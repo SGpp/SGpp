@@ -1,0 +1,57 @@
+/*! \page sgalgo101 Sparse Grid Algorithm 101
+
+\section modular The modular way to sparse grid algorithms
+
+\subsection basic Basic building blocks:
+
+- sweep
+- grid_iterator
+- *_base
+
+\subsection analysis Decide what your algorithm needs:
+
+- If you want to exploit d-linearity you most likely need sweep (as shown in LaplaceLinear.hpp)
+- To descend in one dimension use grid_iterator. Do not forget to watch for 
+  hints (also shown in LaplaceLinear.hpp). 
+- Try to move all base dependent code in the corresponding base class.
+
+\subsection python Make sure your algorithm is exported into python:
+
+- Templates
+	- Force instantiation by writing a typedef into sgpp.hpp
+	- Include a %template statement into pysgpp.i
+	- Write at least a basic test to check if the object can be created
+
+- Operations
+	- If you are writing a new Operation try to stay within the interface
+
+
+\subsection faq Frequently Asked Questions
+
+- All those constructors and function calls and stuff. Isn't that slow?
+	- No! All those calls are static and can be easily inlined. It can be even faster,
+	  eg. if you use FixedGridIndex.
+	  
+- What are functors?
+	- Because C++ is staticly typed, you have to specify all parameters on a function pointer.
+	  Also a function pointer can not be inlined. So it's much easier to define a new struct
+	  and overload the operator(). Such a function object can be, once instantiated, called
+	  like an ordinary function. It's even possible to partially evaluate such a function,
+	  by providing parameters to the constructor.
+
+- Templates? I'm scared!
+	- There is no need to. There isn't any real template magic used within sgpp. Get yourself
+	  familiar with the basic syntax (http://www.cplusplus.com/doc/tutorial/). Templates are used
+	  with two concepts. The first one is "templates as containers". This is the part which Java
+	  implements as generics. You should be familiar with that through your computer engineering 
+	  courses. The second concept is "templates as static polymorphism". This is similiar to normal
+	  polymorphism. You write a class that uses an interface (in this case the template parameter)
+	  and later tell the compiler which implementation it should accept (via the template instantiation).
+	  The main difference is that the polymorphism is resolved at compile time. Look at sweep and 
+	  LaplaceLinear.hpp for examples.
+	  
+- Help! I get 10 pages full of compiler error messages!
+	- Yeah thats the way it is... This is going to be better as soon as C++0x is in place. C++ always 
+	  shows the whole template instantiation path. Just look through the error message step by step.
+	  You should get a feeling for the correct place pretty fast.
+*/

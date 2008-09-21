@@ -1,0 +1,68 @@
+# This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems.
+#
+# Copyright (C) 2008  Joerg Blank (blankj@in.tum.de)
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with pyclass. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+import unittest
+
+class TestDataVector(unittest.TestCase):
+    def testConstructor(self):
+        from pysgpp import DataVector
+        
+        d = DataVector(2)
+        self.assertEqual(d.getSize(), 2)
+        
+        d = DataVector(2,2)
+        self.assertEqual(d.getSize(), 2)
+        self.assertEqual(d.getDim(), 2)
+        self.assertEqual(len(d), 4)
+
+    def testMinMax(self):
+        from pysgpp import DataVector
+        
+        d = DataVector(3)
+        for i in xrange(len(d)):
+            d[i] = i
+            
+        self.assertEqual(d.min(0), 0)
+        self.assertEqual(d.max(0), 2)
+        
+        mi, ma = d.minmax(0)
+        self.assertEqual(mi, 0)
+        self.assertEqual(ma, 2)        
+
+    def testSum(self):
+        from pysgpp import DataVector
+        
+        d = DataVector(3)
+        for i in xrange(len(d)):
+            d[i] = i
+        
+        self.assertEqual(d.sum(), 3)
+
+    def testDotProduct(self):
+        from pysgpp import DataVector
+        
+        x = 0
+        
+        d = DataVector(3)
+        for i in xrange(len(d)):
+            d[i] = i + 1
+            x += d[i] * d[i]
+            
+        self.assertEqual(d.dotProduct(d), x)
+

@@ -1,0 +1,34 @@
+# This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems.
+#
+# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de)
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with pyclass. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+srcs = Split("""
+pysgpp.i
+""")
+
+Import('env')
+Import('src_objs')
+
+py_env = env.Clone()
+
+py_env.Append(SWIGFLAGS=['-c++','-python'])
+py_env.Append(CPPPATH=['#/sg++']+env['PYTHON_CPPPATH'])
+
+pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+
+Export('pysgpp')
