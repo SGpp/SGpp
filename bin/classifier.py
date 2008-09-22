@@ -375,12 +375,14 @@ class ClassesEvalProvider:
         
         self.training_overall = []
         self.testing_overall = []
+        self.number_points = []
 
     def reset(self):
         """Called before each learning step"""
         self.training_results = []
         self.testing_results = []
-
+        
+        
     def training(self, alpha, data):
         """Called to evaluate training data once per fold"""
         if data:
@@ -396,9 +398,19 @@ class ClassesEvalProvider:
         i = float(len(self.training_results))
         self.training_overall.append(sum(self.training_results)/i)
         self.testing_overall.append(sum(self.testing_results)/i)
+        self.number_points.append(self.status.grid.getStorage().size())
         
         print self.training_overall
         print self.testing_overall
+
+        if options.stats != None:
+            txt = "%f, %-10g, %f" % (options.level, options.l, options.adaptive)
+            for i in xrange(len(self.training_overall)):
+                txt = txt + ", %f, %.10f, %.10f" % (self.number_points[i], self.training_overall[i], self.testing_overall[i])
+            if options.verbose:
+                print txt
+            writeLockFile(options.stats, txt+"\n")
+
 
 class RegressionEvalProvider:
     def __init__(self, status):
@@ -618,6 +630,7 @@ def _main():
     
     parser.add_option("-P", "--polynom", action="store", type="int", default="-1", dest="polynom", help="Specifies maximal polynomial degree for polynomial base functions")
     
+    parser.add_option("-s", "--stats", action="store", type="string", dest="stats", help="In this file the statistics from the test are stored")
     parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Provides extra output")
 
     parser.add_option("--seed", action="store", type="int", dest="seed", help="Random seed used for initializing")
