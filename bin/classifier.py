@@ -418,6 +418,7 @@ class RegressionEvalProvider:
         
         self.training_overall = []
         self.testing_overall = []
+        self.number_points = []
 
     def reset(self):
         """Called before each learning step"""
@@ -449,9 +450,19 @@ class RegressionEvalProvider:
         i = float(len(self.training_results))
         self.training_overall.append(sum(self.training_results)/i)
         self.testing_overall.append(sum(self.testing_results)/i)
-        
+        self.number_points.append(self.status.grid.getStorage().size())
+                
         print self.training_overall
         print self.testing_overall
+
+        if options.stats != None:
+            txt = "%f, %-10g, %f" % (options.level, options.l, options.adaptive)
+            for i in xrange(len(self.training_overall)):
+                txt = txt + ", %f, %.10f, %.10f" % (self.number_points[i], self.training_overall[i], self.testing_overall[i])
+            if options.verbose:
+                print txt
+            writeLockFile(options.stats, txt+"\n")
+
 
 ## List of available refine providers
 # See ClassesEvalProvider for an example        
