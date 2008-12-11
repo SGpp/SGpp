@@ -4,6 +4,7 @@
 # Setup cron job: crontab -e
 #
 
+export PATH=$PATH:~/bin
 cd ~/TUM/cronjob/SGpp
 
 # check out / update

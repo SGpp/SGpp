@@ -314,7 +314,7 @@ class SurplusRefineProvider:
         print "GridPoints: ", self.status.grid.getStorage().size()
 
 ##
-# TODO: rework
+# @TODO: rework
 class ErrorRefineProvider:
     def __init__(self, status):
         self.status = status
@@ -665,7 +665,7 @@ def _main():
             print "%15s: %s" % (m, zeh_modes[m])
         sys.exit(0)
     elif zeh not in zeh_modes.keys():
-        print("Wrong C-mode! Please refer to --C help for further information.")
+        print("Wrong C-mode! Please refer to -C help for further information.")
         sys.exit(1)
 
     # Execute the mode
