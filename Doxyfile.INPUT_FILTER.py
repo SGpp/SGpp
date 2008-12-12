@@ -31,7 +31,7 @@ if re.search('\$SVN_LOG\$', txt):
         rev_prev = rev-4
         svn_log = 'svn log -r %d:%d' % (rev,rev_prev)
     except:
-        svn_log = 'svn log -r HEAD:PREV --limit 5'
+        svn_log = 'svn log -r HEAD:1 --limit 5'
     
     # read in log entries
     f = os.popen(svn_log)

@@ -1,0 +1,112 @@
+/**
+@mainpage SGpp Documentation
+Welcome to the sparse grid ++ (SGpp) documentation.
+
+@version $HEAD$
+
+
+@section overview Overview
+- \ref svn
+- \ref installation instructions (separate page)
+- \ref guideline
+- \ref unittests
+- \ref description
+- \ref doxygen
+- \ref copyright
+
+
+@section svn Last modifications
+$SVN_LOG$
+
+
+@section guideline Guideline documenting the code
+<div style="color:#FF0000;">All code has to be documented so that the functions,
+classes and all other entities appearing in the Doxygen-webpage are
+commented so that some \e other person can understand what they are
+doing.</div>
+
+Especially tags like \e \@todo should be used. They are then listed on the 
+\link todo ToDo\endlink-page. 
+
+Different scripts can be grouped together
+in so-called Modules. The link to the Modules-page is shown in the navigation bar.
+
+Please correct any warnings or errors that appear when creating the
+documentation with doxygen!
+
+@sa Doxygen Manual http://www.stack.nl/~dimitri/doxygen/manual.html
+@sa - Documenting the code http://www.stack.nl/~dimitri/doxygen/docblocks.html
+@sa - Special Commands http://www.stack.nl/~dimitri/doxygen/commands.html
+
+
+@section unittests Unittests/Testing
+
+In the subfolder <tt>tests</tt> there are @link tests the following@endlink 
+unittests written in Python.
+They can be tested separately or all together via the file
+<tt>test_pyclass.py</tt>. If you modify existing code, do not forget 
+to make sure that no new errors are introduced. If you write new
+functionalities, do <i>always</i> add unittests for each functionality!
+
+
+@section description Description of the SGClass package
+
+Here comes the description...
+
+
+@section doxygen Usage of Doxygen
+
+Executing <tt>doxygen</tt> in the main folder creates the
+Doxygen-documentation in the subfolder <tt>doc</tt>. The settings
+for Doxygen are automatically taken from the file
+<tt>Doxyfile</tt>. As those settings do some preprocessing to
+include the revision numbers from the svn-Repository this requires the
+use of <tt>svn</tt> and takes longer than normal execution.
+
+Therefore a second file with Doxygen-settings exists, just without
+the preprocessing steps, <tt>Doxyfile.fast</tt>, which is much
+faster. It can be used running <tt>doxygen Doxyfile.fast</tt>
+in the main folder.
+
+The preprocessing steps include the substitution of the tags
+<pre>
+\@version&nbsp;$HEAD$
+</pre> to show the current revision of the svn, and 
+<pre>
+\@version&nbsp;$CURR$
+</pre> to additionally show the last revision, the current file 
+changed and the last author working on the file. Additionally the tag
+<pre>
+$<tt>SVN_LOG</tt>$
+</pre>
+is substituted by a list of the last few check-ins, as shown above.
+
+
+@section copyright Copyright
+
+Copyright (C) 2007  Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), 
+Richard Roettger (roettger@in.tum.de)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+@todo Add the description
+@todo Structure the Doxygen Documentation / Group the files somehow, see README for an example
+@todo Remove the all leftover from SGClass
+
+
+
+*/

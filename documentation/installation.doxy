@@ -1,0 +1,79 @@
+/**
+@page installation Installation
+Installation and what is necessary for it.
+
+
+@section requirements Requirements
+
+Required are
+- SCons, http://www.scons.org/ for compilation, see \ref
+sconsInstallation "further information" below.
+- swig, http://www.swig.org/, if you want to use SGpp within python,
+e.g.<br> It allows to wrap C/C++ functions as libraries that can be used
+from within other languages.
+- psyco, http://psyco.sourceforge.net/ is recommended, although not
+required, to speed up the execution of python code.
+
+
+@section compilation Compilation
+
+Compilation of the C++ libraries is done with SCons.
+(SCons is a Makefile replacement that facilitates quite a few
+things.) Execute
+@verbatim
+  > scons
+@endverbatim
+in the main folder. For configuration and optimization, see below.
+
+Within compilation, all unit-tests (located in the
+<tt>tests</tt>-folder) are executed.
+
+After compilation, two files, <code>pysgpp.py</code> and
+<code>_pysgpp.so</code> are copied to the <code>bin</code> folder and
+can be used from within python. Import and print contents via
+@verbatim
+  import pysgpp
+  dir(pysgpp)
+@endverbatim
+You might want to include your <code>bin</code> directory in your
+Python search path by
+@verbatim
+  export PYTHONPATH=path_to_main_dir/bin:$PYTHONPATH
+@endverbatim
+
+
+@subsection sconsInstallation How to get and use SCons
+
+If you do not have SCons with version >= 1.0 available, there is a
+ready-to-use version in the folder <tt>tools</tt>. 
+
+Just change to the <tt>tools</tt> directory, unzip
+<tt>scons-local-1.0.1.tar.gz</tt> and run the <tt>scons.py</tt>-Skript
+in the <tt>tools</tt> folder. E.g.
+@verbatim
+  > cd tools
+  > tar -xzf scons-local-1.0.1.tar.gz
+  > cd ..
+  > python tools/scons.py
+@endverbatim
+
+Alternatively, download and unpack the latest version and install
+it. A local installation to <tt>$HOME/tools</tt> is done e.g. via
+@verbatim
+  > python setup.py install --prefix=$HOME/tools
+@endverbatim
+
+
+@subsection sconsConfiguration Configuration for compilation
+
+SCons uses the file <tt>SConstruct</tt>. General settings for SCons,
+like compiler flags e.g., can be specified in a
+<tt>custom.py</tt>-file. An example-file with some recommendations is
+the <tt>custom-example.py</tt>-file residing in the main folder. For a
+start, just copy it to a new <tt>custom.py</tt>-file, e.g.  @verbatim
+  > cp custom-example.py custom.py
+@endverbatim
+
+
+
+*/
