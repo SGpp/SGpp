@@ -6,7 +6,8 @@ Welcome to the sparse grid ++ (SGpp) documentation.
 
 
 @section overview Overview
-- \ref svn
+- \ref lastmodifications
+- \ref svn instruction (separate page)
 - \ref installation instructions (separate page)
 - \ref guideline
 - \ref unittests
@@ -15,7 +16,7 @@ Welcome to the sparse grid ++ (SGpp) documentation.
 - \ref copyright
 
 
-@section svn Last modifications
+@section lastmodifications Last modifications
 $SVN_LOG$
 
 

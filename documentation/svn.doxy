@@ -1,0 +1,26 @@
+/**
+@page svn SVN
+How to access the repository.
+
+
+@section svnlocal How to check out a svn repository (locally)
+
+The repositories reside in /home_local/repositories/svn/.
+To check out on one of the computers in the labs into the current directory use
+@verbatim
+  > svn co file:///home_local/repositories/svn/$repositoryname
+@endverbatim
+
+@section svnremote How to check out a svn repository (remotely)
+
+Run the following short and easy-remembered command from your local dir:
+
+@verbatim
+  > svn co svn+ssh://$username@atsccs??.informatik.tu-muenchen.de/home_local/repositories/svn/$repositoryname
+@endverbatim
+
+You should now have a working copy which works exactly like the local working copy. 
+
+@see http://svnbook.red-bean.com/en/1.2/svn-book.html More information about svn
+
+*/
