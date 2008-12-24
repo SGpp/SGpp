@@ -1,5 +1,6 @@
 # pyclass is a set of tools utilizing sparse grids to solve numerical problems
-# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de)
+# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
+#               2008  Dirk Pflueger (pflueged@in.tum.de)
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,38 +15,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 
+###############################
+# Copy this file to custom.py #
+###############################
 
-# Copy this file to custom.py
-
+# path to STLport
+# global installation e.g.
+STLPORT = '/usr/include/stlport'
+# local installation (see documentation)
+#STLPORT = os.path.expanduser('~/include/stlport')
 
 # additional compiler flags
-CPPFLAGS = ['-O3','-ggdb','-funroll-loops']
-
-# debug flags. You have to disable inline or you'll get nowhere
-#CPPFLAGS = ['-O0','-ggdb']
+CPPFLAGS = ['-O3','-g','-funroll-loops']
 
 # MARCH variable for compiler optimization. See gcc man page
-MARCH = 'nocona'  # Core2
+#MARCH = 'nocona'  # Core2
 #MARCH = 'opteron'
 #MARCH = 'pentium4'
+
+# Set if Scons-Version = v0.96.1.D001
+#OLDSCONS = 1
+
+# Set to True to vectorize certain files
+#VECTORIZE = True
 
 
 ####### ICC #######
 # Uncomment to use Intels optimizing Compiler
 
 #ICC = 1
-
 #CPPFLAGS = ['-axN', '-O3', '-xN', '-funroll-loops', '-ipo']
-
-###### JSGPP ######
-# Uncomment to enable jsgpp
-
-#JSGPP = True
-
-#JNI_CPPPATH = ''
-#JNI_LIBPATH = ''
-#JNI_OS = 'linux'
-
 
 

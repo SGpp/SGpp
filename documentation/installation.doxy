@@ -1,25 +1,32 @@
 /**
-@page installation Installation
+@page installation Installation and Compilation
 Installation and what is necessary for it.
 
+@section overview Overview
+- \ref requirements
+- \ref compilation
+- \ref stepByStep
+- \ref installInstructions
 
-@section requirements Requirements
 
-Required are
-- SCons, http://www.scons.org/ for compilation, see \ref
-sconsInstallation "further information" below.
+@section requirements Requirements and Recommendations
+Information about how to install the additional software is given \ref
+installInstructions "below".
+- SCons, http://www.scons.org/ for compilation. Cons is a Makefile
+  replacement that facilitates quite a few things.
 - swig, http://www.swig.org/, if you want to use SGpp within python,
-e.g.<br> It allows to wrap C/C++ functions as libraries that can be used
-from within other languages.
+  e.g.<br> It allows to wrap C/C++ functions as libraries that can be used
+  from within other languages.
+- STLport, http://sourceforge.net/projects/stlport/, a Multiplatform
+  C++ Standard Library (STL implementation). Highly recommended,
+  though not required
 - psyco, http://psyco.sourceforge.net/ is recommended, although not
-required, to speed up the execution of python code.
+  required, to speed up the execution of python code. Only for 32-bit architectures!
 
 
 @section compilation Compilation
 
-Compilation of the C++ libraries is done with SCons.
-(SCons is a Makefile replacement that facilitates quite a few
-things.) Execute
+Compilation of the C++ libraries is done with SCons. Execute
 @verbatim
   > scons
 @endverbatim
@@ -75,5 +82,136 @@ start, just copy it to a new <tt>custom.py</tt>-file, e.g.  @verbatim
 @endverbatim
 
 
+@section stepByStep Step-by-step instructions (Linux)
+
+- Check out the current version. Change to the <tt>trunk</tt>
+directory. All further steps assume that one is in the trunk directory
+at the beginning.
+- SCons
+ - If you already have SCons installed, check the version with
+   @verbatim  
+  scons -v 
+   @endverbatim
+ - If SCons is not yet installed, or if the version is < 1.0, \ref
+   installSCons "install SCons". 
+- swig
+ - Check with
+   @verbatim
+  swig -version
+   @endverbatim
+   whether swig is installed. \ref installSwig "Install swig", if necessary. 
+- STLport
+ - If during compilation SCons tells you that it can't finde stlport,
+   then you quite likely either don't set the path to stlport in your
+   <tt>custom.py</tt> or via the command line parameters for
+   <tt>scons</tt> - or you don't have STLport installed. \ref
+   installSTLport "Install STLport", if desired.
+- psyco
+ - psyco can help you to speed up the execution of Python code
+   (e.g. <tt>classifier.py</tt>). \ref installPsyco "Install psyco", if desired.
+
+
+@section installInstructions How To Install
+The following section contains installation instructions for the
+required software
+
+@subsection installSCons SCons
+- To install locally proceed as follows:
+  @verbatim
+  cd tools/
+  tar -xzf scons-1.2.0.tar.gz 
+  cd scons-1.2.0
+  python setup.py install --prefix=$HOME
+  cd ../../
+  @endverbatim
+  Set the path to the <tt>~/bin</tt> directory, (preferrably in your
+  starting scripts, e.g. your <tt>.bash_profile</tt> or
+  <tt>.bashrc</tt>), e.g.
+  @verbatim
+  export PATH=$HOME/bin:$PATH
+  @endverbatim
+  Now you can compile via
+  @verbatim
+  scons
+  @endverbatim
+- Alternatively, you can use the standalone-version (no need to install):
+  @verbatim
+  cd tools
+  tar -xzf scons-local-1.2.0.tar.gz
+  cd ..
+  python tools/scons.py
+  @endverbatim
+- SCons is platform independent
+
+@subsection installSwig swig
+- To install locally proceed as follows:
+  @verbatim
+  cd tools/
+  tar -xzf swig-1.3.36.tar.gz  
+  cd swig-1.3.36
+  ./configure --prefix=$HOME
+  make && make install
+  @endverbatim
+  Set the path to the <tt>~/bin</tt> directory, (preferrably in your
+  starting scripts, e.g. your <tt>.bash_profile</tt> or
+  <tt>.bashrc</tt>), e.g.
+  @verbatim
+  export PATH=$HOME/bin:$PATH
+  @endverbatim
+  Now swig is installed 
+ - swig is platform dependent (ia64, x86_64, ...)
+
+@subsection installSTLport STLport
+- STLport is not required, but recommended
+- To install locally proceed as follows:
+  @verbatim
+  cd tools/
+  tar -xzf STLport-5.2.1.tar.gz 
+  cd STLport-5.2.1
+  ./configure --prefix=$HOME
+  make && make check
+  @endverbatim
+  If there is an error, saying that 'wcsftime' has not been declared,
+  this is a bug. Execute
+  @verbatim
+  sed -i \
+          -e 's/_STLP_VENDOR_CSTD::wcsftime/::wcsftime/' \
+          stlport/stl/_cwchar.h || die "sed failed"
+  @endverbatim
+  to overcome this, then compile again.<br>
+  Continue with
+  @verbatim
+  make install
+  @endverbatim
+ - Modify the default setting in your custom.py for <tt>STLPORT</tt>
+   to point to <tt>~/include/stlport'</tt>.
+ - If everything worked fine, running <tt>scons</tt> should tell you
+   that it found stlport
+
+@subsection installPsyco psyco
+- STLport is not required, but recommended for 32-Bit
+  architectures. It can be used <b>only</b> on 32-Bit architectures.
+- To install locally proceed as follows:
+  @verbatim
+  cd tools/
+  tar -xzf psyco-1.6-src.tar.gz
+  cd psyco-1.6
+  python setup.py build_ext -i
+  cp -r py-support/ ../../bin/psyco/
+  @endverbatim
+- Now psyco can be imported in Python, but only from within the
+  <tt>bin/</tt> directory. The same holds for <tt>pysgpp</tt>
+  libs.<br>
+  To be able to use psyco from any directory, modify the Python search
+  path:
+  @verbatim
+  export PYTHONPATH=$PYTHONPATH:$HOME/path_to_your_bin_directory/
+  @endverbatim
+  
+
+
+*
+  @verbatim
+  @endverbatim
 
 */

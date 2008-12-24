@@ -1,4 +1,4 @@
-# This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems.
+# This file is part of SGClass, a program package making use of spatially adaptive sparse grids to solve numerical problems.
 #
 # Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 # 
@@ -20,23 +20,23 @@
 # @ingroup bin
 # @brief Main script to do classification, regression, ...
 # @version $CURR$
+# @todo Join the different modes so that not 100 different versions (checkpointing, ...) exist!
 
 
 from optparse import OptionParser
 import sys
 from tools import *
-from pysgpp import *
+from pyclass import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
-
 import random
 
 try:
     import psyco
     psyco.full()
+    print "Using psyco"
 except:
     pass
-
 
 
 #-------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ def exec_mode(mode):
         sys.exit(1)
 
     # execute action
-    modes[mode]['action'](mode)
+    modes[mode]['action']()
     
 
 
@@ -122,7 +122,6 @@ def openFile(filename):
         
     return data
 
-
 #-------------------------------------------------------------------------------
 ## Constructs a new grid.
 # If options.grid is set, then read in a stored grid. If not, construct a new
@@ -130,47 +129,649 @@ def openFile(filename):
 # Sets the use of boundary functions according to options.border.
 # @param dim the grid dimension
 # @return a grid
+# @todo Integrate into all modes
 def constructGrid(dim):
-    factories = {"linear" : lambda : Grid.createLinearGrid(dim),
-             "modlinear" : lambda : Grid.createModLinearGrid(dim),
-             "poly" : lambda : Grid.createPolyGrid(dim, options.polynom),
-             "modpoly" : lambda : Grid.createModPolyGrid(dim, options.polynom),
-             }
-    grid = factories[options.basetype]()
-    gen = grid.createGridGenerator()
-    gen.regular(options.level)
+    if options.grid == None:
+        if options.polynom > 1:
+            if options.verbose:
+                print "SpGridHighOrder, p=%d, l=%d" %(options.polynom, options.level)
+            grid = SpGridHighOrder(dim,options.level,options.polynom)
+        else:
+            if options.verbose:
+                print "SpGridLinear, l=%s" % (options.level)
+            grid = SpGridLinear(dim,options.level)
+    else:
+        if options.verbose:
+            print "reading grid from %s" % (options.grid)
+        grid = readGrid(options.grid)
     
+    if options.border:
+        if options.verbose:
+            print "setting border"
+        grid.setUseBorderFunctions(True)
+
     return grid
 
+
+
 #-------------------------------------------------------------------------------
-## Construction from serialized grid or new
-def construction(dim = None, mode = None):
-    if options.grid:
-        import pickle
-        fin = open(options.grid, "rb")
-        
-        status = pickle.load(fin)
-        
-        fin.close()
-        return status
+## Classify a dataset with an existing grid (compute accuracy).
+# Evaluates a sparse grid function, given by a regular sparse grid (dim, level)
+# and an alpha-Vector (ARFF-file) at a set of data points (ARFF-file).
+# Outputs classifications to ARFF-file.
+def doApply():
+    # read data
+    data = openFile(options.data[0])
+    dim = len(data["data"])
+    numData = len(data["data"][0])
+    
+    # read alpha vector
+    alpha = buildTrainingVector(openFile(options.alpha))
+    
+#    # construct corresponding regular grid by dim and level
+#    grid = SpGridLinear(dim, options.level)
+    # construct corresponding grid
+    grid = constructGrid(dim)
+    if(alpha.getSize() != grid.getPointsCount()):
+        print "Error: Inconsistent Grid and Alpha-Vector"
+        sys.exit(1)
+    
+    # copy data to DataVector
+    (x,y) = createDataVectorFromDataset(data)
+
+    # evaluate
+    q = DataVector(dim)
+    classes = []
+    # if test data contains classes, additionally compute accuracy
+    if data.has_key("classes"):
+        compute_accuracy = True
+        acc = 0
     else:
-        return Status(constructGrid(dim), mode, options.basetype, options.zeh)
+        compute_accuracy = False
+    # traverse Data
+    for i in xrange(numData):
+        x.getRow(i,q)
+        val = grid.EvaluatePoint(q, alpha)
+        if compute_accuracy:
+            if (val >= 0 and data["classes"][i] >= 0) or (val < 0 and data["classes"][i] < 0):
+                acc += 1
+        if val >= 0:
+            classes.append(1.0)
+        else:
+            classes.append(-1.0)
+    # output accuracy:
+    acc = acc / numData
+    print "Accuracy on test data: %9.5f" % (100*acc)
+            
+    # get filename for output file
+    if(options.outfile != None):
+        data["filename"] = options.outfile
+    else:
+        data["filename"] = data["filename"] + ".out.arff"
+    
+    # write data with function values to ARFF-file
+    data["classes"] = classes
+    writeDataARFF([data])
+
 
 #-------------------------------------------------------------------------------
-## Load data from file
-def loadData():
-    data = []
-    try:
-        for filename in options.data:
-            data.append(readDataARFF(filename))
-    except:
-        raise Exception("An error occured while reading " + filename + "!")
+## Evaluate a sparse grid function given by grid and alphas at data points.
+# Evaluates a sparse grid function, given by a regular sparse grid (dim, level)
+# and an alpha-Vector (ARFF-file) at a set of data points (ARFF-file).
+# Outputs function values to ARFF-file
+def doEval():
+    # read data
+    data = openFile(options.data[0])
+    dim = len(data["data"])
+    numData = len(data["data"][0])
+
+    # read alpha vector
+    alpha = buildTrainingVector(openFile(options.alpha))
+
+    # construct corresponding grid
+    grid = constructGrid(dim)
+    if(alpha.getSize() != grid.getPointsCount()):
+        print "Error: Inconsistent Grid and Alpha-Vector"
+        sys.exit(1)
+
+    # copy data to DataVector
+    (x,y) = createDataVectorFromDataset(data)
+
+    # evaluate
+    q = DataVector(dim)
+    classes = []
+    # if test data contains function values, additionally compute L2-norm of error
+    if data.has_key("classes"):
+        compute_accuracy = True
+        err = 0
+    else:
+        compute_accuracy = False
+    # traverse Data
+    for i in xrange(numData):
+        x.getRow(i,q)
+        val = grid.EvaluatePoint(q, alpha)
+
+        classes.append(val)
+    # output accuracy:
+    if compute_accuracy:
+        error = DataVector(len(classes))
+        for i in range(len(classes)):
+            error[i] = classes[i]
+        error.sub(y) # error vector
+        error.sqr()  # entries squared
+        # output some statistics
+        err_min = error.min(1)
+        err_max = error.max(1)
+        print "(Min,Max) error: (%f,%f)" % (sqrt(err_min), sqrt(err_max))
+        # output accuracy
+        err = error.sum()
+        print "L2-norm of error on data: %f" % (sqrt(err))
+        print "MSE: %f" %(err / error.getSize())
+
+    # get filename for output file
+    if(options.outfile != None):
+        data["filename"] = options.outfile
+    else:
+        data["filename"] = data["filename"] + ".out.arff"
+    # write data with function values to ARFF-file
+    data["classes"] = classes
+    writeDataARFF([data])
 
     
-    if len(data) < 1:
-        raise Exception("No data files supplied.")
+#-------------------------------------------------------------------------------
+## Evaluate a sparse grid function given by grid and alphas at data points
+# which are provided at stdin.
+# Evaluates a sparse grid function, given by a regular sparse grid (dim and level
+# or file) and an alpha-Vector (ARFF-file) at a set of data points (stdin).
+# Data points have to be provided linewise via stdin (doubles).
+# Outputs function values linewise to stdout.
+def doEvalStdin():
+    # read alpha vector
+    alpha = buildTrainingVector(openFile(options.alpha))
+
+    # construct corresponding grid
+    if not (options.grid or (options.dim and options.level)):
+        print "Error: No grid provided!"
+        sys.exit(1)
+    if options.dim:
+        dim = options.dim
+    else:
+        dim = 0
+    grid = constructGrid(dim)
+    dim = grid.getDim()
+    if(alpha.getSize() != grid.getPointsCount()):
+        print "Error: Inconsistent Grid and Alpha-Vector"
+        sys.exit(1)
+
+    # read in normalization information if available
+    if options.normfile:
+        (border, minvals, maxvals, deltavals) = readNormfile(options.normfile)
+        
+    # evaluate
+    q = DataVector(dim)
+    # read data
+    sys.stdout.write("---- enter data ---- stop with blank line ----\n")
+    sys.stdout.flush()
+    s = sys.stdin.readline().strip()
+    while (s):
+        dat = s.split(None)
+        if len(dat) < dim:
+            dat = s.split(",")
+        for i in range(dim):
+            if options.normfile:
+                if deltavals[i] == 0:
+                    q[i] = 0.5
+                else:
+                    q[i] = (float(dat[i])-minvals[i])/deltavals[i] + border
+            else:
+                q[i] = float(dat[i])
+        val = grid.EvaluatePoint(q, alpha)
+        sys.stdout.write("%g\n" % val)
+        sys.stdout.flush()
+        s = sys.stdin.readline().strip()
+    sys.stdout.write("\n")
+    sys.stdout.flush()
+
     
-    return data
+#-------------------------------------------------------------------------------
+## Learn a dataset
+def doNormal():
+    # read data
+    data = openFile(options.data[0])
+    dim = len(data["data"])
+    numData = len(data["data"][0])
+        
+    training = buildTrainingVector(data)
+    y = buildYVector(data)
+
+    grid = constructGrid(dim)
+
+    alpha = run(grid, training, y)
+
+    if options.outfile:
+        writeAlphaARFF(options.outfile, alpha)
+    
+    if(options.gnuplot != None):
+        if(grid.getDim() != 2):
+            print("Wrong dimension for gnuplot-Output!")
+        else:
+            writeGnuplot(options.gnuplot, grid, alpha, options.res)
+        
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+def run(grid, training, classes):
+    alpha = None
+    errors = None
+
+    for a in xrange(options.adaptive):
+        alpha = DataVector(grid.getPointsCount())
+        alpha.setAll(0.0)
+
+        m = Matrix(grid, training, options.regparam, options.zeh)
+        b = m.generateb(classes)
+            
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
+        print res
+
+        if options.regression:
+            error = DataVector(len(classes))
+            m.B.multBTrans(alpha, m.x, error)
+            error.sub(classes)# error vector
+            error.sqr()       # entries squared
+            # output some statistics
+            err_min = error.min(1)
+            err_max = error.max(1)
+            print "(Min,Max) error: (%f,%f)" % (sqrt(err_min), sqrt(err_max))
+            # output accuracy
+            err = error.sum()
+            print "L2-norm of error on data: %f" % (sqrt(err))
+            print "MSE: ",(err / error.getSize())
+
+            # calculate error per basis function
+            errors = DataVector(alpha.getSize())
+            m.B.multB(error, m.x, errors)
+
+        if options.checkpoint != None:
+            txt = ""
+            writeCheckpoint(options.checkpoint, grid, alpha, txt, a)
+        
+        
+        if(a + 1 < options.adaptive):
+            #if(options.verbose):
+            print("refining grid")
+            if options.regression:
+                grid.refineOneGridPoint(errors)
+            else:
+                grid.refineOneGridPoint(alpha)
+    return alpha
+
+#-------------------------------------------------------------------------------
+## Learn a dataset with a test dataset.
+def doTest():
+    data = openFile(options.data[0])
+    test = openFile(options.test)
+
+    training = buildTrainingVector(data)
+    y = buildYVector(data)
+
+    test_data = buildTrainingVector(test)
+    test_classes = buildYVector(test)
+
+    dim = len(data["data"])
+
+    grid = constructGrid(dim)
+#    if options.grid == None:
+#        if options.polynom > 1:
+#            grid = SpGridHighOrder(len(data["data"]),options.level,options.polynom)
+#        else:
+#            grid = SpGridLinear(len(data["data"]),options.level)
+#    else:
+#        grid = readGrid(options.grid)
+#    
+#    if options.border:
+#        grid.setUseBorderFunctions(True)
+
+            
+    te_refine = []
+    tr_refine = []
+    num_refine = []
+
+    for a in xrange(options.adaptive):
+        m = Matrix(grid, training, options.regparam, options.zeh)
+        b = m.generateb(y)
+        
+        alpha = DataVector(grid.getPointsCount())
+        alpha.setAll(0.0)
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
+        print res
+
+        tr = testVectorFast(grid, alpha, training, y)
+        
+#        if options.verbose:
+#            teValues = []
+#            te = testVectorValues(grid, alpha, test_data, test_classes, teValues)
+#        else:
+#            te = testVector(grid, alpha, test_data, test_classes)
+        
+# testVectorFast uses an OpenMP enabled c++ routine for testing
+        te = testVectorFast(grid, alpha, test_data, test_classes)
+
+
+        te_refine.append(te)
+        tr_refine.append(tr)
+        num_refine.append(grid.getPointsCount())
+
+        if options.verbose:
+            print "training: ",tr
+            print "testing:  ",te
+
+#            print "teValues"
+#            print teValues
+#            print "alpha"
+#            print alpha
+#            print "grid"
+#            print grid
+
+        if options.checkpoint != None:
+            txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+            for i in xrange(len(tr_refine)):
+                txt = txt + ", %f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+            
+            writeCheckpoint(options.checkpoint, grid, alpha, txt, a)
+
+        if(a + 1 < options.adaptive):
+            if(options.verbose):
+                print("refining grid")
+            grid.refineOneGridPoint(alpha)
+            if(options.verbose):
+                print("Number of points: %d" %(grid.getPointsCount(),))
+
+    if options.stats != None:
+        txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+        for i in xrange(len(tr_refine)):
+            txt = txt + ", %f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+        if options.verbose:
+            print txt
+        writeLockFile(options.stats, txt+"\n")
+
+
+
+#-------------------------------------------------------------------------------
+## Learn a dataset with a random n-fold.
+def doFold():
+    data = openFile(options.data[0])
+    (dvec, cvec) = split_n_folds(data, options.f_level, options.seed)
+        
+    if options.regression:
+        performFoldRegression(dvec, cvec)
+    else:
+        performFold(dvec, cvec)
+
+
+#-------------------------------------------------------------------------------
+## Learn a dataset with a sequential n-fold.
+def doFolds():
+    data = openFile(options.data[0])
+    (dvec, cvec) = split_n_folds_sequential(data, options.f_level)
+
+    if options.regression:
+        performFoldRegression(dvec, cvec)
+    else:
+        performFold(dvec, cvec)
+    return
+
+#-------------------------------------------------------------------------------
+## Learn a dataset with a stratified n-fold.
+def doFoldr():
+    data = openFile(options.data[0])
+    (dvec, cvec) = split_n_folds_stratified(data, options.f_level, options.seed)
+    
+    if options.regression:
+        performFoldRegression(dvec, cvec)
+    else:
+        performFold(dvec, cvec)
+
+#-------------------------------------------------------------------------------
+## Learn a dataset with a n-fold from a set of files.
+def doFoldf():
+
+    if len(options.data)==1:
+        print("Error: Not enough to do. At least two data-Files necessary!")
+        sys.exit(1)
+        
+    dvec = []
+    cvec = []
+    
+    for file in options.data:
+        data = openFile(file)
+        dvec.append(buildTrainingVector(data))
+        cvec.append(buildYVector(data))
+        
+    options.f_level = len(dvec)
+    
+    if options.regression:
+        performFoldRegression(dvec, cvec)
+    else:
+        performFold(dvec, cvec)
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+def performFold(dvec,cvec):
+    
+    if options.grid == None:
+        if options.polynom > 1:
+            grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
+        else:
+            grid = SpGridLinear(dvec[0].getDim(),options.level)
+    else:
+        grid = readGrid(options.grid)
+        
+    if options.border:
+        grid.setUseBorderFunctions(True)
+        
+    num_points = []
+    tr_refine = []
+    te_refine = []
+    
+    for a in xrange(options.adaptive):
+        trainingCorrect = []
+        testingCorrect =[]
+
+        refinealpha = DataVector(grid.getPointsCount())
+        refinealpha.setAll(0.0)
+
+        alpha = DataVector(refinealpha)
+        
+        for i in xrange(options.f_level):
+#            alpha.setAll(0.0)
+            training,classes = assembleTrainingVector(dvec,cvec,i)
+            
+            m = Matrix(grid, training, options.regparam, options.zeh)
+            b = m.generateb(classes)
+
+            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose)
+            print res
+            
+#            tr = testVector(grid,alpha,training,classes)
+#            te = testVector(grid,alpha,dvec[i],cvec[i])
+
+            tr = testVectorFast(grid, alpha, training, classes)
+            te = testVectorFast(grid, alpha, dvec[i], cvec[i])
+
+            trainingCorrect.append(tr)
+            testingCorrect.append(te)
+
+## Verstehe ich nicht. Habs deshalb auskommentiert (Dirk)
+##             if(a +1 == options.adaptive):
+##                 #Letzte verfeinerung, wir sind fertig
+##                 pass
+##             else:
+##                 refinealpha.add(alpha)
+            refinealpha.add(alpha)
+
+        if options.verbose:
+            print(trainingCorrect)   
+            print(testingCorrect)
+
+      
+        tr = sum(trainingCorrect)/options.f_level
+        te = sum(testingCorrect)/options.f_level
+        
+        if options.verbose:
+            print "training: ",tr
+            print "testing:  ",te
+
+        num_points.append(grid.getPointsCount())
+        tr_refine.append(tr)
+        te_refine.append(te)
+        
+        refinealpha.mult(1.0/options.f_level)
+        
+        if options.checkpoint != None:
+            txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+            for i in xrange(len(tr_refine)):
+                txt = txt + ", %f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+            
+            writeCheckpoint(options.checkpoint, grid, refinealpha, txt)
+        
+        if options.verbose:
+            print "alpha"
+            print refinealpha
+            print "grid"
+            print grid
+        if(a + 1 < options.adaptive):
+            print "refine"
+            grid.refineOneGridPoint(refinealpha)
+
+    #print(tr)
+    #print(te)
+
+    if options.stats != None:
+        txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+        for i in xrange(len(tr_refine)):
+            txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_refine[i], te_refine[i])
+        if options.verbose:
+            print txt
+        writeLockFile(options.stats, txt+"\n")
+
+    return
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+def performFoldRegression(dvec,cvec):
+    
+    if options.polynom > 1:
+        grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
+    else:
+        grid = SpGridLinear(dvec[0].getDim(),options.level)
+        
+    if options.border:
+        grid.setUseBorderFunctions(True)
+        
+    num_points = []
+    tr_refine = []
+    te_refine = []
+    tr_meanSqrError = []
+    te_meanSqrError = []
+        
+    for a in xrange(options.adaptive):
+        trainingCorrect = []
+        testingCorrect = []
+        meanSqrErrorsTraining = []
+        meanSqrErrorsTesting = []        
+
+        #refinealpha = DataVector(grid.getPointsCount())
+        #refinealpha.setAll(0.0)
+
+        refineerrors = DataVector(grid.getPointsCount())
+        refineerrors.setAll(0.0)
+
+        alpha = DataVector(grid.getPointsCount())
+        
+        for i in xrange(options.f_level):
+#            alpha.setAll(0.0)
+            training,classes = assembleTrainingVector(dvec,cvec,i)
+            
+            m = Matrix(grid, training, options.regparam, options.zeh)
+            b = m.generateb(classes)
+
+            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose)
+            print res
+            tr = testVector(grid,alpha,training,classes)
+            te = testVector(grid,alpha,dvec[i],cvec[i])
+
+            trainingCorrect.append(tr)
+            testingCorrect.append(te)
+            
+            # calculate Mean Square Error for training set
+            temp = DataVector(classes.getSize())
+            m.B.multBTrans(alpha, m.x, temp)
+            temp.sub(classes)
+            temp.sqr()
+            meanSqrErrorsTraining.append(temp.sum() / temp.getSize())
+
+            # calculate error per base function
+            errors = DataVector(alpha.getSize())
+            m.B.multB(temp, m.x, errors)
+
+            # calculate Mean Square Error for testing set
+            temp = DataVector(cvec[i].getSize())
+            m.B.multBTrans(alpha, dvec[i], temp)
+            temp.sub(cvec[i])
+            temp.sqr()
+            meanSqrErrorsTesting.append(temp.sum() / temp.getSize())
+
+            
+            if(a +1 == options.adaptive):
+                #Letzte verfeinerung, wir sind fertig
+                pass
+            else:
+                #refinealpha.add(alpha)
+                refineerrors.add(errors)
+
+        if options.verbose:
+            print(trainingCorrect)   
+            print(testingCorrect)
+            print(meanSqrErrorsTraining)
+            print(meanSqrErrorsTesting)
+            
+      
+        tr = sum(trainingCorrect)/options.f_level
+        te = sum(testingCorrect)/options.f_level
+        trSqrError = sum(meanSqrErrorsTraining)/options.f_level
+        teSqrError = sum(meanSqrErrorsTesting)/options.f_level
+        
+        if options.verbose:
+            print "training: ",tr, trSqrError
+            print "testing:  ",te, teSqrError
+
+        num_points.append(grid.getPointsCount())
+        tr_refine.append(tr)
+        te_refine.append(te)
+        tr_meanSqrError.append(trSqrError)
+        te_meanSqrError.append(teSqrError)
+        
+        #refinealpha.mult(1.0/options.f_level)
+        refineerrors.mult(1.0/options.f_level)
+        
+        if(a + 1 < options.adaptive):
+            print "refine"
+            #grid.refineOneGridPoint(refinealpha)
+            grid.refineOneGridPoint(refineerrors)
+
+    #print(tr)
+    #print(te)
+
+    if options.stats != None:
+        txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+        for i in xrange(len(tr_refine)):
+            txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_meanSqrError[i], te_meanSqrError[i])
+        if options.verbose:
+            print txt
+        writeLockFile(options.stats, txt+"\n")
+
+    return
 
 #-------------------------------------------------------------------------------
 # For n-fold-cv:
@@ -218,6 +819,39 @@ def buildTrainingVector(data):
     return training
 
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+def testVector(grid,alpha,test,classes):
+    p = DataVector(1,test.getDim())
+    correct = 0
+    for i in xrange(test.getSize()):
+        test.getRow(i,p)
+        val = grid.EvaluatePoint(p, alpha)
+        if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
+            correct = correct + 1
+            
+    return float(correct)/test.getSize()
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+def testVectorFast(grid, alpha, test, classes):
+    return float(grid.testVector(alpha, test, classes))/test.getSize()
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+def testVectorValues(grid,alpha,test,classes,evalValues):
+    p = DataVector(1,test.getDim())
+    correct = 0
+    for i in xrange(test.getSize()):
+        test.getRow(i,p)
+        val = grid.EvaluatePoint(p, alpha)
+        evalValues.append(val)
+        if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
+            correct = correct + 1
+            
+    return float(correct)/test.getSize()
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 def buildYVector(data):
     y = DataVector(len(data["classes"]))
     for i in xrange(len(data["classes"])):
@@ -226,438 +860,49 @@ def buildYVector(data):
     return y
 
 
-#===============================================================================
-# data_providers
-#===============================================================================
-
-def constructNormal(data):
-    if len(data) != 1:
-        raise Exception("Only one data file supported.")
-
-    return data[0], len(data[0]["data"])
-
-def splitNormal(data):
-    yield (buildTrainingVector(data), buildYVector(data)), None
-    return
-
-## Random Fold
-def constructFold(data):
-    if len(data) != 1:
-        raise Exception("Only one data file supported.")
-    
-    return split_n_folds(data[0], options.f_level, options.seed), len(data[0]["data"])
-
-## Stratified Fold
-def constructFoldr(data):
-    if len(data) != 1:
-        raise Exception("Only one data file supported.")
-    
-    return split_n_folds_stratified(data[0], options.f_level, options.seed), len(data[0]["data"])
-
-
-## Sequential Fold
-def constructFolds(data):
-    if len(data) != 1:
-        raise Exception("Only one data file supported.")
-    
-    return split_n_folds_sequential(data[0], options.f_level), len(data[0]["data"])
-
-
-def splitFold(data):
-    dvec, cvec = data
-    for i in xrange(options.f_level):
-        training = assembleTrainingVector(dvec,cvec,i)
-        testing = (dvec[i], cvec[i])
-        yield (training, testing)
-    return
-
-## list of data providers
-# construct should bring the data in a suitable form.
-# split should be a generator returning a tuple (training, testing) for the current fold.
-# training/testing should be of the form (data, classes) or None if not present
-data_providers = {
-        "normal" : {"construct" : constructNormal, "split" : splitNormal},
-        "fold" : {"construct" : constructFold, "split" : splitFold},
-        "folds" : {"construct" : constructFolds, "split" : splitFold},                  
-        "foldr" : {"construct" : constructFoldr, "split" : splitFold},                  
-        }
-
-#===============================================================================
-# refine_providers
-#===============================================================================
-
-class SurplusRefineProvider:
-    def __init__(self, status):
-        self.status = status
-        
-    def reset(self):
-        """Called before each learning step"""
-        self.alpha = DataVector(self.status.grid.getStorage().size())
-        self.alpha.setAll(0.0)
-        self.i = 0
-    
-    def add(self, alpha, training):
-        """Called once per fold"""
-        self.alpha.add(alpha)
-        self.i += 1
-    
-    def refine(self):
-        """Called after learning all folds"""
-        self.alpha.mult(1.0/self.i)
-        
-        refine = self.status.grid.createGridGenerator()
-        
-        functor = SurplusRefinementFunctor(self.alpha)
-        
-        refine.refine(functor)
-        
-        print "GridPoints: ", self.status.grid.getStorage().size()
-
-##
-# @TODO: rework
-class ErrorRefineProvider:
-    def __init__(self, status):
-        self.status = status
-        
-    def reset(self):
-        """Called before each learning step"""
-        self.alpha = DataVector(self.status.grid.getStorage().size())
-        self.alpha.setAll(0.0)
-        self.i = 0
-    
-    def add(self, alpha, training):
-        """Called once per fold"""
-        
-        temp = DataVector(training[1].getSize())
-        B = self.status.grid.createOperationB()
-        
-        B.multTranspose(alpha, training[0], temp)
-        
-        temp.sub(training[1])
-        temp.sqr()        
-        
-        error_temp = DataVector(alpha.getSize())
-        B.mult(temp, training[0], error_temp)
-        
-        self.alpha.add(error_temp)
-        self.i += 1
-    
-    def refine(self):
-        """Called after learning all folds"""
-        self.alpha.mult(1.0/self.i)
-        
-        refine = self.status.grid.createGridGenerator()
-        
-        functor = SurplusRefinementFunctor(self.alpha)
-        
-        refine.refine(functor)
-        
-        print "GridPoints: ", self.status.grid.getStorage().size()
-
-##list of refine providers
-# see SuprlusRefineProvider for an example
-refine_providers = {
-        "surplus" : SurplusRefineProvider,
-        "error" : ErrorRefineProvider,
-        }
-
-#===============================================================================
-# eval_providers
-#===============================================================================
-
-def testVector(status, alpha, data, classes):
-    eval = status.grid.createOperationEval()
-    return eval.test(alpha, data, classes) / float(data.getSize())
-
-class ClassesEvalProvider:
-    def __init__(self, status):
-        self.status = status
-        
-        self.training_overall = []
-        self.testing_overall = []
-        self.number_points = []
-
-    def reset(self):
-        """Called before each learning step"""
-        self.training_results = []
-        self.testing_results = []
-        
-        
-    def training(self, alpha, data):
-        """Called to evaluate training data once per fold"""
-        if data:
-            self.training_results.append(testVector(self.status, alpha, data[0], data[1]))
-
-    def testing(self, alpha, data):
-        """Called to evaluate testing data once per fold"""
-        if data:
-            self.testing_results.append(testVector(self.status, alpha, data[0], data[1]))
-                                     
-    def evaluate(self):
-        """Called after each learning step"""
-        i = float(len(self.training_results))
-        self.training_overall.append(sum(self.training_results)/i)
-        self.testing_overall.append(sum(self.testing_results)/i)
-        self.number_points.append(self.status.grid.getStorage().size())
-        
-        print self.training_overall
-        print self.testing_overall
-
-        if options.stats != None:
-            txt = "%f, %-10g, %f" % (options.level, options.l, options.adaptive)
-            for i in xrange(len(self.training_overall)):
-                txt = txt + ", %f, %.10f, %.10f" % (self.number_points[i], self.training_overall[i], self.testing_overall[i])
-            if options.verbose:
-                print txt
-            writeLockFile(options.stats, txt+"\n")
-
-
-class RegressionEvalProvider:
-    def __init__(self, status):
-        self.status = status
-        
-        self.training_overall = []
-        self.testing_overall = []
-        self.number_points = []
-
-    def reset(self):
-        """Called before each learning step"""
-        self.training_results = []
-        self.testing_results = []
-
-    def training(self, alpha, data):
-        """Called to evaluate training data once per fold"""
-        if data:
-            self.training_results.append(self.regressionTest(alpha, data[0], data[1]))
-
-    def testing(self, alpha, data):
-        """Called to evaluate testing data once per fold"""
-        if data:
-            self.testing_results.append(self.regressionTest(alpha, data[0], data[1]))
-             
-    def regressionTest(self, alpha, data, classes):
-        temp = DataVector(classes.getSize())
-        B = self.status.grid.createOperationB()
-        B.multTranspose(alpha, data, temp)
-        
-        temp.sub(classes)
-        temp.sqr()
-        return temp.sum()/temp.getSize()
-        
-                                     
-    def evaluate(self):
-        """Called after each learning step"""
-        i = float(len(self.training_results))
-        self.training_overall.append(sum(self.training_results)/i)
-        self.testing_overall.append(sum(self.testing_results)/i)
-        self.number_points.append(self.status.grid.getStorage().size())
-                
-        print self.training_overall
-        print self.testing_overall
-
-        if options.stats != None:
-            txt = "%f, %-10g, %f" % (options.level, options.l, options.adaptive)
-            for i in xrange(len(self.training_overall)):
-                txt = txt + ", %f, %.10f, %.10f" % (self.number_points[i], self.training_overall[i], self.testing_overall[i])
-            if options.verbose:
-                print txt
-            writeLockFile(options.stats, txt+"\n")
-
-
-## List of available refine providers
-# See ClassesEvalProvider for an example        
-eval_providers = {
-        "classes" : ClassesEvalProvider,
-        "regression" : RegressionEvalProvider,
-        }
-
-#===============================================================================
-# General algorithms
-#===============================================================================
-
-
-class Status(object):
-    """Grid status type. Contains everything needed for datamining"""
-    def __init__(self, grid, mode, basetype, zeh):
-        self.grid = grid
-        self.mode = mode
-        self.basetype = basetype
-        self.zeh = zeh
-        
-        self.refine = None
-        self.eval = None
-
-    def __getstate__(self):
-        odict = self.__dict__.copy()
-        del odict['grid']
-        
-        del odict['refine']
-        del odict['eval']
-        
-        odict['grid'] = self.grid.serialize()
-        
-        return odict
-
-    def __setstate__(self, dict):
-        #restore grid
-        
-        self.__dict__.update(dict)
-        self.grid = Grid.unserialize(dict['grid'])
-
-def learningStep(status, data):
-    if status.eval:
-        status.eval.reset()
-    
-    if status.refine:
-        status.refine.reset()
-        
-    for training, testing in data_providers[status.mode]["split"](data):
-        alpha = DataVector(status.grid.getStorage().size())
-        alpha.setAll(0.0)
-
-        m = Matrix(status.grid, training[0], options.l, status.zeh, status.basetype)
-        b = m.generateb(training[1])
-
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
-        print res
-        
-        if status.eval:
-            status.eval.training(alpha, training)
-            status.eval.testing(alpha, testing)
-        
-        if status.refine:
-            status.refine.add(alpha, training)
-            
-    if options.checkpoint:
-        import pickle
-        
-        filename = "%s_%08d" % (options.checkpoint, status.grid.getStorage().size())
-        fout = open(filename + ".grid", "wb")
-        pickle.dump(status, fout, -1)
-        fout.close()
-        
-        #writeAlphaARFF(filename + ".alpha.arff", alpha)
-
-
-def learningAlgorithm(mode):
-    data = loadData()
-    data, dim = data_providers[mode]["construct"](data)
-
-    status = construction(dim, mode)
-    
-    status.refine = refine_providers[options.refine](status)
-    status.eval = eval_providers[options.eval](status)
-    
-    learningStep(status, data)
-    if status.eval:
-        status.eval.evaluate()
-    
-    for i in xrange(options.adaptive):
-        if status.refine:
-            status.refine.refine()
-        learningStep(status, data)
-        if status.eval:
-            status.eval.evaluate()
-    
-
-def evalAlgorithm(mode):
-    
-    raise Exception("eval unsupported.")
-    
-    data = loadData()
-    data, dim = data_providers[mode]["construct"](data)
-
-    #TODO: construct grid from serialized file
-    status = construction(dim, mode)
-
-    alpha = DataVector(grid.size())
-    #Fill alpha Vector
-    
-    for training, testing in data_providers[status.mode]["split"](data):
-        status.eval.testing(alpha, testing)
-        
-    status.eval.evaluate()
-    
-
 
 #===============================================================================
 # Main
 #===============================================================================
 
-#-------------------------------------------------------------------------------
-def doUnsupported(mode):
-    raise Exception(mode + " mode unsupported")
+# check so that file can also be imported in other files
+if __name__=='__main__':
 
-# specifiy the modes:
-# modes is an array containing all modes, the options needed by the mode and the action
-# that is to be executed
-modes = {
-    'apply'  : {'help': "classify a dataset with an existing grid (compute accuracy)",
-                'required_options': ['data', 'alpha', ['level', 'grid']],
-                'action': doUnsupported},
-    'eval'   : {'help': "evaluate a sparse grid function given by grid and alphas at data points",
-                'required_options': ['data', 'alpha', ['level', 'grid']],
-                'action': doUnsupported},
-    'normal' : {'help': "learn a dataset",
-                'required_options': ['data', ['level', 'grid']],
-                'action': learningAlgorithm},
-    'test'   : {'help': "learn a dataset with a test dataset",
-                'required_options': ['data', 'test'],
-                'action': doUnsupported},
-    'fold'   : {'help': "learn a dataset with a random n-fold",
-                'required_options': ['data'],
-                'action': learningAlgorithm},
-    'folds'  : {'help': "learn a dataset with a sequential n-fold",
-                'required_options': ['data'],
-                'action': learningAlgorithm},
-    'foldr'  : {'help': "learn a dataset with a stratified n-fold",
-                'required_options': ['data'],
-                'action': learningAlgorithm},
-    'foldf'  : {'help': "learn a dataset with a n-fold from a set of files",
-                'required_options': ['data'],
-                'action': doUnsupported}
-    }
-
-
-
-def _main():
     # Initialize OptionParser, set Options
     parser = OptionParser()
     parser.add_option("-l", "--level", action="store", type="int", dest="level", help="Gridlevel")
+    parser.add_option("-D", "--dim", action="callback", type="int",dest="dim", help="Griddimension", callback=callback_deprecated)
     parser.add_option("-a", "--adaptive", action="store", type="int", default="0", dest="adaptive", metavar="NUM", help="Using an adaptive Grid with NUM of refines")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplaceadaptive", dest="zeh", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default="10", metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
-    parser.add_option("-L", "--lambda", action="store", type="float",default="0.000001", metavar="LAMBDA", dest="l", help="Lambda")
+    parser.add_option("-L", "--lambda", action="store", type="float",default="0.000001", metavar="LAMBDA", dest="regparam", help="Lambda")
     parser.add_option("-i", "--imax", action="store", type="int",default="400", metavar="MAX", dest="imax", help="Max number of iterations")
     parser.add_option("-r", "--accuracy", action="store", type="float",default="0.0001", metavar="ACCURACY", dest="r", help="Specifies the accuracy of the CG-Iteration")
     parser.add_option("-d", "--data", action="append", type="string", dest="data", help="Filename for the Datafile.")
     parser.add_option("-t", "--test", action="store", type="string", dest="test", help="File containing the testdata")
     parser.add_option("-A", "--alpha", action="store", type="string", dest="alpha", help="Filename for a file containing an alpha-Vector")
-    
-    parser.add_option("-b", "--base", action="store", type="string", default="linear", dest="basetype", help="Specifies basetype. Values: linear, modlinear, poly, modpoly")
-    parser.add_option("-e", "--eval", action="store", type="string", default="classes", dest="eval", help="Specifies evaluation method. Values: classes, regression")
-    parser.add_option("-R", "--refine", action="store", type="string", default="surplus", dest="refine", help="Specifies refinement method. Values: surplus, error")
-    
-    parser.add_option("-P", "--polynom", action="store", type="int", default="-1", dest="polynom", help="Specifies maximal polynomial degree for polynomial base functions")
-    
+    parser.add_option("-o", "--outfile", action="store", type="string", dest="outfile", help="Filename where the calculated alphas are stored")
+    parser.add_option("-g", "--gnuplot", action="store", type="string", dest="gnuplot", help="In 2D case, the generated can be stored in a gnuplot readable format.")
+    parser.add_option("-R", "--resolution", action="store", type="int",default="50", metavar="RESOLUTION", dest="res", help="Specifies the resolution of the gnuplotfile")
     parser.add_option("-s", "--stats", action="store", type="string", dest="stats", help="In this file the statistics from the test are stored")
+    parser.add_option("-p", "--polynom", action="store", type="int", default="0", dest="polynom", help="Sets the maximum degree for high order basis functions. Set to 2 or larger to activate. Works only with 'identity' and 'fold'-modes.")
+    parser.add_option("-b", "--border", action="store_true", default=False, dest="border", help="Enables special border base functions")
     parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Provides extra output")
-
+    parser.add_option("--normfile", action="store", type="string", dest="normfile", metavar="FILE", help="For all modes that read data via stdin. Normalizes data according to boundaries in FILE")
+    parser.add_option("--reuse", action="store_true", default=False, dest="reuse", help="Reuse alpha-values for CG")
     parser.add_option("--seed", action="store", type="int", dest="seed", help="Random seed used for initializing")
+    parser.add_option("--regression", action="store_true", default=False, dest="regression", help="Use regression approach.")
     parser.add_option("--checkpoint", action="store", type="string", dest="checkpoint", help="Filename for checkpointing. For fold? and test. No file extension.")
     parser.add_option("--grid", action="store", type="string", dest="grid", help="Filename for Grid-resume. For fold? and test. Full filename.")
     # parse options
-    global options
-    options,args = parser.parse_args()
-    
+    (options,args)=parser.parse_args()
+
     # check some options
     zeh = options.zeh.lower()
-    
-    options.basetype = options.basetype.lower()
-    options.eval = options.eval.lower()
-    options.refine = options.refine.lower()
-    
+
+    options.adaptive = options.adaptive + 1
+
     # check C-mode
     if zeh == "help":
         print "The following C-modes are available:"
@@ -665,13 +910,51 @@ def _main():
             print "%15s: %s" % (m, zeh_modes[m])
         sys.exit(0)
     elif zeh not in zeh_modes.keys():
-        print("Wrong C-mode! Please refer to -C help for further information.")
+        print("Wrong C-mode! Please refer to --C help for further information.")
         sys.exit(1)
+
+    if options.polynom > 1 and zeh != "identity":
+        print("Wrong C-mode selected for high-order grids.")
+        sys.exit(1)
+
+    if options.polynom > 1 and options.border:
+        print("Special border bases do not work for High-Order Grids")
+        sys.exit(1)
+
+
+
+    # specifiy the modes:
+    # modes is an array containing all modes, the options needed by the mode and the action
+    # that is to be executed
+    modes = {
+        'apply'    : {'help': "classify a dataset with an existing grid (compute accuracy)",
+                      'required_options': ['data', 'alpha', ['level', 'grid']],
+                      'action': doApply},
+        'eval'     : {'help': "evaluate a sparse grid function given by grid and alphas at data points",
+                      'required_options': ['data', 'alpha', ['level', 'grid']],
+                      'action': doEval},
+        'evalstdin': {'help': "evaluate a sparse grid function given by grid and alphas at data points",
+                      'required_options': ['alpha', ['level', 'grid']],
+                      'action': doEvalStdin},
+        'normal'   : {'help': "learn a dataset",
+                      'required_options': ['data', ['level', 'grid']],
+                      'action': doNormal},
+        'test'     : {'help': "learn a dataset with a test dataset",
+                      'required_options': ['data', 'test'],
+                      'action': doTest},
+        'fold'     : {'help': "learn a dataset with a random n-fold",
+                      'required_options': ['data'],
+                      'action': doFold},
+        'folds'    : {'help': "learn a dataset with a sequential n-fold",
+                      'required_options': ['data'],
+                      'action': doFolds},
+        'foldr'    : {'help': "learn a dataset with a stratified n-fold",
+                      'required_options': ['data'],
+                      'action': doFoldr},
+        'foldf'    : {'help': "learn a dataset with a n-fold from a set of files",
+                      'required_options': ['data'],
+                      'action': doFoldf}
+        }
 
     # Execute the mode
     exec_mode(options.mode.lower())
-
-
-
-if __name__=="__main__":
-    _main()
