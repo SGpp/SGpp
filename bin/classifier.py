@@ -200,8 +200,8 @@ def doApply():
         else:
             classes.append(-1.0)
     # output accuracy:
-    acc = acc / numData
-    print "Accuracy on test data: %9.5f" % (100*acc)
+    acc = acc / float(numData)
+    print "Accuracy on test data: %9.5f%%" % (100*acc)
             
     # get filename for output file
     if(options.outfile != None):
