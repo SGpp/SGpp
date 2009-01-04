@@ -205,18 +205,6 @@ def writeGnuplot(filename, grid, alpha, resolution):
     fout.close()
     return
 
-def writeAlphaARFF(filename, alpha):
-    fout = open(filename, "w")
-    fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % filename)
-    fout.write("@ATTRIBUTE alpha NUMERIC\n")
-    
-    fout.write("\n@DATA\n")
-    
-    for i in xrange(len(alpha)):
-        fout.write("%1.20f\n" % alpha[i])
-    
-    fout.close()
-
 def writeDataARFF(data, merge=False):
     if len(data) == 0:
         return

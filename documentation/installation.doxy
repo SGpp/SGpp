@@ -134,11 +134,15 @@ required software
   @verbatim
   scons
   @endverbatim
-- Alternatively, you can use the standalone-version (no need to install):
+- Alternatively, you can use the standalone-version (no need to
+  install): Unpack
   @verbatim
   cd tools
   tar -xzf scons-local-1.2.0.tar.gz
   cd ..
+  @endverbatim
+  and compile via  
+  @verbatim
   python tools/scons.py
   @endverbatim
 - SCons is platform independent
