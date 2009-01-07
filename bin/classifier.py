@@ -940,7 +940,7 @@ if __name__=='__main__':
                       'required_options': ['data', ['level', 'grid']],
                       'action': doNormal},
         'test'     : {'help': "learn a dataset with a test dataset",
-                      'required_options': ['data', 'test'],
+                      'required_options': ['data', 'test', ['level', 'grid']],
                       'action': doTest},
         'fold'     : {'help': "learn a dataset with a random n-fold",
                       'required_options': ['data'],
