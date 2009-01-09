@@ -28,7 +28,7 @@ installInstructions "below".
 
 Compilation of the C++ libraries is done with SCons. Execute
 @verbatim
-  > scons
+  scons
 @endverbatim
 in the main folder. For configuration and optimization, see below.
 
@@ -58,16 +58,16 @@ Just change to the <tt>tools</tt> directory, unzip
 <tt>scons-local-1.0.1.tar.gz</tt> and run the <tt>scons.py</tt>-Skript
 in the <tt>tools</tt> folder. E.g.
 @verbatim
-  > cd tools
-  > tar -xzf scons-local-1.0.1.tar.gz
-  > cd ..
-  > python tools/scons.py
+  cd tools
+  tar -xzf scons-local-1.0.1.tar.gz
+  cd ..
+  python tools/scons.py
 @endverbatim
 
 Alternatively, download and unpack the latest version and install
 it. A local installation to <tt>$HOME/tools</tt> is done e.g. via
 @verbatim
-  > python setup.py install --prefix=$HOME/tools
+  python setup.py install --prefix=$HOME/tools
 @endverbatim
 
 
@@ -78,7 +78,7 @@ like compiler flags e.g., can be specified in a
 <tt>custom.py</tt>-file. An example-file with some recommendations is
 the <tt>custom-example.py</tt>-file residing in the main folder. For a
 start, just copy it to a new <tt>custom.py</tt>-file, e.g.  @verbatim
-  > cp custom-example.py custom.py
+  cp custom-example.py custom.py
 @endverbatim
 
 
