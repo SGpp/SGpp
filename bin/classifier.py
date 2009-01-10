@@ -136,14 +136,15 @@ def constructGrid(dim):
         if options.polynom > 1:
             if options.verbose:
                 print "SpGridHighOrder, p=%d, l=%d" %(options.polynom, options.level)
-            grid = SpGridHighOrder(dim,options.level,options.polynom)
+            #grid = SpGridHighOrder(dim,options.level,options.polynom)
+            grid = Grid.createPolyGrid(dim, options.polynom)
         else:
             if options.verbose:
                 print "SpGridLinear, l=%s" % (options.level)
             #grid = SpGridLinear(dim,options.level)
             grid = Grid.createLinearGrid(dim)
-            generator  = grid.createGridGenerator()
-            generator.regular(options.level)
+        generator  = grid.createGridGenerator()
+        generator.regular(options.level)
     else:
         if options.verbose:
             print "reading grid from %s" % (options.grid)
@@ -405,9 +406,11 @@ def run(grid, training, classes):
             #if(options.verbose):
             print("refining grid")
             if options.regression:
-                grid.refineOneGridPoint(errors)
+                refinementFunctor = SurplusRefinementFunctor(errors)
+                grid.createGridGenerator().refine(refinementFunctor)
             else:
-                grid.refineOneGridPoint(alpha)
+                refinementFunctor = SurplusRefinementFunctor(alpha)
+                grid.createGridGenerator().refine(refinementFunctor)
     return alpha
 
 #-------------------------------------------------------------------------------
