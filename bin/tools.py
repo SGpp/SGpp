@@ -504,12 +504,15 @@ base_types = {
 # the matrix C and computing the RHS b.
 # TODO: fully update to pysgpp
 class Matrix:
-    def __init__(self, grid, x, l, mode, base):
+    #val: paramtere base removed from the definition
+    #def __init__(self, grid, x, l, mode, base):
+    def __init__(self, grid, x, l, mode):
         self.grid = grid
         self.x = x
         self.l = l
         self.B = grid.createOperationB()
-        self.base = base
+        #val: base is obviously not used
+        #self.base = base
         self.CMode = mode.lower()
         
         if self.CMode == "laplace":
