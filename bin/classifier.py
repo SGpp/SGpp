@@ -26,7 +26,8 @@
 from optparse import OptionParser
 import sys
 from tools import *
-from pyclass import *
+#from pyclass import *
+from pysgpp import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
 import random
@@ -139,7 +140,10 @@ def constructGrid(dim):
         else:
             if options.verbose:
                 print "SpGridLinear, l=%s" % (options.level)
-            grid = SpGridLinear(dim,options.level)
+            #grid = SpGridLinear(dim,options.level)
+            grid = Grid.createLinearGrid(dim)
+            generator  = grid.createGridGenerator()
+            generator.regular(options.level)
     else:
         if options.verbose:
             print "reading grid from %s" % (options.grid)
@@ -365,7 +369,7 @@ def run(grid, training, classes):
     errors = None
 
     for a in xrange(options.adaptive):
-        alpha = DataVector(grid.getPointsCount())
+        alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
 
         m = Matrix(grid, training, options.regparam, options.zeh)
@@ -874,7 +878,7 @@ if __name__=='__main__':
     parser.add_option("-D", "--dim", action="callback", type="int",dest="dim", help="Griddimension", callback=callback_deprecated)
     parser.add_option("-a", "--adaptive", action="store", type="int", default="0", dest="adaptive", metavar="NUM", help="Using an adaptive Grid with NUM of refines")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
-    parser.add_option("-C", "--zeh", action="store", type="string", default="laplaceadaptive", dest="zeh", help="Specifies the action to do.")
+    parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default="10", metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
     parser.add_option("-L", "--lambda", action="store", type="float",default="0.000001", metavar="LAMBDA", dest="regparam", help="Lambda")
     parser.add_option("-i", "--imax", action="store", type="int",default="400", metavar="MAX", dest="imax", help="Max number of iterations")
