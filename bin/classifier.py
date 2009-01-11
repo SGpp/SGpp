@@ -177,7 +177,7 @@ def doApply():
 #    grid = SpGridLinear(dim, options.level)
     # construct corresponding grid
     grid = constructGrid(dim)
-    if(alpha.getSize() != grid.getPointsCount()):
+    if(alpha.getSize() != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
         sys.exit(1)
     
@@ -196,7 +196,7 @@ def doApply():
     # traverse Data
     for i in xrange(numData):
         x.getRow(i,q)
-        val = grid.EvaluatePoint(q, alpha)
+        val = grid.createOperationEval().eval(q, alpha)
         if compute_accuracy:
             if (val >= 0 and data["classes"][i] >= 0) or (val < 0 and data["classes"][i] < 0):
                 acc += 1
@@ -235,7 +235,7 @@ def doEval():
 
     # construct corresponding grid
     grid = constructGrid(dim)
-    if(alpha.getSize() != grid.getPointsCount()):
+    if(alpha.getSize() != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
         sys.exit(1)
 
@@ -254,7 +254,7 @@ def doEval():
     # traverse Data
     for i in xrange(numData):
         x.getRow(i,q)
-        val = grid.EvaluatePoint(q, alpha)
+        val = grid.createOperationEval().eval(q, alpha)
 
         classes.append(val)
     # output accuracy:
@@ -304,7 +304,7 @@ def doEvalStdin():
         dim = 0
     grid = constructGrid(dim)
     dim = grid.getDim()
-    if(alpha.getSize() != grid.getPointsCount()):
+    if(alpha.getSize() != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
         sys.exit(1)
 
@@ -330,7 +330,7 @@ def doEvalStdin():
                     q[i] = (float(dat[i])-minvals[i])/deltavals[i] + border
             else:
                 q[i] = float(dat[i])
-        val = grid.EvaluatePoint(q, alpha)
+        val = grid.createOparationEval().eval(q, alpha)
         sys.stdout.write("%g\n" % val)
         sys.stdout.flush()
         s = sys.stdin.readline().strip()
@@ -369,7 +369,7 @@ def run(grid, training, classes):
     alpha = None
     errors = None
 
-    for a in xrange(options.adaptive):
+    for adaptStep in xrange(options.adaptive):
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
 
@@ -381,7 +381,7 @@ def run(grid, training, classes):
 
         if options.regression:
             error = DataVector(len(classes))
-            m.B.multBTrans(alpha, m.x, error)
+            m.B.multTranspose(alpha, m.x, error)
             error.sub(classes)# error vector
             error.sqr()       # entries squared
             # output some statistics
@@ -395,22 +395,20 @@ def run(grid, training, classes):
 
             # calculate error per basis function
             errors = DataVector(alpha.getSize())
-            m.B.multB(error, m.x, errors)
+            m.B.mult(error, m.x, errors)
 
         if options.checkpoint != None:
             txt = ""
-            writeCheckpoint(options.checkpoint, grid, alpha, txt, a)
+            writeCheckpoint(options.checkpoint, grid, alpha, txt, adaptStep)
         
         
-        if(a + 1 < options.adaptive):
+        if(adaptStep + 1 < options.adaptive):
             #if(options.verbose):
             print("refining grid")
             if options.regression:
-                refinementFunctor = SurplusRefinementFunctor(errors)
-                grid.createGridGenerator().refine(refinementFunctor)
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors))
             else:
-                refinementFunctor = SurplusRefinementFunctor(alpha)
-                grid.createGridGenerator().refine(refinementFunctor)
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha))
     return alpha
 
 #-------------------------------------------------------------------------------
@@ -444,11 +442,11 @@ def doTest():
     tr_refine = []
     num_refine = []
 
-    for a in xrange(options.adaptive):
+    for adaptStep in xrange(options.adaptive):
         m = Matrix(grid, training, options.regparam, options.zeh)
         b = m.generateb(y)
         
-        alpha = DataVector(grid.getPointsCount())
+        alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
         print res
@@ -467,7 +465,7 @@ def doTest():
 
         te_refine.append(te)
         tr_refine.append(tr)
-        num_refine.append(grid.getPointsCount())
+        num_refine.append(grid.getStorage().size())
 
         if options.verbose:
             print "training: ",tr
@@ -485,14 +483,14 @@ def doTest():
             for i in xrange(len(tr_refine)):
                 txt = txt + ", %f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
             
-            writeCheckpoint(options.checkpoint, grid, alpha, txt, a)
+            writeCheckpoint(options.checkpoint, grid, alpha, txt, adaptStep)
 
-        if(a + 1 < options.adaptive):
+        if(adaptStep + 1 < options.adaptive):
             if(options.verbose):
                 print("refining grid")
-            grid.refineOneGridPoint(alpha)
+            grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha))
             if(options.verbose):
-                print("Number of points: %d" %(grid.getPointsCount(),))
+                print("Number of points: %d" %(grid.getStorage().size(),))
 
     if options.stats != None:
         txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
@@ -566,33 +564,35 @@ def doFoldf():
 #-------------------------------------------------------------------------------
 def performFold(dvec,cvec):
     
-    if options.grid == None:
-        if options.polynom > 1:
-            grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
-        else:
-            grid = SpGridLinear(dvec[0].getDim(),options.level)
-    else:
-        grid = readGrid(options.grid)
-        
-    if options.border:
-        grid.setUseBorderFunctions(True)
+#    if options.grid == None:
+#        if options.polynom > 1:
+#            grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
+#        else:
+#            grid = SpGridLinear(dvec[0].getDim(),options.level)
+#    else:
+#        grid = readGrid(options.grid)
+#        
+#    if options.border:
+#        grid.setUseBorderFunctions(True)
+
+    grid = constructGrid(dvec[0].getDim())
         
     num_points = []
     tr_refine = []
     te_refine = []
     
-    for a in xrange(options.adaptive):
+    for adaptStep in xrange(options.adaptive):
         trainingCorrect = []
         testingCorrect =[]
 
-        refinealpha = DataVector(grid.getPointsCount())
+        refinealpha = DataVector(grid.getStorage().size())
         refinealpha.setAll(0.0)
 
         alpha = DataVector(refinealpha)
         
-        for i in xrange(options.f_level):
+        for foldSetNumber in xrange(options.f_level):
 #            alpha.setAll(0.0)
-            training,classes = assembleTrainingVector(dvec,cvec,i)
+            training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
             
             m = Matrix(grid, training, options.regparam, options.zeh)
             b = m.generateb(classes)
@@ -601,16 +601,16 @@ def performFold(dvec,cvec):
             print res
             
 #            tr = testVector(grid,alpha,training,classes)
-#            te = testVector(grid,alpha,dvec[i],cvec[i])
+#            te = testVector(grid,alpha,dvec[foldSetNumber],cvec[foldSetNumber])
 
             tr = testVectorFast(grid, alpha, training, classes)
-            te = testVectorFast(grid, alpha, dvec[i], cvec[i])
+            te = testVectorFast(grid, alpha, dvec[foldSetNumber], cvec[foldSetNumber])
 
             trainingCorrect.append(tr)
             testingCorrect.append(te)
 
 ## Verstehe ich nicht. Habs deshalb auskommentiert (Dirk)
-##             if(a +1 == options.adaptive):
+##             if(adaptStep +1 == options.adaptive):
 ##                 #Letzte verfeinerung, wir sind fertig
 ##                 pass
 ##             else:
@@ -629,7 +629,7 @@ def performFold(dvec,cvec):
             print "training: ",tr
             print "testing:  ",te
 
-        num_points.append(grid.getPointsCount())
+        num_points.append(grid.getStorage().size())
         tr_refine.append(tr)
         te_refine.append(te)
         
@@ -647,9 +647,10 @@ def performFold(dvec,cvec):
             print refinealpha
             print "grid"
             print grid
-        if(a + 1 < options.adaptive):
+        if(adaptStep + 1 < options.adaptive):
             print "refine"
-            grid.refineOneGridPoint(refinealpha)
+            #grid.refineOneGridPoint(refinealpha)
+            grid.createGridGenerator().refine(SurplusRefinementFunctor(refinealpha))
 
     #print(tr)
     #print(te)
@@ -668,13 +669,15 @@ def performFold(dvec,cvec):
 #-------------------------------------------------------------------------------
 def performFoldRegression(dvec,cvec):
     
-    if options.polynom > 1:
-        grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
-    else:
-        grid = SpGridLinear(dvec[0].getDim(),options.level)
-        
-    if options.border:
-        grid.setUseBorderFunctions(True)
+#    if options.polynom > 1:
+#        grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
+#    else:
+#        grid = SpGridLinear(dvec[0].getDim(),options.level)
+#        
+#    if options.border:
+#        grid.setUseBorderFunctions(True)
+    
+    grid = constructGrid(dvec[0].getDim())
         
     num_points = []
     tr_refine = []
@@ -682,7 +685,7 @@ def performFoldRegression(dvec,cvec):
     tr_meanSqrError = []
     te_meanSqrError = []
         
-    for a in xrange(options.adaptive):
+    for adpatStep in xrange(options.adaptive):
         trainingCorrect = []
         testingCorrect = []
         meanSqrErrorsTraining = []
@@ -691,14 +694,14 @@ def performFoldRegression(dvec,cvec):
         #refinealpha = DataVector(grid.getPointsCount())
         #refinealpha.setAll(0.0)
 
-        refineerrors = DataVector(grid.getPointsCount())
+        refineerrors = DataVector(grid.getStorage().size())
         refineerrors.setAll(0.0)
 
-        alpha = DataVector(grid.getPointsCount())
+        alpha = DataVector(grid.getStorage().size())
         
-        for i in xrange(options.f_level):
+        for foldSetNumber in xrange(options.f_level):
 #            alpha.setAll(0.0)
-            training,classes = assembleTrainingVector(dvec,cvec,i)
+            training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
             
             m = Matrix(grid, training, options.regparam, options.zeh)
             b = m.generateb(classes)
@@ -706,31 +709,31 @@ def performFoldRegression(dvec,cvec):
             res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose)
             print res
             tr = testVector(grid,alpha,training,classes)
-            te = testVector(grid,alpha,dvec[i],cvec[i])
+            te = testVector(grid,alpha,dvec[foldSetNumber],cvec[foldSetNumber])
 
             trainingCorrect.append(tr)
             testingCorrect.append(te)
             
             # calculate Mean Square Error for training set
             temp = DataVector(classes.getSize())
-            m.B.multBTrans(alpha, m.x, temp)
+            m.B.multTranspose(alpha, m.x, temp)
             temp.sub(classes)
             temp.sqr()
             meanSqrErrorsTraining.append(temp.sum() / temp.getSize())
 
             # calculate error per base function
             errors = DataVector(alpha.getSize())
-            m.B.multB(temp, m.x, errors)
+            m.B.mult(temp, m.x, errors)
 
             # calculate Mean Square Error for testing set
-            temp = DataVector(cvec[i].getSize())
-            m.B.multBTrans(alpha, dvec[i], temp)
-            temp.sub(cvec[i])
+            temp = DataVector(cvec[foldSetNumber].getSize())
+            m.B.multTranspose(alpha, dvec[foldSetNumber], temp)
+            temp.sub(cvec[foldSetNumber])
             temp.sqr()
             meanSqrErrorsTesting.append(temp.sum() / temp.getSize())
 
             
-            if(a +1 == options.adaptive):
+            if(adpatStep +1 == options.adaptive):
                 #Letzte verfeinerung, wir sind fertig
                 pass
             else:
@@ -753,7 +756,7 @@ def performFoldRegression(dvec,cvec):
             print "training: ",tr, trSqrError
             print "testing:  ",te, teSqrError
 
-        num_points.append(grid.getPointsCount())
+        num_points.append(grid.getStorage().size())
         tr_refine.append(tr)
         te_refine.append(te)
         tr_meanSqrError.append(trSqrError)
@@ -762,10 +765,10 @@ def performFoldRegression(dvec,cvec):
         #refinealpha.mult(1.0/options.f_level)
         refineerrors.mult(1.0/options.f_level)
         
-        if(a + 1 < options.adaptive):
+        if(adpatStep + 1 < options.adaptive):
             print "refine"
             #grid.refineOneGridPoint(refinealpha)
-            grid.refineOneGridPoint(refineerrors)
+            grid.createGridGenerator().refine(SurplusRefinementFunctor(refineerrors))
 
     #print(tr)
     #print(te)
@@ -832,7 +835,7 @@ def testVector(grid,alpha,test,classes):
     correct = 0
     for i in xrange(test.getSize()):
         test.getRow(i,p)
-        val = grid.EvaluatePoint(p, alpha)
+        val = grid.createOperationEval().eval(alpha,p)
         if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
             correct = correct + 1
             
@@ -841,7 +844,7 @@ def testVector(grid,alpha,test,classes):
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 def testVectorFast(grid, alpha, test, classes):
-    return float(grid.testVector(alpha, test, classes))/test.getSize()
+    return float(grid.createOperationEval().test(alpha, test, classes))/test.getSize()
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -950,16 +953,16 @@ if __name__=='__main__':
                       'required_options': ['data', 'test', ['level', 'grid']],
                       'action': doTest},
         'fold'     : {'help': "learn a dataset with a random n-fold",
-                      'required_options': ['data'],
+                      'required_options': ['data', ['level', 'grid']],
                       'action': doFold},
         'folds'    : {'help': "learn a dataset with a sequential n-fold",
-                      'required_options': ['data'],
+                      'required_options': ['data', ['level', 'grid']],
                       'action': doFolds},
         'foldr'    : {'help': "learn a dataset with a stratified n-fold",
-                      'required_options': ['data'],
+                      'required_options': ['data', ['level', 'grid']],
                       'action': doFoldr},
         'foldf'    : {'help': "learn a dataset with a n-fold from a set of files",
-                      'required_options': ['data'],
+                      'required_options': ['data', ['level', 'grid']],
                       'action': doFoldf}
         }
 
