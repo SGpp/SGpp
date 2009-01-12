@@ -828,7 +828,13 @@ def buildTrainingVector(data):
     return training
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+## Computes the classification accuracy on some test data. Tests on the classes
+# {+1, -1}, cut-off at 0.
+# @param grid the sparse grid
+# @param alpha DataVector of surplusses
+# @param test a DataVector containing a dataset of points to test on
+# @param classes DataVector of correct class values
+# @return classification accuracy
 def testVector(grid,alpha,test,classes):
     p = DataVector(1,test.getDim())
     correct = 0
@@ -842,6 +848,13 @@ def testVector(grid,alpha,test,classes):
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+## Computes the classification accuracy on some test data. Tests on the classes
+# {+1, -1}, cut-off at 0.
+# @param grid the sparse grid
+# @param alpha DataVector of surplusses
+# @param test a DataVector containing a dataset of points to test on
+# @param classes DataVector of correct class values
+# @return classification accuracy
 def testVectorFast(grid, alpha, test, classes):
     return float(grid.createOperationEval().test(alpha, test, classes))/test.getSize()
 
