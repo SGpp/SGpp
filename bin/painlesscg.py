@@ -1,6 +1,8 @@
-# This file is part of SGClass, a program package making use of spatially adaptive sparse grids to solve numerical problems
+# This file is part of SG++, a program package making use of spatially
+# adaptive sparse grids to solve numerical problems
 # 
-# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de)
+# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de),
+#               2007-2009 Dirk Pflueger (pflueged@in.tum.de)
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -221,8 +223,23 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
         p.add(r)
     
     return (i, delta)
-    
+
+
+#-------------------------------------------------------------------------------
+## Conjugated Gradient method for sparse grids, solving A.alpha=b.
+# The resulting vector is stored in alpha.
+# @param b RHS of equation
+# @param alpha vector of unknowns
+# @param imax max. number of iterations (abort, if reached)
+# @param epsilon accuracy requirements (reduce initial norm of residuum |delta_0|
+#        below epsilon*|delta_0|)
+# @param ApplyMatrix procedure that applies A to a vector
+# @param reuse starting vector is 0 by default. If true, use current values in alpha
+# @param verbose verbose output (default False)
+# @return tuple (number of iterations, final norm of residuum)
 def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
+    if verbose:
+        print "Starting Conjugated Gradients"
  
 #    Apply B to y
 #    b = DataVector(alpha.getSize())
@@ -261,7 +278,7 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
 
     
     if verbose:
-        print "delta_0 %g" % delta_0
+        print "Starting norm of residuum: %g" % (delta_0)
 
     while (i < imax+1) and (delta_new > delta_0):
         # q = A*d
@@ -294,10 +311,8 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
         i += 1
         
     if verbose:    
-        print i
-        print imax
-        print delta_0
-        print delta_new
+        print "Number of iterations: %d (max. %d)" % (i, imax)
+        print "Final norm of residuum: %g" % delta_new
     
     return (i,delta_new)
 
