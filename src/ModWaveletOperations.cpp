@@ -60,7 +60,7 @@ double OperationEvalModWavelet::eval(DataVector& alpha, std::vector<double>& poi
 	
 	IndexValVector vec;
 	mod_Wavelet_base<unsigned int, unsigned int> base;
-	GetAffectedLocal<mod_Wavelet_base<unsigned int, unsigned int> > ga(storage);
+	GetAffectedBasisFunctions<mod_Wavelet_base<unsigned int, unsigned int> > ga(storage);
 	
 	ga(base, point, vec);
 

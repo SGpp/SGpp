@@ -62,7 +62,7 @@ double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& poin
 	
 	IndexValVector vec;
 	modified_linear_base<unsigned int, unsigned int> base;
-	GetAffectedLocal<modified_linear_base<unsigned int, unsigned int> > ga(storage);
+	GetAffectedBasisFunctions<modified_linear_base<unsigned int, unsigned int> > ga(storage);
 	
 	ga(base, point, vec);
 

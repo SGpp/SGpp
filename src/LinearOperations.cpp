@@ -63,7 +63,7 @@ double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
 	
 	IndexValVector vec;
 	linear_base<unsigned int, unsigned int> base;
-	GetAffectedLocal<linear_base<unsigned int, unsigned int> > ga(storage);
+	GetAffectedBasisFunctions<linear_base<unsigned int, unsigned int> > ga(storage);
 	
 	ga(base, point, vec);
 

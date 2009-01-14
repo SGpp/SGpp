@@ -79,7 +79,7 @@ namespace std {
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
-%template(SGetAffectedLocal) sg::GetAffectedLocal<sg::SLinearBase>;
+%template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
 
 %template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
 %template(test_dataset_modlin) sg::test_dataset<sg::SModLinearBase>;

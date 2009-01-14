@@ -49,7 +49,7 @@ double OperationEvalPoly::eval(DataVector& alpha, std::vector<double>& point)
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 	
 	IndexValVector vec;
-	GetAffectedLocal<SPolyBase> ga(storage);
+	GetAffectedBasisFunctions<SPolyBase> ga(storage);
 	
 	ga(base, point, vec);
 

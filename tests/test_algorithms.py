@@ -169,7 +169,7 @@ class TestBase(unittest.TestCase):
 class TestFunctions(unittest.TestCase):
     def testGetAffected(self):
         from pysgpp import GridIndex, GridStorage, SLinearBase
-        from pysgpp import SGetAffectedLocal
+        from pysgpp import SGetAffectedBasisFunctions
         
         i = GridIndex(1)
         s = GridStorage(1)
@@ -179,7 +179,7 @@ class TestFunctions(unittest.TestCase):
         i.set(0,1,1)
         s.insert(i)
         
-        ga = SGetAffectedLocal(s)
+        ga = SGetAffectedBasisFunctions(s)
         
         x = ga(b, [0.25])
         

@@ -33,28 +33,62 @@ namespace sg {
 
 
 /**
- * Basic algorithm for getting all affected base functions.
+ * Basic algorithm for getting all affected basis functions.
  * This implicitly assumes a tensor-product approach and local support.
- * No grid points on the border supported.
+ * No grid points on the border are supported.
+ * 
+ * The main idea behind this algorithm is to spend as few function evaluations as possible.
+ * Assume a regular sparse grid level 3 in two dimensions with the sparse grid basis 
+ * \f$\Phi:=\{\phi_i(x), i=1,\ldots,N\}\f$. Then the tableau of subspaces looks
+ * as follows: 
+ *   \image html GetAffectedBasisFunctions_subspaces.png "Tableau of subspaces for a regular sparse grid level 3"
+ * You could evaluate the function \f$ f_N(x) = \sum_{i=1}^N \alpha_i \phi_i(x)\f$ for all basis
+ * functions \f$\phi_i(x)\f$, multiply them with the surplus and add them up. 
+ * In \f$d\f$ dimensions this would lead to \f$N\f$ evaluations of \f$d\f$ one-dimensional basis
+ * functions each.
+ * 
+ * A better way is to (recursively) look at each subspace, as only one basis function 
+ * per subspace can be non-zero (partially disjunct supports):
+ *   \image html GetAffectedBasisFunctions_subspaces_affectedBasisFunctions.png "Traversal of subspaces for evaluation"
+ * This can be done recursively in both the dimension and the level. In each subspace
+ * the basis function concerned can be identified via a few index calculations and 
+ * evaluated at the given point in the domain.
+ * 
+ * Even better would be to save further function evaluations and to reuse intermediate values obtained by
+ * the evaluation of one-dimensional basis functions, see the following figure.
+ *   \image html GetAffectedBasisFunctions_subspaces_affectedBasisFunctions_recursive.png "Minimize the number of evaluations" width=10cm
+ * Descending recursively in the d-th dimension, one can propagate the value of the intermediate function
+ * evaluation for the first d-1 dimensions that have already been looked at.
  */
-template<class BASE>
-class GetAffectedLocal
+template<class BASIS>
+class GetAffectedBasisFunctions
 {
 public:
-	GetAffectedLocal(GridStorage* storage) : storage(storage)
+	GetAffectedBasisFunctions(GridStorage* storage) : storage(storage)
 	{
 	}
 	
-	~GetAffectedLocal() {}
+	~GetAffectedBasisFunctions() {}
 	
-	void operator()(BASE& base, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
+	/**
+	 * Returns evaluations of all basis functions that are non-zero at a given evaluation point.
+	 * For a given evaluation point \f$x\f$, it stores tuples (std::pair) of 
+	 * \f$(i,\phi_i(x))\f$ in the result vector for all basis functions that are non-zero. 
+	 * If one wants to evaluate \f$f_N(x)\f$, one only has to compute 
+	 * \f[ \sum_{r\in\mathbf{result}} \alpha[r\rightarrow\mathbf{first}] \cdot r\rightarrow\mathbf{second}. \f] 
+	 * 
+	 * @param basis a sparse grid basis
+	 * @param point evaluation point within the domain
+	 * @param result a vector to store the results in
+	 */ 
+	void operator()(BASIS& basis, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
 	{
 		GridStorage::grid_iterator working(storage);	
 		
 		typedef GridStorage::index_type::level_type level_type;
 		typedef GridStorage::index_type::index_type index_type;
 		
-		size_t bits = sizeof(index_type) * 8; // who many levels can we store in a index_type?
+		size_t bits = sizeof(index_type) * 8; // how many levels can we store in a index_type?
 	
 		size_t dim = storage->dim();
 		
@@ -76,7 +110,7 @@ public:
 		}
 	
 		result.clear();
-		rec(base, point, 0, 1.0, working, source, result);
+		rec(basis, point, 0, 1.0, working, source, result);
 		
 		delete [] source;
 		
@@ -86,17 +120,26 @@ protected:
 	GridStorage* storage;
 	
 	/**
-	 * Example implementation of storage agnostic algorithm. 
-	 * Returns all affected base functions
+	 * Recursive traversal of the "tree" of basis functions for evaluation, used in operator(). 
+	 * For a given evaluation point \f$x\f$, it stores tuples (std::pair) of 
+	 * \f$(i,\phi_i(x))\f$ in the result vector for all basis functions that are non-zero. 
+	 * 
+	 * @param basis a sparse grid basis
+	 * @param point evaluation point within the domain
+	 * @param current_dim the dimension currently looked at (recursion parameter)
+	 * @param value the value of the evaluation of the current basis function up to (excluding) dimension current_dim (product of the evaluations of the one-dimensional ones)
+	 * @param working iterator working on the GridStorage of the basis
+	 * @param source array of indices for each dimension (identifying the indices of the current grid point)
+	 * @param result a vector to store the results in
 	 */	
-	void rec(BASE& base, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
+	void rec(BASIS& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
 	{
 		typedef GridStorage::index_type::level_type level_type;
 		typedef GridStorage::index_type::index_type index_type;
 
 		size_t i;
 		
-		// TODO: Remove 'magic' number
+		// @TODO: Remove 'magic' number
 		level_type src_level = static_cast<level_type>(sizeof(index_type) * 8 - 1);
 		index_type src_index = source[current_dim];
 		
@@ -117,7 +160,7 @@ protected:
 				
 				working.get(current_dim, temp, work_index);
 				
-				double new_value = base.eval(work_level, work_index, point[current_dim]);
+				double new_value = basis.eval(work_level, work_index, point[current_dim]);
 
 				if(current_dim == storage->dim()-1)
 				{
@@ -125,7 +168,7 @@ protected:
 				}
 				else
 				{
-					rec(base, point, current_dim + 1, value*new_value, working, source, result);
+					rec(basis, point, current_dim + 1, value*new_value, working, source, result);
 				}
 				
 
@@ -160,8 +203,8 @@ protected:
 /**
  * Returns the number of correctly classified instances in data
  */
-template<class BASE>
-double test_dataset( GridStorage* storage, BASE& base, DataVector& alpha, DataVector& data, DataVector& classes)
+template<class BASIS>
+double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -171,7 +214,7 @@ double test_dataset( GridStorage* storage, BASE& base, DataVector& alpha, DataVe
 	
 	std::vector<double> point;
 	
-	GetAffectedLocal<BASE> ga(storage);
+	GetAffectedBasisFunctions<BASIS> ga(storage);
 	
 	for(size_t i = 0; i < size; i++)
 	{
@@ -181,7 +224,7 @@ double test_dataset( GridStorage* storage, BASE& base, DataVector& alpha, DataVe
 		
 		data.getLine(i, point);
 	
-		ga(base, point, vec);
+		ga(basis, point, vec);
 	
 		for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 		{
@@ -201,14 +244,14 @@ double test_dataset( GridStorage* storage, BASE& base, DataVector& alpha, DataVe
 
 /**
  * Basic multiplaction with B and B^T.
- * This is just wrong ... there should be some functor for the BASE type
+ * This is just wrong ... there should be some functor for the BASIS type
  */
-template<class BASE>
+template<class BASIS>
 class AlgorithmB
 {
 public:
 
-	void mult(GridStorage* storage, BASE& base, DataVector& source, DataVector& x, DataVector& result)
+	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 		
@@ -218,7 +261,7 @@ public:
 		std::vector<double> line;
 		IndexValVector vec;
 		
-		GetAffectedLocal<BASE> ga(storage);
+		GetAffectedBasisFunctions<BASIS> ga(storage);
 				
 		for(size_t i = 0; i < source_size; i++)
 		{
@@ -226,7 +269,7 @@ public:
 			
 			x.getLine(i, line);
 			
-			ga(base, line, vec);
+			ga(basis, line, vec);
 			
 			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 			{
@@ -235,7 +278,7 @@ public:
 		}
 	}
 	
-	void mult_transpose(GridStorage* storage, BASE& base, DataVector& source, DataVector& x, DataVector& result)
+	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 		
@@ -245,7 +288,7 @@ public:
 		std::vector<double> line;
 		IndexValVector vec;
 		
-		GetAffectedLocal<BASE> ga(storage);
+		GetAffectedBasisFunctions<BASIS> ga(storage);
 
 		for(size_t i = 0; i < result_size; i++)
 		{
@@ -253,7 +296,7 @@ public:
 			
 			x.getLine(i, line);
 			
-			ga(base, line, vec);
+			ga(basis, line, vec);
 
 			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 			{
