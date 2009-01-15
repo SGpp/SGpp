@@ -30,14 +30,13 @@ SIMPLE = 0
 NOTAFILE = -1
 
 #-------------------------------------------------------------------------------
-# Writes a String txt to File filename, appends by default.
+## Writes a String txt to File filename, appends by default.
 # Uses secure writing, i.e. locks file.
 # On Windows concurrent access raises an error wich is handled.
 # On Linux/Unix it should block until lock released!!
 #     param: filename
 #     param: txt
 #     param: mode, default: "a"
-#-------------------------------------------------------------------------------
 def writeLockFile(filename, txt, mode="a"):
     try:
         f = open(filename, mode)
@@ -54,11 +53,10 @@ def writeLockFile(filename, txt, mode="a"):
         f.close()
 
 #-------------------------------------------------------------------------------
-# checks whether a file given by a filename is an ARFF-file
+## checks whether a file given by a filename is an ARFF-file
 #     param: filename
 #     returns: ARFF, SIMPLE or NOTAFILE
-#-------------------------------------------------------------------------------
-def isArffFile(filename):
+def isARFFFile(filename):
     try:
         # read lines until non-empty line found
         f = open(filename, 'r')
@@ -75,8 +73,7 @@ def isArffFile(filename):
         return NOTAFILE
 
 #-------------------------------------------------------------------------------
-# Writes String to File and checks if file existant
-#-------------------------------------------------------------------------------
+## Writes String to File and checks if file existant
 def writeStringToFile(s, filename):
     if os.path.exists(filename):
         i = raw_input("File <%s> exists. Overwrite [y/n]? " % (filename))
@@ -90,8 +87,7 @@ def writeStringToFile(s, filename):
         f.close()
     
 #-------------------------------------------------------------------------------
-# Converts a python "dataset"-structure into two object of type DataVector (X,Y)
-#-------------------------------------------------------------------------------
+## Converts a python "dataset"-structure into two object of type DataVector (X,Y)
 def createDataVectorFromDataset(dataset):
     dim = len(dataset["data"])
     entries = len(dataset["data"][0])
@@ -111,6 +107,21 @@ def createDataVectorFromDataset(dataset):
             y[i] = classes[i]
             
     return (x,y)
+
+#-------------------------------------------------------------------------------
+## Converts one or two (data + optionally classes) objects of type DataVector
+# to a python "dataset"-structure
+def createDatasetFromDataVector(data, classes=None):
+    dataset = {}
+    dataset['data'] = []
+    for j in range(data.getDim()):
+        column = [data.get(i,j) for i in range(data.getSize())]
+        dataset['data'].append(column)
+
+    if classes:
+        dataset['classes'] = [classes[i] for i in range(len(classes))]
+    
+    return dataset
 
 def readDataTrivial(filename, delim = "", hasclass = True):
     fin = open(filename, "r")
@@ -208,9 +219,11 @@ def writeGnuplot(filename, grid, alpha, resolution):
 def writeDataARFF(data, merge=False):
     if len(data) == 0:
         return
+    # is data a dataset or is it a list of datasets?
+    if isinstance(data, dict):
+        data = [data]
     
     hasHeader = False
-    
     for dataset in data:
     	if hasHeader == False or merge == False:
             hasHeader = True
@@ -225,13 +238,13 @@ def writeDataARFF(data, merge=False):
                    
             for i in xrange(dim):
                 fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
-                fstring = fstring + "%f,"
+                fstring = fstring + "%s,"
            
             hasclass = False
             if dataset.has_key("classes"):
            	hasclass = True
            	fout.write("@ATTRIBUTE class NUMERIC\n")
-           	fstring = fstring + "%f"
+           	fstring = fstring + "%s"
             else:
            	fstring = fstring.strip(',')
                 
@@ -295,7 +308,45 @@ def writeDataMaple(data, merge):
 
     return
 
-def normalize(data, border=0.0):
+#-------------------------------------------------------------------------------
+## Writes information that is needed for the normalization of data to a file.
+# Using this information one can then later on reverse the normalization or
+# normalize further data.
+# @param filename a filename
+# @param border offset for normalization
+# @param minvals the minimum value of each attribute
+# @param maxvals the maximum value of each attribute
+def writeNormfile(filename, border, minvals, maxvals, deltavals):
+    s  = "border: %s\n" % (border)
+    s += "min:    %s\n" % (' '.join(map(lambda l: "%s"%l, minvals)))
+    s += "max:    %s\n" % (' '.join(map(lambda l: "%s"%l, maxvals)))
+    s += "delta:  %s\n" % (' '.join(map(lambda l: "%s"%l, deltavals)))
+    writeStringToFile(s, filename)
+    
+#-------------------------------------------------------------------------------
+## Reads information that is needed for the normalization of data from a file.
+# @param filename a filename
+# @return (border, minvals, maxvals, deltavals)
+# border: offset for normalization
+# minvals: the minimum value of each attribute
+# maxvals: the maximum value of each attribute
+# deltavals: (max-min)/(1.0-2*border), provided for convenience
+def readNormfile(filename):
+    fd = open(filename, 'r')
+    data = fd.readlines()
+    fd.close()
+    try:
+        border = float((data[0].strip()).split(None)[1])
+        minvals = map(lambda l: float(l), (data[1].strip()).split(None)[1:])
+        maxvals = map(lambda l: float(l), (data[2].strip()).split(None)[1:])
+        deltavals = map(lambda x,y: ((y-x)/(1.0-2.0*border)), minvals, maxvals)
+    except:
+        raise Exception("ERROR: Unable to read \"%s\"\n" % (filename))
+    return (border, minvals, maxvals, deltavals)
+
+
+
+def normalize(data, border=0.0, filename=None):
     if len(data) == 0:
         return
 
@@ -316,8 +367,11 @@ def normalize(data, border=0.0):
             
     lmin = map(lambda x: x, lmin)
     lmax = map(lambda x: x, lmax)
-
     ldelta = map(lambda x,y: ((y-x)/(1.0-2.0*border)), lmin, lmax)
+
+    # write normalization data to file:
+    if filename:
+        writeNormfile(filename, border, lmin, lmax, ldelta)
     
     for dataset in data:
         for dim in xrange(len(dataset["data"])):
@@ -476,33 +530,30 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
 
     return (dvec, cvec)
 
-
-
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 ## An array containing all modes and descriptions
 zeh_modes = {
     "laplace" : "Classical Laplacian. See OpLaplaceAdaptive",
+    "laplaceboundary" : "Classical Laplacian for modified boundary functions. See OpLaplaceAdaptiveBoundary",
     "identity" : "Identity matrix, most efficient. See OpPseudo",
     "ratio" : "Preferres quadratical supports. See OpPseudo",
     "levelsum" : "Sum of the levels, scaled by the gridlevel (usually 2 for adaptive SGs). See OpPseudo",
     "energy" : "Energy-norm-like SGs. See OpPseudo",
-    "copy" : "Sum of the rows of classical Laplacian. See OpLaplaceAdaptive",}
-
+    "copy" : "Sum of the rows of classical Laplacian. See OpLaplaceAdaptive",
+    "pseudounit" : "???"}
+    
 ## base function types
 base_types = {
 #    "linear" : {"base" : SLinearBase, "b" : SGridOperationB, "t" : test_dataset_linear, "laplace" : SGridOperationLaplace},
 #    "modlinear" : {"base" : SModLinearBase, "b" : SGridModOperationB, "t" : test_dataset_modlin},
 #    "poly" : {"base" : "SPolyBase", },
-    
-              
               }
 
-    
 
 ## Class Matrix that incorporates settings and actions for applying
 # the matrix C and computing the RHS b.
-# TODO: fully update to pysgpp
+# @TODO: fully update to pysgpp
 class Matrix:
     #val: paramtere base removed from the definition
     #def __init__(self, grid, x, l, mode, base):
@@ -516,7 +567,11 @@ class Matrix:
         self.CMode = mode.lower()
         
         if self.CMode == "laplace":
-            self.C = grid.createOperationLaplace()
+            self.C = OpLaplaceAdaptive(grid)
+        elif self.CMode == "laplaceadaptive":
+            self.C = OpLaplaceAdaptive(grid)
+        elif self.CMode == "laplaceboundary":
+            self.C = OpLaplaceAdaptiveBoundary(grid)
         elif self.CMode == "identity":
             pass
         elif self.CMode == "ratio":
@@ -615,4 +670,37 @@ def readAlphaARFF(filename):
     
     return alpha
 
+def writeGrid(filename, grid):
+    text = saveGrid(grid)
+    fout = open(filename, "w")
+    fout.write(text)
+    fout.close()
+
+def readGrid(filename):
+    fin = open(filename, "r")
+    text = fin.read()
+    fin.close()
+    
+    return restoreGrid(text)
+
+def writeCheckpoint(filename, grid, alpha, txt, adaption = None):
+    if adaption != None:
+        writeAlphaARFF(filename+".a" + str(adaption) + ".alpha.arff", alpha)
+        writeGrid(filename+".a" + str(adaption) + ".grid", grid)
+        fout = open(filename+".stats", "w")
+        fout.write(txt+"\n");
+        fout.close()
+    else:
+        writeAlphaARFF(filename+".alpha.arff", alpha)
+        writeGrid(filename+".grid", grid)
+        fout = open(filename+".stats", "w")
+        fout.write(txt+"\n");
+        fout.close()
+    
+
+def readCheckpoint(filename):
+    alpha = readAlphaARFF(filename+".alpha.arff")
+    grid = readGrid(filename+".grid")
+    
+    return grid, alpha
 
