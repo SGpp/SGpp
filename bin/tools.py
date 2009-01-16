@@ -444,6 +444,7 @@ def split_n_folds(data, num_partitions, seed=None):
         for element in xrange(size_fold):
             for d in xrange(dim):
                 dvec[i][element*dim + d] = data["data"][d][seq[index]]
+            #FIXME: this doesn't work for regression, because the last parameter is not necessary class
             cvec[i][element] = data["classes"][seq[index]]
             index += 1
         size_left = size_left-size_fold
@@ -567,7 +568,8 @@ class Matrix:
         self.CMode = mode.lower()
         
         if self.CMode == "laplace":
-            self.C = OpLaplaceAdaptive(grid)
+            #self.C = OpLaplaceAdaptive(grid)
+            self.C = grid.createOperationLaplace()
         elif self.CMode == "laplaceadaptive":
             self.C = OpLaplaceAdaptive(grid)
         elif self.CMode == "laplaceboundary":
