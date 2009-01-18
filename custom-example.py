@@ -21,12 +21,17 @@ import os
 # Copy this file to custom.py #
 ###############################
 
+
+####### STLPort #######
 # path to STLport
 # global installation e.g.
 STLPORT = '/usr/include/stlport'
 # local installation (see documentation)
 #STLPORT = os.path.expanduser('~/include/stlport')
 
+
+
+####### GCC Settings #######
 # additional compiler flags
 CPPFLAGS = ['-O3','-g','-funroll-loops']
 
@@ -42,10 +47,17 @@ CPPFLAGS = ['-O3','-g','-funroll-loops']
 #VECTORIZE = True
 
 
+
 ####### ICC #######
 # Uncomment to use Intels optimizing Compiler, please use version 11
+# Take care that you have defined following env. variables for loading the shared libraries: LD_LIBRARY_PATH and LIBPATH
+# both must contain the path to the intel shared libs
+# for instance:
+# LD_LIBRARY_PATH = /opt/intel/cce/default/lib/intel64:LD_LIBRARY_PATH
+# LIBPATH = /opt/intel/cce/default/lib/intel64:LIBPATH
 
 #ICC = 1
-#CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static']
+#INTELHOME = '/opt/intel/cce/default/bin/'
+#CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias']
 
 
