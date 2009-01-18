@@ -43,9 +43,9 @@ CPPFLAGS = ['-O3','-g','-funroll-loops']
 
 
 ####### ICC #######
-# Uncomment to use Intels optimizing Compiler
+# Uncomment to use Intels optimizing Compiler, please use version 11
 
 #ICC = 1
-#CPPFLAGS = ['-axN', '-O3', '-xN', '-funroll-loops', '-ipo']
+#CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static']
 
 

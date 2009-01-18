@@ -42,6 +42,12 @@ env.Append(LINKFLAGS=['-pthread'])
 if not env['ICC'] and env.has_key('MARCH'):
 	env.Append(CPPFLAGS=('-march=' + env['MARCH']))
 
+# heinecke: this has been added to support intel compiler 11
+if env['ICC']:
+    env['CC'] = 'icce'
+    env['LINK'] = 'icpce'
+    env['CXX'] = 'icpce'
+
 if not env.GetOption('clean'):	
     config = env.Configure()
 	
