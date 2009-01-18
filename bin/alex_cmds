@@ -1,0 +1,2 @@
+python classifier.py --data circle.arff --level 5 --zeh laplace --mode normal --gnuplot gnu.out --resolution 100 --lambda 0.001
+
