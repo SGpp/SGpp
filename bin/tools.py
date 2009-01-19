@@ -310,17 +310,16 @@ def writeDataMaple(data, merge):
 
 #-------------------------------------------------------------------------------
 ## Writes information that is needed for the normalization of data to a file.
-# Using this information one can then later on reverse the normalization or
+# Using this information one can then lateron reverse the normalization or
 # normalize further data.
 # @param filename a filename
 # @param border offset for normalization
-# @param minvals the minimum value of each attribute
-# @param maxvals the maximum value of each attribute
-def writeNormfile(filename, border, minvals, maxvals, deltavals):
+# @param minvals the (original) minimum value of each attribute
+# @param maxvals the (original) maximum value of each attribute
+def writeNormfile(filename, border, minvals, maxvals):
     s  = "border: %s\n" % (border)
     s += "min:    %s\n" % (' '.join(map(lambda l: "%s"%l, minvals)))
     s += "max:    %s\n" % (' '.join(map(lambda l: "%s"%l, maxvals)))
-    s += "delta:  %s\n" % (' '.join(map(lambda l: "%s"%l, deltavals)))
     writeStringToFile(s, filename)
     
 #-------------------------------------------------------------------------------
@@ -371,7 +370,7 @@ def normalize(data, border=0.0, filename=None):
 
     # write normalization data to file:
     if filename:
-        writeNormfile(filename, border, lmin, lmax, ldelta)
+        writeNormfile(filename, border, lmin, lmax)
     
     for dataset in data:
         for dim in xrange(len(dataset["data"])):

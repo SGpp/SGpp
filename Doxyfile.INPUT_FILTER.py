@@ -8,18 +8,19 @@ f = open(sys.argv[1],'r')
 txt = f.read()
 f.close()
 
-
+# replace $HEAD$ (and, if enabled, $CURR$
 if re.search('\$HEAD\$', txt):
     # read in version info
     f = os.popen('svn stat -v '+sys.argv[1])
     data = f.read()
     f.close()
     g = re.search('(\S*?)\s*?(\S*?)\s*?(\S*?)\s*?(\S*)$', data).groups();
-    r_HEAD = 'Rev. %s (last mod. in rev. %s by %s)'%(g[0],g[1],g[2]);
+    r_HEAD = 'Rev. %s (Last mod. in rev. %s by %s)'%(g[0],g[1],g[2]);
     r_CURR = 'Rev. '+g[0]
     txt = re.sub('version\s*\$HEAD\$', 'version '+r_HEAD, txt)
     txt = re.sub('version\s*\$CURR\$', 'version '+r_CURR, txt)
 
+#replace $SVN_LOG$
 if re.search('\$SVN_LOG\$', txt):
     # read in version info
     f = os.popen('svn stat -v '+sys.argv[1])

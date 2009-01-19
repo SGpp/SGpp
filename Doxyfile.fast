@@ -389,6 +389,7 @@ SHOW_DIRECTORIES       = YES
 # provided by doxygen. Whatever the program writes to standard output 
 # is used as the file version. See the manual for examples.
 
+#FILE_VERSION_FILTER    = "python -c \"import sys,re,os; t=os.popen('svn stat -v '+sys.argv[1]).read(); g=re.search('(\S*?)\s*?(\S*?)\s*?(\S*?)\s*?(\S*)$',t).groups(); print 'Rev. %s (last mod. in rev. %s by %s)'%(g[0],g[1],g[2])\""
 FILE_VERSION_FILTER    = 
 
 #---------------------------------------------------------------------------
@@ -451,6 +452,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
+#INPUT                  = README class/ class/QuSquare include/ include/QuSquare bin/ tests/ WekaSpGrid/weka/classifiers/functions/ WekaSpGrid/weka/search/ WekaSpGrid/weka/classifiers/functions/sparseGrid/Matrix.java
 INPUT                  = sg++/ tests/ bin/ documentation/ SPARSE_GRID_ALGORITHM101
  
 
@@ -487,7 +489,7 @@ EXCLUDE_SYMLINKS       = NO
 # against the file with absolute path, so to exclude all test directories 
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = */.svn/* */.hg/*
+EXCLUDE_PATTERNS       = */.svn* */.hg/*
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or 
 # directories that contain example code fragments that are included (see 
@@ -593,7 +595,7 @@ USE_HTAGS              = NO
 # will generate a verbatim copy of the header file for each class for 
 # which an include is specified. Set to NO to disable this.
 
-VERBATIM_HEADERS       = YES
+VERBATIM_HEADERS       = NO
 
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index

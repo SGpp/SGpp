@@ -34,12 +34,15 @@ parser.add_option("-i", "--infile", action="append", type="string", dest="infile
 parser.add_option("-t", "--types", action="append", type="string", dest="types", help="Specifies the type of the inputfiles. Availible types are \"arrf\" and \"simple\". Can be specified for each inputfile.")
 parser.add_option("-m", "--merge", action="store_true", default=False, dest="merge", help="If this is enabled, then all inputfiles are normalized and merged to one outputfile.")
 parser.add_option("-n", "--nonormalization", action="store_true", default=False, dest="nonormalization", help="If this option is set, neither data (-b) nor classes (-c) are normalized, but all data is just being converted.")
+parser.add_option("--nodatanormalization", action="store_true", default=False, dest="nodatanormalization", help="If this option is set, data (-b) is not normalized, but just being converted.")
+parser.add_option("--noclassnormalization", action="store_true", default=False, dest="noclassnormalization", help="If this option is set, classes (-c) are not normalized, but just being converted.")
 parser.add_option("-b", "--border", action="store", type="float", dest="border", help="Specifies the border for the Dataset. If not set 0.05 is used.")
 parser.add_option("-c", "--class", action="store", type="float", dest="c_border",metavar="BORDER", help="Specifies the classification border on which the classification data is put into different classes. If not set classvalue>=0.5 is used.")
 parser.add_option("--class_min", action="store", type="float", dest="c_border_min", default=-sys.maxint-1, metavar="BORDERMIN", help="Specifies a second classification border on which the classification data is put into different classes (additionally check for classvalue<=class_min). If not set, it is ignored.")
 parser.add_option("-C", "--noclasses", action="store_true", default=False, dest="noclasses", help="If this is enabled, then inputfiles have no classes.")
 parser.add_option("-o", "--output", action="append", type="string", dest="outfiles", help="Specifies the output file. Can be specified for each inputfile. If not applicated, .arff is appended to each file.")
 parser.add_option("--delimiter", action="store", type="string", default="", dest="delimiter", help="The delimiter separating the columns for the simple-format. Default: Split for whitespaces.")
+parser.add_option("--normfile", action="store", type="string", dest="normfile", default=None, help="Write normalization information to file, so that further data could be normalized")
 parser.add_option("--maple", action="store_true", default=False, dest="maple", help="If enabled, write Maple-readable format.")
 (options,args)=parser.parse_args()
 
@@ -102,15 +105,18 @@ for i in xrange(len(options.infiles)):
 		elif options.types[i] == "simple":
 			data.append(readDataTrivial(options.infiles[i], delim=options.delimiter))
 			data[i]["filename"] = options.outfiles[i]
-	except Exception:
+	except Exception, e:
 		print("Error while reading "  + options.infiles[i] +"! Aborting...");
+		print e
 		sys.exit(1)
 				
 checkData(data)
 
 if not options.nonormalization:
-	normalize(data, options.border)
-	normalizeClasses(data, options.c_border, options.c_border_min)
+	if not options.nodatanormalization:
+		normalize(data, options.border, options.normfile)
+	if not options.noclassnormalization:
+		normalizeClasses(data, options.c_border, options.c_border_min)
 if not options.maple:
 	writeDataARFF(data, options.merge)
 else:
