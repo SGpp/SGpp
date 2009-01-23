@@ -195,7 +195,7 @@ def doApply():
     (x,y) = createDataVectorFromDataset(data)
 
     # evaluate
-    q = DataVector(dim)
+    q = DataVector(1,dim)
     classes = []
     # if test data contains classes, additionally compute accuracy
     if data.has_key("classes"):
@@ -206,7 +206,7 @@ def doApply():
     # traverse Data
     for i in xrange(numData):
         x.getRow(i,q)
-        val = grid.createOperationEval().eval(q, alpha)
+        val = grid.createOperationEval().eval(alpha,q)
         if compute_accuracy:
             if (val >= 0 and data["classes"][i] >= 0) or (val < 0 and data["classes"][i] < 0):
                 acc += 1
