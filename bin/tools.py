@@ -210,7 +210,7 @@ def writeGnuplot(filename, grid, alpha, resolution):
         for y in xrange(resolution):
             p[0] = float(x) / (resolution - 1)
             p[1] = float(y) / (resolution - 1)
-            pc = grid.EvaluatePoint(p, alpha)
+            pc = grid.createOperationEval().eval(alpha, p)
             fout.write("%f %f %f\n" % (p[0], p[1], pc))
         fout.write("\n")
     fout.close()

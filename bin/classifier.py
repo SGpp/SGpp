@@ -102,6 +102,7 @@ def exec_mode(mode):
         print ("Error!")
         print ("For --mode %s you have to specify the following options:\n" % (mode)
                + format_optionlist(modes[mode]['required_options']))
+        print ("More on the usage of %s with --help" % (sys.argv[0]))
         sys.exit(1)
 
     # execute action
@@ -377,7 +378,7 @@ def doNormal():
         writeAlphaARFF(options.outfile, alpha)
     
     if(options.gnuplot != None):
-        if(grid.getDim() != 2):
+        if(dim != 2):
             print("Wrong dimension for gnuplot-Output!")
         else:
             writeGnuplot(options.gnuplot, grid, alpha, options.res)
