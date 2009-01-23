@@ -31,6 +31,8 @@ from painlesscg import cg,sd,cg_new
 from math import sqrt
 import random
 
+from array import array
+
 try:
     import psyco
     psyco.full()
@@ -134,12 +136,12 @@ def constructGrid(dim):
     if options.grid == None:
         if options.polynom > 1:
             if options.verbose:
-                print "SpGridHighOrder, p=%d, l=%d" %(options.polynom, options.level)
+                print "PolyGrid, p=%d, l=%d" %(options.polynom, options.level)
             #grid = SpGridHighOrder(dim,options.level,options.polynom)
             grid = Grid.createPolyGrid(dim, options.polynom)
         else:
             if options.verbose:
-                print "SpGridLinear, l=%s" % (options.level)
+                print "LinearGrid, l=%s" % (options.level)
             #grid = SpGridLinear(dim,options.level)
             grid = Grid.createLinearGrid(dim)
         generator  = grid.createGridGenerator()
@@ -150,9 +152,16 @@ def constructGrid(dim):
         grid = readGrid(options.grid)
     
     if options.border:
-        if options.verbose:
-            print "setting border"
-        grid.setUseBorderFunctions(True)
+        if options.polynom > 1:
+            if options.verbose:
+                print "ModPolyGrid, p=%d, l=%d" %(options.polynom, options.level)
+            grid = Grid.createModPolyGrid(dim, options.polynom)
+        else:
+            if options.verbose:
+                print "ModLinearGrid, l=%s" % (options.level)
+            grid = Grid.createModLinearGrid(dim)
+        generator  = grid.createGridGenerator()
+        generator.regular(options.level)
 
     return grid
 
@@ -231,6 +240,7 @@ def doEval():
 
     # read alpha vector
     alpha = buildTrainingVector(openFile(options.alpha))
+    print alpha
 
     # construct corresponding grid
     grid = constructGrid(dim)
@@ -242,7 +252,11 @@ def doEval():
     (x,y) = createDataVectorFromDataset(data)
 
     # evaluate
-    q = DataVector(dim)
+    q = DataVector(1,dim)
+    #print "Classifier dim: %d" % dim
+#    print "Classifier q.getDim(): %d" % q.getDim()
+    
+    #q = [1.0,1.0,1.0,1.0,1.0]
     classes = []
     # if test data contains function values, additionally compute L2-norm of error
     if data.has_key("classes"):
@@ -253,14 +267,21 @@ def doEval():
     # traverse Data
     for i in xrange(numData):
         x.getRow(i,q)
-        val = grid.createOperationEval().eval(q, alpha)
-
+#        print "q dim in DataVector: %d" % q.getDim()
+#        print "q:"
+#        for j in xrange(q.getSize()):
+#            print q[j]
+        #TODO: replace the parameters everywhere
+        val = grid.createOperationEval().eval(alpha,q)
+        #print "val %f" % val
         classes.append(val)
     # output accuracy:
     if compute_accuracy:
         error = DataVector(len(classes))
         for i in range(len(classes)):
             error[i] = classes[i]
+#            print str(error[i]) + " - " + str(y[i])
+        
         error.sub(y) # error vector
         error.sqr()  # entries squared
         # output some statistics
@@ -423,19 +444,7 @@ def doTest():
     test_classes = buildYVector(test)
 
     dim = len(data["data"])
-
     grid = constructGrid(dim)
-#    if options.grid == None:
-#        if options.polynom > 1:
-#            grid = SpGridHighOrder(len(data["data"]),options.level,options.polynom)
-#        else:
-#            grid = SpGridLinear(len(data["data"]),options.level)
-#    else:
-#        grid = readGrid(options.grid)
-#    
-#    if options.border:
-#        grid.setUseBorderFunctions(True)
-
             
     te_refine = []
     tr_refine = []
@@ -458,7 +467,6 @@ def doTest():
 #        else:
 #            te = testVector(grid, alpha, test_data, test_classes)
         
-# testVectorFast uses an OpenMP enabled c++ routine for testing
         te = testVectorFast(grid, alpha, test_data, test_classes)
 
 
@@ -467,15 +475,8 @@ def doTest():
         num_refine.append(grid.getStorage().size())
 
         if options.verbose:
-            print "training: ",tr
-            print "testing:  ",te
-
-#            print "teValues"
-#            print teValues
-#            print "alpha"
-#            print alpha
-#            print "grid"
-#            print grid
+            print "Correct classified on training data: ",tr
+            print "Correct classified on testing data:  ",te
 
         if options.checkpoint != None:
             txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
@@ -849,7 +850,7 @@ def testVector(grid,alpha,test,classes):
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 ## Computes the classification accuracy on some test data. Tests on the classes
-# {+1, -1}, cut-off at 0.
+# {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
 # @param grid the sparse grid
 # @param alpha DataVector of surplusses
 # @param test a DataVector containing a dataset of points to test on
