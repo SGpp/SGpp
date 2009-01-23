@@ -639,6 +639,18 @@ class Matrix:
             self.C.applyRatio(alpha,temp)
             result.axpy(M*self.l,temp)
 
+#-------------------------------------------------------------------------------
+# saves/restores grid from file
+# set appropriate modes for automatic destructions
+#-------------------------------------------------------------------------------
+
+def restoreGrid(text):
+    #FIXME: is there any control of correctness of text?
+    return Grid.unserialize(text)
+
+
+def saveGrid(grid):
+    return grid.serialize()
 
 #-------------------------------------------------------------------------------
 # read/write alpha
