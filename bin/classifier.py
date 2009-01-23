@@ -135,34 +135,35 @@ def openFile(filename):
 # @todo Integrate into all modes
 def constructGrid(dim):
     if options.grid == None:
-        if options.polynom > 1:
-            if options.verbose:
-                print "PolyGrid, p=%d, l=%d" %(options.polynom, options.level)
-            #grid = SpGridHighOrder(dim,options.level,options.polynom)
-            grid = Grid.createPolyGrid(dim, options.polynom)
-        else:
-            if options.verbose:
-                print "LinearGrid, l=%s" % (options.level)
-            #grid = SpGridLinear(dim,options.level)
-            grid = Grid.createLinearGrid(dim)
+        if options.border:
+            if options.polynom > 1:
+                if options.verbose:
+                    print "ModPolyGrid, p=%d, l=%d" %(options.polynom, options.level)
+                grid = Grid.createModPolyGrid(dim, options.polynom)
+            else:
+                if options.verbose:
+                    print "ModLinearGrid, l=%s" % (options.level)
+                grid = Grid.createModLinearGrid(dim)
+        else: #no border points
+            if options.polynom > 1:
+                if options.verbose:
+                    print "PolyGrid, p=%d, l=%d" %(options.polynom, options.level)
+                #grid = SpGridHighOrder(dim,options.level,options.polynom)
+                grid = Grid.createPolyGrid(dim, options.polynom)
+            else:
+                if options.verbose:
+                    print "LinearGrid, l=%s" % (options.level)
+                #grid = SpGridLinear(dim,options.level)
+                grid = Grid.createLinearGrid(dim)
         generator  = grid.createGridGenerator()
         generator.regular(options.level)
-    else:
+        
+    else: #read grid from file
         if options.verbose:
             print "reading grid from %s" % (options.grid)
         grid = readGrid(options.grid)
     
-    if options.border:
-        if options.polynom > 1:
-            if options.verbose:
-                print "ModPolyGrid, p=%d, l=%d" %(options.polynom, options.level)
-            grid = Grid.createModPolyGrid(dim, options.polynom)
-        else:
-            if options.verbose:
-                print "ModLinearGrid, l=%s" % (options.level)
-            grid = Grid.createModLinearGrid(dim)
-        generator  = grid.createGridGenerator()
-        generator.regular(options.level)
+    
 
     return grid
 
@@ -241,12 +242,12 @@ def doEval():
 
     # read alpha vector
     alpha = buildTrainingVector(openFile(options.alpha))
-    print alpha
 
     # construct corresponding grid
     grid = constructGrid(dim)
     if(alpha.getSize() != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
+        print "alpha size %d, grid size %d" % (alpha.getSize(),grid.getStorage().size())
         sys.exit(1)
 
     # copy data to DataVector
