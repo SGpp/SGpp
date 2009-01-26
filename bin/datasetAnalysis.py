@@ -15,9 +15,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with pyclass. If not, see <http://www.gnu.org/licenses/>.
 
+## @package classifier
+# @ingroup bin
+# @brief Show some statistics for data files
+#Handles either ARFF-files or plain data files. If the ARFF file
+#contains a class attribute, it also shows statistics for the class
+#distribution. 
+#
+# Help with <tt>--help</tt>.
+# @version $CURR$
 
 from optparse import OptionParser
-import sys, os
+import sys, os, math
 from tools import *
 
 parser = OptionParser()
@@ -32,6 +41,7 @@ if options.infiles == None:
 # loop over infiles
 for filename in options.infiles:
     try:
+        # read in files
         print "================= %20s =================" %(filename)
         ftype = isARFFFile(filename)
         if ftype == ARFF:
@@ -43,12 +53,30 @@ for filename in options.infiles:
             continue
 
         # analyse data
+        # header
         dim = len(dataset["data"])
+        numpoints = len(dataset["data"][0])
         print "Dim (#attributes): %d"%(dim)
-        print "Dim Min Max"
+        print " %-4s %-12s %-12s %-12s %-12s %-12s" % ("Dim",
+                                                       "Min",
+                                                       "Max",
+                                                       "mean",
+                                                       "unbiased V",
+                                                       "samplestddev")
+        # traverse all attributes
         for i in range(dim):
-            print "  %02d %f %f" %(i+1, min(dataset["data"][i]), max(dataset["data"][i]))
-        print "#data points: %d"%(len(dataset["data"][0]))
+            total_sum = sum(dataset["data"][i])
+            mean = total_sum/float(numpoints)
+            unbiased_variance = sum(map(lambda x: (x-mean)**2, dataset["data"][i]))/float(numpoints-1)
+            sample_stddev = math.sqrt(unbiased_variance)
+            print "  %02d %12f %12f %12f %12f %12f" %(i+1,
+                                                 min(dataset["data"][i]),
+                                                 max(dataset["data"][i]),
+                                                 mean,
+                                                 unbiased_variance,
+                                                 sample_stddev)
+        print "#data points: %d"%(numpoints)
+        # statistics for class distribution
         if dataset.has_key("classes"):
             print "Class distribution:"
             class_count = {}
