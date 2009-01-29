@@ -111,7 +111,11 @@ def exec_mode(mode):
 
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+## Opens and read the data of an ARFF file
+# Reads in an ARFF file
+#
+# @param filename of the file
+# @return the data stored in the file as a set of arrays
 def openFile(filename):
     try:
         data = readDataARFF(filename)
@@ -367,6 +371,10 @@ def doNormal():
     data = openFile(options.data[0])
     dim = len(data["data"])
     numData = len(data["data"][0])
+    
+    if options.verbose:
+        print "Dimension is:", dim
+        print "Number of datasets is:", numData
         
     training = buildTrainingVector(data)
     y = buildYVector(data)
@@ -819,11 +827,15 @@ def assembleTrainingVector(dvecs,cvecs,omit):
 
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+## Builds the training data vector
+# 
+# @param data a list of lists that contains the points a the training data set, coordinate-wise
+# @return a instance of a DataVector that stores the training data
 def buildTrainingVector(data):
     dim = len(data["data"])
     training = DataVector(len(data["data"][0]), dim)
     
+    # i iterates over the data points, d over the dimension of one data point
     for i in xrange(len(data["data"][0])):
         for d in xrange(dim):
             training[i*dim + d] = data["data"][d][i]

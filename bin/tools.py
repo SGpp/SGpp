@@ -164,12 +164,20 @@ def readDataTrivial(filename, delim = "", hasclass = True):
     else:
         return {"data":data, "filename":filename}
 
+## Reads in an ARFF file 
+# reads a ARFF file 
+# the data list is a lists. There is a value list for every dimension of the test data set. e.g. 
+# [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
+#
+# @param filename the file's filename that should be read
+# @return returns a set of a array with the data (named data), a array with the classes (named classes) and the filename named as filename
 def readDataARFF(filename):
     fin = open(filename, "r")
     data = []
     classes = []
     hasclass = False
 
+    # get the different section of ARFF-File
     for line in fin:
         sline = line.strip().lower()
         if sline.startswith("%") or len(sline) == 0:
@@ -185,6 +193,7 @@ def readDataARFF(filename):
             else:
                 data.append([])
     
+    #read in the data stored in the ARFF file
     for line in fin:
         sline = line.strip()
         if sline.startswith("%") or len(sline) == 0:
@@ -197,8 +206,7 @@ def readDataARFF(filename):
         for i in xrange(len(values)):
             data[i].append(float(values[i]))
             
-        
-
+    # cleaning up and return
     fin.close()
     return {"data":data, "classes":classes, "filename":filename}
 
