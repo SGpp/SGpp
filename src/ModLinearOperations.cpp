@@ -38,19 +38,33 @@ OperationBModLinear::~OperationBModLinear()
 {
 }
 
+/**
+ * Multiplication with vector, not transposed, modified linear sparse grid
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
 void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmB<SModLinearBase> op;
 	modified_linear_base<unsigned int, unsigned int> base;
-	
+
 	op.mult(storage, base, alpha, data, result);
 }
 
+/**
+ * Multiplication with vector, transposed, modified linear sparse grid
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
 void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmB<SModLinearBase> op;
 	modified_linear_base<unsigned int, unsigned int> base;
-	
+
 	op.mult_transpose(storage, base, alpha, data, result);
 }
 
@@ -59,20 +73,20 @@ void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, Dat
 double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
-	
+
 	IndexValVector vec;
 	modified_linear_base<unsigned int, unsigned int> base;
 	GetAffectedBasisFunctions<modified_linear_base<unsigned int, unsigned int> > ga(storage);
-	
+
 	ga(base, point, vec);
 
 	double result = 0.0;
-	
+
 	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 	{
 		result += iter->second * alpha[iter->first];
 	}
-	
+
 	return result;
 }
 

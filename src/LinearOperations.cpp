@@ -38,19 +38,33 @@ OperationBLinear::~OperationBLinear()
 {
 }
 
+/**
+ * Multiplication with vector, not transposed, linear sparse grid
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
 void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmB<SLinearBase> op;
 	linear_base<unsigned int, unsigned int> base;
-	
+
 	op.mult(storage, base, alpha, data, result);
 }
 
+/**
+ * Multiplication with vector, transposed, linear sparse grid
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
 void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmB<SLinearBase> op;
 	linear_base<unsigned int, unsigned int> base;
-	
+
 	op.mult_transpose(storage, base, alpha, data, result);
 }
 
@@ -60,20 +74,20 @@ void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVe
 double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
-	
+
 	IndexValVector vec;
 	linear_base<unsigned int, unsigned int> base;
 	GetAffectedBasisFunctions<linear_base<unsigned int, unsigned int> > ga(storage);
-	
+
 	ga(base, point, vec);
 
 	double result = 0.0;
-	
+
 	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 	{
 		result += iter->second * alpha[iter->first];
 	}
-	
+
 	return result;
 }
 
