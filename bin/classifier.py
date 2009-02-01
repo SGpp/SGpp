@@ -112,7 +112,6 @@ def exec_mode(mode):
 
 #-------------------------------------------------------------------------------
 ## Opens and read the data of an ARFF file
-# Reads in an ARFF file
 #
 # @param filename of the file
 # @return the data stored in the file as a set of arrays
@@ -888,7 +887,10 @@ def testVectorValues(grid,alpha,test,classes,evalValues):
     return float(correct)/test.getSize()
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+## builds a vector that contains the class information
+#
+# @param data class information
+# @return DataVector that contains the class information, length of the vector is identical to the length of the data vector
 def buildYVector(data):
     y = DataVector(len(data["classes"]))
     for i in xrange(len(data["classes"])):

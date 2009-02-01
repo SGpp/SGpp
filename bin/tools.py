@@ -164,9 +164,8 @@ def readDataTrivial(filename, delim = "", hasclass = True):
     else:
         return {"data":data, "filename":filename}
 
-## Reads in an ARFF file 
-# reads a ARFF file 
-# the data list is a lists. There is a value list for every dimension of the test data set. e.g. 
+## Reads in an ARFF file:
+# The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
 # [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
 #
 # @param filename the file's filename that should be read
