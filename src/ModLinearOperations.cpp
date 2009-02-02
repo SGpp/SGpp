@@ -29,14 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace sg
 {
-
-OperationBModLinear::OperationBModLinear(GridStorage* storage) : storage(storage)
-{
-}
-
-OperationBModLinear::~OperationBModLinear()
-{
-}
+// ***** OperationBModLinear *****
 
 /**
  * Multiplication with vector, not transposed, modified linear sparse grid
@@ -68,7 +61,7 @@ void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, Dat
 	op.mult_transpose(storage, base, alpha, data, result);
 }
 
-// ***** OperationEvalLinear *****
+// ***** OperationEvalModLinear *****
 
 double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
@@ -94,6 +87,48 @@ double OperationEvalModLinear::test(DataVector& alpha, DataVector& data, DataVec
 {
 	modified_linear_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
+}
+
+// ***** OperationhierarchisationModLinear *****
+
+/**
+ * Implements the hierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ * @param node_values the functions values in the node base
+ * @param bDirection this parameter specifies the direction of the hierarchisation: true = hierarchisation, false = dehierarchisation
+ *
+ * @todo Implement the hierarchisation on the sparse grid with mod linear base functions
+ */
+void OperationHierarchisationModLinear::PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection)
+{
+	return;
+}
+
+/**
+ * Implements the hierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ * @param node_values the functions values in the node base
+ *
+ * @todo Implement the hierarchisation on the sparse grid with mod linear base functions
+ */
+void OperationHierarchisationModLinear::doHierarchisation(DataVector& alpha, DataVector& node_values)
+{
+	PrivateHierarchisation(alpha, node_values, true);
+}
+
+/**
+ * Implements the dehierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ * @param node_values the functions values in the node base
+ *
+ * @todo Implement the dehierarchisation on the sparse grid with mod linear base functions
+ */
+void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha, DataVector& node_values)
+{
+	PrivateHierarchisation(alpha, node_values, false);
 }
 
 };

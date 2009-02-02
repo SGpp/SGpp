@@ -29,12 +29,12 @@ namespace sg
 class OperationBLinear : public OperationB
 {
 public:
-	OperationBLinear(GridStorage* storage);
-	virtual ~OperationBLinear();
-	
+	OperationBLinear(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationBLinear() {}
+
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
-	
+
 protected:
 	GridStorage* storage;
 };
@@ -45,13 +45,32 @@ class OperationEvalLinear : public OperationEval
 public:
 	OperationEvalLinear(GridStorage* storage) : storage(storage) {}
 	virtual ~OperationEvalLinear() {}
-	
+
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-		
+
 protected:
 	GridStorage* storage;
 
+};
+
+/**
+ * Hierarchisation on sparse grid, linear case
+ */
+class OperationHierarchisationLinear : public OperationHierarchisation
+{
+public:
+	OperationHierarchisationLinear(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationHierarchisationLinear() {}
+
+	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values);
+
+protected:
+	GridStorage* storage;
+
+private:
+	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);
 };
 
 }

@@ -34,10 +34,10 @@ public:
 
 	RefinementFunctor() {}
 	virtual ~RefinementFunctor() {}
-	
+
 	virtual double operator()(GridStorage* storage, size_t seq) = 0;
-	
-	virtual double start() = 0;	
+
+	virtual double start() = 0;
 };
 
 
@@ -46,7 +46,7 @@ class GridGenerator
 public:
 	GridGenerator() {}
 	virtual ~GridGenerator() {}
-	
+
 	virtual void regular(size_t level) = 0;
 	virtual void refine(RefinementFunctor* func) = 0;
 };
@@ -75,9 +75,9 @@ class OperationEval
 public:
 	OperationEval() {}
 	virtual ~OperationEval() {}
-	
+
 	virtual double eval(DataVector& alpha, std::vector<double>& point) = 0;
-	
+
 	virtual double eval(DataVector& alpha, DataVector& point)
 	{
 		std::vector<double> p;
@@ -87,8 +87,24 @@ public:
 		}
 		return eval(alpha, p);
 	}
-	
+
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
+};
+
+/**
+ * This class implements the hierarchisation and dehierarchisation on the sparse grid
+ */
+class OperationHierarchisation
+{
+public:
+	OperationHierarchisation() {}
+	virtual ~OperationHierarchisation() {}
+
+	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values) = 0;
+	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values) = 0;
+
+protected:
+	virtual void doPrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection) = 0;
 };
 
 }

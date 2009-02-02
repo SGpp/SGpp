@@ -28,12 +28,12 @@ namespace sg
 class OperationBModLinear : public OperationB
 {
 public:
-	OperationBModLinear(GridStorage* storage);
-	virtual ~OperationBModLinear();
-	
+	OperationBModLinear(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationBModLinear() {}
+
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
-	
+
 protected:
 	GridStorage* storage;
 };
@@ -44,15 +44,33 @@ class OperationEvalModLinear : public OperationEval
 public:
 	OperationEvalModLinear(GridStorage* storage) : storage(storage) {}
 	virtual ~OperationEvalModLinear() {}
-	
+
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-		
+
 protected:
 	GridStorage* storage;
 
 };
 
+/**
+ * Hierarchisation on sparse grid, mod linear case
+ */
+class OperationHierarchisationModLinear : public OperationHierarchisation
+{
+public:
+	OperationHierarchisationModLinear(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationHierarchisationModLinear() {}
+
+	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values);
+
+protected:
+	GridStorage* storage;
+
+private:
+	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);
+};
 
 }
 

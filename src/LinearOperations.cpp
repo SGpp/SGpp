@@ -27,16 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace sg
 {
-
 // ***** OperationBLinear *****
-
-OperationBLinear::OperationBLinear(GridStorage* storage) : storage(storage)
-{
-}
-
-OperationBLinear::~OperationBLinear()
-{
-}
 
 /**
  * Multiplication with vector, not transposed, linear sparse grid
@@ -68,7 +59,6 @@ void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVe
 	op.mult_transpose(storage, base, alpha, data, result);
 }
 
-
 // ***** OperationEvalLinear *****
 
 double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
@@ -95,6 +85,48 @@ double OperationEvalLinear::test(DataVector& alpha, DataVector& data, DataVector
 {
 	linear_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
+}
+
+// ***** OperationhierarchisationLinear *****
+
+/**
+ * Implements the hierarchisation on a sprase grid with linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ * @param node_values the functions values in the node base
+ * @param bDirection this parameter specifies the direction of the hierarchisation: true = hierarchisation, false = dehierarchisation
+ *
+ * @todo Implement the hierarchisation on the sparse grid with linear base functions
+ */
+void OperationHierarchisationLinear::PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection)
+{
+	return;
+}
+
+/**
+ * Implements the hierarchisation on a sprase grid with linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ * @param node_values the functions values in the node base
+ *
+ * @todo Implement the hierarchisation on the sparse grid with linear base functions
+ */
+void OperationHierarchisationLinear::doHierarchisation(DataVector& alpha, DataVector& node_values)
+{
+	PrivateHierarchisation(alpha, node_values, true);
+}
+
+/**
+ * Implements the dehierarchisation on a sprase grid with linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ * @param node_values the functions values in the node base
+ *
+ * @todo Implement the dehierarchisation on the sparse grid with linear base functions
+ */
+void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha, DataVector& node_values)
+{
+	PrivateHierarchisation(alpha, node_values, false);
 }
 
 }

@@ -27,16 +27,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace sg
 {
-	
+
 class OperationBPoly : public OperationB
 {
 public:
 	OperationBPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 	virtual ~OperationBPoly() {}
-	
+
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
-	
+
 protected:
 	GridStorage* storage;
 	SPolyBase base;
@@ -48,16 +48,36 @@ class OperationEvalPoly : public OperationEval
 public:
 	OperationEvalPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 	virtual ~OperationEvalPoly() {}
-	
+
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-		
+
 protected:
 	GridStorage* storage;
 	SPolyBase base;
 
-};	
-	
+};
+
+/**
+ * Hierarchisation on sparse grid, poly case
+ */
+class OperationHierarchisationPoly : public OperationHierarchisation
+{
+public:
+	OperationHierarchisationPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+	virtual ~OperationHierarchisationPoly() {}
+
+	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values);
+
+protected:
+	GridStorage* storage;
+	SPolyBase base;
+
+private:
+	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);
+};
+
 }
 
 

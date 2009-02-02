@@ -27,16 +27,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace sg
 {
-	
+
 class OperationBModPoly : public OperationB
 {
 public:
 	OperationBModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 	virtual ~OperationBModPoly() {}
-	
+
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
-	
+
 protected:
 	GridStorage* storage;
 	SModPolyBase base;
@@ -48,16 +48,35 @@ class OperationEvalModPoly : public OperationEval
 public:
 	OperationEvalModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 	virtual ~OperationEvalModPoly() {}
-	
+
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-		
+
+protected:
+	GridStorage* storage;
+	SModPolyBase base;
+};
+
+/**
+ * Hierarchisation on sparse grid, mod poly case
+ */
+class OperationHierarchisationModPoly : public OperationHierarchisation
+{
+public:
+	OperationHierarchisationModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+	virtual ~OperationHierarchisationModPoly() {}
+
+	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values);
+
 protected:
 	GridStorage* storage;
 	SModPolyBase base;
 
-};	
-	
+private:
+	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);
+};
+
 }
 
 #endif /*MODPOLYOPERATIONS_HPP_*/
