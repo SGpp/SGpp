@@ -72,7 +72,7 @@ public:
 
 protected:
 	GridStorage* storage;
-	SPolyBase base;
+	SModPolyBase base;
 
 private:
 	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);

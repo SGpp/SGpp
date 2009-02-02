@@ -38,10 +38,10 @@ public:
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
-	
+
 	static Grid* unserialize(std::string& istr);
 	static Grid* unserialize(std::istream& istr);
-	
+
 protected:
 	/**
 	 * This constructor creates a new GridStorage out of the stream.
@@ -50,43 +50,44 @@ protected:
 	 */
 	Grid(std::istream& istr);
 	Grid();
-	
-public:	
+
+public:
 	virtual ~Grid();
-	
+
 	virtual GridStorage* getStorage();
 	virtual GridGenerator* createGridGenerator() = 0;
 	virtual OperationB* createOperationB() = 0;
 	virtual OperationEval* createOperationEval() = 0;
-	
+	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
+
 	virtual OperationMatrix* createOperationLaplace() = 0;
 
 	/**
 	 * Returns a string that identifies the grid type uniquely
 	 */
-	virtual const char* getType() = 0;	
-	
+	virtual const char* getType() = 0;
+
 	/**
-	 * Serializes grid to a string. 
+	 * Serializes grid to a string.
 	 * Needed for Python compatibility. Calls serialize(std::ostream&).
 	 */
 	void serialize(std::string& ostr);
-	
+
 	/**
 	 * Serializes the grid.
 	 * Override if additional information need to be saved.
 	 * Call base function before writing anything!
 	 */
 	virtual void serialize(std::ostream& ostr);
-	
+
 protected:
 	GridStorage* storage;
-	
+
 	typedef Grid* (*Factory)(std::istream&);
 	typedef std::map<std::string, Grid::Factory> factoryMap;
-	
+
 	static Grid* nullFactory(std::istream&);
-	
+
 private:
 	/**
 	 * This method returns a map with all available grid types for serialization

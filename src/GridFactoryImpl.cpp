@@ -34,9 +34,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace sg
 {
 
+// ***** LinearGrid ***** //
+
 LinearGrid::LinearGrid(std::istream& istr) : Grid(istr)
 {
-	
+
 }
 
 LinearGrid::LinearGrid(size_t dim)
@@ -80,6 +82,11 @@ OperationMatrix* LinearGrid::createOperationLaplace()
 OperationEval* LinearGrid::createOperationEval()
 {
 	return new OperationEvalLinear(this->storage);
+}
+
+OperationHierarchisation* LinearGrid::createOperationHierarchisation()
+{
+	return new OperationHierarchisationLinear(this->storage);
 }
 
 // ***** ModLinearGrid *****
@@ -129,6 +136,11 @@ OperationMatrix* ModLinearGrid::createOperationLaplace()
 OperationEval* ModLinearGrid::createOperationEval()
 {
 	return new OperationEvalModLinear(this->storage);
+}
+
+OperationHierarchisation* ModLinearGrid::createOperationHierarchisation()
+{
+	return new OperationHierarchisationModLinear(this->storage);
 }
 
 // ***** PolyGrid *****
@@ -187,8 +199,13 @@ OperationEval* PolyGrid::createOperationEval()
 	return new OperationEvalPoly(this->storage, this->degree);
 }
 
+OperationHierarchisation* PolyGrid::createOperationHierarchisation()
+{
+	return new OperationHierarchisationPoly(this->storage, this->degree);
+}
 
-// ***** ModPolyGrid *****
+// ***** ModPolyGrid ***** //
+
 ModPolyGrid::ModPolyGrid(std::istream& istr) : Grid(istr), degree(-1)
 {
 	istr >> degree;
@@ -245,5 +262,9 @@ OperationEval* ModPolyGrid::createOperationEval()
 	return new OperationEvalModPoly(this->storage, this->degree);
 }
 
+OperationHierarchisation* ModPolyGrid::createOperationHierarchisation()
+{
+	return new OperationHierarchisationModPoly(this->storage, this->degree);
+}
 
 }

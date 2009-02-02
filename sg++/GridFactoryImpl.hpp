@@ -40,14 +40,15 @@ protected:
 public:
 	LinearGrid(size_t dim);
 	virtual ~LinearGrid();
-	
+
 	virtual const char* getType();
-	
+
 	virtual OperationB* createOperationB();
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
-	
+	virtual OperationHierarchisation* createOperationHierarchisation();
+
 	static Grid* unserialize(std::istream& istr);
 };
 
@@ -62,14 +63,15 @@ protected:
 public:
 	ModLinearGrid(size_t dim);
 	virtual ~ModLinearGrid();
-	
+
 	virtual const char* getType();
-		
+
 	virtual OperationB* createOperationB();
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
-	
+	virtual OperationHierarchisation* createOperationHierarchisation();
+
 	static Grid* unserialize(std::istream& istr);
 
 };
@@ -86,17 +88,18 @@ protected:
 public:
 	PolyGrid(size_t dim, size_t degree);
 	virtual ~PolyGrid();
-	
+
 	virtual const char* getType();
 	virtual void serialize(std::ostream& ostr);
-		
+
 	virtual OperationB* createOperationB();
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
-	
+	virtual OperationHierarchisation* createOperationHierarchisation();
+
 	static Grid* unserialize(std::istream& istr);
-	
+
 protected:
 	size_t degree;
 };
@@ -113,17 +116,18 @@ protected:
 public:
 	ModPolyGrid(size_t dim, size_t degree);
 	virtual ~ModPolyGrid();
-	
+
 	virtual const char* getType();
 	virtual void serialize(std::ostream& ostr);
-		
+
 	virtual OperationB* createOperationB();
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
-	
+	virtual OperationHierarchisation* createOperationHierarchisation();
+
 	static Grid* unserialize(std::istream& istr);
-	
+
 protected:
 	size_t degree;
 };

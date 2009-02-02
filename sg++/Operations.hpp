@@ -102,9 +102,7 @@ public:
 
 	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values) = 0;
 	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values) = 0;
-
-protected:
-	virtual void doPrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection) = 0;
+	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection) = 0;
 };
 
 }
