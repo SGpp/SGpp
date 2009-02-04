@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef OPERATIONS_HPP_
 #define OPERATIONS_HPP_
 
-#include "DataVector.h"
+#include "data/DataVector.h"
 #include "GridStorage.hpp"
 
 

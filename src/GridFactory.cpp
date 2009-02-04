@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GridFactory.hpp"
 #include "GridFactoryImpl.hpp"
 
-#include "exceptions.hpp"
+#include "exception/factory_exception.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -52,7 +52,7 @@ Grid* Grid::unserialize(std::string& istr)
 {
 	std::istringstream istream;
 	istream.str(istr);
-	
+
 	return Grid::unserialize(istream);
 }
 
@@ -70,8 +70,8 @@ Grid* Grid::unserialize(std::istream& istr)
 	else
 	{
 		throw factory_exception("factory_exeception unserialize: unkown gridtype");
-	}	
-	
+	}
+
 	return NULL;
 }
 
@@ -112,14 +112,14 @@ Grid::Grid(std::istream& istr) : storage(NULL)
 	if(hasStorage == 1)
 	{
 		storage = new GridStorage(istr);
-	} 
+	}
 }
 
 Grid::Grid() : storage(NULL)
 {
 }
 
-Grid::~Grid() 
+Grid::~Grid()
 {
 	if(storage != NULL)
 	{
@@ -136,7 +136,7 @@ void Grid::serialize(std::string& ostr)
 {
 	std::ostringstream ostream;
 	this->serialize(ostream);
-	
+
 	ostr = ostream.str();
 }
 
@@ -154,6 +154,6 @@ void Grid::serialize(std::ostream& ostr)
 	}
 }
 
-	
-	
+
+
 }

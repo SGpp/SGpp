@@ -17,6 +17,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+
 #include "modlinear/ModLinearOperations.hpp"
 
 #include "sgpp.hpp"
@@ -25,7 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "modlinear/LaplaceModLinear.hpp"
 
-#include "DataVector.h"
+#include "exception/operation_exception.hpp"
+
+#include "data/DataVector.h"
 
 namespace sg
 {

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-#include "DataVector.h"
+#include "data/DataVector.h"
 #include <string.h>
 
 #include <sstream>
@@ -59,7 +59,7 @@ DataVector::DataVector(DataVector &vec) : unused(0)
 	this->size = vec.size;
 	this->dim = vec.dim;
 	this->data = new double[size*dim];
-	
+
 	memcpy(this->data, vec.data, size*dim*sizeof(double));
 }
 
@@ -81,18 +81,18 @@ void DataVector::resize(int size)
 	{
 		return;
 	}
-	
+
 	double* newdata = new double[size * this->dim];
-	
+
 	memcpy(newdata, this->data, this->size*this->dim*sizeof(double));
-	
+
 	for(int i = this->size; i < size; i++)
 	{
-		newdata[i] = 0.0;	
+		newdata[i] = 0.0;
 	}
-	
+
 	delete [] this->data;
-	
+
 	this->data = newdata;
 	this->size = size;
 }
@@ -102,7 +102,7 @@ void DataVector::addSize(int add)
 {
 	double* newdata = new double[(size+add) * this->dim];
 	memcpy(newdata, this->data, this->size*this->dim*sizeof(double));
-	
+
 	delete [] this->data;
 
 	this->data = newdata;
@@ -116,12 +116,12 @@ int DataVector::addValue()
 	{
 		addSize(size);
 	}
-	
+
 	int x = size;
 
 	size++;
 	unused--;
-	
+
 	return x;
 }
 
@@ -134,11 +134,11 @@ void DataVector::setAll(double value)
 	int n = size*dim;
 	for(int i = 0; i < n; i++)
 	{
-		data[i] = value;	
+		data[i] = value;
 	}
 }
 
-/** 
+/**
  * Returns the i-th value.
  * @param i
  * @return
@@ -224,7 +224,7 @@ void DataVector::copyFrom(const DataVector& vec)
 	{
 		return;
 	}
-	
+
 	if(size != vec.size || dim != vec.dim)
 	{
 		delete [] data;
@@ -241,12 +241,12 @@ void DataVector::copySmall(const DataVector& vec)
 	{
 		return;
 	}
-	
+
 	if(vec.dim != 1 || dim != 1 || size < vec.size)
 	{
 		return;
 	}
-	memcpy(this->data, vec.data, vec.size*sizeof(double));	
+	memcpy(this->data, vec.data, vec.size*sizeof(double));
 }
 
 /**
@@ -261,7 +261,7 @@ DataVector& DataVector::operator=(const DataVector &vec)
 	{
 		return *this;
 	}
-	
+
 	if(size != vec.size || dim != vec.dim)
 	{
 		delete [] data;
@@ -287,9 +287,9 @@ void DataVector::add(DataVector &vec)
 	int n = size*dim;
 	for(int i = 0; i < n; i++)
 	{
-		data[i] += vec.data[i];	
+		data[i] += vec.data[i];
 	}
-		
+
 }
 
 /**
@@ -305,9 +305,9 @@ void DataVector::sub(DataVector &vec)
 	int n = size*dim;
 	for(int i = 0; i < n; i++)
 	{
-		data[i] -= vec.data[i];	
+		data[i] -= vec.data[i];
 	}
-		
+
 }
 
 /**
@@ -346,7 +346,7 @@ int DataVector::getSize()
 {
 	return size;
 }
- 
+
  /**
   * Returns the number of dimensions.
   * @return
@@ -355,7 +355,7 @@ int DataVector::getDim()
 {
 	return dim;
 }
-  
+
 /**
  * Returns the number of allocated values
  * @return
@@ -373,7 +373,7 @@ int DataVector::getTotalSize()
 double DataVector::dotProduct(DataVector &vec)
 {
 	double sum = 0.0;
-	
+
 	for(int i = 0; i < size; i++)
 	{
 		sum += data[i]*vec.data[i];
@@ -390,7 +390,7 @@ void DataVector::mult(double scalar)
 	int n = size*dim;
 	for(int i = 0; i < n; i++)
 	{
-		data[i] *= scalar;	
+		data[i] *= scalar;
 	}
 }
 
@@ -402,7 +402,7 @@ void DataVector::mult(double scalar)
 	int n = size*dim;
 	for(int i = 0; i < n; i++)
 	{
-		data[i] = data[i] * data[i];	
+		data[i] = data[i] * data[i];
 	}
  }
 
@@ -415,7 +415,7 @@ void DataVector::mult(double scalar)
 	double result;
 	for(int i = 0; i < n; i++)
 	{
-		result += data[i];	
+		result += data[i];
 	}
 	return result;
  }
@@ -449,9 +449,9 @@ void DataVector::axpy(double alpha, DataVector& x)
 	double* p_d = data;
 	for(int i = 0; i < n; i++)
 	{
-		p_d[i] += alpha*p_x[i];	
+		p_d[i] += alpha*p_x[i];
 	}
-	
+
 }
 
 /**
@@ -491,8 +491,8 @@ void DataVector::normalizeDimension(int d, double border)
 	for(int i = d; i < n; i += dim)
 	{
 		data[i] = (data[i] - min) / delta;
-	}	
-	
+	}
+
 }
 
 /**
@@ -503,9 +503,9 @@ void DataVector::toString(std::string& text)
 {
 	std::stringstream str;
 	int n = size*dim;
-	
+
 	str << "[";
-	
+
 	for(int i = 0; i < n; i++)
 	{
 		if(i != 0)
@@ -592,7 +592,7 @@ double* DataVector::getPointer()
 	return data;
 }
 
-	
+
 DataVector::~DataVector()
 {
 	delete [] data;

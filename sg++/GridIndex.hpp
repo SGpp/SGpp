@@ -21,8 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef GRIDINDEX_HPP_
 #define GRIDINDEX_HPP_
 
-
-#include "hash_map_config.hpp"
+#include "common/hash_map_config.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -35,7 +34,7 @@ namespace sg
 
 template<class LT, class IT>
 class HashGridIndex {
-	
+
 public:
 	typedef LT level_type;
 	typedef IT index_type;
@@ -45,7 +44,7 @@ public:
     	level = new level_type[dim];
     	index = new index_type[dim];
     }
-    
+
     HashGridIndex() : DIM(0), level(NULL), index(NULL)
     {
     }
@@ -54,7 +53,7 @@ public:
     {
     	level = new level_type[DIM];
     	index = new index_type[DIM];
-    	
+
         for(size_t d = 0; d < DIM; d++)
         {
             level[d] = o->level[d];
@@ -62,11 +61,11 @@ public:
         }
         rehash();
     }
-    
+
     HashGridIndex(std::istream& istream) : DIM(0), level(NULL), index(NULL)
     {
     	istream >> DIM;
-    	
+
     	level = new level_type[DIM];
     	index = new index_type[DIM];
 
@@ -89,7 +88,7 @@ public:
 			delete [] index;
 		}
 	}
-	
+
 	void serialize(std::ostream& ostream)
 	{
 		ostream << DIM << std::endl;
@@ -100,7 +99,7 @@ public:
 			ostream << index[d] << " ";
         }
         ostream << std::endl;
-		
+
 	}
 
 	size_t dim() const
@@ -124,12 +123,12 @@ public:
 	void get(size_t d, LT &l, IT &i) const
 	{
 		l = level[d];
-		i = index[d];	
+		i = index[d];
 	}
-	
+
 	double abs(size_t d) const
 	{
-		return index[d] * pow(2.0, -static_cast<double>(level[d]));	
+		return index[d] * pow(2.0, -static_cast<double>(level[d]));
 	}
 
 /*
@@ -199,10 +198,10 @@ public:
     	{
     		return *this;
     	}
-    	
+
     	if(DIM != rhs.DIM)
     	{
-    	
+
     		if(level)
     		{
     			delete [] level;
@@ -211,13 +210,13 @@ public:
     		{
     			delete [] index;
     		}
-    		
+
     		DIM = rhs.DIM;
-    		
+
     		level = new level_type[DIM];
-    		index = new index_type[DIM];	
+    		index = new index_type[DIM];
     	}
-    	
+
         for(size_t d = 0; d < DIM; d++)
         {
             level[d] = rhs.level[d];
@@ -241,10 +240,10 @@ public:
         }
         stream << " ]";
     }
-    
+
     void print()
     {
-    	
+
     	for(int i = 0; i < DIM; i++)
     	{
     		if(level[i] == 0)
@@ -264,7 +263,7 @@ private:
 	LT* level;
 	IT* index;
     size_t hash_value;
-	
+
 };
 
 template<class LT, class IT>

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define UNIDIR_HPP_
 
 #include "GridStorage.hpp"
-#include "DataVector.h"
+#include "data/DataVector.h"
 
 #include <vector>
 
@@ -36,12 +36,12 @@ class UnidirGradient
 public:
 	UnidirGradient(GridStorage* storage) : storage(storage) {}
 	virtual ~UnidirGradient() {}
-	
+
 	virtual void updown(DataVector& alpha, DataVector& result)
 	{
 		DataVector beta(result.getSize());
 		result.setAll(0.0);
-		
+
 		for(size_t i = 0; i < storage->dim(); i++)
 		{
 			this->updown(alpha, beta, storage->dim() - 1, i);
@@ -51,7 +51,7 @@ public:
 
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
-	
+
 	GridStorage* storage;
 
 /**
@@ -78,7 +78,7 @@ protected:
 				// Reordering ups and downs
 				// Use previously calculated ups for all future calculations
 				// U* -> UU* and UD*
-				
+
 				DataVector temp(alpha.getSize());
 				up(alpha, temp, dim);
 				updown(temp, result, dim-1, gradient_dim);
@@ -90,10 +90,10 @@ protected:
 				DataVector result_temp(alpha.getSize());
 				updown(alpha, temp, dim-1, gradient_dim);
 				down(temp, result_temp, dim);
-	
-				
+
+
 				//Overall memory use: 2*|alpha|*(d-1)
-				
+
 				result.add(result_temp);
 			}
 			else
@@ -104,12 +104,12 @@ protected:
 				DataVector temp(alpha.getSize());
 				down(alpha, temp, dim);
 
-				result.add(temp);					
+				result.add(temp);
 			}
-			
+
 		}
 	}
-	
+
 /**
  * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
  * Applies the up-part of the one-dimensional mass matrix in one dimension.
@@ -119,7 +119,7 @@ protected:
  * @param result vector to store the results in
  */
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim) = 0;
-	
+
 /**
  * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
  * Applies the down-part of the one-dimensional mass matrix in one dimension.
@@ -131,7 +131,7 @@ protected:
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
 
 /**
- * All calculations for gradient_dim. 
+ * All calculations for gradient_dim.
  */
 	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 	{
@@ -141,7 +141,7 @@ protected:
 			// Reordering ups and downs
 			// Use previously calculated ups for all future calculations
 			// U* -> UU* and UD*
-			
+
 			DataVector temp(alpha.getSize());
 			upGradient(alpha, temp, dim);
 			updown(temp, result, dim-1, gradient_dim);
@@ -154,9 +154,9 @@ protected:
 			updown(alpha, temp, dim-1, gradient_dim);
 			downGradient(temp, result_temp, dim);
 
-			
+
 			//Overall memory use: 2*|alpha|*(d-1)
-			
+
 			result.add(result_temp);
 		}
 		else
@@ -167,12 +167,12 @@ protected:
 			DataVector temp(alpha.getSize());
 			downGradient(alpha, temp, dim);
 
-			result.add(temp);					
+			result.add(temp);
 		}
-		
+
 	}
-	
-	
+
+
 	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim) = 0;
 	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim) = 0;
 

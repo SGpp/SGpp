@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BASE_HPP_
 #define BASE_HPP_
 
-#include "exceptions.hpp"
+#include "exception/factory_exception.hpp"
 
 #include <cmath>
 #include <vector>
@@ -44,7 +44,7 @@ public:
 	double eval(LT level, IT index, double p)
 	{
 		return 1.0 - fabs((1<<level) * p - index);
-	}	
+	}
 };
 
 /**
@@ -63,17 +63,17 @@ public:
 		if(level == 1)
 		{
 			return 1.0;
-		} 
+		}
 		else if(index == 1)
 		{
-			return 2.0 - (1<<level) * p;	
+			return 2.0 - (1<<level) * p;
 		}
 		else if(index == (1<<level)-1)
 		{
 			return (1<<level) * p - index + 1.0;
 		}
 		return 1.0 - fabs((1<<level) * p - index);
-	}	
+	}
 };
 
 /**
@@ -89,16 +89,16 @@ public:
 		{
 			throw factory_exception("poly_base: degree < 2");
 		}
-		
+
 		int polycount = (1 << (degree - 1)) - 1;
 		std::vector<double> x;
-		x.push_back(0.0); 
+		x.push_back(0.0);
 		x.push_back(1.0);
-		
+
 		polynoms = new double[(degree + 3) * polycount];
-		initPolynoms(x, 1, 1); 
+		initPolynoms(x, 1, 1);
 	}
-	
+
 	~poly_base()
 	{
 		if(polynoms)
@@ -106,29 +106,29 @@ public:
 			delete [] polynoms;
 		}
 	}
-	
+
 	double eval(LT level, IT index, double p)
 	{
 		size_t deg = degree - 1 < level ? degree - 1 : level;
-		
+
 		size_t idMask = (1 << deg) - 1;
 		size_t id = (((index & idMask) >> 1) | (1 << (deg - 1))) - 1;
-		
+
 		// scale p to a value in [-1.0,1.0]
 		double val = (1 << level)*p - index;
-		return evalPolynom(id, deg, val);	
+		return evalPolynom(id, deg, val);
 	}
-	
+
 protected:
 	double* polynoms;
 	int degree;
-	
+
 private:
 	double evalPolynom(size_t id, size_t deg, double val)
 	{
 		double* x_store = this->polynoms + (degree + 3) * id;
 		double* y_store = x_store + 2;
-		
+
 		double y_val = y_store[deg+1];
 		// scale val back into the right range
 		double x_val = x_store[0] + val * pow(2.0, -(double)deg);
@@ -136,11 +136,11 @@ private:
 		//Horner
 		for(int i = deg; i >= 0; i--)
 		{
-			y_val = y_val * x_val + y_store[i]; 
+			y_val = y_val * x_val + y_store[i];
 		}
-		
+
 		return y_val;
-	} 
+	}
 
 /**
  * recursively creates polynomial values
@@ -149,10 +149,10 @@ private:
 	{
 		// Add new point
 		x.push_back(index * pow(2.0, -(double)level));
-		
+
 		std::vector<double> y;
 		std::vector<double> intpoly;
-		
+
 		for(int i = 0; i < level + 1; i++)
 		{
 			y.push_back(0.0);
@@ -160,13 +160,13 @@ private:
 		}
 		y.push_back(1.0);
 		intpoly.push_back(0.0);
-		
+
 		// Every poly has a unique id similiar to sparse grid level/index pairs
 		size_t id = ((index >> 1) | (1 << (level-1))) - 1;
-		
+
 		int n = level + 2;
 		std::vector<std::vector<double> > lagpoly;
-		
+
 		/**
 		 * Fill lagpoly with multiplied lagrange polynomials
 		 * Add lagrange polynomials together into intpoly
@@ -176,7 +176,7 @@ private:
 			lagpoly.push_back(std::vector<double>());
 			lagpoly[i].push_back(1.0);
 			double fac = y[i];
-			
+
 			int j = 0;
 			for(int k = 0; k < n; k++)
 			{
@@ -193,14 +193,14 @@ private:
             	j += 1;
            		fac /= (x[i] - x[k]);
 			}
-			
+
 			for(int l = 0; l < n; l++)
 			{
 				lagpoly[i][l] *= fac;
             	intpoly[l] += lagpoly[i][l];
 			}
 		}
-		
+
 		//determine position in storage. (degree + 1) polynomial factors and 2 values for support and x-value
 		double* x_store = this->polynoms + (degree + 3) * id;
 		double* y_store = x_store + 2;
@@ -212,42 +212,42 @@ private:
 		}
 
 		x_store[0] = x[level+1];
-		
+
 		// Integrate polynom
 		/*
 		{
 			//get the antiderivative of the polynomial
 			for(int i = 0; i < level + 2; i++)
 			{
-				intpoly[i] /= i + 1; 
+				intpoly[i] /= i + 1;
 			}
-			
+
 			//evaluate bounds
 			double support = pow(2.0, -level);
 			double lb = x[level+1] - support;
 			double rb = x[level+1] + support;
-			
+
 			double val = intpoly[level + 1];
 			for(int i = level; i >= 0; i--)
 			{
 				val = val * rb + intpoly[i];
 			}
 			val *= rb;
-			
+
 			double val2 = intpoly[level + 1];
 			for(int i = level; i >= 0; i--)
 			{
 				val2 = val2 * lb + intpoly[i];
 			}
 			val2 *= lb;
-			
+
 			val -= val2;
 			val /= 2*support;
-			
+
 			x_store[1] = val;
 		}
 		*/
-		
+
 		if((level+1) < degree)
 		{
 			initPolynoms(x, level+1, index*2 - 1);
@@ -255,7 +255,7 @@ private:
 		}
 		x.pop_back();
 	}
-	
+
 };
 
 
@@ -270,7 +270,7 @@ class modified_poly_base
 protected:
 	double* polynoms;
 	size_t degree;
-	
+
 public:
 	modified_poly_base(size_t degree) : polynoms(NULL), degree(degree)
 	{
@@ -278,15 +278,15 @@ public:
 		{
 			throw factory_exception("poly_base: degree < 0");
 		}
-		
+
 		int polycount = (1 << (degree+1)) - 1;
 		std::vector<double> x;
-		
+
 		// degree + 1 for the polynom, +1 for the integral value, +1 for the base-point
 		polynoms = new double[(degree + 1 + 2) * polycount];
-		initPolynoms(x, 1, 1); 
+		initPolynoms(x, 1, 1);
 	}
-	
+
 	~modified_poly_base()
 	{
 		if(polynoms)
@@ -294,25 +294,25 @@ public:
 			delete [] polynoms;
 		}
 	}
-	
+
 	double eval(LT level, IT index, double p)
 	{
 		size_t deg = degree + 1 < level ? degree + 1 : level;
-		
+
 		size_t idMask = (1 << deg) - 1;
 		size_t id = (((index & idMask) >> 1) | (1 << (deg - 1))) - 1;
-		
+
 		// scale p to a value in [-1.0,1.0]
 		double val = (1 << level)*p - index;
-		return evalPolynom(id, deg, val);	
+		return evalPolynom(id, deg, val);
 	}
-	
+
 private:
 	double evalPolynom(size_t id, size_t deg, double val)
 	{
 		double* x_store = this->polynoms + (degree + 1 + 2) * id;
 		double* y_store = x_store + 2;
-		
+
 		double y_val = y_store[deg-1]; // TODO
 		// scale val back into the right range
 		double x_val = x_store[0] + val * pow(2.0, -(double)(deg));
@@ -320,12 +320,12 @@ private:
 		//Horner
 		for(int i = deg-2; i >= 0; i--)
 		{
-			y_val = y_val * x_val + y_store[i]; 
+			y_val = y_val * x_val + y_store[i];
 		}
-		
+
 		return y_val;
 	}
-	
+
 /**
  * recursively creates polynomial values
  */
@@ -333,10 +333,10 @@ private:
 	{
 		// Add new point
 		x.push_back(index * pow(2.0, -(double)level));
-		
+
 		std::vector<double> y;
 		std::vector<double> intpoly;
-		
+
 		for(int i = 0; i < level - 1; i++)
 		{
 			y.push_back(0.0);
@@ -344,13 +344,13 @@ private:
 		}
 		y.push_back(1.0);
 		intpoly.push_back(0.0);
-		
+
 		// Every poly has a unique id similiar to sparse grid level/index pairs
 		size_t id = ((index >> 1) | (1 << (level-1))) - 1;
-		
+
 		int n = level;
 		std::vector<std::vector<double> > lagpoly;
-		
+
 		/**
 		 * Fill lagpoly with multiplied lagrange polynomials
 		 * Add lagrange polynomials together into intpoly
@@ -360,7 +360,7 @@ private:
 			lagpoly.push_back(std::vector<double>());
 			lagpoly[i].push_back(1.0);
 			double fac = y[i];
-			
+
 			int j = 0;
 			for(int k = 0; k < n; k++)
 			{
@@ -377,14 +377,14 @@ private:
             	j += 1;
            		fac /= (x[i] - x[k]);
 			}
-			
+
 			for(int l = 0; l < n; l++)
 			{
 				lagpoly[i][l] *= fac;
             	intpoly[l] += lagpoly[i][l];
 			}
 		}
-		
+
 		//determine position in storage. (degree + 1) polynomial factors and 2 values for integral and x-value
 		double* x_store = this->polynoms + (degree + 3) * id;
 		double* y_store = x_store + 2;
@@ -396,8 +396,8 @@ private:
 		}
 
 		x_store[0] = x.back();
-		
-	
+
+
 		if((level) < degree+1)
 		{
 			initPolynoms(x, level+1, index*2 - 1);

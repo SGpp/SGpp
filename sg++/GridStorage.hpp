@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef GRIDSTORAGE_HPP
 #define GRIDSTORAGE_HPP
 
-#include "hash_map_config.hpp"
-#include "exceptions.hpp"
+#include "common/hash_map_config.hpp"
+
+#include "exception/generation_exception.hpp"
 
 #include "GridIndex.hpp"
 
@@ -59,12 +60,12 @@ public:
 	typedef GIT index_type;
 	typedef typename GIT::index_type index_t;
 	typedef typename GIT::level_type level_t;
-	
+
 	HashGridIterator(HashGridStorage<GIT>* storage) : storage(storage), index(storage->dim())
 	{
 		for(size_t i = 0; i < storage->dim(); i++)
 		{
-			index.push(i, 1, 1);	
+			index.push(i, 1, 1);
 		}
 		index.rehash();
 		this->seq_ = storage->seq(&index);
@@ -112,10 +113,10 @@ public:
 		typename index_type::level_type l;
 		typename index_type::index_type i;
 		index.get(d, l, i);
-		
+
 		i /= 2;
 		i += i % 2 == 0 ? 1 : 0;
-		
+
 		index.set(d, l - 1, i);
 		this->seq_ = storage->seq(&index);
 	}
@@ -130,7 +131,7 @@ public:
 		index.get(d, l, i);
 		index.set(d, l, i + 2);
 		this->seq_ = storage->seq(&index);
-	 	
+
 	 }
 
 	/**
@@ -140,12 +141,12 @@ public:
 	{
 		return false;
 	}
-	
+
 	void get(size_t d, typename index_type::level_type &l, typename index_type::index_type &i) const
 	{
 		index.get(d, l, i);
 	}
-	
+
 	void set(size_t d, typename index_type::level_type l, typename index_type::index_type i)
 	{
 		index.set(d, l, i);
@@ -155,15 +156,15 @@ public:
 	{
 		index.push(d, l, i);
 	}
-	
+
 	/**
 	 * returns the current sequence number
-	 */ 
+	 */
 	size_t seq() const
 	{
 		return seq_;
 	}
-	
+
 
 private:
 	HashGridStorage<GIT>* storage;
@@ -176,42 +177,42 @@ private:
  * Generic hash table based index storage.
  */
 template<typename GIT>
-class HashGridStorage 
+class HashGridStorage
 {
 public:
 	typedef GIT index_type;
 	typedef GIT* index_pointer;
-	
+
     typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
     typedef typename grid_map::iterator grid_map_iterator;
     typedef typename grid_map::const_iterator grid_map_const_iterator;
 
 	typedef std::vector<index_pointer> grid_list;
 	typedef typename grid_list::iterator grid_list_iterator;
-	
+
 	typedef HashGridIterator<GIT> grid_iterator;
 
-	HashGridStorage(size_t dim) : DIM(dim), list(), map() 
+	HashGridStorage(size_t dim) : DIM(dim), list(), map()
 	{
 	}
 
-	HashGridStorage(std::string& istr) : DIM(0), list(), map() 
+	HashGridStorage(std::string& istr) : DIM(0), list(), map()
 	{
     	std::istringstream istream;
     	istream.str(istr);
-    	
+
     	int version;
     	istream >> version;
     	if(version != SERIALIZATION_VERSION)
     	{
     		throw generation_exception("Unsupported version!");
     	}
-    	
+
     	istream >> DIM;
-    	
+
     	size_t num;
     	istream >> num;
-    	
+
     	for(size_t i = 0; i < num; i++)
     	{
     		index_pointer index = new GIT(istream);
@@ -220,7 +221,7 @@ public:
     	}
 	}
 
-	HashGridStorage(std::istream& istream) : DIM(0), list(), map() 
+	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
 	{
     	int version;
     	istream >> version;
@@ -228,12 +229,12 @@ public:
     	{
     		throw generation_exception("Unsupported version!");
     	}
-    	
+
     	istream >> DIM;
-    	
+
     	size_t num;
     	istream >> num;
-    	
+
     	for(size_t i = 0; i < num; i++)
     	{
     		index_pointer index = new GIT(istream);
@@ -247,23 +248,23 @@ public:
 	{
 		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
 		{
-			delete *iter; 
+			delete *iter;
 		}
 	}
-	
+
 	std::string serialize()
 	{
 		std::ostringstream ostream;
-		this->serialize(ostream);		
+		this->serialize(ostream);
 		return ostream.str();
 	}
-	
+
 	void serialize(std::ostream& ostream)
 	{
 		ostream << SERIALIZATION_VERSION << " ";
 		ostream << DIM << " ";
 		ostream << list.size() << std::endl;
-		
+
 		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
 		{
 			(*iter)->serialize(ostream);
@@ -303,7 +304,7 @@ public:
 	{
 		return map[index];
 	}
-	
+
 	index_pointer& operator[](size_t seq)
 	{
 		return list[seq];
@@ -313,8 +314,8 @@ public:
 	{
 		return list[seq];
 	}
-	
-	
+
+
 	size_t insert(index_type &index)
 	{
 		index_pointer insert = new GIT(&index);
@@ -327,12 +328,12 @@ public:
 		index_pointer insert = new GIT(&index);
 		return insert;
 	}
-	
+
 	void destroy(index_pointer index)
 	{
-		delete index; 
+		delete index;
 	}
-	
+
 	unsigned int store(index_pointer index)
 	{
 		list.push_back(index);
@@ -343,17 +344,17 @@ public:
 	{
 		return map.find(index);
 	}
-	
+
 	grid_map_iterator begin()
 	{
 		return map.begin();
 	}
-	
-	grid_map_iterator end() 
+
+	grid_map_iterator end()
 	{
 		return map.end();
 	}
-	
+
 	/**
 	 * Tests if index is in the storage
 	 */
@@ -361,7 +362,7 @@ public:
 	{
 		return map.find(index) != map.end();
 	}
-	
+
 	/**
 	 * Sets the index to the left child
 	 */
@@ -372,7 +373,7 @@ public:
 		index->get(dim, l, i);
 		index->set(dim, l + 1, 2 * i - 1);
 	}
-	
+
 	/**
 	 * Sets the index to the right child
 	 */
@@ -383,7 +384,7 @@ public:
 		index->get(dim, l, i);
 		index->set(dim, l + 1, 2 * i + 1);
 	}
-	
+
 	/**
 	 * Resets the index to the top level in direction d
 	 */
@@ -391,7 +392,7 @@ public:
 	{
 		index->set(d, 1, 1);
 	}
-	
+
 	/**
 	 * Gets the seq number for index
 	 */
@@ -407,7 +408,7 @@ public:
 			return map.size() + 1;
 		}
 	}
-	
+
 	/**
 	 * Tests if seq number does not point to a valid grid index
 	 */
@@ -415,7 +416,7 @@ public:
 	{
 		return s > map.size();
 	}
-	
+
 	/**
 	 * Should return true if there are no more childs in direction d
 	 */
@@ -423,7 +424,7 @@ public:
 	{
 		return false;
 	}
-	
+
 protected:
 	/**
 	 * returns the next sequence numbers
@@ -434,7 +435,7 @@ protected:
     }
 
 
-	
+
 private:
 	size_t DIM;
 	grid_list list;

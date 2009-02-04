@@ -23,9 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Operations.hpp"
 #include "StandardOperations.hpp"
 
-#include "linear/LinearOperations.hpp"
-#include "linear/HierarchisationLinear.hpp"
-#include "linear/OperationHierarchisationLinear.hpp"
+// Include all operations on the linear grid
+#include "basis/linear/operation/OperationBLinear.hpp"
+#include "basis/linear/operation/OperationEvalLinear.hpp"
+#include "basis/linear/operation/OperationHierarchisationLinear.hpp"
+#include "basis/linear/operation/OperationLaplaceLinear.hpp"
 
 #include "modlinear/ModLinearOperations.hpp"
 #include "poly/PolyOperations.hpp"

@@ -2,6 +2,7 @@
 /* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
@@ -20,50 +21,28 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linear/operation/OperationHierarchisationLinear.hpp"
-#include "basis/linear/algorithm_sweep/HierarchisationLinear.hpp"
-#include "basis/linear/algorithm_sweep/DehierarchisationLinear.hpp"
+#ifndef OPERATIONEVALLINEAR_HPP
+#define OPERATIONEVALLINEAR_HPP
 
-#include "sgpp.hpp"
-#include "algorithms.hpp"
-#include "base.hpp"
-#include "data/DataVector.h"
+#include "Operations.hpp"
 
 namespace sg
 {
 
-/**
- * Implements the hierarchisation on a sprase grid with linear base functions
- *
- * @param node_values the functions values in the node base
- */
-void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
+class OperationEvalLinear : public OperationEval
 {
-	detail::HierarchisationLinear func(this->storage);
-	sweep<detail::HierarchisationLinear> s(func, this->storage);
+public:
+	OperationEvalLinear(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationEvalLinear() {}
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(node_values, node_values, i);
-	}
-}
+	virtual double eval(DataVector& alpha, std::vector<double>& point);
+	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
 
-/**
- * Implements the dehierarchisation on a sprase grid with linear base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- */
-void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
-{
-	detail::DehierarchisationLinear func(this->storage);
-	sweep<detail::DehierarchisationLinear> s(func, this->storage);
+protected:
+	GridStorage* storage;
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(alpha, alpha, i);
-	}
-}
+};
 
 }
+
+#endif /* OPERATIONEVALLINEAR_HPP */

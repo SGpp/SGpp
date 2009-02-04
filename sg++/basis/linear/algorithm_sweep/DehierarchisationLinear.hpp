@@ -20,11 +20,11 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef HIERARCHISATIONLINEAR_HPP
-#define HIERARCHISATIONLINEAR_HPP
+#ifndef DEHIERARCHISATIONLINEAR_HPP
+#define DEHIERARCHISATIONLINEAR_HPP
 
 #include "GridStorage.hpp"
-#include "DataVector.h"
+#include "data/DataVector.h"
 
 namespace sg
 {
@@ -33,11 +33,11 @@ namespace detail
 {
 
 /**
- * Class that implements the hierarchisation on a linear sparse grid. Therefore
+ * Class that implements the dehierarchisation on a linear sparse grid. Therefore
  * the ()operator has to be implement in order to use the sweep algorithm for
  * the grid traversal
  */
-class HierarchisationLinear
+class DehierarchisationLinear
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -49,16 +49,16 @@ public:
 	/**
 	 * Constructor, must be bind to a grid
 	 *
-	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
+	 * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
 	 */
-	HierarchisationLinear(GridStorage* storage) : storage(storage)
+	DehierarchisationLinear(GridStorage* storage) : storage(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~HierarchisationLinear()
+	~DehierarchisationLinear()
 	{
 	}
 
@@ -66,8 +66,8 @@ public:
 	 * Implements operator() needed by the sweep class during the grid traversal. This function
 	 * is applied to the whole grid.
 	 *
-	 * @param source this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
-	 * @param result this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
+	 * @param source this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
+	 * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
@@ -79,12 +79,12 @@ public:
 protected:
 
 	/**
-	 * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
+	 * Recursive dehierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
 	 *
 	 * @todo add graphical explanation here
 	 *
-	 * @param source this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
-	 * @param result this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
+	 * @param source this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
+	 * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 * @param fl left value of the current region regarded in this step of the recursion
@@ -96,6 +96,10 @@ protected:
 		size_t seq = index.seq();
 		// value in the middle, needed for recursive call and calculation of the hierarchical surplus
 		double fm = source[seq];
+
+		// dehierarchisation
+		fm += ((fl + fr)/2.0);
+		result[seq] = fm;
 
 		// recursive calls for the right and left side of the current node
 		if(index.hint(dim) == false)
@@ -117,9 +121,6 @@ protected:
 			// ascend
 			index.up(dim);
 		}
-
-		// hierarchisation
-		result[seq] = fm - ((fl + fr)/2.0);
 	}
 };
 
@@ -127,4 +128,4 @@ protected:
 
 }	// namespace sg
 
-#endif /* HIERARCHISATIONLINEAR_HPP */
+#endif /* DEHIERARCHISATIONLINEAR_HPP */

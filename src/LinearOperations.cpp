@@ -17,13 +17,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "linear/LinearOperations.hpp"
+#include "basis/linear/operation/OperationBLinear.hpp"
+#include "basis/linear/operation/OperationEvalLinear.hpp"
 
 #include "sgpp.hpp"
 #include "algorithms.hpp"
 #include "base.hpp"
-#include "linear/LaplaceLinear.hpp"
-#include "DataVector.h"
+
+#include "data/DataVector.h"
 
 namespace sg
 {

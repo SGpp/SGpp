@@ -23,7 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "algorithms.hpp"
 #include "base.hpp"
 
-#include "DataVector.h"
+#include "data/DataVector.h"
+
+#include "exception/operation_exception.hpp"
 
 namespace sg
 {

@@ -30,18 +30,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "generation.hpp"
 #include "base.hpp"
 
-#include "linear/LaplaceLinear.hpp"
+#include "basis/linear/operation/OperationLaplaceLinear.hpp"
 
 #include "modlinear/LaplaceModLinear.hpp"
 
-#include "DataVector.h"
+#include "data/DataVector.h"
 
 #include "GridFactory.hpp"
 #include "Operations.hpp"
 
 namespace sg
 {
-	
+
 typedef linear_base<unsigned int, unsigned int> SLinearBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
 typedef poly_base<unsigned int, unsigned int> SPolyBase;
