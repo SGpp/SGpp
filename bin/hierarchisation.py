@@ -37,6 +37,10 @@ except:
     pass
 
 
+# This is the main file to do hierarchisation tasks on the
+# sparse grid
+
+
 #-------------------------------------------------------------------------------
 ## Outputs a deprecated warning for an option
 # @param option Parameter set by the OptionParser
@@ -48,49 +52,113 @@ def callback_deprecated(option, opt, value, parser):
     
 
 #-------------------------------------------------------------------------------
-## Builds the training data vector
+# Builds the data vector that hold the coefficients fo either the ansatzfuctions
+# or the node base
 # 
-# @param data a list of lists that contains the points a the training data set, coordinate-wise
-# @return a instance of a DataVector that stores the training data
-def buildTrainingVector(data):
+# @param filename name of the ARFF file that contains the coefficients
+# @return a instance of a DataVector that stores coefficients
+def buildCoefficientVectorFromFile(filename):
+    data = readDataARFF(filename);
+    
     dim = len(data["data"])
-    training = DataVector(len(data["data"][0]), dim)
+    coeff = DataVector(len(data["data"][0]), dim)
     
     # i iterates over the data points, d over the dimension of one data point
     for i in xrange(len(data["data"][0])):
         for d in xrange(dim):
-            training[i*dim + d] = data["data"][d][i]
+            coeff[i*dim + d] = data["data"][d][i]
     
-    return training
+    return coeff
     
     
-# tests the hierarchisation routine of sg++
-def run_hierarchisation_test():
-    node_values = None
-    gridpoint = None
-    dim = 2
-    level = 3
+#-------------------------------------------------------------------------------
+# Wrapper for buildCoefficientVectorFromFile
+# 
+# @param filename name of the ARFF file that contains the node base coefficients
+# @return a instance of a DataVector that stores node base coefficients
+def buildNodevalueVector(filename):
+    return buildCoefficientVectorFromFile(filename)
     
+    
+#-------------------------------------------------------------------------------
+# Wrapper for buildCoefficientVectorFromFile
+# 
+# @param filename name of the ARFF file that contains the ansatzfunction coefficients
+# @return a instance of a DataVector that stores ansatzfunction coefficients    
+def buildAlphaVector(filename):
+    return buildCoefficientVectorFromFile(filename)
+    
+        
+#-------------------------------------------------------------------------------
+# hierarchisation of the node base values on a regular, linear grid
+#
+# @param node_values DataVector that holds the coefficients of the function's node base
+# @param dim the dimension of the grid
+# @param level levels used in the regular grid
+def doHierarchisationLinearRegular(node_values, dim, level):
+    #generate linear grid
     grid = Grid.createLinearGrid(dim)
     generator  = grid.createGridGenerator()
+    #generate a regular grid
     generator.regular(level)
-    
-    #print grid to console (base functions)
-    print grid.serialize()
-    print "Size of Grid = Number of Gridpoints is:"
-    print grid.getStorage().size()
-        
-    # read in the node base values
-    node_values = buildTrainingVector(readDataARFF("hierarchisation_nodevalues.in"))
     
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()
     
     # execute hierarchisation
-    hierarchisation.doHierarchisation(node_values)
- 
-    #print result
+    hierarchisation.doHierarchisation(node_values)    
+
+    return node_values
+
+
+#-------------------------------------------------------------------------------
+# hierarchisation of the node base values on a regular, linear grid
+#
+# @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
+# @param dim the dimension of the grid
+# @param level levels used in the regular grid
+def doDehierarchisationLinearRegular(alpha, dim, level):
+    #generate linear grid
+    grid = Grid.createLinearGrid(dim)
+    generator  = grid.createGridGenerator()
+    #generate a regular grid
+    generator.regular(level)
+    
+    # create operation: hierarchisation
+    hierarchisation = grid.createOperationHierarchisation()
+    
+    # execute hierarchisation
+    hierarchisation.doDehierarchisation(alpha)
+    
+    return alpha
+    
+    
+#-------------------------------------------------------------------------------    
+# tests the hierarchisation and dehierarchisation routine of sg++ with a sparse
+# grid of dimension 2 and level 3
+def runHierarchisationDehierarchisationTest():
+    node_values = None
+    node_values_back = None
+    alpha = None
+
+    dim = 2
+    level = 3
+        
+    # read in the node base values
+    node_values = buildNodevalueVector("hierarchisation_nodevalues.in")
+    
     print node_values
+    
+    # do hierarchisation
+    alpha = doHierarchisationLinearRegular(node_values, dim, level)
+    
+    print alpha
+    
+    # do dehierarchisation
+    node_values_back = doDehierarchisationLinearRegular(alpha, dim, level)
+     
+    #print result
+    print node_values_back
     
     return
     
@@ -102,4 +170,4 @@ def run_hierarchisation_test():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    run_hierarchisation_test()
+    runHierarchisationDehierarchisationTest()

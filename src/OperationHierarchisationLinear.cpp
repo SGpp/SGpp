@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "linear/OperationHierarchisationLinear.hpp"
+#include "linear/DehierarchisationLinear.hpp"
 #include "linear/HierarchisationLinear.hpp"
 
 #include "sgpp.hpp"
@@ -52,12 +53,17 @@ void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
  * Implements the dehierarchisation on a sprase grid with linear base functions
  *
  * @param alpha the coefficients of the sparse grid's base functions
- *
- * @todo Implement the dehierarchisation on the sparse grid with linear base functions
  */
 void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");;
+	detail::DehierarchisationLinear func(this->storage);
+	sweep<detail::DehierarchisationLinear> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(alpha, alpha, i);
+	}
 }
 
 }
