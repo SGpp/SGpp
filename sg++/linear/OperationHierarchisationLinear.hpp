@@ -1,5 +1,5 @@
 /*****************************************************************************/
-/* This file is part of sg++,  a program package making use of spatially     */
+/* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
@@ -9,7 +9,7 @@
 /* the Free Software Foundation; either version 3 of the License, or         */
 /* (at your option) any later version.                                       */
 /*                                                                           */
-/* TifaMMy is distributed in the hope that it will be useful,                */
+/* sg++ is distributed in the hope that it will be useful,                   */
 /* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU General Public License for more details.                              */
