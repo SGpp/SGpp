@@ -17,15 +17,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-#include "modlinear/ModLinearOperations.hpp"
+#include "basis/modlinear/operation/OperationBModLinear.hpp"
+#include "basis/modlinear/operation/OperationEvalModLinear.hpp"
+#include "basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
+#include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
 #include "sgpp.hpp"
 #include "algorithms.hpp"
 #include "base.hpp"
-
-#include "modlinear/LaplaceModLinear.hpp"
 
 #include "exception/operation_exception.hpp"
 
