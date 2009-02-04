@@ -76,41 +76,25 @@ double OperationEvalPoly::test(DataVector& alpha, DataVector& data, DataVector& 
 /**
  * Implements the hierarchisation on a sprase grid with poly base functions
  *
- * @param alpha the coefficients of the sparse grid's base functions
- * @param node_values the functions values in the node base
- * @param bDirection this parameter specifies the direction of the hierarchisation: true = hierarchisation, false = dehierarchisation
- *
- * @todo Implement the hierarchisation on the sparse grid with poly base functions
- */
-void OperationHierarchisationPoly::PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection)
-{
-	return;
-}
-
-/**
- * Implements the hierarchisation on a sprase grid with poly base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
  * @param node_values the functions values in the node base
  *
  * @todo Implement the hierarchisation on the sparse grid with poly base functions
  */
-void OperationHierarchisationPoly::doHierarchisation(DataVector& alpha, DataVector& node_values)
+void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values)
 {
-	PrivateHierarchisation(alpha, node_values, true);
+	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
 /**
  * Implements the dehierarchisation on a sprase grid with poly base functions
  *
  * @param alpha the coefficients of the sparse grid's base functions
- * @param node_values the functions values in the node base
  *
  * @todo Implement the dehierarchisation on the sparse grid with poly base functions
  */
-void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha, DataVector& node_values)
+void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha)
 {
-	PrivateHierarchisation(alpha, node_values, false);
+	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
 }

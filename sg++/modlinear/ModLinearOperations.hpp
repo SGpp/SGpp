@@ -62,14 +62,11 @@ public:
 	OperationHierarchisationModLinear(GridStorage* storage) : storage(storage) {}
 	virtual ~OperationHierarchisationModLinear() {}
 
-	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values);
+	virtual void doHierarchisation(DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha);
 
 protected:
 	GridStorage* storage;
-
-private:
-	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);
 };
 
 }

@@ -2,6 +2,7 @@
 This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems
 
 Copyright (C) 2008  Joerg Blank (blankj@in.tum.de)
+              2009  Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -28,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %newobject sg::Grid::createGridGenerator();
 %newobject sg::Grid::createOperationLaplace();
 %newobject sg::Grid::createOperationEval();
+%newobject sg::Grid::createOperationHierarchisation();
 
 %include "stl.i"
 %include "typemaps.i"
@@ -61,6 +63,7 @@ public:
 	virtual OperationB* createOperationB() = 0;
 	virtual OperationEval* createOperationEval() = 0;
 	virtual OperationMatrix* createOperationLaplace() = 0;
+	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 	
 	virtual GridStorage* getStorage();
 

@@ -22,7 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Operations.hpp"
 #include "StandardOperations.hpp"
+
 #include "linear/LinearOperations.hpp"
+#include "linear/HierarchisationLinear.hpp"
+#include "linear/OperationHierarchisationLinear.hpp"
+
 #include "modlinear/ModLinearOperations.hpp"
 #include "poly/PolyOperations.hpp"
 #include "modpoly/ModPolyOperations.hpp"

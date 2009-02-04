@@ -100,9 +100,8 @@ public:
 	OperationHierarchisation() {}
 	virtual ~OperationHierarchisation() {}
 
-	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values) = 0;
-	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values) = 0;
-	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection) = 0;
+	virtual void doHierarchisation(DataVector& node_values) = 0;
+	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
 
 }

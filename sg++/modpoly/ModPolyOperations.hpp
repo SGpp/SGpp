@@ -66,15 +66,12 @@ public:
 	OperationHierarchisationModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 	virtual ~OperationHierarchisationModPoly() {}
 
-	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values);
+	virtual void doHierarchisation(DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha);
 
 protected:
 	GridStorage* storage;
 	SModPolyBase base;
-
-private:
-	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);
 };
 
 }

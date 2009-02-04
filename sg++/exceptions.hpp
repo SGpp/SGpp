@@ -29,14 +29,14 @@ namespace sg
 class generation_exception : public std::exception
 {
 public:
-	generation_exception(const char* msg) throw() : msg(msg)   
-	{ 
+	generation_exception(const char* msg) throw() : msg(msg)
+	{
 	}
-	
+
 	generation_exception() throw() : msg(NULL) { }
-	
+
     virtual ~generation_exception() throw() { }
-    
+
 	virtual const char* what() const throw()
 	{
 		if(msg)
@@ -49,21 +49,21 @@ public:
 		}
 	}
 protected:
-	const char* msg;		
-	
+	const char* msg;
+
 };
 
 class factory_exception : public std::exception
 {
 public:
-	factory_exception(const char* msg) throw() : msg(msg)   
-	{ 
+	factory_exception(const char* msg) throw() : msg(msg)
+	{
 	}
-	
+
 	factory_exception() throw() : msg(NULL) { }
-	
+
     virtual ~factory_exception() throw() { }
-    
+
 	virtual const char* what() const throw()
 	{
 		if(msg)
@@ -76,8 +76,35 @@ public:
 		}
 	}
 protected:
-	const char* msg;		
-	
+	const char* msg;
+
+};
+
+class operation_exception : public std::exception
+{
+public:
+	operation_exception(const char* msg) throw() : msg(msg)
+	{
+	}
+
+	operation_exception() throw() : msg(NULL) { }
+
+    virtual ~operation_exception() throw() { }
+
+	virtual const char* what() const throw()
+	{
+		if(msg)
+		{
+			return msg;
+		}
+		else
+		{
+			return "operation_exception: general failure";
+		}
+	}
+protected:
+	const char* msg;
+
 };
 
 }

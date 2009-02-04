@@ -2,6 +2,7 @@
 This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems
 
 Copyright (C) 2008  Joerg Blank (blankj@in.tum.de)
+              2009  Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -56,5 +57,11 @@ public:
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
 };
 
+class OperationHierarchisation
+{
+public:
+	virtual void doHierarchisation(DataVector& node_values) = 0;
+	virtual void doDehierarchisation(DataVector& alpha) = 0;
+};
 
 }

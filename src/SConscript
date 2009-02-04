@@ -27,6 +27,7 @@ LinearOperations.cpp
 ModLinearOperations.cpp
 PolyOperations.cpp
 ModPolyOperations.cpp
+OperationHierarchisationLinear.cpp
 """)
 
 

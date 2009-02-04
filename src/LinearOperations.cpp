@@ -87,46 +87,4 @@ double OperationEvalLinear::test(DataVector& alpha, DataVector& data, DataVector
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-// ***** OperationhierarchisationLinear *****
-
-/**
- * Implements the hierarchisation on a sprase grid with linear base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- * @param node_values the functions values in the node base
- * @param bDirection this parameter specifies the direction of the hierarchisation: true = hierarchisation, false = dehierarchisation
- *
- * @todo Implement the hierarchisation on the sparse grid with linear base functions
- */
-void OperationHierarchisationLinear::PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection)
-{
-	return;
-}
-
-/**
- * Implements the hierarchisation on a sprase grid with linear base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- * @param node_values the functions values in the node base
- *
- * @todo Implement the hierarchisation on the sparse grid with linear base functions
- */
-void OperationHierarchisationLinear::doHierarchisation(DataVector& alpha, DataVector& node_values)
-{
-	PrivateHierarchisation(alpha, node_values, true);
-}
-
-/**
- * Implements the dehierarchisation on a sprase grid with linear base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- * @param node_values the functions values in the node base
- *
- * @todo Implement the dehierarchisation on the sparse grid with linear base functions
- */
-void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha, DataVector& node_values)
-{
-	PrivateHierarchisation(alpha, node_values, false);
-}
-
 }

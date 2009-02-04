@@ -54,25 +54,6 @@ protected:
 
 };
 
-/**
- * Hierarchisation on sparse grid, linear case
- */
-class OperationHierarchisationLinear : public OperationHierarchisation
-{
-public:
-	OperationHierarchisationLinear(GridStorage* storage) : storage(storage) {}
-	virtual ~OperationHierarchisationLinear() {}
-
-	virtual void doHierarchisation(DataVector& alpha, DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha, DataVector& node_values);
-
-protected:
-	GridStorage* storage;
-
-private:
-	virtual void PrivateHierarchisation(DataVector& alpha, DataVector& node_values, bool bDirection);
-};
-
 }
 
 #endif /*LINEAROPERATIONS_HPP_*/
