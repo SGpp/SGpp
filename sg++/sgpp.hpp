@@ -31,8 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "base.hpp"
 
 #include "basis/linear/operation/OperationLaplaceLinear.hpp"
-
-#include "modlinear/LaplaceModLinear.hpp"
+#include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.h"
 
