@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GridFactory.hpp"
 #include "GridFactoryImpl.hpp"
 
-#include "Operations.hpp"
 #include "StandardOperations.hpp"
 
 // Include all operations on the linear grid

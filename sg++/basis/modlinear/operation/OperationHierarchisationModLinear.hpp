@@ -24,7 +24,8 @@
 #ifndef OPERATIONHIERARCHISATIONMODLINEAR_HPP
 #define OPERATIONHIERARCHISATIONMODLINEAR_HPP
 
-#include "Operations.hpp"
+#include "operation/OperationHierarchisation.hpp"
+#include "GridStorage.hpp"
 
 namespace sg
 {

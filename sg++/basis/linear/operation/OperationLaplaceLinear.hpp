@@ -27,6 +27,8 @@
 #include "basis/linear/algorithm_sweep/LaplaceDownLinear.hpp"
 #include "basis/linear/algorithm_sweep/LaplaceUpLinear.hpp"
 
+#include "operation/OperationMatrix.hpp"
+
 #include "algorithms.hpp"
 #include "unidir.hpp"
 

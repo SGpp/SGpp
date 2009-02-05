@@ -20,9 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef OPERATIONS_HPP_
 #define OPERATIONS_HPP_
 
-#include "data/DataVector.h"
 #include "GridStorage.hpp"
-
 
 namespace sg
 {
@@ -49,59 +47,6 @@ public:
 
 	virtual void regular(size_t level) = 0;
 	virtual void refine(RefinementFunctor* func) = 0;
-};
-
-class OperationB
-{
-public:
-	OperationB() {}
-	virtual ~OperationB() {}
-
-	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result) = 0;
-	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result) = 0;
-};
-
-class OperationMatrix
-{
-public:
-	OperationMatrix() {}
-	virtual ~OperationMatrix() {}
-
-	virtual void mult(DataVector& alpha, DataVector& result) = 0;
-};
-
-class OperationEval
-{
-public:
-	OperationEval() {}
-	virtual ~OperationEval() {}
-
-	virtual double eval(DataVector& alpha, std::vector<double>& point) = 0;
-
-	virtual double eval(DataVector& alpha, DataVector& point)
-	{
-		std::vector<double> p;
-		for(size_t i = 0; i < point.getDim(); i++)
-		{
-			p.push_back(point[i]);
-		}
-		return eval(alpha, p);
-	}
-
-	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
-};
-
-/**
- * This class implements the hierarchisation and dehierarchisation on the sparse grid
- */
-class OperationHierarchisation
-{
-public:
-	OperationHierarchisation() {}
-	virtual ~OperationHierarchisation() {}
-
-	virtual void doHierarchisation(DataVector& node_values) = 0;
-	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
 
 }

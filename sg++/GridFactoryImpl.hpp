@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GRIDFACTORYIMPL_HPP_
 
 #include "GridFactory.hpp"
-#include "Operations.hpp"
 
 #include <iostream>
 

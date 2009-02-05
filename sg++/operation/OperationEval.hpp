@@ -21,34 +21,35 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONHIERARCHISATIONPOLY_HPP
-#define OPERATIONHIERARCHISATIONPOLY_HPP
+#ifndef OPERATIONEVAL_HPP
+#define OPERATIONEVAL_HPP
 
-#include "operation/OperationHierarchisation.hpp"
-#include "GridStorage.hpp"
-
-#include "sgpp.hpp"
+#include "data/DataVector.h"
 
 namespace sg
 {
 
-/**
- * Hierarchisation on sparse grid, poly case
- */
-class OperationHierarchisationPoly : public OperationHierarchisation
+class OperationEval
 {
 public:
-	OperationHierarchisationPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
-	virtual ~OperationHierarchisationPoly() {}
+	OperationEval() {}
+	virtual ~OperationEval() {}
 
-	virtual void doHierarchisation(DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha);
+	virtual double eval(DataVector& alpha, std::vector<double>& point) = 0;
 
-protected:
-	GridStorage* storage;
-	SModPolyBase base;
+	virtual double eval(DataVector& alpha, DataVector& point)
+	{
+		std::vector<double> p;
+		for(size_t i = 0; i < point.getDim(); i++)
+		{
+			p.push_back(point[i]);
+		}
+		return eval(alpha, p);
+	}
+
+	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
 };
 
 }
 
-#endif /* OPERATIONHIERARCHISATIONPOLY_HPP */
+#endif /* OPERATIONEVAL_HPP */
