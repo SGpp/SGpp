@@ -17,7 +17,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "wavelet/ModWaveletOperations.hpp"
+// Include all operations on the mod wavelet gird
+#include "basis/modwavelet/operation/OperationBModWavelet.hpp"
+#include "basis/modwavelet/operation/OperationEvalModWavelet.hpp"
+#include "basis/modwavelet/operation/OperationHierarchisationModWavelet.hpp"
 
 #include "sgpp.hpp"
 #include "algorithms.hpp"
