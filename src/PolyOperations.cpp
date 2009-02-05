@@ -17,7 +17,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "poly/PolyOperations.hpp"
+// Include all operations on the poly grid
+#include "basis/poly/operation/OperationBPoly.hpp"
+#include "basis/poly/operation/OperationEvalPoly.hpp"
+#include "basis/poly/operation/OperationHierarchisationPoly.hpp"
 
 #include "sgpp.hpp"
 #include "algorithms.hpp"
