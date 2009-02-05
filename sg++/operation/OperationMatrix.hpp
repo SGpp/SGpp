@@ -21,34 +21,23 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONHIERARCHISATIONPOLY_HPP
-#define OPERATIONHIERARCHISATIONPOLY_HPP
+#ifndef OPERATIONMATRIX_HPP
+#define OPERATIONMATRIX_HPP
 
-#include "operation/OperationHierarchisation.hpp"
-#include "GridStorage.hpp"
-
-#include "sgpp.hpp"
+#include "data/DataVector.h"
 
 namespace sg
 {
 
-/**
- * Hierarchisation on sparse grid, poly case
- */
-class OperationHierarchisationPoly : public OperationHierarchisation
+class OperationMatrix
 {
 public:
-	OperationHierarchisationPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
-	virtual ~OperationHierarchisationPoly() {}
+	OperationMatrix() {}
+	virtual ~OperationMatrix() {}
 
-	virtual void doHierarchisation(DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha);
-
-protected:
-	GridStorage* storage;
-	SModPolyBase base;
+	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
 }
 
-#endif /* OPERATIONHIERARCHISATIONPOLY_HPP */
+#endif /* OPERATIONMATRIX_HPP */

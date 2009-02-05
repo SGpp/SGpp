@@ -24,7 +24,8 @@
 #ifndef OPERATIONEVALMODPOLY_HPP
 #define OPERATIONEVALMODPOLY_HPP
 
-#include "Operations.hpp"
+#include "operation/OperationEval.hpp"
+#include "GridStorage.hpp"
 
 #include "sgpp.hpp"
 

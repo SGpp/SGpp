@@ -29,6 +29,8 @@
 #include "basis/modlinear/algorithm_sweep/LaplaceUpGradientModLinear.hpp"
 #include "basis/modlinear/algorithm_sweep/LaplaceUpModLinear.hpp"
 
+#include "operation/OperationMatrix.hpp"
+
 #include "algorithms.hpp"
 #include "unidir.hpp"
 #include "Operations.hpp"

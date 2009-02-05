@@ -24,7 +24,8 @@
 #ifndef OPERATIONHIERARCHISATIONMODPOLY_HPP
 #define OPERATIONHIERARCHISATIONMODPOLY_HPP
 
-#include "Operations.hpp"
+#include "operation/OperationHierarchisation.hpp"
+#include "GridStorage.hpp"
 
 #include "sgpp.hpp"
 

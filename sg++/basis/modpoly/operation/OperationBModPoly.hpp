@@ -24,7 +24,8 @@
 #ifndef OPERATIONBMODPOLY_HPP
 #define OPERATIONBMODPOLY_HPP
 
-#include "Operations.hpp"
+#include "operation/OperationB.hpp"
+#include "GridStorage.hpp"
 
 #include "sgpp.hpp"
 

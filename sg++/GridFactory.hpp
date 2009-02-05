@@ -21,6 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef GRIDFACTORY_HPP_
 #define GRIDFACTORY_HPP_
 
+#include "operation/OperationB.hpp"
+#include "operation/OperationEval.hpp"
+#include "operation/OperationHierarchisation.hpp"
+#include "operation/OperationMatrix.hpp"
+
 #include "Operations.hpp"
 #include "GridStorage.hpp"
 

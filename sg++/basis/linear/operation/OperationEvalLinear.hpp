@@ -24,7 +24,8 @@
 #ifndef OPERATIONEVALLINEAR_HPP
 #define OPERATIONEVALLINEAR_HPP
 
-#include "Operations.hpp"
+#include "operation/OperationEval.hpp"
+#include "GridStorage.hpp"
 
 namespace sg
 {
