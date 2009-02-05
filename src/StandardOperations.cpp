@@ -17,7 +17,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "StandardOperations.hpp"
+#include "grid/generation/StandardGridGenerator.hpp"
+#include "grid/GridStorage.hpp"
+
 #include "sgpp.hpp"
 
 namespace sg

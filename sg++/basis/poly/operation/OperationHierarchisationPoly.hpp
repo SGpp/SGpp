@@ -25,7 +25,7 @@
 #define OPERATIONHIERARCHISATIONPOLY_HPP
 
 #include "operation/OperationHierarchisation.hpp"
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"
 

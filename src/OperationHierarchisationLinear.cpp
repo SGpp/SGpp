@@ -25,7 +25,7 @@
 #include "basis/linear/algorithm_sweep/DehierarchisationLinear.hpp"
 
 #include "sgpp.hpp"
-#include "algorithms.hpp"
+
 #include "basis/basis.hpp"
 #include "data/DataVector.h"
 

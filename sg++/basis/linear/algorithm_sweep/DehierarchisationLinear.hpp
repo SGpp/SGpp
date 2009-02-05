@@ -23,7 +23,7 @@
 #ifndef DEHIERARCHISATIONLINEAR_HPP
 #define DEHIERARCHISATIONLINEAR_HPP
 
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
 namespace sg

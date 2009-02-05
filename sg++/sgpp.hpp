@@ -24,10 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Optimizations currently useless
 //#define SGPP_OPTIMIZE
 
-#include "GridIndex.hpp"
-#include "GridStorage.hpp"
-#include "algorithms.hpp"
-#include "generation.hpp"
+#include "algorithm/AlgorithmB.hpp"
+#include "algorithm/GetAffectedBasisFunctions.hpp"
+#include "algorithm/classification/test_dataset.hpp"
 
 #include "basis/basis.hpp"
 
@@ -36,8 +35,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "data/DataVector.h"
 
-#include "GridFactory.hpp"
-#include "Operations.hpp"
+#include "grid/Grid.hpp"
+#include "grid/GridStorage.hpp"
+#include "grid/generation/RefinementFunctor.hpp"
+#include "grid/generation/StandardGridGenerator.hpp"
+#include "grid/generation/GridGenerator.hpp"
+#include "grid/generation/hashmap/HashGenerator.hpp"
+#include "grid/generation/hashmap/HashRefinement.hpp"
+#include "grid/generation/SurplusRefinementFunctor.hpp"
 
 namespace sg
 {
@@ -51,11 +56,5 @@ typedef AlgorithmB<SLinearBase> SGridOperationB;
 typedef AlgorithmB<SModLinearBase> SGridModOperationB;
 
 }
-
-
-/*
-typedef sg::GridIndex<unsigned int, unsigned int> SGridIndex;
-typedef sg::GridStorage<SGridIndex> SGridStorage;
-*/
 
 #endif /*SGPP_HPP_*/

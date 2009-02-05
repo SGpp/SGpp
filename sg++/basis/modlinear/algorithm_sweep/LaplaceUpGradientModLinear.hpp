@@ -24,7 +24,7 @@
 #ifndef LAPLACEUPGRADIENTMODLINEAR_HPP
 #define LAPLACEUPGRADIENTMODLINEAR_HPP
 
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
 namespace sg

@@ -2,7 +2,7 @@
 /* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
@@ -21,88 +21,60 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEDOWNLINEAR_HPP
-#define LAPLACEDOWNLINEAR_HPP
+#ifndef TEST_DATASET_HPP
+#define TEST_DATASET_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
-namespace sg
-{
+#include <vector>
+#include <utility>
+#include <iostream>
 
-namespace detail
-{
+namespace sg {
 
 /**
- * down-operation in dimension dim. for use with sweep
+ * Returns the number of correctly classified instances in data
  */
-class LaplaceDownLinear
+template<class BASIS>
+double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes)
 {
-protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-	GridStorage* storage;
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-public:
-	LaplaceDownLinear(GridStorage* storage) : storage(storage)
+	double correct = 0;
+
+	size_t size = data.getSize();
+
+	std::vector<double> point;
+
+	GetAffectedBasisFunctions<BASIS> ga(storage);
+
+	for(size_t i = 0; i < size; i++)
 	{
-	}
 
-	~LaplaceDownLinear()
-	{
-	}
+		IndexValVector vec;
+		double result = 0;
 
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		rec(source, result, index, dim, 0.0, 0.0);
-	}
+		data.getLine(i, point);
 
-protected:
+		ga(basis, point, vec);
 
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-	{
-		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
-
+		for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
-
-			index.get(dim, l, i);
-
-			double h = 1/pow(2.0, l);
-
-			// integration
-			result[seq] = (  h * (fl+fr)/2.0
-			                      + 2.0/3.0 * h * alpha_value );    // diagonal entry
+			result += iter->second * alpha[iter->first];
 		}
 
-		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
-
-		if(!index.hint(dim))
+		if( (result >= 0 && classes[i] >= 0) || (result < 0 && classes[i] < 0) )
 		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fm);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fm, fr);
-			}
-
-			index.up(dim);
+			correct++;
 		}
+
 	}
 
+	return correct;
 
-};
+}
 
-} // namespace detail
+}
 
-} // namespace sg
-
-#endif /* LAPLACEDOWNLINEAR_HPP */
+#endif /* TEST_DATASET_HPP */

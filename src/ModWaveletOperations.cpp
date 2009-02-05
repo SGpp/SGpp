@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "basis/modwavelet/operation/OperationHierarchisationModWavelet.hpp"
 
 #include "sgpp.hpp"
-#include "algorithms.hpp"
+
 #include "basis/basis.hpp"
 
 #include "data/DataVector.h"
