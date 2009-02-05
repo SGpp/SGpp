@@ -17,7 +17,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "modpoly/ModPolyOperations.hpp"
+// Include all operations on the mod poly grid
+#include "basis/modpoly/operation/OperationBModPoly.hpp"
+#include "basis/modpoly/operation/OperationEvalModPoly.hpp"
+#include "basis/modpoly/operation/OperationHierarchisationModPoly.hpp"
 
 #include "sgpp.hpp"
 #include "algorithms.hpp"
