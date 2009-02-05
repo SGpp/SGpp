@@ -63,7 +63,11 @@ namespace std {
 %include "sg++/GridIndex.hpp"
 %include "sg++/algorithms.hpp"
 %include "sg++/generation.hpp"
-%include "sg++/base.hpp"
+%include "sg++/basis/linear/linear_base.hpp"
+%include "sg++/basis/modlinear/modified_linear_base.hpp"
+%include "sg++/basis/modpoly/modified_poly_base.hpp"
+%include "sg++/basis/poly/poly_base.hpp"
+%include "sg++/basis/modwavelet/modified_wavelet_base.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 

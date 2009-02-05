@@ -28,7 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GridStorage.hpp"
 #include "algorithms.hpp"
 #include "generation.hpp"
-#include "base.hpp"
+
+#include "basis/basis.hpp"
 
 #include "basis/linear/operation/OperationLaplaceLinear.hpp"
 #include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"

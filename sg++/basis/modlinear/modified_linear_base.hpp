@@ -2,6 +2,7 @@
 /* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
@@ -20,50 +21,44 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linear/operation/OperationHierarchisationLinear.hpp"
-#include "basis/linear/algorithm_sweep/HierarchisationLinear.hpp"
-#include "basis/linear/algorithm_sweep/DehierarchisationLinear.hpp"
+#ifndef MODIFIED_LINEAR_BASE_HPP
+#define MODIFIED_LINEAR_BASE_HPP
 
-#include "sgpp.hpp"
-#include "algorithms.hpp"
-#include "basis/basis.hpp"
-#include "data/DataVector.h"
+#include <cmath>
 
 namespace sg
 {
 
 /**
- * Implements the hierarchisation on a sprase grid with linear base functions
- *
- * @param node_values the functions values in the node base
+ * modified linear base functions.
  */
-void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
+ template<class LT, class IT>
+class modified_linear_base
 {
-	detail::HierarchisationLinear func(this->storage);
-	sweep<detail::HierarchisationLinear> s(func, this->storage);
-
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
+public:
+	/**
+	 * Evaluate a base functions.
+	 * Has a dependence on the absolute position of grid point and support.
+	 */
+	double eval(LT level, IT index, double p)
 	{
-		s.sweep1D(node_values, node_values, i);
+		if(level == 1)
+		{
+			return 1.0;
+		}
+		else if(index == 1)
+		{
+			return 2.0 - (1<<level) * p;
+		}
+		else if(index == (1<<level)-1)
+		{
+			return (1<<level) * p - index + 1.0;
+		}
+		return 1.0 - fabs((1<<level) * p - index);
 	}
-}
-
-/**
- * Implements the dehierarchisation on a sprase grid with linear base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- */
-void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
-{
-	detail::DehierarchisationLinear func(this->storage);
-	sweep<detail::DehierarchisationLinear> s(func, this->storage);
-
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(alpha, alpha, i);
-	}
-}
+};
 
 }
+
+#endif /* MODIFIED_LINEAR_BASE_HPP */
+
