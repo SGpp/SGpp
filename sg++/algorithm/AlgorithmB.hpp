@@ -2,7 +2,7 @@
 /* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
@@ -21,88 +21,88 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEDOWNLINEAR_HPP
-#define LAPLACEDOWNLINEAR_HPP
+#ifndef ALGORTIHMB_HPP
+#define ALGORTIHMB_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
-namespace sg
-{
+#include "algorithm/GetAffectedBasisFunctions.hpp"
 
-namespace detail
-{
+#include <vector>
+#include <utility>
+#include <iostream>
+
+namespace sg {
 
 /**
- * down-operation in dimension dim. for use with sweep
+ * Basic multiplaction with B and B^T.
+ * This is just wrong ... there should be some functor for the BASIS type
  */
-class LaplaceDownLinear
+template<class BASIS>
+class AlgorithmB
 {
-protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-	GridStorage* storage;
-
 public:
-	LaplaceDownLinear(GridStorage* storage) : storage(storage)
+
+	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
+		typedef std::vector<std::pair<size_t, double> > IndexValVector;
+
+		result.setAll(0.0);
+		size_t source_size = source.getSize();
+
+		std::vector<double> line;
+		IndexValVector vec;
+
+		GetAffectedBasisFunctions<BASIS> ga(storage);
+
+		for(size_t i = 0; i < source_size; i++)
+		{
+			vec.clear();
+
+			x.getLine(i, line);
+
+			ga(basis, line, vec);
+
+			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+			{
+				result[iter->first] += iter->second * source[i];
+			}
+		}
 	}
 
-	~LaplaceDownLinear()
+	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
+		typedef std::vector<std::pair<size_t, double> > IndexValVector;
+
+		result.setAll(0.0);
+		size_t result_size = result.getSize();
+
+		std::vector<double> line;
+		IndexValVector vec;
+
+		GetAffectedBasisFunctions<BASIS> ga(storage);
+
+		for(size_t i = 0; i < result_size; i++)
+		{
+			vec.clear();
+
+			x.getLine(i, line);
+
+			ga(basis, line, vec);
+
+			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+			{
+				result[i] += iter->second * source[iter->first];
+			}
+		}
 	}
 
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		rec(source, result, index, dim, 0.0, 0.0);
-	}
 
 protected:
-
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-	{
-		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
-
-		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
-
-			index.get(dim, l, i);
-
-			double h = 1/pow(2.0, l);
-
-			// integration
-			result[seq] = (  h * (fl+fr)/2.0
-			                      + 2.0/3.0 * h * alpha_value );    // diagonal entry
-		}
-
-		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
-
-		if(!index.hint(dim))
-		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fm);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fm, fr);
-			}
-
-			index.up(dim);
-		}
-	}
-
 
 };
 
-} // namespace detail
+}
 
-} // namespace sg
-
-#endif /* LAPLACEDOWNLINEAR_HPP */
+#endif /* ALGORTIHMB_HPP */

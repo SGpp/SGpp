@@ -25,7 +25,7 @@
 #define OPERATIONEVALPOLY_HPP
 
 #include "operation/OperationEval.hpp"
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"
 

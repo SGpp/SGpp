@@ -1,33 +1,36 @@
-/*
-This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems
+/*****************************************************************************/
+/* This file is part of sg++, a program package making use of spatially      */
+/* adaptive sparse grids to solve numerical problems                         */
+/*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
+/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/*                                                                           */
+/* sg++ is free software; you can redistribute it and/or modify              */
+/* it under the terms of the GNU General Public License as published by      */
+/* the Free Software Foundation; either version 3 of the License, or         */
+/* (at your option) any later version.                                       */
+/*                                                                           */
+/* sg++ is distributed in the hope that it will be useful,                   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/* GNU General Public License for more details.                              */
+/*                                                                           */
+/* You should have received a copy of the GNU General Public License         */
+/* along with Foobar; if not, write to the Free Software                     */
+/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+/* or see <http://www.gnu.org/licenses/>.                                    */
+/*****************************************************************************/
 
-Copyright (C) 2008  Joerg Blank (blankj@in.tum.de)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-#ifndef GRIDFACTORY_HPP_
-#define GRIDFACTORY_HPP_
+#ifndef GRID_HPP
+#define GRID_HPP
 
 #include "operation/OperationB.hpp"
 #include "operation/OperationEval.hpp"
 #include "operation/OperationHierarchisation.hpp"
 #include "operation/OperationMatrix.hpp"
 
-#include "Operations.hpp"
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
+#include "grid/generation/GridGenerator.hpp"
 
 #include <iostream>
 #include <string>
@@ -103,4 +106,4 @@ private:
 
 }
 
-#endif /*GRIDFACTORY_HPP_*/
+#endif /* GRID_HPP */

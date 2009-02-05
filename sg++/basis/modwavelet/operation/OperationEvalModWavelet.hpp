@@ -25,7 +25,7 @@
 #define OPERATIINEVALMODWAVELET_HPP
 
 #include "operation/OperationEval.hpp"
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
 
 namespace sg
 {

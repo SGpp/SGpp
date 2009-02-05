@@ -17,10 +17,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "GridFactory.hpp"
-#include "GridFactoryImpl.hpp"
+#include "grid/Grid.hpp"
+#include "grid/type/LinearGrid.hpp"
+#include "grid/type/ModLinearGrid.hpp"
+#include "grid/type/ModPolyGrid.hpp"
+#include "grid/type/PolyGrid.hpp"
 
-#include "StandardOperations.hpp"
+#include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the linear grid
 #include "basis/linear/operation/OperationBLinear.hpp"

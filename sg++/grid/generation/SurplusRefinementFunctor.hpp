@@ -2,7 +2,7 @@
 /* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
@@ -21,88 +21,52 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEDOWNLINEAR_HPP
-#define LAPLACEDOWNLINEAR_HPP
+#ifndef SURPLUSREFINEMENTFUNCTOR_HPP
+#define SURPLUSREFINEMENTFUNCTOR_HPP
 
-#include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
+#include "grid/generation/RefinementFunctor.hpp"
+#include "grid/GridStorage.hpp"
 
 namespace sg
 {
 
-namespace detail
-{
-
 /**
- * down-operation in dimension dim. for use with sweep
+ * This abstracts the refinement criteria out of the refinement algorithm
  */
-class LaplaceDownLinear
+class SurplusRefinementFunctor : public RefinementFunctor
 {
-protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-	GridStorage* storage;
-
 public:
-	LaplaceDownLinear(GridStorage* storage) : storage(storage)
+
+
+	SurplusRefinementFunctor(DataVector* alpha) : alpha(alpha)
 	{
 	}
 
-	~LaplaceDownLinear()
+	virtual ~SurplusRefinementFunctor() {}
+
+	/**
+	 * This should be returning a refinement value for every grid point.
+	 * The point with the highest value will be refined.
+	 */
+	virtual double operator()(GridStorage* storage, size_t seq)
 	{
+		return fabs(alpha->get(seq));
 	}
 
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+	/**
+	 * This should return a bottom.
+	 */
+	virtual double start()
 	{
-		rec(source, result, index, dim, 0.0, 0.0);
+		return 0.0;
 	}
+
 
 protected:
-
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-	{
-		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
-
-		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
-
-			index.get(dim, l, i);
-
-			double h = 1/pow(2.0, l);
-
-			// integration
-			result[seq] = (  h * (fl+fr)/2.0
-			                      + 2.0/3.0 * h * alpha_value );    // diagonal entry
-		}
-
-		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
-
-		if(!index.hint(dim))
-		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fm);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fm, fr);
-			}
-
-			index.up(dim);
-		}
-	}
-
-
+	DataVector* alpha;
 };
 
-} // namespace detail
+}
 
-} // namespace sg
-
-#endif /* LAPLACEDOWNLINEAR_HPP */
+#endif /* SURPLUSREFINEMENTFUNCTOR_HPP */

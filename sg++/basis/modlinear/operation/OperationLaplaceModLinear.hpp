@@ -31,11 +31,10 @@
 
 #include "operation/OperationMatrix.hpp"
 
-#include "algorithms.hpp"
-#include "unidir.hpp"
-#include "Operations.hpp"
+#include "algorithm/UnidirGradient.hpp"
+#include "algorithm/sweep.hpp"
 
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
 namespace sg

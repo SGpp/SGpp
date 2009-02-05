@@ -25,7 +25,7 @@
 #define OPERATIONBLINEAR_HPP
 
 #include "operation/OperationB.hpp"
-#include "GridStorage.hpp"
+#include "grid/GridStorage.hpp"
 
 namespace sg
 {

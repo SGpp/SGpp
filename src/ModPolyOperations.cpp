@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "basis/modpoly/operation/OperationHierarchisationModPoly.hpp"
 
 #include "sgpp.hpp"
-#include "algorithms.hpp"
+
 #include "basis/basis.hpp"
 
 #include "exception/operation_exception.hpp"

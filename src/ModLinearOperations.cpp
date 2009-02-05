@@ -17,6 +17,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "basis/basis.hpp"
+
 // Include all operations on the mod linear grid
 #include "basis/modlinear/operation/OperationBModLinear.hpp"
 #include "basis/modlinear/operation/OperationEvalModLinear.hpp"
@@ -24,8 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
 #include "sgpp.hpp"
-#include "algorithms.hpp"
-#include "basis/basis.hpp"
 
 #include "exception/operation_exception.hpp"
 
