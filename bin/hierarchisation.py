@@ -90,18 +90,11 @@ def buildAlphaVector(filename):
     
         
 #-------------------------------------------------------------------------------
-# hierarchisation of the node base values on a regular, linear grid
+# hierarchisation of the node base values on a grid
 #
 # @param node_values DataVector that holds the coefficients of the function's node base
-# @param dim the dimension of the grid
-# @param level levels used in the regular grid
-def doHierarchisationLinearRegular(node_values, dim, level):
-    #generate linear grid
-    grid = Grid.createLinearGrid(dim)
-    generator  = grid.createGridGenerator()
-    #generate a regular grid
-    generator.regular(level)
-    
+# @param grid the grid matching to the node_vector
+def doHierarchisation(node_values, grid):   
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()
     
@@ -112,18 +105,11 @@ def doHierarchisationLinearRegular(node_values, dim, level):
 
 
 #-------------------------------------------------------------------------------
-# hierarchisation of the node base values on a regular, linear grid
+# hierarchisation of the node base values on a grid
 #
 # @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
-# @param dim the dimension of the grid
-# @param level levels used in the regular grid
-def doDehierarchisationLinearRegular(alpha, dim, level):
-    #generate linear grid
-    grid = Grid.createLinearGrid(dim)
-    generator  = grid.createGridGenerator()
-    #generate a regular grid
-    generator.regular(level)
-    
+# @param grid thee grid matching to the alpha vector
+def doDehierarchisation(alpha, grid): 
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()
     
@@ -136,13 +122,18 @@ def doDehierarchisationLinearRegular(alpha, dim, level):
 #-------------------------------------------------------------------------------    
 # tests the hierarchisation and dehierarchisation routine of sg++ with a sparse
 # grid of dimension 2 and level 3
-def runHierarchisationDehierarchisationTest():
+def runHierarchisationDehierarchisationLinearRegularTest():
     node_values = None
     node_values_back = None
     alpha = None
 
     dim = 2
     level = 3
+    
+    # generate a regular test grid
+    grid = Grid.createLinearGrid(dim)
+    generator  = grid.createGridGenerator()
+    generator.regular(level)
         
     # read in the node base values
     node_values = buildNodevalueVector("hierarchisation_nodevalues.in")
@@ -150,12 +141,12 @@ def runHierarchisationDehierarchisationTest():
     print node_values
     
     # do hierarchisation
-    alpha = doHierarchisationLinearRegular(node_values, dim, level)
+    alpha = doHierarchisation(node_values, grid)
     
     print alpha
     
     # do dehierarchisation
-    node_values_back = doDehierarchisationLinearRegular(alpha, dim, level)
+    node_values_back = doDehierarchisation(alpha, grid)
      
     #print result
     print node_values_back
@@ -170,4 +161,4 @@ def runHierarchisationDehierarchisationTest():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationTest()
+    runHierarchisationDehierarchisationLinearRegularTest()
