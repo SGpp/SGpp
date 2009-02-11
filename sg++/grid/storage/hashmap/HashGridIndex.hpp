@@ -246,19 +246,31 @@ public:
 
     void print()
     {
+    	std::cout << this->getCoordinates();
+    }
+
+    std::string getCoordinates()
+    {
+    	std::stringstream return_stream;
 
     	for(int i = 0; i < DIM; i++)
     	{
     		if(level[i] == 0)
     		{
-    			std::cout << index[i];
+    			return_stream << index[i];
     		}
     		else
     		{
-    			std::cout << (pow(0.5, level[i])*index[i]);
+    			return_stream << (pow(0.5, level[i])*index[i]);
     		}
-    		std::cout << " ";
+
+    		if (i < DIM-1)
+    		{
+    			return_stream << " ";
+    		}
     	}
+
+    	return return_stream.str();
     }
 
 private:
