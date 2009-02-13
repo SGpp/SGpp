@@ -81,6 +81,7 @@ namespace std {
 %include "sg++/algorithm/UnidirGradient.hpp"
 
 %include "sg++/basis/linear/linear_base.hpp"
+%include "sg++/basis/linearboundary/linearboundaryBase.hpp"
 %include "sg++/basis/modlinear/modified_linear_base.hpp"
 %include "sg++/basis/modpoly/modified_poly_base.hpp"
 %include "sg++/basis/poly/poly_base.hpp"
@@ -95,6 +96,7 @@ namespace std {
 %template(GridStorage) sg::HashGridStorage<sg::GridIndex>;
 
 %template(SLinearBase) sg::linear_base<unsigned int, unsigned int>;
+%template(SLinearBoundaryBase) sg::linearboundaryBase<unsigned int, unsigned int>;
 %template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
 %template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;

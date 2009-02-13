@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grid/Grid.hpp"
 #include "grid/type/LinearGrid.hpp"
+#include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
@@ -34,6 +35,11 @@ namespace sg
 Grid* Grid::createLinearGrid(size_t dim)
 {
 	return new LinearGrid(dim);
+}
+
+Grid* Grid::createLinearBoundaryGrid(size_t dim)
+{
+	return new LinearBoundaryGrid(dim);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim)

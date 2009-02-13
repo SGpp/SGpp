@@ -2,7 +2,6 @@
 /* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
@@ -21,30 +20,46 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef STANDARDGRIDGENERATOR_HPP
-#define STANDARDGRIDGENERATOR_HPP
+#ifndef LINEARBOUNDARYBASE_HPP
+#define LINEARBOUNDARYBASE_HPP
 
-#include "grid/GridStorage.hpp"
-#include "grid/generation/GridGenerator.hpp"
+#include <cmath>
 
 namespace sg
 {
 
-class StandardGridGenerator : public GridGenerator
+/**
+ * linear base functions with boundaries
+ * And here we have another implicit dependence on tensor products
+ */
+template<class LT, class IT>
+class linearboundaryBase
 {
 public:
-	StandardGridGenerator(GridStorage* storage);
-	virtual ~StandardGridGenerator();
+	/**
+	 * Evaluate a base functions.
+	 * Has a dependence on the absolute position of grid point and support.
+	 */
+	double eval(LT level, IT index, double p)
+	{
+		if (level == 0)
+		{
+			if (index == 1)
+			{
 
-	virtual void regular(size_t level);
-	virtual void regularBoundaries(size_t level);
-	virtual void regularFullBoundaries(size_t level);
-	virtual void refine(RefinementFunctor* func);
+			}
+			if (index == 3)
+			{
 
-protected:
-	GridStorage* storage;
+			}
+		}
+		else
+		{
+			return 1.0 - fabs((1<<level) * p - index);
+		}
+	}
 };
 
 }
 
-#endif /* STANDARDGRIDGEMERATOR_HPP */
+#endif /* LINEARBOUNDARYBASE_HPP */

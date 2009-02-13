@@ -47,6 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace sg
 {
 
+typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
 typedef linear_base<unsigned int, unsigned int> SLinearBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
 typedef poly_base<unsigned int, unsigned int> SPolyBase;
