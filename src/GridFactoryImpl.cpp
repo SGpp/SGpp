@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grid/Grid.hpp"
 #include "grid/type/LinearGrid.hpp"
+#include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
@@ -113,6 +114,62 @@ OperationHierarchisation* LinearGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationLinear(this->storage);
 }
+
+// ***** LinearBoundaryGrid ***** //
+
+LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) : Grid(istr)
+{
+
+}
+
+LinearBoundaryGrid::LinearBoundaryGrid(size_t dim)
+{
+	this->storage = new GridStorage(dim);
+}
+
+LinearBoundaryGrid::~LinearBoundaryGrid()
+{
+}
+
+const char* LinearBoundaryGrid::getType()
+{
+	return "linearBoundary";
+}
+
+Grid* LinearBoundaryGrid::unserialize(std::istream& istr)
+{
+	return new LinearBoundaryGrid(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* LinearBoundaryGrid::createGridGenerator()
+{
+	return new StandardGridGenerator(this->storage);
+}
+
+OperationB* LinearBoundaryGrid::createOperationB()
+{
+	return NULL;
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
+{
+	return NULL;
+}
+
+OperationEval* LinearBoundaryGrid::createOperationEval()
+{
+	return NULL;
+}
+
+OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
+{
+	return NULL;
+}
+
 
 // ***** ModLinearGrid *****
 
