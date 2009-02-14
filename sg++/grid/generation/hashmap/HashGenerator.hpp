@@ -85,7 +85,8 @@ public:
 
 		if (fullBoundaries == true)
 		{
-			this->boundariesFull_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim() - 1, level + storage->dim());
+			throw new generation_exception("full boundaries are not supported, yet!");
+			//this->boundariesFull_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim() - 1, level + storage->dim());
 		}
 		else
 		{
@@ -248,13 +249,13 @@ protected:
 		}
 	}
 
-	void boundariesFull_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level)
+	void boundariesFull_rec_lastd(GridStorage* storage, index_type& index, level_t current_level, level_t level)
 	{
 		for(level_t l = 1; l <= level-current_level + 1; l++)
 		{
 			for(index_t i = 1; i <= 1<<(l-1); i++)
 			{
-				index.push(0, l, 2*i-1);
+				index.push(storage->dim()-1, l, 2*i-1);
 				storage->insert(index);
 			}
 		}
