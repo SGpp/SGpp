@@ -1,4 +1,4 @@
-# This file is part of SG++, a program package making use of spatially
+# This file is part of sgpp, a program package making use of spatially
 # adaptive sparse grids to solve numerical problems
 # 
 # Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de),
