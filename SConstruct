@@ -80,16 +80,18 @@ env.Append(PYTHON_CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 Export('env')
 
-SConscript('src/SConscript', build_dir='build_sg', duplicate=0)
-SConscript('pysgpp/SConscript', build_dir='build_pysgpp', duplicate=0)
+SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
+SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
 
 if env['JSGPP']:
-	SConscript('jsgpp/SConscript', build_dir='build_jsgpp', duplicate=0)
+	SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
 
 SConscript('tests/SConscript')
 
 cpy = []
-cpy += Command("#bin/_pysgpp.so", "#build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#bin/pysgpp.py", "#build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+cpy += Command("#lib/pysgpp/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
+cpy += Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+cpy += Command("#bin/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
+cpy += Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
 
 Help(opts.GenerateHelpText(env))

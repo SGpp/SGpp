@@ -18,8 +18,8 @@
 
 Import('env')
 
-cpy = Command("#tests/_pysgpp.so", "#build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#tests/pysgpp.py", "#build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+cpy = Command("#tests/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
+cpy += Command("#tests/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
 
 bld = Builder(action = "python $SOURCE")
 env = Environment(BUILDERS = {'Test' : bld})
