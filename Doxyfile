@@ -453,7 +453,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 #INPUT                  = README class/ class/QuSquare include/ include/QuSquare bin/ tests/ WekaSpGrid/weka/classifiers/functions/ WekaSpGrid/weka/search/ WekaSpGrid/weka/classifiers/functions/sparseGrid/Matrix.java
-INPUT                  = sg++/ tests/ bin/ documentation/ SPARSE_GRID_ALGORITHM101
+INPUT                  = src/sgpp/ tests/ bin/ doc/doxygen/ SPARSE_GRID_ALGORITHM101
 
 
 # If the value of the INPUT tag contains directories, you can use the 
@@ -515,7 +515,7 @@ EXAMPLE_RECURSIVE      = NO
 # directories that contain image that are included in the documentation (see 
 # the \image command).
 
-IMAGE_PATH             = documentation/images
+IMAGE_PATH             = doc/doxygen/images
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should 
 # invoke to filter for each input file. Doxygen will invoke the filter program 
@@ -991,7 +991,7 @@ SEARCH_INCLUDES        = YES
 # contain include files that are not input files but should be processed by 
 # the preprocessor.
 
-INCLUDE_PATH           = include
+INCLUDE_PATH           = /src/sgpp
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard 
 # patterns (like *.h and *.hpp) to filter out the header-files in the 
