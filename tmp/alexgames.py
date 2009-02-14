@@ -90,7 +90,7 @@ def buildTrainingVector(data):
     return training
 
 
-# Alex is playing with python and sg++
+# Alex is playing with python and sgpp
 #
 # This test routine creates a grid and evaluates a function
 # on this grid

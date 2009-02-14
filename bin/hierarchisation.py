@@ -53,7 +53,7 @@ def callback_deprecated(option, opt, value, parser):
     
 
 #-------------------------------------------------------------------------------
-# Builds the data vector that hold the coefficients fo either the ansatzfuctions
+## Builds the data vector that hold the coefficients fo either the ansatzfuctions
 # or the node base
 # re.sub(regex, replacement, subject)
 # @param filename name of the ARFF file that contains the coefficients
@@ -73,8 +73,7 @@ def buildCoefficientVectorFromFile(filename):
     
     
 #-------------------------------------------------------------------------------
-# Wrapper for buildCoefficientVectorFromFile
-# 
+## Wrapper for buildCoefficientVectorFromFile
 # @param filename name of the ARFF file that contains the node base coefficients
 # @return a instance of a DataVector that stores node base coefficients
 def buildNodevalueVector(filename):
@@ -82,8 +81,7 @@ def buildNodevalueVector(filename):
     
     
 #-------------------------------------------------------------------------------
-# Wrapper for buildCoefficientVectorFromFile
-# 
+## Wrapper for buildCoefficientVectorFromFile
 # @param filename name of the ARFF file that contains the ansatzfunction coefficients
 # @return a instance of a DataVector that stores ansatzfunction coefficients    
 def buildAlphaVector(filename):
@@ -91,8 +89,7 @@ def buildAlphaVector(filename):
     
         
 #-------------------------------------------------------------------------------
-# hierarchisation of the node base values on a grid
-#
+## hierarchisation of the node base values on a grid
 # @param node_values DataVector that holds the coefficients of the function's node base
 # @param grid the grid matching to the node_vector
 def doHierarchisation(node_values, grid):   
@@ -106,8 +103,7 @@ def doHierarchisation(node_values, grid):
 
 
 #-------------------------------------------------------------------------------
-# hierarchisation of the node base values on a grid
-#
+## hierarchisation of the node base values on a grid
 # @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
 # @param grid thee grid matching to the alpha vector
 def doDehierarchisation(alpha, grid): 
@@ -120,7 +116,8 @@ def doDehierarchisation(alpha, grid):
     return alpha
     
     
-# evalutes a given function
+#-------------------------------------------------------------------------------    
+## evalutes a given function
 # @param function a string the gives the function; x1...xn must be the names of the placeholders
 # @param points sorted list of the coordinates (x1...xn) of evaluation point
 # @return returns the function value at points
@@ -131,7 +128,8 @@ def evalFunction(function, points):
     return eval(function)    
     
 
-# tests the correctness of the hierarchisation and dehierachisation
+#-------------------------------------------------------------------------------
+## tests the correctness of the hierarchisation and dehierachisation
 # @param node1 the vector of the node base values before hierarchisation and dehierarchisation
 # @param node2 the vector of the node base values after hierarchisation and dehierarchisation
 # @return maximum error during the transformations
@@ -145,7 +143,8 @@ def testHierarchisationResults(node1, node2):
     return error
     
     
-# build parable test function over [0,1]^d
+#-------------------------------------------------------------------------------    
+## builds parable test function over [0,1]^d
 # @param dim dimension of the parable's space
 # @return returns a string that contains the function as string
 def buildParable(dim):
@@ -160,8 +159,9 @@ def buildParable(dim):
     
     
 #-------------------------------------------------------------------------------    
-# tests the hierarchisation and dehierarchisation routine of sg++ with a sparse
-# grid of dimension 2 and level 3
+## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse
+# @param dim the dimension of the test grid
+# @param level the max. level of the test sparse grid
 def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
     node_values = None
     node_values_back = None

@@ -1,5 +1,5 @@
 /*
-This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems
+This file is part of sgpp, a program package making use of spatially adaptive sparse grids to solve numerical problems
 
 Copyright (C) 2007  Jörg Blank (blankj@in.tum.de)
 
