@@ -26,16 +26,27 @@ Import("env")
 
 srcs = Split("""
 data/DataVector.cpp
-GridFactory.cpp
-GridFactoryImpl.cpp
 
+grid/Grid.cpp
+grid/type/LinearBoundaryGrid.cpp
+grid/type/LinearGrid.cpp
+grid/type/ModLinearGrid.cpp
+grid/type/ModPolyGrid.cpp
+grid/type/PolyGrid.cpp
 grid/generation/StandardGridGenerator.cpp
 
-LinearOperations.cpp
-ModLinearOperations.cpp
-PolyOperations.cpp
-ModPolyOperations.cpp
-OperationHierarchisationLinear.cpp
+basis/linear/operation/OperationBLinear.cpp
+basis/linear/operation/OperationEvalLinear.cpp
+basis/linear/operation/OperationHierarchisationLinear.cpp
+basis/modlinear/operation/OperationBModLinear.cpp
+basis/modlinear/operation/OperationEvalModLinear.cpp
+basis/modlinear/operation/OperationHierarchisationModLinear.cpp
+basis/modpoly/operation/OperationBModPoly.cpp
+basis/modpoly/operation/OperationEvalModPoly.cpp
+basis/modpoly/operation/OperationHierarchisationModPoly.cpp
+basis/poly/operation/OperationBPoly.cpp
+basis/poly/operation/OperationEvalPoly.cpp
+basis/poly/operation/OperationHierarchisationPoly.cpp
 """)
 
 
