@@ -1,4 +1,4 @@
-/*****************************************************************************/
+ /*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
@@ -62,7 +62,7 @@ void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alp
 	// Execute hierarchisation in every dimension of the grid
 	for (size_t i = 0; i < this->storage->dim(); i++)
 	{
-		s.sweep1D(alpha, alpha, i);
+		s.sweep1D(alpha, alpha, (this->storage->dim()-(i+1)));
 	}
 }
 
