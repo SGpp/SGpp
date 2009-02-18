@@ -89,7 +89,7 @@ OperationEval* LinearBoundaryGrid::createOperationEval()
 
 OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
 {
-	return NULL;
+	return new OperationHierarchisationLinearBoundary(this->storage);
 }
 
 }
