@@ -66,6 +66,23 @@ public:
 		this->seq_ = storage->seq(&index);
 	}
 
+	/**
+	 * left level zero parent
+	 */
+	void left_levelzero(size_t dim)
+	{
+		index.set(dim, 0, 0);
+		this->seq_ = storage->seq(&index);
+	}
+
+	/**
+	 * right level zero parent
+	 */
+	void right_levelzero(size_t dim)
+	{
+		index.set(dim, 0, 1);
+		this->seq_ = storage->seq(&index);
+	}
 
 	/**
 	 * left child in direction dim

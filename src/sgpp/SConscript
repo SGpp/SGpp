@@ -47,6 +47,7 @@ basis/modpoly/operation/OperationHierarchisationModPoly.cpp
 basis/poly/operation/OperationBPoly.cpp
 basis/poly/operation/OperationEvalPoly.cpp
 basis/poly/operation/OperationHierarchisationPoly.cpp
+basis/linearboundary/operation/OperationHierarchisationLinearBoundary.cpp
 """)
 
 
