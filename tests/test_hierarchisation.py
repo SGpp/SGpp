@@ -22,6 +22,7 @@
 
 import unittest
 import re
+from pysgpp import DataVector
 
 ## tests the correctness of the hierarchisation and dehierachisation
 # @param node1 the vector of the node base values before hierarchisation and dehierarchisation
@@ -39,32 +40,41 @@ def testHierarchisationResults(node1, node2):
 
 #-------------------------------------------------------------------------------
 ## hierarchisation of the node base values on a grid
-#
 # @param node_values DataVector that holds the coefficients of the function's node base
 # @param grid the grid matching to the node_vector
 def doHierarchisation(node_values, grid):   
+    tmp =  DataVector(grid.getStorage().size(), 1)
+    
+    for i in xrange(len(node_values)):
+        tmp[i] = node_values[i]
+    
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()
     
     # execute hierarchisation
-    hierarchisation.doHierarchisation(node_values)    
+    hierarchisation.doHierarchisation(tmp)    
 
-    return node_values
+    return tmp
 
 
 #-------------------------------------------------------------------------------
 ## hierarchisation of the node base values on a grid
-#
 # @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
 # @param grid thee grid matching to the alpha vector
-def doDehierarchisation(alpha, grid): 
+def doDehierarchisation(alpha, grid):
+    tmp =  DataVector(grid.getStorage().size(), 1)
+    
+    for i in xrange(len(alpha)):
+        tmp[i] = alpha[i]
+         
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()
     
     # execute hierarchisation
-    hierarchisation.doDehierarchisation(alpha)
+    hierarchisation.doDehierarchisation(tmp)
     
-    return alpha
+    return tmp
+
 
 ## evalutes a given function
 # @param function a string the gives the function; x1...xn must be the names of the placeholders

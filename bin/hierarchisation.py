@@ -93,27 +93,37 @@ def buildAlphaVector(filename):
 # @param node_values DataVector that holds the coefficients of the function's node base
 # @param grid the grid matching to the node_vector
 def doHierarchisation(node_values, grid):   
+    tmp =  DataVector(grid.getStorage().size(), 1)
+    
+    for i in xrange(len(node_values)):
+        tmp[i] = node_values[i]
+    
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()
     
     # execute hierarchisation
-    hierarchisation.doHierarchisation(node_values)    
+    hierarchisation.doHierarchisation(tmp)    
 
-    return node_values
+    return tmp
 
 
 #-------------------------------------------------------------------------------
 ## hierarchisation of the node base values on a grid
 # @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
 # @param grid thee grid matching to the alpha vector
-def doDehierarchisation(alpha, grid): 
+def doDehierarchisation(alpha, grid):
+    tmp =  DataVector(grid.getStorage().size(), 1)
+    
+    for i in xrange(len(alpha)):
+        tmp[i] = alpha[i]
+         
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()
     
     # execute hierarchisation
-    hierarchisation.doDehierarchisation(alpha)
+    hierarchisation.doDehierarchisation(tmp)
     
-    return alpha
+    return tmp
     
     
 #-------------------------------------------------------------------------------    
@@ -125,7 +135,7 @@ def evalFunction(function, points):
     for i in xrange(len(points)):
         function = re.sub("x" + str(i+1), points[i], function)
             
-    return eval(function)    
+    return eval(function)+1.0    
     
 
 #-------------------------------------------------------------------------------
@@ -157,6 +167,71 @@ def buildParable(dim):
         
     return function    
     
+
+#-------------------------------------------------------------------------------        
+## build parable test function over [0,1]^d with boundaries
+# @param dim dimension of the parable's space
+# @return returns a string that contains the function as string
+def buildParableBoundary(dim):
+    function = ""
+    
+    function = "1.0"
+    
+    for i in xrange(dim):
+        function = function + "*((0.25*(x" + str(i+1) + "-0.7)*(x" + str(i+1) + "-0.7))+2.0)"
+        
+    return function 
+
+
+#-------------------------------------------------------------------------------    
+## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse
+# @param dim the dimension of the test grid
+# @param level the max. level of the test sparse grid
+def runHierarchisationDehierarchisationLinearBoundaryRegularTest(dim, level):
+    node_values = None
+    node_values_back = None
+    alpha = None
+    points = None
+
+    function = buildParableBoundary(dim)
+    
+    print "The test function is:"
+    print function
+    
+    # generate a regular test grid
+    grid = Grid.createLinearBoundaryGrid(dim)
+    generator  = grid.createGridGenerator()
+    generator.regularBoundaries(level)
+    
+    # generate the node_values vector
+    storage = grid.getStorage()
+    
+    node_values = DataVector(storage.size(), 1)
+    
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates().split()
+        node_values[n] = evalFunction(function, points)
+        
+        
+    #print node_values
+    
+    # do hierarchisation
+    alpha = doHierarchisation(node_values, grid)
+    
+    #print alpha
+    
+    # do dehierarchisation
+    node_values_back = doDehierarchisation(alpha, grid)
+     
+    #print result
+    #print node_values_back
+    
+    # test hierarchisation and dehierarchisation
+    print "The maximum error during hierarchisation and dehierarchisation was:"
+    print testHierarchisationResults(node_values, node_values_back)
+    
+    return
+
     
 #-------------------------------------------------------------------------------    
 ## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse
@@ -215,4 +290,4 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationLinearRegularTest(20, 4)
+    runHierarchisationDehierarchisationLinearBoundaryRegularTest(3, 3)

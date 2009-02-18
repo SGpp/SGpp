@@ -62,7 +62,7 @@ void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
 	// Execute hierarchisation in every dimension of the grid
 	for (size_t i = 0; i < this->storage->dim(); i++)
 	{
-		s.sweep1D(alpha, alpha, i);
+		s.sweep1D(alpha, alpha, (this->storage->dim()-(i+1)));
 	}
 }
 
