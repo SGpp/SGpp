@@ -23,7 +23,7 @@
 import unittest
 import re
 
-# tests the correctness of the hierarchisation and dehierachisation
+## tests the correctness of the hierarchisation and dehierachisation
 # @param node1 the vector of the node base values before hierarchisation and dehierarchisation
 # @param node2 the vector of the node base values after hierarchisation and dehierarchisation
 # @return maximum error during the transformations
@@ -38,7 +38,7 @@ def testHierarchisationResults(node1, node2):
 
 
 #-------------------------------------------------------------------------------
-# hierarchisation of the node base values on a grid
+## hierarchisation of the node base values on a grid
 #
 # @param node_values DataVector that holds the coefficients of the function's node base
 # @param grid the grid matching to the node_vector
@@ -53,7 +53,7 @@ def doHierarchisation(node_values, grid):
 
 
 #-------------------------------------------------------------------------------
-# hierarchisation of the node base values on a grid
+## hierarchisation of the node base values on a grid
 #
 # @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
 # @param grid thee grid matching to the alpha vector
@@ -66,7 +66,7 @@ def doDehierarchisation(alpha, grid):
     
     return alpha
 
-# evalutes a given function
+## evalutes a given function
 # @param function a string the gives the function; x1...xn must be the names of the placeholders
 # @param points sorted list of the coordinates (x1...xn) of evaluation point
 # @return returns the function value at points
@@ -77,7 +77,7 @@ def evalFunction(function, points):
     return eval(function)
 
 
-# build parable test function over [0,1]^d
+## build parable test function over [0,1]^d
 # @param dim dimension of the parable's space
 # @return returns a string that contains the function as string
 def buildParable(dim):
@@ -91,6 +91,20 @@ def buildParable(dim):
     return function 
     
     
+## build parable test function over [0,1]^d with boundaries
+# @param dim dimension of the parable's space
+# @return returns a string that contains the function as string
+def buildParableBoundary(dim):
+    function = ""
+    
+    function = "1.0"
+    
+    for i in xrange(dim):
+        function = function + "*((0.25*(x" + str(i+1) + "-0.7)*(x" + str(i+1) + "-0.7))+2.0)"
+        
+    return function 
+
+
 class TestHierarchisationLinear(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
@@ -167,6 +181,83 @@ class TestHierarchisationLinear(unittest.TestCase):
         #test
         self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
         
+
+class TestHierarchisationLinearBoundary(unittest.TestCase):
+    ##
+    # Test hierarchisation for 1D
+    def testHierarchisation1DBoundary(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 1
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
+
+        function = buildParableBoundary(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createLinearBoundaryGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regularBoundaries(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+
+  
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHierarchisationDBoundary(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 3
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
+
+        function = buildParableBoundary(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createLinearBoundaryGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regularBoundaries(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+
         
 # Run tests for this file if executed as application 
 if __name__=='__main__':
