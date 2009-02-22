@@ -87,7 +87,35 @@ def buildNodevalueVector(filename):
 def buildAlphaVector(filename):
     return buildCoefficientVectorFromFile(filename)
     
+#-------------------------------------------------------------------------------    
+def print2DFunction(filename, grid, alpha, resolution):
+    p = DataVector(1,2)
+    fout = file(filename, "w")
+
+    for x in xrange(resolution):
+        for y in xrange(resolution):
+            p[0] = float(x) / (resolution - 1)
+            p[1] = float(y) / (resolution - 1)
+            pc = grid.createOperationEval().eval(alpha, p)
+            fout.write("%f %f %f\n" % (p[0], p[1], pc))
+        fout.write("\n")
+    fout.close()
+    return
+
         
+#-------------------------------------------------------------------------------    
+def print1DFunction(filename, grid, alpha, resolution):
+    p = DataVector(1,1)
+    fout = file(filename, "w")
+
+    for x in xrange(resolution):
+        p[0] = float(x) / (resolution - 1)
+        pc = grid.createOperationEval().eval(alpha, p)
+        fout.write("%f %f\n" % (p[0], pc))
+    fout.close()
+    return
+
+
 #-------------------------------------------------------------------------------
 ## hierarchisation of the node base values on a grid
 # @param node_values DataVector that holds the coefficients of the function's node base
@@ -135,7 +163,7 @@ def evalFunction(function, points):
     for i in xrange(len(points)):
         function = re.sub("x" + str(i+1), points[i], function)
             
-    return eval(function)+1.0    
+    return eval(function)    
     
 
 #-------------------------------------------------------------------------------
@@ -178,11 +206,116 @@ def buildParableBoundary(dim):
     function = "1.0"
     
     for i in xrange(dim):
-        function = function + "*((0.25*(x" + str(i+1) + "-0.7)*(x" + str(i+1) + "-0.7))+2.0)"
+        function = function + "*(((-1.0)*(x" + str(i+1) + "-0.7)*(x" + str(i+1) + "-0.7))+2.0)"
         
     return function 
 
 
+#-------------------------------------------------------------------------------    
+## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse 
+# and evals the hierachified sparse grid
+# @param level the max. level of the test sparse grid
+def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint1D(level):
+    node_values = None
+    node_values_back = None
+    alpha = None
+    points = None
+    dim = 1
+
+    function = buildParableBoundary(dim)
+    
+    print "The test function is:"
+    print function
+    
+    # generate a regular test grid
+    grid = Grid.createLinearBoundaryGrid(dim)
+    generator  = grid.createGridGenerator()
+    generator.regularBoundaries(level)
+    
+    # generate the node_values vector
+    storage = grid.getStorage()
+    
+    node_values = DataVector(storage.size(), 1)
+    
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates().split()
+        node_values[n] = evalFunction(function, points)
+        
+        
+    #print node_values
+    
+    # do hierarchisation
+    alpha = doHierarchisation(node_values, grid)
+    
+    #print alpha
+    print1DFunction("hier_1d.out", grid, alpha, 50)
+    
+    # do dehierarchisation
+    node_values_back = doDehierarchisation(alpha, grid)
+     
+    #print result
+    #print node_values_back
+    
+    # test hierarchisation and dehierarchisation
+    print "The maximum error during hierarchisation and dehierarchisation was:"
+    print testHierarchisationResults(node_values, node_values_back)
+    
+    return
+
+    
+#-------------------------------------------------------------------------------    
+## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse 
+# and evals the hierachified sparse grid
+# @param level the max. level of the test sparse grid
+def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(level):
+    node_values = None
+    node_values_back = None
+    alpha = None
+    points = None
+    dim = 2
+
+    function = buildParableBoundary(dim)
+    
+    print "The test function is:"
+    print function
+    
+    # generate a regular test grid
+    grid = Grid.createLinearBoundaryGrid(dim)
+    generator  = grid.createGridGenerator()
+    generator.regularBoundaries(level)
+    
+    # generate the node_values vector
+    storage = grid.getStorage()
+    
+    node_values = DataVector(storage.size(), 1)
+    
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates().split()
+        node_values[n] = evalFunction(function, points)
+        
+        
+    #print node_values
+    
+    # do hierarchisation
+    alpha = doHierarchisation(node_values, grid)
+    
+    #print alpha
+    
+    print2DFunction("hier_2d.out", grid, alpha, 10)
+    
+    # do dehierarchisation
+    node_values_back = doDehierarchisation(alpha, grid)
+     
+    #print result
+    #print node_values_back
+    
+    # test hierarchisation and dehierarchisation
+    print "The maximum error during hierarchisation and dehierarchisation was:"
+    print testHierarchisationResults(node_values, node_values_back)
+    
+    return
+
+    
 #-------------------------------------------------------------------------------    
 ## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse
 # @param dim the dimension of the test grid
@@ -290,4 +423,4 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationLinearBoundaryRegularTest(3, 3)
+    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(5)
