@@ -84,7 +84,7 @@ OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
 
 OperationEval* LinearBoundaryGrid::createOperationEval()
 {
-	return NULL;
+	return new OperationEvalLinearBoundary(this->storage);
 }
 
 OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()

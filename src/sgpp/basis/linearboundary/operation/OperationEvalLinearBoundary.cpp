@@ -20,46 +20,42 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYBASE_HPP
-#define LINEARBOUNDARYBASE_HPP
+#include "basis/basis.hpp"
 
-#include <cmath>
+#include "basis/linearboundary/operation/OperationEvalLinearBoundary.hpp"
+
+#include "sgpp.hpp"
+
+#include "data/DataVector.h"
 
 namespace sg
 {
 
-/**
- * linear base functions with boundaries
- * And here we have another implicit dependence on tensor products
- */
-template<class LT, class IT>
-class linearboundaryBase
+double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>& point)
 {
-public:
-	/**
-	 * Evaluate a base functions.
-	 * Has a dependence on the absolute position of grid point and support.
-	 */
-	double eval(LT level, IT index, double p)
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+
+	IndexValVector vec;
+	linearboundaryBase<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctionsBoundaries<linearboundaryBase<unsigned int, unsigned int> > ga(storage);
+
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 	{
-		if (level == 0)
-		{
-			if (index == 0)
-			{
-				return 1.0 - p;
-			}
-			if (index == 1)
-			{
-				return p;
-			}
-		}
-		else
-		{
-			return 1.0 - fabs((1<<level) * p - index);
-		}
+		result += iter->second * alpha[iter->first];
 	}
-};
+
+	return result;
+}
+
+double OperationEvalLinearBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
+{
+	linearboundaryBase<unsigned int, unsigned int> base;
+	return test_dataset(this->storage, base, alpha, data, classes);
+}
 
 }
 
-#endif /* LINEARBOUNDARYBASE_HPP */

@@ -2,8 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Dirk Pflüger (pflueged@in.tum.de)                      */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -22,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GETAFFECTEDBASISFUNCTIONS_HPP
-#define GETAFFECTEDBASISFUNCTIONS_HPP
+#ifndef GETAFFECTEDBASISFUNCTIONSBOUNDARIES_HPP
+#define GETAFFECTEDBASISFUNCTIONSBOUNDARIES_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
@@ -37,40 +35,19 @@ namespace sg {
 /**
  * Basic algorithm for getting all affected basis functions.
  * This implicitly assumes a tensor-product approach and local support.
- * No grid points on the border are supported.
+ * Grid points on the border are supported.
  *
- * The main idea behind this algorithm is to spend as few function evaluations as possible.
- * Assume a regular sparse grid level 3 in two dimensions with the sparse grid basis
- * \f$\Phi:=\{\phi_i(x), i=1,\ldots,N\}\f$. Then the tableau of subspaces looks
- * as follows:
- *   \image html GetAffectedBasisFunctions_subspaces.png "Tableau of subspaces for a regular sparse grid level 3"
- * You could evaluate the function \f$ f_N(x) = \sum_{i=1}^N \alpha_i \phi_i(x)\f$ for all basis
- * functions \f$\phi_i(x)\f$, multiply them with the surplus and add them up.
- * In \f$d\f$ dimensions this would lead to \f$N\f$ evaluations of \f$d\f$ one-dimensional basis
- * functions each.
- *
- * A better way is to (recursively) look at each subspace, as only one basis function
- * per subspace can be non-zero (partially disjunct supports):
- *   \image html GetAffectedBasisFunctions_subspaces_affectedBasisFunctions.png "Traversal of subspaces for evaluation"
- * This can be done recursively in both the dimension and the level. In each subspace
- * the basis function concerned can be identified via a few index calculations and
- * evaluated at the given point in the domain.
- *
- * Even better would be to save further function evaluations and to reuse intermediate values obtained by
- * the evaluation of one-dimensional basis functions, see the following figure.
- *   \image html GetAffectedBasisFunctions_subspaces_affectedBasisFunctions_recursive.png "Minimize the number of evaluations" width=10cm
- * Descending recursively in the d-th dimension, one can propagate the value of the intermediate function
- * evaluation for the first d-1 dimensions that have already been looked at.
+ * @todo add graphical description
  */
 template<class BASIS>
-class GetAffectedBasisFunctions
+class GetAffectedBasisFunctionsBoundaries
 {
 public:
-	GetAffectedBasisFunctions(GridStorage* storage) : storage(storage)
+	GetAffectedBasisFunctionsBoundaries(GridStorage* storage) : storage(storage)
 	{
 	}
 
-	~GetAffectedBasisFunctions() {}
+	~GetAffectedBasisFunctionsBoundaries() {}
 
 	/**
 	 * Returns evaluations of all basis functions that are non-zero at a given evaluation point.
@@ -156,6 +133,32 @@ protected:
 			}
 			else
 			{
+				// handle boundaries if we are on level 1
+				if (work_level == 1)
+				{
+					// level 0, index 0
+					working.left_levelzero(current_dim);
+					size_t seq_lz_left = working.seq();
+					double new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+					// level 0, index 1
+					working.right_levelzero(current_dim);
+					size_t seq_lz_right = working.seq();
+					double new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
+
+					if(current_dim == storage->dim()-1)
+					{
+						result.push_back(std::make_pair(seq_lz_left, value*new_value_l_zero_left));
+						result.push_back(std::make_pair(seq_lz_right, value*new_value_l_zero_right));
+					}
+					else
+					{
+						rec(basis, point, current_dim + 1, value*(new_value_l_zero_left+new_value_l_zero_right), working, source, result);
+					}
+
+					working.top(current_dim);
+					seq = working.seq();
+				}
+
 				index_type work_index;
 				level_type temp;
 
@@ -173,6 +176,7 @@ protected:
 				}
 			}
 
+			// there are no levels left
 			if(working.hint(current_dim))
 			{
 				break;
@@ -201,4 +205,4 @@ protected:
 
 }
 
-#endif /* GETAFFECTEDBASISFUNCTIONS_HPP */
+#endif /* GETAFFECTEDBASISFUNCTIONSBOUNDARIES_HPP */

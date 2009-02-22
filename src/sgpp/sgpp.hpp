@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "algorithm/AlgorithmB.hpp"
 #include "algorithm/GetAffectedBasisFunctions.hpp"
+#include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/classification/test_dataset.hpp"
 
 #include "basis/basis.hpp"
