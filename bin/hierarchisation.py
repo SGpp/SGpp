@@ -104,6 +104,24 @@ def print2DFunction(filename, grid, alpha, resolution):
 
         
 #-------------------------------------------------------------------------------    
+def printRef2DFunction(filename, function, resolution):
+    points = ""
+    fout = file(filename, "w")
+
+    for x in xrange(resolution):
+        for y in xrange(resolution):
+            p = None
+            points = str(float(x) / (resolution - 1)) + " "
+            points = points + str(float(y) / (resolution - 1))
+            p = points.split()
+            pc = evalFunction(function, p)
+            fout.write("%s %s %f\n" % (p[0], p[1], pc))
+        fout.write("\n")
+    fout.close()
+    return        
+        
+        
+#-------------------------------------------------------------------------------    
 def print1DFunction(filename, grid, alpha, resolution):
     p = DataVector(1,1)
     fout = file(filename, "w")
@@ -112,6 +130,21 @@ def print1DFunction(filename, grid, alpha, resolution):
         p[0] = float(x) / (resolution - 1)
         pc = grid.createOperationEval().eval(alpha, p)
         fout.write("%f %f\n" % (p[0], pc))
+    fout.close()
+    return
+
+
+#-------------------------------------------------------------------------------    
+def printRef1DFunction(filename, function, resolution):
+    points = ""
+    fout = file(filename, "w")
+
+    for x in xrange(resolution):
+            p = None
+            points = str(float(x) / (resolution - 1))
+            p = points.split()
+            pc = evalFunction(function, p)
+            fout.write("%s %f\n" % (p[0], pc))
     fout.close()
     return
 
@@ -301,7 +334,9 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(level):
     
     #print alpha
     
-    print2DFunction("hier_2d.out", grid, alpha, 10)
+    resolution =  50
+    print2DFunction("hier_2d.out", grid, alpha, resolution)
+    printRef2DFunction("ref_2d.out", function, resolution)
     
     # do dehierarchisation
     node_values_back = doDehierarchisation(alpha, grid)
@@ -326,6 +361,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTest(dim, level):
     alpha = None
     points = None
 
+    #function = buildParableBoundary(dim)
     function = buildParableBoundary(dim)
     
     print "The test function is:"
@@ -423,4 +459,4 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(5)
+    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(6)
