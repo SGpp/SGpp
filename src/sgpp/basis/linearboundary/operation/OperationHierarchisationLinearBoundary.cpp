@@ -42,22 +42,30 @@ void OperationHierarchisationLinearBoundary::doHierarchisation(DataVector& node_
 	detail::HierarchisationLinearBoundary func(this->storage);
 	sweep<detail::HierarchisationLinearBoundary> s(func, this->storage);
 
-	// loop over the zero dim
-	for (size_t zd = 0; zd < this->storage->dim(); zd++)
+	if (this->storage->dim() > 1)
 	{
-		// do hierarchisation on the remaining grid
-		for (size_t i = 0; i < this->storage->dim(); i++)
+		// loop over the zero dim
+		for (size_t zd = 0; zd < this->storage->dim(); zd++)
 		{
-			if (i != zd)
+			// do hierarchisation on the remaining grid
+			for (size_t i = 0; i < this->storage->dim(); i++)
 			{
-				// hierarchisation of the grid's left boundary in direction of dimension dim-(i+1)
-				s.sweep1D_Boundary(node_values, node_values, i, zd, true);
-				// hierarchisation of the grid's right boundary in direction of dimension dim-(i+1)
-				s.sweep1D_Boundary(node_values, node_values, i, zd, false);
-				// hierarchisation of the grid's core in direction of dimension dim-(i+1)
-				s.sweep1D(node_values, node_values, i);
+				if (i != zd)
+				{
+					// hierarchisation of the grid's left boundary in direction of dimension dim-(i+1)
+					s.sweep1D_Boundary(node_values, node_values, i, zd, true);
+					// hierarchisation of the grid's right boundary in direction of dimension dim-(i+1)
+					s.sweep1D_Boundary(node_values, node_values, i, zd, false);
+					// hierarchisation of the grid's core in direction of dimension dim-(i+1)
+					s.sweep1D(node_values, node_values, i);
+				}
 			}
 		}
+	}
+	else
+	{
+		// hierarchisation of the grid's core in direction of dimension dim-(i+1)
+		s.sweep1D(node_values, node_values, 0);
 	}
 }
 
@@ -71,22 +79,30 @@ void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alp
 	detail::DehierarchisationLinearBoundary func(this->storage);
 	sweep<detail::DehierarchisationLinearBoundary> s(func, this->storage);
 
-	// loop over the zero dim
-	for (size_t zd = 0; zd < this->storage->dim(); zd++)
+	if (this->storage->dim() > 1)
 	{
-		// do dehierarchisation on the remaining grid
-		for (size_t i = 0; i < this->storage->dim(); i++)
+		// loop over the zero dim
+		for (size_t zd = 0; zd < this->storage->dim(); zd++)
 		{
-			if (i != zd)
+			// do dehierarchisation on the remaining grid
+			for (size_t i = 0; i < this->storage->dim(); i++)
 			{
-				// dehierarchisation of the grid's core in direction of dimension dim-(i+1)
-				s.sweep1D(alpha, alpha, (this->storage->dim()-(i+1)));
-				// dehierarchisation of the grid's right boundary in direction of dimension dim-(i+1)
-				s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)), (this->storage->dim()-(zd+1)), false);
-				// dehierarchisation of the grid's left boundary in direction of dimension dim-(i+1)
-				s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)), (this->storage->dim()-(zd+1)), true);
+				if (i != zd)
+				{
+					// dehierarchisation of the grid's core in direction of dimension dim-(i+1)
+					s.sweep1D(alpha, alpha, (this->storage->dim()-(i+1)));
+					// dehierarchisation of the grid's right boundary in direction of dimension dim-(i+1)
+					s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)), (this->storage->dim()-(zd+1)), false);
+					// dehierarchisation of the grid's left boundary in direction of dimension dim-(i+1)
+					s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)), (this->storage->dim()-(zd+1)), true);
+				}
 			}
 		}
+	}
+	else
+	{
+		// dehierarchisation of the grid's core in direction of dimension dim-(i+1)
+		s.sweep1D(alpha, alpha, 0);
 	}
 }
 
