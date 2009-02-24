@@ -439,4 +439,4 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(5, 3, 5)
+    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(3, 7, 11)
