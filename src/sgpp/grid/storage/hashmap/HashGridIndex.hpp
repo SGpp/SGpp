@@ -134,6 +134,11 @@ public:
 		return index[d] * pow(2.0, -static_cast<double>(level[d]));
 	}
 
+	HashGridIndex* getPointer()
+	{
+		return this;
+	}
+
 /*
  * Not a grid point trait
 	double volume() const
