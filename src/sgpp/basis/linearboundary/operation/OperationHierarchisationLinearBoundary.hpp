@@ -43,7 +43,6 @@ public:
 
 protected:
 	GridStorage* storage;
-
 };
 
 }
