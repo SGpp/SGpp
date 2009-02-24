@@ -69,37 +69,6 @@ public:
 	}
 
 	/**
-	 * Descends on all dimensions beside dim_sweep, skips dimension boundary_dim. Class functor for dim_sweep
-	 */
-	void sweep1D_Boundary(DataVector& source, DataVector& result, size_t dim_sweep, size_t boundary_dim, bool bLeftRight)
-	{
-		// generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
-		std::vector<size_t> dim_list;
-		for(size_t i = 0; i < storage->dim(); i++)
-		{
-			if(i != dim_sweep && i != boundary_dim)
-			{
-				dim_list.push_back(i);
-			}
-		}
-
-		grid_iterator index(storage);
-
-		if (bLeftRight == true)
-		{
-			index.set(boundary_dim, 0, 0);
-		}
-		else
-		{
-			index.set(boundary_dim, 0, 1);
-		}
-
-		sweep_rec(source, result, index, dim_list, storage->dim()-2, dim_sweep);
-
-	}
-
-
-	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
 	 */
 	void sweep1D(DataVector& source, DataVector& result, size_t dim_sweep)
@@ -118,6 +87,26 @@ public:
 
 		sweep_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
 
+	}
+
+	/**
+	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
+	 */
+	void sweep1D_Boundary(DataVector& source, DataVector& result, size_t dim_sweep)
+	{
+		// generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+		std::vector<size_t> dim_list;
+		for(size_t i = 0; i < storage->dim(); i++)
+		{
+			if(i != dim_sweep)
+			{
+				dim_list.push_back(i);
+			}
+		}
+
+		grid_iterator index(storage);
+
+		sweep_Boundary_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
 	}
 
 protected:
@@ -150,6 +139,56 @@ protected:
 			}
 
 			index.up(current_dim);
+		}
+	}
+
+	void sweep_Boundary_rec(DataVector& source, DataVector& result, grid_iterator& index,
+				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
+	{
+		if (dim_rem == 0)
+		{
+			functor(source, result, index, dim_sweep);
+		}
+		else
+		{
+			typedef GridStorage::index_type::level_type level_type;
+			typedef GridStorage::index_type::index_type index_type;
+
+			level_type current_level;
+			index_type current_index;
+
+			index.get(dim_list[dim_rem-1], current_level, current_index);
+
+			// handle level zero
+			if (current_level == 1)
+			{
+				index.left_levelzero(dim_list[dim_rem-1]);
+				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+
+				index.right_levelzero(dim_list[dim_rem-1]);
+				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+
+				index.top(dim_list[dim_rem-1]);
+			}
+
+			// given current point to next dim
+			sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+
+			if (index.hint_left(dim_list[dim_rem-1]) == true)
+			{
+				index.left_child(dim_list[dim_rem-1]);
+				sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+
+				index.up(dim_list[dim_rem-1]);
+			}
+
+			if (index.hint_right(dim_list[dim_rem-1]) == true)
+			{
+				index.right_child(dim_list[dim_rem-1]);
+				sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+
+				index.up(dim_list[dim_rem-1]);
+			}
 		}
 	}
 

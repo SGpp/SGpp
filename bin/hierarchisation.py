@@ -87,65 +87,98 @@ def buildNodevalueVector(filename):
 def buildAlphaVector(filename):
     return buildCoefficientVectorFromFile(filename)
     
-#-------------------------------------------------------------------------------    
-def print2DFunction(filename, grid, alpha, resolution):
-    p = DataVector(1,2)
-    fout = file(filename, "w")
 
-    for x in xrange(resolution):
-        for y in xrange(resolution):
-            p[0] = float(x) / (resolution - 1)
-            p[1] = float(y) / (resolution - 1)
-            pc = grid.createOperationEval().eval(alpha, p)
-            fout.write("%f %f %f\n" % (p[0], p[1], pc))
+#-------------------------------------------------------------------------------
+def printRefPoint(points, dim, function, fout, foutvalue):
+    p = None
+    
+    p = points.split()
+    pc = evalFunction(function, p)
+    for y in xrange(dim):
+        fout.write("%s " % p[y])
+    
+    fout.write("%f " % pc)    
+    fout.write("\n")
+    foutvalue.write("%f " % pc)    
+    foutvalue.write("\n")
+    
+    return 
+    
+    
+#-------------------------------------------------------------------------------
+def recGenPrintRefVector(dim_rem, dim, points, function, resolution, fout, foutvalue):
+    if dim_rem == 0:
+        points_save = points
+        for x in xrange(resolution):
+            points = str(float(x) / (resolution - 1)) + " " + points_save
+            printRefPoint(points, dim, function, fout, foutvalue)
+            
         fout.write("\n")
-    fout.close()
-    return
-
+        foutvalue.write("\n")
+    else:
+        points_save = points
+        for x in xrange(resolution):
+            points = str(float(x) / (resolution - 1)) + " "+ points_save + str(float(x) / (resolution - 1))
+            recGenPrintRefVector(dim_rem-1, dim, points, function, resolution, fout, foutvalue)
         
-#-------------------------------------------------------------------------------    
-def printRef2DFunction(filename, function, resolution):
-    points = ""
-    fout = file(filename, "w")
-
-    for x in xrange(resolution):
-        for y in xrange(resolution):
-            p = None
-            points = str(float(x) / (resolution - 1)) + " "
-            points = points + str(float(y) / (resolution - 1))
-            p = points.split()
-            pc = evalFunction(function, p)
-            fout.write("%s %s %f\n" % (p[0], p[1], pc))
-        fout.write("\n")
-    fout.close()
-    return        
-        
-        
-#-------------------------------------------------------------------------------    
-def print1DFunction(filename, grid, alpha, resolution):
-    p = DataVector(1,1)
-    fout = file(filename, "w")
-
-    for x in xrange(resolution):
-        p[0] = float(x) / (resolution - 1)
-        pc = grid.createOperationEval().eval(alpha, p)
-        fout.write("%f %f\n" % (p[0], pc))
-    fout.close()
     return
 
 
 #-------------------------------------------------------------------------------    
-def printRef1DFunction(filename, function, resolution):
+def printRefNDFunction(filename, filenameValue, function, resolution, dim):
     points = ""
     fout = file(filename, "w")
-
-    for x in xrange(resolution):
-            p = None
-            points = str(float(x) / (resolution - 1))
-            p = points.split()
-            pc = evalFunction(function, p)
-            fout.write("%s %f\n" % (p[0], pc))
+    foutvalue = file(filenameValue, "w")
+    
+    recGenPrintRefVector(dim-1, dim, points, function, resolution, fout, foutvalue)
+    
     fout.close()
+    foutvalue.close()
+    return
+    
+    
+#-------------------------------------------------------------------------------
+def printPoint(p, grid, alpha, fout, foutvalue):
+    pc = grid.createOperationEval().eval(alpha, p)
+    for y in xrange(grid.getStorage().dim()):
+        fout.write("%f " % p[y])
+    
+    fout.write("%f " % pc)
+    fout.write("\n")
+    foutvalue.write("%f " % pc)
+    foutvalue.write("\n") 
+    
+    return 
+    
+    
+#-------------------------------------------------------------------------------
+def recGenPrintVector(dim_rem, p, grid, alpha, resolution, fout, foutvalue):
+    if dim_rem == 0:
+        for x in xrange(resolution):
+            p[dim_rem] = float(x) / (resolution - 1)
+            printPoint(p, grid, alpha, fout, foutvalue)
+            
+        fout.write("\n")
+        foutvalue.write("\n")
+    else:
+        for x in xrange(resolution):
+            p[dim_rem] = float(x) / (resolution - 1)
+            recGenPrintVector(dim_rem-1, p, grid, alpha, resolution, fout, foutvalue)
+        
+    return
+
+
+#-------------------------------------------------------------------------------    
+def printNDFunction(filename, filenameValue, grid, alpha, resolution):
+    dim = grid.getStorage().dim()
+    p = DataVector(1,dim)
+    fout = file(filename, "w")
+    foutvalue = file(filenameValue, "w")
+    
+    recGenPrintVector(dim-1, p, grid, alpha, resolution, fout, foutvalue)
+    
+    fout.close()
+    foutvalue.close()
     return
 
 
@@ -247,65 +280,13 @@ def buildParableBoundary(dim):
 #-------------------------------------------------------------------------------    
 ## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse 
 # and evals the hierachified sparse grid
+# @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
-def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint1D(level):
+def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, level, resolution):
     node_values = None
     node_values_back = None
     alpha = None
     points = None
-    dim = 1
-
-    function = buildParableBoundary(dim)
-    
-    print "The test function is:"
-    print function
-    
-    # generate a regular test grid
-    grid = Grid.createLinearBoundaryGrid(dim)
-    generator  = grid.createGridGenerator()
-    generator.regularBoundaries(level)
-    
-    # generate the node_values vector
-    storage = grid.getStorage()
-    
-    node_values = DataVector(storage.size(), 1)
-    
-    for n in xrange(storage.size()):
-        points = storage.get(n).getCoordinates().split()
-        node_values[n] = evalFunction(function, points)
-        
-        
-    #print node_values
-    
-    # do hierarchisation
-    alpha = doHierarchisation(node_values, grid)
-    
-    #print alpha
-    print1DFunction("hier_1d.out", grid, alpha, 50)
-    
-    # do dehierarchisation
-    node_values_back = doDehierarchisation(alpha, grid)
-     
-    #print result
-    #print node_values_back
-    
-    # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
-    
-    return
-
-    
-#-------------------------------------------------------------------------------    
-## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse 
-# and evals the hierachified sparse grid
-# @param level the max. level of the test sparse grid
-def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(level):
-    node_values = None
-    node_values_back = None
-    alpha = None
-    points = None
-    dim = 2
 
     function = buildParableBoundary(dim)
     
@@ -334,9 +315,8 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(level):
     
     #print alpha
     
-    resolution =  50
-    print2DFunction("hier_2d.out", grid, alpha, resolution)
-    printRef2DFunction("ref_2d.out", function, resolution)
+    printNDFunction("hier_Nd.out", "hier_Nd_values.out", grid, alpha, resolution)
+    printRefNDFunction("ref_Nd.out", "ref_Nd_values.out", function, resolution, dim)
     
     # do dehierarchisation
     node_values_back = doDehierarchisation(alpha, grid)
@@ -459,4 +439,4 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrint2D(6)
+    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(5, 3, 5)

@@ -154,6 +154,46 @@ public:
 		return false;
 	}
 
+	/**
+	 * returns true if there are more left childs in dimensioin d
+	 */
+	bool hint_left(size_t d)
+	{
+		typename index_type::level_type l;
+		typename index_type::index_type i;
+		bool hasIndex = true;
+
+		index.get(d, l, i);
+		index.set(d, l + 1, 2 * i - 1);
+
+		GIT* my_Index = index.getPointer();
+		hasIndex = storage->has_key(my_Index);
+
+		index.set(d, l, i);
+
+		return hasIndex;
+	}
+
+	/**
+	 * returns true if there are more right childs in dimensioin d
+	 */
+	bool hint_right(size_t d)
+	{
+		typename index_type::level_type l;
+		typename index_type::index_type i;
+		bool hasIndex = true;
+
+		index.get(d, l, i);
+		index.set(d, l + 1, 2 * i + 1);
+
+		GIT* my_Index = index.getPointer();
+		hasIndex = storage->has_key(my_Index);
+
+		index.set(d, l, i);
+
+		return hasIndex;
+	}
+
 	void get(size_t d, typename index_type::level_type &l, typename index_type::index_type &i) const
 	{
 		index.get(d, l, i);
