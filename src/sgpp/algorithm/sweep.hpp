@@ -69,6 +69,37 @@ public:
 	}
 
 	/**
+	 * Descends on all dimensions beside dim_sweep, skips dimension boundary_dim. Class functor for dim_sweep
+	 */
+	void sweep1D_Boundary(DataVector& source, DataVector& result, size_t dim_sweep, size_t boundary_dim, bool bLeftRight)
+	{
+		// generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+		std::vector<size_t> dim_list;
+		for(size_t i = 0; i < storage->dim(); i++)
+		{
+			if(i != dim_sweep && i != boundary_dim)
+			{
+				dim_list.push_back(i);
+			}
+		}
+
+		grid_iterator index(storage);
+
+		if (bLeftRight == true)
+		{
+			index.set(boundary_dim, 0, 0);
+		}
+		else
+		{
+			index.set(boundary_dim, 0, 1);
+		}
+
+		sweep_rec(source, result, index, dim_list, storage->dim()-2, dim_sweep);
+
+	}
+
+
+	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
 	 */
 	void sweep1D(DataVector& source, DataVector& result, size_t dim_sweep)

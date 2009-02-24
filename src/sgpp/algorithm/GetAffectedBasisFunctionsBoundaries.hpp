@@ -140,6 +140,16 @@ protected:
 					working.left_levelzero(current_dim);
 					size_t seq_lz_left = working.seq();
 					double new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+
+					if(current_dim == storage->dim()-1)
+					{
+						result.push_back(std::make_pair(seq_lz_left, value*new_value_l_zero_left));
+					}
+					else
+					{
+						rec(basis, point, current_dim + 1, value*new_value_l_zero_left, working, source, result);
+					}
+
 					// level 0, index 1
 					working.right_levelzero(current_dim);
 					size_t seq_lz_right = working.seq();
@@ -147,12 +157,11 @@ protected:
 
 					if(current_dim == storage->dim()-1)
 					{
-						result.push_back(std::make_pair(seq_lz_left, value*new_value_l_zero_left));
 						result.push_back(std::make_pair(seq_lz_right, value*new_value_l_zero_right));
 					}
 					else
 					{
-						rec(basis, point, current_dim + 1, value*(new_value_l_zero_left+new_value_l_zero_right), working, source, result);
+						rec(basis, point, current_dim + 1, value*new_value_l_zero_right, working, source, result);
 					}
 
 					working.top(current_dim);
