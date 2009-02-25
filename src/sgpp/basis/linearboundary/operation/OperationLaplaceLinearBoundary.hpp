@@ -23,8 +23,8 @@
 #ifndef OPERATIONLAPLACELINEARBOUNDARY_HPP
 #define OPERATIONLAPLACELINEARBOUNDARY_HPP
 
-//#include "basis/linearboundary/algorithm_sweep/LaplaceDownLinear.hpp"
-//#include "basis/linearboundary/algorithm_sweep/LaplaceUpLinear.hpp"
+#include "basis/linearboundary/algorithm_sweep/LaplaceDownLinearBoundary.hpp"
+#include "basis/linearboundary/algorithm_sweep/LaplaceUpLinearBoundary.hpp"
 
 #include "operation/OperationMatrix.hpp"
 
@@ -49,7 +49,7 @@ public:
 
 	virtual ~OperationLaplaceLinearBoundary() {}
 
-	/*
+
 	virtual void mult(DataVector& alpha, DataVector& result)
 	{
 		this->updown(alpha, result);
@@ -75,16 +75,16 @@ protected:
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceUpLinear func(this->storage);
-		sweep<detail::LaplaceUpLinear> s(func, this->storage);
-		s.sweep1D(alpha, result, dim);
+		detail::LaplaceUpLinearBoundary func(this->storage);
+		sweep<detail::LaplaceUpLinearBoundary> s(func, this->storage);
+		s.sweep1D_Boundary(alpha, result, dim);
 	}
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceDownLinear func(this->storage);
-		sweep<detail::LaplaceDownLinear> s(func, this->storage);
-		s.sweep1D(alpha, result, dim);
+		detail::LaplaceDownLinearBoundary func(this->storage);
+		sweep<detail::LaplaceDownLinearBoundary> s(func, this->storage);
+		s.sweep1D_Boundary(alpha, result, dim);
 	}
 
 	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim)
@@ -101,7 +101,6 @@ protected:
 	}
 
 	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim) {}
-	*/
 
 };
 

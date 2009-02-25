@@ -174,18 +174,19 @@ protected:
 			// given current point to next dim
 			sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 
-			if (index.hint_left(dim_list[dim_rem-1]) == true)
+			if (!index.hint(dim_list[dim_rem-1]))
 			{
 				index.left_child(dim_list[dim_rem-1]);
-				sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+				if(!storage->end(index.seq()))
+				{
+					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+				}
 
-				index.up(dim_list[dim_rem-1]);
-			}
-
-			if (index.hint_right(dim_list[dim_rem-1]) == true)
-			{
-				index.right_child(dim_list[dim_rem-1]);
-				sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+				index.step_right(dim_list[dim_rem-1]);
+				if(!storage->end(index.seq()))
+				{
+					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+				}
 
 				index.up(dim_list[dim_rem-1]);
 			}

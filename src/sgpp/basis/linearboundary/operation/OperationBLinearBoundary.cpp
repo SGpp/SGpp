@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,75 +20,44 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "grid/Grid.hpp"
-#include "grid/type/LinearBoundaryGrid.hpp"
+#include "basis/basis.hpp"
 
-#include "grid/generation/StandardGridGenerator.hpp"
-
-// Include all operations on the linear boundary grid
 #include "basis/linearboundary/operation/OperationBLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationEvalLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationLaplaceLinearBoundary.hpp"
 
 #include "sgpp.hpp"
 
-#include <iostream>
+#include "data/DataVector.h"
 
 namespace sg
 {
-
-LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) : Grid(istr)
+/**
+ * Multiplication with vector, not transposed, linear sparse grid with boundaries
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
+void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
+	AlgorithmBBoundaries<SLinearBoundaryBase> op;
+	linearboundaryBase<unsigned int, unsigned int> base;
 
-}
-
-LinearBoundaryGrid::LinearBoundaryGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
-
-LinearBoundaryGrid::~LinearBoundaryGrid()
-{
-}
-
-const char* LinearBoundaryGrid::getType()
-{
-	return "linearBoundary";
-}
-
-Grid* LinearBoundaryGrid::unserialize(std::istream& istr)
-{
-	return new LinearBoundaryGrid(istr);
+	op.mult(storage, base, alpha, data, result);
 }
 
 /**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
+ * Multiplication with vector, transposed, linear sparse grid with boundaries
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
  */
-GridGenerator* LinearBoundaryGrid::createGridGenerator()
+void OperationBLinearBoundary::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	return new StandardGridGenerator(this->storage);
-}
+	AlgorithmBBoundaries<SLinearBoundaryBase> op;
+	linearboundaryBase<unsigned int, unsigned int> base;
 
-OperationB* LinearBoundaryGrid::createOperationB()
-{
-	return new OperationBLinearBoundary(this->storage);
-}
-
-OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
-{
-	return new OperationLaplaceLinearBoundary(this->storage);
-}
-
-OperationEval* LinearBoundaryGrid::createOperationEval()
-{
-	return new OperationEvalLinearBoundary(this->storage);
-}
-
-OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearBoundary(this->storage);
+	op.mult_transpose(storage, base, alpha, data, result);
 }
 
 }

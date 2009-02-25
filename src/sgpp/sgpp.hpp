@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define SGPP_OPTIMIZE
 
 #include "algorithm/AlgorithmB.hpp"
+#include "algorithm/AlgorithmBBoundaries.hpp"
 #include "algorithm/GetAffectedBasisFunctions.hpp"
 #include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/classification/test_dataset.hpp"
@@ -55,6 +56,7 @@ typedef poly_base<unsigned int, unsigned int> SPolyBase;
 typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
 
 typedef AlgorithmB<SLinearBase> SGridOperationB;
+typedef AlgorithmB<SLinearBoundaryBase> SGridBoundaryOperationB;
 typedef AlgorithmB<SModLinearBase> SGridModOperationB;
 
 }
