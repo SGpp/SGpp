@@ -75,8 +75,10 @@ namespace std {
 %include "src/sgpp/sgpp.hpp"
 
 %include "src/sgpp/algorithm/AlgorithmB.hpp"
+%include "src/sgpp/algorithm/AlgorithmBBoundaries.hpp"
 %include "src/sgpp/algorithm/classification/test_dataset.hpp"
 %include "src/sgpp/algorithm/GetAffectedBasisFunctions.hpp"
+%include "src/sgpp/algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 %include "src/sgpp/algorithm/sweep.hpp"
 %include "src/sgpp/algorithm/UnidirGradient.hpp"
 
@@ -106,4 +108,5 @@ namespace std {
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
 
 %template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
+%template(test_dataset_linearboundary) sg::test_dataset<sg::SLinearBoundaryBase>;
 %template(test_dataset_modlin) sg::test_dataset<sg::SModLinearBase>;

@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,75 +20,95 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "grid/Grid.hpp"
-#include "grid/type/LinearBoundaryGrid.hpp"
+#ifndef LAPLACEUPLINEARBOUNDARY_HPP
+#define LAPLACEUPLINEARBOUNDARY_HPP
 
-#include "grid/generation/StandardGridGenerator.hpp"
-
-// Include all operations on the linear boundary grid
-#include "basis/linearboundary/operation/OperationBLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationEvalLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationLaplaceLinearBoundary.hpp"
-
-#include "sgpp.hpp"
-
-#include <iostream>
+#include "grid/GridStorage.hpp"
+#include "data/DataVector.h"
 
 namespace sg
 {
 
-LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) : Grid(istr)
+namespace detail
 {
-
-}
-
-LinearBoundaryGrid::LinearBoundaryGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
-
-LinearBoundaryGrid::~LinearBoundaryGrid()
-{
-}
-
-const char* LinearBoundaryGrid::getType()
-{
-	return "linearBoundary";
-}
-
-Grid* LinearBoundaryGrid::unserialize(std::istream& istr)
-{
-	return new LinearBoundaryGrid(istr);
-}
 
 /**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
+ * up-operation in dimension dim. for use with sweep
  */
-GridGenerator* LinearBoundaryGrid::createGridGenerator()
+class LaplaceUpLinearBoundary
 {
-	return new StandardGridGenerator(this->storage);
-}
+protected:
+	typedef GridStorage::grid_iterator grid_iterator;
+	GridStorage* storage;
 
-OperationB* LinearBoundaryGrid::createOperationB()
-{
-	return new OperationBLinearBoundary(this->storage);
-}
+public:
+	LaplaceUpLinearBoundary(GridStorage* storage) : storage(storage)
+	{
+	}
 
-OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
-{
-	return new OperationLaplaceLinearBoundary(this->storage);
-}
+	~LaplaceUpLinearBoundary()
+	{
+	}
 
-OperationEval* LinearBoundaryGrid::createOperationEval()
-{
-	return new OperationEvalLinearBoundary(this->storage);
-}
+	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+	{
+		// get boundary values
+		double fl = 0.0;
+		double fr = 0.0;
 
-OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearBoundary(this->storage);
-}
+		rec(source, result, index, dim, fl, fr);
+	}
 
-}
+protected:
+
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+	{
+		size_t seq = index.seq();
+
+		fl = fr = 0.0;
+		double fml = 0.0;
+		double fmr = 0.0;
+
+		if(!index.hint(dim))
+		{
+			index.left_child(dim);
+			if(!storage->end(index.seq()))
+			{
+				rec(source, result, index, dim, fl, fml);
+			}
+
+			index.step_right(dim);
+			if(!storage->end(index.seq()))
+			{
+				rec(source, result, index, dim, fmr, fr);
+			}
+
+			index.up(dim);
+		}
+
+		{
+			GridStorage::index_type::level_type l;
+			GridStorage::index_type::index_type i;
+
+			index.get(dim, l, i);
+
+			double fm = fml + fmr;
+
+			double alpha_value = source[seq];
+			double h = 1/pow(2.0,l);
+
+			// transposed operations:
+			result[seq] = fm;
+
+			fl = fm/2.0 + alpha_value*h/2.0 + fl;
+			fr = fm/2.0 + alpha_value*h/2.0 + fr;
+		}
+	}
+
+};
+
+} // namespace detail
+
+} // namespace sg
+
+#endif /* LAPLACEUPLINEAR_HPP */

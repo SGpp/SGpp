@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,75 +20,89 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "grid/Grid.hpp"
-#include "grid/type/LinearBoundaryGrid.hpp"
+#ifndef ALGORTIHMBBOUNDARIES_HPP
+#define ALGORTIHMBBOUNDARIES_HPP
 
-#include "grid/generation/StandardGridGenerator.hpp"
+#include "grid/GridStorage.hpp"
+#include "data/DataVector.h"
 
-// Include all operations on the linear boundary grid
-#include "basis/linearboundary/operation/OperationBLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationEvalLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationLaplaceLinearBoundary.hpp"
+#include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 
-#include "sgpp.hpp"
-
+#include <vector>
+#include <utility>
 #include <iostream>
 
-namespace sg
-{
-
-LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) : Grid(istr)
-{
-
-}
-
-LinearBoundaryGrid::LinearBoundaryGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
-
-LinearBoundaryGrid::~LinearBoundaryGrid()
-{
-}
-
-const char* LinearBoundaryGrid::getType()
-{
-	return "linearBoundary";
-}
-
-Grid* LinearBoundaryGrid::unserialize(std::istream& istr)
-{
-	return new LinearBoundaryGrid(istr);
-}
+namespace sg {
 
 /**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
+ * Basic multiplaction with B and B^T.
+ *
+ * Boundaries are supported
  */
-GridGenerator* LinearBoundaryGrid::createGridGenerator()
+template<class BASIS>
+class AlgorithmBBoundaries
 {
-	return new StandardGridGenerator(this->storage);
+public:
+
+	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
+	{
+		typedef std::vector<std::pair<size_t, double> > IndexValVector;
+
+		result.setAll(0.0);
+		size_t source_size = source.getSize();
+
+		std::vector<double> line;
+		IndexValVector vec;
+
+		GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+
+		for(size_t i = 0; i < source_size; i++)
+		{
+			vec.clear();
+
+			x.getLine(i, line);
+
+			ga(basis, line, vec);
+
+			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+			{
+				result[iter->first] += iter->second * source[i];
+			}
+		}
+	}
+
+	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
+	{
+		typedef std::vector<std::pair<size_t, double> > IndexValVector;
+
+		result.setAll(0.0);
+		size_t result_size = result.getSize();
+
+		std::vector<double> line;
+		IndexValVector vec;
+
+		GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+
+		for(size_t i = 0; i < result_size; i++)
+		{
+			vec.clear();
+
+			x.getLine(i, line);
+
+			ga(basis, line, vec);
+
+			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+			{
+				result[i] += iter->second * source[iter->first];
+			}
+		}
+	}
+
+
+protected:
+
+};
+
 }
 
-OperationB* LinearBoundaryGrid::createOperationB()
-{
-	return new OperationBLinearBoundary(this->storage);
-}
-
-OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
-{
-	return new OperationLaplaceLinearBoundary(this->storage);
-}
-
-OperationEval* LinearBoundaryGrid::createOperationEval()
-{
-	return new OperationEvalLinearBoundary(this->storage);
-}
-
-OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearBoundary(this->storage);
-}
-
-}
+#endif /* ALGORTIHMBBOUNDARIES_HPP */

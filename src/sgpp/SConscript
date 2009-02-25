@@ -49,6 +49,7 @@ basis/poly/operation/OperationEvalPoly.cpp
 basis/poly/operation/OperationHierarchisationPoly.cpp
 basis/linearboundary/operation/OperationHierarchisationLinearBoundary.cpp
 basis/linearboundary/operation/OperationEvalLinearBoundary.cpp
+basis/linearboundary/operation/OperationBLinearBoundary.cpp
 """)
 
 
