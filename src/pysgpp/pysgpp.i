@@ -62,6 +62,7 @@ namespace std {
 %include "src/sgpp/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/grid/generation/hashmap/HashRefinement.hpp"
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
+%include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 
 %include "GridFactory.i"
@@ -106,6 +107,7 @@ namespace std {
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryBase>;
 
 %template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
 %template(test_dataset_linearboundary) sg::test_dataset<sg::SLinearBoundaryBase>;

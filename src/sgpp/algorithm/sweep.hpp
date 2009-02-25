@@ -142,6 +142,9 @@ protected:
 		}
 	}
 
+	/**
+	 * @todo check if it's possible to write a parallel implementation using OMP 3
+	 */
 	void sweep_Boundary_rec(DataVector& source, DataVector& result, grid_iterator& index,
 				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
 	{

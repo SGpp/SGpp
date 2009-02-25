@@ -34,6 +34,7 @@ grid/type/ModLinearGrid.cpp
 grid/type/ModPolyGrid.cpp
 grid/type/PolyGrid.cpp
 grid/generation/StandardGridGenerator.cpp
+grid/generation/BoundaryGridGenerator.cpp
 
 basis/linear/operation/OperationBLinear.cpp
 basis/linear/operation/OperationEvalLinear.cpp

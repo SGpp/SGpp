@@ -24,6 +24,8 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 #include "grid/GridStorage.hpp"
 
+#include "exception/generation_exception.hpp"
+
 #include "sgpp.hpp"
 
 namespace sg
@@ -45,20 +47,13 @@ void StandardGridGenerator::regular(size_t level)
 
 void StandardGridGenerator::regularFullBoundaries(size_t level)
 {
-	HashGenerator gen;
-	gen.regularWithBoundaries(this->storage, level, true);
-}
-
-void StandardGridGenerator::regularBoundaries(size_t level)
-{
-	HashGenerator gen;
-	gen.regularWithBoundaries(this->storage, level, false);
+	throw generation_exception("full boundary generation is not supported on standard grid without boundaries!");
 }
 
 void StandardGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinement refine;
-	refine.free_refine(this->storage, func);
+	refine.free_refine(this->storage, func, false);
 }
 
 }

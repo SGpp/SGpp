@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grid/GridStorage.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/StandardGridGenerator.hpp"
+#include "grid/generation/BoundaryGridGenerator.hpp"
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/generation/hashmap/HashGenerator.hpp"
 #include "grid/generation/hashmap/HashRefinement.hpp"
