@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,29 +20,38 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef STANDARDGRIDGENERATOR_HPP
-#define STANDARDGRIDGENERATOR_HPP
-
+#include "grid/generation/BoundaryGridGenerator.hpp"
 #include "grid/GridStorage.hpp"
-#include "grid/generation/GridGenerator.hpp"
+
+#include "sgpp.hpp"
 
 namespace sg
 {
 
-class StandardGridGenerator : public GridGenerator
+BoundaryGridGenerator::BoundaryGridGenerator(GridStorage* storage) : storage(storage)
 {
-public:
-	StandardGridGenerator(GridStorage* storage);
-	virtual ~StandardGridGenerator();
-
-	virtual void regular(size_t level);
-	virtual void regularFullBoundaries(size_t level);
-	virtual void refine(RefinementFunctor* func);
-
-protected:
-	GridStorage* storage;
-};
-
 }
 
-#endif /* STANDARDGRIDGEMERATOR_HPP */
+BoundaryGridGenerator::~BoundaryGridGenerator()
+{
+}
+
+void BoundaryGridGenerator::regularFullBoundaries(size_t level)
+{
+	HashGenerator gen;
+	gen.regularWithBoundaries(this->storage, level, true);
+}
+
+void BoundaryGridGenerator::regular(size_t level)
+{
+	HashGenerator gen;
+	gen.regularWithBoundaries(this->storage, level, false);
+}
+
+void BoundaryGridGenerator::refine(RefinementFunctor* func)
+{
+	HashRefinement refine;
+	refine.free_refine(this->storage, func, true);
+}
+
+}

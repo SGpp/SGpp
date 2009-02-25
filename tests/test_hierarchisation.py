@@ -209,7 +209,7 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         # generate a regular test grid
         grid = Grid.createLinearBoundaryGrid(dim)
         generator = grid.createGridGenerator()
-        generator.regularBoundaries(5)
+        generator.regular(5)
     
         # generate the node_values vector
         storage = grid.getStorage()
@@ -247,7 +247,7 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         # generate a regular test grid
         grid = Grid.createLinearBoundaryGrid(dim)
         generator = grid.createGridGenerator()
-        generator.regularBoundaries(5)
+        generator.regular(5)
     
         # generate the node_values vector
         storage = grid.getStorage()

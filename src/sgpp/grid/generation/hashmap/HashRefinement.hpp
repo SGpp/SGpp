@@ -45,13 +45,17 @@ public:
 	typedef index_type::index_type index_t;
 	typedef index_type::level_type level_t;
 
+	bool bWithBoundaries;
 
-	void free_refine(GridStorage* storage, RefinementFunctor* functor)
+
+	void free_refine(GridStorage* storage, RefinementFunctor* functor, bool bBoundaries = false)
 	{
 		if(storage->size() == 0)
 		{
 			throw generation_exception("storage empty");
 		}
+
+		bWithBoundaries = bBoundaries;
 
 		RefinementFunctor::value_type max_value = functor->start();
 		size_t max_index = 0;
@@ -73,8 +77,10 @@ public:
 				level_t source_level;
 				index.get(d, source_level, source_index);
 
+				// left child
 				index.set(d, source_level + 1, 2 * source_index - 1);
 				child_iter = storage->find(&index);
+				// if there no more grid points --> test if we should refine the grid
 				if(child_iter == end_iter)
 				{
 					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
@@ -86,6 +92,7 @@ public:
 					}
 				}
 
+				// right child
 				index.set(d, source_level + 1, 2 * source_index + 1);
 				child_iter = storage->find(&index);
 				if(child_iter == end_iter)
@@ -124,12 +131,14 @@ protected:
 			level_t source_level;
 			index.get(d, source_level, source_index);
 
+			// generate left child, if necessary
 			index.set(d, source_level + 1, 2 * source_index - 1);
 			if(!storage->has_key(&index))
 			{
 				create_gridpoint(storage, index);
 			}
 
+			// generate right child, if necessary
 			index.set(d, source_level + 1, 2 * source_index + 1);
 			if(!storage->has_key(&index))
 			{
@@ -140,6 +149,10 @@ protected:
 		}
 	}
 
+	/**
+	 * @todo 	check, if it's better the implement an own class for grid refinement on a grid
+	 * 			with boundaries.
+	 */
 	void create_gridpoint(GridStorage* storage, index_type& index)
 	{
 		for(size_t d = 0; d < storage->dim(); d++)
@@ -147,6 +160,31 @@ protected:
 			index_t source_index;
 			level_t source_level;
 			index.get(d, source_level, source_index);
+
+			if (source_level == 1)
+			{
+				// check if we need some additional points on the boundaries, only needed on a N dim grid
+				if (bWithBoundaries == true && storage->dim() > 1)
+				{
+					// test if there are boundaries in every dimension for this grid point
+					// left boundary
+					index.set(d, 0, 0);
+					if(!storage->has_key(&index))
+					{
+						create_gridpoint(storage, index);
+					}
+
+					// right boundary
+					index.set(d, 0, 1);
+					if(!storage->has_key(&index))
+					{
+						create_gridpoint(storage, index);
+					}
+
+					// restore values
+					index.set(d, source_level, source_index);
+				}
+			}
 
 			if(source_level > 1)
 			{
@@ -164,6 +202,8 @@ protected:
 				{
 					create_gridpoint(storage, index);
 				}
+
+				// restore values
 				index.set(d, source_level, source_index);
 			}
 		}

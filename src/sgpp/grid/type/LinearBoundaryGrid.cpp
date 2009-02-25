@@ -24,7 +24,7 @@
 #include "grid/Grid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
 
-#include "grid/generation/StandardGridGenerator.hpp"
+#include "grid/generation/BoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
 #include "basis/linearboundary/operation/OperationBLinearBoundary.hpp"
@@ -69,7 +69,7 @@ Grid* LinearBoundaryGrid::unserialize(std::istream& istr)
  */
 GridGenerator* LinearBoundaryGrid::createGridGenerator()
 {
-	return new StandardGridGenerator(this->storage);
+	return new BoundaryGridGenerator(this->storage);
 }
 
 OperationB* LinearBoundaryGrid::createOperationB()

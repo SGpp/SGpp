@@ -296,7 +296,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
-    generator.regularBoundaries(level)
+    generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
@@ -350,7 +350,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTest(dim, level):
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
-    generator.regularBoundaries(level)
+    generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
