@@ -99,7 +99,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		 */
 		tMap->insert(std::make_pair("NULL",Grid::nullFactory));
 		tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
-		tMap->insert(std::make_pair("linearboundary", LinearBoundaryGrid::unserialize));
+		tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
