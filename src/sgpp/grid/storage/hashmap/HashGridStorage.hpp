@@ -235,6 +235,28 @@ public:
 	}
 
 	/**
+	 * Sets the index to the left level zero parent
+	 */
+	void left_levelzero(GIT* index, size_t dim)
+	{
+		typename index_type::level_type l;
+		typename index_type::index_type i;
+		index->get(dim, l, i);
+		index->set(dim, 0, 0);
+	}
+
+	/**
+	 * Sets the index to the right level zero parent
+	 */
+	void right_levelzero(GIT* index, size_t dim)
+	{
+		typename index_type::level_type l;
+		typename index_type::index_type i;
+		index->get(dim, l, i);
+		index->set(dim, 0, 1);
+	}
+
+	/**
 	 * Sets the index to the left child
 	 */
 	void left_child(GIT* index, size_t dim)

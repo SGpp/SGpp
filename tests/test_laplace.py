@@ -1,20 +1,25 @@
-# This file is part of sgpp, a program package making use of spatially adaptive sparse grids to solve numerical problems.
-#
-# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de)
-# 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Lesser General Public License for more details.
-# 
-# You should have received a copy of the GNU Lesser General Public License
-# along with pyclass. If not, see <http://www.gnu.org/licenses/>.
-#
+#############################################################################
+# This file is part of pysgpp, a program package making use of spatially    #
+# adaptive sparse grids to solve numerical problems                         #
+#                                                                           #
+# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
+# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
+#                                                                           #
+# pysgpp is free software; you can redistribute it and/or modify            #
+# it under the terms of the GNU General Public License as published by      #
+# the Free Software Foundation; either version 3 of the License, or         #
+# (at your option) any later version.                                       #
+#                                                                           #
+# pysgpp is distributed in the hope that it will be useful,                 #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU General Public License for more details.                              #
+#                                                                           #
+# You should have received a copy of the GNU General Public License         #
+# along with pysgpp; if not, write to the Free Software                     #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
+# or see <http://www.gnu.org/licenses/>.                                    #
+#############################################################################
 
 
 import unittest
@@ -200,6 +205,49 @@ class TestOperationLaplaceModLinear(unittest.TestCase):
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)
+        
+        
+class TestOperationLaplaceLinearBoundary(unittest.TestCase):
+    ##
+    # Test laplace for regular sparse grid in 1d using linear hat functions
+    def testHatRegular1D(self):
+        from pysgpp import Grid, DataVector
+        
+        factory = Grid.createLinearBoundaryGrid(1)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(7)
+        
+        laplace = factory.createOperationLaplace()
+      
+        
+        alpha = DataVector(storage.size())
+        result = DataVector(storage.size())
+        
+        alpha.setAll(1.0)
+        
+        laplace.mult(alpha, result)
+        
+        for seq in xrange(storage.size()):
+            index = storage.get(seq)
+            level, _ = index.get(0)
+            self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
+
+        
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHatRegulardD(self):
+        
+        from pysgpp import Grid
+        
+        factory = Grid.createLinearBoundaryGrid(3)
+
+        m = generateLaplaceMatrix(factory, 3)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref)        
         
 # Run tests for this file if executed as application 
 if __name__=='__main__':
