@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,46 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#ifndef LINEARBOUNDARYOSCALEDBASE_HPP
+#define LINEARBOUNDARYOSCALEDBASE_HPP
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include <cmath>
 
 namespace sg
 {
 
-class GridGenerator
+/**
+ * linear base functions with over-scaled boundaries
+ * And here we have another implicit dependence on tensor products
+ */
+template<class LT, class IT>
+class linearboundaryOScaledBase
 {
 public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
-
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
+	/**
+	 * Evaluate a base functions.
+	 * Has a dependence on the absolute position of grid point and support.
+	 */
+	double eval(LT level, IT index, double p)
+	{
+		if (level == 0)
+		{
+			if (index == 0)
+			{
+				return 1.0 - p;
+			}
+			if (index == 1)
+			{
+				return p;
+			}
+		}
+		else
+		{
+			return 1.0 - fabs((1<<level) * p - index);
+		}
+	}
 };
 
 }
 
-#endif /* GRIDGENERATOR_HPP */
+#endif /* LINEARBOUNDARYOSCALEDBASE_HPP */

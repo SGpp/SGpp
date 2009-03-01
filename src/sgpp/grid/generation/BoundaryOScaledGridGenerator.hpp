@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,28 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#ifndef BOUNDARYOSCALEDGRIDGENERATOR_HPP
+#define BOUNDARYOSCALEDGRIDGENERATOR_HPP
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include "grid/GridStorage.hpp"
+#include "grid/generation/GridGenerator.hpp"
 
 namespace sg
 {
 
-class GridGenerator
+class BoundaryOScaledGridGenerator : public GridGenerator
 {
 public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
+	BoundaryOScaledGridGenerator(GridStorage* storage);
+	virtual ~BoundaryOScaledGridGenerator();
 
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
+	virtual void regular(size_t level);
+	virtual void refine(RefinementFunctor* func);
+
+protected:
+	GridStorage* storage;
 };
 
 }
 
-#endif /* GRIDGENERATOR_HPP */
+#endif /* BOUNDARYOSCALEDGRIDGEMERATOR_HPP */

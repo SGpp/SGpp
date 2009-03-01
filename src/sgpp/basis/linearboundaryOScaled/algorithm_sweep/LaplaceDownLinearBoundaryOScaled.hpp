@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEUPLINEARBOUNDARY_HPP
-#define LAPLACEUPLINEARBOUNDARY_HPP
+#ifndef LAPLACEDOWNLINEARBOUNDARYOSCALED_HPP
+#define LAPLACEDOWNLINEARBOUNDARYOSCALED_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
@@ -33,58 +33,52 @@ namespace detail
 {
 
 /**
- * up-operation in dimension dim. for use with sweep
+ * down-operation in dimension dim. for use with sweep
  */
-class LaplaceUpLinearBoundary
+class LaplaceDownLinearBoundaryOScaled
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
 	GridStorage* storage;
 
 public:
-	LaplaceUpLinearBoundary(GridStorage* storage) : storage(storage)
+	LaplaceDownLinearBoundaryOScaled(GridStorage* storage) : storage(storage)
 	{
 	}
 
-	~LaplaceUpLinearBoundary()
+	~LaplaceDownLinearBoundaryOScaled()
 	{
 	}
 
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
 		// get boundary values
-		double fl = 0.0;
-		double fr = 0.0;
+		double left_boundary;
+		double right_boundary;
+		size_t seq;
 
-		rec(source, result, index, dim, fl, fr);
+		// left boundary
+		index.left_levelzero(dim);
+		seq = index.seq();
+		left_boundary = source[seq];
+		// right boundary
+		index.right_levelzero(dim);
+		seq = index.seq();
+		right_boundary = source[seq];
+
+		// move to root
+		index.top(dim);
+
+		rec(source, result, index, dim, left_boundary, right_boundary);
 	}
 
 protected:
 
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 	{
 		size_t seq = index.seq();
 
-		fl = fr = 0.0;
-		double fml = 0.0;
-		double fmr = 0.0;
-
-		if(!index.hint(dim))
-		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fml);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fmr, fr);
-			}
-
-			index.up(dim);
-		}
+		double alpha_value = source[seq];
 
 		{
 			GridStorage::index_type::level_type l;
@@ -92,18 +86,34 @@ protected:
 
 			index.get(dim, l, i);
 
-			double fm = fml + fmr;
+			double h = 1/pow(2.0, l);
 
-			double alpha_value = source[seq];
-			double h = 1/pow(2.0,l);
+			// integration
+			result[seq] = (  h * (fl+fr)/2.0
+			                      + 2.0/3.0 * h * alpha_value );    // diagonal entry
+		}
 
-			// transposed operations:
-			result[seq] = fm;
+		// dehierarchisation
+		double fm = (fl+fr)/2.0 + alpha_value;
 
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
+		if(!index.hint(dim))
+		{
+			index.left_child(dim);
+			if(!storage->end(index.seq()))
+			{
+				rec(source, result, index, dim, fl, fm);
+			}
+
+			index.step_right(dim);
+			if(!storage->end(index.seq()))
+			{
+				rec(source, result, index, dim, fm, fr);
+			}
+
+			index.up(dim);
 		}
 	}
+
 
 };
 
@@ -111,4 +121,4 @@ protected:
 
 } // namespace sg
 
-#endif /* LAPLACEUPLINEARBOUNDARY_HPP */
+#endif /* LAPLACEDOWNLINEARBOUNDARYOSCALED_HPP */

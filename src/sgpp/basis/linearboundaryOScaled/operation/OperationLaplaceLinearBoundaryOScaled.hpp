@@ -20,11 +20,11 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONLAPLACELINEARBOUNDARY_HPP
-#define OPERATIONLAPLACELINEARBOUNDARY_HPP
+#ifndef OPERATIONLAPLACELINEARBOUNDARYOSCALED_HPP
+#define OPERATIONLAPLACELINEARBOUNDARYOSCALED_HPP
 
-#include "basis/linearboundary/algorithm_sweep/LaplaceDownLinearBoundary.hpp"
-#include "basis/linearboundary/algorithm_sweep/LaplaceUpLinearBoundary.hpp"
+#include "basis/linearboundaryOScaled/algorithm_sweep/LaplaceDownLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryOScaled/algorithm_sweep/LaplaceUpLinearBoundaryOScaled.hpp"
 
 #include "operation/OperationMatrix.hpp"
 
@@ -40,14 +40,14 @@ namespace sg
 /**
  * Implementation for linear functions
  */
-class OperationLaplaceLinearBoundary: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinearBoundaryOScaled: public OperationMatrix, public UnidirGradient
 {
 public:
-	OperationLaplaceLinearBoundary(GridStorage* storage) : UnidirGradient(storage)
+	OperationLaplaceLinearBoundaryOScaled(GridStorage* storage) : UnidirGradient(storage)
 	{
 	}
 
-	virtual ~OperationLaplaceLinearBoundary() {}
+	virtual ~OperationLaplaceLinearBoundaryOScaled() {}
 
 
 	virtual void mult(DataVector& alpha, DataVector& result)
@@ -75,15 +75,15 @@ protected:
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceUpLinearBoundary func(this->storage);
-		sweep<detail::LaplaceUpLinearBoundary> s(func, this->storage);
+		detail::LaplaceUpLinearBoundaryOScaled func(this->storage);
+		sweep<detail::LaplaceUpLinearBoundaryOScaled> s(func, this->storage);
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceDownLinearBoundary func(this->storage);
-		sweep<detail::LaplaceDownLinearBoundary> s(func, this->storage);
+		detail::LaplaceDownLinearBoundaryOScaled func(this->storage);
+		sweep<detail::LaplaceDownLinearBoundaryOScaled> s(func, this->storage);
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
 
@@ -106,4 +106,4 @@ protected:
 
 }
 
-#endif /* OPERATIONLAPLACELINEAROSCALED_HPP */
+#endif /* OPERATIONLAPLACELINEARBOUNDARYOSCALED_HPP */

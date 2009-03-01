@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,31 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#include "grid/generation/BoundaryOScaledGridGenerator.hpp"
+#include "grid/GridStorage.hpp"
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include "sgpp.hpp"
 
 namespace sg
 {
 
-class GridGenerator
+BoundaryOScaledGridGenerator::BoundaryOScaledGridGenerator(GridStorage* storage) : storage(storage)
 {
-public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
-
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
-};
-
 }
 
-#endif /* GRIDGENERATOR_HPP */
+BoundaryOScaledGridGenerator::~BoundaryOScaledGridGenerator()
+{
+}
+
+void BoundaryOScaledGridGenerator::regular(size_t level)
+{
+	HashGenerator gen;
+	gen.regularWithBoundaries(this->storage, level, true);
+}
+
+void BoundaryOScaledGridGenerator::refine(RefinementFunctor* func)
+{
+	throw generation_exception("refinement is not supported on grid with over-scaled boundaries!");
+}
+
+}

@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,29 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#ifndef OPERATIONEVALLINEARBOUNDARYOSCALED_HPP
+#define OPERATIONEVALLINEARBOUNDARYOSCALED_HPP
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include "operation/OperationEval.hpp"
+#include "grid/GridStorage.hpp"
 
 namespace sg
 {
 
-class GridGenerator
+class OperationEvalLinearBoundaryOScaled : public OperationEval
 {
 public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
+	OperationEvalLinearBoundaryOScaled(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationEvalLinearBoundaryOScaled() {}
 
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
+	virtual double eval(DataVector& alpha, std::vector<double>& point);
+	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
+
+protected:
+	GridStorage* storage;
+
 };
 
 }
 
-#endif /* GRIDGENERATOR_HPP */
+#endif /* OPERATIONEVALLINEARBOUNDARYOSCALED_HPP */

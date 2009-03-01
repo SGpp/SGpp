@@ -36,12 +36,6 @@ BoundaryGridGenerator::~BoundaryGridGenerator()
 {
 }
 
-void BoundaryGridGenerator::regularFullBoundaries(size_t level)
-{
-	HashGenerator gen;
-	gen.regularWithBoundaries(this->storage, level, true);
-}
-
 void BoundaryGridGenerator::regular(size_t level)
 {
 	HashGenerator gen;
