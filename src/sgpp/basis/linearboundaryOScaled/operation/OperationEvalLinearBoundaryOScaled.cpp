@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,41 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#include "basis/basis.hpp"
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include "basis/linearboundaryOScaled/operation/OperationEvalLinearBoundaryOScaled.hpp"
+
+#include "sgpp.hpp"
+
+#include "data/DataVector.h"
 
 namespace sg
 {
 
-class GridGenerator
+double OperationEvalLinearBoundaryOScaled::eval(DataVector& alpha, std::vector<double>& point)
 {
-public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
-};
+	IndexValVector vec;
+	linearboundaryOScaledBase<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctionsBoundaries<linearboundaryOScaledBase<unsigned int, unsigned int> > ga(storage);
 
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	{
+		result += iter->second * alpha[iter->first];
+	}
+
+	return result;
 }
 
-#endif /* GRIDGENERATOR_HPP */
+double OperationEvalLinearBoundaryOScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
+{
+	linearboundaryOScaledBase<unsigned int, unsigned int> base;
+	return test_dataset(this->storage, base, alpha, data, classes);
+}
+
+}

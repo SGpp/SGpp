@@ -45,11 +45,6 @@ void StandardGridGenerator::regular(size_t level)
 	gen.regular(this->storage, level);
 }
 
-void StandardGridGenerator::regularFullBoundaries(size_t level)
-{
-	throw generation_exception("full boundary generation is not supported on standard grid without boundaries!");
-}
-
 void StandardGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinement refine;

@@ -26,6 +26,7 @@
 
 #include "basis/linear/linear_base.hpp"
 #include "basis/linearboundary/linearboundaryBase.hpp"
+#include "basis/linearboundaryOScaled/linearboundaryOScaledBase.hpp"
 #include "basis/modlinear/modified_linear_base.hpp"
 #include "basis/modpoly/modified_poly_base.hpp"
 #include "basis/modwavelet/modified_wavelet_base.hpp"

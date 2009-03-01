@@ -21,15 +21,15 @@
 /*****************************************************************************/
 
 #include "grid/Grid.hpp"
-#include "grid/type/LinearBoundaryGrid.hpp"
+#include "grid/type/LinearBoundaryOScaledGrid.hpp"
 
-#include "grid/generation/BoundaryGridGenerator.hpp"
+#include "grid/generation/BoundaryOScaledGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linearboundary/operation/OperationBLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationEvalLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linearboundaryOScaled/operation/OperationBLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryOScaled/operation/OperationEvalLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryOScaled/operation/OperationHierarchisationLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryOScaled/operation/OperationLaplaceLinearBoundaryOScaled.hpp"
 
 #include "sgpp.hpp"
 
@@ -38,57 +38,57 @@
 namespace sg
 {
 
-LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) : Grid(istr)
+LinearBoundaryOScaledGrid::LinearBoundaryOScaledGrid(std::istream& istr) : Grid(istr)
 {
 
 }
 
-LinearBoundaryGrid::LinearBoundaryGrid(size_t dim)
+LinearBoundaryOScaledGrid::LinearBoundaryOScaledGrid(size_t dim)
 {
 	this->storage = new GridStorage(dim);
 }
 
-LinearBoundaryGrid::~LinearBoundaryGrid()
+LinearBoundaryOScaledGrid::~LinearBoundaryOScaledGrid()
 {
 }
 
-const char* LinearBoundaryGrid::getType()
+const char* LinearBoundaryOScaledGrid::getType()
 {
-	return "linearBoundary";
+	return "linearBoundaryOScaled";
 }
 
-Grid* LinearBoundaryGrid::unserialize(std::istream& istr)
+Grid* LinearBoundaryOScaledGrid::unserialize(std::istream& istr)
 {
-	return new LinearBoundaryGrid(istr);
+	return new LinearBoundaryOScaledGrid(istr);
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearBoundaryGrid::createGridGenerator()
+GridGenerator* LinearBoundaryOScaledGrid::createGridGenerator()
 {
-	return new BoundaryGridGenerator(this->storage);
+	return new BoundaryOScaledGridGenerator(this->storage);
 }
 
-OperationB* LinearBoundaryGrid::createOperationB()
+OperationB* LinearBoundaryOScaledGrid::createOperationB()
 {
-	return new OperationBLinearBoundary(this->storage);
+	return new OperationBLinearBoundaryOScaled(this->storage);
 }
 
-OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
+OperationMatrix* LinearBoundaryOScaledGrid::createOperationLaplace()
 {
-	return new OperationLaplaceLinearBoundary(this->storage);
+	return new OperationLaplaceLinearBoundaryOScaled(this->storage);
 }
 
-OperationEval* LinearBoundaryGrid::createOperationEval()
+OperationEval* LinearBoundaryOScaledGrid::createOperationEval()
 {
-	return new OperationEvalLinearBoundary(this->storage);
+	return new OperationEvalLinearBoundaryOScaled(this->storage);
 }
 
-OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
+OperationHierarchisation* LinearBoundaryOScaledGrid::createOperationHierarchisation()
 {
-	return new OperationHierarchisationLinearBoundary(this->storage);
+	return new OperationHierarchisationLinearBoundaryOScaled(this->storage);
 }
 
 }

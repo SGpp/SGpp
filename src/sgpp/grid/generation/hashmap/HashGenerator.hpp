@@ -85,8 +85,8 @@ public:
 
 		if (fullBoundaries == true)
 		{
-			throw new generation_exception("full boundaries are not supported, yet!");
-			//this->boundariesFull_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim() - 1, level + storage->dim());
+			//throw new generation_exception("full boundaries are not supported, yet!");
+			this->boundariesFull_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim(), false, false);
 		}
 		else
 		{
@@ -183,11 +183,11 @@ protected:
 		}
 	}
 
-	void boundariesFull_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, level_t level_boundary)
+	void boundariesFull_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool tatooine, bool kessel)
 	{
 		if(current_dim == 0)
 		{
-			boundaries_rec_1d(storage, index, current_level, level);
+			boundariesFull_rec_lastd(storage, index, current_level, level, tatooine, kessel);
 		}
 		else
 		{
@@ -201,25 +201,36 @@ protected:
 				if (source_level == 1)
 				{
 					index.push(current_dim, 0, 0);
-					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level_boundary, level_boundary);
+					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level, true, kessel);
 
 					index.push(current_dim, 0, 1);
-					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level_boundary, level_boundary);
+					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level, true, kessel);
 
 					index.push(current_dim, source_level, source_index);
 				}
 
 				// d-1 recursion
-				this->boundariesFull_rec(storage, index, current_dim - 1, current_level, level, level_boundary);
+				this->boundariesFull_rec(storage, index, current_dim - 1, current_level, level, tatooine, kessel);
 			}
 
 			if(current_level < level)
 			{
-				index.push(current_dim, source_level + 1, 2*source_index - 1);
-				this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, level_boundary);
+				if (current_level == (level-1))
+				{
+					index.push(current_dim, source_level + 1, 2*source_index - 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, true);
 
-				index.push(current_dim, source_level + 1, 2*source_index + 1);
-				this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, level_boundary);
+					index.push(current_dim, source_level + 1, 2*source_index + 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, true);
+				}
+				else
+				{
+					index.push(current_dim, source_level + 1, 2*source_index - 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, kessel);
+
+					index.push(current_dim, source_level + 1, 2*source_index + 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, kessel);
+				}
 			}
 
 			index.push(current_dim, source_level, source_index);
@@ -249,14 +260,37 @@ protected:
 		}
 	}
 
-	void boundariesFull_rec_lastd(GridStorage* storage, index_type& index, level_t current_level, level_t level)
+	void boundariesFull_rec_lastd(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool tatooine, bool kessel)
 	{
-		for(level_t l = 1; l <= level-current_level + 1; l++)
+		if (tatooine == false && kessel == true)
 		{
-			for(index_t i = 1; i <= 1<<(l-1); i++)
+			index.push(0, 0, 0);
+			storage->insert(index);
+			index.push(0, 0, 1);
+			storage->insert(index);
+		}
+		else
+		{
+			if (tatooine == false)
+				level--;
+
+			for(level_t l = 0; l <= level-current_level + 1; l++)
 			{
-				index.push(storage->dim()-1, l, 2*i-1);
-				storage->insert(index);
+				if (l == 0)
+				{
+					index.push(0, 0, 0);
+					storage->insert(index);
+					index.push(0, 0, 1);
+					storage->insert(index);
+				}
+				else
+				{
+					for(index_t i = 1; i <= 1<<(l-1); i++)
+					{
+						index.push(0, l, 2*i-1);
+						storage->insert(index);
+					}
+				}
 			}
 		}
 	}

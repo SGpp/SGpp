@@ -1,4 +1,4 @@
-/*****************************************************************************/
+ /*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
@@ -20,95 +20,66 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEUPLINEARBOUNDARY_HPP
-#define LAPLACEUPLINEARBOUNDARY_HPP
+#include "basis/linearboundaryOScaled/operation/OperationHierarchisationLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryOScaled/algorithm_sweep/HierarchisationLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryOScaled/algorithm_sweep/DehierarchisationLinearBoundaryOScaled.hpp"
 
-#include "grid/GridStorage.hpp"
+#include "sgpp.hpp"
+
+#include "basis/basis.hpp"
 #include "data/DataVector.h"
 
 namespace sg
 {
 
-namespace detail
+/**
+ * Implements the hierarchisation on a sprase grid with linear base functions and boundaries
+ *
+ * @param node_values the functions values in the node base
+ */
+void OperationHierarchisationLinearBoundaryOScaled::doHierarchisation(DataVector& node_values)
 {
+	detail::HierarchisationLinearBoundaryOScaled func(this->storage);
+	sweep<detail::HierarchisationLinearBoundaryOScaled> s(func, this->storage);
+
+	// N D case
+	if (this->storage->dim() > 1)
+	{
+		for (size_t i = 0; i < this->storage->dim(); i++)
+		{
+			s.sweep1D_Boundary(node_values, node_values, i);
+		}
+	}
+	// 1 D case
+	else
+	{
+		s.sweep1D(node_values, node_values, 0);
+	}
+}
 
 /**
- * up-operation in dimension dim. for use with sweep
+ * Implements the dehierarchisation on a sprase grid with linear base functions and boundaries
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
  */
-class LaplaceUpLinearBoundary
+void OperationHierarchisationLinearBoundaryOScaled::doDehierarchisation(DataVector& alpha)
 {
-protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-	GridStorage* storage;
+	detail::DehierarchisationLinearBoundaryOScaled func(this->storage);
+	sweep<detail::DehierarchisationLinearBoundaryOScaled> s(func, this->storage);
 
-public:
-	LaplaceUpLinearBoundary(GridStorage* storage) : storage(storage)
+	// N D case
+	if (this->storage->dim() > 1)
 	{
-	}
-
-	~LaplaceUpLinearBoundary()
-	{
-	}
-
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		// get boundary values
-		double fl = 0.0;
-		double fr = 0.0;
-
-		rec(source, result, index, dim, fl, fr);
-	}
-
-protected:
-
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-	{
-		size_t seq = index.seq();
-
-		fl = fr = 0.0;
-		double fml = 0.0;
-		double fmr = 0.0;
-
-		if(!index.hint(dim))
+		for (size_t i = 0; i < this->storage->dim(); i++)
 		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fml);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fmr, fr);
-			}
-
-			index.up(dim);
-		}
-
-		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
-
-			index.get(dim, l, i);
-
-			double fm = fml + fmr;
-
-			double alpha_value = source[seq];
-			double h = 1/pow(2.0,l);
-
-			// transposed operations:
-			result[seq] = fm;
-
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
+			s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)));
 		}
 	}
+	// 1 D case
+	else
+	{
+		s.sweep1D(alpha, alpha, 0);
+	}
+}
 
-};
-
-} // namespace detail
-
-} // namespace sg
-
-#endif /* LAPLACEUPLINEARBOUNDARY_HPP */
+}

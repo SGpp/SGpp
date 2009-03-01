@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,31 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#ifndef OPERATIONHIERARCHISATIONLINEARBOUNDARYOSCALED_HPP
+#define OPERATIONHIERARCHISATIONLINEARBOUNDARYOSCALED_HPP
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include "operation/OperationHierarchisation.hpp"
+#include "grid/GridStorage.hpp"
 
 namespace sg
 {
 
-class GridGenerator
+/**
+ * Hierarchisation on sparse grid, linear case
+ */
+class OperationHierarchisationLinearBoundaryOScaled : public OperationHierarchisation
 {
 public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
+	OperationHierarchisationLinearBoundaryOScaled(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationHierarchisationLinearBoundaryOScaled() {}
 
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
+	virtual void doHierarchisation(DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha);
+
+protected:
+	GridStorage* storage;
 };
 
 }
 
-#endif /* GRIDGENERATOR_HPP */
+#endif /* OPERATIONHIERARCHISATIONBOUNDARYOSCALED_HPP */

@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,44 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#include "basis/basis.hpp"
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include "basis/linearboundaryOScaled/operation/OperationBLinearBoundaryOScaled.hpp"
+
+#include "sgpp.hpp"
+
+#include "data/DataVector.h"
 
 namespace sg
 {
-
-class GridGenerator
+/**
+ * Multiplication with vector, not transposed, linear sparse grid with boundaries, over-scaled
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
+void OperationBLinearBoundaryOScaled::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
+	AlgorithmBBoundaries<SLinearBoundaryOScaledBase> op;
+	linearboundaryOScaledBase<unsigned int, unsigned int> base;
 
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
-};
-
+	op.mult(storage, base, alpha, data, result);
 }
 
-#endif /* GRIDGENERATOR_HPP */
+/**
+ * Multiplication with vector, transposed, linear sparse grid with boundaries, over-scaled
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
+void OperationBLinearBoundaryOScaled::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+{
+	AlgorithmBBoundaries<SLinearBoundaryOScaledBase> op;
+	linearboundaryOScaledBase<unsigned int, unsigned int> base;
+
+	op.mult_transpose(storage, base, alpha, data, result);
+}
+
+}

@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,24 +20,39 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef GRIDGENERATOR_HPP
-#define GRIDGENERATOR_HPP
+#ifndef LINEARBOUNDARYGRIDOSCALED_HPP
+#define LINEARBOUNDARYGRIDOSCALED_HPP
 
-#include "grid/generation/RefinementFunctor.hpp"
+#include "grid/Grid.hpp"
+
+#include <iostream>
 
 namespace sg
 {
 
-class GridGenerator
+/**
+ * grid with linear base functions with boundaries
+ */
+class LinearBoundaryOScaledGrid : public Grid
 {
-public:
-	GridGenerator() {}
-	virtual ~GridGenerator() {}
+protected:
+	LinearBoundaryOScaledGrid(std::istream& istr);
 
-	virtual void regular(size_t level) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
+public:
+	LinearBoundaryOScaledGrid(size_t dim);
+	virtual ~LinearBoundaryOScaledGrid();
+
+	virtual const char* getType();
+
+	virtual OperationB* createOperationB();
+	virtual GridGenerator* createGridGenerator();
+	virtual OperationMatrix* createOperationLaplace();
+	virtual OperationEval* createOperationEval();
+	virtual OperationHierarchisation* createOperationHierarchisation();
+
+	static Grid* unserialize(std::istream& istr);
 };
 
 }
 
-#endif /* GRIDGENERATOR_HPP */
+#endif /* LINEARBOUNDARYGRIDOSCALED_HPP */

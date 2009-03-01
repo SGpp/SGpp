@@ -36,7 +36,6 @@ public:
 	virtual ~BoundaryGridGenerator();
 
 	virtual void regular(size_t level);
-	virtual void regularFullBoundaries(size_t level);
 	virtual void refine(RefinementFunctor* func);
 
 protected:

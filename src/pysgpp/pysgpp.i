@@ -63,6 +63,7 @@ namespace std {
 %include "src/sgpp/grid/generation/hashmap/HashRefinement.hpp"
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
+%include "src/sgpp/grid/generation/BoundaryOScaledGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 
 %include "GridFactory.i"
@@ -85,6 +86,7 @@ namespace std {
 
 %include "src/sgpp/basis/linear/linear_base.hpp"
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"
+%include "src/sgpp/basis/linearboundaryOScaled/linearboundaryOScaledBase.hpp"
 %include "src/sgpp/basis/modlinear/modified_linear_base.hpp"
 %include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
 %include "src/sgpp/basis/poly/poly_base.hpp"
@@ -100,6 +102,7 @@ namespace std {
 
 %template(SLinearBase) sg::linear_base<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) sg::linearboundaryBase<unsigned int, unsigned int>;
+%template(SLinearBoundaryOScaledBase) sg::linearboundaryOScaledBase<unsigned int, unsigned int>;
 %template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
 %template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
@@ -108,7 +111,9 @@ namespace std {
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctionsBoundariesOScaled) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryOScaledBase>;
 
 %template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
 %template(test_dataset_linearboundary) sg::test_dataset<sg::SLinearBoundaryBase>;
+%template(test_dataset_linearboundaryOScaled) sg::test_dataset<sg::SLinearBoundaryOScaledBase>;
 %template(test_dataset_modlin) sg::test_dataset<sg::SModLinearBase>;
