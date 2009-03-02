@@ -37,9 +37,8 @@ namespace sg
 class SurplusRefinementFunctor : public RefinementFunctor
 {
 public:
-
-
-	SurplusRefinementFunctor(DataVector* alpha) : alpha(alpha)
+	
+	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1) : alpha(alpha), refinements_num(refinements_num)
 	{
 	}
 
@@ -61,10 +60,19 @@ public:
 	{
 		return 0.0;
 	}
+	
+	/**
+	 * Number of refinement points in one refinement iteration
+	 */
+	virtual int getRefinementsNum()
+	{
+		return this->refinements_num;
+	}
 
 
 protected:
 	DataVector* alpha;
+	int refinements_num; //number of points to refine
 };
 
 }

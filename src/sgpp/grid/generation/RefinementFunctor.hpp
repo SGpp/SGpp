@@ -40,6 +40,8 @@ public:
 	virtual double operator()(GridStorage* storage, size_t seq) = 0;
 
 	virtual double start() = 0;
+	
+	virtual int getRefinementsNum(){ return 1;} //makes it possible to refine on several points
 };
 
 }

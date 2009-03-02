@@ -1,22 +1,22 @@
 /*****************************************************************************/
-/* This file is part of sgpp, a program package making use of spatially      */
+/* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
-/* sgpp is free software; you can redistribute it and/or modify              */
+/* sg++ is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU General Public License as published by      */
 /* the Free Software Foundation; either version 3 of the License, or         */
 /* (at your option) any later version.                                       */
 /*                                                                           */
-/* sgpp is distributed in the hope that it will be useful,                   */
+/* sg++ is distributed in the hope that it will be useful,                   */
 /* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU General Public License for more details.                              */
 /*                                                                           */
 /* You should have received a copy of the GNU General Public License         */
-/* along with sgpp; if not, write to the Free Software                       */
+/* along with sg++; if not, write to the Free Software                       */
 /* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
@@ -44,22 +44,47 @@ public:
 	typedef GridStorage::index_type index_type;
 	typedef index_type::index_type index_t;
 	typedef index_type::level_type level_t;
-
+	
 	bool bWithBoundaries;
 
-
+	/**
+	 * Returns the index of the first accurance of minimal element in array
+	 */
+	int getIndexOfMin(RefinementFunctor::value_type* array){
+		int length = sizeof(array)/sizeof(RefinementFunctor::value_type);
+		int min_idx = 0;
+		for (int i = 1; i < length; i++)
+		{
+			if(array[i] < array[min_idx])
+				min_idx = i;
+		}
+		
+		return min_idx;
+	}
+	
 	void free_refine(GridStorage* storage, RefinementFunctor* functor, bool bBoundaries = false)
 	{
 		if(storage->size() == 0)
 		{
 			throw generation_exception("storage empty");
 		}
+		
+		//Algorithm should be able to look for several points in grid to refine
+		//So we store an array with refinements_num maximal points
+		int refinements_num = functor->getRefinementsNum();
+		RefinementFunctor::value_type max_values[refinements_num];
+		size_t max_indexes[refinements_num];
+		for (int i = 0; i<refinements_num; i++){
+			max_values[i] = functor->start();
+			max_indexes[i] = 0;
+		}
+		int min_idx = 0;
+
+		RefinementFunctor::value_type max_value = max_values[min_idx];
+		size_t max_index = max_indexes[min_idx];
 
 		bWithBoundaries = bBoundaries;
-
-		RefinementFunctor::value_type max_value = functor->start();
-		size_t max_index = 0;
-
+		
 		index_type index;
 		GridStorage::grid_map_iterator end_iter = storage->end();
 
@@ -86,8 +111,11 @@ public:
 					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 					if(current_value > max_value)
 					{
-						max_value = current_value;
-						max_index = iter->second;
+						//Replace the minimal point in result array, find the new  minimal point
+						max_values[min_idx] = current_value;
+						max_indexes[min_idx] = iter->second;
+						min_idx = getIndexOfMin(max_values);
+						max_value = max_values[min_idx];
 						break;
 					}
 				}
@@ -100,8 +128,11 @@ public:
 					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 					if(current_value > max_value)
 					{
-						max_value = current_value;
-						max_index = iter->second;
+						//Replace the minimal point in result array, find the new minimal point
+						max_values[min_idx] = current_value;
+						max_indexes[min_idx] = iter->second;
+						min_idx = getIndexOfMin(max_values);
+						max_value = max_values[min_idx];
 						break;
 					}
 				}
@@ -109,10 +140,15 @@ public:
 				index.set(d, source_level, source_index);
 			}
 		}
-
-		if(max_value > functor->start())
-		{
-			refine_gridpoint(storage, max_index);
+		
+		//can refine grid on several points
+		for (int i = 0; i < refinements_num; i++){
+			max_value = max_values[i];
+			max_index = max_indexes[i];
+			if(max_value > functor->start())
+			{
+				refine_gridpoint(storage, max_index);
+			}
 		}
 
 	}
