@@ -272,11 +272,6 @@ def doEval():
     # traverse Data
     for i in xrange(numData):
         x.getRow(i,q)
-#        print "q dim in DataVector: %d" % q.getDim()
-#        print "q:"
-#        for j in xrange(q.getSize()):
-#            print q[j]
-        #TODO: replace the parameters everywhere
         val = grid.createOperationEval().eval(alpha,q)
         #print "val %f" % val
         classes.append(val)
@@ -292,11 +287,11 @@ def doEval():
         # output some statistics
         err_min = error.min(1)
         err_max = error.max(1)
-        print "(Min,Max) error: (%f,%f)" % (sqrt(err_min), sqrt(err_max))
+        print "(Min,Max) error: (%2.10f,%2.10f)" % (sqrt(err_min), sqrt(err_max))
         # output accuracy
         err = error.sum()
-        print "L2-norm of error on data: %f" % (sqrt(err))
-        print "MSE: %f" %(err / error.getSize())
+        print "L2-norm of error on data: %5.10f" % (sqrt(err))
+        print "MSE: %2.10f" %(err / error.getSize())
 
     # get filename for output file
     if(options.outfile != None):
@@ -398,7 +393,7 @@ def run(grid, training, classes):
     alpha = None
     errors = None
 
-    for adaptStep in xrange(options.adaptive):
+    for adaptStep in xrange(options.adaptive + 1):
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
 
@@ -406,39 +401,53 @@ def run(grid, training, classes):
         b = m.generateb(classes)
             
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
+        print "Conjugate Gradient output:"
         print res
 
         if options.regression:
-            error = DataVector(len(classes))
-            m.B.multTranspose(alpha, m.x, error)
-            error.sub(classes)# error vector
-            error.sqr()       # entries squared
-            # output some statistics
-            err_min = error.min(1)
-            err_max = error.max(1)
-            print "(Min,Max) error: (%f,%f)" % (sqrt(err_min), sqrt(err_max))
-            # output accuracy
-            err = error.sum()
-            print "L2-norm of error on data: %f" % (sqrt(err))
-            print "MSE: ",(err / error.getSize())
+            errors = evaluateError(classes, alpha, m)[1]
 
-            # calculate error per basis function
-            errors = DataVector(alpha.getSize())
-            m.B.mult(error, m.x, errors)
+            
 
         if options.checkpoint != None:
-            txt = ""
-            writeCheckpoint(options.checkpoint, grid, alpha, txt, adaptStep)
+            writeCheckpoint(options.checkpoint, grid, alpha, options.adapt_start + adaptStep)
         
         
-        if(adaptStep + 1 < options.adaptive):
+        if(adaptStep  < options.adaptive):
             #if(options.verbose):
             print("refining grid")
             if options.regression:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, options.adapt_points))
             else:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, options.adapt_points))
     return alpha
+
+##
+#Subroutine evaluation of error
+#@TODO: remove printing messages from the subroutine and place it into the suited methods
+#
+def evaluateError(classes, alpha, m):
+
+    error = DataVector(len(classes))
+    m.B.multTranspose(alpha, m.x, error)
+    error.sub(classes) # error vector
+    error.sqr() # entries squared
+    # output some statistics
+    err_min = error.min(1)
+    err_max = error.max(1)
+    print "(Min,Max) error: (%f,%f)" % (sqrt(err_min), sqrt(err_max))
+    # output accuracy
+    err = error.sum()
+    print "L2-norm of error on data: %f" % (sqrt(err))
+    mse = err / error.getSize()
+    print "MSE: ", mse
+
+    # calculate error per basis function
+    errors = DataVector(alpha.getSize())
+    m.B.mult(error, m.x, errors)
+    
+    return (mse, errors)
+
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a test dataset.
@@ -454,62 +463,109 @@ def doTest():
 
     dim = len(data["data"])
     grid = constructGrid(dim)
-            
+    
     te_refine = []
     tr_refine = []
     num_refine = []
-
-    for adaptStep in xrange(options.adaptive):
+    
+    adaptStep = 0
+    while True: #loop exit condition on the end of the loop
+        print "Adaptive Step:", (options.adapt_start + adaptStep)
         m = Matrix(grid, training, options.regparam, options.zeh)
         b = m.generateb(y)
         
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
+        print "Conjugate Gradient output:"
         print res
 
         tr = testVectorFast(grid, alpha, training, y)
-        
-#        if options.verbose:
-#            teValues = []
-#            te = testVectorValues(grid, alpha, test_data, test_classes, teValues)
-#        else:
-#            te = testVector(grid, alpha, test_data, test_classes)
-        
         te = testVectorFast(grid, alpha, test_data, test_classes)
-
-
-        te_refine.append(te)
-        tr_refine.append(tr)
         num_refine.append(grid.getStorage().size())
-
-        if options.verbose:
+        
+        if options.regression:
+            print "Training Data:"
+            tr, errors = evaluateError(y, alpha, m)
+            tr_refine.append(tr)
+            print "Test Data:"
+            m_test = Matrix(grid, test_data, options.regparam, options.zeh)
+            mse = evaluateError(test_classes, alpha, m_test)[0]
+            te_refine.append(mse)
+        else:     
+            te_refine.append(te)
+            tr_refine.append(tr)
+        
+        if options.verbose and not options.regression:
             print "Correct classified on training data: ",tr
             print "Correct classified on testing data:  ",te
 
-        if options.checkpoint != None:
-            txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-            for i in xrange(len(tr_refine)):
-                txt = txt + ", %f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+        if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, alpha, (options.adapt_start + adaptStep))
+        if options.stats != None: writeStats(options.stats, formTxt([te_refine[-1]], [tr_refine[-1]], [num_refine[-1]], False))
             
-            writeCheckpoint(options.checkpoint, grid, alpha, txt, adaptStep)
-
-        if(adaptStep + 1 < options.adaptive):
-            if(options.verbose):
-                print("refining grid")
-            grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha))
-            if(options.verbose):
-                print("Number of points: %d" %(grid.getStorage().size(),))
+        #increment adaptive step
+        adaptStep += 1
+        if(options.adaptive >= 0 and adaptStep <= options.adaptive) \
+            or (options.epochs_limit > 0 and options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
+            or (options.regression and options.mse_limit > 0 and options.mse_limit > te_refine[-1]):
+            print("refining grid")
+            if options.regression:
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, options.adapt_points))
+            else:
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, options.adapt_points))
+           
+            if(options.verbose): print("Number of points: %d" %(grid.getStorage().size(),))
+            
+        #Break condition for while-loop: 
+        #number of adaptive steps is achieved or MSE of test data increase last 20 epochs or last MSE less then given boundary 
+        else:
+            break
+        
+    #--end of while loop
 
     if options.stats != None:
-        txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-        for i in xrange(len(tr_refine)):
-            txt = txt + ", %f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
-        if options.verbose:
-            print txt
-        writeLockFile(options.stats, txt+"\n")
+        txt = formTxt(te_refine, tr_refine, num_refine)
+        writeStats(options.stats, txt)
+        if options.verbose: print txt
 
 
+##
+# returns the number of epochs the error is increasing
+# @param list: List with MSE's from different refinement iterations
+#
+def getEpochsErrorIncreasing(list):
+    length = len(list)
+    if length == 0:
+        return 0
+    else:
+        for i in xrange(1,length):
+            if list[-i] < list[-i - 1]:
+                return i
+    return length
+
+#def formHeader():
+#    return  "#\t%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+#
+###
+## returns txt variable for stats and checkpoint
+##
+#def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
+#    txt = ""
+#    if withHeader:
+#        txt = formHeader()
+#    for i in xrange(len(tr_refine)):
+#        txt = txt + " \n%f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+#    
+#    return txt + "\n"
+
+###
+## returns txt variable for stats
+##
+def formTxt(te_refine, tr_refine, num_points, withHeader = True):
+    txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+    for i in xrange(len(tr_refine)):
+        txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_refine[i], te_refine[i])
+    return txt + "\n"
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a random n-fold.
@@ -572,17 +628,6 @@ def doFoldf():
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 def performFold(dvec,cvec):
-    
-#    if options.grid == None:
-#        if options.polynom > 1:
-#            grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
-#        else:
-#            grid = SpGridLinear(dvec[0].getDim(),options.level)
-#    else:
-#        grid = readGrid(options.grid)
-#        
-#    if options.border:
-#        grid.setUseBorderFunctions(True)
 
     grid = constructGrid(dvec[0].getDim())
         
@@ -590,7 +635,7 @@ def performFold(dvec,cvec):
     tr_refine = []
     te_refine = []
     
-    for adaptStep in xrange(options.adaptive):
+    for adaptStep in xrange(options.adaptive + 1):
         trainingCorrect = []
         testingCorrect =[]
 
@@ -608,9 +653,6 @@ def performFold(dvec,cvec):
 
             res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose)
             print res
-            
-#            tr = testVector(grid,alpha,training,classes)
-#            te = testVector(grid,alpha,dvec[foldSetNumber],cvec[foldSetNumber])
 
             tr = testVectorFast(grid, alpha, training, classes)
             te = testVectorFast(grid, alpha, dvec[foldSetNumber], cvec[foldSetNumber])
@@ -644,47 +686,29 @@ def performFold(dvec,cvec):
         
         refinealpha.mult(1.0/options.f_level)
         
-        if options.checkpoint != None:
-            txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-            for i in xrange(len(tr_refine)):
-                txt = txt + ", %f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
-            
-            writeCheckpoint(options.checkpoint, grid, refinealpha, txt)
+        if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, refinealpha)
+        
+        if options.stats != None: writeStats(options.stats, formTxt(te_refine, tr_refine, num_points)) 
         
         if options.verbose:
             print "alpha"
             print refinealpha
             print "grid"
             print grid
-        if(adaptStep + 1 < options.adaptive):
+        if(adaptStep < options.adaptive):
             print "refine"
-            #grid.refineOneGridPoint(refinealpha)
             grid.createGridGenerator().refine(SurplusRefinementFunctor(refinealpha))
 
-    #print(tr)
-    #print(te)
-
     if options.stats != None:
-        txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-        for i in xrange(len(tr_refine)):
-            txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_refine[i], te_refine[i])
-        if options.verbose:
-            print txt
-        writeLockFile(options.stats, txt+"\n")
+        txt = formTxt(te_refine, tr_refine, num_points)
+        writeStats(options.stats, txt)
+        if options.verbose: print txt
 
     return
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 def performFoldRegression(dvec,cvec):
-    
-#    if options.polynom > 1:
-#        grid = SpGridHighOrder(dvec[0].getDim(),options.level,options.polynom)
-#    else:
-#        grid = SpGridLinear(dvec[0].getDim(),options.level)
-#        
-#    if options.border:
-#        grid.setUseBorderFunctions(True)
     
     grid = constructGrid(dvec[0].getDim())
         
@@ -694,14 +718,11 @@ def performFoldRegression(dvec,cvec):
     tr_meanSqrError = []
     te_meanSqrError = []
         
-    for adpatStep in xrange(options.adaptive):
+    for adpatStep in xrange(options.adaptive + 1):
         trainingCorrect = []
         testingCorrect = []
         meanSqrErrorsTraining = []
         meanSqrErrorsTesting = []        
-
-        #refinealpha = DataVector(grid.getPointsCount())
-        #refinealpha.setAll(0.0)
 
         refineerrors = DataVector(grid.getStorage().size())
         refineerrors.setAll(0.0)
@@ -746,7 +767,6 @@ def performFoldRegression(dvec,cvec):
                 #Letzte verfeinerung, wir sind fertig
                 pass
             else:
-                #refinealpha.add(alpha)
                 refineerrors.add(errors)
 
         if options.verbose:
@@ -771,24 +791,16 @@ def performFoldRegression(dvec,cvec):
         tr_meanSqrError.append(trSqrError)
         te_meanSqrError.append(teSqrError)
         
-        #refinealpha.mult(1.0/options.f_level)
         refineerrors.mult(1.0/options.f_level)
         
         if(adpatStep + 1 < options.adaptive):
             print "refine"
-            #grid.refineOneGridPoint(refinealpha)
             grid.createGridGenerator().refine(SurplusRefinementFunctor(refineerrors))
 
-    #print(tr)
-    #print(te)
-
     if options.stats != None:
-        txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-        for i in xrange(len(tr_refine)):
-            txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_meanSqrError[i], te_meanSqrError[i])
-        if options.verbose:
-            print txt
-        writeLockFile(options.stats, txt+"\n")
+            txt = formTxt(te_meanSqrError, tr_meanSqrError, num_points)
+            writeStats(options.stats, txt )
+            if options.verbose: print txt
 
     return
 
@@ -912,6 +924,8 @@ if __name__=='__main__':
     parser.add_option("-l", "--level", action="store", type="int", dest="level", help="Gridlevel")
     parser.add_option("-D", "--dim", action="callback", type="int",dest="dim", help="Griddimension", callback=callback_deprecated)
     parser.add_option("-a", "--adaptive", action="store", type="int", default="0", dest="adaptive", metavar="NUM", help="Using an adaptive Grid with NUM of refines")
+    parser.add_option("--adapt_points", action="store", type="int", default="1", dest="adapt_points", metavar="NUM", help="Number of points in one refinement iteration")
+    parser.add_option("--adapt_start", action="store", type="int", default="0", dest="adapt_start", metavar="NUM", help="The index of adapt step to begin with")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default="10", metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
@@ -934,13 +948,18 @@ if __name__=='__main__':
     parser.add_option("--regression", action="store_true", default=False, dest="regression", help="Use regression approach.")
     parser.add_option("--checkpoint", action="store", type="string", dest="checkpoint", help="Filename for checkpointing. For fold? and test. No file extension.")
     parser.add_option("--grid", action="store", type="string", dest="grid", help="Filename for Grid-resume. For fold? and test. Full filename.")
+#TODO: maybe a better name for parameter
+    parser.add_option("--epochs_limit", action="store", type="int", default="0", dest="epochs_limit", help="Number of refinement iterations (epochs), MSE of test data have to increase, before refinement will stop.")
+    parser.add_option("--mse_limit", action="store", type="float", default="0.0", dest="mse_limit", help="If MSE of test data fall below this limit, refinement will stop.")
+
     # parse options
     (options,args)=parser.parse_args()
 
     # check some options
     zeh = options.zeh.lower()
 
-    options.adaptive = options.adaptive + 1
+    #this incrementation is unobvious, the default value of options.adaptive 
+    #options.adaptive = options.adaptive + 1
 
     # check C-mode
     if zeh == "help":

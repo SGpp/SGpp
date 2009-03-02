@@ -562,9 +562,7 @@ base_types = {
 # the matrix C and computing the RHS b.
 # @TODO: fully update to pysgpp
 class Matrix:
-    #val: paramtere base removed from the definition
-    #def __init__(self, grid, x, l, mode, base):
-    def __init__(self, grid, x, l, mode):
+    def __init__(self, grid, x, l, mode, base = None):
         self.grid = grid
         self.x = x
         self.l = l
@@ -703,20 +701,22 @@ def readGrid(filename):
     
     return restoreGrid(text)
 
-def writeCheckpoint(filename, grid, alpha, txt, adaption = None):
+def writeCheckpoint(filename, grid, alpha, adaption = None):
     if adaption != None:
         writeAlphaARFF(filename+".a" + str(adaption) + ".alpha.arff", alpha)
         writeGrid(filename+".a" + str(adaption) + ".grid", grid)
-        fout = open(filename+".stats", "w")
-        fout.write(txt+"\n");
-        fout.close()
+#        fout = open(filename+".stats", "w")
+#        fout.write(txt+"\n");
+#        fout.close()
     else:
         writeAlphaARFF(filename+".alpha.arff", alpha)
         writeGrid(filename+".grid", grid)
-        fout = open(filename+".stats", "w")
-        fout.write(txt+"\n");
-        fout.close()
+#        fout = open(filename+".stats", "w")
+#        fout.write(txt+"\n");
+#        fout.close()
     
+def writeStats(filename, txt, mode = "a"):
+    writeLockFile(filename + ".stats", txt, mode)
 
 def readCheckpoint(filename):
     alpha = readAlphaARFF(filename+".alpha.arff")
