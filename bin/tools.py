@@ -560,7 +560,7 @@ base_types = {
 
 ## Class Matrix that incorporates settings and actions for applying
 # the matrix C and computing the RHS b.
-# @TODO: fully update to pysgpp
+# @todo fully update to pysgpp
 class Matrix:
     def __init__(self, grid, x, l, mode, base = None):
         self.grid = grid
