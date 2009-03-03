@@ -105,6 +105,7 @@ public:
 		}
 
 		grid_iterator index(storage);
+		index.resetToLevelZero();
 
 		sweep_Boundary_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
 	}
@@ -144,6 +145,16 @@ protected:
 
 	/**
 	 * @todo check if it's possible to write a parallel implementation using OMP 3
+	 *
+	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
+	 * Boundaries are regarded
+	 *
+	 * @param source coefficients of the sparse grid
+	 * @param result coefficients of the function computed by sweep
+	 * @param index current grid position
+	 * @param dim_list list of dimensions, that should be handled
+	 * @param dim_rem number of remaining dims
+	 * @param dim_sweep static dimension, in this dimension the functor is executed
 	 */
 	void sweep_Boundary_rec(DataVector& source, DataVector& result, grid_iterator& index,
 				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
@@ -163,35 +174,45 @@ protected:
 			index.get(dim_list[dim_rem-1], current_level, current_index);
 
 			// handle level zero
-			if (current_level == 1)
+			if (current_level == 0)
 			{
-				index.left_levelzero(dim_list[dim_rem-1]);
 				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 
 				index.right_levelzero(dim_list[dim_rem-1]);
 				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 
-				index.top(dim_list[dim_rem-1]);
+				if (!index.hint(dim_list[dim_rem-1]))
+				{
+					index.top(dim_list[dim_rem-1]);
+					if(!storage->end(index.seq()))
+					{
+						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+					}
+
+					index.left_levelzero(dim_list[dim_rem-1]);
+				}
 			}
-
-			// given current point to next dim
-			sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
-
-			if (!index.hint(dim_list[dim_rem-1]))
+			else
 			{
-				index.left_child(dim_list[dim_rem-1]);
-				if(!storage->end(index.seq()))
-				{
-					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-				}
+				// given current point to next dim
+				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 
-				index.step_right(dim_list[dim_rem-1]);
-				if(!storage->end(index.seq()))
+				if (!index.hint(dim_list[dim_rem-1]))
 				{
-					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-				}
+					index.left_child(dim_list[dim_rem-1]);
+					if(!storage->end(index.seq()))
+					{
+						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+					}
 
-				index.up(dim_list[dim_rem-1]);
+					index.step_right(dim_list[dim_rem-1]);
+					if(!storage->end(index.seq()))
+					{
+						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+					}
+
+					index.up(dim_list[dim_rem-1]);
+				}
 			}
 		}
 	}
