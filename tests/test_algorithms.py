@@ -48,10 +48,10 @@ class TestBase(unittest.TestCase):
 
         self.baseTest(b, points)
         
-    def testLinearBoundary(self):
-        from pysgpp import SLinearBoundaryBase
+    def testLinearBoundaryUScaled(self):
+        from pysgpp import SLinearBoundaryUScaledBase
         
-        b = SLinearBoundaryBase()
+        b = SLinearBoundaryUScaledBase()
         
         points = [(0, 0, 0.0, 1.0),
                   (0, 0, 1.0, 0.0),
@@ -215,13 +215,13 @@ class TestFunctions(unittest.TestCase):
         
         
     def testGetAffectedBoundaries(self):
-        from pysgpp import GridIndex, GridStorage, SLinearBoundaryBase
-        from pysgpp import SGetAffectedBasisFunctionsBoundaries
+        from pysgpp import GridIndex, GridStorage, SLinearBoundaryUScaledBase
+        from pysgpp import SGetAffectedBasisFunctionsBoundariesUScaled
         
         i = GridIndex(1)
         s = GridStorage(1)
         
-        b = SLinearBoundaryBase()
+        b = SLinearBoundaryUScaledBase()
 
         i.set(0,0,0)
         s.insert(i)
@@ -230,7 +230,7 @@ class TestFunctions(unittest.TestCase):
         i.set(0,1,1)
         s.insert(i)
         
-        ga = SGetAffectedBasisFunctionsBoundaries(s)
+        ga = SGetAffectedBasisFunctionsBoundariesUScaled(s)
         
         x = ga(b, [0.5])
         

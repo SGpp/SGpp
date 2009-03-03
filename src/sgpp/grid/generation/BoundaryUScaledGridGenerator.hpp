@@ -20,26 +20,27 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONHIERARCHISATIONLINEARBOUNDARYOSCALED_HPP
-#define OPERATIONHIERARCHISATIONLINEARBOUNDARYOSCALED_HPP
+#ifndef BOUNDARYUSCALEDGRIDGENERATOR_HPP
+#define BOUNDARYUSCALEDGRIDGENERATOR_HPP
 
-#include "operation/OperationHierarchisation.hpp"
 #include "grid/GridStorage.hpp"
+#include "grid/generation/GridGenerator.hpp"
 
 namespace sg
 {
 
 /**
- * Hierarchisation on sparse grid, linear case
+ * This class provides the interface for the grid generation
+ * for grids with boundaries, pentagon cut through sub space scheme
  */
-class OperationHierarchisationLinearBoundaryOScaled : public OperationHierarchisation
+class BoundaryUScaledGridGenerator : public GridGenerator
 {
 public:
-	OperationHierarchisationLinearBoundaryOScaled(GridStorage* storage) : storage(storage) {}
-	virtual ~OperationHierarchisationLinearBoundaryOScaled() {}
+	BoundaryUScaledGridGenerator(GridStorage* storage);
+	virtual ~BoundaryUScaledGridGenerator();
 
-	virtual void doHierarchisation(DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha);
+	virtual void regular(size_t level);
+	virtual void refine(RefinementFunctor* func);
 
 protected:
 	GridStorage* storage;
@@ -47,4 +48,4 @@ protected:
 
 }
 
-#endif /* OPERATIONHIERARCHISATIONBOUNDARYOSCALED_HPP */
+#endif /* BOUNDARYUSCALEDGRIDGEMERATOR_HPP */

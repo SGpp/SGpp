@@ -24,7 +24,7 @@
 #include "grid/Grid.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
-#include "grid/type/LinearBoundaryOScaledGrid.hpp"
+#include "grid/type/LinearBoundaryUScaledGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
@@ -47,9 +47,9 @@ Grid* Grid::createLinearBoundaryGrid(size_t dim)
 	return new LinearBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearBoundaryOScaledGrid(size_t dim)
+Grid* Grid::createLinearBoundaryUScaledGrid(size_t dim)
 {
-	return new LinearBoundaryOScaledGrid(dim);
+	return new LinearBoundaryUScaledGrid(dim);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim)
@@ -106,7 +106,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("NULL",Grid::nullFactory));
 		tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
 		tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
-		tMap->insert(std::make_pair("linearBoundaryOScaled", LinearBoundaryOScaledGrid::unserialize));
+		tMap->insert(std::make_pair("linearBoundaryUScaled", LinearBoundaryUScaledGrid::unserialize));
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));

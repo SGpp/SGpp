@@ -29,14 +29,14 @@ data/DataVector.cpp
 
 grid/Grid.cpp
 grid/type/LinearBoundaryGrid.cpp
-grid/type/LinearBoundaryOScaledGrid.cpp
+grid/type/LinearBoundaryUScaledGrid.cpp
 grid/type/LinearGrid.cpp
 grid/type/ModLinearGrid.cpp
 grid/type/ModPolyGrid.cpp
 grid/type/PolyGrid.cpp
 grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
-grid/generation/BoundaryOScaledGridGenerator.cpp
+grid/generation/BoundaryUScaledGridGenerator.cpp
 
 basis/linear/operation/OperationBLinear.cpp
 basis/linear/operation/OperationEvalLinear.cpp
@@ -53,9 +53,9 @@ basis/poly/operation/OperationHierarchisationPoly.cpp
 basis/linearboundary/operation/OperationHierarchisationLinearBoundary.cpp
 basis/linearboundary/operation/OperationEvalLinearBoundary.cpp
 basis/linearboundary/operation/OperationBLinearBoundary.cpp
-basis/linearboundaryOScaled/operation/OperationHierarchisationLinearBoundaryOScaled.cpp
-basis/linearboundaryOScaled/operation/OperationEvalLinearBoundaryOScaled.cpp
-basis/linearboundaryOScaled/operation/OperationBLinearBoundaryOScaled.cpp
+basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.cpp
+basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.cpp
+basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.cpp
 
 """)
 

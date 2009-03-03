@@ -20,28 +20,44 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONBLINEARBOUNDARYOSCALED_HPP
-#define OPERATIONBLINEARBOUNDARYOSCALED_HPP
+#include "basis/basis.hpp"
 
-#include "operation/OperationB.hpp"
-#include "grid/GridStorage.hpp"
+#include "basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.hpp"
+
+#include "sgpp.hpp"
+
+#include "data/DataVector.h"
 
 namespace sg
 {
-
-class OperationBLinearBoundaryOScaled : public OperationB
+/**
+ * Multiplication with vector, not transposed, linear sparse grid with boundaries
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
+void OperationBLinearBoundaryUScaled::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-public:
-	OperationBLinearBoundaryOScaled(GridStorage* storage) : storage(storage) {}
-	virtual ~OperationBLinearBoundaryOScaled() {}
+	AlgorithmBBoundaries<SLinearBoundaryUScaledBase> op;
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
 
-	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
-	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
-
-protected:
-	GridStorage* storage;
-};
-
+	op.mult(storage, base, alpha, data, result);
 }
 
-#endif /* OPERATIONBLINEARBOUNDARYOSCALED_HPP */
+/**
+ * Multiplication with vector, transposed, linear sparse grid with boundaries
+ *
+ * @param alpha coefficients of the sparse grid's base functions
+ * @param data the vector that should be multiplied
+ * @param result the result vector of the matrix vector multiplication
+ */
+void OperationBLinearBoundaryUScaled::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+{
+	AlgorithmBBoundaries<SLinearBoundaryUScaledBase> op;
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+
+	op.mult_transpose(storage, base, alpha, data, result);
+}
+
+}

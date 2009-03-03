@@ -207,13 +207,13 @@ class TestOperationLaplaceModLinear(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)
         
         
-class TestOperationLaplaceLinearBoundary(unittest.TestCase):
+class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D(self):
         from pysgpp import Grid, DataVector
         
-        factory = Grid.createLinearBoundaryGrid(1)
+        factory = Grid.createLinearBoundaryUScaledGrid(1)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -241,7 +241,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryGrid(3)
+        factory = Grid.createLinearBoundaryUScaledGrid(3)
 
         m = generateLaplaceMatrix(factory, 3)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat')

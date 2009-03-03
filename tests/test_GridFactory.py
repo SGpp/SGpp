@@ -53,11 +53,11 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
-    def testSerializationLinearBoudary(self):
+    def testSerializationLinearBoudaryUScaled(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryGrid(2)
+        factory = Grid.createLinearBoundaryUScaledGrid(2)
         self.failIfEqual(factory, None)
 
         gen = factory.createGridGenerator()
@@ -251,10 +251,10 @@ class TestLinearGrid(unittest.TestCase):
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 0.5)
 
-class TestLinearBoundaryGrid(unittest.TestCase):
+class TestLinearBoundaryUScaledGrid(unittest.TestCase):
     def testGeneration(self):
         from pysgpp import Grid, DataVector
-        factory = Grid.createLinearBoundaryGrid(2)
+        factory = Grid.createLinearBoundaryUScaledGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -269,7 +269,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         
     def testRefinement2d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        factory = Grid.createLinearBoundaryGrid(2)
+        factory = Grid.createLinearBoundaryUScaledGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -293,7 +293,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         
     def testRefinement3d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        factory = Grid.createLinearBoundaryGrid(3)
+        factory = Grid.createLinearBoundaryUScaledGrid(3)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -312,7 +312,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
 
     def testOperationB(self):
         from pysgpp import Grid, DataVector
-        factory = Grid.createLinearBoundaryGrid(1)
+        factory = Grid.createLinearBoundaryUScaledGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
         
@@ -347,7 +347,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
     def testOperationEval_test(self):
         from pysgpp import Grid, DataVector
 
-        factory = Grid.createLinearBoundaryGrid(1)
+        factory = Grid.createLinearBoundaryUScaledGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(1)
         
@@ -376,7 +376,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
     def testOperationEval_eval(self):
         from pysgpp import Grid, DataVector
 
-        factory = Grid.createLinearBoundaryGrid(1)
+        factory = Grid.createLinearBoundaryUScaledGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(1)
         

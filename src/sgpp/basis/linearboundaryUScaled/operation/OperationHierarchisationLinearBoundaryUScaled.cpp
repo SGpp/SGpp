@@ -20,9 +20,9 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linearboundaryOScaled/operation/OperationHierarchisationLinearBoundaryOScaled.hpp"
-#include "basis/linearboundaryOScaled/algorithm_sweep/HierarchisationLinearBoundaryOScaled.hpp"
-#include "basis/linearboundaryOScaled/algorithm_sweep/DehierarchisationLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/algorithm_sweep/HierarchisationLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/algorithm_sweep/DehierarchisationLinearBoundaryUScaled.hpp"
 
 #include "sgpp.hpp"
 
@@ -37,10 +37,10 @@ namespace sg
  *
  * @param node_values the functions values in the node base
  */
-void OperationHierarchisationLinearBoundaryOScaled::doHierarchisation(DataVector& node_values)
+void OperationHierarchisationLinearBoundaryUScaled::doHierarchisation(DataVector& node_values)
 {
-	detail::HierarchisationLinearBoundaryOScaled func(this->storage);
-	sweep<detail::HierarchisationLinearBoundaryOScaled> s(func, this->storage);
+	detail::HierarchisationLinearBoundaryUScaled func(this->storage);
+	sweep<detail::HierarchisationLinearBoundaryUScaled> s(func, this->storage);
 
 	// N D case
 	if (this->storage->dim() > 1)
@@ -62,17 +62,18 @@ void OperationHierarchisationLinearBoundaryOScaled::doHierarchisation(DataVector
  *
  * @param alpha the coefficients of the sparse grid's base functions
  */
-void OperationHierarchisationLinearBoundaryOScaled::doDehierarchisation(DataVector& alpha)
+void OperationHierarchisationLinearBoundaryUScaled::doDehierarchisation(DataVector& alpha)
 {
-	detail::DehierarchisationLinearBoundaryOScaled func(this->storage);
-	sweep<detail::DehierarchisationLinearBoundaryOScaled> s(func, this->storage);
+	detail::DehierarchisationLinearBoundaryUScaled func(this->storage);
+	sweep<detail::DehierarchisationLinearBoundaryUScaled> s(func, this->storage);
 
 	// N D case
 	if (this->storage->dim() > 1)
 	{
 		for (size_t i = 0; i < this->storage->dim(); i++)
 		{
-			s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)));
+			//s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)));
+			s.sweep1D_Boundary(alpha, alpha, i);
 		}
 	}
 	// 1 D case

@@ -192,10 +192,10 @@ class TestHierarchisationLinear(unittest.TestCase):
         self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
         
 
-class TestHierarchisationLinearBoundary(unittest.TestCase):
+class TestHierarchisationLinearBoundaryUScaled(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
-    def testHierarchisation1DBoundary(self):
+    def testHierarchisation1DBoundaryUScaled(self):
         from pysgpp import Grid, DataVector
         
         dim = 1
@@ -207,7 +207,7 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         function = buildParableBoundary(dim)
     
         # generate a regular test grid
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryUScaledGrid(dim)
         generator = grid.createGridGenerator()
         generator.regular(5)
     
@@ -233,7 +233,7 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
   
     ##
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationDBoundary(self):
+    def testHierarchisationDBoundaryUScaled(self):
         from pysgpp import Grid, DataVector
         
         dim = 3
@@ -245,7 +245,7 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         function = buildParableBoundary(dim)
     
         # generate a regular test grid
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryUScaledGrid(dim)
         generator = grid.createGridGenerator()
         generator.regular(5)
     

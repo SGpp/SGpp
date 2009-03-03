@@ -18,9 +18,9 @@
 /* along with sgpp; if not, write to the Free Software                       */
 /* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 /* or see <http://www.gnu.org/licenses/>.                                    */
-/*****************************************************************************/
+/******************************************************************************/
 
-#include "grid/generation/BoundaryOScaledGridGenerator.hpp"
+#include "grid/generation/BoundaryUScaledGridGenerator.hpp"
 #include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"
@@ -28,23 +28,42 @@
 namespace sg
 {
 
-BoundaryOScaledGridGenerator::BoundaryOScaledGridGenerator(GridStorage* storage) : storage(storage)
+/**
+ * Constructor
+ *
+ * @param storage template type that holds the grid points
+ */
+BoundaryUScaledGridGenerator::BoundaryUScaledGridGenerator(GridStorage* storage) : storage(storage)
 {
 }
 
-BoundaryOScaledGridGenerator::~BoundaryOScaledGridGenerator()
+/**
+ * Destructor
+ */
+BoundaryUScaledGridGenerator::~BoundaryUScaledGridGenerator()
 {
 }
 
-void BoundaryOScaledGridGenerator::regular(size_t level)
+/**
+ * creates a regular grid with boundaries, pentagon cut
+ *
+ * @param level maximum level of the grid
+ */
+void BoundaryUScaledGridGenerator::regular(size_t level)
 {
 	HashGenerator gen;
 	gen.regularWithBoundaries(this->storage, level, true);
 }
 
-void BoundaryOScaledGridGenerator::refine(RefinementFunctor* func)
+/**
+ * refines a regular grid
+ *
+ * @param func pointer to refinement function
+ */
+void BoundaryUScaledGridGenerator::refine(RefinementFunctor* func)
 {
-	throw generation_exception("refinement is not supported on grid with over-scaled boundaries!");
+	HashRefinement refine;
+	refine.free_refine(this->storage, func, true);
 }
 
 }
