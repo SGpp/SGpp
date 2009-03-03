@@ -206,30 +206,30 @@ class TestHashGenerator(unittest.TestCase):
         
         self.failUnlessEqual(s.size(), 7)
         
-    def testRegularBoundaries1D(self):
+    def testRegularBoundariesUScaled1D(self):
         """Tests 1D grid generation"""
         from pysgpp import GridStorage, HashGenerator
         
         s = GridStorage(1)
         g = HashGenerator()
         
-        g.regularWithBoundaries(s, 2, False)
+        g.regularWithBoundaries(s, 2, True)
         
         self.failUnlessEqual(s.size(), 5)
         
-    def testRegularBoundaries2D(self):
+    def testRegularBoundariesUScaled2D(self):
         """Tests 2D grid generation"""
         from pysgpp import GridStorage, HashGenerator
         
         s = GridStorage(2)
         g = HashGenerator()
         
-        g.regularWithBoundaries(s, 2, False)
+        g.regularWithBoundaries(s, 2, True)
         
         self.failUnlessEqual(s.size(), 21)
 
         s = GridStorage(2)
-        g.regularWithBoundaries(s, 3, False)
+        g.regularWithBoundaries(s, 3, True)
         self.failUnlessEqual(s.size(), 49)
         
         from pysgpp import GridIndex
@@ -258,14 +258,14 @@ class TestHashGenerator(unittest.TestCase):
         i.set(0,0,0)
         self.failUnless(s.has_key(i))
 
-    def testRegularBoundaries3D(self):
+    def testRegularBoundariesUScaled3D(self):
         """Tests 3D grid generation"""
         from pysgpp import GridStorage, HashGenerator
         
         s = GridStorage(3)
         g = HashGenerator()
         
-        g.regularWithBoundaries(s, 2, False)
+        g.regularWithBoundaries(s, 2, True)
         
         self.failUnlessEqual(s.size(), 81)        
 
@@ -290,7 +290,7 @@ class TestHashRefinement(unittest.TestCase):
         
         self.failUnlessEqual(s.size(), 5)
         
-    def testFreeRefineBoundaries(self):
+    def testFreeRefineBoundariesUScaled(self):
         """Tests surplus based refine for Hash-Storage"""
         from pysgpp import GridStorage, HashGenerator
         from pysgpp import SurplusRefinementFunctor, HashRefinement, DataVector
@@ -298,7 +298,7 @@ class TestHashRefinement(unittest.TestCase):
         s = GridStorage(2)
         g = HashGenerator()
         
-        g.regularWithBoundaries(s, 1, False)
+        g.regularWithBoundaries(s, 1, True)
         
         d = DataVector(9)
         d[0] = 0.0

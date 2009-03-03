@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEDOWNLINEARBOUNDARYOSCALED_HPP
-#define LAPLACEDOWNLINEARBOUNDARYOSCALED_HPP
+#ifndef DEHIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
+#define DEHIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
@@ -33,26 +33,46 @@ namespace detail
 {
 
 /**
- * down-operation in dimension dim. for use with sweep
+ * Class that implements the dehierarchisation on a linear sparse grid with boundaries. Therefore
+ * the ()operator has to be implement in order to use the sweep algorithm for
+ * the grid traversal
  */
-class LaplaceDownLinearBoundaryOScaled
+class DehierarchisationLinearBoundaryUScaled
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
+
+	/// the grid object
 	GridStorage* storage;
 
 public:
-	LaplaceDownLinearBoundaryOScaled(GridStorage* storage) : storage(storage)
+	/**
+	 * Constructor, must be bind to a grid
+	 *
+	 * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
+	 */
+	DehierarchisationLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
 	{
 	}
 
-	~LaplaceDownLinearBoundaryOScaled()
+	/**
+	 * Destructor
+	 */
+	~DehierarchisationLinearBoundaryUScaled()
 	{
 	}
 
+	/**
+	 * Implements operator() needed by the sweep class during the grid traversal. This function
+	 * is applied to the whole grid.
+	 *
+	 * @param source this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
+	 * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
+	 * @param index a iterator object of the grid
+	 * @param dim current fixed dimension of the 'execution direction'
+	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		// get boundary values
 		double left_boundary;
 		double right_boundary;
 		size_t seq;
@@ -74,51 +94,54 @@ public:
 
 protected:
 
+	/**
+	 * Recursive dehierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
+	 *
+	 * @todo add graphical explanation here
+	 *
+	 * @param source this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
+	 * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
+	 * @param index a iterator object of the grid
+	 * @param dim current fixed dimension of the 'execution direction'
+	 * @param fl left value of the current region regarded in this step of the recursion
+	 * @param fr right value of the current region regarded in this step of the recursion
+	 */
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 	{
+		// current position on the grid
 		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
-
-		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
-
-			index.get(dim, l, i);
-
-			double h = 1/pow(2.0, l);
-
-			// integration
-			result[seq] = (  h * (fl+fr)/2.0
-			                      + 2.0/3.0 * h * alpha_value );    // diagonal entry
-		}
+		// value in the middle, needed for recursive call and calculation of the hierarchical surplus
+		double fm = source[seq];
 
 		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		fm += ((fl + fr)/2.0);
+		result[seq] = fm;
 
-		if(!index.hint(dim))
+		// recursive calls for the right and left side of the current node
+		if(index.hint(dim) == false)
 		{
+			// descend left
 			index.left_child(dim);
 			if(!storage->end(index.seq()))
 			{
 				rec(source, result, index, dim, fl, fm);
 			}
 
+			// descend right
 			index.step_right(dim);
 			if(!storage->end(index.seq()))
 			{
 				rec(source, result, index, dim, fm, fr);
 			}
 
+			// ascend
 			index.up(dim);
 		}
 	}
-
-
 };
 
-} // namespace detail
+}	// namespace detail
 
-} // namespace sg
+}	// namespace sg
 
-#endif /* LAPLACEDOWNLINEARBOUNDARYOSCALED_HPP */
+#endif /* DEHIERARCHISATIONLINEARBOUNDARYUSCALED_HPP */

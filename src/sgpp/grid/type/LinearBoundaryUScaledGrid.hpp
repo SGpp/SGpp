@@ -20,95 +20,39 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEUPLINEARBOUNDARYOSCALED_HPP
-#define LAPLACEUPLINEARBOUNDARYOSCALED_HPP
+#ifndef LINEARBOUNDARYGRIDUSCALED_HPP
+#define LINEARBOUNDARYGRIDUSCALED_HPP
 
-#include "grid/GridStorage.hpp"
-#include "data/DataVector.h"
+#include "grid/Grid.hpp"
+
+#include <iostream>
 
 namespace sg
 {
 
-namespace detail
-{
-
 /**
- * up-operation in dimension dim. for use with sweep
+ * grid with linear base functions with boundaries, pentagon cut
  */
-class LaplaceUpLinearBoundaryOScaled
+class LinearBoundaryUScaledGrid : public Grid
 {
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-	GridStorage* storage;
+	LinearBoundaryUScaledGrid(std::istream& istr);
 
 public:
-	LaplaceUpLinearBoundaryOScaled(GridStorage* storage) : storage(storage)
-	{
-	}
+	LinearBoundaryUScaledGrid(size_t dim);
+	virtual ~LinearBoundaryUScaledGrid();
 
-	~LaplaceUpLinearBoundaryOScaled()
-	{
-	}
+	virtual const char* getType();
 
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		// get boundary values
-		double fl = 0.0;
-		double fr = 0.0;
+	virtual OperationB* createOperationB();
+	virtual GridGenerator* createGridGenerator();
+	virtual OperationMatrix* createOperationLaplace();
+	virtual OperationEval* createOperationEval();
+	virtual OperationHierarchisation* createOperationHierarchisation();
 
-		rec(source, result, index, dim, fl, fr);
-	}
-
-protected:
-
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-	{
-		size_t seq = index.seq();
-
-		fl = fr = 0.0;
-		double fml = 0.0;
-		double fmr = 0.0;
-
-		if(!index.hint(dim))
-		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fml);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fmr, fr);
-			}
-
-			index.up(dim);
-		}
-
-		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
-
-			index.get(dim, l, i);
-
-			double fm = fml + fmr;
-
-			double alpha_value = source[seq];
-			double h = 1/pow(2.0,l);
-
-			// transposed operations:
-			result[seq] = fm;
-
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
-		}
-	}
-
+	static Grid* unserialize(std::istream& istr);
 };
 
-} // namespace detail
+}
 
-} // namespace sg
-
-#endif /* LAPLACEUPLINEARBOUNDARYOSCALED_HPP */
+#endif /* LINEARBOUNDARYGRIDUSCALED_HPP */

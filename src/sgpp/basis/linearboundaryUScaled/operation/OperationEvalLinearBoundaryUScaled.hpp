@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONEVALLINEARBOUNDARYOSCALED_HPP
-#define OPERATIONEVALLINEARBOUNDARYOSCALED_HPP
+#ifndef OPERATIONEVALLINEARBOUNDARYUSCALED_HPP
+#define OPERATIONEVALLINEARBOUNDARYUSCALED_HPP
 
 #include "operation/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
@@ -29,11 +29,11 @@
 namespace sg
 {
 
-class OperationEvalLinearBoundaryOScaled : public OperationEval
+class OperationEvalLinearBoundaryUScaled : public OperationEval
 {
 public:
-	OperationEvalLinearBoundaryOScaled(GridStorage* storage) : storage(storage) {}
-	virtual ~OperationEvalLinearBoundaryOScaled() {}
+	OperationEvalLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationEvalLinearBoundaryUScaled() {}
 
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
@@ -45,4 +45,4 @@ protected:
 
 }
 
-#endif /* OPERATIONEVALLINEARBOUNDARYOSCALED_HPP */
+#endif /* OPERATIONEVALLINEARBOUNDARYUSCALED_HPP */

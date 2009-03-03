@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYOSCALEDBASE_HPP
-#define LINEARBOUNDARYOSCALEDBASE_HPP
+#ifndef LINEARBOUNDARYUSCALEDBASE_HPP
+#define LINEARBOUNDARYUSCALEDBASE_HPP
 
 #include <cmath>
 
@@ -29,11 +29,11 @@ namespace sg
 {
 
 /**
- * linear base functions with over-scaled boundaries
+ * linear base functions with boundaries
  * And here we have another implicit dependence on tensor products
  */
 template<class LT, class IT>
-class linearboundaryOScaledBase
+class linearboundaryUScaledBase
 {
 public:
 	/**
@@ -62,4 +62,4 @@ public:
 
 }
 
-#endif /* LINEARBOUNDARYOSCALEDBASE_HPP */
+#endif /* LINEARBOUNDARYUSCALEDBASE_HPP */

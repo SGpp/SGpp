@@ -22,7 +22,7 @@
 
 #include "basis/basis.hpp"
 
-#include "basis/linearboundaryOScaled/operation/OperationEvalLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.hpp"
 
 #include "sgpp.hpp"
 
@@ -31,13 +31,13 @@
 namespace sg
 {
 
-double OperationEvalLinearBoundaryOScaled::eval(DataVector& alpha, std::vector<double>& point)
+double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<double>& point)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	linearboundaryOScaledBase<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctionsBoundaries<linearboundaryOScaledBase<unsigned int, unsigned int> > ga(storage);
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctionsBoundaries<linearboundaryUScaledBase<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 
@@ -51,10 +51,11 @@ double OperationEvalLinearBoundaryOScaled::eval(DataVector& alpha, std::vector<d
 	return result;
 }
 
-double OperationEvalLinearBoundaryOScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
+double OperationEvalLinearBoundaryUScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	linearboundaryOScaledBase<unsigned int, unsigned int> base;
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
 }
+

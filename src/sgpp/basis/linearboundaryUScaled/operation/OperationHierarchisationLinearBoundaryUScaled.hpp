@@ -20,44 +20,31 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/basis.hpp"
+#ifndef OPERATIONHIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
+#define OPERATIONHIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
 
-#include "basis/linearboundaryOScaled/operation/OperationBLinearBoundaryOScaled.hpp"
-
-#include "sgpp.hpp"
-
-#include "data/DataVector.h"
+#include "operation/OperationHierarchisation.hpp"
+#include "grid/GridStorage.hpp"
 
 namespace sg
 {
-/**
- * Multiplication with vector, not transposed, linear sparse grid with boundaries, over-scaled
- *
- * @param alpha coefficients of the sparse grid's base functions
- * @param data the vector that should be multiplied
- * @param result the result vector of the matrix vector multiplication
- */
-void OperationBLinearBoundaryOScaled::mult(DataVector& alpha, DataVector& data, DataVector& result)
-{
-	AlgorithmBBoundaries<SLinearBoundaryOScaledBase> op;
-	linearboundaryOScaledBase<unsigned int, unsigned int> base;
-
-	op.mult(storage, base, alpha, data, result);
-}
 
 /**
- * Multiplication with vector, transposed, linear sparse grid with boundaries, over-scaled
- *
- * @param alpha coefficients of the sparse grid's base functions
- * @param data the vector that should be multiplied
- * @param result the result vector of the matrix vector multiplication
+ * Hierarchisation on sparse grid, linear case
  */
-void OperationBLinearBoundaryOScaled::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+class OperationHierarchisationLinearBoundaryUScaled : public OperationHierarchisation
 {
-	AlgorithmBBoundaries<SLinearBoundaryOScaledBase> op;
-	linearboundaryOScaledBase<unsigned int, unsigned int> base;
+public:
+	OperationHierarchisationLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationHierarchisationLinearBoundaryUScaled() {}
 
-	op.mult_transpose(storage, base, alpha, data, result);
+	virtual void doHierarchisation(DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha);
+
+protected:
+	GridStorage* storage;
+};
+
 }
 
-}
+#endif /* OPERATIONHIERARCHISATIONBOUNDARYUSCALED_HPP */

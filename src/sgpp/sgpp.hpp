@@ -37,7 +37,7 @@
 
 #include "basis/linear/operation/OperationLaplaceLinear.hpp"
 #include "basis/linearboundary/operation/OperationLaplaceLinearBoundary.hpp"
-#include "basis/linearboundaryOScaled/operation/OperationLaplaceLinearBoundaryOScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/OperationLaplaceLinearBoundaryUScaled.hpp"
 #include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.h"
@@ -47,7 +47,7 @@
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/StandardGridGenerator.hpp"
 #include "grid/generation/BoundaryGridGenerator.hpp"
-#include "grid/generation/BoundaryOScaledGridGenerator.hpp"
+#include "grid/generation/BoundaryUScaledGridGenerator.hpp"
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/generation/hashmap/HashGenerator.hpp"
 #include "grid/generation/hashmap/HashRefinement.hpp"
@@ -56,7 +56,7 @@
 namespace sg
 {
 
-typedef linearboundaryOScaledBase<unsigned int, unsigned int> SLinearBoundaryOScaledBase;
+typedef linearboundaryUScaledBase<unsigned int, unsigned int> SLinearBoundaryUScaledBase;
 typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
 typedef linear_base<unsigned int, unsigned int> SLinearBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
@@ -65,7 +65,7 @@ typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
 
 typedef AlgorithmB<SLinearBase> SGridOperationB;
 typedef AlgorithmB<SLinearBoundaryBase> SGridBoundaryOperationB;
-typedef AlgorithmB<SLinearBoundaryOScaledBase> SGridBoundaryOScaledOperationB;
+typedef AlgorithmB<SLinearBoundaryUScaledBase> SGridBoundaryUScaledOperationB;
 typedef AlgorithmB<SModLinearBase> SGridModOperationB;
 
 }

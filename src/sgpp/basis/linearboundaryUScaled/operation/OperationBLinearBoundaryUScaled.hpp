@@ -20,23 +20,23 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef BOUNDARYOSCALEDGRIDGENERATOR_HPP
-#define BOUNDARYOSCALEDGRIDGENERATOR_HPP
+#ifndef OPERATIONBLINEARBOUNDARYUSCALED_HPP
+#define OPERATIONBLINEARBOUNDARYUSCALED_HPP
 
+#include "operation/OperationB.hpp"
 #include "grid/GridStorage.hpp"
-#include "grid/generation/GridGenerator.hpp"
 
 namespace sg
 {
 
-class BoundaryOScaledGridGenerator : public GridGenerator
+class OperationBLinearBoundaryUScaled : public OperationB
 {
 public:
-	BoundaryOScaledGridGenerator(GridStorage* storage);
-	virtual ~BoundaryOScaledGridGenerator();
+	OperationBLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+	virtual ~OperationBLinearBoundaryUScaled() {}
 
-	virtual void regular(size_t level);
-	virtual void refine(RefinementFunctor* func);
+	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
+	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
 
 protected:
 	GridStorage* storage;
@@ -44,4 +44,4 @@ protected:
 
 }
 
-#endif /* BOUNDARYOSCALEDGRIDGEMERATOR_HPP */
+#endif /* OPERATIONBLINEARBOUNDARYUSCALED_HPP */
