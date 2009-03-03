@@ -424,7 +424,7 @@ def run(grid, training, classes):
 
 ##
 #Subroutine evaluation of error
-#@TODO: remove printing messages from the subroutine and place it into the suited methods
+#@todo remove printing messages from the subroutine and place it into the suited methods
 #
 def evaluateError(classes, alpha, m):
 

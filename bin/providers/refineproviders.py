@@ -46,7 +46,7 @@ class SurplusRefineProvider:
         print "GridPoints: ", self.gridDecorator.getSize()
 
 ##
-# @TODO: rework
+# @todo rework
 class ErrorRefineProvider:
     def __init__(self, gridDecorator):
         self.gridDecorator = gridDecorator
