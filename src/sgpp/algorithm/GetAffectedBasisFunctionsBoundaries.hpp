@@ -59,6 +59,8 @@ public:
 	 * @param basis a sparse grid basis
 	 * @param point evaluation point within the domain
 	 * @param result a vector to store the results in
+	 *
+	 * @todo review this seems to be wrong
 	 */
 	void operator()(BASIS& basis, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
 	{
@@ -110,6 +112,8 @@ protected:
 	 * @param working iterator working on the GridStorage of the basis
 	 * @param source array of indices for each dimension (identifying the indices of the current grid point)
 	 * @param result a vector to store the results in
+	 *
+	 * @todo review this seems to be wrong
 	 */
 	void rec(BASIS& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
 	{

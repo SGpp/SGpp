@@ -89,7 +89,10 @@ public:
 		// move to root
 		index.top(dim);
 
-		rec(source, result, index, dim, left_boundary, right_boundary);
+		if(!storage->end(index.seq()))
+		{
+			rec(source, result, index, dim, left_boundary, right_boundary);
+		}
 	}
 
 protected:

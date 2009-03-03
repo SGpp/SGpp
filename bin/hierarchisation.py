@@ -97,9 +97,9 @@ def printRefPoint(points, dim, function, fout, foutvalue):
     for y in xrange(dim):
         fout.write("%s " % p[y])
     
-    fout.write("%f " % pc)    
+    fout.write("%s " % pc)    
     fout.write("\n")
-    foutvalue.write("%f " % pc)    
+    foutvalue.write("%s " % pc)    
     foutvalue.write("\n")
     
     return 
@@ -114,7 +114,7 @@ def recGenPrintRefVector(dim_rem, dim, points, function, resolution, fout, foutv
             printRefPoint(points, dim, function, fout, foutvalue)
             
         fout.write("\n")
-        foutvalue.write("\n")
+        #foutvalue.write("\n")
     else:
         points_save = points
         for x in xrange(resolution):
@@ -141,11 +141,11 @@ def printRefNDFunction(filename, filenameValue, function, resolution, dim):
 def printPoint(p, grid, alpha, fout, foutvalue):
     pc = grid.createOperationEval().eval(alpha, p)
     for y in xrange(grid.getStorage().dim()):
-        fout.write("%f " % p[y])
+        fout.write("%s " % p[y])
     
-    fout.write("%f " % pc)
+    fout.write("%s " % pc)
     fout.write("\n")
-    foutvalue.write("%f " % pc)
+    foutvalue.write("%s " % pc)
     foutvalue.write("\n") 
     
     return 
@@ -159,7 +159,7 @@ def recGenPrintVector(dim_rem, p, grid, alpha, resolution, fout, foutvalue):
             printPoint(p, grid, alpha, fout, foutvalue)
             
         fout.write("\n")
-        foutvalue.write("\n")
+        #foutvalue.write("\n")
     else:
         for x in xrange(resolution):
             p[dim_rem] = float(x) / (resolution - 1)
@@ -180,6 +180,30 @@ def printNDFunction(filename, filenameValue, grid, alpha, resolution):
     fout.close()
     foutvalue.close()
     return
+
+
+#-------------------------------------------------------------------------------
+def compareResultFiles(file1, file2):
+    error = 0.0
+    
+    vala = 0.0
+    valb = 0.0
+    
+    fa = open(file1, 'r')
+    fb = open(file2, 'r')
+    vala = fa.readline().strip()
+    valb = fb.readline().strip()
+    while len(vala) > 0:
+        if abs(abs(float(vala))-abs(float(valb))) > error:
+            error = abs(abs(float(vala))-abs(float(valb))) 
+        
+        vala = fa.readline().strip()
+        valb = fb.readline().strip()
+
+    fa.close()
+    fb.close()
+    
+    return error
 
 
 #-------------------------------------------------------------------------------
@@ -382,6 +406,9 @@ def runHierarchisationDehierarchisationLinearBoundaryUScaledRegularTestPrintND(d
     print "The maximum error during hierarchisation and dehierarchisation was:"
     print testHierarchisationResults(node_values, node_values_back)
     
+    print "The maximum error during function evaluation was:"
+    print compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out")
+    
     return
 
     
@@ -493,4 +520,4 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationLinearBoundaryRegularTest(10, 3)
+    runHierarchisationDehierarchisationLinearBoundaryUScaledRegularTestPrintND(5, 10, 7)

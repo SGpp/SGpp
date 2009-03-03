@@ -69,40 +69,65 @@ protected:
 		double fml = 0.0;
 		double fmr = 0.0;
 
-		if(!index.hint(dim))
+		GridStorage::index_type::level_type current_level;
+		GridStorage::index_type::index_type current_index;
+
+		index.get(dim, current_level, current_index);
+
+		/*if(l == 0)
 		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
+			if(!index.hint(dim))
 			{
-				rec(source, result, index, dim, fl, fml);
-			}
+				index.left_child(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fl, fml);
+				}
 
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
+				index.step_right(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fmr, fr);
+				}
+
+				index.up(dim);
+			}
+		}
+		else*/
+		{
+			if(!index.hint(dim))
 			{
-				rec(source, result, index, dim, fmr, fr);
-			}
+				index.left_child(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fl, fml);
+				}
 
-			index.up(dim);
+				index.step_right(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fmr, fr);
+				}
+
+				index.up(dim);
+			}
 		}
 
-		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
+		GridStorage::index_type::level_type l;
+		GridStorage::index_type::index_type i;
 
-			index.get(dim, l, i);
+		index.get(dim, l, i);
 
-			double fm = fml + fmr;
+		double fm = fml + fmr;
 
-			double alpha_value = source[seq];
-			double h = 1/pow(2.0,l);
+		double alpha_value = source[seq];
+		double h = 1/pow(2.0,l);
 
-			// transposed operations:
-			result[seq] = fm;
+		// transposed operations:
+		result[seq] = fm;
 
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
-		}
+		fl = fm/2.0 + alpha_value*h/2.0 + fl;
+		fr = fm/2.0 + alpha_value*h/2.0 + fr;
 	}
 
 };

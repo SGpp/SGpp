@@ -67,6 +67,19 @@ public:
 	}
 
 	/**
+	 *	Sets 0,0 in every dimension
+	 */
+	void resetToLevelZero()
+	{
+		for(size_t i = 0; i < storage->dim(); i++)
+		{
+			index.push(i, 0, 0);
+		}
+		index.rehash();
+		this->seq_ = storage->seq(&index);
+	}
+
+	/**
 	 * left level zero parent
 	 */
 	void left_levelzero(size_t dim)
