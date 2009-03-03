@@ -134,7 +134,7 @@ protected:
 			if(storage->end(seq))
 			{
 				//if (work_level == 1)
-				std::cout << "work_level: " << work_level << std::endl;
+				//std::cout << "work_level: " << work_level << std::endl;
 
 				break;
 			}
