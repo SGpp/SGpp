@@ -90,6 +90,8 @@ public:
 	 *
 	 * @todo: level should be of type level_t but swig doesnt want that
 	 *
+	 * @todo: DIRK: review this part
+	 *
 	 * @param storage Hashmap, that stores the grid points
 	 * @param level maximum level of the sparse grid
 	 * @param UScaledBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
@@ -112,7 +114,7 @@ public:
 					index.push(d, 0, 0);
 				}
 
-				this->boundaries_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim());
+				this->boundaries_rec(storage, index, storage->dim() - 1, 0, 0);
 			}
 			else
 			{
@@ -121,17 +123,37 @@ public:
 					index.push(d, 1, 1);
 				}
 
-				this->boundaries_UScaled_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim() - 1);
+				this->boundaries_UScaled_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1);
 			}
 		}
 		else
 		{
-			for(size_t d = 0; d < storage->dim(); d++)
+			if (level < 2)
 			{
-				index.push(d, 0, 0);
-			}
+				for(size_t d = 0; d < storage->dim(); d++)
+				{
+					index.push(d, 0, 0);
+				}
 
-			this->boundaries_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim());
+				this->boundaries_rec(storage, index, storage->dim()-1, 0, level);
+			}
+			else
+			{
+				for(size_t d = 0; d < storage->dim(); d++)
+				{
+					index.push(d, 1, 1);
+				}
+
+				// handle 1 D grid
+				if (storage->dim() == 1)
+				{
+					this->boundariesFull_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, true, false);
+				}
+				else
+				{
+					this->boundariesFull_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false, false);
+				}
+			}
 		}
 	}
 
@@ -251,7 +273,7 @@ protected:
 	}
 
 	/**
-	 * recursive construction of the spare grid with boundaries, classic level 0 approach
+	 * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level 0 and 1
 	 *
 	 * @param storage hashmap that stores the grid points
 	 * @param index point's index
@@ -261,50 +283,66 @@ protected:
 	 */
 	void boundaries_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level)
 	{
-		if(current_dim == 0)
-		{
-			boundaries_rec_1d(storage, index, current_level, level);
-		}
-		else
-		{
-			index_t source_index;
-			level_t source_level;
+		index_t source_index;
+		level_t source_level;
 
-			index.get(current_dim, source_level, source_index);
+		index.get(current_dim, source_level, source_index);
 
-			if(current_level <= level)
+		if(current_level <= level)
+		{
+			// d-1 recursion
+			if (source_level == 0)
 			{
-				if (source_level == 0)
+				if (current_dim == 0)
 				{
+					index.push(0, 0, 0);
+					storage->insert(index);
+					index.push(0, 0, 1);
+					storage->insert(index);
+
+					index.push(current_dim, source_level, source_index);
+				}
+				else
+				{
+					this->boundaries_rec(storage, index, current_dim-1, current_level, level);
+
 					index.push(current_dim, 0, 1);
 					this->boundaries_rec(storage, index, current_dim-1, current_level, level);
 
 					index.push(current_dim, source_level, source_index);
 				}
-
-				// d-1 recursion
-				this->boundaries_rec(storage, index, current_dim-1, current_level, level);
 			}
-
-			if(current_level < level)
+			else
 			{
-				if (source_level == 0 && source_index == 0)
+				if (current_dim == 0)
 				{
-					index.push(current_dim, source_level + 1, 1);
-					this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
+					storage->insert(index);
 				}
 				else
 				{
-					index.push(current_dim, source_level + 1, 2*source_index - 1);
-					this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
-
-					index.push(current_dim, source_level + 1, 2*source_index + 1);
-					this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
+					this->boundaries_rec(storage, index, current_dim-1, current_level, level);
 				}
 			}
-
-			index.push(current_dim, source_level, source_index);
 		}
+
+		if(current_level < level)
+		{
+			if (source_level == 0 && source_index == 0)
+			{
+				index.push(current_dim, source_level + 1, 1);
+				this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
+			}
+			else
+			{
+				index.push(current_dim, source_level + 1, 2*source_index - 1);
+				this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
+
+				index.push(current_dim, source_level + 1, 2*source_index + 1);
+				this->boundaries_rec(storage, index, current_dim, current_level + 1, level);
+			}
+		}
+
+		index.push(current_dim, source_level, source_index);
 	}
 
 	/**
@@ -339,31 +377,107 @@ protected:
 	}
 
 	/**
+	 * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level greater 1
+	 *
+	 * @param storage hashmap that stores the grid points
+	 * @param index point's index
+	 * @param current_dim current working dimension
+	 * @param current_level current level in this construction step
+	 * @param level maximum level of the sparse grid
+	 */
+	void boundariesFull_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool tatooine, bool kessel)
+	{
+		if(current_dim == 0)
+		{
+			boundariesFull_rec_lastd(storage, index, current_level, level, tatooine, kessel);
+		}
+		else
+		{
+			index_t source_index;
+			level_t source_level;
+
+			index.get(current_dim, source_level, source_index);
+
+			if(current_level <= level)
+			{
+				if (source_level == 1)
+				{
+					index.push(current_dim, 0, 0);
+					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level, true, kessel);
+
+					index.push(current_dim, 0, 1);
+					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level, true, kessel);
+
+					index.push(current_dim, source_level, source_index);
+				}
+
+				// d-1 recursion
+				this->boundariesFull_rec(storage, index, current_dim - 1, current_level, level, tatooine, kessel);
+			}
+
+			if(current_level < level)
+			{
+				if (current_level == (level-1))
+				{
+					index.push(current_dim, source_level + 1, 2*source_index - 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, true);
+
+					index.push(current_dim, source_level + 1, 2*source_index + 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, true);
+				}
+				else
+				{
+					index.push(current_dim, source_level + 1, 2*source_index - 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, kessel);
+
+					index.push(current_dim, source_level + 1, 2*source_index + 1);
+					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, kessel);
+				}
+			}
+
+			index.push(current_dim, source_level, source_index);
+		}
+	}
+
+	/**
 	 * generate points of the last dimension (dim == 0), version of the classic sparse grid
-	 * with level 0
+	 * with level 0, overall level > 1
 	 *
 	 * @param storage the hashmap that stores the grid points
 	 * @param index point's index that should be created on the grid
 	 * @param current_level current level of the grid generation
 	 * @param level maximum level of grid
 	 */
-	void boundaries_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level)
+	void boundariesFull_rec_lastd(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool tatooine, bool kessel)
 	{
-		for(level_t l = 0; l <= level-current_level; l++)
+		if (tatooine == false && kessel == true)
 		{
-			if (l == 0)
+			index.push(0, 0, 0);
+			storage->insert(index);
+			index.push(0, 0, 1);
+			storage->insert(index);
+		}
+		else
+		{
+			if (tatooine == false)
+				level--;
+
+			for(level_t l = 0; l <= level-current_level + 1; l++)
 			{
-				index.push(0, 0, 0);
-				storage->insert(index);
-				index.push(0, 0, 1);
-				storage->insert(index);
-			}
-			else
-			{
-				for(index_t i = 1; i <= 1<<(l-1); i++)
+				if (l == 0)
 				{
-					index.push(0, l, 2*i-1);
+					index.push(0, 0, 0);
 					storage->insert(index);
+					index.push(0, 0, 1);
+					storage->insert(index);
+				}
+				else
+				{
+					for(index_t i = 1; i <= 1<<(l-1); i++)
+					{
+						index.push(0, l, 2*i-1);
+						storage->insert(index);
+					}
 				}
 			}
 		}
