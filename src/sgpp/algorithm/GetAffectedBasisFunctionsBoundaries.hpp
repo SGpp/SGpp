@@ -126,19 +126,22 @@ protected:
 		level_type src_level = static_cast<level_type>(sizeof(index_type) * 8 - 1);
 		index_type src_index = source[current_dim];
 
-		level_type work_level = 1;
+		level_type work_level = 0;
 
 		while(true)
 		{
 			size_t seq = working.seq();
 			if(storage->end(seq))
 			{
+				//if (work_level == 1)
+				std::cout << "work_level: " << work_level << std::endl;
+
 				break;
 			}
 			else
 			{
 				// handle boundaries if we are on level 1
-				if (work_level == 1)
+				if (work_level == 0)
 				{
 					// level 0, index 0
 					working.left_levelzero(current_dim);
@@ -168,24 +171,26 @@ protected:
 						rec(basis, point, current_dim + 1, value*new_value_l_zero_right, working, source, result);
 					}
 
-					working.top(current_dim);
-					seq = working.seq();
-				}
-
-				index_type work_index;
-				level_type temp;
-
-				working.get(current_dim, temp, work_index);
-
-				double new_value = basis.eval(work_level, work_index, point[current_dim]);
-
-				if(current_dim == storage->dim()-1)
-				{
-					result.push_back(std::make_pair(seq, value*new_value));
+					//working.top(current_dim);
+					//seq = working.seq();
 				}
 				else
 				{
-					rec(basis, point, current_dim + 1, value*new_value, working, source, result);
+					index_type work_index;
+					level_type temp;
+
+					working.get(current_dim, temp, work_index);
+
+					double new_value = basis.eval(work_level, work_index, point[current_dim]);
+
+					if(current_dim == storage->dim()-1)
+					{
+						result.push_back(std::make_pair(seq, value*new_value));
+					}
+					else
+					{
+						rec(basis, point, current_dim + 1, value*new_value, working, source, result);
+					}
 				}
 			}
 
@@ -197,18 +202,24 @@ protected:
 
 			// this decides in which direction we should descend by evaluating the corresponding bit
 			// the bits are coded from left to right starting with level 1 being in position src_level
-			bool right = (src_index & (1 << (src_level - work_level))) > 0;
-			++work_level;
-
-			if(right)
+			if (work_level == 0)
 			{
-				working.right_child(current_dim);
+				working.top(current_dim);
 			}
 			else
 			{
-				working.left_child(current_dim);
-			}
+				bool right = (src_index & (1 << (src_level - work_level))) > 0;
 
+				if(right)
+				{
+					working.right_child(current_dim);
+				}
+				else
+				{
+					working.left_child(current_dim);
+				}
+			}
+			++work_level;
 		}
 
 		working.top(current_dim);

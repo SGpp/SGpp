@@ -352,6 +352,9 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     print "The maximum error during hierarchisation and dehierarchisation was:"
     print testHierarchisationResults(node_values, node_values_back)
     
+    print "The maximum error during function evaluation was:"
+    print compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out")
+    
     return
 
 
@@ -373,6 +376,63 @@ def runHierarchisationDehierarchisationLinearBoundaryUScaledRegularTestPrintND(d
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryUScaledGrid(dim)
+    generator  = grid.createGridGenerator()
+    generator.regular(level)
+    
+    # generate the node_values vector
+    storage = grid.getStorage()
+    
+    node_values = DataVector(storage.size(), 1)
+    
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates().split()
+        node_values[n] = evalFunction(function, points)
+        
+        
+    #print node_values
+    
+    # do hierarchisation
+    alpha = doHierarchisation(node_values, grid)
+    
+    #print alpha
+    
+    printNDFunction("hier_Nd.out", "hier_Nd_values.out", grid, alpha, resolution)
+    printRefNDFunction("ref_Nd.out", "ref_Nd_values.out", function, resolution, dim)
+    
+    # do dehierarchisation
+    node_values_back = doDehierarchisation(alpha, grid)
+     
+    #print result
+    #print node_values_back
+    
+    # test hierarchisation and dehierarchisation
+    print "The maximum error during hierarchisation and dehierarchisation was:"
+    print testHierarchisationResults(node_values, node_values_back)
+    
+    print "The maximum error during function evaluation was:"
+    print compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out")
+    
+    return
+
+
+#-------------------------------------------------------------------------------    
+## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse 
+# and evals the hierachified sparse grid
+# @param dim the dimension of the test grid
+# @param level the max. level of the test sparse grid
+def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, resolution):
+    node_values = None
+    node_values_back = None
+    alpha = None
+    points = None
+
+    function = buildParable(dim)
+    
+    print "The test function is:"
+    print function
+    
+    # generate a regular test grid
+    grid = Grid.createLinearGrid(dim)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     
@@ -520,4 +580,4 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    runHierarchisationDehierarchisationLinearBoundaryUScaledRegularTestPrintND(5, 10, 7)
+    runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(2, 3, 7)
