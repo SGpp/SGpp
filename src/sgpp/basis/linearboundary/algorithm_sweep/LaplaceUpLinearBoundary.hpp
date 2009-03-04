@@ -69,29 +69,72 @@ protected:
 		double fml = 0.0;
 		double fmr = 0.0;
 
-		if(!index.hint(dim))
+		GridStorage::index_type::level_type current_level;
+		GridStorage::index_type::index_type current_index;
+
+		index.get(dim, current_level, current_index);
+
+		if(current_level == 0)
 		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
+			if(!index.hint(dim))
 			{
-				rec(source, result, index, dim, fl, fml);
+				index.top(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fl, fr);
+				}
+				index.left_levelzero(dim);
 			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
+		}
+		else
+		{
+			if(!index.hint(dim))
 			{
-				rec(source, result, index, dim, fmr, fr);
-			}
+				index.left_child(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fl, fml);
+				}
 
-			index.up(dim);
+				index.step_right(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fmr, fr);
+				}
+
+				index.up(dim);
+			}
 		}
 
+		GridStorage::index_type::level_type l;
+		GridStorage::index_type::index_type i;
+
+		index.get(dim, l, i);
+
+		if (l == 0)
 		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
+			double alpha_value = 0.0;
+			double fm = fml + fmr;
 
-			index.get(dim, l, i);
+			// handle left boundary
+			alpha_value = source[seq];
 
+			// transposed operations:
+			result[seq] = fm/2.0 + alpha_value/2.0 + fl;
+
+			// handle right boundary
+			index.right_levelzero(dim);
+			seq = index.seq();
+
+			alpha_value = source[seq];
+
+			// transposed operations:
+			result[seq] = fm/2.0 + alpha_value/2.0 + fr;
+
+			index.left_levelzero(dim);
+		}
+		else
+		{
 			double fm = fml + fmr;
 
 			double alpha_value = source[seq];
