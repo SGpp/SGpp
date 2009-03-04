@@ -267,6 +267,82 @@ class TestHierarchisationLinearBoundaryUScaled(unittest.TestCase):
     
         #test
         self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        
+class TestHierarchisationLinearBoundary(unittest.TestCase):
+    ##
+    # Test hierarchisation for 1D
+    def testHierarchisation1DBoundary(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 1
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
+
+        function = buildParableBoundary(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createLinearBoundaryGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regular(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+
+  
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHierarchisationDBoundary(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 3
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
+
+        function = buildParableBoundary(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createLinearBoundaryGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regular(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)        
 
         
 # Run tests for this file if executed as application 
