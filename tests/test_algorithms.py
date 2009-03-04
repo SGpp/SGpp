@@ -68,7 +68,29 @@ class TestBase(unittest.TestCase):
                   
                   ]
 
-        self.baseTest(b, points)       
+        self.baseTest(b, points)  
+        
+    def testLinearBoundary(self):
+        from pysgpp import SLinearBoundaryBase
+        
+        b = SLinearBoundaryBase()
+        
+        points = [(0, 0, 0.0, 1.0),
+                  (0, 0, 1.0, 0.0),
+                  (0, 0, 0.25, 0.75),
+                  (0, 0, 0.75, 0.25),
+                  (0, 1, 0.0, 0.0),
+                  (0, 1, 1.0, 1.0),
+                  (0, 1, 0.75, 0.75),
+                  (0, 1, 0.25, 0.25),
+                  (1, 1, 0.5, 1.0),
+                  (1, 1, 0.25, 0.5),
+                  (2, 1, 0.25, 1.0),
+                  (2, 1, 0.125, 0.5),
+                  
+                  ]
+
+        self.baseTest(b, points)             
         
     def testModifiedLinear(self):
         from pysgpp import SModLinearBase
@@ -214,7 +236,7 @@ class TestFunctions(unittest.TestCase):
         self.failUnlessEqual(x[0][1], 0.5)
         
         
-    def testGetAffectedBoundaries(self):
+    def testGetAffectedBoundariesUScaled(self):
         from pysgpp import GridIndex, GridStorage, SLinearBoundaryUScaledBase
         from pysgpp import SGetAffectedBasisFunctionsBoundariesUScaled
         
@@ -240,6 +262,33 @@ class TestFunctions(unittest.TestCase):
         self.failUnlessEqual(x[1][1], 0.5)
         self.failUnlessEqual(x[2][0], 2)
         self.failUnlessEqual(x[2][1], 1.0)
+        
+    def testGetAffectedBoundaries(self):
+        from pysgpp import GridIndex, GridStorage, SLinearBoundaryBase
+        from pysgpp import SGetAffectedBasisFunctionsBoundaries
+        
+        i = GridIndex(1)
+        s = GridStorage(1)
+        
+        b = SLinearBoundaryBase()
+
+        i.set(0,0,0)
+        s.insert(i)
+        i.set(0,0,1)
+        s.insert(i)        
+        i.set(0,1,1)
+        s.insert(i)
+        
+        ga = SGetAffectedBasisFunctionsBoundaries(s)
+        
+        x = ga(b, [0.5])
+        
+        self.failUnlessEqual(x[0][0], 0)
+        self.failUnlessEqual(x[0][1], 0.5)
+        self.failUnlessEqual(x[1][0], 1)
+        self.failUnlessEqual(x[1][1], 0.5)
+        self.failUnlessEqual(x[2][0], 2)
+        self.failUnlessEqual(x[2][1], 1.0)        
 
 # Run tests for this file if executed as application 
 if __name__=='__main__':

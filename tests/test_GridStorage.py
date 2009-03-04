@@ -316,7 +316,32 @@ class TestHashRefinement(unittest.TestCase):
         
         r.free_refine(s, f)
         
-        self.failUnlessEqual(s.size(), 21)        
+        self.failUnlessEqual(s.size(), 21)     
+        
+    def testFreeRefineBoundariesUScaled(self):
+        """Tests surplus based refine for Hash-Storage"""
+        from pysgpp import GridStorage, HashGenerator
+        from pysgpp import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector
+        
+        s = GridStorage(2)
+        g = HashGenerator()
+        
+        g.regularWithBoundaries(s, 2, False)
+        
+        d = DataVector(17)
+
+        for i in xrange(len(d)):
+            d[i] = 0.0
+            
+        d[12] = 1.0
+        
+        f = SurplusRefinementFunctor(d)
+        r = HashRefinementBoundaries()
+        
+        r.free_refine(s, f)
+        
+        self.failUnlessEqual(s.size(), 21)          
+           
 
     def testSurplusFunctor(self):
         """Tests if surplus functor correctly considers absolute values"""

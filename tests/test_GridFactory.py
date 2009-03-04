@@ -71,6 +71,24 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
+    def testSerializationLinearBoudary(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        factory = Grid.createLinearBoundaryGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())        
+        
     def testSerializationPoly(self):
         from pysgpp import Grid
         
@@ -390,3 +408,295 @@ class TestLinearBoundaryUScaledGrid(unittest.TestCase):
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 1.5)
 
+class TestLinearBoundaryGrid(unittest.TestCase):
+    def testGeneration(self):
+        from pysgpp import Grid, DataVector
+        factory = Grid.createLinearBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        self.failIfEqual(gen, None)
+        
+        self.failUnlessEqual(storage.size(), 0)
+        gen.regular(3)
+        self.failUnlessEqual(storage.size(), 37)
+        
+        #This should fail
+        self.failUnlessRaises(Exception, gen.regular, 3)
+        
+    def testRefinement2d_one(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
+        factory = Grid.createLinearBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(0)
+        
+        self.failUnlessEqual(storage.size(), 4)
+        
+        alpha = DataVector(4)
+    
+        for i in xrange(len(alpha)):
+            alpha[i] = 0.0
+
+        alpha[0] = 1.0
+        func = SurplusRefinementFunctor(alpha)
+            
+        gen.refine(func)
+        self.failUnlessEqual(storage.size(), 6)
+        
+    def testRefinement2d_two(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
+        factory = Grid.createLinearBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(0)
+        
+        alpha = DataVector(4)
+    
+        for i in xrange(len(alpha)):
+            alpha[i] = 0.0
+
+        alpha[0] = 1.0
+        func = SurplusRefinementFunctor(alpha)
+            
+        gen.refine(func)
+        
+        alpha2 = DataVector(6)
+    
+        for i in xrange(len(alpha2)):
+            alpha2[i] = 0.0
+
+        alpha2[4] = 1.0
+        func = SurplusRefinementFunctor(alpha2)
+            
+        gen.refine(func)    
+        self.failUnlessEqual(storage.size(), 11)        
+
+    def testRefinement2d_three(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
+        factory = Grid.createLinearBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(0)
+        
+        alpha = DataVector(4)
+    
+        for i in xrange(len(alpha)):
+            alpha[i] = 0.0
+
+        alpha[0] = 1.0
+        func = SurplusRefinementFunctor(alpha)
+            
+        gen.refine(func)
+        
+        alpha2 = DataVector(6)
+    
+        for i in xrange(len(alpha2)):
+            alpha2[i] = 0.0
+
+        alpha2[4] = 1.0
+        func = SurplusRefinementFunctor(alpha2)
+            
+        gen.refine(func)
+        
+        alpha3 = DataVector(11)
+    
+        for i in xrange(len(alpha3)):
+             alpha3[i] = 0.0
+
+        alpha3[10] = 1.0
+        func = SurplusRefinementFunctor(alpha3)
+            
+        gen.refine(func)   
+        self.failUnlessEqual(storage.size(), 21) 
+
+    def testRefinement2d_four(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
+        factory = Grid.createLinearBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(0)
+        
+        alpha = DataVector(4)
+    
+        for i in xrange(len(alpha)):
+            alpha[i] = 0.0
+
+        alpha[0] = 1.0
+        func = SurplusRefinementFunctor(alpha)
+            
+        gen.refine(func)
+        
+        alpha2 = DataVector(6)
+    
+        for i in xrange(len(alpha2)):
+            alpha2[i] = 0.0
+
+        alpha2[4] = 1.0
+        func = SurplusRefinementFunctor(alpha2)
+            
+        gen.refine(func)
+        
+        alpha3 = DataVector(11)
+    
+        for i in xrange(len(alpha3)):
+             alpha3[i] = 0.0
+
+        alpha3[10] = 1.0
+        func = SurplusRefinementFunctor(alpha3)
+            
+        gen.refine(func)
+        
+        alpha4 = DataVector(21)
+    
+        for i in xrange(len(alpha4)):
+            alpha4[i] = 0.0
+
+        alpha4[7] = 1.0
+        func = SurplusRefinementFunctor(alpha4)
+            
+        gen.refine(func)
+        self.failUnlessEqual(storage.size(), 23) 
+
+    def testRefinement2d_five(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
+        factory = Grid.createLinearBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(0)
+        
+        alpha = DataVector(4)
+    
+        for i in xrange(len(alpha)):
+            alpha[i] = 0.0
+
+        alpha[0] = 1.0
+        func = SurplusRefinementFunctor(alpha)
+            
+        gen.refine(func)
+        
+        alpha2 = DataVector(6)
+    
+        for i in xrange(len(alpha2)):
+            alpha2[i] = 0.0
+
+        alpha2[4] = 1.0
+        func = SurplusRefinementFunctor(alpha2)
+            
+        gen.refine(func)
+        
+        alpha3 = DataVector(11)
+    
+        for i in xrange(len(alpha3)):
+             alpha3[i] = 0.0
+
+        alpha3[10] = 1.0
+        func = SurplusRefinementFunctor(alpha3)
+            
+        gen.refine(func)
+        
+        alpha4 = DataVector(21)
+    
+        for i in xrange(len(alpha4)):
+            alpha4[i] = 0.0
+
+        alpha4[7] = 1.0
+        func = SurplusRefinementFunctor(alpha4)
+            
+        gen.refine(func)
+        
+        alpha5 = DataVector(23)
+    
+        for i in xrange(len(alpha5)):
+            alpha5[i] = 0.0
+
+        alpha5[22] = 1.0
+        func = SurplusRefinementFunctor(alpha4)
+            
+        gen.refine(func)
+        self.failUnlessEqual(storage.size(), 27) 
+
+    def testOperationB(self):
+        from pysgpp import Grid, DataVector
+        factory = Grid.createLinearBoundaryGrid(1)
+        gen = factory.createGridGenerator()
+        gen.regular(2)
+        
+        alpha = DataVector(factory.getStorage().size())
+        p = DataVector(1,1)
+        beta = DataVector(1)
+        
+        
+        alpha.setAll(0.0)
+        p[0] = 0.25
+        beta[0] = 1.0
+        
+        opb = factory.createOperationB()
+        opb.mult(beta, p, alpha)
+        
+        self.failUnlessAlmostEqual(alpha[0], 0.75)
+        self.failUnlessAlmostEqual(alpha[1], 0.25)
+        self.failUnlessAlmostEqual(alpha[2], 0.5)
+        self.failUnlessAlmostEqual(alpha[3], 1.0)
+        self.failUnlessAlmostEqual(alpha[4], 0.0)
+        
+        alpha.setAll(0.0)
+        alpha[2] = 1.0
+        
+        p[0] = 0.25
+        
+        beta[0] = 0.0
+        
+        opb.multTranspose(alpha, p, beta)
+        self.failUnlessAlmostEqual(beta[0], 0.5)
+
+    def testOperationEval_test(self):
+        from pysgpp import Grid, DataVector
+
+        factory = Grid.createLinearBoundaryGrid(1)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        
+        data = DataVector(1,1)
+        data.setAll(0.25)
+        classes = DataVector(1,1)
+        classes.setAll(1.0)
+
+        eval = factory.createOperationEval()
+
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = 1.0
+        
+        c = eval.test(alpha, data, classes)
+        self.failUnless(c > 0.0)
+        
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = -1.0
+        c = eval.test(alpha, data, classes)
+        self.failUnless(c == 0.0)
+        
+    def testOperationEval_eval(self):
+        from pysgpp import Grid, DataVector
+
+        factory = Grid.createLinearBoundaryGrid(1)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        alpha.setAll(1.0)
+
+        p = DataVector(1,1)
+        p.setAll(0.25)
+        
+        eval = factory.createOperationEval()
+
+        self.failUnlessAlmostEqual(eval.eval(alpha, p), 1.5)
