@@ -36,7 +36,7 @@ namespace sg
 {
 
 /**
- * Standard free refinement class
+ * Standard free refinement class for sparse grids with and without boundaries
  */
 class HashRefinement
 {
@@ -44,13 +44,21 @@ public:
 	typedef GridStorage::index_type index_type;
 	typedef index_type::index_type index_t;
 	typedef index_type::level_type level_t;
-	
+
+	/// specifies, whether the refinement is executed on a grid with boundaries
 	bool bWithBoundaries;
 
 	/**
 	 * Returns the index of the first accurance of minimal element in array
+	 *
+	 * @param: array array with ???
+	 *
+	 * @return: index of the first accurance of minimal element in array
+	 *
+	 * @todo: check if this has to be public
 	 */
-	int getIndexOfMin(RefinementFunctor::value_type* array){
+	int getIndexOfMin(RefinementFunctor::value_type* array)
+	{
 		int length = sizeof(array)/sizeof(RefinementFunctor::value_type);
 		int min_idx = 0;
 		for (int i = 1; i < length; i++)
@@ -58,17 +66,24 @@ public:
 			if(array[i] < array[min_idx])
 				min_idx = i;
 		}
-		
+
 		return min_idx;
 	}
-	
+
+	/**
+	 * Performs the refinement on grid
+	 *
+	 * @param: storage hashmap that stores the grid points
+	 * @param: functor a function used to determine if refinement is needed
+	 * @param: bBoundaries specifies, whether the grid has boundaries or not
+	 */
 	void free_refine(GridStorage* storage, RefinementFunctor* functor, bool bBoundaries = false)
 	{
 		if(storage->size() == 0)
 		{
 			throw generation_exception("storage empty");
 		}
-		
+
 		//Algorithm should be able to look for several points in grid to refine
 		//So we store an array with refinements_num maximal points
 		int refinements_num = functor->getRefinementsNum();
@@ -84,63 +99,145 @@ public:
 		size_t max_index = max_indexes[min_idx];
 
 		bWithBoundaries = bBoundaries;
-		
+
 		index_type index;
 		GridStorage::grid_map_iterator end_iter = storage->end();
 
-		// I think this may be depedent on local support
-		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
+		// do a lot of copy&paste due to performance reasons
+		if (bWithBoundaries == true)
 		{
-			index = *(iter->first);
-
-			GridStorage::grid_map_iterator child_iter;
-
-			// TODO: Maybe it's possible to move predecessor/successor discovery into the storage concept
-			for(size_t d = 0; d < storage->dim(); d++)
+			// I think this may be depedent on local support
+			for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
 			{
-				index_t source_index;
-				level_t source_level;
-				index.get(d, source_level, source_index);
+				index = *(iter->first);
 
-				// left child
-				index.set(d, source_level + 1, 2 * source_index - 1);
-				child_iter = storage->find(&index);
-				// if there no more grid points --> test if we should refine the grid
-				if(child_iter == end_iter)
+				GridStorage::grid_map_iterator child_iter;
+
+				// TODO: Maybe it's possible to move predecessor/successor discovery into the storage concept
+				for(size_t d = 0; d < storage->dim(); d++)
 				{
-					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-					if(current_value > max_value)
-					{
-						//Replace the minimal point in result array, find the new  minimal point
-						max_values[min_idx] = current_value;
-						max_indexes[min_idx] = iter->second;
-						min_idx = getIndexOfMin(max_values);
-						max_value = max_values[min_idx];
-						break;
-					}
-				}
+					index_t source_index;
+					level_t source_level;
+					index.get(d, source_level, source_index);
 
-				// right child
-				index.set(d, source_level + 1, 2 * source_index + 1);
-				child_iter = storage->find(&index);
-				if(child_iter == end_iter)
-				{
-					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-					if(current_value > max_value)
+					if (source_level == 0)
 					{
-						//Replace the minimal point in result array, find the new minimal point
-						max_values[min_idx] = current_value;
-						max_indexes[min_idx] = iter->second;
-						min_idx = getIndexOfMin(max_values);
-						max_value = max_values[min_idx];
-						break;
+						// we only have one child on level 1
+						index.set(d, 1, 1);
+						child_iter = storage->find(&index);
+						// if there no more grid points --> test if we should refine the grid
+						if(child_iter == end_iter)
+						{
+							RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+							if(current_value > max_value)
+							{
+								//Replace the minimal point in result array, find the new  minimal point
+								max_values[min_idx] = current_value;
+								max_indexes[min_idx] = iter->second;
+								min_idx = getIndexOfMin(max_values);
+								max_value = max_values[min_idx];
+								break;
+							}
+						}
 					}
-				}
+					else
+					{
+						// left child
+						index.set(d, source_level + 1, 2 * source_index - 1);
+						child_iter = storage->find(&index);
+						// if there no more grid points --> test if we should refine the grid
+						if(child_iter == end_iter)
+						{
+							RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+							if(current_value > max_value)
+							{
+								//Replace the minimal point in result array, find the new  minimal point
+								max_values[min_idx] = current_value;
+								max_indexes[min_idx] = iter->second;
+								min_idx = getIndexOfMin(max_values);
+								max_value = max_values[min_idx];
+								break;
+							}
+						}
 
-				index.set(d, source_level, source_index);
+						// right child
+						index.set(d, source_level + 1, 2 * source_index + 1);
+						child_iter = storage->find(&index);
+						if(child_iter == end_iter)
+						{
+							RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+							if(current_value > max_value)
+							{
+								//Replace the minimal point in result array, find the new minimal point
+								max_values[min_idx] = current_value;
+								max_indexes[min_idx] = iter->second;
+								min_idx = getIndexOfMin(max_values);
+								max_value = max_values[min_idx];
+								break;
+							}
+						}
+					}
+
+					index.set(d, source_level, source_index);
+				}
 			}
 		}
-		
+		else
+		{
+			// I think this may be depedent on local support
+			for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
+			{
+				index = *(iter->first);
+
+				GridStorage::grid_map_iterator child_iter;
+
+				// TODO: Maybe it's possible to move predecessor/successor discovery into the storage concept
+				for(size_t d = 0; d < storage->dim(); d++)
+				{
+					index_t source_index;
+					level_t source_level;
+					index.get(d, source_level, source_index);
+
+					// left child
+					index.set(d, source_level + 1, 2 * source_index - 1);
+					child_iter = storage->find(&index);
+					// if there no more grid points --> test if we should refine the grid
+					if(child_iter == end_iter)
+					{
+						RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+						if(current_value > max_value)
+						{
+							//Replace the minimal point in result array, find the new  minimal point
+							max_values[min_idx] = current_value;
+							max_indexes[min_idx] = iter->second;
+							min_idx = getIndexOfMin(max_values);
+							max_value = max_values[min_idx];
+							break;
+						}
+					}
+
+					// right child
+					index.set(d, source_level + 1, 2 * source_index + 1);
+					child_iter = storage->find(&index);
+					if(child_iter == end_iter)
+					{
+						RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+						if(current_value > max_value)
+						{
+							//Replace the minimal point in result array, find the new minimal point
+							max_values[min_idx] = current_value;
+							max_indexes[min_idx] = iter->second;
+							min_idx = getIndexOfMin(max_values);
+							max_value = max_values[min_idx];
+							break;
+						}
+					}
+
+					index.set(d, source_level, source_index);
+				}
+			}
+		}
+
 		//can refine grid on several points
 		for (int i = 0; i < refinements_num; i++){
 			max_value = max_values[i];
@@ -155,30 +252,48 @@ public:
 
 
 protected:
-
+	/**
+	 * This method refines a grid point be generating the children in every dimension
+	 * of the grid.
+	 *
+	 * @param: storage hashmap that stores the gridpoints
+	 * @param: refine_index the index in the hashmap of the point that should be refined
+	 */
 	void refine_gridpoint(GridStorage* storage, size_t refine_index)
 	{
 		index_type index((*storage)[refine_index]);
 
-		// TODO: Maybe it's possible to move predecessor/successor discovery into the storage concept
+		// @todo: Maybe it's possible to move predecessor/successor discovery into the storage concept
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
 			index_t source_index;
 			level_t source_level;
 			index.get(d, source_level, source_index);
 
-			// generate left child, if necessary
-			index.set(d, source_level + 1, 2 * source_index - 1);
-			if(!storage->has_key(&index))
+			if (source_level == 0)
 			{
-				create_gridpoint(storage, index);
+				// we only have one child on level 1
+				index.set(d, 1, 1);
+				if(!storage->has_key(&index))
+				{
+					create_gridpoint(storage, index);
+				}
 			}
-
-			// generate right child, if necessary
-			index.set(d, source_level + 1, 2 * source_index + 1);
-			if(!storage->has_key(&index))
+			else
 			{
-				create_gridpoint(storage, index);
+				// generate left child, if necessary
+				index.set(d, source_level + 1, 2 * source_index - 1);
+				if(!storage->has_key(&index))
+				{
+					create_gridpoint(storage, index);
+				}
+
+				// generate right child, if necessary
+				index.set(d, source_level + 1, 2 * source_index + 1);
+				if(!storage->has_key(&index))
+				{
+					create_gridpoint(storage, index);
+				}
 			}
 
 			index.set(d, source_level, source_index);
@@ -186,6 +301,12 @@ protected:
 	}
 
 	/**
+	 * This method creates a new point on the grid. It checks if some parents or
+	 * children are needed in other dimensions.
+	 *
+	 * @param storage hashmap that stores the gridpoinrs
+	 * @param index the point that should be inserted
+	 *
 	 * @todo 	check, if it's better the implement an own class for grid refinement on a grid
 	 * 			with boundaries.
 	 */
