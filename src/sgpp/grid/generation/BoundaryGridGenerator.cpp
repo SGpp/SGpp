@@ -62,8 +62,8 @@ void BoundaryGridGenerator::regular(size_t level)
  */
 void BoundaryGridGenerator::refine(RefinementFunctor* func)
 {
-	HashRefinement refine;
-	refine.free_refine(this->storage, func, true);
+	HashRefinementBoundaries refine;
+	refine.free_refine(this->storage, func);
 }
 
 }

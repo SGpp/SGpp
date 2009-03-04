@@ -51,6 +51,7 @@
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/generation/hashmap/HashGenerator.hpp"
 #include "grid/generation/hashmap/HashRefinement.hpp"
+#include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 
 namespace sg

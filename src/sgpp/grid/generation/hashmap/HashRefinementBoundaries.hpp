@@ -2,7 +2,6 @@
 /* This file is part of sg++, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
@@ -21,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef HASHREFINEMENT_HPP
-#define HASHREFINEMENT_HPP
+#ifndef HASHREFINEMENTBOUNDARIES_HPP
+#define HASHREFINEMENTBOUNDARIES_HPP
 
 #include "grid/GridStorage.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
@@ -36,9 +35,9 @@ namespace sg
 {
 
 /**
- * Standard free refinement class for sparse grids without boundaries
+ * Standard free refinement class for sparse grids with boundaries
  */
-class HashRefinement
+class HashRefinementBoundaries
 {
 public:
 	typedef GridStorage::index_type index_type;
@@ -72,7 +71,6 @@ public:
 	 *
 	 * @param: storage hashmap that stores the grid points
 	 * @param: functor a function used to determine if refinement is needed
-	 * @param: bBoundaries specifies, whether the grid has boundaries or not
 	 */
 	void free_refine(GridStorage* storage, RefinementFunctor* functor)
 	{
@@ -112,38 +110,61 @@ public:
 				level_t source_level;
 				index.get(d, source_level, source_index);
 
-				// left child
-				index.set(d, source_level + 1, 2 * source_index - 1);
-				child_iter = storage->find(&index);
-				// if there no more grid points --> test if we should refine the grid
-				if(child_iter == end_iter)
+				if (source_level == 0)
 				{
-					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-					if(current_value > max_value)
+					// we only have one child on level 1
+					index.set(d, 1, 1);
+					child_iter = storage->find(&index);
+					// if there no more grid points --> test if we should refine the grid
+					if(child_iter == end_iter)
 					{
-						//Replace the minimal point in result array, find the new  minimal point
-						max_values[min_idx] = current_value;
-						max_indexes[min_idx] = iter->second;
-						min_idx = getIndexOfMin(max_values);
-						max_value = max_values[min_idx];
-						break;
+						RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+						if(current_value > max_value)
+						{
+							//Replace the minimal point in result array, find the new  minimal point
+							max_values[min_idx] = current_value;
+							max_indexes[min_idx] = iter->second;
+							min_idx = getIndexOfMin(max_values);
+							max_value = max_values[min_idx];
+							break;
+						}
 					}
 				}
-
-				// right child
-				index.set(d, source_level + 1, 2 * source_index + 1);
-				child_iter = storage->find(&index);
-				if(child_iter == end_iter)
+				else
 				{
-					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-					if(current_value > max_value)
+					// left child
+					index.set(d, source_level + 1, 2 * source_index - 1);
+					child_iter = storage->find(&index);
+					// if there no more grid points --> test if we should refine the grid
+					if(child_iter == end_iter)
 					{
-						//Replace the minimal point in result array, find the new minimal point
-						max_values[min_idx] = current_value;
-						max_indexes[min_idx] = iter->second;
-						min_idx = getIndexOfMin(max_values);
-						max_value = max_values[min_idx];
-						break;
+						RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+						if(current_value > max_value)
+						{
+							//Replace the minimal point in result array, find the new  minimal point
+							max_values[min_idx] = current_value;
+							max_indexes[min_idx] = iter->second;
+							min_idx = getIndexOfMin(max_values);
+							max_value = max_values[min_idx];
+							break;
+						}
+					}
+
+					// right child
+					index.set(d, source_level + 1, 2 * source_index + 1);
+					child_iter = storage->find(&index);
+					if(child_iter == end_iter)
+					{
+						RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+						if(current_value > max_value)
+						{
+							//Replace the minimal point in result array, find the new minimal point
+							max_values[min_idx] = current_value;
+							max_indexes[min_idx] = iter->second;
+							min_idx = getIndexOfMin(max_values);
+							max_value = max_values[min_idx];
+							break;
+						}
 					}
 				}
 
@@ -184,18 +205,30 @@ protected:
 			level_t source_level;
 			index.get(d, source_level, source_index);
 
-			// generate left child, if necessary
-			index.set(d, source_level + 1, 2 * source_index - 1);
-			if(!storage->has_key(&index))
+			if (source_level == 0)
 			{
-				create_gridpoint(storage, index);
+				// we only have one child on level 1
+				index.set(d, 1, 1);
+				if(!storage->has_key(&index))
+				{
+					create_gridpoint(storage, index);
+				}
 			}
-
-			// generate right child, if necessary
-			index.set(d, source_level + 1, 2 * source_index + 1);
-			if(!storage->has_key(&index))
+			else
 			{
-				create_gridpoint(storage, index);
+				// generate left child, if necessary
+				index.set(d, source_level + 1, 2 * source_index - 1);
+				if(!storage->has_key(&index))
+				{
+					create_gridpoint(storage, index);
+				}
+
+				// generate right child, if necessary
+				index.set(d, source_level + 1, 2 * source_index + 1);
+				if(!storage->has_key(&index))
+				{
+					create_gridpoint(storage, index);
+				}
 			}
 
 			index.set(d, source_level, source_index);
@@ -219,6 +252,31 @@ protected:
 			index_t source_index;
 			level_t source_level;
 			index.get(d, source_level, source_index);
+
+			if (source_level == 1)
+			{
+				// check if we need some additional points on the boundaries, only needed on a N dim grid
+				if (storage->dim() > 1)
+				{
+					// test if there are boundaries in every dimension for this grid point
+					// left boundary
+					index.set(d, 0, 0);
+					if(!storage->has_key(&index))
+					{
+						create_gridpoint(storage, index);
+					}
+
+					// right boundary
+					index.set(d, 0, 1);
+					if(!storage->has_key(&index))
+					{
+						create_gridpoint(storage, index);
+					}
+
+					// restore values
+					index.set(d, source_level, source_index);
+				}
+			}
 
 			if(source_level > 1)
 			{
@@ -248,4 +306,4 @@ protected:
 
 }
 
-#endif /* HASHREFINEMENT_HPP */
+#endif /* HASHREFINEMENTBOUNDARIES_HPP */

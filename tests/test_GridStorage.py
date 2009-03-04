@@ -293,7 +293,7 @@ class TestHashRefinement(unittest.TestCase):
     def testFreeRefineBoundariesUScaled(self):
         """Tests surplus based refine for Hash-Storage"""
         from pysgpp import GridStorage, HashGenerator
-        from pysgpp import SurplusRefinementFunctor, HashRefinement, DataVector
+        from pysgpp import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector
         
         s = GridStorage(2)
         g = HashGenerator()
@@ -312,9 +312,9 @@ class TestHashRefinement(unittest.TestCase):
         d[8] = 1.0
         
         f = SurplusRefinementFunctor(d)
-        r = HashRefinement()
+        r = HashRefinementBoundaries()
         
-        r.free_refine(s, f, True)
+        r.free_refine(s, f)
         
         self.failUnlessEqual(s.size(), 21)        
 
