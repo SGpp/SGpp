@@ -26,6 +26,8 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
+#include <iostream>
+
 namespace sg
 {
 
@@ -103,24 +105,31 @@ protected:
 				}
 
 				index.up(dim);
+
+				/*if (current_level > 1)
+				{
+					index.up(dim);
+				}
+				else
+				{
+					index.left_levelzero(dim);
+				}*/
 			}
 		}
 
-		GridStorage::index_type::level_type l;
-		GridStorage::index_type::index_type i;
+		index.get(dim, current_level, current_index);
 
-		index.get(dim, l, i);
-
-		if (l == 0)
+		if (current_level  == 0)
 		{
 			double alpha_value = 0.0;
-			double fm = fml + fmr;
+			double fm = fl + fr;
 
 			// handle left boundary
 			alpha_value = source[seq];
 
 			// transposed operations:
-			result[seq] = fm/2.0 + alpha_value/2.0 + fl;
+			result[seq] = fm/2.0 + alpha_value/2.0;
+			//result[seq] = alpha_value;
 
 			// handle right boundary
 			index.right_levelzero(dim);
@@ -129,7 +138,8 @@ protected:
 			alpha_value = source[seq];
 
 			// transposed operations:
-			result[seq] = fm/2.0 + alpha_value/2.0 + fr;
+			result[seq] = fm/2.0 + alpha_value/2.0;
+			//result[seq] = alpha_value;
 
 			index.left_levelzero(dim);
 		}
@@ -138,7 +148,7 @@ protected:
 			double fm = fml + fmr;
 
 			double alpha_value = source[seq];
-			double h = 1/pow(2.0,l);
+			double h = 1/pow(2.0,current_level);
 
 			// transposed operations:
 			result[seq] = fm;
