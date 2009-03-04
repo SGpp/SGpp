@@ -208,9 +208,6 @@ protected:
 	 *
 	 * @param storage hashmap that stores the gridpoinrs
 	 * @param index the point that should be inserted
-	 *
-	 * @todo 	check, if it's better the implement an own class for grid refinement on a grid
-	 * 			with boundaries.
 	 */
 	void create_gridpoint(GridStorage* storage, index_type& index)
 	{
@@ -243,7 +240,6 @@ protected:
 		}
 		storage->insert(index);
 	}
-
 };
 
 }

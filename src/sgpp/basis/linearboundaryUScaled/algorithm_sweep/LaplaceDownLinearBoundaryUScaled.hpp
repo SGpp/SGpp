@@ -61,10 +61,12 @@ public:
 		index.left_levelzero(dim);
 		seq = index.seq();
 		left_boundary = source[seq];
+		result[seq] = 2.0/3.0*left_boundary;
 		// right boundary
 		index.right_levelzero(dim);
 		seq = index.seq();
 		right_boundary = source[seq];
+		result[seq] = 2.0/3.0*right_boundary;
 
 		// move to root
 		index.top(dim);
