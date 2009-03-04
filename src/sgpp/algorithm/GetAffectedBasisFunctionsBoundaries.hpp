@@ -29,6 +29,7 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <cmath>
 
 namespace sg {
 
@@ -59,42 +60,13 @@ public:
 	 * @param basis a sparse grid basis
 	 * @param point evaluation point within the domain
 	 * @param result a vector to store the results in
-	 *
-	 * @todo review this seems to be wrong
 	 */
 	void operator()(BASIS& basis, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
 	{
 		GridStorage::grid_iterator working(storage);
 
-		typedef GridStorage::index_type::level_type level_type;
-		typedef GridStorage::index_type::index_type index_type;
-
-		size_t bits = sizeof(index_type) * 8; // how many levels can we store in a index_type?
-
-		size_t dim = storage->dim();
-
-		index_type* source = new index_type[dim];
-
-		for(size_t d = 0; d < dim; ++d)
-		{
-			// This does not really work on grids with borders.
-			double temp = floor(point[d]*(1<<(bits-2)))*2;
-			if(point[d] == 1.0)
-			{
-				source[d] = static_cast<index_type>(temp-1);
-			}
-			else
-			{
-				source[d] = static_cast<index_type>(temp+1);
-			}
-
-		}
-
 		result.clear();
-		rec(basis, point, 0, 1.0, working, source, result);
-
-		delete [] source;
-
+		rec(basis, point, 0, 1.0, working, result);
 	}
 
 protected:
@@ -110,37 +82,33 @@ protected:
 	 * @param current_dim the dimension currently looked at (recursion parameter)
 	 * @param value the value of the evaluation of the current basis function up to (excluding) dimension current_dim (product of the evaluations of the one-dimensional ones)
 	 * @param working iterator working on the GridStorage of the basis
-	 * @param source array of indices for each dimension (identifying the indices of the current grid point)
 	 * @param result a vector to store the results in
-	 *
-	 * @todo review this seems to be wrong
 	 */
-	void rec(BASIS& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
+	void rec(BASIS& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result)
 	{
 		typedef GridStorage::index_type::level_type level_type;
 		typedef GridStorage::index_type::index_type index_type;
-
-		size_t i;
-
-		// @TODO: Remove 'magic' number
-		level_type src_level = static_cast<level_type>(sizeof(index_type) * 8 - 1);
-		index_type src_index = source[current_dim];
 
 		level_type work_level = 0;
 
 		while(true)
 		{
 			size_t seq = working.seq();
+			index_type global_work_index = 0;
+
 			if(storage->end(seq))
 			{
-				//if (work_level == 1)
-				//std::cout << "work_level: " << work_level << std::endl;
-
 				break;
 			}
 			else
 			{
-				// handle boundaries if we are on level 1
+				index_type work_index;
+				level_type temp;
+
+				working.get(current_dim, temp, work_index);
+				global_work_index = work_index;
+
+				// handle boundaries if we are on level 0
 				if (work_level == 0)
 				{
 					// level 0, index 0
@@ -154,7 +122,7 @@ protected:
 					}
 					else
 					{
-						rec(basis, point, current_dim + 1, value*new_value_l_zero_left, working, source, result);
+						rec(basis, point, current_dim + 1, value*new_value_l_zero_left, working, result);
 					}
 
 					// level 0, index 1
@@ -168,19 +136,11 @@ protected:
 					}
 					else
 					{
-						rec(basis, point, current_dim + 1, value*new_value_l_zero_right, working, source, result);
+						rec(basis, point, current_dim + 1, value*new_value_l_zero_right, working, result);
 					}
-
-					//working.top(current_dim);
-					//seq = working.seq();
 				}
 				else
 				{
-					index_type work_index;
-					level_type temp;
-
-					working.get(current_dim, temp, work_index);
-
 					double new_value = basis.eval(work_level, work_index, point[current_dim]);
 
 					if(current_dim == storage->dim()-1)
@@ -189,7 +149,7 @@ protected:
 					}
 					else
 					{
-						rec(basis, point, current_dim + 1, value*new_value, working, source, result);
+						rec(basis, point, current_dim + 1, value*new_value, working, result);
 					}
 				}
 			}
@@ -204,19 +164,30 @@ protected:
 			// the bits are coded from left to right starting with level 1 being in position src_level
 			if (work_level == 0)
 			{
+				if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
+					break;
+
 				working.top(current_dim);
 			}
 			else
 			{
-				bool right = (src_index & (1 << (src_level - work_level))) > 0;
+				double hat = 0.0;
+				level_type h = 0;
 
-				if(right)
+				h = 1<<work_level;
+
+				hat = (1.0/static_cast<double>(h))*static_cast<double>(global_work_index);
+
+				if (point[current_dim] == hat)
+					break;
+
+				if(point[current_dim] < hat)
 				{
-					working.right_child(current_dim);
+					working.left_child(current_dim);
 				}
 				else
 				{
-					working.left_child(current_dim);
+					working.right_child(current_dim);
 				}
 			}
 			++work_level;
