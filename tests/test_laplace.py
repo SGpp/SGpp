@@ -2,6 +2,7 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2007-2009 Dirk Pflueger (pflueged@in.tum.de)                #
 # Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
@@ -21,9 +22,12 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-
 import unittest
 
+# # to be able to import bin/tools.py
+# import sys
+# sys.path.append('../bin/')
+# import tools
 
 def generateLaplaceMatrix(factory, level, verbose=False):
     from pysgpp import DataVector
@@ -244,7 +248,7 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
         factory = Grid.createLinearBoundaryUScaledGrid(3)
 
         m = generateLaplaceMatrix(factory, 3)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)        
