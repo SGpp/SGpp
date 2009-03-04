@@ -48,7 +48,7 @@ void StandardGridGenerator::regular(size_t level)
 void StandardGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinement refine;
-	refine.free_refine(this->storage, func, false);
+	refine.free_refine(this->storage, func);
 }
 
 }

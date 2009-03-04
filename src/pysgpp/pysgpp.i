@@ -61,6 +61,7 @@ namespace std {
 
 %include "src/sgpp/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/grid/generation/hashmap/HashRefinement.hpp"
+%include "src/sgpp/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryUScaledGridGenerator.hpp"
