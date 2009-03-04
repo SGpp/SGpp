@@ -30,6 +30,24 @@ SIMPLE = 0
 NOTAFILE = -1
 
 #-------------------------------------------------------------------------------
+## Opens a file. If the file ends with ".gz", automatically gzip compression
+# is used for the file. Returns the filedescriptor
+# @param filename
+# @param mode, default: "r" for read only
+# @return file descriptor
+def gzOpen(filename, mode="r"):
+    # gzip-file
+    if re.match(".*\.gz$", filename):
+        # mode set for binary data?
+        if not mode[-1] == "b":
+            mode += "b"
+        fd = gzip.open(filename, mode)
+    # non gzip-file
+    else:
+        fd = open(filename, mode)
+    return fd
+
+#-------------------------------------------------------------------------------
 ## Writes a String txt to File filename, appends by default.
 # Uses secure writing, i.e. locks file.
 # On Windows concurrent access raises an error wich is handled.
@@ -39,7 +57,7 @@ NOTAFILE = -1
 #     param: mode, default: "a"
 def writeLockFile(filename, txt, mode="a"):
     try:
-        f = open(filename, mode)
+        f = gzOpen(filename, mode)
         fcntl.flock(f, fcntl.LOCK_EX)
         f.write(txt)
         fcntl.flock(f, fcntl.LOCK_UN)
@@ -48,7 +66,7 @@ def writeLockFile(filename, txt, mode="a"):
         sys.stderr.write("Unable to acquire lock "+str(e)+os.linesep)
         fname = filename+"."+str(time.time())
         sys.stderr.write("Writing to "+fname+os.linesep)
-        f = open(fname, mode)
+        f = gzOpen(fname, mode)
         f.write(txt)
         f.close()
 
@@ -59,7 +77,7 @@ def writeLockFile(filename, txt, mode="a"):
 def isARFFFile(filename):
     try:
         # read lines until non-empty line found
-        f = open(filename, 'r')
+        f = gzOpen(filename, 'r')
         data = f.readline().strip()
         while len(data) == 0:
             data = f.readline().strip()
@@ -78,11 +96,11 @@ def writeStringToFile(s, filename):
     if os.path.exists(filename):
         i = raw_input("File <%s> exists. Overwrite [y/n]? " % (filename))
         if len(i) > 0 and i[0] == 'y':
-            f = open(filename, 'w')
+            f = gzOpen(filename, 'w')
             f.write(s)
             f.close()
     else:
-        f = open(filename, 'w')
+        f = gzOpen(filename, 'w')
         f.write(s)
         f.close()
     
@@ -124,7 +142,7 @@ def createDatasetFromDataVector(data, classes=None):
     return dataset
 
 def readDataTrivial(filename, delim = "", hasclass = True):
-    fin = open(filename, "r")
+    fin = gzOpen(filename, "r")
     data = []
     classes = []
     for line in fin:
@@ -171,7 +189,7 @@ def readDataTrivial(filename, delim = "", hasclass = True):
 # @param filename the file's filename that should be read
 # @return returns a set of a array with the data (named data), a array with the classes (named classes) and the filename named as filename
 def readDataARFF(filename):
-    fin = open(filename, "r")
+    fin = gzOpen(filename, "r")
     data = []
     classes = []
     hasclass = False
@@ -209,6 +227,10 @@ def readDataARFF(filename):
     fin.close()
     return {"data":data, "classes":classes, "filename":filename}
 
+
+#-------------------------------------------------------------------------------
+## Writes gnuplot data of function into file
+# 
 def writeGnuplot(filename, grid, alpha, resolution):
     p = DataVector(1,2)
     fout = file(filename, "w")
@@ -223,6 +245,20 @@ def writeGnuplot(filename, grid, alpha, resolution):
     fout.close()
     return
 
+#-------------------------------------------------------------------------------
+## Writes gnuplot data of grid into file
+# 
+def writeGnuplotGrid(filename, grid):
+    p = DataVector(1,2)
+    fout = file(filename, "w")
+    s = grid.__str__()
+    s = s.split("], [")
+    for gp in s:
+        (l1,i1,l2,i2) = re.search("(\d+)[, ]*(\d+)[, ]*(\d+)[, ]*(\d+)", gp).groups()
+        fout.write("%f %f\n" % (int(i1)*2**(-int(l1)), int(i2)*2**(-int(l2))))
+    fout.close()
+    return
+
 def writeDataARFF(data, merge=False):
     if len(data) == 0:
         return
@@ -234,7 +270,7 @@ def writeDataARFF(data, merge=False):
     for dataset in data:
     	if hasHeader == False or merge == False:
             hasHeader = True
-            fout = open(dataset["filename"], "w")
+            fout = gzOpen(dataset["filename"], "w")
             fout.write("@RELATION \"%s\"\n\n" % dataset["filename"])
             fstring = ""
 
@@ -317,7 +353,7 @@ def writeDataMaple(data, merge):
 
 #-------------------------------------------------------------------------------
 ## Writes information that is needed for the normalization of data to a file.
-# Using this information one can then lateron reverse the normalization or
+# Using this information one can then later on reverse the normalization or
 # normalize further data.
 # @param filename a filename
 # @param border offset for normalization
@@ -338,7 +374,7 @@ def writeNormfile(filename, border, minvals, maxvals):
 # maxvals: the maximum value of each attribute
 # deltavals: (max-min)/(1.0-2*border), provided for convenience
 def readNormfile(filename):
-    fd = open(filename, 'r')
+    fd = gzOpen(filename, 'r')
     data = fd.readlines()
     fd.close()
     try:
@@ -663,7 +699,7 @@ def saveGrid(grid):
 
 
 def writeAlphaARFF(filename, alpha):
-    fout = open(filename, "w")
+    fout = gzOpen(filename, "w")
     fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % filename)
     fout.write("@ATTRIBUTE alpha NUMERIC\n")
     
@@ -690,12 +726,12 @@ def readAlphaARFF(filename):
 
 def writeGrid(filename, grid):
     text = saveGrid(grid)
-    fout = open(filename, "w")
+    fout = gzOpen(filename, "w")
     fout.write(text)
     fout.close()
 
 def readGrid(filename):
-    fin = open(filename, "r")
+    fin = gzOpen(filename, "r")
     text = fin.read()
     fin.close()
     

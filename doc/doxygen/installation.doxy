@@ -7,6 +7,7 @@ Installation and what is necessary for it.
 - \ref compilation
 - \ref stepByStep
 - \ref installInstructions
+- \ref troubleshooting
 
 
 @section requirements Requirements and Recommendations
@@ -239,9 +240,13 @@ required software
   Now dot is installed 
 
 
+@section troubleshooting Troubleshooting
+A few helpful hints that have caused trouble before (or might cause trouble...)
 
-*
+- If there is an error like
   @verbatim
+  build_pyclass/pyclass_wrap.cc:145:20: error: Python.h: No such file or directory
   @endverbatim
+  this indicates that the package <tt>python-dev</tt> is missing. Just install it.
 
 */
