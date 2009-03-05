@@ -30,7 +30,6 @@
 
 #include <vector>
 #include <utility>
-#include <iostream>
 
 namespace sg {
 

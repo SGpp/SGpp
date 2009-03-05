@@ -236,7 +236,10 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
         for seq in xrange(storage.size()):
             index = storage.get(seq)
             level, _ = index.get(0)
-            self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
+            if level == 0:
+                self.failUnlessAlmostEqual(result[seq], 1.0)
+            else:
+                self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
 
         
     ##
@@ -279,7 +282,10 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         for seq in xrange(storage.size()):
             index = storage.get(seq)
             level, _ = index.get(0)
-            self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
+            if level == 0:
+                self.failUnlessAlmostEqual(result[seq], 1.0)
+            else:
+                self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
 
         
     ##
