@@ -32,6 +32,10 @@
 #include <utility>
 #include <iostream>
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg {
 
 /**
@@ -83,6 +87,8 @@ public:
 
 		GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
 
+#ifdef USEOMP
+		#pragma omp parallel for private (vec, line) shared (result) schedule (static)
 		for(size_t i = 0; i < result_size; i++)
 		{
 			vec.clear();
@@ -96,6 +102,21 @@ public:
 				result[i] += iter->second * source[iter->first];
 			}
 		}
+#else
+		for(size_t i = 0; i < result_size; i++)
+		{
+			vec.clear();
+
+			x.getLine(i, line);
+
+			ga(basis, line, vec);
+
+			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+			{
+				result[i] += iter->second * source[iter->first];
+			}
+		}
+#endif /* USEOMP */
 	}
 
 
