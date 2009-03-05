@@ -54,7 +54,9 @@ CPPFLAGS = ['-O3','-g','-funroll-loops']
 # Set to True to vectorize certain files
 #VECTORIZE = True
 
-
+####### OMP #######
+# OpenMP parallelisation directives in version 3
+#OMP = 1
 
 ####### ICC #######
 # Uncomment to use Intels optimizing Compiler, please use version 11

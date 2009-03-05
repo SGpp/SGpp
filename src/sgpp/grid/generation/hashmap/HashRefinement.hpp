@@ -46,28 +46,6 @@ public:
 	typedef index_type::level_type level_t;
 
 	/**
-	 * Returns the index of the first accurance of minimal element in array
-	 *
-	 * @param: array array with ???
-	 *
-	 * @return: index of the first accurance of minimal element in array
-	 *
-	 * @todo: check if this has to be public
-	 */
-	int getIndexOfMin(RefinementFunctor::value_type* array)
-	{
-		int length = sizeof(array)/sizeof(RefinementFunctor::value_type);
-		int min_idx = 0;
-		for (int i = 1; i < length; i++)
-		{
-			if(array[i] < array[min_idx])
-				min_idx = i;
-		}
-
-		return min_idx;
-	}
-
-	/**
 	 * Performs the refinement on grid
 	 *
 	 * @param: storage hashmap that stores the grid points
@@ -239,6 +217,26 @@ protected:
 			}
 		}
 		storage->insert(index);
+	}
+
+	/**
+	 * Returns the index of the first accurance of minimal element in array
+	 *
+	 * @param: array array with ???
+	 *
+	 * @return: index of the first accurance of minimal element in array
+	 */
+	int getIndexOfMin(RefinementFunctor::value_type* array)
+	{
+		int length = sizeof(array)/sizeof(RefinementFunctor::value_type);
+		int min_idx = 0;
+		for (int i = 1; i < length; i++)
+		{
+			if(array[i] < array[min_idx])
+				min_idx = i;
+		}
+
+		return min_idx;
 	}
 };
 

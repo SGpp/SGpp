@@ -33,6 +33,7 @@ opts.Add('LINKFLAGS','Set additional Linker-flags','')
 opts.Add('MARCH','Set processor specific MARCH',None)
 
 opts.Add('ICC', 'Uses Intels Optimizing Compiler', False)
+opts.Add('OMP', 'Use OpenMP parallelisation', False)
 opts.Add('INTELHOME', 'Intel Compiler Home Dir', '')
 
 opts.Add('JSGPP', 'Build jsgpp if set to True', False)
@@ -45,12 +46,25 @@ env = Environment(options = opts, ENV = os.environ)
 env.Append(CPPFLAGS=['-pthread'])
 env.Append(LINKFLAGS=['-pthread'])
 
+####### enable omp support #######
+if not env['ICC']:
+    if env['OMP']:
+        env.Append(CPPFLAGS=['-fopenmp'])
+        env.Append(CPPFLAGS=['-DUSEOMP'])
+        env.Append(LINKFLAGS=['-fopenmp'])
+
 ####### Sets icc tool chain #######
 if env['ICC']:
 #    env.Tool(env['INTELHOME'] + 'icpc')
     env['CC'] = (env['INTELHOME'] + 'icc')
     env['LINK'] = (env['INTELHOME'] + 'icpc')
     env['CXX'] = (env['INTELHOME'] + 'icpc')
+    
+if env['ICC']:
+    if env['OMP']:
+        env.Append(CPPFLAGS=['-openmp'])
+        env.Append(CPPFLAGS=['-DUSEOMP'])
+        env.Append(LINKFLAGS=['-openmp'])    
 
 if not env['ICC'] and env.has_key('MARCH'):
 	env.Append(CPPFLAGS=('-march=' + env['MARCH']))
