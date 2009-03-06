@@ -27,6 +27,8 @@ import test_hierarchisation
 import test_GridFactory
 import test_DataVector
 
+import test_Classifier
+
 if __name__ == '__main__':
     alltests = unittest.TestSuite([
          unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
@@ -36,6 +38,7 @@ if __name__ == '__main__':
          unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
          unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
          unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
+         unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
         ])
 
     unittest.TextTestRunner().run(alltests)
