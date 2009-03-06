@@ -144,10 +144,10 @@ def loadData():
 
 
 #-------------------------------------------------------------------------------
-def saveCheckpoint(gridDecorator, checkpoint):
+def saveCheckpoint(gridDecorator, checkpoint, adaptStep):
     import pickle
     filename = "%s_%08d" % (checkpoint, gridDecorator.getSize())
-    fout = open(filename + ".grid", "wb")
+    fout = open(filename + ".a" + str(options.adapt_start + adaptStep) + ".grid", "wb")
     pickle.dump(gridDecorator, fout, -1)
     fout.close()
 
@@ -164,7 +164,7 @@ def learningStep(gridDecorator, data):
         gridDecorator.refine.reset()
     #TODO: Exception, what if eval or refine are None?
         
-    for trainingData, testingData in DataProvider(data, gridDecorator.mode):
+    for trainingData, testingData in DataProvider(data, gridDecorator.mode, options):
         alpha = DataVector(gridDecorator.getSize())
         alpha.setAll(0.0)
 
@@ -179,16 +179,13 @@ def learningStep(gridDecorator, data):
         
         if gridDecorator.refine:
             gridDecorator.refine.add(alpha, trainingData)
-            
-    if options.checkpoint:
-        saveCheckpoint(gridDecorator, options.checkpoint)
         
         #writeAlphaARFF(filename + ".alpha.arff", alpha)
 
 
 def learningAlgorithm(mode):
     data = loadData()
-    (data, dim) = DataProvider(data, mode).construct() # data_providers[mode]["construct"](data)
+    (data, dim) = DataProvider(data, mode, options).construct()
 
     gridDecorator = GridDecorator.create(options, dim, mode)
     gridDecorator.setRefine(options.refine)
@@ -199,12 +196,16 @@ def learningAlgorithm(mode):
         gridDecorator.eval.updateStatistics(options)
     
     #perform adaptive steps if necessary
-    for i in xrange(options.adaptive):
+    for adaptStep in xrange(options.adaptive):
         
         if gridDecorator.refine:
-            gridDecorator.refine.refine()
+            gridDecorator.refine.refine(options)
             
+        print "adaptStep: %d" %adaptStep
         learningStep(gridDecorator, data)
+        
+        if options.checkpoint:
+            saveCheckpoint(gridDecorator, options.checkpoint, adaptStep)
         
         if gridDecorator.eval:
             gridDecorator.eval.updateStatistics(options)
@@ -215,18 +216,17 @@ def evalAlgorithm(mode):
     raise Exception("eval unsupported.")
     
     data = loadData()
-    data, dim = data_providers[mode]["construct"](data)
+    data, dim = DataProvider(data, mode, options).construct()
 
-    #TODO: construct grid from serialized file
-    status = GridDecorator.create(dim, mode)
+    gridDecorator = GridDecorator.create(options, dim, mode)
 
-    alpha = DataVector(grid.size())
+    alpha = DataVector(gridDecorator.getSize())
     #Fill alpha Vector
     
-    for training, testing in data_providers[status.mode]["split"](data):
-        status.eval.testing(alpha, testing)
+    for training, testing in data_providers[gridDecorator.mode]["split"](data):
+        gridDecorator.eval.testing(alpha, testing)
         
-    status.eval.updateStatistics(options)
+    gridDecorator.eval.updateStatistics(options)
     
 
 
@@ -272,6 +272,8 @@ def _main():
     parser = OptionParser()
     parser.add_option("-l", "--level", action="store", type="int", dest="level", help="Gridlevel")
     parser.add_option("-a", "--adaptive", action="store", type="int", default="0", dest="adaptive", metavar="NUM", help="Using an adaptive Grid with NUM of refines")
+    parser.add_option("--adapt_points", action="store", type="int", default="1", dest="adapt_points", metavar="NUM", help="Number of points in one refinement iteration")
+    parser.add_option("--adapt_start", action="store", type="int", default="0", dest="adapt_start", metavar="NUM", help="The index of adapt step to begin with")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default="10", metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
