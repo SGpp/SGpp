@@ -16,13 +16,15 @@
 # along with pyclass. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from pysgpp import *
+from bin.pysgpp import *
+import random
 
 class DataProvider(object):
-    def __init__(self, data, mode):
+    def __init__(self, data, mode, options):
         self.__data = data
         self.__nextMethod = self.data_providers[mode]["split"]
         self.__constructMethod = self.data_providers[mode]["construct"]
+        self.options = options
     
     def __iter__(self):
         return self.__nextMethod(self, self.data)
@@ -49,14 +51,14 @@ class DataProvider(object):
         if len(data) != 1:
             raise Exception("Only one data file supported.")
         
-        return split_n_folds(data[0], options.f_level, options.seed), len(data[0]["data"])
+        return self.split_n_folds(data[0], self.options.f_level, self.options.seed), len(data[0]["data"])
     
     ## Stratified Fold
     def constructFoldr(self, data):
         if len(data) != 1:
             raise Exception("Only one data file supported.")
         
-        return split_n_folds_stratified(data[0], options.f_level, options.seed), len(data[0]["data"])
+        return self.split_n_folds_stratified(data[0],self. options.f_level, options.seed), len(data[0]["data"])
     
     
     ## Sequential Fold
@@ -64,13 +66,13 @@ class DataProvider(object):
         if len(data) != 1:
             raise Exception("Only one data file supported.")
         
-        return split_n_folds_sequential(data[0], options.f_level), len(data[0]["data"])
+        return self.split_n_folds_sequential(data[0], self.options.f_level), len(data[0]["data"])
     
     
     def splitFold(self, data):
         dvec, cvec = data
-        for i in xrange(options.f_level):
-            training = assembleTrainingVector(dvec,cvec,i)
+        for i in xrange(self.options.f_level):
+            training = self.assembleTrainingVector(dvec,cvec,i)
             testing = (dvec[i], cvec[i])
             yield (training, testing)
         return
@@ -123,6 +125,120 @@ class DataProvider(object):
                 i = i + 1
                 
         return training, classes
+    
+    #-------------------------------------------------------------------------------
+    # perform split of dataset in num_partitions partitions for n-fold-cv
+    # split data into folds,
+    # return ([data1,data2,...,datan], [classes1,classes2,...,classesn])
+    #-------------------------------------------------------------------------------
+    def split_n_folds(self, data, num_partitions, seed=None):
+        dim = len(data["data"])
+        size = len(data["data"][0])
+    
+        random.seed(seed)
+        seq = range(size)
+        random.shuffle(seq)
+    
+        dvec = []
+        cvec = []
+    
+        size_left = size
+        index = 0
+    
+        for i in xrange(num_partitions):
+            size_fold = size_left/(num_partitions-i)
+            dvec.append(DataVector(size_fold, dim))
+            cvec.append(DataVector(size_fold))
+            for element in xrange(size_fold):
+                for d in xrange(dim):
+                    dvec[i][element*dim + d] = data["data"][d][seq[index]]
+                #FIXME: this doesn't work for regression, because the last parameter is not necessary class
+                cvec[i][element] = data["classes"][seq[index]]
+                index += 1
+            size_left = size_left-size_fold
+        
+        return (dvec, cvec)
+    
+    #-------------------------------------------------------------------------------
+    # perform sequential(!) split of dataset in num_partitions partitions for n-fold-cv
+    # split data into folds,
+    # return ([data1,data2,...,datan], [classes1,classes2,...,classesn])
+    #-------------------------------------------------------------------------------
+    def split_n_folds_sequential(self, data, num_partitions):
+        dim = len(data["data"])
+        size = len(data["data"][0])
+    
+        dvec = []
+        cvec = []
+        size_left = size
+        index = 0
+    
+        for i in xrange(num_partitions):
+            size_fold = size_left/(num_partitions-i)
+            dvec.append(DataVector(size_fold, dim))
+            cvec.append(DataVector(size_fold))
+            for element in xrange(size_fold):
+                for d in xrange(dim):
+                    dvec[i][element*dim + d] = data["data"][d][index]
+                cvec[i][element] = data["classes"][index]
+                index += 1
+            size_left = size_left-size_fold
+    
+        return (dvec, cvec)
+    
+    
+    #-------------------------------------------------------------------------------
+    # perform split of dataset in num_partitions partitions for stratified n-fold-cv
+    # split data into folds,
+    # return ([data1,data2,...,datan], [classes1,classes2,...,classesn])
+    #-------------------------------------------------------------------------------
+    def split_n_folds_stratified(self, data, num_partitions, seed=None):
+        dim = len(data["data"])
+        size = len(data["data"][0])
+        # split in pos. and neg sets
+        neg = []
+        pos = []
+        for i in xrange(size):
+            if data["classes"][i] < 0:
+                neg.append(i)
+            else:
+                pos.append(i)
+        
+        # shuffel using seed
+        random.seed(seed)
+        random.shuffle(neg)
+        random.shuffle(pos)
+    
+        dvec = []
+        cvec = []
+    
+        size_left_pos = len(pos)
+        size_left_neg = len(neg)
+        index_pos = 0
+        index_neg = 0
+    
+        for i in xrange(num_partitions):
+            size_fold_pos = size_left_pos/(num_partitions-i)
+            size_fold_neg = size_left_neg/(num_partitions-i)
+            dvec.append(DataVector(size_fold_pos+size_fold_neg, dim))
+            cvec.append(DataVector(size_fold_pos+size_fold_neg))
+            # add data with class pos first
+            for element in xrange(size_fold_pos):
+                for d in xrange(dim):
+                    dvec[i][element*dim + d] = data["data"][d][pos[index_pos]]
+                cvec[i][element] = data["classes"][pos[index_pos]]
+                index_pos += 1
+            size_left_pos = size_left_pos-size_fold_pos
+            # then add data with class neg
+            for element in xrange(size_fold_neg):
+                for d in xrange(dim):
+                    dvec[i][(size_fold_pos+element)*dim + d] = data["data"][d][neg[index_neg]]
+                cvec[i][size_fold_pos+element] = data["classes"][neg[index_neg]]
+                index_neg += 1
+            size_left_neg = size_left_neg-size_fold_neg
+    
+        return (dvec, cvec)
+
     
     ## list of data providers
     # construct should bring the data in a suitable form.

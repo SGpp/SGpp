@@ -16,9 +16,9 @@
 # along with pyclass. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from pysgpp import *
-from evalproviders import *
-from refineproviders import *
+from bin.pysgpp import *
+from bin.evalproviders import *
+from bin.refineproviders import *
 
 ##
 #

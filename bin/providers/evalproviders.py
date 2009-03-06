@@ -16,9 +16,11 @@
 # along with pyclass. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from pysgpp import *
+from bin.pysgpp import *
+from bin.tools import *
 
-class ClassesEvalProvider:
+class EvalProvider:
+    
     def __init__(self, status):
         self.status = status
         
@@ -26,18 +28,20 @@ class ClassesEvalProvider:
         self.testing_overall = []
         self.number_points = []
         
-    def testVector(self, gridDecorator, alpha, data, classes):
-        eval = gridDecorator.grid.createOperationEval()
-        return eval.test(alpha, data, classes) / float(data.getSize())
-
     def reset(self):
         """Called before each learning step"""
         self.training_results = []
         self.testing_results = []
-    
+        
     def updateResults(self, alpha, trainingData, testingData):
         self.training(alpha, trainingData)
         self.testing(alpha, testingData)
+        
+class ClassesEvalProvider(EvalProvider):
+    
+    def testVector(self, gridDecorator, alpha, data, classes):
+        eval = gridDecorator.grid.createOperationEval()
+        return eval.test(alpha, data, classes) / float(data.getSize())
         
     def training(self, alpha, data):
         """Called to evaluate training data once per fold"""
@@ -56,34 +60,23 @@ class ClassesEvalProvider:
         self.testing_overall.append(sum(self.testing_results)/i)
         self.number_points.append(self.status.getSize())
         
-        print self.training_overall
-        print self.testing_overall
+        if options.verbose:       
+            print "Traing avg MSE:"
+            print self.training_overall
+            print "Testing avg. MSE:"
+            print self.testing_overall
 
-        if stats != None:
+        if options.stats != None:
             txt = "%f, %-10g, %f" % (options.level, options.l, options.adaptive)
             for i in xrange(len(self.training_overall)):
                 txt = txt + ", %f, %.10f, %.10f" % (self.number_points[i], self.training_overall[i], self.testing_overall[i])
             if options.verbose:
+                print "Statistics: level, lambda, adaptive, number of point, training overall, testing overall"
                 print txt
             writeLockFile(options.stats, txt+"\n")
 
 
-class RegressionEvalProvider:
-    def __init__(self, status):
-        self.status = status
-        
-        self.training_overall = []
-        self.testing_overall = []
-        self.number_points = []
-
-    def reset(self):
-        """Called before each learning step"""
-        self.training_results = []
-        self.testing_results = []
-    
-    def updateResults(self, alpha, trainingData, testingData):
-        self.training(alpha, trainingData)
-        self.testing(alpha, testingData)
+class RegressionEvalProvider(EvalProvider):
 
     def training(self, alpha, data):
         """Called to evaluate training data once per fold"""
@@ -111,14 +104,21 @@ class RegressionEvalProvider:
         self.training_overall.append(sum(self.training_results)/i)
         self.testing_overall.append(sum(self.testing_results)/i)
         self.number_points.append(self.status.getSize())
-                
-        print self.training_overall
-        print self.testing_overall
+        
+        if options.verbose:       
+            print "Traing avg MSE:"
+            print self.training_overall
+            print "Testing avg. MSE:"
+            print self.testing_overall
+        
+#        if options.verbose:
+#            print "MSE: %2.10f" %self.testing_results[-1]
 
         if options.stats != None:
             txt = "%f, %-10g, %f" % (options.level, options.l, options.adaptive)
             for i in xrange(len(self.training_overall)):
                 txt = txt + ", %f, %.10f, %.10f" % (self.number_points[i], self.training_overall[i], self.testing_overall[i])
             if options.verbose:
+                print "Statistics: level, lambda, adaptive, number of point, training overall, testing overall"
                 print txt
             writeLockFile(options.stats, txt+"\n")
