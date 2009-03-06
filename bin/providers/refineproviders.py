@@ -16,46 +16,41 @@
 # along with pyclass. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from pysgpp import *
+from bin.pysgpp import *
 
-class SurplusRefineProvider:
+class RefineProvider:
+    gridDecorator = None
     def __init__(self, gridDecorator):
         self.gridDecorator = gridDecorator
+        print "constructor called"
+        print "size: %d" %self.gridDecorator.getSize()
         
     def reset(self):
         """Called before each learning step"""
         self.alpha = DataVector(self.gridDecorator.getSize())
         self.alpha.setAll(0.0)
         self.i = 0
+        
+    def refine(self, options):
+        """Called after learning all folds"""
+        self.alpha.mult(1.0/self.i)
+        self.gridDecorator.grid.createGridGenerator().refine(SurplusRefinementFunctor(self.alpha, options.adapt_points))
+        print "GridPoints: ", self.gridDecorator.getSize()
+        
     
     def add(self, alpha, training):
         """Called once per fold"""
         self.alpha.add(alpha)
         self.i += 1
-    
-    def refine(self):
-        """Called after learning all folds"""
-        self.alpha.mult(1.0/self.i)
         
-        refine = self.gridDecorator.grid.createGridGenerator()
-        
-        functor = SurplusRefinementFunctor(self.alpha)
-        
-        refine.refine(functor)
-        
-        print "GridPoints: ", self.gridDecorator.getSize()
+class SurplusRefineProvider(RefineProvider):
+
+    def __init__(self, gridDecorator):
+        RefineProvider.__init__(self, gridDecorator)
 
 ##
 # @todo rework
-class ErrorRefineProvider:
-    def __init__(self, gridDecorator):
-        self.gridDecorator = gridDecorator
-        
-    def reset(self):
-        """Called before each learning step"""
-        self.alpha = DataVector(self.gridDecorator.getSize())
-        self.alpha.setAll(0.0)
-        self.i = 0
+class ErrorRefineProvider(RefineProvider):
     
     def add(self, alpha, training):
         """Called once per fold"""
@@ -71,17 +66,4 @@ class ErrorRefineProvider:
         error_temp = DataVector(alpha.getSize())
         B.mult(temp, training[0], error_temp)
         
-        self.alpha.add(error_temp)
-        self.i += 1
-    
-    def refine(self):
-        """Called after learning all folds"""
-        self.alpha.mult(1.0/self.i)
-        
-        refine = self.gridDecorator.grid.createGridGenerator()
-        
-        functor = SurplusRefinementFunctor(self.alpha)
-        
-        refine.refine(functor)
-        
-        print "GridPoints: ", self.gridDecorator.getSize()
+        RefineProvider.add(error_temp, training)
