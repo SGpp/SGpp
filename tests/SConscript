@@ -27,3 +27,5 @@ tests = env.Test('test_pysgpp.py')
 Requires(tests, cpy)
 AlwaysBuild(tests)
 
+env.Alias('test', tests)
+
