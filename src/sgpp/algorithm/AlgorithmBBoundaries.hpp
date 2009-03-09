@@ -53,6 +53,35 @@ public:
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 		result.setAll(0.0);
+#ifdef USEOMP
+		#pragma omp parallel
+		{
+			size_t source_size = source.getSize();
+
+			std::vector<double> line;
+			IndexValVector vec;
+
+			GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+
+			#pragma omp for shared(result) schedule(static)
+			for(size_t i = 0; i < source_size; i++)
+			{
+				vec.clear();
+
+				x.getLine(i, line);
+
+				ga(basis, line, vec);
+
+				#pragma omp critical
+				{
+					for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+					{
+						result[iter->first] += iter->second * source[i];
+					}
+				}
+			}
+		}
+#else
 		size_t source_size = source.getSize();
 
 		std::vector<double> line;
@@ -73,6 +102,7 @@ public:
 				result[iter->first] += iter->second * source[i];
 			}
 		}
+#endif /* USEOMP */
 	}
 
 	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
@@ -80,6 +110,33 @@ public:
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 		result.setAll(0.0);
+
+#ifdef USEOMP
+		#pragma omp parallel
+		{
+			size_t result_size = result.getSize();
+
+			std::vector<double> line;
+			IndexValVector vec;
+
+			GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+
+			#pragma omp for shared (result) schedule (static)
+			for(size_t i = 0; i < result_size; i++)
+			{
+				vec.clear();
+
+				x.getLine(i, line);
+
+				ga(basis, line, vec);
+
+				for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+				{
+					result[i] += iter->second * source[iter->first];
+				}
+			}
+		}
+#else
 		size_t result_size = result.getSize();
 
 		std::vector<double> line;
@@ -87,22 +144,6 @@ public:
 
 		GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
 
-#ifdef USEOMP
-		#pragma omp parallel for private (vec, line) shared (result) schedule (static)
-		for(size_t i = 0; i < result_size; i++)
-		{
-			vec.clear();
-
-			x.getLine(i, line);
-
-			ga(basis, line, vec);
-
-			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-			{
-				result[i] += iter->second * source[iter->first];
-			}
-		}
-#else
 		for(size_t i = 0; i < result_size; i++)
 		{
 			vec.clear();
