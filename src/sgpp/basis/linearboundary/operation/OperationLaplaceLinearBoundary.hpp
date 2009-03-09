@@ -99,6 +99,12 @@ protected:
 			if (level == 0)
 			{
 				result[i] = alpha[i];
+
+				// up
+				if (index == 1)
+				{
+					result[i-1] += -1 * alpha[i];
+				}
 			}
 			else
 			{

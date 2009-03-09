@@ -17,8 +17,8 @@
 #
 
 from bin.pysgpp import *
-from bin.evalproviders import *
-from bin.refineproviders import *
+from bin.providers.evalproviders import *
+from bin.providers.refineproviders import *
 
 ##
 #
