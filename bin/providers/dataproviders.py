@@ -17,11 +17,12 @@
 #
 
 from bin.pysgpp import *
+from bin.tools import *
 import random
 
 class DataProvider(object):
-    def __init__(self, data, mode, options):
-        self.__data = data
+    def __init__(self, filenames, mode, options):
+        self.__data = self.loadData(filenames)
         self.__nextMethod = self.data_providers[mode]["split"]
         self.__constructMethod = self.data_providers[mode]["construct"]
         self.options = options
@@ -34,12 +35,26 @@ class DataProvider(object):
 
     def getData(self):
         return self.__data
-
+    
+    ## Load data from file
+    def loadData(self, filenames):
+        data = []
+        try:
+            for filename in filenames:
+                data.append(readDataARFF(filename))
+        except:
+            raise Exception("An error occurred while reading " + filename + "!")
+    
+        
+        if len(data) < 1:
+            raise Exception("No data files supplied.")
+        
+        return data
     
     def constructNormal(self, data):
         if len(data) != 1:
             raise Exception("Only one data file supported.")
-    
+        self.__data = data[0]
         return (data[0], len(data[0]["data"]))
     
     def splitNormal(self, data):
