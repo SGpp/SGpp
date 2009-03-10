@@ -169,7 +169,7 @@ protected:
 			upGradient(alpha, result, dim);
 
 			DataVector temp(alpha.getSize());
-			downGradient(alpha, alpha, dim);
+			downGradient(alpha, temp, dim);
 
 			result.add(temp);
 		}
