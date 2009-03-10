@@ -54,7 +54,7 @@ public:
 
 		result.setAll(0.0);
 #ifdef USEOMP
-		#pragma omp parallel
+		#pragma omp parallel shared(result)
 		{
 			size_t source_size = source.getSize();
 
@@ -63,7 +63,7 @@ public:
 
 			GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
 
-			#pragma omp for shared(result) schedule(static)
+			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
 			{
 				vec.clear();
@@ -112,7 +112,7 @@ public:
 		result.setAll(0.0);
 
 #ifdef USEOMP
-		#pragma omp parallel
+		#pragma omp parallel shared (result)
 		{
 			size_t result_size = result.getSize();
 
@@ -121,7 +121,7 @@ public:
 
 			GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
 
-			#pragma omp for shared (result) schedule (static)
+			#pragma omp for schedule (static)
 			for(size_t i = 0; i < result_size; i++)
 			{
 				vec.clear();
