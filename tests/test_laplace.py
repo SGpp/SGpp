@@ -214,34 +214,32 @@ class TestOperationLaplaceModLinear(unittest.TestCase):
 class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
-    def testHatRegular1D(self):
-        from pysgpp import Grid, DataVector
+    def testHatRegular1D_one(self):
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryUScaledGrid(1)
-        storage = factory.getStorage()
-        
-        gen = factory.createGridGenerator()
-        gen.regular(7)
-        
-        laplace = factory.createOperationLaplace()
-      
-        
-        alpha = DataVector(storage.size())
-        result = DataVector(storage.size())
-        
-        alpha.setAll(1.0)
-        
-        laplace.mult(alpha, result)
-        
-        for seq in xrange(storage.size()):
-            index = storage.get(seq)
-            level, _ = index.get(0)
-            if level == 0:
-                self.failUnlessAlmostEqual(result[seq], 1.0)
-            else:
-                self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
 
+        m = generateLaplaceMatrix(factory, 4)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref) 
+
+  
+    ##
+    # Test laplace for regular sparse grid in 1d using linear hat functions
+    def testHatRegular1D_two(self):
+        from pysgpp import Grid
         
+        factory = Grid.createLinearBoundaryUScaledGrid(1)
+
+        m = generateLaplaceMatrix(factory, 5)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref) 
+        
+                
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD(self):
@@ -260,32 +258,30 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
 class TestOperationLaplaceLinearBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
-    def testHatRegular1D(self):
-        from pysgpp import Grid, DataVector
+    def testHatRegular1D_one(self):
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1)
-        storage = factory.getStorage()
+
+        m = generateLaplaceMatrix(factory, 4)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref) 
+
+  
+    ##
+    # Test laplace for regular sparse grid in 1d using linear hat functions
+    def testHatRegular1D_two(self):
+        from pysgpp import Grid
         
-        gen = factory.createGridGenerator()
-        gen.regular(7)
-        
-        laplace = factory.createOperationLaplace()
-      
-        
-        alpha = DataVector(storage.size())
-        result = DataVector(storage.size())
-        
-        alpha.setAll(1.0)
-        
-        laplace.mult(alpha, result)
-        
-        for seq in xrange(storage.size()):
-            index = storage.get(seq)
-            level, _ = index.get(0)
-            if level == 0:
-                self.failUnlessAlmostEqual(result[seq], 1.0)
-            else:
-                self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
+        factory = Grid.createLinearBoundaryGrid(1)
+
+        m = generateLaplaceMatrix(factory, 5)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref) 
 
         
     ##

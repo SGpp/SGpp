@@ -88,7 +88,6 @@ protected:
 			upGradient(alpha, result, gradient_dim);
 			downGradient(alpha, result, gradient_dim);
 		}
-
 	}
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
