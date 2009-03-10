@@ -12,7 +12,7 @@
 /* sgpp is distributed in the hope that it will be useful,                   */
 /* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
-/* GNU General Public License for more details.                              */
+/* GNU Lesser General Public License for more details.                       */
 /*                                                                           */
 /* You should have received a copy of the GNU General Public License         */
 /* along with sgpp; if not, write to the Free Software                       */
@@ -58,19 +58,37 @@ public:
 protected:
 	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 	{
-		// In direction gradient_dim we only calculate the norm of the gradient
-		// The up-part is empty, thus omitted
+		//Unidirectional scheme
 		if(dim > 0)
 		{
+			// Reordering ups and downs
+			// Use previously calculated ups for all future calculations
+			// U* -> UU* and UD*
+
 			DataVector temp(alpha.getSize());
+			upGradient(alpha, temp, dim);
+			updown(temp, result, dim-1, gradient_dim);
+
+
+			// Same from the other direction:
+			// *D -> *UD and *DD
+
+			DataVector result_temp(alpha.getSize());
 			updown(alpha, temp, dim-1, gradient_dim);
-			downGradient(temp, result, gradient_dim);
+			downGradient(temp, result_temp, dim);
+
+
+			//Overall memory use: 2*|alpha|*(d-1)
+
+			result.add(result_temp);
 		}
 		else
 		{
 			// Terminates dimension recursion
+			upGradient(alpha, result, gradient_dim);
 			downGradient(alpha, result, gradient_dim);
 		}
+
 	}
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
@@ -95,17 +113,20 @@ protected:
 			GridStorage::index_type::level_type level;
 			GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
-			//only affects the diagonal of the stiffness matrix
 			if (level == 0)
 			{
-				result[i] = alpha[i];
+				//only affects the diagonal of the stiffness matrix
+				result[i] += alpha[i];
 
-				// up
-				if (index == 1)
+				// down
+				if (index == 0)
 				{
-					result[i-1] += -1 * alpha[i];
+					GridIndex index_one = (*storage)[i];
+					index_one.set(dim, 0, 1);
+					result[(*storage)[&index_one]] += ((-1) * alpha[i]);
 				}
 			}
+			//only affects the diagonal of the stiffness matrix
 			else
 			{
 				result[i] = alpha[i]*pow(2.0, level+1);
@@ -113,8 +134,26 @@ protected:
 		}
 	}
 
-	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim) {}
-
+	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim)
+	{
+		// traverse all basis function by sequence number
+		for(size_t i = 0; i < storage->size(); i++)
+		{
+			GridStorage::index_type::level_type level;
+			GridStorage::index_type::index_type index;
+			(*storage)[i]->get(dim, level, index);
+			if (level == 0)
+			{
+				// up
+				if (index == 1)
+				{
+					GridIndex index_zero = (*storage)[i];
+					index_zero.set(dim, 0, 0);
+					result[(*storage)[&index_zero]] += ((-1) * alpha[i]);
+				}
+			}
+		}
+	}
 };
 
 }
