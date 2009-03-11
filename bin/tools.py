@@ -21,7 +21,7 @@
 # @version $CURR$
 
 #data = [{"data":[[x],[y]], "classes":[c]}, {"data":[[x],[y]], "classes":[c]}]
-import sys, re, time, fcntl, os, random
+import sys, re, time, fcntl, os, random, gzip
 from pysgpp import *
 
 # constants

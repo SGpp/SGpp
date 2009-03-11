@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
-import sys, re, os, optparse, random, utils
+import sys, re, os, optparse, random, tools
 
 # parse args
 parser = optparse.OptionParser()
@@ -37,6 +37,6 @@ for n in range(options.num):
 
 # output
 if options.outfile:
-    utils.writeStringToFile(dat, options.outfile)
+    tools.writeStringToFile(dat, options.outfile)
 else:
     print dat

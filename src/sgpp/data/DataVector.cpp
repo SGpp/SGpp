@@ -434,7 +434,8 @@ void DataVector::partitionClasses(double border)
 }
 
 /**
- * BLAS Level 1 operation: axpy.
+ * Adds alpha*x to current vector.
+ * BLAS Level 1 (elementary vector operations) operation: axpy.
  * @param alpha
  * @param x
  */
