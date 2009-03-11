@@ -102,17 +102,17 @@ for i in xrange(len(options.infiles)):
 data = []
 
 for i in xrange(len(options.infiles)):
-#	try:
+	try:
 		if options.types[i] == "arff":
 			data.append(readDataARFF(options.infiles[i]))
 			data[i]["filename"] = options.outfiles[i]
 		elif options.types[i] == "simple":
 			data.append(readDataTrivial(options.infiles[i], delim=options.delimiter))
 			data[i]["filename"] = options.outfiles[i]
-#	except Exception, e:
-#		print("Error while reading "  + options.infiles[i] +"! Aborting...");
-#		print e
-#		sys.exit(1)
+	except Exception, e:
+		print("Error while reading "  + options.infiles[i] +"! Aborting...");
+		print e
+		sys.exit(1)
 				
 checkData(data)
 
