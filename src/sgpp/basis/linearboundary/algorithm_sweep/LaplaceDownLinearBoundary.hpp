@@ -55,16 +55,29 @@ public:
 		// get boundary values
 		double left_boundary;
 		double right_boundary;
-		size_t seq;
+		size_t seq_left;
+		size_t seq_right;
 
+		/*
+		 * Handle Level 0
+		 */
+		// This handles the diagonal only
+		//////////////////////////////////////
 		// left boundary
 		index.left_levelzero(dim);
-		seq = index.seq();
-		left_boundary = source[seq];
+		seq_left = index.seq();
+		left_boundary = source[seq_left];
+		result[seq_left] = 1.0/3.0*left_boundary;
+
 		// right boundary
 		index.right_levelzero(dim);
-		seq = index.seq();
-		right_boundary = source[seq];
+		seq_right = index.seq();
+		right_boundary = source[seq_right];
+		result[seq_right] = 1.0/3.0*right_boundary;
+
+		// down
+		//////////////////////////////////////
+		result[seq_right] += 1.0/6.0*left_boundary;
 
 		// move to root
 		index.top(dim);
