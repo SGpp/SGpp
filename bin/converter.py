@@ -40,7 +40,7 @@ parser.add_option("-b", "--border", action="store", type="float", dest="border",
 parser.add_option("-c", "--class", action="store", type="float", dest="c_border",metavar="BORDER", help="Specifies the classification border on which the classification data is put into different classes. If not set classvalue>=0.5 is used.")
 parser.add_option("--class_min", action="store", type="float", dest="c_border_min", default=-sys.maxint-1, metavar="BORDERMIN", help="Specifies a second classification border on which the classification data is put into different classes (additionally check for classvalue<=class_min). If not set, it is ignored.")
 parser.add_option("-C", "--noclasses", action="store_true", default=False, dest="noclasses", help="If this is enabled, then inputfiles have no classes.")
-parser.add_option("-o", "--output", action="append", type="string", dest="outfiles", help="Specifies the output file. Can be specified for each inputfile. If not applicated, .arff is appended to each file.")
+parser.add_option("-o", "--output", action="append", type="string", dest="outfiles", help="Specifies the output file. Can be specified for each inputfile. If not applicated, .arff.gz is appended to each file.")
 parser.add_option("--delimiter", action="store", type="string", default="", dest="delimiter", help="The delimiter separating the columns for the simple-format. Default: Split for whitespaces.")
 parser.add_option("--normfile", action="store", type="string", dest="normfile", default=None, help="Write normalization information to file, so that further data could be normalized")
 parser.add_option("--maple", action="store_true", default=False, dest="maple", help="If enabled, write Maple-readable format.")
@@ -77,11 +77,15 @@ if options.types == None:
 
 for i in xrange(len(options.infiles)):
 	if i >= len(options.outfiles):
-		options.outfiles.append(options.infiles[i] + ".arff")
+		# append ".arff.gz", but strip trailing ".gz"
+		if options.infiles[i].endswith(".gz"):
+			options.outfiles.append(options.infiles[i][:-3] + ".arff.gz")
+		else:
+			options.outfiles.append(options.infiles[i] + ".arff.gz")
 
 	if i >= len(options.types):
 		filename = options.infiles[i].lower()
-		if filename.endswith("arff"):
+		if filename.endswith("arff") or filename.endswith("arff.gz"):
 			options.types.append("arff")
 		else:
 			options.types.append("simple")
@@ -98,17 +102,17 @@ for i in xrange(len(options.infiles)):
 data = []
 
 for i in xrange(len(options.infiles)):
-	try:
+#	try:
 		if options.types[i] == "arff":
 			data.append(readDataARFF(options.infiles[i]))
 			data[i]["filename"] = options.outfiles[i]
 		elif options.types[i] == "simple":
 			data.append(readDataTrivial(options.infiles[i], delim=options.delimiter))
 			data[i]["filename"] = options.outfiles[i]
-	except Exception, e:
-		print("Error while reading "  + options.infiles[i] +"! Aborting...");
-		print e
-		sys.exit(1)
+#	except Exception, e:
+#		print("Error while reading "  + options.infiles[i] +"! Aborting...");
+#		print e
+#		sys.exit(1)
 				
 checkData(data)
 
