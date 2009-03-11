@@ -56,6 +56,29 @@ public:
 		double fl = 0.0;
 		double fr = 0.0;
 
+		// get boundary values
+		double left_boundary;
+		double right_boundary;
+		size_t seq_left;
+		size_t seq_right;
+
+		/*
+		 * Handle Level 0
+		 */
+		// left boundary
+		index.left_levelzero(dim);
+		seq_left = index.seq();
+		left_boundary = source[seq_left];
+
+		// right boundary
+		index.right_levelzero(dim);
+		seq_right = index.seq();
+		right_boundary = source[seq_right];
+
+		// up
+		//////////////////////////////////////
+		result[seq_left] += 1.0/6.0*right_boundary;
+
 		rec(source, result, index, dim, fl, fr);
 	}
 
@@ -122,6 +145,33 @@ protected:
 			double alpha_value = 0.0;
 			double fm = fl + fr;
 
+			//double left_boundary;
+			//double right_boundary;
+			size_t seq_left;
+			size_t seq_right;
+
+			/*
+			 * Handle Level 0
+			 */
+			// This handles the diagonal only
+			//////////////////////////////////////
+			// left boundary
+			seq_left = index.seq();
+			//left_boundary = source[seq_left];
+			//result[seq_left] = 1.0/3.0*left_boundary;
+
+			// right boundary
+			index.right_levelzero(dim);
+			seq_right = index.seq();
+			//right_boundary = source[seq_right];
+			//result[seq_right] = 1.0/3.0*right_boundary;
+
+			// up
+			//////////////////////////////////////
+			//result[seq_left] += 1.0-fm;
+			//result[seq_right] += fm;
+
+			/*
 			// handle left boundary
 			alpha_value = source[seq];
 
@@ -138,6 +188,7 @@ protected:
 			// transposed operations:
 			result[seq] = fm/2.0 + alpha_value/2.0;
 			//result[seq] = alpha_value;
+			*/
 
 			index.left_levelzero(dim);
 		}

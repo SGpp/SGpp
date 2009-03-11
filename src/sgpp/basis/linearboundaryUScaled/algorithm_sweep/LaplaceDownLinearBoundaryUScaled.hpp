@@ -55,18 +55,29 @@ public:
 		// get boundary values
 		double left_boundary;
 		double right_boundary;
-		size_t seq;
+		size_t seq_left;
+		size_t seq_right;
 
+		/*
+		 * Handle Level 0
+		 */
+		// This handles the diagonal only
+		//////////////////////////////////////
 		// left boundary
 		index.left_levelzero(dim);
-		seq = index.seq();
-		left_boundary = source[seq];
-		result[seq] = 2.0/3.0*left_boundary;
+		seq_left = index.seq();
+		left_boundary = source[seq_left];
+		result[seq_left] = 1.0/3.0*left_boundary;
+
 		// right boundary
 		index.right_levelzero(dim);
-		seq = index.seq();
-		right_boundary = source[seq];
-		result[seq] = 2.0/3.0*right_boundary;
+		seq_right = index.seq();
+		right_boundary = source[seq_right];
+		result[seq_right] = 1.0/3.0*right_boundary;
+
+		// down
+		//////////////////////////////////////
+		result[seq_right] += 1.0/6.0*left_boundary;
 
 		// move to root
 		index.top(dim);
@@ -85,18 +96,16 @@ protected:
 
 		double alpha_value = source[seq];
 
-		{
-			GridStorage::index_type::level_type l;
-			GridStorage::index_type::index_type i;
+		GridStorage::index_type::level_type l;
+		GridStorage::index_type::index_type i;
 
-			index.get(dim, l, i);
+		index.get(dim, l, i);
 
-			double h = 1/pow(2.0, l);
+		double h = 1/pow(2.0, l);
 
-			// integration
-			result[seq] = (  h * (fl+fr)/2.0
-			                      + 2.0/3.0 * h * alpha_value );    // diagonal entry
-		}
+		// integration
+		result[seq] = (  h * (fl+fr)/2.0
+							  + 2.0/3.0 * h * alpha_value );    // diagonal entry
 
 		// dehierarchisation
 		double fm = (fl+fr)/2.0 + alpha_value;
