@@ -27,9 +27,11 @@
 
 #include <sstream>
 
+/*
 #ifdef USEOMP
 #include <omp.h>
 #endif
+*/
 
 DataVector::DataVector()
 {
@@ -139,18 +141,18 @@ int DataVector::addValue()
 void DataVector::setAll(double value)
 {
 	int n = size*dim;
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] = value;
 	}
-#else
+#else*/
 	for(int i = 0; i < n; i++)
 	{
 		data[i] = value;
 	}
-#endif
+//#endif
 }
 
 /**
@@ -180,18 +182,18 @@ void DataVector::set(int i, double value)
  */
 void DataVector::getRow(int row, DataVector& vec)
 {
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < this->dim; i++)
 	{
 			vec[i] = data[row*dim+i];
 	}
-#else
+#else*/
 	for(int i = 0; i < this->dim; i++)
 	{
 			vec[i] = data[row*dim+i];
 	}
-#endif
+//#endif
 }
 
 /**
@@ -201,18 +203,18 @@ void DataVector::getRow(int row, DataVector& vec)
  */
 void DataVector::setRow(int row, DataVector& vec)
 {
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < this->dim; i++)
 	{
 			data[row*dim+i] = vec[i];
 	}
-#else
+#else*/
 	for(int i = 0; i < this->dim; i++)
 	{
 			data[row*dim+i] = vec[i];
 	}
-#endif
+//#endif
 }
 
 /**
@@ -222,18 +224,18 @@ void DataVector::setRow(int row, DataVector& vec)
  */
 void DataVector::getColumn(int col, DataVector& vec)
 {
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int j = 0; j < this->size; j++)
 	{
 		vec[j] = data[j*dim+col];
 	}
-#else
+#else*/
 	for(int j = 0; j < this->size; j++)
 	{
 		vec[j] = data[j*dim+col];
 	}
-#endif
+//#endif
 }
 
 /**
@@ -243,18 +245,18 @@ void DataVector::getColumn(int col, DataVector& vec)
  */
 void DataVector::setColumn(int col, DataVector& vec)
 {
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int j = 0; j < this->size; j++)
 	{
 		data[j*dim+col] = vec[j];
 	}
-#else
+#else*/
 	for(int j = 0; j < this->size; j++)
 	{
 		data[j*dim+col] = vec[j];
 	}
-#endif
+//#endif
 }
 
 /**
@@ -330,18 +332,18 @@ void DataVector::add(DataVector &vec)
 	}
 	int n = size*dim;
 
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] += vec.data[i];
 	}
-#else
+#else*/
 	for(int i = 0; i < n; i++)
 	{
 		data[i] += vec.data[i];
 	}
-#endif
+//#endif
 }
 
 /**
@@ -356,18 +358,18 @@ void DataVector::sub(DataVector &vec)
 	}
 	int n = size*dim;
 
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] -= vec.data[i];
 	}
-#else
+#else*/
 	for(int i = 0; i < n; i++)
 	{
 		data[i] -= vec.data[i];
 	}
-#endif
+//#endif
 }
 
 /**
@@ -377,18 +379,18 @@ void DataVector::sub(DataVector &vec)
  */
 void DataVector::getLine(int row, DataVector& vec)
 {
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < this->dim; i++)
 	{
 		vec[i] = data[row*dim+i];
 	}
-#else
+#else*/
 	for(int i = 0; i < this->dim; i++)
 	{
 		vec[i] = data[row*dim+i];
 	}
-#endif
+//#endif
 }
 
 /**
@@ -399,18 +401,18 @@ void DataVector::getLine(int row, DataVector& vec)
 void DataVector::getLine(int row, std::vector<double>& vec)
 {
 	vec.clear();
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < this->dim; i++)
 	{
 		vec.push_back(data[row*dim+i]);
 	}
-#else
+#else*/
 	for(int i = 0; i < this->dim; i++)
 	{
 		vec.push_back(data[row*dim+i]);
 	}
-#endif
+//#endif
 }
 
 
@@ -464,18 +466,18 @@ double DataVector::dotProduct(DataVector &vec)
 void DataVector::mult(double scalar)
 {
 	int n = size*dim;
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] *= scalar;
 	}
-#else
+#else*/
 	for(int i = 0; i < n; i++)
 	{
 		data[i] *= scalar;
 	}
-#endif
+//#endif
 }
 
 /**
@@ -484,18 +486,18 @@ void DataVector::mult(double scalar)
  void DataVector::sqr()
  {
 	int n = size*dim;
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] = data[i] * data[i];
 	}
-#else
+#else*/
 	for(int i = 0; i < n; i++)
 	{
 		data[i] = data[i] * data[i];
 	}
-#endif
+//#endif
  }
 
 /**
@@ -540,18 +542,18 @@ void DataVector::axpy(double alpha, DataVector& x)
 	int n = size*dim;
 	double* p_x = x.data;
 	double* p_d = data;
-#ifdef USEOMP
+/*#ifdef USEOMP
 	#pragma omp parallel for shared(p_d, p_x) schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		p_d[i] += alpha*p_x[i];
 	}
-#else
+#else*/
 	for(int i = 0; i < n; i++)
 	{
 		p_d[i] += alpha*p_x[i];
 	}
-#endif
+//#endif
 
 }
 
