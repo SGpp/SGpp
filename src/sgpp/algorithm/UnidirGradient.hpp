@@ -48,6 +48,7 @@ public:
 
 		for(size_t i = 0; i < storage->dim(); i++)
 		{
+			beta.setAll(0.0);
 			this->updown(alpha, beta, storage->dim() - 1, i);
 			result.add(beta);
 		}
@@ -84,6 +85,7 @@ protected:
 				// U* -> UU* and UD*
 
 				DataVector temp(alpha.getSize());
+				temp.setAll(0.0);
 				up(alpha, temp, dim);
 				updown(temp, result, dim-1, gradient_dim);
 
@@ -92,6 +94,7 @@ protected:
 				// *D -> *UD and *DD
 
 				DataVector result_temp(alpha.getSize());
+				result_temp.setAll(0.0);
 				updown(alpha, temp, dim-1, gradient_dim);
 				down(temp, result_temp, dim);
 
@@ -106,6 +109,7 @@ protected:
 				up(alpha, result, dim);
 
 				DataVector temp(alpha.getSize());
+				temp.setAll(0.0);
 				down(alpha, temp, dim);
 
 				result.add(temp);
@@ -147,6 +151,7 @@ protected:
 			// U* -> UU* and UD*
 
 			DataVector temp(alpha.getSize());
+			temp.setAll(0.0);
 			upGradient(alpha, temp, dim);
 			updown(temp, result, dim-1, gradient_dim);
 
@@ -155,6 +160,7 @@ protected:
 			// *D -> *UD and *DD
 
 			DataVector result_temp(alpha.getSize());
+			result_temp.setAll(0.0);
 			updown(alpha, temp, dim-1, gradient_dim);
 			downGradient(temp, result_temp, dim);
 
@@ -169,6 +175,7 @@ protected:
 			upGradient(alpha, result, dim);
 
 			DataVector temp(alpha.getSize());
+			temp.setAll(0.0);
 			downGradient(alpha, temp, dim);
 
 			result.add(temp);
