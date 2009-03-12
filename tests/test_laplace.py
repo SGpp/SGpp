@@ -242,8 +242,7 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
                 
     ##
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHatRegulardD(self):
-        
+    def testHatRegulardD_one(self):  
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryUScaledGrid(3)
@@ -255,6 +254,20 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)  
            
         
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHatRegulardD_two(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createLinearBoundaryUScaledGrid(3)
+
+        m = generateLaplaceMatrix(factory, 2)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref)
+        
+                
 class TestOperationLaplaceLinearBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
@@ -286,17 +299,16 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         
     ##
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHatRegulardD(self):
+    #def testHatRegulardD(self):
+        #from pysgpp import Grid
         
-        from pysgpp import Grid
-        
-        factory = Grid.createLinearBoundaryGrid(3)
+        #factory = Grid.createLinearBoundaryGrid(3)
 
-        m = generateLaplaceMatrix(factory, 3)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat')
+        #m = generateLaplaceMatrix(factory, 3)
+        #m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat')
 
         # compare
-        compareStiffnessMatrices(self, m, m_ref)        
+        #compareStiffnessMatrices(self, m, m_ref)        
            
         
 # Run tests for this file if executed as application 
