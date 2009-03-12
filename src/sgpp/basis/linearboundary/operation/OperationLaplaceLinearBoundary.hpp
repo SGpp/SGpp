@@ -28,7 +28,7 @@
 
 #include "operation/OperationMatrix.hpp"
 
-#include "algorithm/UnidirGradient.hpp"
+#include "algorithm/UnidirGradientBoundaries.hpp"
 #include "algorithm/sweep.hpp"
 
 #include "grid/GridStorage.hpp"
@@ -38,12 +38,12 @@ namespace sg
 {
 
 /**
- * Implementation for linear functions
+ * Implementation for linear functions with boundaries pentagon cut through subspace scheme
  */
-class OperationLaplaceLinearBoundary: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinearBoundary: public OperationMatrix, public UnidirGradientBoundaries
 {
 public:
-	OperationLaplaceLinearBoundary(GridStorage* storage) : UnidirGradient(storage)
+	OperationLaplaceLinearBoundary(GridStorage* storage) : UnidirGradientBoundaries(storage)
 	{
 	}
 

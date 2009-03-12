@@ -53,9 +53,6 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result)
 	{
 		this->updown(alpha, result);
-		/// @todo remove test facilies when laplace on boundary grid is working
-		//this->down(alpha, result, 0);
-		//this->up(alpha, result, 0);
 	}
 
 protected:
