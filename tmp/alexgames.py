@@ -73,6 +73,26 @@ def readDataARFF(filename):
     return {"data":data, "classes":classes, "filename":filename}
 
 
+def printInnerPointsOnly(grid):
+    pointstring = ""
+    points = None
+    printpoint = True
+    
+    for n in xrange(grid.getStorage().size()):
+        pointstring = grid.getStorage().get(n).getCoordinates()
+        points = pointstring.split()
+        printpoint = True
+        for i in xrange(len(points)):
+            if points[i] == "0":
+                printpoint = False
+                
+            if points[i] == "1":
+                printpoint = False
+                
+        if (printpoint == True):
+            print pointstring
+            
+
 #-------------------------------------------------------------------------------
 ## Builds the training data vector
 # 
@@ -124,6 +144,9 @@ def refinement3d():
     
     gen = factory.createGridGenerator()
     gen.regular(1)
+ 
+    #for n in xrange(factory.getStorage().size()):
+    #    print factory.getStorage().get(n).getCoordinates() 
     
     alpha = DataVector(27)
     
@@ -132,79 +155,95 @@ def refinement3d():
 
     alpha[26] = 1.0
     func = SurplusRefinementFunctor(alpha)
-    
-    #for n in xrange(factory.getStorage().size()):
-    #    print factory.getStorage().get(n).getCoordinates()
-        
+            
     gen.refine(func)
 
     for n in xrange(factory.getStorage().size()):
         print factory.getStorage().get(n).getCoordinates()
+
+
+def generateLaplaceMatrix(factory, level, verbose=False):
+    from pysgpp import DataVector
+    storage = factory.getStorage()
+    
+    gen = factory.createGridGenerator()
+    gen.regular(level)
+    
+    laplace = factory.createOperationLaplace()
+    
+    # create vector
+    alpha = DataVector(storage.size())
+    erg = DataVector(storage.size())
+
+    # create stiffness matrix
+    m = DataVector(storage.size(), storage.size())
+    m.setAll(0)
+    for i in xrange(storage.size()):
+        # apply unit vectors
+        alpha.setAll(0)
+        alpha[i] = 1
+        laplace.mult(alpha, erg)
+        if verbose:
+            print erg, erg.sum()
+        m.setColumn(i, erg)
+
+    return m
         
-            
+def printDiagonal(m1):
+    n = m1.getSize()
+
+    # check diagonal
+    values = []
+    for i in range(n):
+        values.append(m1[i*n + i])
+    #values.sort()
+    for i in range(n):
+        print values[i]
+        
+def roundVector(v):
+    for i in xrange(len(v)):
+        v[i] = round(v[i], 10)
+    
+    return v
+  
+def printMatrix(m):
+    n = m.getSize()
+
+    for i in range(n):
+        values = []
+        for j in range(n):
+            values.append(m[i*n + j])
+        
+        print roundVector(values)
+        
+    return
+    
+    
+                       
 # Alex is playing with python and sgpp
 #
 # This test routine creates a grid and evaluates a function
 # on this grid
 def run_test():
-    factory = Grid.createLinearBoundaryGrid(3)
-    storage = factory.getStorage()
+    factory = Grid.createLinearBoundaryUScaledGrid(2)
+    m = generateLaplaceMatrix(factory, 1)
     
-    gen = factory.createGridGenerator()
-    gen.regular(1)
+    #print str(m) 
+    #printDiagonal(m)
     
-    alpha = DataVector(27)
-    
-    for i in xrange(len(alpha)):
-        alpha[i] = 0.0
+    print "C down: Gitter mit Rand:"
+    printMatrix(m)
+    print "\n\n"
 
-    alpha[26] = 1.0
-    func = SurplusRefinementFunctor(alpha)
+    factorytwo = Grid.createLinearGrid(2)
+    mtwo = generateLaplaceMatrix(factorytwo, 1)
     
-    #for n in xrange(factory.getStorage().size()):
-    #    print factory.getStorage().get(n).getCoordinates()
-        
-    gen.refine(func)
-
-    for n in xrange(factory.getStorage().size()):
-        print factory.getStorage().get(n).getCoordinates()
-        
-    #print factory.getStorage().size()
+    #print str(m) 
+    #printDiagonal(m)
     
-    #alpha = None
-    #gridpoint = None
-    #dim = 3
-    #level = 3
-    #res = 9
+    print "C down: Gitter ohne Rand:"
+    printMatrix(mtwo)
     
-    #grid = Grid.createLinearBoundaryGrid(dim)
-    #generator = grid.createGridGenerator()
-    #generator.regularBoundaries(level)
-    
-    #print grid to console (base functions)
-    #print grid.serialize()
-    #print "Size of Grid = Number of Gridpoints is:"
-    #print grid.getStorage().size()
-    
-    #for n in xrange(grid.getStorage().size()):
-    #    print grid.getStorage().get(n).getCoordinates()
-    
-    #evaluating parable on sparse grid
-    #eval = grid.createOperationEval()
-    #gridpoint = DataVector(1, dim)
-    
-    # read the alphas
-    #alpha = buildTrainingVector(readDataARFF("alexgames_alpha.in"))
-    
-    #fout = file("alexgames_eval.out", "w")
-    
-    #for x in xrange(res):
-    #    for y in xrange(res):
-    #        gridpoint[0] = float(x) / (res - 1)
-    #        gridpoint[1] = float(y) / (res - 1)
-    #        gp_value = eval.eval(alpha, gridpoint)
-    #        fout.write("%f %f %f\n" % (gridpoint[0], gridpoint[1], gp_value))
-    #fout.close()
     return
       
 #===============================================================================

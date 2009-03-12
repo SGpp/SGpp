@@ -83,6 +83,7 @@ protected:
 				{
 					rec(source, result, index, dim, fl, fr);
 				}
+
 				index.left_levelzero(dim);
 			}
 		}
@@ -106,30 +107,26 @@ protected:
 			}
 		}
 
-		GridStorage::index_type::level_type l;
-		GridStorage::index_type::index_type i;
+		index.get(dim, current_level, current_index);
 
-		index.get(dim, l, i);
-
-		if (l == 0)
+		if (current_level == 0)
 		{
-			double alpha_value = 0.0;
-			double fm = fml + fmr;
+			size_t seq_left;
+			size_t seq_right;
 
-			// handle left boundary
-			alpha_value = source[seq];
+			// left boundary
+			seq_left = index.seq();
 
-			// transposed operations:
-			result[seq] = fm/2.0 + alpha_value/2.0 + fl;
-
-			// handle right boundary
+			// right boundary
 			index.right_levelzero(dim);
-			seq = index.seq();
+			seq_right = index.seq();
 
-			alpha_value = source[seq];
+			// up
+			//////////////////////////////////////
+			result[seq_left] = fl;
+			result[seq_right] = fr;
 
-			// transposed operations:
-			result[seq] = fm/2.0 + alpha_value/2.0 + fr;
+			result[seq_left] += 1.0/6.0*source[seq_right];
 
 			index.left_levelzero(dim);
 		}
@@ -138,7 +135,7 @@ protected:
 			double fm = fml + fmr;
 
 			double alpha_value = source[seq];
-			double h = 1/pow(2.0,l);
+			double h = 1/pow(2.0,current_level);
 
 			// transposed operations:
 			result[seq] = fm;
@@ -147,7 +144,6 @@ protected:
 			fr = fm/2.0 + alpha_value*h/2.0 + fr;
 		}
 	}
-
 };
 
 } // namespace detail
