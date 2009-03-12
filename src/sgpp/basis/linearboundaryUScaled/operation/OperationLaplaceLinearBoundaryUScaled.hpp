@@ -28,7 +28,7 @@
 
 #include "operation/OperationMatrix.hpp"
 
-#include "algorithm/UnidirGradient.hpp"
+#include "algorithm/UnidirGradientBoundaries.hpp"
 #include "algorithm/sweep.hpp"
 
 #include "grid/GridStorage.hpp"
@@ -40,10 +40,10 @@ namespace sg
 /**
  * Implementation for linear functions
  */
-class OperationLaplaceLinearBoundaryUScaled: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinearBoundaryUScaled: public OperationMatrix, public UnidirGradientBoundaries
 {
 public:
-	OperationLaplaceLinearBoundaryUScaled(GridStorage* storage) : UnidirGradient(storage)
+	OperationLaplaceLinearBoundaryUScaled(GridStorage* storage) : UnidirGradientBoundaries(storage)
 	{
 	}
 
@@ -53,9 +53,6 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result)
 	{
 		this->updown(alpha, result);
-		/// @todo remove test facilies when laplace on boundary grid is working
-		//this->down(alpha, result, 0);
-		//this->up(alpha, result, 0);
 	}
 
 protected:

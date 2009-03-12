@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef UNIDIRGRADIENT_HPP
-#define UNIDIRGRADIENT_HPP
+#ifndef UNIDIRGRADIENTBOUNDARIES_HPP
+#define UNIDIRGRADIENTBOUNDARIES_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
@@ -33,13 +32,13 @@ namespace sg
 {
 
 /**
- * Unidirectional scheme with gradient
+ * Unidirectional scheme with gradient for grids with boundaries
  */
-class UnidirGradient
+class UnidirGradientBoundaries
 {
 public:
-	UnidirGradient(GridStorage* storage) : storage(storage) {}
-	virtual ~UnidirGradient() {}
+	UnidirGradientBoundaries(GridStorage* storage) : storage(storage) {}
+	virtual ~UnidirGradientBoundaries() {}
 
 	virtual void updown(DataVector& alpha, DataVector& result)
 	{
@@ -48,6 +47,7 @@ public:
 
 		for(size_t i = 0; i < storage->dim(); i++)
 		{
+			beta.setAll(0.0);
 			this->updown(alpha, beta, storage->dim() - 1, i);
 			result.add(beta);
 		}
@@ -84,6 +84,7 @@ protected:
 				// U* -> UU* and UD*
 
 				DataVector temp(alpha.getSize());
+				temp.setAll(0.0);
 				up(alpha, temp, dim);
 				updown(temp, result, dim-1, gradient_dim);
 
@@ -92,6 +93,8 @@ protected:
 				// *D -> *UD and *DD
 
 				DataVector result_temp(alpha.getSize());
+				result_temp.setAll(0.0);
+				temp.setAll(0.0);
 				updown(alpha, temp, dim-1, gradient_dim);
 				down(temp, result_temp, dim);
 
@@ -106,6 +109,7 @@ protected:
 				up(alpha, result, dim);
 
 				DataVector temp(alpha.getSize());
+				temp.setAll(0.0);
 				down(alpha, temp, dim);
 
 				result.add(temp);
@@ -147,6 +151,7 @@ protected:
 			// U* -> UU* and UD*
 
 			DataVector temp(alpha.getSize());
+			temp.setAll(0.0);
 			upGradient(alpha, temp, dim);
 			updown(temp, result, dim-1, gradient_dim);
 
@@ -155,6 +160,8 @@ protected:
 			// *D -> *UD and *DD
 
 			DataVector result_temp(alpha.getSize());
+			result_temp.setAll(0.0);
+			temp.setAll(0.0);
 			updown(alpha, temp, dim-1, gradient_dim);
 			downGradient(temp, result_temp, dim);
 
@@ -169,6 +176,7 @@ protected:
 			upGradient(alpha, result, dim);
 
 			DataVector temp(alpha.getSize());
+			temp.setAll(0.0);
 			downGradient(alpha, temp, dim);
 
 			result.add(temp);
@@ -184,4 +192,4 @@ protected:
 
 }
 
-#endif /* UNIDIRGRADIENT_HPP */
+#endif /* UNIDIRGRADIENTBOUNDARIES_HPP */
