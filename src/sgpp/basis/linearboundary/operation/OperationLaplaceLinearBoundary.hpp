@@ -56,40 +56,6 @@ public:
 	}
 
 protected:
-	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
-	{
-		//Unidirectional scheme
-		if(dim > 0)
-		{
-			// Reordering ups and downs
-			// Use previously calculated ups for all future calculations
-			// U* -> UU* and UD*
-
-			DataVector temp(alpha.getSize());
-			upGradient(alpha, temp, dim);
-			updown(temp, result, dim-1, gradient_dim);
-
-
-			// Same from the other direction:
-			// *D -> *UD and *DD
-
-			DataVector result_temp(alpha.getSize());
-			updown(alpha, temp, dim-1, gradient_dim);
-			downGradient(temp, result_temp, dim);
-
-
-			//Overall memory use: 2*|alpha|*(d-1)
-
-			result.add(result_temp);
-		}
-		else
-		{
-			// Terminates dimension recursion
-			upGradient(alpha, result, gradient_dim);
-			downGradient(alpha, result, gradient_dim);
-		}
-	}
-
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		detail::LaplaceUpLinearBoundary func(this->storage);
