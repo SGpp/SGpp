@@ -218,31 +218,47 @@ def printMatrix(m):
         
     return
     
-    
+ 
+def checkSymmetry(m):
+    error = 0.0
+    tmp_error = 0.0
+    n = m.getSize()
+
+    for i in range(n):
+        for j in range(n):
+            tmp_error = 0.0
+            tmp_error = m[i*n+j]-m[j*n+i]
+            if abs(tmp_error) > abs(error):
+                error = tmp_error
+                
+    return error
+            
                        
 # Alex is playing with python and sgpp
 #
 # This test routine creates a grid and evaluates a function
 # on this grid
 def run_test():
-    factory = Grid.createLinearBoundaryUScaledGrid(2)
-    m = generateLaplaceMatrix(factory, 1)
+    factory = Grid.createLinearBoundaryUScaledGrid(3)
+    m = generateLaplaceMatrix(factory, 7)
     
     #print str(m) 
     #printDiagonal(m)
     
-    print "C down: Gitter mit Rand:"
-    printMatrix(m)
-    print "\n\n"
-
-    factorytwo = Grid.createLinearGrid(2)
-    mtwo = generateLaplaceMatrix(factorytwo, 1)
+    print "C: Gitter mit Rand:"
+    #printMatrix(m)
+    print "\n"
+    print "Symmetry-error:"
+    print checkSymmetry(m)
+    
+    #factorytwo = Grid.createLinearGrid(2)
+    #mtwo = generateLaplaceMatrix(factorytwo, 1)
     
     #print str(m) 
     #printDiagonal(m)
     
-    print "C down: Gitter ohne Rand:"
-    printMatrix(mtwo)
+    #print "C down: Gitter ohne Rand:"
+    #printMatrix(mtwo)
     
     return
       
