@@ -26,6 +26,7 @@ except:
 # @param parser Parameter set by the OptionParser
 def callback_deprecated(option, opt, value, parser):
     print "Warning: Option %s is deprecated." % (option)
+    
 
 ## Reads in an ARFF file:
 # The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
@@ -72,27 +73,7 @@ def readDataARFF(filename):
     fin.close()
     return {"data":data, "classes":classes, "filename":filename}
 
-
-def printInnerPointsOnly(grid):
-    pointstring = ""
-    points = None
-    printpoint = True
     
-    for n in xrange(grid.getStorage().size()):
-        pointstring = grid.getStorage().get(n).getCoordinates()
-        points = pointstring.split()
-        printpoint = True
-        for i in xrange(len(points)):
-            if points[i] == "0":
-                printpoint = False
-                
-            if points[i] == "1":
-                printpoint = False
-                
-        if (printpoint == True):
-            print pointstring
-            
-
 #-------------------------------------------------------------------------------
 ## Builds the training data vector
 # 
@@ -188,6 +169,7 @@ def generateLaplaceMatrix(factory, level, verbose=False):
         m.setColumn(i, erg)
 
     return m
+
         
 def printDiagonal(m1):
     n = m1.getSize()
@@ -200,11 +182,13 @@ def printDiagonal(m1):
     for i in range(n):
         print values[i]
         
+        
 def roundVector(v):
     for i in xrange(len(v)):
         v[i] = round(v[i], 10)
     
     return v
+
   
 def printMatrix(m):
     n = m.getSize()
@@ -233,13 +217,29 @@ def checkSymmetry(m):
                 
     return error
             
-                       
-# Alex is playing with python and sgpp
-#
-# This test routine creates a grid and evaluates a function
-# on this grid
-def run_test():
-    factory = Grid.createLinearBoundaryUScaledGrid(3)
+            
+def printInnerPointsOnly(grid):
+    pointstring = ""
+    points = None
+    printpoint = True
+    
+    for n in xrange(grid.getStorage().size()):
+        pointstring = grid.getStorage().get(n).getCoordinates()
+        points = pointstring.split()
+        printpoint = True
+        for i in xrange(len(points)):
+            if points[i] == "0":
+                printpoint = False
+                
+            if points[i] == "1":
+                printpoint = False
+                
+        if (printpoint == True):
+            print pointstring
+
+
+def test_laplace():
+    factory = Grid.createLinearBoundaryUScaledGrid(4)
     m = generateLaplaceMatrix(factory, 7)
     
     #print str(m) 
@@ -261,6 +261,22 @@ def run_test():
     #printMatrix(mtwo)
     
     return
+                                  
+
+def test_generation():
+    factory = Grid.createLinearBoundaryGrid(8)
+    storage = factory.getStorage()
+    
+    gen = factory.createGridGenerator()
+    gen.regular(8)
+    
+    printInnerPointsOnly(factory)
+    #for n in xrange(storage.size()):
+    #    points = storage.get(n).getCoordinates()
+    #    print points
+    
+    return
+
       
 #===============================================================================
 # Main
@@ -269,4 +285,4 @@ def run_test():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    run_test()
+    test_laplace()

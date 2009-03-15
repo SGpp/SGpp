@@ -90,8 +90,6 @@ public:
 	 *
 	 * @todo: level should be of type level_t but swig doesnt want that
 	 *
-	 * @todo: DIRK: review this part
-	 *
 	 * @param storage Hashmap, that stores the grid points
 	 * @param level maximum level of the sparse grid
 	 * @param UScaledBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
@@ -128,7 +126,26 @@ public:
 		}
 		else
 		{
-			if (level < 2)
+			/* new grid generation
+			 *
+			 * for all level the same calculation of the level sum is implemented:
+			 * |l| = n + d -1
+			 */
+			for(size_t d = 0; d < storage->dim(); d++)
+			{
+				index.push(d, 0, 0);
+			}
+
+			this->boundaries_rec(storage, index, storage->dim()-1, 0, level);
+
+			/*
+			 * old grid generation
+			 *
+			 * here a switching in calculating the level sum
+			 * is implemented: For level 0 |l| = n and for all other levels |l| = n+d-1
+			 * are applied.
+			 */
+			/*if (level < 2)
 			{
 				for(size_t d = 0; d < storage->dim(); d++)
 				{
@@ -153,7 +170,7 @@ public:
 				{
 					this->boundariesFull_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false, false);
 				}
-			}
+			}*/
 		}
 	}
 
@@ -273,6 +290,37 @@ protected:
 	}
 
 	/**
+	 * generate points of the last dimension (dim == 0), version of pentagon cut in
+	 * sub space scheme
+	 *
+	 * @param storage the hashmap that stores the grid points
+	 * @param index point's index that should be created on the grid
+	 * @param current_level current level of the grid generation
+	 * @param level maximum level of grid
+	 */
+	void boundaries_UScaled_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level)
+	{
+		for(level_t l = 0; l <= level-current_level + 1; l++)
+		{
+			if (l == 0)
+			{
+				index.push(0, 0, 0);
+				storage->insert(index);
+				index.push(0, 0, 1);
+				storage->insert(index);
+			}
+			else
+			{
+				for(index_t i = 1; i <= 1<<(l-1); i++)
+				{
+					index.push(0, l, 2*i-1);
+					storage->insert(index);
+				}
+			}
+		}
+	}
+
+	/**
 	 * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level 0 and 1
 	 *
 	 * @param storage hashmap that stores the grid points
@@ -345,38 +393,7 @@ protected:
 		index.push(current_dim, source_level, source_index);
 	}
 
-	/**
-	 * generate points of the last dimension (dim == 0), version of pentagon cut in
-	 * sub space scheme
-	 *
-	 * @param storage the hashmap that stores the grid points
-	 * @param index point's index that should be created on the grid
-	 * @param current_level current level of the grid generation
-	 * @param level maximum level of grid
-	 */
-	void boundaries_UScaled_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level)
-	{
-		for(level_t l = 0; l <= level-current_level + 1; l++)
-		{
-			if (l == 0)
-			{
-				index.push(0, 0, 0);
-				storage->insert(index);
-				index.push(0, 0, 1);
-				storage->insert(index);
-			}
-			else
-			{
-				for(index_t i = 1; i <= 1<<(l-1); i++)
-				{
-					index.push(0, l, 2*i-1);
-					storage->insert(index);
-				}
-			}
-		}
-	}
-
-	/**
+	/*
 	 * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level greater 1
 	 *
 	 * @param storage hashmap that stores the grid points
@@ -385,6 +402,7 @@ protected:
 	 * @param current_level current level in this construction step
 	 * @param level maximum level of the sparse grid
 	 */
+	/*
 	void boundariesFull_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool tatooine, bool kessel)
 	{
 		if(current_dim == 0)
@@ -437,9 +455,9 @@ protected:
 
 			index.push(current_dim, source_level, source_index);
 		}
-	}
+	}*/
 
-	/**
+	/*
 	 * generate points of the last dimension (dim == 0), version of the classic sparse grid
 	 * with level 0, overall level > 1
 	 *
@@ -448,6 +466,7 @@ protected:
 	 * @param current_level current level of the grid generation
 	 * @param level maximum level of grid
 	 */
+	/*
 	void boundariesFull_rec_lastd(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool tatooine, bool kessel)
 	{
 		if (tatooine == false && kessel == true)
@@ -481,7 +500,7 @@ protected:
 				}
 			}
 		}
-	}
+	}*/
 };
 
 }
