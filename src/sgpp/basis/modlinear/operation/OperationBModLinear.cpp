@@ -41,7 +41,7 @@ namespace sg
  */
 void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SModLinearBase> op;
+	AlgorithmDGEMV<SModLinearBase> op;
 	modified_linear_base<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, data, result);
@@ -56,7 +56,7 @@ void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& 
  */
 void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SModLinearBase> op;
+	AlgorithmDGEMV<SModLinearBase> op;
 	modified_linear_base<unsigned int, unsigned int> base;
 
 	op.mult_transpose(storage, base, alpha, data, result);

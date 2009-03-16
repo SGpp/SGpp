@@ -64,7 +64,6 @@ namespace std {
 %include "src/sgpp/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
-%include "src/sgpp/grid/generation/BoundaryUScaledGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 
 %include "GridFactory.i"
@@ -77,14 +76,13 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
-%include "src/sgpp/algorithm/AlgorithmB.hpp"
-%include "src/sgpp/algorithm/AlgorithmBBoundaries.hpp"
+%include "src/sgpp/algorithm/AlgorithmDGEMV.hpp"
+%include "src/sgpp/algorithm/AlgorithmDGEMVBoundaries.hpp"
 %include "src/sgpp/algorithm/classification/test_dataset.hpp"
 %include "src/sgpp/algorithm/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 %include "src/sgpp/algorithm/sweep.hpp"
 %include "src/sgpp/algorithm/UnidirGradient.hpp"
-%include "src/sgpp/algorithm/UnidirGradientBoundaries.hpp"
 
 %include "src/sgpp/basis/linear/linear_base.hpp"
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"

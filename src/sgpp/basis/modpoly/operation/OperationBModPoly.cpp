@@ -35,14 +35,14 @@ namespace sg
 
 void OperationBModPoly::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SModPolyBase> op;
+	AlgorithmDGEMV<SModPolyBase> op;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
 void OperationBModPoly::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SModPolyBase> op;
+	AlgorithmDGEMV<SModPolyBase> op;
 
 	op.mult_transpose(storage, base, alpha, data, result);
 }

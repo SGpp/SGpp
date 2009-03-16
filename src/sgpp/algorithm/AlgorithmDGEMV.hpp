@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -20,13 +21,13 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef ALGORTIHMBBOUNDARIES_HPP
-#define ALGORTIHMBBOUNDARIES_HPP
+#ifndef ALGORTIHMDGEMV_HPP
+#define ALGORTIHMDGEMV_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
-#include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
+#include "algorithm/GetAffectedBasisFunctions.hpp"
 
 #include <vector>
 #include <utility>
@@ -39,13 +40,13 @@
 namespace sg {
 
 /**
- * Basic multiplaction with B and B^T on grids with boundaries.
+ * Basic multiplaction with B and B^T on grids with no boundaries.
  * The common known name for this operation is the BLAS routine DGEMV
  *
  * @todo check if it is possible to have some functor for the BASIS type
  */
 template<class BASIS>
-class AlgorithmBBoundaries
+class AlgorithmDGEMV
 {
 public:
 
@@ -75,7 +76,7 @@ public:
 			std::vector<double> line;
 			IndexValVector vec;
 
-			GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+			GetAffectedBasisFunctions<BASIS> ga(storage);
 
 			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
@@ -110,7 +111,7 @@ public:
 		std::vector<double> line;
 		IndexValVector vec;
 
-		GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+		GetAffectedBasisFunctions<BASIS> ga(storage);
 
 		for(size_t i = 0; i < source_size; i++)
 		{
@@ -155,7 +156,7 @@ public:
 			std::vector<double> line;
 			IndexValVector vec;
 
-			GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+			GetAffectedBasisFunctions<BASIS> ga(storage);
 
 			#pragma omp for schedule (static)
 			for(size_t i = 0; i < result_size; i++)
@@ -178,7 +179,7 @@ public:
 		std::vector<double> line;
 		IndexValVector vec;
 
-		GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+		GetAffectedBasisFunctions<BASIS> ga(storage);
 
 		for(size_t i = 0; i < result_size; i++)
 		{
@@ -199,4 +200,4 @@ public:
 
 }
 
-#endif /* ALGORTIHMBBOUNDARIES_HPP */
+#endif /* ALGORTIHMDGEMV_HPP */

@@ -40,7 +40,7 @@ namespace sg
  */
 void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SLinearBase> op;
+	AlgorithmDGEMV<SLinearBase> op;
 	linear_base<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, data, result);
@@ -55,7 +55,7 @@ void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& res
  */
 void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SLinearBase> op;
+	AlgorithmDGEMV<SLinearBase> op;
 	linear_base<unsigned int, unsigned int> base;
 
 	op.mult_transpose(storage, base, alpha, data, result);
