@@ -29,7 +29,6 @@ import os
 # Copy this file to custom.py #
 ###############################
 
-
 ####### STLPort #######
 # path to STLport
 # global installation e.g.
@@ -37,22 +36,21 @@ STLPORT = '/usr/include/stlport'
 # local installation (see documentation)
 #STLPORT = os.path.expanduser('~/include/stlport')
 
-
-
 ####### GCC Settings #######
 # additional compiler flags
 CPPFLAGS = ['-O3','-g','-funroll-loops']
 
 # MARCH variable for compiler optimization. See gcc man page
-#MARCH = 'nocona'  # Core2
+#MARCH = 'nocona'
 #MARCH = 'opteron'
 #MARCH = 'pentium4'
 
-# Set if Scons-Version = v0.96.1.D001
-#OLDSCONS = 1
-
-# Set to True to vectorize certain files
-#VECTORIZE = True
+####### JSGPP #######
+# Uncomment to compile jsgpp, a version of sgpp that works with java
+# you have to define serveral paths
+# JSGPP = 1
+# JNI_CPPPATH = '/usr/java/jdk1.6.0_11/include'
+# JNI_OS = 'linux'
 
 ####### OMP #######
 # OpenMP parallelisation directives in version 3
@@ -69,5 +67,3 @@ CPPFLAGS = ['-O3','-g','-funroll-loops']
 #ICC = 1
 #INTELHOME = '/opt/intel/cce/default/bin/'
 #CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias']
-
-
