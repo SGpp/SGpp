@@ -52,6 +52,8 @@ protected:
 public:
 	/**
 	 * Create a new sweep object with a default constructed functor
+	 *
+	 * @param storage the storage that contains the grid points
 	 */
 	sweep(GridStorage* storage) : functor(), storage(storage)
 	{
@@ -59,17 +61,28 @@ public:
 
 	/**
 	 * Create a new sweep object with a copied functor
+	 *
+	 * @param functor the functor that is executed on the grid
+	 * @param storage the storage that contains the grid points
 	 */
 	sweep(FUNC& functor, GridStorage* storage) : functor(functor), storage(storage)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	~sweep()
 	{
 	}
 
 	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
+	 * Boundaries are not regarded
+	 *
+	 * @param source a DataVector containing the source coefficients of the grid points
+	 * @param result a DataVector containing the result coefficients of the grid points
+	 * @param dim_sweep the dimension in which the functor is executed
 	 */
 	void sweep1D(DataVector& source, DataVector& result, size_t dim_sweep)
 	{
@@ -91,6 +104,11 @@ public:
 
 	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
+	 * Boundaries are regarded
+	 *
+	 * @param source a DataVector containing the source coefficients of the grid points
+	 * @param result a DataVector containing the result coefficients of the grid points
+	 * @param dim_sweep the dimension in which the functor is executed
 	 */
 	void sweep1D_Boundary(DataVector& source, DataVector& result, size_t dim_sweep)
 	{
@@ -112,6 +130,19 @@ public:
 
 protected:
 
+	/**
+	 * @todo check if it's possible to write a parallel implementation using OMP 3
+	 *
+	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
+	 * Boundaries are not regarded
+	 *
+	 * @param source coefficients of the sparse grid
+	 * @param result coefficients of the function computed by sweep
+	 * @param index current grid position
+	 * @param dim_list list of dimensions, that should be handled
+	 * @param dim_rem number of remaining dims
+	 * @param dim_sweep static dimension, in this dimension the functor is executed
+	 */
 	void sweep_rec(DataVector& source, DataVector& result, grid_iterator& index,
 				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
 	{

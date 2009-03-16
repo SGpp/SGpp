@@ -27,11 +27,9 @@
 
 #include <sstream>
 
-/*
 #ifdef USEOMP
 #include <omp.h>
 #endif
-*/
 
 DataVector::DataVector()
 {
@@ -141,18 +139,18 @@ int DataVector::addValue()
 void DataVector::setAll(double value)
 {
 	int n = size*dim;
-/*#ifdef USEOMP
+#ifdef USEOMP
 	#pragma omp parallel for schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] = value;
 	}
-#else*/
+#else
 	for(int i = 0; i < n; i++)
 	{
 		data[i] = value;
 	}
-//#endif
+#endif
 }
 
 /**
