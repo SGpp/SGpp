@@ -40,14 +40,29 @@
 namespace sg {
 
 /**
- * Basic multiplaction with B and B^T.
- * This is just wrong ... there should be some functor for the BASIS type
+ * Basic multiplaction with B and B^T on grids with no boundaries.
+ * The common known name for this operation is the BLAS routine DGEMV
+ *
+ * @todo check if it is possible to have some functor for the BASIS type
  */
 template<class BASIS>
 class AlgorithmB
 {
 public:
 
+	/**
+	 * Performs the DGEMV Operation on the grid
+	 *
+	 * This operation can be executed in parallel by setting the USEOMP define
+	 *
+	 * @todo add mathematical description
+	 *
+	 * @param storage GridStorage object that contains the grid's points information
+	 * @param basis a reference to a class that implements a specific basis
+	 * @param source the coefficients of the grid points
+	 * @param x the right hand side of the matrix vector product
+	 * @param result the result vector of the matrix vector multiplication
+	 */
 	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
@@ -66,17 +81,26 @@ public:
 			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
 			{
+				DataVector temp = DataVector(1);
+				double dbl_temp = 0.0;
+
 				vec.clear();
 
 				x.getLine(i, line);
 
 				ga(basis, line, vec);
 
-				#pragma omp critical
+				for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 				{
-					for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+					dbl_temp = iter->second * source[i];
+					if (dbl_temp != 0.0)
 					{
-						result[iter->first] += iter->second * source[i];
+						temp[0] = result[iter->first];
+						temp[0] += iter->second * source[i];
+						#pragma omp critical
+						{
+							result[iter->first] = temp[0];
+						}
 					}
 				}
 			}
@@ -105,6 +129,19 @@ public:
 #endif /* USEOMP */
 	}
 
+	/**
+	 * Performs the DGEMV Operation on the grid having a transposed matrix
+	 *
+	 * This operation can be executed in parallel by setting the USEOMP define
+	 *
+	 * @todo add mathematical description
+	 *
+	 * @param storage GridStorage object that contains the grid's points information
+	 * @param basis a reference to a class that implements a specific basis
+	 * @param source the coefficients of the grid points
+	 * @param x the right hand side of the matrix vector product
+	 * @param result the result vector of the matrix vector multiplication
+	 */
 	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
@@ -159,10 +196,6 @@ public:
 		}
 #endif /* USEOMP */
 	}
-
-
-protected:
-
 };
 
 }

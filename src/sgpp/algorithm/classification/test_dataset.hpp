@@ -34,7 +34,13 @@
 namespace sg {
 
 /**
- * Returns the number of correctly classified instances in data
+ * Returns the number of correctly classified instances in data without boundaries
+ *
+ * @param storage GridStorage object that contains the grid points
+ * @param basis reference to class that implements to current basis
+ * @param alpha the coefficients of the grid points
+ * @param data the data the should be tested
+ * @param classes the classes computed by the sparse grid's classification algorithm
  */
 template<class BASIS>
 double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes)
