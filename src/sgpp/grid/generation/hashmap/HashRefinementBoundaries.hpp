@@ -214,13 +214,29 @@ protected:
 	}
 
 	/**
+	 * Wrapper for the two functions create_gridpoint_general and
+	 * create_gridpoint_levelZeroConsistency which have both to be
+	 * executed if a gridpoint is refined
+	 *
+	 * @param storage hashmap that stores the gridpoinrs
+	 * @param index the point that should be inserted
+	 */
+	void create_gridpoint(GridStorage* storage, index_type& index)
+	{
+		// create grid with its needed childern and parents
+		create_gridpoint_general(storage, index);
+		// create all missing points an level zero
+		create_gridpoint_levelZeroConsistency(storage, index);
+	}
+
+	/**
 	 * This method creates a new point on the grid. It checks if some parents or
 	 * children are needed in other dimensions.
 	 *
 	 * @param storage hashmap that stores the gridpoinrs
 	 * @param index the point that should be inserted
 	 */
-	void create_gridpoint(GridStorage* storage, index_type& index)
+	void create_gridpoint_general(GridStorage* storage, index_type& index)
 	{
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
@@ -238,14 +254,14 @@ protected:
 					index.set(d, 0, 0);
 					if(!storage->has_key(&index))
 					{
-						create_gridpoint(storage, index);
+						create_gridpoint_general(storage, index);
 					}
 
 					// right boundary
 					index.set(d, 0, 1);
 					if(!storage->has_key(&index))
 					{
-						create_gridpoint(storage, index);
+						create_gridpoint_general(storage, index);
 					}
 
 					// restore values
@@ -267,7 +283,7 @@ protected:
 
 				if(!storage->has_key(&index))
 				{
-					create_gridpoint(storage, index);
+					create_gridpoint_general(storage, index);
 				}
 
 				// restore values
@@ -275,6 +291,59 @@ protected:
 			}
 		}
 		storage->insert(index);
+	}
+
+	/**
+	 * Assures that we have always a consistent grid with both functions
+	 * 0,0 and 0,1 on level zero
+	 *
+	 * @param storage hashmap that stores the gridpoinrs
+	 * @param index the point that should be inserted
+	 */
+	void create_gridpoint_levelZeroConsistency(GridStorage* storage, index_type& index)
+	{
+		for(size_t d = 0; d < storage->dim(); d++)
+		{
+			index_t source_index;
+			level_t source_level;
+			index.get(d, source_level, source_index);
+
+			// Assure that we have always a consistent grid with both functions
+			// 0,0 and 0,1 on level zero
+			if (source_level == 0)
+			{
+				// check if we need some additional points on the boundaries, only needed on a N dim grid
+				if (storage->dim() > 1)
+				{
+					// if we have already a left boundary...
+					index.set(d, 0, 0);
+					if(storage->has_key(&index))
+					{
+						// ... we have to generate the correspondending right boundary
+						index.set(d, 0, 1);
+						if(!storage->has_key(&index))
+						{
+							storage->insert(index);
+						}
+					}
+
+					// if we have already a right boundary...
+					index.set(d, 0, 1);
+					if(storage->has_key(&index))
+					{
+						// ... we have to generate the correspondending left boundary
+						index.set(d, 0, 0);
+						if(!storage->has_key(&index))
+						{
+							storage->insert(index);
+						}
+					}
+
+					// restore values
+					index.set(d, source_level, source_index);
+				}
+			}
+		}
 	}
 
 	/**

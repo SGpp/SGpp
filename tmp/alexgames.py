@@ -277,7 +277,70 @@ def test_generation():
     
     return
 
-      
+    
+def test_refinement():
+    factory = Grid.createLinearBoundaryGrid(2)
+    storage = factory.getStorage()
+    
+    gen = factory.createGridGenerator()
+    gen.regular(0)
+    
+    alpha = DataVector(4)
+
+    for i in xrange(len(alpha)):
+        alpha[i] = 0.0
+
+    alpha[0] = 1.0
+    func = SurplusRefinementFunctor(alpha)
+        
+    gen.refine(func)
+    
+    alpha2 = DataVector(8)
+
+    for i in xrange(len(alpha2)):
+        alpha2[i] = 0.0
+
+    alpha2[4] = 1.0
+    func = SurplusRefinementFunctor(alpha2)
+        
+    gen.refine(func)
+    
+    alpha3 = DataVector(13)
+
+    for i in xrange(len(alpha3)):
+         alpha3[i] = 0.0
+
+    alpha3[11] = 1.0
+    func = SurplusRefinementFunctor(alpha3)
+        
+    gen.refine(func)
+    
+    alpha4 = DataVector(18)
+
+    for i in xrange(len(alpha4)):
+        alpha4[i] = 0.0
+
+    alpha4[12] = 1.0
+    func = SurplusRefinementFunctor(alpha4)
+        
+    gen.refine(func)
+    
+    alpha5 = DataVector(25)
+
+    for i in xrange(len(alpha5)):
+        alpha5[i] = 0.0
+
+    alpha5[23] = 1.0
+    func = SurplusRefinementFunctor(alpha5)    
+    
+    gen.refine(func)
+        
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates()
+        print points
+    
+    #print storage.size()
+        
 #===============================================================================
 # Main
 #===============================================================================
@@ -285,4 +348,4 @@ def test_generation():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    test_laplace()
+    test_refinement()
