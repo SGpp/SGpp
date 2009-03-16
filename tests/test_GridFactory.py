@@ -443,7 +443,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         func = SurplusRefinementFunctor(alpha)
             
         gen.refine(func)
-        self.failUnlessEqual(storage.size(), 6)
+        self.failUnlessEqual(storage.size(), 8)
         
     def testRefinement2d_two(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
@@ -463,7 +463,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
             
         gen.refine(func)
         
-        alpha2 = DataVector(6)
+        alpha2 = DataVector(8)
     
         for i in xrange(len(alpha2)):
             alpha2[i] = 0.0
@@ -472,7 +472,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         func = SurplusRefinementFunctor(alpha2)
             
         gen.refine(func)    
-        self.failUnlessEqual(storage.size(), 11)        
+        self.failUnlessEqual(storage.size(), 13)        
 
     def testRefinement2d_three(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
@@ -492,7 +492,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
             
         gen.refine(func)
         
-        alpha2 = DataVector(6)
+        alpha2 = DataVector(8)
     
         for i in xrange(len(alpha2)):
             alpha2[i] = 0.0
@@ -502,16 +502,16 @@ class TestLinearBoundaryGrid(unittest.TestCase):
             
         gen.refine(func)
         
-        alpha3 = DataVector(11)
+        alpha3 = DataVector(13)
     
         for i in xrange(len(alpha3)):
              alpha3[i] = 0.0
 
-        alpha3[10] = 1.0
+        alpha3[11] = 1.0
         func = SurplusRefinementFunctor(alpha3)
             
         gen.refine(func)   
-        self.failUnlessEqual(storage.size(), 21) 
+        self.failUnlessEqual(storage.size(), 18) 
 
     def testRefinement2d_four(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
@@ -531,7 +531,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
             
         gen.refine(func)
         
-        alpha2 = DataVector(6)
+        alpha2 = DataVector(8)
     
         for i in xrange(len(alpha2)):
             alpha2[i] = 0.0
@@ -541,26 +541,26 @@ class TestLinearBoundaryGrid(unittest.TestCase):
             
         gen.refine(func)
         
-        alpha3 = DataVector(11)
+        alpha3 = DataVector(13)
     
         for i in xrange(len(alpha3)):
              alpha3[i] = 0.0
 
-        alpha3[10] = 1.0
+        alpha3[11] = 1.0
         func = SurplusRefinementFunctor(alpha3)
             
         gen.refine(func)
         
-        alpha4 = DataVector(21)
+        alpha4 = DataVector(18)
     
         for i in xrange(len(alpha4)):
             alpha4[i] = 0.0
 
-        alpha4[7] = 1.0
+        alpha4[12] = 1.0
         func = SurplusRefinementFunctor(alpha4)
             
         gen.refine(func)
-        self.failUnlessEqual(storage.size(), 23) 
+        self.failUnlessEqual(storage.size(), 25) 
 
     def testRefinement2d_five(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
@@ -580,7 +580,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
             
         gen.refine(func)
         
-        alpha2 = DataVector(6)
+        alpha2 = DataVector(8)
     
         for i in xrange(len(alpha2)):
             alpha2[i] = 0.0
@@ -590,36 +590,36 @@ class TestLinearBoundaryGrid(unittest.TestCase):
             
         gen.refine(func)
         
-        alpha3 = DataVector(11)
+        alpha3 = DataVector(13)
     
         for i in xrange(len(alpha3)):
              alpha3[i] = 0.0
 
-        alpha3[10] = 1.0
+        alpha3[11] = 1.0
         func = SurplusRefinementFunctor(alpha3)
             
         gen.refine(func)
         
-        alpha4 = DataVector(21)
+        alpha4 = DataVector(18)
     
         for i in xrange(len(alpha4)):
             alpha4[i] = 0.0
 
-        alpha4[7] = 1.0
+        alpha4[12] = 1.0
         func = SurplusRefinementFunctor(alpha4)
             
         gen.refine(func)
         
-        alpha5 = DataVector(23)
+        alpha5 = DataVector(25)
     
         for i in xrange(len(alpha5)):
             alpha5[i] = 0.0
 
-        alpha5[22] = 1.0
-        func = SurplusRefinementFunctor(alpha4)
+        alpha5[23] = 1.0
+        func = SurplusRefinementFunctor(alpha5)
             
         gen.refine(func)
-        self.failUnlessEqual(storage.size(), 27) 
+        self.failUnlessEqual(storage.size(), 29) 
 
     def testOperationB(self):
         from pysgpp import Grid, DataVector
