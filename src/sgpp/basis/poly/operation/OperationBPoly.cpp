@@ -35,14 +35,14 @@ namespace sg
 
 void OperationBPoly::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SPolyBase> op;
+	AlgorithmDGEMV<SPolyBase> op;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
 void OperationBPoly::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SPolyBase> op;
+	AlgorithmDGEMV<SPolyBase> op;
 
 	op.mult_transpose(storage, base, alpha, data, result);
 }

@@ -27,8 +27,8 @@
 // Optimizations currently useless
 //#define SGPP_OPTIMIZE
 
-#include "algorithm/AlgorithmB.hpp"
-#include "algorithm/AlgorithmBBoundaries.hpp"
+#include "algorithm/AlgorithmDGEMV.hpp"
+#include "algorithm/AlgorithmDGEMVBoundaries.hpp"
 #include "algorithm/GetAffectedBasisFunctions.hpp"
 #include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/classification/test_dataset.hpp"
@@ -64,10 +64,10 @@ typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
 typedef poly_base<unsigned int, unsigned int> SPolyBase;
 typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
 
-typedef AlgorithmB<SLinearBase> SGridOperationB;
-typedef AlgorithmB<SLinearBoundaryBase> SGridBoundaryOperationB;
-typedef AlgorithmB<SLinearBoundaryUScaledBase> SGridBoundaryUScaledOperationB;
-typedef AlgorithmB<SModLinearBase> SGridModOperationB;
+typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
+typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;
+typedef AlgorithmDGEMV<SLinearBoundaryUScaledBase> SGridBoundaryUScaledOperationB;
+typedef AlgorithmDGEMV<SModLinearBase> SGridModOperationB;
 
 }
 

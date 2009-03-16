@@ -35,7 +35,7 @@ namespace sg
 
 void OperationBModWavelet::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SModWaveletBase> op;
+	AlgorithmDGEMV<SModWaveletBase> op;
 	mod_Wavelet_base<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, data, result);
@@ -43,7 +43,7 @@ void OperationBModWavelet::mult(DataVector& alpha, DataVector& data, DataVector&
 
 void OperationBModWavelet::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmB<SModWaveletBase> op;
+	AlgorithmDGEMV<SModWaveletBase> op;
 	mod_Wavelet_base<unsigned int, unsigned int> base;
 
 	op.mult_transpose(storage, base, alpha, data, result);
