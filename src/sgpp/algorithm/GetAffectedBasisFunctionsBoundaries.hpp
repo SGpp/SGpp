@@ -55,6 +55,11 @@ public:
 	 * If one wants to evaluate \f$f_N(x)\f$, one only has to compute
 	 * \f[ \sum_{r\in\mathbf{result}} \alpha[r\rightarrow\mathbf{first}] \cdot r\rightarrow\mathbf{second}. \f]
 	 *
+	 * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
+	 * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
+	 * result)
+	 * So please assure that both functions do exist!
+	 *
 	 * @param basis a sparse grid basis
 	 * @param point evaluation point within the domain
 	 * @param result a vector to store the results in
