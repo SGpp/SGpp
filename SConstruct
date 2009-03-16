@@ -30,7 +30,7 @@ opts = Options('custom.py')
 opts.Add('CPPFLAGS','Set additional Flags','')
 opts.Add('LINKFLAGS','Set additional Linker-flags','')
 
-opts.Add('MARCH','Set processor specific MARCH',None)
+opts.Add('MARCH','Set processor specific MARCH', None)
 
 opts.Add('ICC', 'Uses Intels Optimizing Compiler', False)
 opts.Add('OMP', 'Use OpenMP parallelisation', False)
@@ -38,7 +38,6 @@ opts.Add('INTELHOME', 'Intel Compiler Home Dir', '')
 
 opts.Add('JSGPP', 'Build jsgpp if set to True', False)
 opts.Add('JNI_CPPPATH', 'Path to JNI includes', None)
-opts.Add('JNI_LIBPATH', 'Path to JNI libs', None)
 opts.Add('JNI_OS', 'JNI os path', None)
 
 env = Environment(options = opts, ENV = os.environ)
@@ -98,7 +97,7 @@ SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
 SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
 
 if env['JSGPP']:
-	SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
+    SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
 
 SConscript('tests/SConscript')
 

@@ -1,24 +1,27 @@
-/*
-This file is part of sg++, a program package making use of spatially adaptive sparse grids to solve numerical problems
-
-Copyright (C) 2008  Jörg Blank (blankj@in.tum.de), Lennart Johansson
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+/*****************************************************************************/
+/* This file is part of jsgpp, a program package making use of spatially     */
+/* adaptive sparse grids to solve numerical problems                         */
+/*                                                                           */
+/* Copyright (C) 2008 Joerg Blank (blankj@in.tum.de)                         */
+/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/*                                                                           */
+/* jsgpp is free software; you can redistribute it and/or modify             */
+/* it under the terms of the GNU General Public License as published by      */
+/* the Free Software Foundation; either version 3 of the License, or         */
+/* (at your option) any later version.                                       */
+/*                                                                           */
+/* jsgpp is distributed in the hope that it will be useful,                  */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/* GNU Lesser General Public License for more details.                       */
+/*                                                                           */
+/* You should have received a copy of the GNU General Public License         */
+/* along with jsgpp; if not, write to the Free Software                      */
+/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+/* or see <http://www.gnu.org/licenses/>.                                    */
+/*****************************************************************************/
 
 package weka.classifiers.functions;
-
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -126,7 +129,7 @@ implements OptionHandler
 	/**
 	 * Returns default capabilities of the classifier.
 	 *
-	 * @return      the capabilities of this classifier
+	 * @return the capabilities of this classifier
 	 */
 	public Capabilities getCapabilities() {
 		Capabilities result = super.getCapabilities();
@@ -143,8 +146,6 @@ implements OptionHandler
 		return result;
 	}
 
-	
-	
 	static {
 		try {
 			System.loadLibrary("jsgpp");
@@ -154,6 +155,4 @@ implements OptionHandler
 			System.exit(1);
 		}
 	}
-
-
 }
