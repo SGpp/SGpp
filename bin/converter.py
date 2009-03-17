@@ -1,6 +1,7 @@
 # This file is part of pysgpp, a program package making use of spatially adaptive sparse grids to solve numerical problems.
 #
-# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
+# Copyright (C) 2007-2009 Dirk Pflueger (pflueged@in.tum.de)
+#               2007 Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de), 
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -36,8 +37,8 @@ parser.add_option("-m", "--merge", action="store_true", default=False, dest="mer
 parser.add_option("-n", "--nonormalization", action="store_true", default=False, dest="nonormalization", help="If this option is set, neither data (-b) nor classes (-c) are normalized, but all data is just being converted.")
 parser.add_option("--nodatanormalization", action="store_true", default=False, dest="nodatanormalization", help="If this option is set, data (-b) is not normalized, but just being converted.")
 parser.add_option("--noclassnormalization", action="store_true", default=False, dest="noclassnormalization", help="If this option is set, classes (-c) are not normalized, but just being converted.")
-parser.add_option("-b", "--border", action="store", type="float", dest="border", help="Specifies the border for the Dataset. If not set 0.05 is used.")
-parser.add_option("-c", "--class", action="store", type="float", dest="c_border",metavar="BORDER", help="Specifies the classification border on which the classification data is put into different classes. If not set classvalue>=0.5 is used.")
+parser.add_option("-b", "--border", action="store", type="float", dest="border", help="Specifies the border for the Dataset. If not set 0.0 is used.", default=0.0)
+parser.add_option("-c", "--class", action="store", type="float", dest="c_border",metavar="BORDER", help="Specifies the classification border on which the classification data is put into different classes. If not set classvalue>=0.5 is used.", default=0.5)
 parser.add_option("--class_min", action="store", type="float", dest="c_border_min", default=-sys.maxint-1, metavar="BORDERMIN", help="Specifies a second classification border on which the classification data is put into different classes (additionally check for classvalue<=class_min). If not set, it is ignored.")
 parser.add_option("-C", "--noclasses", action="store_true", default=False, dest="noclasses", help="If this is enabled, then inputfiles have no classes.")
 parser.add_option("-o", "--output", action="append", type="string", dest="outfiles", help="Specifies the output file. Can be specified for each inputfile. If not applicated, .arff.gz is appended to each file.")
@@ -47,15 +48,10 @@ parser.add_option("--maple", action="store_true", default=False, dest="maple", h
 (options,args)=parser.parse_args()
 
 if options.infiles == None:
-	print("No inputfiles. Aborting... Help with -h")
-	sys.exit(1)
+	print("No inputfiles. Aborting...")
+	print
+	parser.parse_args(["-h"])
 	
-if options.border == None:
-	options.border = 0.05
-	
-if options.c_border == None:
-	options.c_border = 0.5
-
 if len(args) != 0:
 	print("Warning: There were command-line args. Maybe forgotten to put an -i in front of filename?")
 
