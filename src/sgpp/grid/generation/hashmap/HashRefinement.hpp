@@ -91,7 +91,7 @@ public:
 				index_t source_index;
 				level_t source_level;
 				index.get(d, source_level, source_index);
-				cout << "d: " << d <<"\nsource_level: "<<source_level << "\nsource_index: "<<source_index<<endl;
+				//cout << "d: " << d <<"\nsource_level: "<<source_level << "\nsource_index: "<<source_index<<endl;
 
 				// left child
 				index.set(d, source_level + 1, 2 * source_index - 1);
@@ -145,7 +145,7 @@ public:
 		}
 
 	}
-	
+
 	/**
 	 * Calculates the number of points, which can be refined
 	 *
@@ -154,7 +154,7 @@ public:
 	int getNumberOfRefinablePoints(GridStorage* storage)
 	{
 		int counter = 0;
-		
+
 		if(storage->size() == 0)
 		{
 			throw generation_exception("storage empty");

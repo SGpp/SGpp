@@ -83,7 +83,6 @@ namespace std {
 %include "src/sgpp/algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 %include "src/sgpp/algorithm/sweep.hpp"
 %include "src/sgpp/algorithm/UnidirGradient.hpp"
-%include "src/sgpp/algorithm/UnidirGradientBoundaries.hpp"
 
 %include "src/sgpp/basis/linear/linear_base.hpp"
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"
