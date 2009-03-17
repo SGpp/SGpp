@@ -377,7 +377,6 @@ protected:
 						if(!storage->has_key(&index))
 						{
 							create_gridpoint(storage, index);
-							//storage->insert(index);
 						}
 					}
 
@@ -390,7 +389,6 @@ protected:
 						if(!storage->has_key(&index))
 						{
 							create_gridpoint(storage, index);
-							//storage->insert(index);
 						}
 					}
 
