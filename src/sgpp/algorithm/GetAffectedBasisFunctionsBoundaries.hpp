@@ -68,6 +68,7 @@ public:
 	{
 		GridStorage::grid_iterator working(storage);
 
+		working.resetToLevelZero();
 		result.clear();
 		rec(basis, point, 0, 1.0, working, result);
 	}
@@ -99,7 +100,13 @@ protected:
 			size_t seq = working.seq();
 			index_type global_work_index = 0;
 
-			if(storage->end(seq))
+			if(storage->end(seq) && work_level > 0)
+			{
+				rec(basis, point, current_dim + 1, value, working, result);
+				break;
+			}
+
+			if (storage->end(seq) && work_level == 0)
 			{
 				break;
 			}
@@ -196,7 +203,7 @@ protected:
 			++work_level;
 		}
 
-		working.top(current_dim);
+		working.left_levelzero(current_dim);
 	}
 
 };
