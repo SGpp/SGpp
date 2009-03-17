@@ -100,14 +100,13 @@ protected:
 			size_t seq = working.seq();
 			index_type global_work_index = 0;
 
-			if(storage->end(seq) && work_level > 0)
-			{
-				rec(basis, point, current_dim + 1, value, working, result);
-				break;
-			}
 
-			if (storage->end(seq) && work_level == 0)
+			if (storage->end(seq))
 			{
+				if(current_dim < storage->dim()-1)
+				{
+					rec(basis, point, current_dim + 1, value, working, result);
+				}
 				break;
 			}
 			else
