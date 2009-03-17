@@ -38,6 +38,7 @@ class GridGenerator
 public:
 	virtual void regular(size_t level) = 0;
 	virtual void refine(RefinementFunctor* func) = 0;
+	virtual int getNumberOfRefinablePoints() = 0;
 };
 
 class OperationB

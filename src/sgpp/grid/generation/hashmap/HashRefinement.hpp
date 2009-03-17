@@ -32,6 +32,9 @@
 #include <vector>
 #include <cmath>
 
+#include <iostream>
+using namespace std;
+
 namespace sg
 {
 
@@ -58,7 +61,6 @@ public:
 		{
 			throw generation_exception("storage empty");
 		}
-
 		//Algorithm should be able to look for several points in grid to refine
 		//So we store an array with refinements_num maximal points
 		int refinements_num = functor->getRefinementsNum();
@@ -89,6 +91,7 @@ public:
 				index_t source_index;
 				level_t source_level;
 				index.get(d, source_level, source_index);
+				cout << "d: " << d <<"\nsource_level: "<<source_level << "\nsource_index: "<<source_index<<endl;
 
 				// left child
 				index.set(d, source_level + 1, 2 * source_index - 1);
@@ -102,7 +105,7 @@ public:
 						//Replace the minimal point in result array, find the new  minimal point
 						max_values[min_idx] = current_value;
 						max_indexes[min_idx] = iter->second;
-						min_idx = getIndexOfMin(max_values);
+						min_idx = getIndexOfMin(max_values, refinements_num);
 						max_value = max_values[min_idx];
 						break;
 					}
@@ -119,7 +122,7 @@ public:
 						//Replace the minimal point in result array, find the new minimal point
 						max_values[min_idx] = current_value;
 						max_indexes[min_idx] = iter->second;
-						min_idx = getIndexOfMin(max_values);
+						min_idx = getIndexOfMin(max_values, refinements_num);
 						max_value = max_values[min_idx];
 						break;
 					}
@@ -134,11 +137,67 @@ public:
 		for (int i = 0; i < refinements_num; i++){
 			max_value = max_values[i];
 			max_index = max_indexes[i];
+			double start = functor->start();
 			if(max_value > functor->start())
 			{
 				refine_gridpoint(storage, max_index);
 			}
 		}
+
+	}
+	
+	/**
+	 * Calculates the number of points, which can be refined
+	 *
+	 * @param: storage hashmap that stores the grid points
+	 */
+	int getNumberOfRefinablePoints(GridStorage* storage)
+	{
+		int counter = 0;
+		
+		if(storage->size() == 0)
+		{
+			throw generation_exception("storage empty");
+		}
+
+		index_type index;
+		GridStorage::grid_map_iterator end_iter = storage->end();
+
+		// I think this may be depedent on local support
+		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
+		{
+			index = *(iter->first);
+
+			GridStorage::grid_map_iterator child_iter;
+
+			for(size_t d = 0; d < storage->dim(); d++)
+			{
+				index_t source_index;
+				level_t source_level;
+				index.get(d, source_level, source_index);
+
+				// left child
+				index.set(d, source_level + 1, 2 * source_index - 1);
+				child_iter = storage->find(&index);
+				// if there no more grid points --> test if we should refine the grid
+				if(child_iter == end_iter)
+				{
+					counter++;
+				}
+
+				// right child
+				index.set(d, source_level + 1, 2 * source_index + 1);
+				child_iter = storage->find(&index);
+				if(child_iter == end_iter)
+				{
+					counter++;
+				}
+
+				index.set(d, source_level, source_index);
+			}
+		}
+
+		return counter;
 
 	}
 
@@ -226,9 +285,8 @@ protected:
 	 *
 	 * @return: index of the first accurance of minimal element in array
 	 */
-	int getIndexOfMin(RefinementFunctor::value_type* array)
+	int getIndexOfMin(RefinementFunctor::value_type* array, int length)
 	{
-		int length = sizeof(array)/sizeof(RefinementFunctor::value_type);
 		int min_idx = 0;
 		for (int i = 1; i < length; i++)
 		{

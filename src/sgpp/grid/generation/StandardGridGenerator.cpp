@@ -51,4 +51,10 @@ void StandardGridGenerator::refine(RefinementFunctor* func)
 	refine.free_refine(this->storage, func);
 }
 
+int StandardGridGenerator::getNumberOfRefinablePoints()
+{
+	HashRefinement refine;
+	return refine.getNumberOfRefinablePoints(this->storage);
+}
+
 }
