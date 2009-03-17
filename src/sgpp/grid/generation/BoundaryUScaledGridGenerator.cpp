@@ -66,4 +66,10 @@ void BoundaryUScaledGridGenerator::refine(RefinementFunctor* func)
 	refine.free_refine(this->storage, func);
 }
 
+int BoundaryUScaledGridGenerator::getNumberOfRefinablePoints()
+{
+	HashRefinementBoundaries refine;
+	return refine.getNumberOfRefinablePoints(this->storage);
+}
+
 }

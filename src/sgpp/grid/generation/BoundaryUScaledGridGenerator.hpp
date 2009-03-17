@@ -41,6 +41,7 @@ public:
 
 	virtual void regular(size_t level);
 	virtual void refine(RefinementFunctor* func);
+	virtual int getNumberOfRefinablePoints();
 
 protected:
 	GridStorage* storage;
