@@ -29,6 +29,7 @@ from tools import *
 from pysgpp import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
+from math import ceil
 import random
 
 from array import array
@@ -146,7 +147,8 @@ def constructGrid(dim):
             else:
                 if options.verbose:
                     print "ModLinearGrid, l=%s" % (options.level)
-                grid = Grid.createModLinearGrid(dim)
+#                grid = Grid.createModLinearGrid(dim)
+                grid = Grid.createLinearBoundaryGrid(dim)
         else: #no border points
             if options.polynom > 1:
                 if options.verbose:
@@ -220,6 +222,10 @@ def doApply():
     # output accuracy:
     acc = acc / float(numData)
     print "Accuracy on test data: %9.5f%%" % (100*acc)
+    
+    if options.regression: 
+        m = Matrix(grid, buildTrainingVector(data), options.regparam, options.zeh)
+        mse = evaluateError(buildYVector(data), alpha, m)[0]
             
     # get filename for output file
     if(options.outfile != None):
@@ -407,8 +413,6 @@ def run(grid, training, classes):
         if options.regression:
             errors = evaluateError(classes, alpha, m)[1]
 
-            
-
         if options.checkpoint != None:
             writeCheckpoint(options.checkpoint, grid, alpha, options.adapt_start + adaptStep)
         
@@ -426,8 +430,7 @@ def run(grid, training, classes):
 #Subroutine evaluation of error
 #@todo remove printing messages from the subroutine and place it into the suited methods
 #
-def evaluateError(classes, alpha, m):
-
+def evaluateError(classes, alpha, m):   
     error = DataVector(len(classes))
     m.B.multTranspose(alpha, m.x, error)
     error.sub(classes) # error vector
@@ -509,10 +512,16 @@ def doTest():
             or (options.epochs_limit > 0 and options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
             or (options.regression and options.mse_limit > 0 and options.mse_limit > te_refine[-1]):
             print("refining grid")
+            
+            numOfPoints = 0
+            if options.adapt_rate: 
+                numOfPoints = int(ceil( options.adapt_rate * grid.createGridGenerator().getNumberOfRefinablePoints()))
+            else: numOfPoints = options.adapt_points
+            
             if options.regression:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, options.adapt_points))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, numOfPoints))
             else:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, options.adapt_points))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, numOfPoints))
            
             if(options.verbose): print("Number of points: %d" %(grid.getStorage().size(),))
             
@@ -527,7 +536,8 @@ def doTest():
         txt = formTxt(te_refine, tr_refine, num_refine)
         writeStats(options.stats, txt)
         if options.verbose: print txt
-
+    
+    return (tr_refine, te_refine, num_refine)
 
 ##
 # returns the number of epochs the error is increasing
@@ -543,29 +553,29 @@ def getEpochsErrorIncreasing(list):
                 return i
     return length
 
-#def formHeader():
-#    return  "#\t%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-#
+def formHeader():
+    return  "#\t%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+
 ###
 ## returns txt variable for stats and checkpoint
 ##
-#def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
-#    txt = ""
-#    if withHeader:
-#        txt = formHeader()
-#    for i in xrange(len(tr_refine)):
-#        txt = txt + " \n%f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
-#    
-#    return txt + "\n"
+def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
+    txt = ""
+    if withHeader:
+        txt = formHeader()
+    for i in xrange(len(tr_refine)):
+        txt = txt + " \n%f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+    
+    return txt + "\n"
 
 ###
 ## returns txt variable for stats
 ##
-def formTxt(te_refine, tr_refine, num_points, withHeader = True):
-    txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-    for i in xrange(len(tr_refine)):
-        txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_refine[i], te_refine[i])
-    return txt + "\n"
+#def formTxt(te_refine, tr_refine, num_points, withHeader = True):
+#    txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+#    for i in xrange(len(tr_refine)):
+#        txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_refine[i], te_refine[i])
+#    return txt + "\n"
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a random n-fold.
@@ -925,6 +935,7 @@ if __name__=='__main__':
     parser.add_option("-D", "--dim", action="callback", type="int",dest="dim", help="Griddimension", callback=callback_deprecated)
     parser.add_option("-a", "--adaptive", action="store", type="int", default="0", dest="adaptive", metavar="NUM", help="Using an adaptive Grid with NUM of refines")
     parser.add_option("--adapt_points", action="store", type="int", default="1", dest="adapt_points", metavar="NUM", help="Number of points in one refinement iteration")
+    parser.add_option("--adapt_rate", action="store", type="int", dest="adapt_rate", metavar="NUM", help="Percentage of points from all refinable points in one refinement iteration")
     parser.add_option("--adapt_start", action="store", type="int", default="0", dest="adapt_start", metavar="NUM", help="The index of adapt step to begin with")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
