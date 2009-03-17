@@ -73,16 +73,6 @@ protected:
 	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// init the coefficients of the ansatz functions on the boundary
-		/*for(size_t i = 0; i < storage->size(); i++)
-		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
-			(*storage)[i]->get(dim, level, index);
-			if (level == 0)
-			{
-				result[i] = 0.0;
-			}
-		}*/
 		result.setAll(0.0);
 
 		// traverse all basis function by sequence number
@@ -114,13 +104,15 @@ protected:
 
 	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim)
 	{
+		// init the coefficients of the ansatz functions on the boundary
+		result.setAll(0.0);
+
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
 			GridStorage::index_type::level_type level;
 			GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
-			result[i] = 0.0;
 			if (level == 0)
 			{
 				// up
@@ -128,7 +120,7 @@ protected:
 				{
 					GridIndex index_zero = (*storage)[i];
 					index_zero.set(dim, 0, 0);
-					result[(*storage)[&index_zero]] = ((-1) * alpha[i]);
+					result[(*storage)[&index_zero]] += ((-1) * alpha[i]);
 				}
 			}
 		}
