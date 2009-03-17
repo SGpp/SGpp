@@ -120,27 +120,24 @@ def refinement2d():
 
 
 def refinement3d():
-    factory = Grid.createLinearBoundaryGrid(3)
+    factory = Grid.createLinearBoundaryUScaledGrid(3)
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()
     gen.regular(1)
- 
-    #for n in xrange(factory.getStorage().size()):
-    #    print factory.getStorage().get(n).getCoordinates() 
     
     alpha = DataVector(27)
-    
     for i in xrange(len(alpha)):
-        alpha[i] = 0.0
+         alpha[i] = 0.0
 
     alpha[26] = 1.0
     func = SurplusRefinementFunctor(alpha)
-            
+    
     gen.refine(func)
-
+    
     for n in xrange(factory.getStorage().size()):
-        print factory.getStorage().get(n).getCoordinates()
+        print factory.getStorage().get(n).getCoordinates()  
+   
 
 
 def generateLaplaceMatrix(factory, level, verbose=False):
@@ -239,8 +236,8 @@ def printInnerPointsOnly(grid):
 
 
 def test_laplace():
-    factory = Grid.createLinearBoundaryUScaledGrid(4)
-    m = generateLaplaceMatrix(factory, 7)
+    factory = Grid.createLinearBoundaryGrid(5)
+    m = generateLaplaceMatrix(factory, 3)
     
     #print str(m) 
     #printDiagonal(m)
@@ -264,16 +261,16 @@ def test_laplace():
                                   
 
 def test_generation():
-    factory = Grid.createLinearBoundaryGrid(8)
+    factory = Grid.createLinearBoundaryGrid(2)
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()
-    gen.regular(8)
+    gen.regular(2)
     
-    printInnerPointsOnly(factory)
-    #for n in xrange(storage.size()):
-    #    points = storage.get(n).getCoordinates()
-    #    print points
+    #printInnerPointsOnly(factory)
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates()
+        print points
     
     return
 
@@ -340,6 +337,28 @@ def test_refinement():
         print points
     
     #print storage.size()
+    
+def test_new_refinement():
+    factory = Grid.createLinearBoundaryGrid(3)
+    storage = factory.getStorage()
+    
+    gen = factory.createGridGenerator()
+    gen.regular(0)
+    
+    alpha = DataVector(8)
+
+    for i in xrange(len(alpha)):
+        alpha[i] = 0.0
+
+    alpha[0] = 1.0
+    func = SurplusRefinementFunctor(alpha)
+        
+    gen.refine(func)
+    
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates()
+        print points    
+    
         
 #===============================================================================
 # Main
@@ -348,4 +367,4 @@ def test_refinement():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    test_refinement()
+    test_new_refinement()
