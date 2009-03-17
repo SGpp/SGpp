@@ -275,7 +275,6 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
 
     if not reuse:
         delta_0 = delta_new*epsilon2
-
     
     if verbose:
         print "Starting norm of residuum: %g" % (delta_0)
