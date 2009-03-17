@@ -160,7 +160,7 @@ public:
 		}
 
 	}
-	
+
 	/**
 	 * Calculates the number of points, which can be refined
 	 *
@@ -169,7 +169,7 @@ public:
 	int getNumberOfRefinablePoints(GridStorage* storage)
 	{
 		int counter = 0;
-		
+
 		if(storage->size() == 0)
 		{
 			throw generation_exception("storage empty");
@@ -376,7 +376,8 @@ protected:
 						index.set(d, 0, 1);
 						if(!storage->has_key(&index))
 						{
-							storage->insert(index);
+							create_gridpoint(storage, index);
+							//storage->insert(index);
 						}
 					}
 
@@ -388,7 +389,8 @@ protected:
 						index.set(d, 0, 0);
 						if(!storage->has_key(&index))
 						{
-							storage->insert(index);
+							create_gridpoint(storage, index);
+							//storage->insert(index);
 						}
 					}
 

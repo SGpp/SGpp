@@ -94,6 +94,7 @@ protected:
 		typedef GridStorage::index_type::index_type index_type;
 
 		level_type work_level = 0;
+		double interpolation = 1.0;
 
 		while(true)
 		{
@@ -105,7 +106,7 @@ protected:
 			{
 				if(current_dim < storage->dim()-1)
 				{
-					rec(basis, point, current_dim + 1, value, working, result);
+					rec(basis, point, current_dim + 1, value*interpolation, working, result);
 				}
 				break;
 			}
@@ -147,6 +148,8 @@ protected:
 					{
 						rec(basis, point, current_dim + 1, value*new_value_l_zero_right, working, result);
 					}
+
+					//interpolation = new_value_l_zero_left + new_value_l_zero_right;
 				}
 				else
 				{
@@ -160,6 +163,8 @@ protected:
 					{
 						rec(basis, point, current_dim + 1, value*new_value, working, result);
 					}
+
+					//interpolation = new_value;
 				}
 			}
 
