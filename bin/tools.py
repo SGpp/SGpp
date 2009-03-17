@@ -578,7 +578,6 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
 ## An array containing all modes and descriptions
 zeh_modes = {
     "laplace" : "Classical Laplacian. See OpLaplaceAdaptive",
-    "laplaceboundary" : "Classical Laplacian for modified boundary functions. See OpLaplaceAdaptiveBoundary",
     "identity" : "Identity matrix, most efficient. See OpPseudo",
     "ratio" : "Preferres quadratical supports. See OpPseudo",
     "levelsum" : "Sum of the levels, scaled by the gridlevel (usually 2 for adaptive SGs). See OpPseudo",
@@ -608,12 +607,7 @@ class Matrix:
         self.CMode = mode.lower()
         
         if self.CMode == "laplace":
-            #self.C = OpLaplaceAdaptive(grid)
             self.C = grid.createOperationLaplace()
-        elif self.CMode == "laplaceadaptive":
-            self.C = OpLaplaceAdaptive(grid)
-        elif self.CMode == "laplaceboundary":
-            self.C = OpLaplaceAdaptiveBoundary(grid)
         elif self.CMode == "identity":
             pass
         elif self.CMode == "ratio":
