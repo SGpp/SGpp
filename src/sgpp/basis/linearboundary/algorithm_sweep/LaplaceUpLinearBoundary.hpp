@@ -69,7 +69,10 @@ public:
 		double fl = 0.0;
 		double fr = 0.0;
 
-		rec(source, result, index, dim, fl, fr);
+		if (!storage->end(index.seq()))
+		{
+			rec(source, result, index, dim, fl, fr);
+		}
 	}
 
 protected:
