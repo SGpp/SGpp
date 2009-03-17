@@ -28,7 +28,7 @@
 
 #include "operation/OperationMatrix.hpp"
 
-#include "algorithm/UnidirGradient.hpp"
+#include "algorithm/UnidirGradientBoundaries.hpp"
 #include "algorithm/sweep.hpp"
 
 #include "grid/GridStorage.hpp"
@@ -40,10 +40,10 @@ namespace sg
 /**
  * Implementation for linear functions
  */
-class OperationLaplaceLinearBoundaryUScaled: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinearBoundaryUScaled: public OperationMatrix, public UnidirGradientBoundaries
 {
 public:
-	OperationLaplaceLinearBoundaryUScaled(GridStorage* storage) : UnidirGradient(storage)
+	OperationLaplaceLinearBoundaryUScaled(GridStorage* storage) : UnidirGradientBoundaries(storage)
 	{
 	}
 
@@ -73,7 +73,7 @@ protected:
 	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// init the coefficients of the ansatz functions on the boundary
-		result.setAll(0.0);
+		//result.setAll(0.0);
 
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
@@ -105,7 +105,7 @@ protected:
 	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// init the coefficients of the ansatz functions on the boundary
-		result.setAll(0.0);
+		//result.setAll(0.0);
 
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)

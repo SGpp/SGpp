@@ -28,7 +28,7 @@
 
 #include "operation/OperationMatrix.hpp"
 
-#include "algorithm/UnidirGradient.hpp"
+#include "algorithm/UnidirGradientBoundaries.hpp"
 #include "algorithm/sweep.hpp"
 
 #include "grid/GridStorage.hpp"
@@ -40,10 +40,10 @@ namespace sg
 /**
  * Implementation for linear functions with boundaries pentagon cut through subspace scheme
  */
-class OperationLaplaceLinearBoundary: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinearBoundary: public OperationMatrix, public UnidirGradientBoundaries
 {
 public:
-	OperationLaplaceLinearBoundary(GridStorage* storage) : UnidirGradient(storage)
+	OperationLaplaceLinearBoundary(GridStorage* storage) : UnidirGradientBoundaries(storage)
 	{
 	}
 
@@ -73,7 +73,7 @@ protected:
 	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// init the coefficients of the ansatz functions on the boundary
-		result.setAll(0.0);
+		//result.setAll(0.0);
 
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
@@ -105,7 +105,8 @@ protected:
 	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// init the coefficients of the ansatz functions on the boundary
-		result.setAll(0.0);
+		//result.setAll(0.0);
+
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
@@ -119,7 +120,7 @@ protected:
 				{
 					GridIndex index_zero = (*storage)[i];
 					index_zero.set(dim, 0, 0);
-					result[(*storage)[&index_zero]] = ((-1) * alpha[i]);
+					result[(*storage)[&index_zero]] += ((-1) * alpha[i]);
 				}
 			}
 		}
