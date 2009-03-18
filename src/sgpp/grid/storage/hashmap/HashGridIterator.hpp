@@ -161,6 +161,8 @@ public:
 
 	/**
 	 * returns true if there are no more childs in dimensioin d
+	 *
+	 * @todo implement this helper function
 	 */
 	bool hint(size_t d) const
 	{
