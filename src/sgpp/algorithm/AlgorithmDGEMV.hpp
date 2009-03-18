@@ -81,7 +81,7 @@ public:
 			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
 			{
-				DataVector temp = DataVector(1);
+				DataVector* temp = new DataVector(1);
 				double dbl_temp = 0.0;
 
 				vec.clear();
@@ -95,14 +95,15 @@ public:
 					dbl_temp = iter->second * source[i];
 					if (dbl_temp != 0.0)
 					{
-						temp[0] = result[iter->first];
-						temp[0] += iter->second * source[i];
+						(*temp)[0] = result[iter->first];
+						(*temp)[0] += iter->second * source[i];
 						#pragma omp critical
 						{
-							result[iter->first] = temp[0];
+							result[iter->first] = (*temp)[0];
 						}
 					}
 				}
+				delete temp;
 			}
 		}
 #else
