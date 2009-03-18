@@ -72,6 +72,9 @@ def format_optionlist(l):
 ## Checks whether a valid mode is specified,
 # whether all required options for the mode are given and
 # executes the corresponding action (function)
+#
+# @todo remove hack for level new when porting to classifier.new.py
+#
 # @param mode current mode
 def exec_mode(mode):
 
@@ -93,8 +96,14 @@ def exec_mode(mode):
         if type(attrib) is list:
             b = False
             for attrib2 in attrib:
-                if getattr(options, attrib2, None):
-                    b = True
+                # hack for level 0
+                if attrib2 == "level":
+                    option = getattr(options, attrib2, None)
+                    if option >= 0:
+                        b = True
+                else:
+                    if getattr(options, attrib2, None):
+                        b = True
             a = a and b
         else:
             if not getattr(options, attrib, None):
@@ -404,6 +413,7 @@ def run(grid, training, classes):
     errors = None
 
     for adaptStep in xrange(options.adaptive + 1):
+        print "Adaptive Step:", (options.adapt_start + adaptStep)
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
 
