@@ -359,7 +359,95 @@ def test_new_refinement():
         points = storage.get(n).getCoordinates()
         print points    
     
+
+def buildParableBoundary(dim):
+    function = ""
+    
+    function = "1.0"
+    
+    for i in xrange(dim):
+        function = function + "*(((-1.0)*(x" + str(i+1) + "-0.7)*(x" + str(i+1) + "-0.7))+2.0)"
         
+    return function 
+
+
+def buildLinearFunctionBoundary(dim):
+    function = ""
+    
+    function = "1.0"
+    
+    for i in xrange(dim):
+        function = function + "*(x" + str(i+1) + "+0.7)"
+        
+    return function 
+
+
+def evalFunction(function, points):
+    for i in xrange(len(points)):
+        function = re.sub("x" + str(i+1), points[i], function)
+            
+    return eval(function)  
+
+
+def doHierarchisation(node_values, grid):   
+    tmp =  DataVector(grid.getStorage().size(), 1)
+    
+    for i in xrange(len(node_values)):
+        tmp[i] = node_values[i]
+    
+    # create operation: hierarchisation
+    hierarchisation = grid.createOperationHierarchisation()
+    
+    # execute hierarchisation
+    hierarchisation.doHierarchisation(tmp)    
+
+    return tmp
+
+    
+def test_getAffected():
+    factory = Grid.createLinearBoundaryGrid(7)
+    storage = factory.getStorage()
+    
+    gen = factory.createGridGenerator()
+    gen.regular(6)
+ 
+    function = buildParableBoundary(7)
+            
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates()
+        print points 
+        
+    node_values = DataVector(storage.size(), 1)
+    
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates().split()
+        node_values[n] = evalFunction(function, points)
+    #print node_values
+    
+    # do hierarchisation
+    alpha = doHierarchisation(node_values, factory)
+    
+    p = DataVector(1,7)
+    
+    p[0] = 0.5
+    p[1] = 0.5
+    p[2] = 0.5
+    p[3] = 0.5
+    p[4] = 0.5
+    p[5] = 0.5
+    p[6] = 0.5
+    pointstring = "0.5 0.5 0.5 0.5 0.5 0.5 0.5"
+    evalpoints = pointstring.split()
+    
+    pc = factory.createOperationEval().eval(alpha, p)
+    
+    print "Value of Sparse Grid: " + str(pc)
+    
+    pc = evalFunction(function, evalpoints)
+    
+    print "Value of Function: " + str(pc)  
+    
+    
 #===============================================================================
 # Main
 #===============================================================================
@@ -367,4 +455,4 @@ def test_new_refinement():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    test_new_refinement()
+    test_getAffected()

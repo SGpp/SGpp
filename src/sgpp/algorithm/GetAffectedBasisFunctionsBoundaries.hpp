@@ -81,6 +81,8 @@ protected:
 	 * For a given evaluation point \f$x\f$, it stores tuples (std::pair) of
 	 * \f$(i,\phi_i(x))\f$ in the result vector for all basis functions that are non-zero.
 	 *
+	 * @todo check this routine with Dirk
+	 *
 	 * @param basis a sparse grid basis
 	 * @param point evaluation point within the domain
 	 * @param current_dim the dimension currently looked at (recursion parameter)
@@ -94,7 +96,6 @@ protected:
 		typedef GridStorage::index_type::index_type index_type;
 
 		level_type work_level = 0;
-		double interpolation = 1.0;
 
 		while(true)
 		{
@@ -104,10 +105,6 @@ protected:
 
 			if (storage->end(seq))
 			{
-				if(current_dim < storage->dim()-1)
-				{
-					rec(basis, point, current_dim + 1, value*interpolation, working, result);
-				}
 				break;
 			}
 			else
@@ -148,8 +145,6 @@ protected:
 					{
 						rec(basis, point, current_dim + 1, value*new_value_l_zero_right, working, result);
 					}
-
-					//interpolation = new_value_l_zero_left + new_value_l_zero_right;
 				}
 				else
 				{
@@ -163,8 +158,6 @@ protected:
 					{
 						rec(basis, point, current_dim + 1, value*new_value, working, result);
 					}
-
-					//interpolation = new_value;
 				}
 			}
 
