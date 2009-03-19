@@ -32,11 +32,6 @@
 namespace sg
 {
 
-/**
- * Implements the hierarchisation on a sprase grid with linear base functions
- *
- * @param node_values the functions values in the node base
- */
 void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
 {
 	detail::HierarchisationLinear func(this->storage);
@@ -49,11 +44,6 @@ void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
 	}
 }
 
-/**
- * Implements the dehierarchisation on a sprase grid with linear base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- */
 void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
 {
 	detail::DehierarchisationLinear func(this->storage);

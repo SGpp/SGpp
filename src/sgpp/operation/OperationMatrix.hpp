@@ -29,12 +29,28 @@
 namespace sg
 {
 
+/**
+ * Multiplication with a Laplace matrix on sparse grids
+ */
 class OperationMatrix
 {
 public:
+	/**
+	 * Constructor
+	 */
 	OperationMatrix() {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationMatrix() {}
 
+	/**
+	 * starts the Multiplication with the Laplace matrix
+	 *
+	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
+	 * @param result DataVector into which the result of the Laplace operation is stored
+	 */
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 

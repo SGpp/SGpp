@@ -29,13 +29,38 @@
 namespace sg
 {
 
+/**
+ * Multiplication with Matrix B ansd B^T
+ */
 class OperationB
 {
 public:
+	/**
+	 * Constructor
+	 */
 	OperationB() {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationB() {}
 
+	/**
+	 * Multiplication with vector, not transposed
+	 *
+	 * @param alpha coefficients of the sparse grid's base functions
+	 * @param data the vector that should be multiplied
+	 * @param result the result vector of the matrix vector multiplication
+	 */
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result) = 0;
+
+	/**
+	 * Multiplication with vector, transposed
+	 *
+	 * @param alpha coefficients of the sparse grid's base functions
+	 * @param data the vector that should be multiplied
+	 * @param result the result vector of the matrix vector multiplication
+	 */
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result) = 0;
 };
 

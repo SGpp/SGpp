@@ -35,10 +35,28 @@ namespace sg
 class OperationHierarchisation
 {
 public:
+	/**
+	 * Constructor
+	 */
 	OperationHierarchisation() {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationHierarchisation() {}
 
+	/**
+	 * Implements the hierarchisation on a sprase grid
+	 *
+	 * @param node_values the functions values in the node base
+	 */
 	virtual void doHierarchisation(DataVector& node_values) = 0;
+
+	/**
+	 * Implements the dehierarchisation on a sprase grid
+	 *
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 */
 	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
 

@@ -34,23 +34,41 @@ namespace detail
 {
 
 /**
- * down-operation in dimension dim. for use with sweep
+ * down-operation in dimension dim. for use with sweep, linear grids without boundaries
  */
 class LaplaceDownLinear
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
+
+	/// pointer to the grid's grid storage object
 	GridStorage* storage;
 
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage pointer to the grid's grid storage object
+	 */
 	LaplaceDownLinear(GridStorage* storage) : storage(storage)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	~LaplaceDownLinear()
 	{
 	}
 
+	/**
+	 * operator called by sweep during steping through the grid, start the calculation of Down
+	 *
+	 * @param source DataVector that contains the coefficients of the ansatzfunction
+	 * @param result DataVector in which the result of the operation is stored
+	 * @param index reference to a griditerator object that is used navigate through the grid
+	 * @param dim the dimension in which the operation is executed
+	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
 		rec(source, result, index, dim, 0.0, 0.0);
@@ -58,6 +76,16 @@ public:
 
 protected:
 
+	/**
+	 * recursive function for the calculation of Down
+	 *
+	 * @param source DataVector that contains the coefficients of the ansatzfunction
+	 * @param result DataVector in which the result of the operation is stored
+	 * @param index reference to a griditerator object that is used navigate through the grid
+	 * @param dim the dimension in which the operation is executed
+	 * @param fl function value on the left boundary
+	 * @param fr function value on the right boundary
+	 */
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 	{
 		size_t seq = index.seq();
