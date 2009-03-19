@@ -31,13 +31,7 @@
 
 namespace sg
 {
-/**
- * Multiplication with vector, not transposed, linear sparse grid
- *
- * @param alpha coefficients of the sparse grid's base functions
- * @param data the vector that should be multiplied
- * @param result the result vector of the matrix vector multiplication
- */
+
 void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmDGEMV<SLinearBase> op;
@@ -46,13 +40,6 @@ void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& res
 	op.mult(storage, base, alpha, data, result);
 }
 
-/**
- * Multiplication with vector, transposed, linear sparse grid
- *
- * @param alpha coefficients of the sparse grid's base functions
- * @param data the vector that should be multiplied
- * @param result the result vector of the matrix vector multiplication
- */
 void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmDGEMV<SLinearBase> op;

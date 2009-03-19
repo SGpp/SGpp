@@ -39,15 +39,23 @@ namespace sg
 {
 
 /**
- * Implementation for linear functions
+ * Implementation for linear functions of Laplace Operation, linear grids without boundaries
  */
 class OperationLaplaceLinear: public OperationMatrix, public UnidirGradient
 {
 public:
+	/**
+	 * Construtor of OperationLaplaceLinear
+	 *
+	 * @param storage Pointer to the grid's gridstorage obejct
+	 */
 	OperationLaplaceLinear(GridStorage* storage) : UnidirGradient(storage)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationLaplaceLinear() {}
 
 	virtual void mult(DataVector& alpha, DataVector& result)

@@ -29,14 +29,36 @@
 namespace sg
 {
 
+/**
+ * Operation the evaluate the function that is applied the current Sparse Grid at a given point
+ */
 class OperationEval
 {
 public:
+	/**
+	 * Constructor
+	 */
 	OperationEval() {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationEval() {}
 
+	/**
+	 * Evaluates the grid's function at a given point
+	 *
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param point the coordinates of the evaluation point
+	 */
 	virtual double eval(DataVector& alpha, std::vector<double>& point) = 0;
 
+	/**
+	 * Evaluates the grid's function at a given point
+	 *
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param point the coordinates of the evaluation point
+	 */
 	virtual double eval(DataVector& alpha, DataVector& point)
 	{
 		std::vector<double> p;
@@ -47,6 +69,13 @@ public:
 		return eval(alpha, p);
 	}
 
+	/**
+	 * Evaluates the grid's function at a given point and tests the class
+	 *
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param data the coordinates of the evaluation points
+	 * @param classes DataVector the holds the class information
+	 */
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
 };
 

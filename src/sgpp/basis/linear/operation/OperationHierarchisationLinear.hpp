@@ -30,18 +30,28 @@ namespace sg
 {
 
 /**
- * Hierarchisation on sparse grid, linear case
+ * Hierarchisation on sparse grid, linear grid without boundaries
  */
 class OperationHierarchisationLinear : public OperationHierarchisation
 {
 public:
+	/**
+	 * Construtor of OperationHierarchisationLinear
+	 *
+	 * @param storage Pointer to the grid's gridstorage obejct
+	 */
 	OperationHierarchisationLinear(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationHierarchisationLinear() {}
 
 	virtual void doHierarchisation(DataVector& node_values);
 	virtual void doDehierarchisation(DataVector& alpha);
 
 protected:
+	/// Pointer to the grid's gridstorage object
 	GridStorage* storage;
 };
 
