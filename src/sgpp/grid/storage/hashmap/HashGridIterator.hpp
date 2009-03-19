@@ -36,7 +36,7 @@
 #include <sstream>
 #include <exception>
 
-#define SERIALIZATION_VERSION 1
+#define SERIALIZATION_VERSION 2
 
 namespace sg
 {
@@ -56,6 +56,11 @@ public:
 	typedef typename GIT::index_type index_t;
 	typedef typename GIT::level_type level_t;
 
+	/**
+	 * Constructor of the griditerator object
+	 *
+	 * @param storage pointer the hashmap that stores the grid points
+	 */
 	HashGridIterator(HashGridStorage<GIT>* storage) : storage(storage), index(storage->dim())
 	{
 		for(size_t i = 0; i < storage->dim(); i++)
@@ -67,7 +72,7 @@ public:
 	}
 
 	/**
-	 *	Sets 0,0 in every dimension
+	 *	Sets 0,0 in every dimension (Left Level zero ansatzfunction)
 	 */
 	void resetToLevelZero()
 	{
@@ -80,7 +85,9 @@ public:
 	}
 
 	/**
-	 * left level zero parent
+	 * left level zero ansatzfunction for a given dimension
+	 *
+	 * @param dim dimension in which we should step to level zero
 	 */
 	void left_levelzero(size_t dim)
 	{
@@ -89,7 +96,9 @@ public:
 	}
 
 	/**
-	 * right level zero parent
+	 * right level zero ansatzfunction for a given dimension
+	 *
+	 * @param dim dimension in which we should step to level zero
 	 */
 	void right_levelzero(size_t dim)
 	{
@@ -99,6 +108,8 @@ public:
 
 	/**
 	 * left child in direction dim
+	 *
+	 * @param dim dimension in which we should step to the left child
 	 */
 	void left_child(size_t dim)
 	{
@@ -111,6 +122,8 @@ public:
 
 	/**
 	 * right child in direction dim
+	 *
+	 * @param dim dimension in which we should step to the right child
 	 */
 	void right_child(size_t dim)
 	{
@@ -123,6 +136,10 @@ public:
 
 	/**
 	 * resets the iterator to the top if dimension d
+	 *
+	 * @todo maybe rename to steptoLevelOne
+	 *
+	 * @param d the moving direction
 	 */
 	void top(size_t d)
 	{
@@ -132,6 +149,8 @@ public:
 
 	/**
 	 * hierarchical parent in direction dim
+	 *
+	 * @param d the moving direction
 	 */
 	void up(size_t d)
 	{
@@ -148,6 +167,8 @@ public:
 
 	/**
 	 * step right in direction dim
+	 *
+	 * @param d the moving direction
 	 */
 	 void step_right(size_t d)
 	 {
@@ -163,14 +184,19 @@ public:
 	 * returns true if there are no more childs in dimensioin d
 	 *
 	 * @todo implement this helper function
+	 *
+	 * @param d the moving direction
 	 */
 	bool hint(size_t d) const
 	{
 		return false;
+		//return storage->get(this->seq_)->isLeaf();
 	}
 
 	/**
 	 * returns true if there are more left childs in dimensioin d
+	 *
+	 * @param d the moving direction
 	 */
 	bool hint_left(size_t d)
 	{
@@ -191,6 +217,8 @@ public:
 
 	/**
 	 * returns true if there are more right childs in dimensioin d
+	 *
+	 * @param d the moving direction
 	 */
 	bool hint_right(size_t d)
 	{
@@ -209,16 +237,37 @@ public:
 		return hasIndex;
 	}
 
+	/**
+	 * gets the index at a given position
+	 *
+	 * @param d the dimension of the gridpoint
+	 * @param l the ansatzfunction's level
+	 * @param i the ansartfunction's index
+	 */
 	void get(size_t d, typename index_type::level_type &l, typename index_type::index_type &i) const
 	{
 		index.get(d, l, i);
 	}
 
+	/**
+	 * sets the index to a given position
+	 *
+	 * @param d the dimension of the gridpoint
+	 * @param l the ansatzfunction's level
+	 * @param i the ansartfunction's index
+	 */
 	void set(size_t d, typename index_type::level_type l, typename index_type::index_type i)
 	{
 		index.set(d, l, i);
 	}
 
+	/**
+	 * pushs a position to the index
+	 *
+	 * @param d the dimension of the gridpoint
+	 * @param l the ansatzfunction's level
+	 * @param i the ansartfunction's index
+	 */
 	void push(size_t d, typename index_type::level_type l, typename index_type::index_type i)
 	{
 		index.push(d, l, i);
@@ -226,6 +275,8 @@ public:
 
 	/**
 	 * returns the current sequence number
+	 *
+	 * @return the current sequence number
 	 */
 	size_t seq() const
 	{
@@ -234,8 +285,13 @@ public:
 
 
 private:
+	/// Pointer the the hashmap that stores the gridpoints
 	HashGridStorage<GIT>* storage;
+	/// GridIndex object used to operate on the current position in the hashmap
 	GIT index;
+	/// true if the current point is a leaf, otherwise false
+	bool Leaf;
+	/// the current gridpoint's index
 	size_t seq_;
 };
 
