@@ -35,51 +35,84 @@
 namespace sg
 {
 
+/**
+ * This Class represents one Gridpoint.
+ *
+ * A Gridpoint is given by its
+ * ansatzfunctions that are not zero in every dimension. Instances
+ * of this class are members in the hashmap that represents the
+ * whole grid.
+ */
 template<class LT, class IT>
 class HashGridIndex {
-
 public:
 	typedef LT level_type;
 	typedef IT index_type;
 
+	/**
+	 * Constructor of a n-Dim gridpoint
+	 *
+	 * @param dim the dimension of the gridpoint
+	 */
     HashGridIndex(size_t dim) : DIM(dim), level(NULL), index(NULL)
     {
     	level = new level_type[dim];
     	index = new index_type[dim];
+    	bool Leaf = false;
     }
 
+    /**
+     * Standard-Constructor
+     */
     HashGridIndex() : DIM(0), level(NULL), index(NULL)
     {
     }
 
+    /**
+     * Copy-Constructor
+     *
+     * @param o constant pointer to HashGridIndex object
+     */
     HashGridIndex(const HashGridIndex<LT, IT>* o) : DIM(o->DIM), level(NULL), index(NULL)
     {
     	level = new level_type[DIM];
     	index = new index_type[DIM];
+    	bool Leaf = false;
 
         for(size_t d = 0; d < DIM; d++)
         {
             level[d] = o->level[d];
             index[d] = o->index[d];
         }
+        //Leaf = o->Leaf;
         rehash();
     }
 
+    /**
+     * Serialisation-Constructor
+     *
+     * @param istream instream object the contains the information about the gridpoint
+     */
     HashGridIndex(std::istream& istream) : DIM(0), level(NULL), index(NULL)
     {
     	istream >> DIM;
 
     	level = new level_type[DIM];
     	index = new index_type[DIM];
+    	bool Leaf = false;
 
         for(size_t d = 0; d < DIM; d++)
         {
 			istream >> level[d];
 			istream >> index[d];
         }
+        //istream >> Leaf;
         rehash();
     }
 
+    /**
+     * Destructor
+     */
 	~HashGridIndex()
 	{
 		if(level)
@@ -92,6 +125,11 @@ public:
 		}
 	}
 
+	/**
+	 * Serialize this Gridpoint e.g. for a storage or checkpointing
+	 *
+	 * @param ostream outstream object to which the gridpoint's information is written
+	 */
 	void serialize(std::ostream& ostream)
 	{
 		ostream << DIM << std::endl;
@@ -103,13 +141,26 @@ public:
         }
         ostream << std::endl;
 
+        //ostream << Leaf << std::endl;
 	}
 
+	/**
+	 * Gets the dimension of the gridpoint
+	 *
+	 * @return the dimension of the gridpoint
+	 */
 	size_t dim() const
 	{
 		return DIM;
 	}
 
+	/**
+	 * Sets the ansatzfunction in dimension <i>d</i> and rehashs the HashGridIndex object
+	 *
+	 * @param d the dimension in which the ansatzfunction is set
+	 * @param l the level of the ansatzfunction
+	 * @param i the index of the ansatzfunction
+	 */
 	void set(size_t d, LT l, IT i)
 	{
 		level[d] = l;
@@ -117,59 +168,125 @@ public:
         rehash();
 	}
 
+	/**
+	 * Sets the ansatzfunction in dimension <i>d</i> and the Leaf property and rehashs the HashGridIndex object
+	 *
+	 * @param d the dimension in which the ansatzfunction is set
+	 * @param l the level of the ansatzfunction
+	 * @param i the index of the ansatzfunction
+	 * @param isLeaf specifies if this gridpoint has any childrens in any dimension
+	 */
+	void set(size_t d, LT l, IT i, bool isLeaf)
+	{
+		level[d] = l;
+		index[d] = i;
+		Leaf = isLeaf;
+        rehash();
+	}
+
+	/**
+	 * Sets the ansatzfunction in dimension <i>d</i> and doesn't rehash the HashGridIndex object
+	 *
+	 * @param d the dimension in which the ansatzfunction is set
+	 * @param l the level of the ansatzfunction
+	 * @param i the index of the ansatzfunction
+	 */
 	void push(size_t d, LT l, IT i)
 	{
 		level[d] = l;
 		index[d] = i;
 	}
 
+	/**
+	 * Sets the ansatzfunction in dimension <i>d</i> and the Leaf property and doesn't rehash the HashGridIndex object
+	 *
+	 * @param d the dimension in which the ansatzfunction is set
+	 * @param l the level of the ansatzfunction
+	 * @param i the index of the ansatzfunction
+	 * @param isLeaf specifies if this gridpoint has any childrens in any dimension
+	 */
+	void push(size_t d, LT l, IT i, bool isLeaf)
+	{
+		level[d] = l;
+		index[d] = i;
+		Leaf = isLeaf;
+	}
+
+	/**
+	 * gets the ansatzfunction in given dimension by reference parameters
+	 *
+	 * @param d the dimension in which the ansatzfunction should be read
+	 * @param l reference parameter for the level of the ansatzfunction
+	 * @param i reference parameter for the index of the ansatzfunction
+	 */
 	void get(size_t d, LT &l, IT &i) const
 	{
 		l = level[d];
 		i = index[d];
 	}
 
+	/**
+	 * checks if this gridpoint has any succesors in any dimension
+	 *
+	 * @return returns true if this a gridpoint has now children otherwise false
+	 */
+	bool isLeaf()
+	{
+		return Leaf;
+	}
+
+	/**
+	 * determines the coordinate in a given dimension
+	 *
+	 * @param d the dimension in which the coordinate should be calculated
+	 *
+	 * @return the coordinate in the given dimension
+	 */
 	double abs(size_t d) const
 	{
 		return index[d] * pow(2.0, -static_cast<double>(level[d]));
 	}
 
+	/**
+	 * gets a Pointer to the instance of the HashGridIndex Object
+	 *
+	 * @return Pointer to this instance
+	 */
 	HashGridIndex* getPointer()
 	{
 		return this;
 	}
 
-/*
- * Not a grid point trait
-	double volume() const
-	{
-		double lsum = 0;
-		for(size_t d = 0; d < DIM; d++)
-		{
-			lsum += level[d];
-		}
-		return pow(2.0, -lsum);
-	}
-*/
-
+	/**
+	 * rehashs the current gridpoint
+	 */
     void rehash()
     {
         size_t hash = 0xdeadbeef;
         for(size_t d = 0; d < DIM; d++)
         {
-            //hash = level[d] + (hash << 6) + (hash << 16) - hash;
-            //hash = index[d] + (hash << 6) + (hash << 16) - hash;
-            //hash = (1<<level[d]) + index[d] + (hash << 6) + (hash << 16) - hash;
             hash = (1<<level[d]) + index[d] + hash*65599;
         }
         hash_value = hash;
     }
 
+    /**
+     * gets the hash value of the current instance
+     *
+     * @return the hash value of the instance
+     */
     size_t hash() const
     {
         return hash_value;
     }
 
+    /**
+     * checks whether this gridpoints is identical to another one
+     *
+     * @param rhs reference the another HashGridIndex instance
+     *
+     * @return true if the gridpoints are identical otherwise false
+     */
     bool equals(HashGridIndex<LT, IT> &rhs) const
     {
         for(size_t d = 0; d < DIM; d++)
@@ -189,17 +306,27 @@ public:
         return true;
     }
 
-/**
- * This is just wrapper for operator= until I cant get swig to wrap it
- */
+	/**
+	 * This is just wrapper for operator= until I cant get swig to wrap it
+	 *
+	 * @param rhs a reference to a HashGridIndex that contains the values that should be copied
+	 *
+	 * @return returns a reference HashGridIndex
+	 */
 	HashGridIndex<LT, IT>& assign (const HashGridIndex<LT, IT>& rhs)
 	{
 		return this->operator=(rhs);
 	}
 
-/**
- * TODO: generate working swig-wrapper
- */
+	/**
+	 * operator to assign the current gridpoint with the values of another one
+	 *
+	 * @param rhs a reference to a HashGridIndex that contains the values that should be copied
+	 *
+	 * @todo: generate working swig-wrapper
+	 *
+	 * @return returns a reference HashGridIndex
+	 */
     HashGridIndex<LT, IT>& operator= (const HashGridIndex<LT, IT>& rhs)
     {
     	if(this == &rhs)
@@ -230,10 +357,17 @@ public:
             level[d] = rhs.level[d];
             index[d] = rhs.index[d];
         }
+        Leaf = rhs.Leaf;
+
         rehash();
         return *this;
     }
 
+    /**
+     * generates a string with ansatzfunctions of the gridpoint
+     *
+     * @param stream reference to a output stream
+     */
     void toString(std::ostream &stream)
     {
         stream << "[";
@@ -249,11 +383,11 @@ public:
         stream << " ]";
     }
 
-    void print()
-    {
-    	std::cout << this->getCoordinates();
-    }
-
+    /**
+     * generates a string with all coordinates of the gridpoint
+     *
+     * @return returns a string with the coordinates of the gridpoint separated by whitespace
+     */
     std::string getCoordinates()
     {
     	std::stringstream return_stream;
@@ -279,11 +413,16 @@ public:
     }
 
 private:
+	/// the dimension of the gridpoint
 	size_t DIM;
+	/// pointer to array that stores the ansatzfunctions' level
 	LT* level;
+	/// pointer to array that stores the ansatzfunctions' indecies
 	IT* index;
-    size_t hash_value;
-
+	/// stores if this gridpoint is a leaf
+	bool Leaf;
+	/// stores the hashvalue of the gridpoint
+	size_t hash_value;
 };
 
 template<class LT, class IT>

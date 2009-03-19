@@ -36,13 +36,10 @@
 #include <sstream>
 #include <exception>
 
-#define SERIALIZATION_VERSION 1
+#define SERIALIZATION_VERSION 2
 
 namespace sg
 {
-
-//template<typename GIT>
-//class HashGridIterator;
 
 /**
  * Generic hash table based index storage.
@@ -63,10 +60,18 @@ public:
 
 	typedef HashGridIterator<GIT> grid_iterator;
 
+	/**
+	 * Standard-Constructor
+	 */
 	HashGridStorage(size_t dim) : DIM(dim), list(), map()
 	{
 	}
 
+	/**
+	 * Constructor that reads the data from a string
+	 *
+	 * @param istr the string that contains the data
+	 */
 	HashGridStorage(std::string& istr) : DIM(0), list(), map()
 	{
     	std::istringstream istream;
@@ -92,6 +97,11 @@ public:
     	}
 	}
 
+	/**
+	 * Constructor that reads the data from a input stream
+	 *
+	 * @param istr the inputstream that contains the data
+	 */
 	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
 	{
     	int version;
@@ -115,6 +125,9 @@ public:
 	}
 
 
+	/**
+	 * Desctructor
+	 */
 	~HashGridStorage()
 	{
 		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
@@ -123,6 +136,11 @@ public:
 		}
 	}
 
+	/**
+	 * serialize the gridstorage into a string
+	 *
+	 * @return a string the contains all gridstorage information
+	 */
 	std::string serialize()
 	{
 		std::ostringstream ostream;
@@ -130,6 +148,11 @@ public:
 		return ostream.str();
 	}
 
+	/**
+	 * serialize the gridstorage into a stream
+	 *
+	 * @param ostream reference to a stream into that all gridstorage information is written
+	 */
 	void serialize(std::ostream& ostream)
 	{
 		ostream << SERIALIZATION_VERSION << " ";
@@ -142,6 +165,11 @@ public:
 		}
 	}
 
+	/**
+	 * serialize the gridstorage's gridpoints into a stream
+	 *
+	 * @param ostream reference to a stream into that all gridpoint information is written
+	 */
     void toString(std::ostream& stream)
     {
         stream << "[";
@@ -161,32 +189,69 @@ public:
         stream << " ]";
     }
 
+    /**
+     * gets the size of the hashmap
+     *
+     * @return returns the size of the hashmap
+     */
     int size() const
     {
         return map.size();
     }
 
+    /**
+     * gets the dimension of the grid
+     *
+     * @return the dimension of the grid stored in this GridStorage object
+     */
 	int dim() const
 	{
 		return DIM;
 	}
 
+	/**
+	 * gets the sequence number for given gridpoint by its index
+	 *
+	 * @param index gridindex object
+	 *
+	 * @return sequence number of the given index
+	 */
 	size_t& operator[](index_pointer index)
 	{
 		return map[index];
 	}
 
+	/**
+	 * gets the index number for given gridpoint by its sequence number
+	 *
+	 * @param seq the sequence number of the index
+	 *
+	 * @return gridindex object (reference)
+	 */
 	index_pointer& operator[](size_t seq)
 	{
 		return list[seq];
 	}
 
+	/**
+	 * gets the index number for given gridpoint by its sequence number
+	 *
+	 * @param seq the sequence number of the index
+	 *
+	 * @return gridindex object (pointer)
+	 */
 	GIT* get(size_t seq)
 	{
 		return list[seq];
 	}
 
-
+	/**
+	 * insert a new index into map
+	 *
+	 * @param index reference to the index that should be inserted
+	 *
+	 * @return
+	 */
 	size_t insert(index_type &index)
 	{
 		index_pointer insert = new GIT(&index);
@@ -194,33 +259,64 @@ public:
 		return (map[insert] = this->seq()-1);
 	}
 
+	/**
+	 * creates a pointer to index from a reference to index by creating
+	 * a new instance of a index object
+	 *
+	 * @param index address of index object
+	 *
+	 * @return pointer to new index object
+	 */
 	index_pointer create(index_type &index)
 	{
 		index_pointer insert = new GIT(&index);
 		return insert;
 	}
 
+	/**
+	 * removes an index from gridstorage
+	 *
+	 * @param index pointer to index that should be removed
+	 */
 	void destroy(index_pointer index)
 	{
 		delete index;
 	}
 
+	/**
+	 * stores a given index in the hashmap
+	 *
+	 * @param index pointer to index that should be stored
+	 *
+	 * @return sequence number
+	 */
 	unsigned int store(index_pointer index)
 	{
 		list.push_back(index);
 		return (map[index] = this->seq() - 1);
 	}
 
+	/**
+	 * sets the iterator to a given index
+	 *
+	 * @param index the index to which the cursor should be moved
+	 */
 	grid_map_iterator find(index_pointer index)
 	{
 		return map.find(index);
 	}
 
+	/**
+	 * set iterator to the first position in the map
+	 */
 	grid_map_iterator begin()
 	{
 		return map.begin();
 	}
 
+	/**
+	 * sets the iterator to last position in the map
+	 */
 	grid_map_iterator end()
 	{
 		return map.end();
@@ -228,6 +324,10 @@ public:
 
 	/**
 	 * Tests if index is in the storage
+	 *
+	 * @param index pointer to index that should be tested
+	 *
+	 * @return true if the index is in the storage
 	 */
 	bool has_key(GIT* index)
 	{
@@ -236,6 +336,9 @@ public:
 
 	/**
 	 * Sets the index to the left level zero parent
+	 *
+	 * @param index pointer to index the should be modified
+	 * @param dim the dimension in which the modification is taken place
 	 */
 	void left_levelzero(GIT* index, size_t dim)
 	{
@@ -247,6 +350,9 @@ public:
 
 	/**
 	 * Sets the index to the right level zero parent
+	 *
+	 * @param index pointer to index the should be modified
+	 * @param dim the dimension in which the modification is taken place
 	 */
 	void right_levelzero(GIT* index, size_t dim)
 	{
@@ -258,6 +364,9 @@ public:
 
 	/**
 	 * Sets the index to the left child
+	 *
+	 * @param index pointer to index the should be modified
+	 * @param dim the dimension in which the modification is taken place
 	 */
 	void left_child(GIT* index, size_t dim)
 	{
@@ -269,6 +378,9 @@ public:
 
 	/**
 	 * Sets the index to the right child
+	 *
+	 * @param index pointer to index the should be modified
+	 * @param dim the dimension in which the modification is taken place
 	 */
 	void right_child(GIT* index, size_t dim)
 	{
@@ -280,6 +392,9 @@ public:
 
 	/**
 	 * Resets the index to the top level in direction d
+	 *
+	 * @param index pointer to index the should be modified
+	 * @param d the dimension in which the modification is taken place
 	 */
 	void top(GIT* index, size_t d)
 	{
@@ -288,6 +403,10 @@ public:
 
 	/**
 	 * Gets the seq number for index
+	 *
+	 * @param index pointer to index which sequence number should be determined
+	 *
+	 * @return the seq number for index
 	 */
 	size_t seq(GIT* index)
 	{
@@ -304,6 +423,10 @@ public:
 
 	/**
 	 * Tests if seq number does not point to a valid grid index
+	 *
+	 * @param s sequence number that should be tested
+	 *
+	 * @return true if we are not EOF
 	 */
 	bool end(size_t s)
 	{
@@ -312,6 +435,12 @@ public:
 
 	/**
 	 * Should return true if there are no more childs in direction d
+	 *
+	 * @param d the test dimension
+	 * @param index pointer to index object
+	 * @param s sequence number
+	 *
+	 * @return return true if there are no more childs in direction d
 	 */
 	bool hint(size_t d, GIT* index, size_t s)
 	{
@@ -321,19 +450,20 @@ public:
 protected:
 	/**
 	 * returns the next sequence numbers
+	 *
+	 * @return returns the next sequence numbers
 	 */
     size_t seq()
     {
         return list.size();
     }
 
-
-
 private:
+	/// the dimension of the grid
 	size_t DIM;
+	///
 	grid_list list;
     grid_map map;
-
 };
 
 }
