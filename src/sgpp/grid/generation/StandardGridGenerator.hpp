@@ -30,10 +30,22 @@
 namespace sg
 {
 
+/**
+ * GridGenerator for standard grids without boundaries
+ */
 class StandardGridGenerator : public GridGenerator
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param the grid's storage object
+	 */
 	StandardGridGenerator(GridStorage* storage);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~StandardGridGenerator();
 
 	virtual void regular(size_t level);
@@ -41,6 +53,7 @@ public:
 	virtual int getNumberOfRefinablePoints();
 
 protected:
+	/// pointer to the storage object
 	GridStorage* storage;
 };
 

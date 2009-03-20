@@ -36,7 +36,16 @@ namespace sg
 class BoundaryUScaledGridGenerator : public GridGenerator
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage template type that holds the grid points
+	 */
 	BoundaryUScaledGridGenerator(GridStorage* storage);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~BoundaryUScaledGridGenerator();
 
 	virtual void regular(size_t level);
@@ -44,6 +53,7 @@ public:
 	virtual int getNumberOfRefinablePoints();
 
 protected:
+	/// Pointer to the grid's storage object
 	GridStorage* storage;
 };
 

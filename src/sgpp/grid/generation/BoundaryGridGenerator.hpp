@@ -29,10 +29,23 @@
 namespace sg
 {
 
+/**
+ * This class provides the interface for the grid generation
+ * for grids with boundaries, diagonal cut through sub space scheme
+ */
 class BoundaryGridGenerator : public GridGenerator
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage template type that holds the grid points
+	 */
 	BoundaryGridGenerator(GridStorage* storage);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~BoundaryGridGenerator();
 
 	virtual void regular(size_t level);
@@ -40,6 +53,7 @@ public:
 	virtual int getNumberOfRefinablePoints();
 
 protected:
+	/// Pointer to the grid's storage object
 	GridStorage* storage;
 };
 

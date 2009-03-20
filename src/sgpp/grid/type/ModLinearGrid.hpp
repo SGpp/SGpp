@@ -40,7 +40,16 @@ protected:
 	ModLinearGrid(std::istream& istr);
 
 public:
+	/**
+	 * Constructor modified linear grid
+	 *
+	 * @param dim the dimension of the grid
+	 */
 	ModLinearGrid(size_t dim);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~ModLinearGrid();
 
 	virtual const char* getType();

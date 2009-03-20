@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -29,17 +28,36 @@
 namespace sg
 {
 
+/**
+ * Exception that is thrown in case of a grid operation failure
+ */
 class operation_exception : public std::exception
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param msg the exception message
+	 */
 	operation_exception(const char* msg) throw() : msg(msg)
 	{
 	}
 
+	/**
+	 * Standard Constructor
+	 */
 	operation_exception() throw() : msg(NULL) { }
 
+	/**
+	 * Destructor
+	 */
     virtual ~operation_exception() throw() { }
 
+    /**
+     * throw method that have to be implemented
+     *
+     * @return returns the message specified in the constructor otherwise a general text
+     */
 	virtual const char* what() const throw()
 	{
 		if(msg)
@@ -51,7 +69,9 @@ public:
 			return "operation_exception: general failure";
 		}
 	}
+
 protected:
+	/// the exception message
 	const char* msg;
 
 };

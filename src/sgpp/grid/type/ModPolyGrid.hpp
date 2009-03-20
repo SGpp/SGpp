@@ -40,7 +40,17 @@ protected:
 	ModPolyGrid(std::istream& istr);
 
 public:
+	/**
+	 * Constructor of grid with modified polynomial base functions
+	 *
+	 * @param dim the dimension of the grid
+	 * @param degree the max. polynom's degree
+	 */
 	ModPolyGrid(size_t dim, size_t degree);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~ModPolyGrid();
 
 	virtual const char* getType();
@@ -55,6 +65,7 @@ public:
 	static Grid* unserialize(std::istream& istr);
 
 protected:
+	/// max. polynom's degree
 	size_t degree;
 };
 

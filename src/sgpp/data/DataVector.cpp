@@ -36,31 +36,16 @@ DataVector::DataVector()
 
 }
 
-/**
- * Default Constructor.
- * @param size the size
- */
 DataVector::DataVector(int size) : size(size), dim(1), unused(0)
 {
 	this->data = new double[size*dim];
 }
 
-
-/**
- * Default Constructor.
- * @param size the size
- * @param dim the dimension
- */
 DataVector::DataVector(int size, int dim) : size(size), dim(dim), unused(0)
 {
 	this->data = new double[size*dim];
 }
 
-/**
- * Copy constructor.
- * @param vec the vector to be copied
- * @return A copy of the vector vec
- */
 DataVector::DataVector(DataVector &vec) : unused(0)
 {
 	this->size = vec.size;
@@ -70,12 +55,6 @@ DataVector::DataVector(DataVector &vec) : unused(0)
 	memcpy(this->data, vec.data, size*dim*sizeof(double));
 }
 
-/**
- * Default Constructor.
- * @param input
- * @param size
- * @param dim
- */
 DataVector::DataVector(double * input, int size, int dim) : size(size), dim(dim), unused(0)
 {
 	this->data = new double[size*dim];
@@ -132,10 +111,6 @@ int DataVector::addValue()
 	return x;
 }
 
-/**
- * Sets the vector to value.
- * @param value
- */
 void DataVector::setAll(double value)
 {
 	int n = size*dim;
@@ -153,31 +128,16 @@ void DataVector::setAll(double value)
 #endif
 }
 
-/**
- * Returns the i-th value.
- * @param i
- * @return
- */
 double DataVector::get(int i) const
 {
 	return data[i];
 }
 
-/**
- * Sets the i-th value.
- * @param i
- * @param value
- */
 void DataVector::set(int i, double value)
 {
 	data[i] = value;
 }
 
-/**
- * Get the specified row
- * @param row the row to get
- * @param vec result vector
- */
 void DataVector::getRow(int row, DataVector& vec)
 {
 /*#ifdef USEOMP
@@ -194,11 +154,6 @@ void DataVector::getRow(int row, DataVector& vec)
 //#endif
 }
 
-/**
- * Set the specified row
- * @param row the row to set
- * @param vec vector of values
- */
 void DataVector::setRow(int row, DataVector& vec)
 {
 /*#ifdef USEOMP
@@ -215,11 +170,6 @@ void DataVector::setRow(int row, DataVector& vec)
 //#endif
 }
 
-/**
- * Get the specified column
- * @param col the column to get
- * @param vec result vector
- */
 void DataVector::getColumn(int col, DataVector& vec)
 {
 /*#ifdef USEOMP
@@ -236,11 +186,6 @@ void DataVector::getColumn(int col, DataVector& vec)
 //#endif
 }
 
-/**
- * Set the specified column
- * @param col the column to set
- * @param vec vector of values
- */
 void DataVector::setColumn(int col, DataVector& vec)
 {
 /*#ifdef USEOMP
@@ -257,11 +202,6 @@ void DataVector::setColumn(int col, DataVector& vec)
 //#endif
 }
 
-/**
- * Copies a DataVector.
- * @param vec
- * @return
- */
 void DataVector::copyFrom(const DataVector& vec)
 {
 	if(this == &vec)
@@ -293,12 +233,6 @@ void DataVector::copySmall(const DataVector& vec)
 	memcpy(this->data, vec.data, vec.size*sizeof(double));
 }
 
-/**
- * Overloaded assign operator.
- * @param vec
- * @return
- */
-
 DataVector& DataVector::operator=(const DataVector &vec)
 {
 	if(this == &vec)
@@ -317,11 +251,6 @@ DataVector& DataVector::operator=(const DataVector &vec)
 	return *this;
 }
 
-
-/**
- * Adds all values of vec to current vector.
- * @param vec
- */
 void DataVector::add(DataVector &vec)
 {
 	if(size != vec.size || dim != vec.dim)
@@ -344,10 +273,6 @@ void DataVector::add(DataVector &vec)
 //#endif
 }
 
-/**
- * Substracts all values of vec from current vector.
- * @param vec
- */
 void DataVector::sub(DataVector &vec)
 {
 	if(size != vec.size || dim != vec.dim)
@@ -370,11 +295,6 @@ void DataVector::sub(DataVector &vec)
 //#endif
 }
 
-/**
- * Extract the specified row
- * @param row
- * @param vec
- */
 void DataVector::getLine(int row, DataVector& vec)
 {
 /*#ifdef USEOMP
@@ -391,11 +311,6 @@ void DataVector::getLine(int row, DataVector& vec)
 //#endif
 }
 
-/**
- * Extract the specified row
- * @param row
- * @param vec
- */
 void DataVector::getLine(int row, std::vector<double>& vec)
 {
 	vec.clear();
@@ -413,39 +328,21 @@ void DataVector::getLine(int row, std::vector<double>& vec)
 //#endif
 }
 
-
-/**
- * Returns the length of the vector.
- * @return
- */
 int DataVector::getSize()
 {
 	return size;
 }
 
- /**
-  * Returns the number of dimensions.
-  * @return
-  */
 int DataVector::getDim()
 {
 	return dim;
 }
 
-/**
- * Returns the number of allocated values
- * @return
- */
 int DataVector::getTotalSize()
 {
 	return dim*size;
 }
 
-/**
- * Returns the dot product of the two vectors. Only defined for 1 dimensional vectors.
- * @param vec
- * @return
- */
 double DataVector::dotProduct(DataVector &vec)
 {
 	double sum = 0.0;
@@ -457,10 +354,6 @@ double DataVector::dotProduct(DataVector &vec)
 	return sum;
 }
 
-/**
- * Multiplies vector with scalar.
- * @param scalar
- */
 void DataVector::mult(double scalar)
 {
 	int n = size*dim;
@@ -478,11 +371,8 @@ void DataVector::mult(double scalar)
 //#endif
 }
 
-/**
- * Squares each component
- */
- void DataVector::sqr()
- {
+void DataVector::sqr()
+{
 	int n = size*dim;
 /*#ifdef USEOMP
 	#pragma omp parallel for schedule(static)
@@ -496,13 +386,10 @@ void DataVector::mult(double scalar)
 		data[i] = data[i] * data[i];
 	}
 //#endif
- }
+}
 
-/**
- * Calculates the sum of the vector
- */
- double DataVector::sum()
- {
+double DataVector::sum()
+{
 	int n = size*dim;
 	double result;
 	for(int i = 0; i < n; i++)
@@ -510,12 +397,8 @@ void DataVector::mult(double scalar)
 		result += data[i];
 	}
 	return result;
- }
+}
 
-/**
- * Partitions vector into two classes using a choosen border.
- * @param border
- */
 void DataVector::partitionClasses(double border)
 {
 	int n = size*dim;
@@ -525,12 +408,6 @@ void DataVector::partitionClasses(double border)
 	}
 }
 
-/**
- * Adds alpha*x to current vector.
- * BLAS Level 1 (elementary vector operations) operation: axpy.
- * @param alpha
- * @param x
- */
 void DataVector::axpy(double alpha, DataVector& x)
 {
 	if(size != x.size || dim != x.dim)
@@ -555,21 +432,11 @@ void DataVector::axpy(double alpha, DataVector& x)
 
 }
 
-/**
- * Normalizes d-th dimension with border 0.0
- * @param d
- */
 void DataVector::normalizeDimension(int d)
 {
 	normalizeDimension(d, 0.0);
 }
 
-
-/**
- * Normalizes d-th dimension with border
- * @param d
- * @param border
- */
 void DataVector::normalizeDimension(int d, double border)
 {
 	int n = size*dim;
@@ -595,10 +462,6 @@ void DataVector::normalizeDimension(int d, double border)
 	}
 }
 
-/**
- * Outputs DataVector as string
- * @param text
- */
 void DataVector::toString(std::string& text)
 {
 	std::stringstream str;
@@ -618,11 +481,6 @@ void DataVector::toString(std::string& text)
 	text = str.str();
 }
 
-/**
- * Returns the minimum.
- * @param d
- * @return minimum
- */
 double DataVector::min(int d)
 {
 	int n = size*dim;
@@ -637,11 +495,6 @@ double DataVector::min(int d)
 	return min;
 }
 
-/**
- * Returns the maximum.
- * @param d
- * @return maximum
- */
 double DataVector::max(int d)
 {
 	int n = size*dim;
@@ -656,12 +509,6 @@ double DataVector::max(int d)
 	return max;
 }
 
-/**
- * Returns maximum and minimum.
- * @param d
- * @param min
- * @param max
- */
 void DataVector::minmax(int d, double* min, double* max)
 {
 	int n = size*dim;
@@ -682,11 +529,6 @@ void DataVector::minmax(int d, double* min, double* max)
 	(*max) = max_t;
 }
 
-
-/**
- * Returns a borrowed Pointer to the data.
- * @return
- */
 double* DataVector::getPointer()
 {
 	return data;
