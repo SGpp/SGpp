@@ -40,7 +40,16 @@ protected:
 	LinearGrid(std::istream& istr);
 
 public:
+	/**
+	 * Constructor Linear Grid without boundaries
+	 *
+	 * @param dim the dimension of the grid
+	 */
 	LinearGrid(size_t dim);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~LinearGrid();
 
 	virtual const char* getType();

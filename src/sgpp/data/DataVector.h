@@ -29,72 +29,313 @@
 #include <vector>
 
 /**
- * a data holding class.
+ * a data holding class of base function's coefficients
  */
 class DataVector
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param size number of elements
+	 */
 	DataVector(int size);
+
+	/**
+	 * Constructor
+	 *
+	 * @param size number of elements per dimension
+	 * @param dim dimension of Vector
+	 */
 	DataVector(int size, int dim);
+
+	/**
+	 * Copy Constructor
+	 *
+	 * @param vec reference to another instance of DataVector
+	 */
 	DataVector(DataVector& vec);
+
+	/**
+	 * Constructor that construct a DataVector from a double array
+	 *
+	 * @param input double array that contains the data
+	 * @param size number of elements per dimension
+	 * @param dim number of dimensions
+	 */
 	DataVector(double* input, int size, int dim);
 
+	/**
+	 * resizes the DataVector
+	 *
+	 * @param size new size of the DataVector
+	 */
 	void resize(int size);
+
+	/**
+	 * add elements to the DataVector
+	 *
+	 * @param add number of elements that should be added to the data vector
+	 */
 	void addSize(int add);
+
+	/**
+	 * adds one element to data vector
+	 */
 	int addValue();
 
+	/**
+	 * Sets all values of DataVector
+	 *
+	 * @param value value that is set to all elements
+	 */
 	void setAll(double value);
 
+	/**
+	 * copies the data from another DataVector
+	 *
+	 * @param vec the DataVector containing the data
+	 */
 	void copyFrom(const DataVector& vec);
+
+	/**
+	 * copies the data from another DataVector
+	 *
+	 * @param vec the DataVector containing the data
+	 */
 	void copySmall(const DataVector& vec);
+
+	/**
+	 * copies the data from another DataVector
+	 *
+	 * @param vec the DataVector containing the data
+	 */
 	DataVector& operator=(const DataVector& vec);
+
+	/**
+	 * operator to access an element directly
+	 *
+	 * @param i position of the element
+	 */
 	inline double& operator[](int i)
 	{
 		return data[i];
 	};
 
+	/**
+	 * operator to get an element
+	 *
+	 * @param i position of the element
+	 */
 	double get(int i) const;
+
+	/**
+	 * operator to set an element
+	 *
+	 * @param i position of the element
+	 * @param value value that should be set
+	 */
 	void set(int i, double value);
 
+	/**
+	 * gets a row of the DataVector
+	 *
+	 * @param row the row that should be read
+	 * @param vec DataVector into which the data is written
+	 */
  	void getRow(int row, DataVector& vec);
+
+	/**
+	 * sets a row of the DataVector
+	 *
+	 * @param row the row that should be written
+	 * @param vec DataVector from which the data is read
+	 */
  	void setRow(int row, DataVector& vec);
+
+	/**
+	 * gets a col of the DataVector
+	 *
+	 * @param col the col that should be read
+	 * @param vec DataVector into which the data is written
+	 */
  	void getColumn(int col, DataVector& vec);
+
+	/**
+	 * sets a row of the DataVector
+	 *
+	 * @param col the row that should be written
+	 * @param vec DataVector from which the data is read
+	 */
  	void setColumn(int col, DataVector& vec);
 
+ 	/**
+ 	 * adds the values from another DataVector
+ 	 *
+ 	 * @param vec the DataVector which Data is added
+ 	 */
 	void add(DataVector& vec);
+
+	/**
+ 	 * subs the values of another DataVector
+ 	 *
+ 	 * @param vec the DataVector which Data is subtracted
+ 	 */
 	void sub(DataVector& vec);
+
+	/**
+	 * multiplies all elements by a constant factor
+	 *
+	 * @param scalar the constant
+	 */
 	void mult(double scalar);
 
+	/**
+	 * squares all elements of the DataVector
+	 */
 	void sqr();
+
+	/**
+	 * sums all elements up
+	 *
+	 * @return the sum of all elements
+	 */
 	double sum();
 
+	/**
+	 * Adds alpha*x to current vector.
+	 * BLAS Level 1 (elementary vector operations) operation: axpy.
+	 *
+	 * @param alpha the constant
+	 * @param x reference the the DataVector
+	 */
 	void axpy(double alpha, DataVector& x);
 
+	/**
+	 * gets a line of the DataVector
+	 *
+	 * @param row the line that should be read
+	 * @param vec DataVector into which the data is written
+	 */
 	void getLine(int row, DataVector& vec);
+
+	/**
+	 * gets a line of the DataVector
+	 *
+	 * @param row the line that should be read
+	 * @param vec std vector into which the data is written
+	 */
 	void getLine(int row, std::vector<double>& vec);
 
+	/**
+	 * Returns the dot product of the two vectors. Only defined for 1 dimensional vectors.
+	 *
+	 * @param vec reference to another vector
+	 *
+	 * @return the dotProduct
+	 */
 	double dotProduct(DataVector& vec);
 
+	/**
+	 * gets the elements stored in the vector
+	 *
+	 * @return elements stored in the vector
+	 */
 	int getSize();
+
+	/**
+	 * get the dimension of the DataVector
+	 *
+	 * @return dimension of the DataVector
+	 */
 	int getDim();
+
+	/**
+	 * gets number of elements in all dimensions
+	 *
+	 * @return number of elements in all dimensions
+	 */
 	int getTotalSize();
+
+	/**
+	 * gets the unsed entries
+	 *
+	 * @return unsed entries
+	 */
 	inline int getUnused() { return unused; };
 
+	/**
+	 * Partitions vector into two classes using a choosen border.
+	 *
+	 * @param border value of the border
+	 */
 	void partitionClasses(double border);
+
+	/**
+	 * Normalizes d-th dimension with border 0.0
+	 *
+	 * @param d the dimension that should be normalized
+	 */
 	void normalizeDimension(int d);
+
+	/**
+	 * Normalizes d-th dimension with border
+	 *
+	 * @param d the dimension that should be normalized
+	 * @param border value ot the border
+	 */
 	void normalizeDimension(int d, double border);
 
+	/**
+	 * Returns the minimum.
+	 *
+	 * @param d the dimension in which the minimum should be determined
+	 *
+	 * @return the minimum
+	 */
 	double min(int d);
+
+	/**
+	 * Returns the maximum.
+	 *
+	 * @param d the dimension in which the maximum should be determined
+	 *
+	 * @return the maximum
+	 */
 	double max(int d);
+
+	/**
+	 * gets the minimum and the maximum.
+	 *
+	 * @param d the dimension in which the minimum & maximum should be determined
+	 * @param min reference variable for the minimum
+	 * @param max reference variable for the maximum
+	 */
 	void minmax(int d, double* min, double* max);
 
+	/**
+	 * Writes the data stored in the Vector into a string
+	 *
+	 * @param text string to which the data is written
+	 */
 	void toString(std::string& text);
 
+	/**
+	 * gets a pointer to the data array
+	 *
+	 * @return pointer to the data array
+	 */
 	double* getPointer();
 
+	/**
+	 * Destructor
+	 */
 	virtual ~DataVector();
 
 private:
+	/**
+	 * Standard Constructor
+	 */
 	DataVector();
 
 	/// array to store the data

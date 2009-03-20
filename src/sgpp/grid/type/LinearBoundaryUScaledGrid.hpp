@@ -39,7 +39,16 @@ protected:
 	LinearBoundaryUScaledGrid(std::istream& istr);
 
 public:
+	/**
+	 * Constructor Linear Boundary UScaled Grid
+	 *
+	 * @param dim the dimension of the grid
+	 */
 	LinearBoundaryUScaledGrid(size_t dim);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~LinearBoundaryUScaledGrid();
 
 	virtual const char* getType();

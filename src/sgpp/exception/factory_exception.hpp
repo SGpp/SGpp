@@ -29,17 +29,36 @@
 namespace sg
 {
 
+/**
+ * Exception that is thrown in case of a grid failure
+ */
 class factory_exception : public std::exception
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param msg the exception message
+	 */
 	factory_exception(const char* msg) throw() : msg(msg)
 	{
 	}
 
+	/**
+	 * Standard Constructor
+	 */
 	factory_exception() throw() : msg(NULL) { }
 
+	/**
+	 * Destructor
+	 */
     virtual ~factory_exception() throw() { }
 
+    /**
+     * throw method that have to be implemented
+     *
+     * @return returns the message specified in the constructor otherwise a general text
+     */
 	virtual const char* what() const throw()
 	{
 		if(msg)
@@ -51,9 +70,10 @@ public:
 			return "factory_exception: general failure";
 		}
 	}
-protected:
-	const char* msg;
 
+protected:
+	/// the exception message
+	const char* msg;
 };
 
 }

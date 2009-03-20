@@ -29,18 +29,37 @@
 namespace sg
 {
 
+/**
+ * Exception that is thrown in case of a grid generation failure
+ */
 class generation_exception : public std::exception
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param msg the exception message
+	 */
 	generation_exception(const char* msg) throw() : msg(msg)
 	{
 	}
 
+	/**
+	 * Standared Constructor
+	 */
 	generation_exception() throw() : msg(NULL) { }
 
+	/**
+	 * Destructor
+	 */
     virtual ~generation_exception() throw() { }
 
-	virtual const char* what() const throw()
+    /**
+     * throw method that have to be implemented
+     *
+     * @return returns the message specified in the constructor otherwise a general text
+     */
+    virtual const char* what() const throw()
 	{
 		if(msg)
 		{
@@ -51,9 +70,10 @@ public:
 			return "generation_exception: failure generating grid";
 		}
 	}
-protected:
-	const char* msg;
 
+protected:
+	/// the exception message
+	const char* msg;
 };
 
 }

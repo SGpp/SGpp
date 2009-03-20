@@ -29,19 +29,48 @@
 namespace sg
 {
 
+/**
+ * Abstract class the defines the interface that refinement functors have to provide
+ */
 class RefinementFunctor
 {
 public:
 	typedef double value_type;
 
+	/**
+	 * Constructor
+	 */
 	RefinementFunctor() {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~RefinementFunctor() {}
 
+	/**
+	 * This should be returning a refinement value for every grid point.
+	 * The point with the highest value will be refined.
+	 *
+	 * @param storage pointer to the grids storage object
+	 * @param seq sequence number in the coefficients array
+	 *
+	 * @return refinement value
+	 */
 	virtual double operator()(GridStorage* storage, size_t seq) = 0;
 
+	/**
+	 * This should return a bottom.
+	 *
+	 * @return the minimal value
+	 */
 	virtual double start() = 0;
-	
-	virtual int getRefinementsNum(){ return 1;} //makes it possible to refine on several points
+
+	/**
+	 * makes it possible to refine on several points
+	 *
+	 * @return number of refinements ????
+	 */
+	virtual int getRefinementsNum(){ return 1;}
 };
 
 }

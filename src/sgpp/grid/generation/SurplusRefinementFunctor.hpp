@@ -37,33 +37,32 @@ namespace sg
 class SurplusRefinementFunctor : public RefinementFunctor
 {
 public:
-	
+	/**
+	 * Constructor
+	 *
+	 * @param alpha DataVector that is basis for refinement decisions
+	 * @param refinements_num number of refinements
+	 */
 	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1) : alpha(alpha), refinements_num(refinements_num)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	virtual ~SurplusRefinementFunctor() {}
 
-	/**
-	 * This should be returning a refinement value for every grid point.
-	 * The point with the highest value will be refined.
-	 */
+
 	virtual double operator()(GridStorage* storage, size_t seq)
 	{
 		return fabs(alpha->get(seq));
 	}
 
-	/**
-	 * This should return a bottom.
-	 */
 	virtual double start()
 	{
 		return 0.0;
 	}
-	
-	/**
-	 * Number of refinement points in one refinement iteration
-	 */
+
 	virtual int getRefinementsNum()
 	{
 		return this->refinements_num;
@@ -71,8 +70,10 @@ public:
 
 
 protected:
+	/// pointe to the vector that stores the alpha values
 	DataVector* alpha;
-	int refinements_num; //number of points to refine
+	/// number of points to refine
+	int refinements_num;
 };
 
 }

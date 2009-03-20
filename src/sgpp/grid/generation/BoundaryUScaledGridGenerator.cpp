@@ -28,38 +28,20 @@
 namespace sg
 {
 
-/**
- * Constructor
- *
- * @param storage template type that holds the grid points
- */
 BoundaryUScaledGridGenerator::BoundaryUScaledGridGenerator(GridStorage* storage) : storage(storage)
 {
 }
 
-/**
- * Destructor
- */
 BoundaryUScaledGridGenerator::~BoundaryUScaledGridGenerator()
 {
 }
 
-/**
- * creates a regular grid with boundaries, pentagon cut
- *
- * @param level maximum level of the grid
- */
 void BoundaryUScaledGridGenerator::regular(size_t level)
 {
 	HashGenerator gen;
 	gen.regularWithBoundaries(this->storage, level, true);
 }
 
-/**
- * refines a regular grid
- *
- * @param func pointer to refinement function
- */
 void BoundaryUScaledGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinementBoundaries refine;

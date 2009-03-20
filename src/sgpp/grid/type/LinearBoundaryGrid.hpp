@@ -39,7 +39,16 @@ protected:
 	LinearBoundaryGrid(std::istream& istr);
 
 public:
+	/**
+	 * Constructor for the Linear Boundary Grid
+	 *
+	 * @param dim the dimension of the grid
+	 */
 	LinearBoundaryGrid(size_t dim);
+
+	/**
+	 * Destructor
+	 */
 	virtual ~LinearBoundaryGrid();
 
 	virtual const char* getType();

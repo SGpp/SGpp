@@ -29,14 +29,39 @@
 namespace sg
 {
 
+/**
+ * abstract class that defines the interfaces for the different grid's GridGenerators
+ */
 class GridGenerator
 {
 public:
+	/**
+	 * Constructor
+	 */
 	GridGenerator() {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~GridGenerator() {}
 
+	/**
+	 * creates a regular grid
+	 *
+	 * @param level maximum level of the grid
+	 */
 	virtual void regular(size_t level) = 0;
+
+	/**
+	 * refines a regular grid
+	 *
+	 * @param func pointer to refinement function
+	 */
 	virtual void refine(RefinementFunctor* func) = 0;
+
+	/**
+	 * @todo add comment
+	 */
 	virtual int getNumberOfRefinablePoints() = 0;
 };
 

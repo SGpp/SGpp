@@ -39,17 +39,68 @@
 namespace sg
 {
 
+/**
+ * abstract base class for all types grids used in sgpp
+ * the class gives pure virtual function definitions that
+ * have to be implemented by all types of grids
+ */
 class Grid
 {
 public:
+	/**
+	 * creates a linear grid without boundaries
+	 *
+	 * @param dim the grid's dimension
+	 */
 	static Grid* createLinearGrid(size_t dim);
+
+	/**
+	 * creates a linear boundary grid
+	 *
+	 * @param dim the grid's dimension
+	 */
 	static Grid* createLinearBoundaryGrid(size_t dim);
+
+	/**
+	 * creates a linear boundary uscaled grid
+	 *
+	 * @param dim the grid's dimension
+	 */
 	static Grid* createLinearBoundaryUScaledGrid(size_t dim);
+
+	/**
+	 * creates a mod linear grid
+	 *
+	 * @param dim the grid's dimension
+	 */
 	static Grid* createModLinearGrid(size_t dim);
+
+	/**
+	 * creates a mod polynomial grid
+	 *
+	 * @param dim the grid's dimension
+	 */
 	static Grid* createPolyGrid(size_t dim, size_t degree);
+
+	/**
+	 * creates a poly grid
+	 *
+	 * @param dim the grid's dimension
+	 */
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 
+	/**
+	 * reads a grid out of a string
+	 *
+	 * @param istr string that contains the grid information
+	 */
 	static Grid* unserialize(std::string& istr);
+
+	/**
+	 * reads a grid out of a stream
+	 *
+	 * @param istr inputstream that contains the grid information
+	 */
 	static Grid* unserialize(std::istream& istr);
 
 protected:
@@ -57,29 +108,76 @@ protected:
 	 * This constructor creates a new GridStorage out of the stream.
 	 * For derived classes create an own constructor wich takes a std::istream and calls
 	 * this function. Add your own static unserialize function and add it in typeMap().
+	 *
+	 * @param istr inputstream that contains the grid information
 	 */
 	Grid(std::istream& istr);
+
+	/**
+	 * Standard Constructor
+	 */
 	Grid();
 
 public:
+	/**
+	 * Desctructor
+	 */
 	virtual ~Grid();
 
+	/**
+	 * gets a pointer to the GridStorage object
+	 *
+	 * @return pointer to the GridStorage obeject
+	 */
 	virtual GridStorage* getStorage();
+
+	/**
+	 * gets a pointer to GridGenerator object
+	 *
+	 * @return pointer to the GrdGenerator object
+	 */
 	virtual GridGenerator* createGridGenerator() = 0;
+
+	/**
+	 * gets a pointer to OperationB object
+	 *
+	 * @return pointer to the OperationB object
+	 */
 	virtual OperationB* createOperationB() = 0;
+
+	/**
+	 * gets a pointer to OperationEval object
+	 *
+	 * @return pointer to the OperationEval object
+	 */
 	virtual OperationEval* createOperationEval() = 0;
+
+	/**
+	 * gets a pointer to OperationHierarchisation object
+	 *
+	 * @return pointer to the OperationHierarchisation object
+	 */
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 
+	/**
+	 * gets a pointer to OperationLaplace (OperationMatrix) object
+	 *
+	 * @return point to the OperationLaplace object
+	 */
 	virtual OperationMatrix* createOperationLaplace() = 0;
 
 	/**
 	 * Returns a string that identifies the grid type uniquely
+	 *
+	 * @param string that identifies the grid type uniquely
 	 */
 	virtual const char* getType() = 0;
 
 	/**
 	 * Serializes grid to a string.
 	 * Needed for Python compatibility. Calls serialize(std::ostream&).
+	 *
+	 * @param ostr string into which the grid is written
 	 */
 	void serialize(std::string& ostr);
 
@@ -87,10 +185,13 @@ public:
 	 * Serializes the grid.
 	 * Override if additional information need to be saved.
 	 * Call base function before writing anything!
+	 *
+	 * @param ostr stream to which the grid is written
 	 */
 	virtual void serialize(std::ostream& ostr);
 
 protected:
+	/// pointer the GridStorage object of the grid
 	GridStorage* storage;
 
 	typedef Grid* (*Factory)(std::istream&);
@@ -101,6 +202,8 @@ protected:
 private:
 	/**
 	 * This method returns a map with all available grid types for serialization
+	 *
+	 * @return a map with all available grid types for serialization
 	 */
 	static factoryMap& typeMap();
 };
