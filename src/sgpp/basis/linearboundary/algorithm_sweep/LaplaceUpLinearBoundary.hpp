@@ -42,10 +42,18 @@ protected:
 	GridStorage* storage;
 
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	LaplaceUpLinearBoundary(GridStorage* storage) : storage(storage)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	~LaplaceUpLinearBoundary()
 	{
 	}
@@ -77,6 +85,16 @@ public:
 
 protected:
 
+	/**
+	 * recursive function for the calculation of Down
+	 *
+	 * @param source DataVector that contains the coefficients of the ansatzfunction
+	 * @param result DataVector in which the result of the operation is stored
+	 * @param index reference to a griditerator object that is used navigate through the grid
+	 * @param dim the dimension in which the operation is executed
+	 * @param fl function value on the left boundary, reference parameter
+	 * @param fr function value on the right boundary, reference parameter
+	 */
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
 	{
 		size_t seq = index.seq();

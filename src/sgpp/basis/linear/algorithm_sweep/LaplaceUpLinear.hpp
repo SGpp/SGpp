@@ -132,7 +132,6 @@ protected:
 			fr = fm/2.0 + alpha_value*h/2.0 + fr;
 		}
 	}
-
 };
 
 } // namespace detail

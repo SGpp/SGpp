@@ -29,18 +29,31 @@
 namespace sg
 {
 
+/**
+ * This class implements OperationEval for a grids with linear basis ansatzfunctions with
+ * boundaries (diagonal cut through subspace scheme)
+ */
 class OperationEvalLinearBoundary : public OperationEval
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage Object
+	 */
 	OperationEvalLinearBoundary(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationEvalLinearBoundary() {}
 
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
 
 protected:
+	/// Pointer to GridStorage Object
 	GridStorage* storage;
-
 };
 
 }

@@ -35,13 +35,23 @@ namespace sg
 class OperationHierarchisationLinearBoundary : public OperationHierarchisation
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationHierarchisationLinearBoundary(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationHierarchisationLinearBoundary() {}
 
 	virtual void doHierarchisation(DataVector& node_values);
 	virtual void doDehierarchisation(DataVector& alpha);
 
 protected:
+	/// Pointer the GirdStorage object
 	GridStorage* storage;
 };
 

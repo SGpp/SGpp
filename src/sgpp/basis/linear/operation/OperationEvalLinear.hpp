@@ -54,7 +54,6 @@ public:
 protected:
 	/// Pointer to the grid's gridstorage object
 	GridStorage* storage;
-
 };
 
 }
