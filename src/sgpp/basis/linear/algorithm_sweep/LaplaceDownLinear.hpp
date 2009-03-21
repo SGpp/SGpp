@@ -125,8 +125,6 @@ protected:
 			index.up(dim);
 		}
 	}
-
-
 };
 
 } // namespace detail

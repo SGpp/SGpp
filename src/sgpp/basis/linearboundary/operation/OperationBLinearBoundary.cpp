@@ -30,13 +30,7 @@
 
 namespace sg
 {
-/**
- * Multiplication with vector, not transposed, linear sparse grid with boundaries
- *
- * @param alpha coefficients of the sparse grid's base functions
- * @param data the vector that should be multiplied
- * @param result the result vector of the matrix vector multiplication
- */
+
 void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
@@ -45,13 +39,6 @@ void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVec
 	op.mult(storage, base, alpha, data, result);
 }
 
-/**
- * Multiplication with vector, transposed, linear sparse grid with boundaries
- *
- * @param alpha coefficients of the sparse grid's base functions
- * @param data the vector that should be multiplied
- * @param result the result vector of the matrix vector multiplication
- */
 void OperationBLinearBoundary::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
