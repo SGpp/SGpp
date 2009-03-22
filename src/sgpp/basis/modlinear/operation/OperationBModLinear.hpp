@@ -30,16 +30,29 @@
 namespace sg
 {
 
+/**
+ * This class implements OperationB for a grids with mod linear basis ansatzfunctions
+ */
 class OperationBModLinear : public OperationB
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationBModLinear(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationBModLinear() {}
 
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
 };
 

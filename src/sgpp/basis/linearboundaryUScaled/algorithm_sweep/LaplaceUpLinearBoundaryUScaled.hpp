@@ -39,13 +39,23 @@ class LaplaceUpLinearBoundaryUScaled
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
+
+	/// Pointer to GridStorage object
 	GridStorage* storage;
 
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	LaplaceUpLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	~LaplaceUpLinearBoundaryUScaled()
 	{
 	}
@@ -77,6 +87,16 @@ public:
 
 protected:
 
+	/**
+	 * recursive function for the calculation of Down
+	 *
+	 * @param source DataVector that contains the coefficients of the ansatzfunction
+	 * @param result DataVector in which the result of the operation is stored
+	 * @param index reference to a griditerator object that is used navigate through the grid
+	 * @param dim the dimension in which the operation is executed
+	 * @param fl function value on the left boundary, reference parameter
+	 * @param fr function value on the right boundary, reference parameter
+	 */
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
 	{
 		size_t seq = index.seq();
@@ -90,20 +110,7 @@ protected:
 
 		index.get(dim, current_level, current_index);
 
-		if(current_level == 0)
-		{
-			if(!index.hint(dim))
-			{
-				index.top(dim);
-				if(!storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fl, fr);
-				}
-
-				index.left_levelzero(dim);
-			}
-		}
-		else
+		if(current_level > 0)
 		{
 			if(!index.hint(dim))
 			{
@@ -122,10 +129,36 @@ protected:
 				index.up(dim);
 			}
 		}
+		else
+		{
+			if(!index.hint(dim))
+			{
+				index.top(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fl, fr);
+				}
+
+				index.left_levelzero(dim);
+			}
+		}
 
 		index.get(dim, current_level, current_index);
 
-		if (current_level == 0)
+		if (current_level > 0)
+		{
+			double fm = fml + fmr;
+
+			double alpha_value = source[seq];
+			double h = 1/pow(2.0,current_level);
+
+			// transposed operations:
+			result[seq] = fm;
+
+			fl = fm/2.0 + alpha_value*h/2.0 + fl;
+			fr = fm/2.0 + alpha_value*h/2.0 + fr;
+		}
+		else
 		{
 			size_t seq_left;
 			size_t seq_right;
@@ -145,19 +178,6 @@ protected:
 			result[seq_left] += 1.0/6.0*source[seq_right];
 
 			index.left_levelzero(dim);
-		}
-		else
-		{
-			double fm = fml + fmr;
-
-			double alpha_value = source[seq];
-			double h = 1/pow(2.0,current_level);
-
-			// transposed operations:
-			result[seq] = fm;
-
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
 		}
 	}
 };

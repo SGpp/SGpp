@@ -30,18 +30,30 @@
 namespace sg
 {
 
+/**
+ * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
+ */
 class OperationEvalModWavelet : public OperationEval
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationEvalModWavelet() {}
 
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
-
 };
 
 }

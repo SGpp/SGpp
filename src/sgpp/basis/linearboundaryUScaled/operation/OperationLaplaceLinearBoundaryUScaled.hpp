@@ -38,15 +38,23 @@ namespace sg
 {
 
 /**
- * Implementation for linear functions
+ * Implementation of Laplace for linear functions with boundaries pentagon cut through subspace scheme
  */
 class OperationLaplaceLinearBoundaryUScaled: public OperationMatrix, public UnidirGradient
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationLaplaceLinearBoundaryUScaled(GridStorage* storage) : UnidirGradient(storage)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationLaplaceLinearBoundaryUScaled() {}
 
 

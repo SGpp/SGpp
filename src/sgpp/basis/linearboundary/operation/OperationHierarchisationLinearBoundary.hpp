@@ -30,7 +30,8 @@ namespace sg
 {
 
 /**
- * Hierarchisation on sparse grid, linear case
+ * Hierarchisation on sparse grid, linear case with boundaries
+ * (diagonal cut through subspace scheme)
  */
 class OperationHierarchisationLinearBoundary : public OperationHierarchisation
 {

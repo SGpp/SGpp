@@ -38,7 +38,7 @@ namespace sg
 {
 
 /**
- * Implementation of Laplace for linear functions with boundaries pentagon cut through subspace scheme
+ * Implementation of Laplace for linear functions with boundaries diagonal cut through subspace scheme
  */
 class OperationLaplaceLinearBoundary: public OperationMatrix, public UnidirGradient
 {

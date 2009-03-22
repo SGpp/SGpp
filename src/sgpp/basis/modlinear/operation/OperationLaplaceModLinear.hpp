@@ -40,10 +40,22 @@
 namespace sg
 {
 
+/**
+ * Implementation of Laplace for mod linear functions
+ */
 class OperationLaplaceModLinear : public UnidirGradient, public OperationMatrix
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationLaplaceModLinear(GridStorage* storage) : UnidirGradient(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationLaplaceModLinear() {}
 
 	virtual void mult(DataVector& alpha, DataVector& result)

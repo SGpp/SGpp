@@ -30,18 +30,29 @@ namespace sg
 {
 
 /**
- * Hierarchisation on sparse grid, linear case
+ * Hierarchisation on sparse grid, linear case with boundaries
+ * (pentagon cut through subspace scheme)
  */
 class OperationHierarchisationLinearBoundaryUScaled : public OperationHierarchisation
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationHierarchisationLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationHierarchisationLinearBoundaryUScaled() {}
 
 	virtual void doHierarchisation(DataVector& node_values);
 	virtual void doDehierarchisation(DataVector& alpha);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
 };
 

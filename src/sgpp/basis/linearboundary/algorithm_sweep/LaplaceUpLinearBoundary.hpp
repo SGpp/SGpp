@@ -108,20 +108,7 @@ protected:
 
 		index.get(dim, current_level, current_index);
 
-		if(current_level == 0)
-		{
-			if(!index.hint(dim))
-			{
-				index.top(dim);
-				if(!storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fl, fr);
-				}
-
-				index.left_levelzero(dim);
-			}
-		}
-		else
+		if(current_level > 0)
 		{
 			if(!index.hint(dim))
 			{
@@ -140,10 +127,37 @@ protected:
 				index.up(dim);
 			}
 		}
+		else
+		{
+			if(!index.hint(dim))
+			{
+				index.top(dim);
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, fl, fr);
+				}
+
+				index.left_levelzero(dim);
+			}
+		}
 
 		index.get(dim, current_level, current_index);
 
-		if (current_level == 0)
+		if (current_level > 0)
+		{
+			double fm = fml + fmr;
+
+			double alpha_value = source[seq];
+			double h = 1/pow(2.0,current_level);
+
+			// transposed operations:
+			result[seq] = fm;
+
+			fl = fm/2.0 + alpha_value*h/2.0 + fl;
+			fr = fm/2.0 + alpha_value*h/2.0 + fr;
+
+		}
+		else
 		{
 			size_t seq_left;
 			size_t seq_right;
@@ -163,19 +177,6 @@ protected:
 			result[seq_left] += 1.0/6.0*source[seq_right];
 
 			index.left_levelzero(dim);
-		}
-		else
-		{
-			double fm = fml + fmr;
-
-			double alpha_value = source[seq];
-			double h = 1/pow(2.0,current_level);
-
-			// transposed operations:
-			result[seq] = fm;
-
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
 		}
 	}
 };

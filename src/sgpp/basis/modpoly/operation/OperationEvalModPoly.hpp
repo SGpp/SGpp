@@ -32,17 +32,32 @@
 namespace sg
 {
 
+/**
+ * This class implements OperationEval for a grids with mod poly basis ansatzfunctions with
+ */
 class OperationEvalModPoly : public OperationEval
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 * @param degree the polynom's max. degree
+	 */
 	OperationEvalModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationEvalModPoly() {}
 
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
+	/// Mod Poly Basis object
 	SModPolyBase base;
 };
 

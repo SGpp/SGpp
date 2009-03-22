@@ -29,16 +29,30 @@
 namespace sg
 {
 
+/**
+ * This class implements OperationB for a grids with linear basis ansatzfunctions
+ * with boundaries (pentagon cut through subspace scheme)
+ */
 class OperationBLinearBoundaryUScaled : public OperationB
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GirdStorage object
+	 */
 	OperationBLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationBLinearBoundaryUScaled() {}
 
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
 };
 
