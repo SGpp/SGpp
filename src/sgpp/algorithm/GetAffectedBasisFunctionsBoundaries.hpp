@@ -115,8 +115,21 @@ protected:
 				working.get(current_dim, temp, work_index);
 				global_work_index = work_index;
 
+				if (work_level > 0)
+				{
+					double new_value = basis.eval(work_level, work_index, point[current_dim]);
+
+					if(current_dim == storage->dim()-1)
+					{
+						result.push_back(std::make_pair(seq, value*new_value));
+					}
+					else
+					{
+						rec(basis, point, current_dim + 1, value*new_value, working, result);
+					}
+				}
 				// handle boundaries if we are on level 0
-				if (work_level == 0)
+				else
 				{
 					// level 0, index 0
 					working.left_levelzero(current_dim);
@@ -146,19 +159,6 @@ protected:
 						rec(basis, point, current_dim + 1, value*new_value_l_zero_right, working, result);
 					}
 				}
-				else
-				{
-					double new_value = basis.eval(work_level, work_index, point[current_dim]);
-
-					if(current_dim == storage->dim()-1)
-					{
-						result.push_back(std::make_pair(seq, value*new_value));
-					}
-					else
-					{
-						rec(basis, point, current_dim + 1, value*new_value, working, result);
-					}
-				}
 			}
 
 			// there are no levels left
@@ -169,14 +169,7 @@ protected:
 
 			// this decides in which direction we should descend by evaluating the corresponding bit
 			// the bits are coded from left to right starting with level 1 being in position src_level
-			if (work_level == 0)
-			{
-				if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
-					break;
-
-				working.top(current_dim);
-			}
-			else
+			if (work_level > 0)
 			{
 				double hat = 0.0;
 				level_type h = 0;
@@ -196,6 +189,13 @@ protected:
 				{
 					working.right_child(current_dim);
 				}
+			}
+			else
+			{
+				if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
+					break;
+
+				working.top(current_dim);
 			}
 			++work_level;
 		}
