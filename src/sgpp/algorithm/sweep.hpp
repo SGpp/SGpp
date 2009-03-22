@@ -204,30 +204,8 @@ protected:
 
 			index.get(dim_list[dim_rem-1], current_level, current_index);
 
-			// handle level zero
-			if (current_level == 0)
-			{
-				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
-
-				index.right_levelzero(dim_list[dim_rem-1]);
-				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
-
-				if (!index.hint(dim_list[dim_rem-1]))
-				{
-					index.top(dim_list[dim_rem-1]);
-					if(!storage->end(index.seq()))
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-					}
-					else
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
-					}
-
-					index.left_levelzero(dim_list[dim_rem-1]);
-				}
-			}
-			else
+			// handle level greater zero
+			if (current_level > 0)
 			{
 				// given current point to next dim
 				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
@@ -257,9 +235,31 @@ protected:
 					index.up(dim_list[dim_rem-1]);
 				}
 			}
+			// handle level zero
+			else
+			{
+				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+
+				index.right_levelzero(dim_list[dim_rem-1]);
+				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+
+				if (!index.hint(dim_list[dim_rem-1]))
+				{
+					index.top(dim_list[dim_rem-1]);
+					if(!storage->end(index.seq()))
+					{
+						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+					}
+					else
+					{
+						sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+					}
+
+					index.left_levelzero(dim_list[dim_rem-1]);
+				}
+			}
 		}
 	}
-
 };
 
 }
