@@ -37,6 +37,11 @@ template<class LT, class IT>
 class poly_base
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param degree the polynom's max. degree
+	 */
 	poly_base(int degree) : polynoms(NULL), degree(degree)
 	{
 		if(degree < 2)
@@ -53,6 +58,9 @@ public:
 		initPolynoms(x, 1, 1);
 	}
 
+	/**
+	 * Destructor
+	 */
 	~poly_base()
 	{
 		if(polynoms)
@@ -61,6 +69,10 @@ public:
 		}
 	}
 
+	/**
+	 * Evaluate a base functions.
+	 * Has a dependence on the absolute position of grid point and support.
+	 */
 	double eval(LT level, IT index, double p)
 	{
 		size_t deg = degree - 1 < level ? degree - 1 : level;
@@ -74,10 +86,16 @@ public:
 	}
 
 protected:
+	/// Pointer to polynoms
 	double* polynoms;
+	/// the polynom's max degree
 	int degree;
 
 private:
+	/**
+	 * Evaluate a base functions.
+	 * Has a dependence on the absolute position of grid point and support.
+	 */
 	double evalPolynom(size_t id, size_t deg, double val)
 	{
 		double* x_store = this->polynoms + (degree + 3) * id;
@@ -96,9 +114,9 @@ private:
 		return y_val;
 	}
 
-/**
- * recursively creates polynomial values
- */
+	/**
+	 * recursively creates polynomial values
+	 */
 	void initPolynoms(std::vector<double>& x, LT level, IT index)
 	{
 		// Add new point

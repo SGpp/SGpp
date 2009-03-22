@@ -32,25 +32,12 @@
 
 namespace sg
 {
-/**
- * Implements the hierarchisation on a sprase grid with mod poly base functions
- *
- * @param node_values the functions values in the node base
- *
- * @todo Implement the hierarchisation on the sparse grid with mod poly base functions
- */
+
 void OperationHierarchisationModPoly::doHierarchisation(DataVector& node_values)
 {
 	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
-/**
- * Implements the dehierarchisation on a sprase grid with mod poly base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- *
- * @todo Implement the dehierarchisation on the sparse grid with mod poly base functions
- */
 void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha)
 {
 	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");

@@ -30,16 +30,29 @@
 namespace sg
 {
 
+/**
+ * This class implements OperationB for a grids with mod wavelet basis ansatzfunctions
+ */
 class OperationBModWavelet : public OperationB
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationBModWavelet(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationBModWavelet() {}
 
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
 };
 

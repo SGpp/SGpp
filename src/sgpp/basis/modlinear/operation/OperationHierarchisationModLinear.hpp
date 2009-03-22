@@ -36,13 +36,23 @@ namespace sg
 class OperationHierarchisationModLinear : public OperationHierarchisation
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	OperationHierarchisationModLinear(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationHierarchisationModLinear() {}
 
 	virtual void doHierarchisation(DataVector& node_values);
 	virtual void doDehierarchisation(DataVector& alpha);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
 };
 

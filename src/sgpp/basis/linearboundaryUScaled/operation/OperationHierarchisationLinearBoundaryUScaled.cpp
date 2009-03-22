@@ -32,11 +32,6 @@
 namespace sg
 {
 
-/**
- * Implements the hierarchisation on a sprase grid with linear base functions and boundaries
- *
- * @param node_values the functions values in the node base
- */
 void OperationHierarchisationLinearBoundaryUScaled::doHierarchisation(DataVector& node_values)
 {
 	detail::HierarchisationLinearBoundaryUScaled func(this->storage);
@@ -57,11 +52,6 @@ void OperationHierarchisationLinearBoundaryUScaled::doHierarchisation(DataVector
 	}
 }
 
-/**
- * Implements the dehierarchisation on a sprase grid with linear base functions and boundaries
- *
- * @param alpha the coefficients of the sparse grid's base functions
- */
 void OperationHierarchisationLinearBoundaryUScaled::doDehierarchisation(DataVector& alpha)
 {
 	detail::DehierarchisationLinearBoundaryUScaled func(this->storage);

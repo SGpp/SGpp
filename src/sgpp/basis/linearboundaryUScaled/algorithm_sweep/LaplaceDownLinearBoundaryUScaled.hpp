@@ -39,13 +39,23 @@ class LaplaceDownLinearBoundaryUScaled
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
+
+	/// Pointer to the GridStorage Object
 	GridStorage* storage;
 
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
 	LaplaceDownLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
 	{
 	}
 
+	/**
+	 * Destructor
+	 */
 	~LaplaceDownLinearBoundaryUScaled()
 	{
 	}
@@ -106,6 +116,16 @@ public:
 
 protected:
 
+	/**
+	 * recursive function for the calculation of Down
+	 *
+	 * @param source DataVector that contains the coefficients of the ansatzfunction
+	 * @param result DataVector in which the result of the operation is stored
+	 * @param index reference to a griditerator object that is used navigate through the grid
+	 * @param dim the dimension in which the operation is executed
+	 * @param fl function value on the left boundary
+	 * @param fr function value on the right boundary
+	 */
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 	{
 		size_t seq = index.seq();
@@ -143,8 +163,6 @@ protected:
 			index.up(dim);
 		}
 	}
-
-
 };
 
 } // namespace detail

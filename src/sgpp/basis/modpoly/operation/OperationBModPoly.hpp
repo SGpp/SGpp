@@ -32,17 +32,32 @@
 namespace sg
 {
 
+/**
+ * This class implements OperationB for a grids with mod poly basis ansatzfunctions
+ */
 class OperationBModPoly : public OperationB
 {
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 * @param degree the polynom's max. degree
+	 */
 	OperationBModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+
+	/**
+	 * Destructor
+	 */
 	virtual ~OperationBModPoly() {}
 
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
 
 protected:
+	/// Pointer to GridStorage object
 	GridStorage* storage;
+	/// Mod Poly Basis object
 	SModPolyBase base;
 };
 
