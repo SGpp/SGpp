@@ -81,8 +81,8 @@ public:
 			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
 			{
-				DataVector* temp = new DataVector(1);
-				double dbl_temp = 0.0;
+				//DataVector* temp = new DataVector(1);
+				//double dbl_temp = 0.0;
 
 				vec.clear();
 
@@ -90,20 +90,14 @@ public:
 
 				ga(basis, line, vec);
 
-				for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+				#pragma omp critical
 				{
-					dbl_temp = iter->second * source[i];
-					if (dbl_temp != 0.0)
+					for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 					{
-						(*temp)[0] = result[iter->first];
-						(*temp)[0] += iter->second * source[i];
-						#pragma omp critical
-						{
-							result[iter->first] = (*temp)[0];
-						}
+
+						result[iter->first] += iter->second * source[i];
 					}
 				}
-				delete temp;
 			}
 		}
 #else
