@@ -214,6 +214,9 @@ protected:
 	{
 		index_type index((*storage)[refine_index]);
 
+		//Sets leaf property of index, which is refined to false
+		(*storage)[refine_index]->setLeaf(false);
+
 		// @todo: Maybe it's possible to move predecessor/successor discovery into the storage concept
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
@@ -275,6 +278,7 @@ protected:
 				index.set(d, source_level, source_index);
 			}
 		}
+		index.setLeaf(true);
 		storage->insert(index);
 	}
 

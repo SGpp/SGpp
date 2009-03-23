@@ -79,7 +79,7 @@ public:
 
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
-			index.push(d, 1, 1);
+			index.push(d, 1, 1, false);
 		}
 
 		this->regular_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim() - 1);
@@ -199,6 +199,16 @@ protected:
 
 			if(current_level <= level)
 			{
+				// set Leaf option of index
+				if (current_level == level)
+				{
+					index.setLeaf(true);
+				}
+				else
+				{
+					index.setLeaf(false);
+				}
+
 				// d-1 recursion
 				this->regular_rec(storage, index, current_dim - 1, current_level, level);
 			}
@@ -229,10 +239,21 @@ protected:
 	{
         for(level_t l = 1; l <= level-current_level + 1; l++)
         {
-            for(index_t i = 1; i <= 1<<(l-1); i++)
+            if (l == level-current_level + 1)
             {
-                index.push(0, l, 2*i-1);
-                storage->insert(index);
+            	for(index_t i = 1; i <= 1<<(l-1); i++)
+                {
+                    index.push(0, l, 2*i-1, true);
+                    storage->insert(index);
+                }
+            }
+            else
+            {
+            	for(index_t i = 1; i <= 1<<(l-1); i++)
+                {
+                    index.push(0, l, 2*i-1, false);
+                    storage->insert(index);
+                }
             }
         }
 	}
