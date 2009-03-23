@@ -33,7 +33,7 @@ namespace sg
 {
 
 /**
- * Unidirectional scheme with gradient used for building the laplace operator without boundaries
+ * Unidirectional scheme with gradient used for building the laplace operator
  */
 class UnidirGradient
 {
