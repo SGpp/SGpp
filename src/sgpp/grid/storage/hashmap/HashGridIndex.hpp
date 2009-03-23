@@ -96,6 +96,8 @@ public:
      */
     HashGridIndex(std::istream& istream) : DIM(0), level(NULL), index(NULL)
     {
+    	size_t temp_leaf;
+
     	istream >> DIM;
 
     	level = new level_type[DIM];
@@ -107,7 +109,16 @@ public:
 			istream >> level[d];
 			istream >> index[d];
         }
-        //istream >> Leaf;
+        // read leaf option
+        istream >> temp_leaf;
+        if (temp_leaf == 0)
+        {
+        	Leaf = false;
+        }
+        {
+        	Leaf = true;
+        }
+
         rehash();
     }
 
@@ -142,7 +153,7 @@ public:
         }
         ostream << std::endl;
 
-        //ostream << Leaf << std::endl;
+        ostream << Leaf << std::endl;
 	}
 
 	/**
@@ -224,6 +235,16 @@ public:
 	{
 		l = level[d];
 		i = index[d];
+	}
+
+	/**
+	 * sets the Leaf option of this index
+	 *
+	 * @param isLeaf specifies if the current index is a leaf or not
+	 */
+	void setLeaf(bool isLeaf)
+	{
+		Leaf = isLeaf;
 	}
 
 	/**

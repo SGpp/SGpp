@@ -181,15 +181,14 @@ public:
 	 }
 
 	/**
-	 * returns true if there are no more childs in dimensioin d
-	 *
-	 * @todo implement this helper function
+	 * returns true if there are no more childs in any dimension
 	 *
 	 * @param d the moving direction
 	 */
 	bool hint(size_t d) const
 	{
-		return storage->get(this->seq_)->isLeaf();
+		//return storage->get(this->seq_)->isLeaf();
+		return false;
 	}
 
 	/**

@@ -448,6 +448,16 @@ def test_getAffected():
     print "Value of Function: " + str(pc)  
     
     
+def test_grid_serialize():
+    factory = Grid.createLinearGrid(2)
+    storage = factory.getStorage()
+    
+    gen = factory.createGridGenerator()
+    gen.regular(2)
+    
+    print factory.serialize()  
+    
+    
 #===============================================================================
 # Main
 #===============================================================================
@@ -455,4 +465,4 @@ def test_getAffected():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    test_getAffected()
+    test_grid_serialize()
