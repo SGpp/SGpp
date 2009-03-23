@@ -189,8 +189,7 @@ public:
 	 */
 	bool hint(size_t d) const
 	{
-		return false;
-		//return storage->get(this->seq_)->isLeaf();
+		return storage->get(this->seq_)->isLeaf();
 	}
 
 	/**

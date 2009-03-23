@@ -85,22 +85,21 @@ public:
 		// left boundary
 		index.left_levelzero(dim);
 		seq = index.seq();
-		if(!storage->end(seq))
+		left_boundary = source[seq];
+		// right boundary
+		index.right_levelzero(dim);
+		seq = index.seq();
+		right_boundary = source[seq];
+
+		// move to root
+		index.top(dim);
+
+		if(!storage->end(index.seq()))
 		{
-			left_boundary = source[seq];
-			// right boundary
-			index.right_levelzero(dim);
-			seq = index.seq();
-			right_boundary = source[seq];
-
-			// move to root
-			index.top(dim);
-
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, left_boundary, right_boundary);
-			}
+			rec(source, result, index, dim, left_boundary, right_boundary);
 		}
+
+		index.left_levelzero(dim);
 	}
 
 protected:

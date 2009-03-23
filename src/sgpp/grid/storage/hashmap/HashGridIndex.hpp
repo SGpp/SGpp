@@ -58,7 +58,7 @@ public:
     {
     	level = new level_type[dim];
     	index = new index_type[dim];
-    	bool Leaf = false;
+    	Leaf = false;
     }
 
     /**
@@ -66,6 +66,7 @@ public:
      */
     HashGridIndex() : DIM(0), level(NULL), index(NULL)
     {
+    	Leaf = false;
     }
 
     /**
@@ -77,14 +78,14 @@ public:
     {
     	level = new level_type[DIM];
     	index = new index_type[DIM];
-    	bool Leaf = false;
+    	Leaf = false;
 
         for(size_t d = 0; d < DIM; d++)
         {
             level[d] = o->level[d];
             index[d] = o->index[d];
         }
-        //Leaf = o->Leaf;
+        Leaf = o->Leaf;
         rehash();
     }
 
@@ -99,7 +100,7 @@ public:
 
     	level = new level_type[DIM];
     	index = new index_type[DIM];
-    	bool Leaf = false;
+    	Leaf = false;
 
         for(size_t d = 0; d < DIM; d++)
         {
