@@ -217,19 +217,11 @@ protected:
 					{
 						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
 					}
-					else
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
-					}
 
 					index.step_right(dim_list[dim_rem-1]);
 					if(!storage->end(index.seq()))
 					{
 						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-					}
-					else
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 					}
 
 					index.up(dim_list[dim_rem-1]);
@@ -249,10 +241,6 @@ protected:
 					if(!storage->end(index.seq()))
 					{
 						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-					}
-					else
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 					}
 
 					index.left_levelzero(dim_list[dim_rem-1]);
