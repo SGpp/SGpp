@@ -2,7 +2,7 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2008 Joerg Blank (blankj@in.tum.de)                          #
+# Copyright (C) 2008 Joerg Blank (blankj@in.tum.de)                         #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
