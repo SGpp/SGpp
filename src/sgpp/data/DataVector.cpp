@@ -114,18 +114,18 @@ int DataVector::addValue()
 void DataVector::setAll(double value)
 {
 	int n = size*dim;
-#ifdef USEOMP
-	#pragma omp parallel for schedule(static)
+//#ifdef USEOMP
+//	#pragma omp parallel for schedule(static)
+//	for(int i = 0; i < n; i++)
+//	{
+//		data[i] = value;
+//	}
+//#else
 	for(int i = 0; i < n; i++)
 	{
 		data[i] = value;
 	}
-#else
-	for(int i = 0; i < n; i++)
-	{
-		data[i] = value;
-	}
-#endif
+//#endif
 }
 
 double DataVector::get(int i) const
