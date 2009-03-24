@@ -548,7 +548,7 @@ def doTest():
 
     if options.stats != None:
         txt = formTxt(te_refine, tr_refine, num_refine)
-        writeStats(options.stats, txt)
+        #writeStats(options.stats, txt)
         if options.verbose: print txt
     
     return (tr_refine, te_refine, num_refine)
@@ -575,10 +575,10 @@ def formHeader():
 ##
 def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
     txt = ""
-    if withHeader:
-        txt = formHeader()
+    #if withHeader:
+    #    txt = formHeader()
     for i in xrange(len(tr_refine)):
-        txt = txt + " \n%f, %.10f, %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+        txt = txt + "%f %.10f %f %f %f %.10f %.10f" % (options.level, options.regparam, options.adaptive, i, num_refine[i], tr_refine[i], te_refine[i])
     
     return txt + "\n"
 
