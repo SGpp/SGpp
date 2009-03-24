@@ -92,8 +92,8 @@ def isARFFFile(filename):
 
 #-------------------------------------------------------------------------------
 ## Writes String to File and checks if file existant
-def writeStringToFile(s, filename):
-    if os.path.exists(filename):
+def writeStringToFile(s, filename, check=True):
+    if check and os.path.exists(filename):
         i = raw_input("File <%s> exists. Overwrite [y/n]? " % (filename))
         if len(i) > 0 and i[0] == 'y':
             f = gzOpen(filename, 'w')
@@ -321,7 +321,11 @@ def writeDataARFF(data, merge=False):
     return
 
 
-
+#-------------------------------------------------------------------------------
+## Writes a data object to a file, specified by data["filename"]+".maple"
+# @param data a data object
+# @param merge set to True, iff data is a list of data objects and they
+#        should be joined
 def writeDataMaple(data, merge):
     if merge == True:
         print "Ignoring merge. Not implemented yet!"
@@ -350,6 +354,30 @@ def writeDataMaple(data, merge):
         fout.close()
 
     return
+
+#-------------------------------------------------------------------------------
+## Writes a DataVector object to a file, specified by filename.
+# Output in the file is "X := Matrix([[...],[...],...,[...]]);"
+# @param data a DataVector object
+# @param filename the file's name
+# @param format (optional) format specifier, default: "%s"
+# @param maple_name (optional) name of variable in Maple, default: "X"
+# @param check (optional) if set to true, program will ask before overwriting files
+def writeDataVectorMaple(data, filename, format="%s", maple_name="X", check=True):
+    numrows = data.getSize()
+    numcols = data.getDim()
+    s = "%s := Matrix([\n" % (maple_name)
+    for row in xrange(numrows):
+        col_list = []
+        for col in xrange(numcols):
+            col_list.append(format % (data.get(row, col)))
+        s += "["+",".join(col_list)+"]"
+        if row < numrows-1:
+            s += ","
+        s += "\n"
+    s += "], datatype=float);"
+    writeStringToFile(s, filename, check=check)
+
 
 #-------------------------------------------------------------------------------
 ## Writes information that is needed for the normalization of data to a file.
@@ -486,7 +514,7 @@ def split_n_folds(data, num_partitions, seed=None):
         for element in xrange(size_fold):
             for d in xrange(dim):
                 dvec[i][element*dim + d] = data["data"][d][seq[index]]
-            #FIXME: this doesn't work for regression, because the last parameter is not necessary class
+            #@todo: this doesn't work for regression, because the last parameter is not necessary class
             cvec[i][element] = data["classes"][seq[index]]
             index += 1
         size_left = size_left-size_fold
@@ -642,7 +670,7 @@ class Matrix:
         temp = DataVector(alpha.getSize())
 
         if self.CMode == "laplace":
-            # TODO: implement
+            # @todo: implement
             self.C.mult(alpha, temp)
             result.axpy(M*self.l, temp)
 
@@ -650,27 +678,27 @@ class Matrix:
             result.axpy(M*self.l, alpha)
             
         elif self.CMode == "ratio":
-            # TODO: implement
+            # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
             
         elif self.CMode == "levelsum":
-            # TODO: implement
+            # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "energy":
-            # TODO: implement
+            # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "copy":
-            # TODO: implement
+            # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
         
         elif self.CMode == "pseudounit":
-            # TODO: implement
+            # @todo: implement
             self.C.applyRatio(alpha,temp)
             result.axpy(M*self.l,temp)
 
@@ -680,7 +708,7 @@ class Matrix:
 #-------------------------------------------------------------------------------
 
 def restoreGrid(text):
-    #FIXME: is there any control of correctness of text?
+    #@todo: is there any control of correctness of text?
     return Grid.unserialize(text)
 
 
