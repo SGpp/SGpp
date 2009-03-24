@@ -228,6 +228,7 @@ protected:
 			index.set(d, source_level + 1, 2 * source_index - 1);
 			if(!storage->has_key(&index))
 			{
+				index.setLeaf(true);
 				create_gridpoint(storage, index);
 			}
 
@@ -235,6 +236,7 @@ protected:
 			index.set(d, source_level + 1, 2 * source_index + 1);
 			if(!storage->has_key(&index))
 			{
+				index.setLeaf(true);
 				create_gridpoint(storage, index);
 			}
 
@@ -271,14 +273,23 @@ protected:
 
 				if(!storage->has_key(&index))
 				{
+					// save old leaf value
+					bool saveLeaf = index.isLeaf();
+					index.setLeaf(false);
 					create_gridpoint(storage, index);
+					// restore leaf value
+					index.setLeaf(saveLeaf);
+				}
+				else
+				{
+					// set stored index to false
+					(storage->get((storage->find(&index))->second))->setLeaf(false);
 				}
 
 				// restore values
 				index.set(d, source_level, source_index);
 			}
 		}
-		index.setLeaf(true);
 		storage->insert(index);
 	}
 
