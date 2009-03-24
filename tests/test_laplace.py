@@ -277,7 +277,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1)
 
         m = generateLaplaceMatrix(factory, 4)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref) 
@@ -291,7 +291,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1)
 
         m = generateLaplaceMatrix(factory, 5)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref) 
@@ -299,17 +299,32 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         
     ##
     # Test regular sparse grid dD, normal hat basis functions.
-    #def testHatRegulardD(self):
-        #from pysgpp import Grid
+    def testHatRegulardD_one(self):
+        from pysgpp import Grid
         
-        #factory = Grid.createLinearBoundaryGrid(3)
+        factory = Grid.createLinearBoundaryGrid(3)
 
-        #m = generateLaplaceMatrix(factory, 3)
-        #m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat')
+        m = generateLaplaceMatrix(factory, 3)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat')
 
         # compare
-        #compareStiffnessMatrices(self, m, m_ref)        
-           
+        compareStiffnessMatrices(self, m, m_ref)  
+        
+    
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHatRegulardD_two(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createLinearBoundaryGrid(3)
+
+        m = generateLaplaceMatrix(factory, 4)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref)    
+        
+                 
         
 # Run tests for this file if executed as application 
 if __name__=='__main__':
