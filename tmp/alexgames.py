@@ -456,6 +456,108 @@ def test_grid_serialize():
     gen.regular(2)
     
     print factory.serialize()  
+
+
+def openFile(filename):
+    try:
+        data = readDataARFF(filename)
+    except:
+        print ("An error occured while reading " + filename + "!")
+        sys.exit(1)
+        
+    if data.has_key("classes") == False:
+        print ("No classes found in the given File " + filename + "!")
+        sys.exit(1)
+        
+    return data
+
+
+def generateCMatrix(factory, level, verbose=False):
+    from pysgpp import DataVector
+    storage = factory.getStorage()
+    
+    laplace = factory.createOperationLaplace()
+    
+    # create vector
+    alpha = DataVector(storage.size())
+    erg = DataVector(storage.size())
+
+    # create stiffness matrix
+    m = DataVector(storage.size(), storage.size())
+    m.setAll(0)
+    for i in xrange(storage.size()):
+        # apply unit vectors
+        alpha.setAll(0)
+        alpha[i] = 1
+        laplace.mult(alpha, erg)
+        if verbose:
+            print erg, erg.sum()
+        m.setColumn(i, erg)
+
+    return m
+
+
+def generateBMatrix(factory, level, verbose=False):
+    from pysgpp import DataVector
+    storage = factory.getStorage()
+       
+    b = factory.createOperationB()
+    
+    # create vector
+    alpha = buildTrainingVector(openFile("function.out"))
+    point = DataVector(storage.size())
+    erg = DataVector(storage.size())
+
+    # create stiffness matrix
+    m = DataVector(storage.size(), storage.size())
+    m.setAll(0)
+    for i in xrange(storage.size()):
+        # apply unit vectors
+        point.setAll(0)
+        point[i] = 1
+        b.mult(alpha, point, erg)
+        if verbose:
+            print erg, erg.sum()
+        m.setColumn(i, erg)
+
+    return m
+
+
+def generateBtransMatrix(factory, level, verbose=False):
+    from pysgpp import DataVector
+    storage = factory.getStorage()
+       
+    b = factory.createOperationB()
+    
+    # create vector
+    alpha = buildTrainingVector(openFile("function.out"))
+    point = DataVector(storage.size())
+    erg = DataVector(storage.size())
+
+    # create stiffness matrix
+    m = DataVector(storage.size(), storage.size())
+    m.setAll(0)
+    for i in xrange(storage.size()):
+        # apply unit vectors
+        point.setAll(0)
+        point[i] = 1
+        b.multTranspose(alpha, point, erg)
+        if verbose:
+            print erg, erg.sum()
+        m.setColumn(i, erg)
+
+    return m
+
+
+def build_DM_Matrices():
+    factory = Grid.createLinearBoundaryGrid(3)
+    level = 3
+    gen = factory.createGridGenerator()
+    gen.regular(level)
+    
+    laplace_m = generateCMatrix(factory, level)
+    B_m = generateBMatrix(factory, level)
+    B_trans_m = generateBtransMatrix(factory, level)    
     
     
 #===============================================================================
@@ -465,4 +567,4 @@ def test_grid_serialize():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    test_grid_serialize()
+    build_DM_Matrices()
