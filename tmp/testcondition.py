@@ -7,6 +7,7 @@ from pysgpp import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
 import random
+import numpy as np
 
 from array import array
 
@@ -114,10 +115,11 @@ def generateCMatrix(factory, level, verbose=False):
     # create vector
     alpha = DataVector(storage.size())
     erg = DataVector(storage.size())
+    col = 0
 
     # create stiffness matrix
-    m = DataVector(storage.size(), storage.size())
-    m.setAll(0)
+    m = np.zeros( (storage.size(), storage.size()) )
+
     for i in xrange(storage.size()):
         # apply unit vectors
         alpha.setAll(0)
@@ -125,7 +127,12 @@ def generateCMatrix(factory, level, verbose=False):
         laplace.mult(alpha, erg)
         if verbose:
             print erg, erg.sum()
-        m.setColumn(i, erg)
+        
+        #Sets the column in m
+        for j in xrange(storage.size()):
+            m[j,col] = erg[j]
+            
+        col = col + 1
 
     return m
 
@@ -138,21 +145,27 @@ def generateBMatrix(factory, level, verbose=False):
     
     # create vector
     alpha = buildTrainingVector(openFile("function.out"))
-    point = DataVector(1, storage.dim())
-    erg = DataVector(1, storage.size())
-
+    point = DataVector(1, storage.size())
+    erg = DataVector(1, storage.dim())
+    erg.setAll(0.0)
+    col = 0
     # create B matrix
-    m = DataVector(storage.size(), storage.dim())
-    m.setAll(0)
-    for i in xrange(storage.dim()):
+    m = np.zeros( (storage.dim(), storage.size()) )
+
+    for i in xrange(storage.size()):
         # apply unit vectors
         point.setAll(0)
         point[i] = 1
-        b.mult(alpha, point, erg)
+        b.multTranspose(alpha, point, erg)
         if verbose:
             print erg, erg.sum()
-        m.setColumn(i, erg)
 
+        #Sets the column in m
+        for j in xrange(storage.dim()):
+            m[j,col] = erg[j]
+
+        col = col + 1
+        
     return m
 
 
@@ -175,24 +188,44 @@ def MapleMatrixString(m, Name, r, c):
 
 
 def build_DM_Matrices():
-    factory = Grid.createLinearBoundaryUScaledGrid(6)
-    level = 3
+    factory = Grid.createLinearGrid(2)
+    level = 7
     gen = factory.createGridGenerator()
     gen.regular(level)
     
-    print "started generating laplacian matrix..."
+    aem = 194
+    lam = 0.01
+    
+    print "generating laplacian matrix..."
     laplace_m = generateCMatrix(factory, level)
-    print "started generating B matrix..."
-    B_m = generateBMatrix(factory, level)
+    print laplace_m
+    print "generating transposed B matrix..."
+    Bt_m = generateBMatrix(factory, level)
+    print Bt_m
+    print "generating B from transposed B..."
+    B_m = Bt_m.transpose()
+    print B_m
+    print "multiplying B and B^T..." 
+    B_res = np.dot(B_m,Bt_m)
+    print B_res
+    print "multiplying aem*lambda*C..."
+    C = aem * lam * laplace_m
+    print "adding C and B_res..."
+    C = C + B_res
+    print C
+    print "calculating condition number..."
+    cond = np.linalg.cond(C)
+    
+    print cond
     
     #write maple file
-    print "started writing maple file..."
-    fout = file("testcondition.maple", "w")
-    fout.write("with(linalg):\n")
-    fout.write(MapleMatrixString(laplace_m, "C", factory.getStorage().size(), factory.getStorage().size()))
-    fout.write("\n")
-    fout.write(MapleMatrixString(laplace_m, "B", factory.getStorage().size(), factory.getStorage().dim()))
-    fout.close()
+    #print "started writing maple file..."
+    #fout = file("testcondition.maple", "w")
+    #fout.write("with(linalg):\n")
+    #fout.write(MapleMatrixString(laplace_m, "C", factory.getStorage().size(), factory.getStorage().size()))
+    #fout.write("\n")
+    #fout.write(MapleMatrixString(B_m, "B", factory.getStorage().size(), factory.getStorage().dim()))
+    #fout.close()
     print "done!"
     
     
