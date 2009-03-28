@@ -29,7 +29,7 @@ namespace sg
 {
 
 /**
- * linear base functions with boundaries
+ * linear basis functions with boundaries
  * And here we have another implicit dependence on tensor products
  */
 template<class LT, class IT>
@@ -37,7 +37,7 @@ class linearboundaryUScaledBase
 {
 public:
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 */
 	double eval(LT level, IT index, double p)
