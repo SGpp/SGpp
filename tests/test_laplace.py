@@ -7,7 +7,7 @@
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU General Public License as published by      #
+# it under the terms of the GNU Lesser Public License as published by       #
 # the Free Software Foundation; either version 3 of the License, or         #
 # (at your option) any later version.                                       #
 #                                                                           #
@@ -16,18 +16,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
 # GNU Lesser General Public License for more details.                       #
 #                                                                           #
-# You should have received a copy of the GNU General Public License         #
+# You should have received a copy of the GNU Lesser Public License          #
 # along with pysgpp; if not, write to the Free Software                     #
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-import unittest
-
-# # to be able to import bin/tools.py
-# import sys
-# sys.path.append('../bin/')
-# import tools
+import unittest, tools
 
 def generateLaplaceMatrix(factory, level, verbose=False):
     from pysgpp import DataVector
@@ -60,12 +55,12 @@ def readReferenceMatrix(self, storage, filename):
     from pysgpp import DataVector
     # read reference matrix
     try:
-        fd = open(filename, 'r')
+        fd = tools.gzOpen(filename, 'r')
     except IOError, e:
         fd = None
         
     if not fd:
-        fd = open('tests/' + filename, 'r')
+        fd = tools.gzOpen('tests/' + filename, 'r')
         
     dat = fd.read().strip()
     fd.close()
@@ -180,7 +175,7 @@ class TestOperationLaplaceLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(3)
 
         m = generateLaplaceMatrix(factory, 3)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)
@@ -193,7 +188,7 @@ class TestOperationLaplaceModLinear(unittest.TestCase):
         factory = Grid.createModLinearGrid(1)
 
         m = generateLaplaceMatrix(factory, 5)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)
@@ -205,7 +200,7 @@ class TestOperationLaplaceModLinear(unittest.TestCase):
         #print "------------------------------------------------"
         m = generateLaplaceMatrix(factory, 3)
         #print "------------------------------------------------"
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)
@@ -220,7 +215,7 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
         factory = Grid.createLinearBoundaryUScaledGrid(1)
 
         m = generateLaplaceMatrix(factory, 4)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref) 
@@ -234,7 +229,7 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
         factory = Grid.createLinearBoundaryUScaledGrid(1)
 
         m = generateLaplaceMatrix(factory, 5)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref) 
@@ -248,7 +243,7 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
         factory = Grid.createLinearBoundaryUScaledGrid(3)
 
         m = generateLaplaceMatrix(factory, 3)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)  
@@ -262,7 +257,7 @@ class TestOperationLaplaceLinearBoundaryUScaled(unittest.TestCase):
         factory = Grid.createLinearBoundaryUScaledGrid(3)
 
         m = generateLaplaceMatrix(factory, 2)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)
@@ -277,7 +272,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1)
 
         m = generateLaplaceMatrix(factory, 4)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref) 
@@ -291,7 +286,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(1)
 
         m = generateLaplaceMatrix(factory, 5)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref) 
@@ -305,7 +300,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(3)
 
         m = generateLaplaceMatrix(factory, 3)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)  
@@ -319,7 +314,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         factory = Grid.createLinearBoundaryGrid(3)
 
         m = generateLaplaceMatrix(factory, 4)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz')
 
         # compare
         compareStiffnessMatrices(self, m, m_ref)    
