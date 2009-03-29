@@ -62,20 +62,18 @@ def generateBBTMatrix(factory, training, verbose=False):
     erg = DataVector(alpha.getSize())
     temp = DataVector(training.getSize())
     
-    col = 0
-    
     # create B matrix
     m = DataVector(storage.size(), storage.size())
     for i in xrange(storage.size()):
         # apply unit vectors
+        temp.setAll(0.0)
+        erg.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
         b.multTranspose(alpha, training, temp)
         b.mult(temp, training, erg)
         #Sets the column in m
         m.setColumn(i, erg)
-
-        col = col + 1
         
     return m
 
