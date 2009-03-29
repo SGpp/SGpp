@@ -28,52 +28,6 @@ except:
 def callback_deprecated(option, opt, value, parser):
     print "Warning: Option %s is deprecated." % (option)
     
-
-## Reads in an ARFF file:
-# The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
-# [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
-#
-# @param filename the file's filename that should be read
-# @return returns a set of a array with the data (named data), a array with the classes (named classes) and the filename named as filename
-def readDataARFF(filename):
-    fin = open(filename, "r")
-    data = []
-    classes = []
-    hasclass = False
-
-    # get the different section of ARFF-File
-    for line in fin:
-        sline = line.strip().lower()
-        if sline.startswith("%") or len(sline) == 0:
-            continue
-
-        if sline.startswith("@data"):
-            break
-        
-        if sline.startswith("@attribute"):
-            value = sline.split()
-            if value[1].startswith("class"):
-                hasclass = True
-            else:
-                data.append([])
-    
-    #read in the data stored in the ARFF file
-    for line in fin:
-        sline = line.strip()
-        if sline.startswith("%") or len(sline) == 0:
-            continue
-
-        values = sline.split(",")
-        if hasclass:
-            classes.append(float(values[-1]))
-            values = values[:-1]
-        for i in xrange(len(values)):
-            data[i].append(float(values[i]))
-            
-    # cleaning up and return
-    fin.close()
-    return {"data":data, "classes":classes, "filename":filename}
-
     
 #-------------------------------------------------------------------------------
 ## Builds the training data vector
@@ -125,8 +79,6 @@ def generateCMatrix(factory, level, verbose=False):
         alpha.setAll(0)
         alpha[i] = 1
         laplace.mult(alpha, erg)
-        if verbose:
-            print erg, erg.sum()
         
         #Sets the column in m
         for j in xrange(storage.size()):
@@ -137,31 +89,32 @@ def generateCMatrix(factory, level, verbose=False):
     return m
 
 
-def generateBMatrix(factory, level, verbose=False):
+def generateBBTMatrix(factory, level, training, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
        
     b = factory.createOperationB()
     
-    # create vector
-    alpha = buildTrainingVector(openFile("function.out"))
-    point = DataVector(1, storage.size())
-    erg = DataVector(1, storage.dim())
-    erg.setAll(0.0)
+    alpha = DataVector(storage.size())
+    erg = DataVector(alpha.getSize())
+    temp = DataVector(training.getSize())
+    
     col = 0
+    
     # create B matrix
-    m = np.zeros( (storage.dim(), storage.size()) )
+    m = np.zeros( (storage.size(), storage.size()) )
+    
+    #print training
 
     for i in xrange(storage.size()):
         # apply unit vectors
-        point.setAll(0)
-        point[i] = 1
-        b.multTranspose(alpha, point, erg)
-        if verbose:
-            print erg, erg.sum()
-
+        alpha.setAll(0.0)
+        alpha[i] = 1.0
+        b.multTranspose(alpha, training, temp)
+        b.mult(temp, training, erg)
+        
         #Sets the column in m
-        for j in xrange(storage.dim()):
+        for j in xrange(storage.size()):
             m[j,col] = erg[j]
 
         col = col + 1
@@ -169,44 +122,41 @@ def generateBMatrix(factory, level, verbose=False):
     return m
 
 
-def MapleMatrixString(m, Name, r, c):
-    maplematrix = Name + ":=matrix(" + str(r) + "," + str(c) + ", ["
-    
-    print r
-    print c
+#def MapleMatrixString(m, Name, r, c):
+#    maplematrix = Name + ":=matrix(" + str(r) + "," + str(c) + ", ["
+#    
+#    print r
+#    print c
 
-    for i in range(r):
-        for j in range(c):
-            if j < (c-1) or i < (r-1):
-                maplematrix = maplematrix + str(round(m[i*r + j],10)) + ","
-            else:
-                maplematrix = maplematrix + str(round(m[i*r + j],10))
+#    for i in range(r):
+#        for j in range(c):
+#            if j < (c-1) or i < (r-1):
+#                maplematrix = maplematrix + str(round(m[i*r + j],10)) + ","
+#            else:
+#                maplematrix = maplematrix + str(round(m[i*r + j],10))
     
-    maplematrix = maplematrix + "]):"
+#    maplematrix = maplematrix + "]):"
         
-    return maplematrix
+#    return maplematrix
 
 
 def build_DM_Matrices():
-    factory = Grid.createLinearGrid(2)
-    level = 7
+    factory = Grid.createLinearGrid(1)
+    level = 3
     gen = factory.createGridGenerator()
     gen.regular(level)
     
+    #training = buildTrainingVector(openFile('twospirals.wieland.arff.gz'))
+    training = buildTrainingVector(openFile('data_dim_1_nops_8_float.arff.gz'))
+    
     aem = 194
-    lam = 0.01
+    lam = 0.0001
     
     print "generating laplacian matrix..."
     laplace_m = generateCMatrix(factory, level)
     print laplace_m
-    print "generating transposed B matrix..."
-    Bt_m = generateBMatrix(factory, level)
-    print Bt_m
-    print "generating B from transposed B..."
-    B_m = Bt_m.transpose()
-    print B_m
-    print "multiplying B and B^T..." 
-    B_res = np.dot(B_m,Bt_m)
+    print "generating B*B^T matrix..."
+    B_res = generateBBTMatrix(factory, level, training) #np.dot(B_m,Bt_m)
     print B_res
     print "multiplying aem*lambda*C..."
     C = aem * lam * laplace_m
@@ -226,7 +176,7 @@ def build_DM_Matrices():
     #fout.write("\n")
     #fout.write(MapleMatrixString(B_m, "B", factory.getStorage().size(), factory.getStorage().dim()))
     #fout.close()
-    print "done!"
+    #print "done!"
     
     
 #===============================================================================

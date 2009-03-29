@@ -174,7 +174,7 @@ def readDataTrivial(filename, delim = "", hasclass = True):
             for i in xrange(len(values)):
                 data[i].append(float(values[i]))
 
-    
+
     fin.close()
     
     if hasclass:

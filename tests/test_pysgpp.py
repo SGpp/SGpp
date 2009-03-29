@@ -23,6 +23,7 @@ import test_GridStorage
 import test_algorithms
 import test_laplace
 import test_hierarchisation
+import test_BBT
 
 import test_GridFactory
 import test_DataVector
@@ -39,6 +40,7 @@ if __name__ == '__main__':
          unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
          unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
          unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
+         unittest.defaultTestLoader.loadTestsFromModule(test_BBT)
         ])
 
     unittest.TextTestRunner().run(alltests)
