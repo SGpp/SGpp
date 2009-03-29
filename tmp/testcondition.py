@@ -111,11 +111,11 @@ def generateBBTMatrix(factory, level, training, verbose=False):
         alpha.setAll(0.0)
         alpha[i] = 1.0
         b.multTranspose(alpha, training, temp)
-        b.mult(temp, training, erg)
+        #b.mult(temp, training, erg)
         
         #Sets the column in m
-        for j in xrange(storage.size()):
-            m[j,col] = erg[j]
+        for j in xrange(storage.dim()):
+            m[j,col] = temp[j]
 
         col = col + 1
         
