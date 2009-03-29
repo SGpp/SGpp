@@ -96,8 +96,9 @@ def generateBBTMatrix(factory, level, training, verbose=False):
     b = factory.createOperationB()
     
     alpha = DataVector(storage.size())
-    erg = DataVector(alpha.getSize())
     temp = DataVector(training.getSize())
+    
+    erg = DataVector(alpha.getSize())
     
     col = 0
     
@@ -108,14 +109,16 @@ def generateBBTMatrix(factory, level, training, verbose=False):
 
     for i in xrange(storage.size()):
         # apply unit vectors
+        temp.setAll(0.0)
+        erg.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
         b.multTranspose(alpha, training, temp)
-        #b.mult(temp, training, erg)
+        b.mult(temp, training, erg)
         
         #Sets the column in m
-        for j in xrange(storage.dim()):
-            m[j,col] = temp[j]
+        for j in xrange(storage.size()):
+            m[j,col] = erg[j]
 
         col = col + 1
         
@@ -141,13 +144,13 @@ def generateBBTMatrix(factory, level, training, verbose=False):
 
 
 def build_DM_Matrices():
-    factory = Grid.createLinearGrid(1)
+    factory = Grid.createLinearBoundaryUScaledGrid(2)
     level = 3
     gen = factory.createGridGenerator()
     gen.regular(level)
     
-    #training = buildTrainingVector(openFile('twospirals.wieland.arff.gz'))
-    training = buildTrainingVector(openFile('data_dim_1_nops_8_float.arff.gz'))
+    training = buildTrainingVector(openFile('twospirals.wieland.arff.gz'))
+    #training = buildTrainingVector(openFile('data_dim_1_nops_8_float.arff.gz'))
     
     aem = 194
     lam = 0.0001
