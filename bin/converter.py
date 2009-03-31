@@ -45,6 +45,7 @@ parser.add_option("-o", "--output", action="append", type="string", dest="outfil
 parser.add_option("--delimiter", action="store", type="string", default="", dest="delimiter", help="The delimiter separating the columns for the simple-format. Default: Split for whitespaces.")
 parser.add_option("--normfile", action="store", type="string", dest="normfile", default=None, help="Write normalization information to file, so that further data could be normalized")
 parser.add_option("--maple", action="store_true", default=False, dest="maple", help="If enabled, write Maple-readable format.")
+parser.add_option("--hasnoclass", action="store_false", default=True, dest="hasnoclass", help="Set, if data does not contain class attribute.")
 (options,args)=parser.parse_args()
 
 if options.infiles == None:
@@ -103,13 +104,13 @@ for i in xrange(len(options.infiles)):
 			data.append(readDataARFF(options.infiles[i]))
 			data[i]["filename"] = options.outfiles[i]
 		elif options.types[i] == "simple":
-			data.append(readDataTrivial(options.infiles[i], delim=options.delimiter))
+			data.append(readDataTrivial(options.infiles[i], delim=options.delimiter, hasclass=options.hasnoclass))
 			data[i]["filename"] = options.outfiles[i]
 	except Exception, e:
 		print("Error while reading "  + options.infiles[i] +"! Aborting...");
 		print e
 		sys.exit(1)
-				
+print(data)	
 checkData(data)
 
 if not options.nonormalization:

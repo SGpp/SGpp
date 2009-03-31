@@ -2,6 +2,9 @@
 
 from optparse import OptionParser
 import sys
+sys.path.append("../bin")
+
+
 from tools import *
 from pysgpp import *
 from painlesscg import cg,sd,cg_new
@@ -125,6 +128,42 @@ def generateBBTMatrix(factory, level, training, verbose=False):
     return m
 
 
+def generateBTMatrix(factory, level, training, verbose=False):
+    from pysgpp import DataVector
+    storage = factory.getStorage()
+       
+    b = factory.createOperationB()
+    
+    alpha = DataVector(storage.size())
+    temp = DataVector(training.getSize())
+    
+    #erg = DataVector(alpha.getSize())
+    
+    col = 0
+    
+    # create BT matrix
+    m = np.zeros( (training.getSize(), storage.size()) )
+    
+    #print training
+
+    for i in xrange(storage.size()):
+        # apply unit vectors
+        temp.setAll(0.0)
+#        erg.setAll(0.0)
+        alpha.setAll(0.0)
+        alpha[i] = 1.0
+        b.multTranspose(alpha, training, temp)
+#        b.mult(temp, training, erg)
+        
+        #Sets the column in m
+        for j in xrange(training.getSize()):
+            m[j,col] = temp[j]
+
+        col = col + 1
+        
+    return m
+
+
 #def MapleMatrixString(m, Name, r, c):
 #    maplematrix = Name + ":=matrix(" + str(r) + "," + str(c) + ", ["
 #    
@@ -144,32 +183,34 @@ def generateBBTMatrix(factory, level, training, verbose=False):
 
 
 def build_DM_Matrices():
-    factory = Grid.createLinearBoundaryUScaledGrid(2)
+    factory = Grid.createLinearGrid(1)
     level = 3
     gen = factory.createGridGenerator()
     gen.regular(level)
     
-    training = buildTrainingVector(openFile('twospirals.wieland.arff.gz'))
-    #training = buildTrainingVector(openFile('data_dim_1_nops_8_float.arff.gz'))
+#    training = buildTrainingVector(openFile('twospirals.wieland.arff.gz'))
+    training = buildTrainingVector(openFile('../tests/data/data_dim_1_nops_8_float.arff.gz'))
     
     aem = 194
     lam = 0.0001
     
-    print "generating laplacian matrix..."
-    laplace_m = generateCMatrix(factory, level)
-    print laplace_m
+#    print "generating laplacian matrix..."
+#    laplace_m = generateCMatrix(factory, level)
+#    print laplace_m
     print "generating B*B^T matrix..."
-    B_res = generateBBTMatrix(factory, level, training) #np.dot(B_m,Bt_m)
+    B_res = generateBTMatrix(factory, level, training) #np.dot(B_m,Bt_m)
     print B_res
-    print "multiplying aem*lambda*C..."
-    C = aem * lam * laplace_m
-    print "adding C and B_res..."
-    C = C + B_res
-    print C
-    print "calculating condition number..."
-    cond = np.linalg.cond(C)
-    
-    print cond
+#    B_res = generateBBTMatrix(factory, level, training) #np.dot(B_m,Bt_m)
+#    print B_res
+#    print "multiplying aem*lambda*C..."
+#    C = aem * lam * laplace_m
+#    print "adding C and B_res..."
+#    C = C + B_res
+#    print C
+#    print "calculating condition number..."
+#    cond = np.linalg.cond(C)
+#    
+#    print cond
     
     #write maple file
     #print "started writing maple file..."
