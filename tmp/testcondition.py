@@ -92,7 +92,7 @@ def generateCMatrix(factory, level, verbose=False):
     return m
 
 
-def generateBBTMatrix(factory, level, training, verbose=False):
+def generateBBTMatrix(factory, training, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
        
@@ -108,8 +108,6 @@ def generateBBTMatrix(factory, level, training, verbose=False):
     # create B matrix
     m = np.zeros( (storage.size(), storage.size()) )
     
-    #print training
-
     for i in xrange(storage.size()):
         # apply unit vectors
         temp.setAll(0.0)
@@ -128,7 +126,37 @@ def generateBBTMatrix(factory, level, training, verbose=False):
     return m
 
 
-def generateBTMatrix(factory, level, training, verbose=False):
+def generateBTMatrix(factory, training, verbose=False):
+    from pysgpp import DataVector
+    storage = factory.getStorage()
+       
+    b = factory.createOperationB()
+    
+    alpha = DataVector(storage.size())
+    temp = DataVector(training.getSize())
+        
+    col = 0
+    
+    # create BT matrix
+    m = np.zeros( (training.getSize(), storage.size()) )
+    
+    for i in xrange(storage.size()):
+        # apply unit vectors
+        temp.setAll(0.0)
+        alpha.setAll(0.0)
+        alpha[i] = 1.0
+        b.multTranspose(alpha, training, temp)
+        
+        #Sets the column in m
+        for j in xrange(training.getSize()):
+            m[j,col] = temp[j]
+
+        col = col + 1
+        
+    return m
+
+
+def generateBTMatrixPython(factory, training, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
        
@@ -137,29 +165,43 @@ def generateBTMatrix(factory, level, training, verbose=False):
     alpha = DataVector(storage.size())
     temp = DataVector(training.getSize())
     
-    #erg = DataVector(alpha.getSize())
-    
-    col = 0
-    
     # create BT matrix
-    m = np.zeros( (training.getSize(), storage.size()) )
+    m = DataVector(training.getSize(), storage.size())
     
-    #print training
-
     for i in xrange(storage.size()):
         # apply unit vectors
         temp.setAll(0.0)
-#        erg.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
         b.multTranspose(alpha, training, temp)
-#        b.mult(temp, training, erg)
         
-        #Sets the column in m
-        for j in xrange(training.getSize()):
-            m[j,col] = temp[j]
+        #Sets the column in m       
+        m.setColumn(i, temp)
+        
+    return m
 
-        col = col + 1
+
+def generateBBTMatrixPython(factory, training, verbose=False):
+    storage = factory.getStorage()
+       
+    b = factory.createOperationB()
+    
+    alpha = DataVector(storage.size())
+    erg = DataVector(alpha.getSize())
+    temp = DataVector(training.getSize())
+    
+    # create B matrix
+    m = DataVector(storage.size(), storage.size())
+    for i in xrange(storage.size()):
+        # apply unit vectors
+        temp.setAll(0.0)
+        erg.setAll(0.0)
+        alpha.setAll(0.0)
+        alpha[i] = 1.0
+        b.multTranspose(alpha, training, temp)
+        b.mult(temp, training, erg)
+        #Sets the column in m
+        m.setColumn(i, erg)
         
     return m
 
@@ -176,41 +218,235 @@ def generateBTMatrix(factory, level, training, verbose=False):
 #                maplematrix = maplematrix + str(round(m[i*r + j],10)) + ","
 #            else:
 #                maplematrix = maplematrix + str(round(m[i*r + j],10))
-    
+#    
 #    maplematrix = maplematrix + "]):"
-        
+#        
 #    return maplematrix
 
+def readReferenceMatrix(storage, filename):
+    from pysgpp import DataVector
+    # read reference matrix
+    try:
+        fd = gzOpen(filename, 'r')
+    except IOError, e:
+        fd = None
+        
+    if not fd:
+        fd = gzOpen('../tests/' + filename, 'r')
+        
+    dat = fd.read().strip()
+    fd.close()
+    dat = dat.split('\n')
+    dat = map(lambda l: l.strip().split(None), dat)
+
+    #print len(dat)
+    #print len(dat[0])
+    m_ref = DataVector(len(dat), len(dat[0]))
+    for i in xrange(len(dat)):
+        for j in xrange(len(dat[0])):
+            #print float(dat[i][j])
+            m_ref[i*len(dat[0]) + j] = float(dat[i][j])
+
+    return m_ref
+
+
+def readDataVector(filename):
+    
+    try:
+        fin = tools.gzOpen(filename, 'r')
+    except IOError, e:
+        fin = None
+        
+    if not fin:
+        fin = tools.gzOpen('tests/' + filename, 'r')
+    
+    data = []
+    classes = []
+    hasclass = False
+
+    # get the different section of ARFF-File
+    for line in fin:
+        sline = line.strip().lower()
+        if sline.startswith("%") or len(sline) == 0:
+            continue
+
+        if sline.startswith("@data"):
+            break
+        
+        if sline.startswith("@attribute"):
+            value = sline.split()
+            if value[1].startswith("class"):
+                hasclass = True
+            else:
+                data.append([])
+    
+    #read in the data stored in the ARFF file
+    for line in fin:
+        sline = line.strip()
+        if sline.startswith("%") or len(sline) == 0:
+            continue
+
+        values = sline.split(",")
+        if hasclass:
+            classes.append(float(values[-1]))
+            values = values[:-1]
+        for i in xrange(len(values)):
+            data[i].append(float(values[i]))
+            
+    # cleaning up and return
+    fin.close()
+    return {"data":data, "classes":classes, "filename":filename}
+
+##
+# Compares, if two BBT matrices are "almost" equal.
+# Has to handle the problem that the underlying grid was ordered
+# differently. Uses heuristics, e.g. whether the diagonal elements
+# and row and column sums match.
+def compareBBTMatrices(m1, m2):
+    # check dimensions
+ 
+    n = m1.getSize()
+
+    # check diagonal
+    values = []
+    for i in range(n):
+        values.append(m1[i*n + i])
+    values.sort()
+    values_ref = []
+    for i in range(n):
+        values_ref.append(m2[i*n + i])
+    values_ref.sort()
+
+    for i in range(n):
+        print values_ref[i], values[i]
+ #       testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Diagonal %f != %f" % (values[i], values_ref[i]))
+
+    # check row sum
+    v = DataVector(n)
+    values = []
+    for i in range(n):
+        m1.getRow(i,v)
+        values.append(v.sum())
+    values.sort()
+    values_ref = []
+    for i in range(n):
+        m2.getRow(i,v)
+        values_ref.append(v.sum())
+    values_ref.sort()
+    for i in range(n):
+        print values_ref[i], values[i]
+        #testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Row sum %f != %f" % (values[i], values_ref[i]))
+
+    # check col sum
+    v = DataVector(n)
+    values = []
+    for i in range(n):
+        m1.getColumn(i,v)
+        values.append(v.sum())
+    values.sort()
+    values_ref = []
+    for i in range(n):
+        m2.getColumn(i,v)
+        values_ref.append(v.sum())
+    values_ref.sort()
+    for i in range(n):
+        print values_ref[i], values[i]
+        #testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Col sum %f != %f" % (values[i], values_ref[i]))
+
+
+##
+# Compares, if two BT matrices are "almost" equal.
+# Has to handle the problem that the underlying grid was ordered
+# differently. Uses heuristics, e.g. whether the 
+# row and column sums match.
+def compareBTMatrices(m1, m2):
+    # check dimensions
+ 
+    print m1
+    print m2
+ 
+    n = m1.getSize() # lines
+    m = m1.getDim()  # columns
+
+    # check row sum
+    v = DataVector(m)
+    values = []
+    for i in range(n):
+        m1.getRow(i,v)
+        values.append(v.sum())
+    values.sort()
+    values_ref = []
+    for i in range(n):
+        m2.getRow(i,v)
+        values_ref.append(v.sum())
+    values_ref.sort()
+    for i in range(n):
+        print values_ref[i], values[i]
+        #testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Row sum %f != %f" % (values[i], values_ref[i]))
+
+    # check col sum
+    v = DataVector(n)
+    values = []
+    for i in range(m):
+        m1.getColumn(i,v)
+        values.append(v.sum())
+    values.sort()
+    values_ref = []
+    for i in range(m):
+        m2.getColumn(i,v)
+        values_ref.append(v.sum())
+    values_ref.sort()
+    for i in range(m):
+        print values_ref[i], values[i]
+        #testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Col sum %f != %f" % (values[i], values_ref[i]))
+
+
+def writeMatrixToFile(filename, matrix, n, m):
+    fout = file(filename, "w")
+        
+    for i in range(n):
+        for j in range(m):
+            fout.write(str(matrix[i*m+j]) + " " )
+            
+        fout.write("\n")
+        
+    fout.close()
+    
+    return
 
 def build_DM_Matrices():
-    factory = Grid.createLinearGrid(1)
-    level = 3
+    factory = Grid.createLinearBoundaryGrid(2)
+    level = 5
     gen = factory.createGridGenerator()
     gen.regular(level)
     
-#    training = buildTrainingVector(openFile('twospirals.wieland.arff.gz'))
-    training = buildTrainingVector(openFile('../tests/data/data_dim_1_nops_8_float.arff.gz'))
+    #training = buildTrainingVector(openFile('../datasets/twospirals/twospirals.wieland.arff.gz'))
+    training = buildTrainingVector(openFile('../datasets/ripley/ripleyGarcke.train.arff.gz'))
+    #training = buildTrainingVector(openFile('../tests/data/data_dim_1_nops_8_float.arff.gz'))
+       
+    aem = 125
+    lam = 0.01
     
-    aem = 194
-    lam = 0.0001
+    # comparison of matrices
+    #m = generateBTMatrixPython(factory, training)
+    #m_ref = readReferenceMatrix(factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
+    #compareBTMatrices(m, m_ref) 
+    #writeMatrixToFile('BT_trapezrand_dim_1_17.dat', m, m.getSize(), m.getDim())
     
-#    print "generating laplacian matrix..."
-#    laplace_m = generateCMatrix(factory, level)
-#    print laplace_m
+    print "generating laplacian matrix..."
+    laplace_m = generateCMatrix(factory, level)
+    print laplace_m
     print "generating B*B^T matrix..."
-    B_res = generateBTMatrix(factory, level, training) #np.dot(B_m,Bt_m)
+    B_res = generateBBTMatrix(factory, training) #np.dot(B_m,Bt_m)
     print B_res
-#    B_res = generateBBTMatrix(factory, level, training) #np.dot(B_m,Bt_m)
-#    print B_res
-#    print "multiplying aem*lambda*C..."
-#    C = aem * lam * laplace_m
-#    print "adding C and B_res..."
-#    C = C + B_res
-#    print C
-#    print "calculating condition number..."
-#    cond = np.linalg.cond(C)
-#    
-#    print cond
+    print "multiplying aem*lambda*C..."
+    C = aem * lam * laplace_m
+    print "adding C and B_res..."
+    C = C + B_res
+    print C
+    print "calculating condition number..."
+    cond = np.linalg.cond(C)    
+    print cond
     
     #write maple file
     #print "started writing maple file..."
