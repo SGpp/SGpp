@@ -52,28 +52,27 @@ def openFile(filename):
     return data
 
 
-def generateBBTMatrix(factory, training, verbose=False):
+def generateBTMatrix(factory, training, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
        
     b = factory.createOperationB()
     
     alpha = DataVector(storage.size())
-    erg = DataVector(alpha.getSize())
     temp = DataVector(training.getSize())
     
-    # create B matrix
-    m = DataVector(storage.size(), storage.size())
+    # create BT matrix
+    m = DataVector(training.getSize(), storage.size())
+    
     for i in xrange(storage.size()):
         # apply unit vectors
         temp.setAll(0.0)
-        erg.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
         b.multTranspose(alpha, training, temp)
-        b.mult(temp, training, erg)
-        #Sets the column in m
-        m.setColumn(i, erg)
+        
+        #Sets the column in m       
+        m.setColumn(i, temp)
         
     return m
 
@@ -95,13 +94,12 @@ def readReferenceMatrix(self, storage, filename):
     dat = map(lambda l: l.strip().split(None), dat)
 
     # right number of entries?
-    self.assertEqual(storage.size(), len(dat))
     self.assertEqual(storage.size(), len(dat[0]))
 
     m_ref = DataVector(len(dat), len(dat[0]))
     for i in xrange(len(dat)):
         for j in xrange(len(dat[0])):
-            m_ref[i*len(dat) + j] = float(dat[i][j])
+            m_ref[i*len(dat[0]) + j] = float(dat[i][j])
 
     return m_ref
 
@@ -158,30 +156,18 @@ def readDataVector(filename):
 # Has to handle the problem that the underlying grid was ordered
 # differently. Uses heuristics, e.g. whether the diagonal elements
 # and row and column sums match.
-def compareBBTMatrices(testCaseClass, m1, m2):
+def compareBTMatrices(testCaseClass, m1, m2):
     from pysgpp import DataVector
 
     # check dimensions
-    testCaseClass.assertEqual(m1.getSize(), m1.getDim())
     testCaseClass.assertEqual(m1.getSize(), m2.getSize())
     testCaseClass.assertEqual(m1.getDim(), m2.getDim())
 
-    n = m1.getSize()
-
-    # check diagonal
-    values = []
-    for i in range(n):
-        values.append(m1[i*n + i])
-    values.sort()
-    values_ref = []
-    for i in range(n):
-        values_ref.append(m2[i*n + i])
-    values_ref.sort()
-    for i in range(n):
-        testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Diagonal %f != %f" % (values[i], values_ref[i]))
+    n = m1.getSize() # lines
+    m = m1.getDim()  # columns
 
     # check row sum
-    v = DataVector(n)
+    v = DataVector(m)
     values = []
     for i in range(n):
         m1.getRow(i,v)
@@ -199,21 +185,21 @@ def compareBBTMatrices(testCaseClass, m1, m2):
     # check col sum
     v = DataVector(n)
     values = []
-    for i in range(n):
+    for i in range(m):
         m1.getColumn(i,v)
         values.append(v.sum())
     values.sort()
     values_ref = []
-    for i in range(n):
+    for i in range(m):
         m2.getColumn(i,v)
         values_ref.append(v.sum())
     values_ref.sort()
-    for i in range(n):
+    for i in range(m):
         testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Col sum %f != %f" % (values[i], values_ref[i]))
 
 
 
-class TestOperationBBTModLinear(unittest.TestCase):
+class TestOperationBTModLinear(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
@@ -225,11 +211,11 @@ class TestOperationBBTModLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
   
     ##
@@ -243,11 +229,11 @@ class TestOperationBBTModLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
                 
     ##
@@ -261,11 +247,11 @@ class TestOperationBBTModLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
   
         
     ##
@@ -279,14 +265,14 @@ class TestOperationBBTModLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
              
 
-class TestOperationBBTLinear(unittest.TestCase):
+class TestOperationBTLinear(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
@@ -298,11 +284,11 @@ class TestOperationBBTLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
   
     ##
@@ -316,11 +302,11 @@ class TestOperationBBTLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
                 
     ##
@@ -334,11 +320,11 @@ class TestOperationBBTLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
   
         
     ##
@@ -352,14 +338,14 @@ class TestOperationBBTLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
              
 
-class TestOperationBBTLinearBoundary(unittest.TestCase):
+class TestOperationBTLinearBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
@@ -371,11 +357,11 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
   
     ##
@@ -389,11 +375,11 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
                 
     ##
@@ -407,11 +393,11 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
   
         
     ##
@@ -425,14 +411,14 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref)     
+        compareBTMatrices(self, m, m_ref)     
         
 
-class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
+class TestOperationBTLinearBoundaryUscaled(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
@@ -444,11 +430,11 @@ class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
   
     ##
@@ -462,11 +448,11 @@ class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
 
                 
     ##
@@ -480,11 +466,11 @@ class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBTMatrices(self, m, m_ref) 
   
         
     ##
@@ -498,14 +484,13 @@ class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(level)
 
-        m = generateBBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
+        m = generateBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref)  
+        compareBTMatrices(self, m, m_ref)  
         
                                        
 # Run tests for this file if executed as application 
 if __name__=='__main__':
     unittest.main()
-

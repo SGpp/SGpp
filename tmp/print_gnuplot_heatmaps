@@ -2,4 +2,4 @@ set terminal png
 set output 'temp.png'
 set xrange[0:1]
 set yrange[0:1]
-plot 'temp.gnu' using 2:1:3 with image
+plot 'temp.gnu' using 1:2:3 with image
