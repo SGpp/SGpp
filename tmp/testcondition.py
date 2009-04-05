@@ -415,17 +415,18 @@ def writeMatrixToFile(filename, matrix, n, m):
     return
 
 def build_DM_Matrices():
-    factory = Grid.createLinearBoundaryGrid(2)
-    level = 5
+    factory = Grid.createLinearGrid(6)
+    level = 3
     gen = factory.createGridGenerator()
     gen.regular(level)
     
     #training = buildTrainingVector(openFile('../datasets/twospirals/twospirals.wieland.arff.gz'))
-    training = buildTrainingVector(openFile('../datasets/ripley/ripleyGarcke.train.arff.gz'))
+    #training = buildTrainingVector(openFile('../datasets/ripley/ripleyGarcke.train.arff.gz'))
+    training = buildTrainingVector(openFile('../datasets/bupa_liver/liver-disorders_normalized.arff.gz'))
     #training = buildTrainingVector(openFile('../tests/data/data_dim_1_nops_8_float.arff.gz'))
        
-    aem = 125
-    lam = 0.01
+    aem = 325
+    lam = 0.001
     
     # comparison of matrices
     #m = generateBTMatrixPython(factory, training)
@@ -434,15 +435,16 @@ def build_DM_Matrices():
     #writeMatrixToFile('BT_trapezrand_dim_1_17.dat', m, m.getSize(), m.getDim())
     
     print "generating laplacian matrix..."
-    laplace_m = generateCMatrix(factory, level)
-    print laplace_m
+    C = generateCMatrix(factory, level)
+    print C
     print "generating B*B^T matrix..."
-    B_res = generateBBTMatrix(factory, training) #np.dot(B_m,Bt_m)
+    B_res = generateBBTMatrix(factory, training)
     print B_res
     print "multiplying aem*lambda*C..."
-    C = aem * lam * laplace_m
+    C *= aem
+    C *= lam
     print "adding C and B_res..."
-    C = C + B_res
+    C += B_res
     print C
     print "calculating condition number..."
     cond = np.linalg.cond(C)    
