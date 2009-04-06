@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: latin-1 -*
+
 #############################################################################
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
@@ -31,13 +34,13 @@ elif sys.argv[1] == "1":
   dat = "#!/bin/bash\n\n"
   s_tr = "./create_dataset.py -d %d -n 20000 -o chess_%02dD_tr.dat.gz\n"
   s_te = "./create_dataset.py -d %d -n 10000 -o chess_%02dD_te.dat.gz\n"
-  for i in range(1,20):
+  for i in range(1,21):
     dat = dat+s_tr%(i, i)+s_te%(i,i)
   print dat
 
 elif sys.argv[1] == "2":
   dat = "#!/bin/bash\n\n"
-  s = "python ../../bin/converter.py -i chess_%02dD_tr.dat.gz -i chess_%02dD_te.dat.gz -t simple -b 0.015625\n"
-  for i in range(1,61):
+  s = "python ../../bin/converter.py -i chess_%02dD_tr.dat.gz -i chess_%02dD_te.dat.gz -t simple\n"
+  for i in range(1,21):
     dat = dat+s%(i, i)
   print dat

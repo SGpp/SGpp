@@ -1,63 +1,23 @@
 #!/bin/bash
 
-python ../../bin/converter.py -i chess_01D_tr.dat.gz -i chess_01D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_02D_tr.dat.gz -i chess_02D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_03D_tr.dat.gz -i chess_03D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_04D_tr.dat.gz -i chess_04D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_05D_tr.dat.gz -i chess_05D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_06D_tr.dat.gz -i chess_06D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_07D_tr.dat.gz -i chess_07D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_08D_tr.dat.gz -i chess_08D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_09D_tr.dat.gz -i chess_09D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_10D_tr.dat.gz -i chess_10D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_11D_tr.dat.gz -i chess_11D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_12D_tr.dat.gz -i chess_12D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_13D_tr.dat.gz -i chess_13D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_14D_tr.dat.gz -i chess_14D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_15D_tr.dat.gz -i chess_15D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_16D_tr.dat.gz -i chess_16D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_17D_tr.dat.gz -i chess_17D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_18D_tr.dat.gz -i chess_18D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_19D_tr.dat.gz -i chess_19D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_20D_tr.dat.gz -i chess_20D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_21D_tr.dat.gz -i chess_21D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_22D_tr.dat.gz -i chess_22D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_23D_tr.dat.gz -i chess_23D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_24D_tr.dat.gz -i chess_24D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_25D_tr.dat.gz -i chess_25D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_26D_tr.dat.gz -i chess_26D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_27D_tr.dat.gz -i chess_27D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_28D_tr.dat.gz -i chess_28D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_29D_tr.dat.gz -i chess_29D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_30D_tr.dat.gz -i chess_30D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_31D_tr.dat.gz -i chess_31D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_32D_tr.dat.gz -i chess_32D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_33D_tr.dat.gz -i chess_33D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_34D_tr.dat.gz -i chess_34D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_35D_tr.dat.gz -i chess_35D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_36D_tr.dat.gz -i chess_36D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_37D_tr.dat.gz -i chess_37D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_38D_tr.dat.gz -i chess_38D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_39D_tr.dat.gz -i chess_39D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_40D_tr.dat.gz -i chess_40D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_41D_tr.dat.gz -i chess_41D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_42D_tr.dat.gz -i chess_42D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_43D_tr.dat.gz -i chess_43D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_44D_tr.dat.gz -i chess_44D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_45D_tr.dat.gz -i chess_45D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_46D_tr.dat.gz -i chess_46D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_47D_tr.dat.gz -i chess_47D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_48D_tr.dat.gz -i chess_48D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_49D_tr.dat.gz -i chess_49D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_50D_tr.dat.gz -i chess_50D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_51D_tr.dat.gz -i chess_51D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_52D_tr.dat.gz -i chess_52D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_53D_tr.dat.gz -i chess_53D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_54D_tr.dat.gz -i chess_54D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_55D_tr.dat.gz -i chess_55D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_56D_tr.dat.gz -i chess_56D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_57D_tr.dat.gz -i chess_57D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_58D_tr.dat.gz -i chess_58D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_59D_tr.dat.gz -i chess_59D_te.dat.gz -t simple -b 0.015625
-python ../../bin/converter.py -i chess_60D_tr.dat.gz -i chess_60D_te.dat.gz -t simple -b 0.015625
+python ../../bin/converter.py -i chess_01D_tr.dat.gz -i chess_01D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_02D_tr.dat.gz -i chess_02D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_03D_tr.dat.gz -i chess_03D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_04D_tr.dat.gz -i chess_04D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_05D_tr.dat.gz -i chess_05D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_06D_tr.dat.gz -i chess_06D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_07D_tr.dat.gz -i chess_07D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_08D_tr.dat.gz -i chess_08D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_09D_tr.dat.gz -i chess_09D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_10D_tr.dat.gz -i chess_10D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_11D_tr.dat.gz -i chess_11D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_12D_tr.dat.gz -i chess_12D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_13D_tr.dat.gz -i chess_13D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_14D_tr.dat.gz -i chess_14D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_15D_tr.dat.gz -i chess_15D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_16D_tr.dat.gz -i chess_16D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_17D_tr.dat.gz -i chess_17D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_18D_tr.dat.gz -i chess_18D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_19D_tr.dat.gz -i chess_19D_te.dat.gz -t simple
+python ../../bin/converter.py -i chess_20D_tr.dat.gz -i chess_20D_te.dat.gz -t simple
 

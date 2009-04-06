@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: latin-1 -*
+
 #############################################################################
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
@@ -19,9 +22,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
-
-#!/usr/bin/python
-# -*- coding: latin-1 -*
 
 import sys, re, os, optparse, random
 sys.path.append("../../bin")
