@@ -54,7 +54,7 @@ double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>&
 double OperationEvalLinearBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
-	return test_dataset(this->storage, base, alpha, data, classes);
+	return test_dataset_boundary(this->storage, base, alpha, data, classes);
 }
 
 }

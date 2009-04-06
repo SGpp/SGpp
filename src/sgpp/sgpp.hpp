@@ -32,6 +32,7 @@
 #include "algorithm/GetAffectedBasisFunctions.hpp"
 #include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/classification/test_dataset.hpp"
+#include "algorithm/classification/test_dataset_boundary.hpp"
 
 #include "basis/basis.hpp"
 
