@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -20,42 +21,66 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/basis.hpp"
+#ifndef TEST_DATASET_BOUNDARY_HPP
+#define TEST_DATASET_BOUNDARY_HPP
 
-#include "basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.hpp"
-
-#include "sgpp.hpp"
-
+#include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
-namespace sg
-{
+#include <vector>
+#include <utility>
+#include <iostream>
 
-double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<double>& point)
+namespace sg {
+
+/**
+ * Returns the number of correctly classified instances in data without boundaries
+ *
+ * @param storage GridStorage object that contains the grid points
+ * @param basis reference to class that implements to current basis
+ * @param alpha the coefficients of the grid points
+ * @param data the data the should be tested
+ * @param classes the classes computed by the sparse grid's classification algorithm
+ */
+template<class BASIS>
+double test_dataset_boundary( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-	IndexValVector vec;
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctionsBoundaries<linearboundaryUScaledBase<unsigned int, unsigned int> > ga(storage);
+	double correct = 0;
 
-	ga(base, point, vec);
+	size_t size = data.getSize();
 
-	double result = 0.0;
+	std::vector<double> point;
 
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+
+	for(size_t i = 0; i < size; i++)
 	{
-		result += iter->second * alpha[iter->first];
+
+		IndexValVector vec;
+		double result = 0;
+
+		data.getLine(i, point);
+
+		ga(basis, point, vec);
+
+		for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+		{
+			result += iter->second * alpha[iter->first];
+		}
+
+		if( (result >= 0 && classes[i] >= 0) || (result < 0 && classes[i] < 0) )
+		{
+			correct++;
+		}
+
 	}
 
-	return result;
-}
+	return correct;
 
-double OperationEvalLinearBoundaryUScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
-{
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
-	return test_dataset_boundary(this->storage, base, alpha, data, classes);
 }
 
 }
 
+#endif /* TEST_DATASET_BOUNDARY_HPP */

@@ -79,6 +79,7 @@ namespace std {
 %include "src/sgpp/algorithm/AlgorithmDGEMV.hpp"
 %include "src/sgpp/algorithm/AlgorithmDGEMVBoundaries.hpp"
 %include "src/sgpp/algorithm/classification/test_dataset.hpp"
+%include "src/sgpp/algorithm/classification/test_dataset_boundary.hpp"
 %include "src/sgpp/algorithm/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 %include "src/sgpp/algorithm/sweep.hpp"
@@ -113,6 +114,6 @@ namespace std {
 %template(SGetAffectedBasisFunctionsBoundariesUScaled) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryUScaledBase>;
 
 %template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
-%template(test_dataset_linearboundary) sg::test_dataset<sg::SLinearBoundaryBase>;
-%template(test_dataset_linearboundaryUScaled) sg::test_dataset<sg::SLinearBoundaryUScaledBase>;
+%template(test_dataset_linearboundary) sg::test_dataset_boundary<sg::SLinearBoundaryBase>;
+%template(test_dataset_linearboundaryUScaled) sg::test_dataset_boundary<sg::SLinearBoundaryUScaledBase>;
 %template(test_dataset_modlin) sg::test_dataset<sg::SModLinearBase>;
