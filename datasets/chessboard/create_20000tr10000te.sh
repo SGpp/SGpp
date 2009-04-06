@@ -38,4 +38,6 @@
 ./create_dataset.py -d 18 -n 10000 -o chess_18D_te.dat.gz
 ./create_dataset.py -d 19 -n 20000 -o chess_19D_tr.dat.gz
 ./create_dataset.py -d 19 -n 10000 -o chess_19D_te.dat.gz
+./create_dataset.py -d 20 -n 20000 -o chess_20D_tr.dat.gz
+./create_dataset.py -d 20 -n 10000 -o chess_20D_te.dat.gz
 
