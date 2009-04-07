@@ -415,18 +415,18 @@ def writeMatrixToFile(filename, matrix, n, m):
     return
 
 def build_DM_Matrices():
-    factory = Grid.createLinearGrid(6)
-    level = 3
+    factory = Grid.createLinearGrid(2)
+    level = 5
     gen = factory.createGridGenerator()
     gen.regular(level)
     
     #training = buildTrainingVector(openFile('../datasets/twospirals/twospirals.wieland.arff.gz'))
-    #training = buildTrainingVector(openFile('../datasets/ripley/ripleyGarcke.train.arff.gz'))
-    training = buildTrainingVector(openFile('../datasets/bupa_liver/liver-disorders_normalized.arff.gz'))
+    training = buildTrainingVector(openFile('../datasets/ripley/ripleyGarcke.train.arff.gz'))
+    #training = buildTrainingVector(openFile('../datasets/bupa_liver/liver-disorders_normalized.arff.gz'))
     #training = buildTrainingVector(openFile('../tests/data/data_dim_1_nops_8_float.arff.gz'))
        
-    aem = 325
-    lam = 0.001
+    aem = 250
+    lam = 0.01
     
     # comparison of matrices
     #m = generateBTMatrixPython(factory, training)
