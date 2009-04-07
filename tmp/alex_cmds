@@ -1,8 +1,13 @@
 python classifier.py --data circle.arff --level 5 --zeh laplace --mode normal --gnuplot gnu.out --resolution 50 --lambda 0.001 -o function.out --verbose
-python classifier.py --data liver-disorders_normalized.arff.gz --level 2 --zeh laplace --mode normal --lambda 0.001 -o function.out --verbose --complete-boundary -a 10 -i 2000
-python classifier.py --data twospirals.wieland.arff.gz --test r --level 1 --zeh laplace --mode normal --gnuplot twospiral_complete_boundaries_a_100_lambda_0.001.gnuplot --resolution 50 --lambda 0.001 -o function.out -a 100 --complete-boundary
-python classifier.py --data ripleyGarcke.train.arff.gz --test ripleyGarcke.test.arff.gz --level 1 --zeh laplace --mode test --gnuplot ripley_no_boundaries_a_100_lambda_0.001.gnuplot --resolution 50 --lambda 0.001 -o function.out -a 100 -stats ripley_no_boundaries_a_100_lambda_0.001
-python classifier.py --data liver-disorders_normalized.arff --test liver-disorders_normalized.arff --level 0 --zeh laplace --mode test --foldlevel 10 --lambda 0.001 -o function.out --verbose --complete-boundary -i 4000 -a 5 --stats liver_complete_boundary
-python classifier.py --data ../datasets/chessboard/chess_02D_tr.dat.arff.gz --test ../datasets/chessboard/chess_02D_te.dat.arff.gz --level 3 --zeh laplace --mode test --gnuplot ripley_no_boundaries_a_100_lambda_0.001.gnuplot --resolution 50 --lambda 0.001
 
+python classifier.py --data liver-disorders_normalized.arff.gz --level 2 --zeh laplace --mode normal --lambda 0.001 -o function.out --verbose --complete-boundary -a 10 -i 2000
+python classifier.py --data liver-disorders_normalized.arff --test liver-disorders_normalized.arff --level 0 --zeh laplace --mode test --foldlevel 10 --lambda 0.001 -o function.out --verbose --complete-boundary -i 4000 -a 5 --stats liver_complete_boundary
+python classifier.py --data ../datasets/bupa_liver/liver-disorders_normalized.arff.gz --level 5 --zeh laplace --mode foldr --lambda 0.0001 --verbose -i 4000 -r 0.001 --stats bupa_liver_no_boundary_r0-001_la-0.0001_le_5
+
+python classifier.py --data twospirals.wieland.arff.gz --test r --level 1 --zeh laplace --mode normal --gnuplot twospiral_complete_boundaries_a_100_lambda_0.001.gnuplot --resolution 50 --lambda 0.001 -o function.out -a 100 --complete-boundary
+
+python classifier.py --data ripleyGarcke.train.arff.gz --test ripleyGarcke.test.arff.gz --level 1 --zeh laplace --mode test --gnuplot ripley_no_boundaries_a_100_lambda_0.001.gnuplot --resolution 50 --lambda 0.001 -o function.out -a 100 -stats ripley_no_boundaries_a_100_lambda_0.001
 python classifier.py --data ripleyGarcke.train.arff.gz --test ripleyGarcke.test.arff.gz --level 0 --zeh laplace --mode test --lambda 0.000001 -a 400 --stats ripley_uscaled_boundaries_a_200_lambda_0.000001 --uscaled-boundary -r 0.00001 -i 4000
+
+python classifier.py --data ../datasets/chessboard/chess_02D_tr.dat.arff.gz --test ../datasets/chessboard/chess_02D_te.dat.arff.gz --level 3 --zeh laplace --mode test --gnuplot ripley_no_boundaries_a_100_lambda_0.001.gnuplot --resolution 50 --lambda 0.001
+python classifier.py --data ../datasets/chessboard/chess_04D_tr.dat.arff.gz --test ../datasets/chessboard/chess_04D_te.dat.arff.gz --level 0 --zeh laplace --mode test --gnuplot chess.gnuplot --resolution 50 --lambda 0.001 --verbose -r 0.01 --uscaled-boundary -a 40 --adapt_points 5
