@@ -11,3 +11,5 @@ python classifier.py --data ripleyGarcke.train.arff.gz --test ripleyGarcke.test.
 
 python classifier.py --data ../datasets/chessboard/chess_02D_tr.dat.arff.gz --test ../datasets/chessboard/chess_02D_te.dat.arff.gz --level 3 --zeh laplace --mode test --gnuplot ripley_no_boundaries_a_100_lambda_0.001.gnuplot --resolution 50 --lambda 0.001
 python classifier.py --data ../datasets/chessboard/chess_04D_tr.dat.arff.gz --test ../datasets/chessboard/chess_04D_te.dat.arff.gz --level 0 --zeh laplace --mode test --gnuplot chess.gnuplot --resolution 50 --lambda 0.001 --verbose -r 0.01 --uscaled-boundary -a 40 --adapt_points 5
+python classifier.py --data ../datasets/chessboard/chess_10D_tr.dat.arff.gz --test ../datasets/chessboard/chess_10D_te.dat.arff.gz --level 1 --zeh laplace --mode test --lambda 0.001 --verbose -r 0.01 -a 10 --adapt_points 10 --stats chess10D_no_boundary
+python classifier.py --data ../datasets/chessboard/chess_10D_tr.dat.arff.gz --test ../datasets/chessboard/chess_10D_te.dat.arff.gz --level 0 --zeh laplace --mode test --lambda 0.001 --verbose -r 0.01 -a 11 --adapt_points 10 --stats chess10D_boundary --uscaled-boundary &
