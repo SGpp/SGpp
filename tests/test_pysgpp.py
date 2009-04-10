@@ -40,7 +40,7 @@ if __name__ == '__main__':
          unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
          unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
          unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
-         unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
+         #unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
          unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
          unittest.defaultTestLoader.loadTestsFromModule(test_BT)
         ])

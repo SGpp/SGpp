@@ -34,5 +34,4 @@ class TestClassifier(unittest.TestCase):
         self.fail("Not implemented")
 
 if __name__=="__main__":
-    print path
     unittest.main()    
