@@ -49,7 +49,7 @@ env.Append(LINKFLAGS=['-pthread'])
 if not env['ICC']:
     if env['OMP']:
         env.Append(CPPFLAGS=['-fopenmp'])
-        env.Append(CPPFLAGS=['-DUSEOMP'])
+        env.Append(CPPDEFINES=['USEOMP'])
         env.Append(LINKFLAGS=['-fopenmp'])
 
 ####### Sets icc tool chain #######
@@ -62,11 +62,15 @@ if env['ICC']:
 if env['ICC']:
     if env['OMP']:
         env.Append(CPPFLAGS=['-openmp'])
-        env.Append(CPPFLAGS=['-DUSEOMP'])
+        env.Append(CPPDEFINES=['USEOMP'])
         env.Append(LINKFLAGS=['-openmp'])    
 
 if not env['ICC'] and env.has_key('MARCH'):
 	env.Append(CPPFLAGS=('-march=' + env['MARCH']))
+
+
+env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+
 
 if not env.GetOption('clean'):	
     config = env.Configure()
@@ -81,15 +85,12 @@ if not env.GetOption('clean'):
 
     if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
         Exit(1)
+        
+    if not config.CheckCHeader('Python.h'):
+    	print "Python not found. Check path to Python include files."
+    	Exit(1)
 
     env = config.Finish()
-
-
-python_lib='python2.4'
-
-env.Append(PYTHON_LIBPATH=[distutils.sysconfig.PREFIX+"/libs"])
-env.Append(PYTHON_LIB=[python_lib])
-env.Append(PYTHON_CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 Export('env')
 
