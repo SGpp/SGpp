@@ -29,13 +29,6 @@ import os
 # Copy this file to custom.py #
 ###############################
 
-####### STLPort #######
-# path to STLport
-# global installation e.g.
-STLPORT = '/usr/include/stlport'
-# local installation (see documentation)
-#STLPORT = os.path.expanduser('~/include/stlport')
-
 ####### GCC Settings #######
 # additional compiler flags
 CPPFLAGS = ['-O3','-g','-funroll-loops']
