@@ -242,9 +242,9 @@ protected:
 					{
 						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
 					}
-
-					index.left_levelzero(dim_list[dim_rem-1]);
 				}
+
+				index.left_levelzero(dim_list[dim_rem-1]);
 			}
 		}
 	}

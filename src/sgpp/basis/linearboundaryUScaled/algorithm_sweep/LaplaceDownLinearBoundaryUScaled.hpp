@@ -103,14 +103,17 @@ public:
 		result[seq_right] += 1.0/6.0*left_boundary;
 
 		// move to root
-		index.top(dim);
-
-		if(!storage->end(index.seq()))
+		if (!index.hint(dim))
 		{
-			rec(source, result, index, dim, left_boundary, right_boundary);
-		}
+			index.top(dim);
 
-		index.left_levelzero(dim);
+			if(!storage->end(index.seq()))
+			{
+				rec(source, result, index, dim, left_boundary, right_boundary);
+			}
+
+			index.left_levelzero(dim);
+		}
 	}
 
 protected:

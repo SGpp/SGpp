@@ -250,7 +250,7 @@ public:
 	/**
 	 * checks if this gridpoint has any succesors in any dimension
 	 *
-	 * @return returns true if this a gridpoint has now children otherwise false
+	 * @return returns true if this gridpoint has no children otherwise false
 	 */
 	bool isLeaf()
 	{
