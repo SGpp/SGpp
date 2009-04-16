@@ -183,7 +183,7 @@ public:
 	/**
 	 * returns true if there are no more childs in any dimension
 	 *
-	 * @param d the moving direction
+	 * @param d the moving direction !! THIS IS NOT USED !!
 	 */
 	bool hint(size_t d) const
 	{

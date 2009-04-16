@@ -109,7 +109,7 @@ public:
 			{
 				for(size_t d = 0; d < storage->dim(); d++)
 				{
-					index.push(d, 0, 0);
+					index.push(d, 0, 0, false);
 				}
 
 				this->boundaries_rec(storage, index, storage->dim() - 1, 0, 0);
@@ -118,10 +118,10 @@ public:
 			{
 				for(size_t d = 0; d < storage->dim(); d++)
 				{
-					index.push(d, 1, 1);
+					index.push(d, 1, 1, false);
 				}
 
-				this->boundaries_UScaled_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1);
+				this->boundaries_UScaled_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
 			}
 		}
 		else
@@ -129,48 +129,14 @@ public:
 			/* new grid generation
 			 *
 			 * for all level the same calculation of the level sum is implemented:
-			 * |l| = n + d -1
+			 * |l| <= n
 			 */
 			for(size_t d = 0; d < storage->dim(); d++)
 			{
-				index.push(d, 0, 0);
+				index.push(d, 0, 0, false);
 			}
 
 			this->boundaries_rec(storage, index, storage->dim()-1, 0, level);
-
-			/*
-			 * old grid generation
-			 *
-			 * here a switching in calculating the level sum
-			 * is implemented: For level 0 |l| = n and for all other levels |l| = n+d-1
-			 * are applied.
-			 */
-			/*if (level < 2)
-			{
-				for(size_t d = 0; d < storage->dim(); d++)
-				{
-					index.push(d, 0, 0);
-				}
-
-				this->boundaries_rec(storage, index, storage->dim()-1, 0, level);
-			}
-			else
-			{
-				for(size_t d = 0; d < storage->dim(); d++)
-				{
-					index.push(d, 1, 1);
-				}
-
-				// handle 1 D grid
-				if (storage->dim() == 1)
-				{
-					this->boundariesFull_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, true, false);
-				}
-				else
-				{
-					this->boundariesFull_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false, false);
-				}
-			}*/
 		}
 	}
 
@@ -239,7 +205,7 @@ protected:
 	{
         for(level_t l = 1; l <= level-current_level + 1; l++)
         {
-            if (l == level-current_level + 1)
+            if (l == level-current_level+1)
             {
             	for(index_t i = 1; i <= 1<<(l-1); i++)
                 {
@@ -266,12 +232,13 @@ protected:
 	 * @param current_dim current working dimension
 	 * @param current_level current level in this construction step
 	 * @param level maximum level of the sparse grid
+	 * @param bLevelZero specifies if the current index has a level zero component
 	 */
-	void boundaries_UScaled_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level)
+	void boundaries_UScaled_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool bLevelZero)
 	{
 		if(current_dim == 0)
 		{
-			boundaries_UScaled_rec_1d(storage, index, current_level, level);
+			boundaries_UScaled_rec_1d(storage, index, current_level, level, bLevelZero);
 		}
 		else
 		{
@@ -282,28 +249,40 @@ protected:
 
 			if(current_level <= level)
 			{
+				// set Leaf option of index
+				bool bLeafProperty = false;
+				if (current_level == level)
+				{
+					bLeafProperty = true;
+				}
+				else
+				{
+					bLeafProperty = false;
+				}
+
 				if (source_level == 1)
 				{
-					index.push(current_dim, 0, 0);
-					this->boundaries_UScaled_rec(storage, index, current_dim-1, current_level, level);
+					index.push(current_dim, 0, 0, false);
+					this->boundaries_UScaled_rec(storage, index, current_dim-1, current_level, level, true);
 
-					index.push(current_dim, 0, 1);
-					this->boundaries_UScaled_rec(storage, index, current_dim-1, current_level, level);
+					index.push(current_dim, 0, 1, false);
+					this->boundaries_UScaled_rec(storage, index, current_dim-1, current_level, level, true);
 
 					index.push(current_dim, source_level, source_index);
 				}
 
 				// d-1 recursion
-				this->boundaries_UScaled_rec(storage, index, current_dim - 1, current_level, level);
+				index.setLeaf(bLeafProperty);
+				this->boundaries_UScaled_rec(storage, index, current_dim - 1, current_level, level, bLevelZero);
 			}
 
 			if(current_level < level)
 			{
 				index.push(current_dim, source_level + 1, 2*source_index - 1);
-				this->boundaries_UScaled_rec(storage, index, current_dim, current_level + 1, level);
+				this->boundaries_UScaled_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
 
 				index.push(current_dim, source_level + 1, 2*source_index + 1);
-				this->boundaries_UScaled_rec(storage, index, current_dim, current_level + 1, level);
+				this->boundaries_UScaled_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
 			}
 
 			index.push(current_dim, source_level, source_index);
@@ -318,24 +297,47 @@ protected:
 	 * @param index point's index that should be created on the grid
 	 * @param current_level current level of the grid generation
 	 * @param level maximum level of grid
+	 * @param bLevelZero specifies if the current index has a level zero component
 	 */
-	void boundaries_UScaled_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level)
+	void boundaries_UScaled_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool bLevelZero)
 	{
+		bool bLevelGreaterZero = !bLevelZero;
 		for(level_t l = 0; l <= level-current_level + 1; l++)
 		{
-			if (l == 0)
+			if (l == level-current_level+1)
 			{
-				index.push(0, 0, 0);
-				storage->insert(index);
-				index.push(0, 0, 1);
-				storage->insert(index);
+				if (l == 0)
+				{
+					index.push(0, 0, 0, false);
+					storage->insert(index);
+					index.push(0, 0, 1, false);
+					storage->insert(index);
+				}
+				else
+				{
+					for(index_t i = 1; i <= 1<<(l-1); i++)
+					{
+						index.push(0, l, 2*i-1, (true && bLevelGreaterZero));
+						storage->insert(index);
+					}
+				}
 			}
 			else
 			{
-				for(index_t i = 1; i <= 1<<(l-1); i++)
+				if (l == 0)
 				{
-					index.push(0, l, 2*i-1);
+					index.push(0, 0, 0, false);
 					storage->insert(index);
+					index.push(0, 0, 1, false);
+					storage->insert(index);
+				}
+				else
+				{
+					for(index_t i = 1; i <= 1<<(l-1); i++)
+					{
+						index.push(0, l, 2*i-1, false);
+						storage->insert(index);
+					}
 				}
 			}
 		}
@@ -359,30 +361,44 @@ protected:
 
 		if(current_level <= level)
 		{
+			// set Leaf option of index
+			bool bSaveLeafProperty = index.isLeaf();
+			bool bLeafProperty = false;
+			if (current_level == level)
+			{
+				bLeafProperty = true;
+			}
+			else
+			{
+				bLeafProperty = false;
+			}
+
 			// d-1 recursion
 			if (source_level == 0)
 			{
 				if (current_dim == 0)
 				{
-					index.push(0, 0, 0);
+					index.push(0, 0, 0, bLeafProperty);
 					storage->insert(index);
-					index.push(0, 0, 1);
+					index.push(0, 0, 1, bLeafProperty);
 					storage->insert(index);
 
-					index.push(current_dim, source_level, source_index);
+					index.push(current_dim, source_level, source_index, bSaveLeafProperty);
 				}
 				else
 				{
+					index.push(current_dim, 0, 0, bLeafProperty);
 					this->boundaries_rec(storage, index, current_dim-1, current_level, level);
 
-					index.push(current_dim, 0, 1);
+					index.push(current_dim, 0, 1, bLeafProperty);
 					this->boundaries_rec(storage, index, current_dim-1, current_level, level);
 
-					index.push(current_dim, source_level, source_index);
+					index.push(current_dim, source_level, source_index, bSaveLeafProperty);
 				}
 			}
 			else
 			{
+				index.setLeaf(bLeafProperty);
 				if (current_dim == 0)
 				{
 					storage->insert(index);
@@ -391,6 +407,7 @@ protected:
 				{
 					this->boundaries_rec(storage, index, current_dim-1, current_level, level);
 				}
+				index.setLeaf(bSaveLeafProperty);
 			}
 		}
 
@@ -413,115 +430,6 @@ protected:
 
 		index.push(current_dim, source_level, source_index);
 	}
-
-	/*
-	 * recursive construction of the spare grid with boundaries, classic level 0 approach, only for level greater 1
-	 *
-	 * @param storage hashmap that stores the grid points
-	 * @param index point's index
-	 * @param current_dim current working dimension
-	 * @param current_level current level in this construction step
-	 * @param level maximum level of the sparse grid
-	 */
-	/*
-	void boundariesFull_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool tatooine, bool kessel)
-	{
-		if(current_dim == 0)
-		{
-			boundariesFull_rec_lastd(storage, index, current_level, level, tatooine, kessel);
-		}
-		else
-		{
-			index_t source_index;
-			level_t source_level;
-
-			index.get(current_dim, source_level, source_index);
-
-			if(current_level <= level)
-			{
-				if (source_level == 1)
-				{
-					index.push(current_dim, 0, 0);
-					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level, true, kessel);
-
-					index.push(current_dim, 0, 1);
-					this->boundariesFull_rec(storage, index, current_dim-1, current_level, level, true, kessel);
-
-					index.push(current_dim, source_level, source_index);
-				}
-
-				// d-1 recursion
-				this->boundariesFull_rec(storage, index, current_dim - 1, current_level, level, tatooine, kessel);
-			}
-
-			if(current_level < level)
-			{
-				if (current_level == (level-1))
-				{
-					index.push(current_dim, source_level + 1, 2*source_index - 1);
-					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, true);
-
-					index.push(current_dim, source_level + 1, 2*source_index + 1);
-					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, true);
-				}
-				else
-				{
-					index.push(current_dim, source_level + 1, 2*source_index - 1);
-					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, kessel);
-
-					index.push(current_dim, source_level + 1, 2*source_index + 1);
-					this->boundariesFull_rec(storage, index, current_dim, current_level + 1, level, tatooine, kessel);
-				}
-			}
-
-			index.push(current_dim, source_level, source_index);
-		}
-	}*/
-
-	/*
-	 * generate points of the last dimension (dim == 0), version of the classic sparse grid
-	 * with level 0, overall level > 1
-	 *
-	 * @param storage the hashmap that stores the grid points
-	 * @param index point's index that should be created on the grid
-	 * @param current_level current level of the grid generation
-	 * @param level maximum level of grid
-	 */
-	/*
-	void boundariesFull_rec_lastd(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool tatooine, bool kessel)
-	{
-		if (tatooine == false && kessel == true)
-		{
-			index.push(0, 0, 0);
-			storage->insert(index);
-			index.push(0, 0, 1);
-			storage->insert(index);
-		}
-		else
-		{
-			if (tatooine == false)
-				level--;
-
-			for(level_t l = 0; l <= level-current_level + 1; l++)
-			{
-				if (l == 0)
-				{
-					index.push(0, 0, 0);
-					storage->insert(index);
-					index.push(0, 0, 1);
-					storage->insert(index);
-				}
-				else
-				{
-					for(index_t i = 1; i <= 1<<(l-1); i++)
-					{
-						index.push(0, l, 2*i-1);
-						storage->insert(index);
-					}
-				}
-			}
-		}
-	}*/
 };
 
 }
