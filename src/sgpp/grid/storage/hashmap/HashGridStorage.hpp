@@ -433,20 +433,6 @@ public:
 		return s > map.size();
 	}
 
-	/**
-	 * Should return true if there are no more childs in direction d
-	 *
-	 * @param d the test dimension
-	 * @param index pointer to index object
-	 * @param s sequence number
-	 *
-	 * @return return true if there are no more childs in direction d
-	 */
-	bool hint(size_t d, GIT* index, size_t s)
-	{
-		return false;
-	}
-
 protected:
 	/**
 	 * returns the next sequence numbers
