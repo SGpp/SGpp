@@ -92,7 +92,7 @@ public:
 		right_boundary = source[seq];
 
 		// move to root
-		if (!index.hint(dim))
+		if (!index.hint())
 		{
 			index.top(dim);
 
@@ -131,7 +131,7 @@ protected:
 		result[seq] = fm;
 
 		// recursive calls for the right and left side of the current node
-		if(index.hint(dim) == false)
+		if(index.hint() == false)
 		{
 			// descend left
 			index.left_child(dim);

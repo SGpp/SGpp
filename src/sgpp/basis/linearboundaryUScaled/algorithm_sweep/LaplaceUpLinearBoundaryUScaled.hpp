@@ -109,7 +109,7 @@ protected:
 
 		if(current_level > 0)
 		{
-			if(!index.hint(dim))
+			if(!index.hint())
 			{
 				index.left_child(dim);
 				if(!storage->end(index.seq()))
@@ -128,7 +128,7 @@ protected:
 		}
 		else
 		{
-			if(!index.hint(dim))
+			if(!index.hint())
 			{
 				index.top(dim);
 				if(!storage->end(index.seq()))

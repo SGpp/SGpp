@@ -172,7 +172,7 @@ protected:
 				}
 			}
 
-			if(working.hint(current_dim))
+			if(working.hint())
 			{
 				break;
 			}

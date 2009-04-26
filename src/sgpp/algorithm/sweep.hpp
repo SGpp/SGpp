@@ -153,7 +153,7 @@ protected:
 		{
 			size_t current_dim = dim_list[d];
 
-			if(index.hint(current_dim))
+			if(index.hint())
 			{
 				continue;
 			}
@@ -210,7 +210,7 @@ protected:
 				// given current point to next dim
 				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 
-				if (!index.hint(dim_list[dim_rem-1]))
+				if (!index.hint())
 				{
 					index.left_child(dim_list[dim_rem-1]);
 					if(!storage->end(index.seq()))
@@ -235,7 +235,7 @@ protected:
 				index.right_levelzero(dim_list[dim_rem-1]);
 				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
 
-				if (!index.hint(dim_list[dim_rem-1]))
+				if (!index.hint())
 				{
 					index.top(dim_list[dim_rem-1]);
 					if(!storage->end(index.seq()))

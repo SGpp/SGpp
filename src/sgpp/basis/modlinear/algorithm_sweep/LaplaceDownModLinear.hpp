@@ -152,7 +152,7 @@ protected:
 
 		}
 
-		if(!index.hint(dim))
+		if(!index.hint())
 		{
 			index.left_child(dim);
 			if(!storage->end(index.seq()))

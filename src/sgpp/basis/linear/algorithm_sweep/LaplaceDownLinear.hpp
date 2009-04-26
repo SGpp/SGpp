@@ -108,7 +108,7 @@ protected:
 		// dehierarchisation
 		double fm = (fl+fr)/2.0 + alpha_value;
 
-		if(!index.hint(dim))
+		if(!index.hint())
 		{
 			index.left_child(dim);
 			if(!storage->end(index.seq()))

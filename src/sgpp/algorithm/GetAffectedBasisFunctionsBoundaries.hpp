@@ -162,7 +162,7 @@ protected:
 			}
 
 			// there are no levels left
-			if(working.hint(current_dim))
+			if(working.hint())
 			{
 				break;
 			}

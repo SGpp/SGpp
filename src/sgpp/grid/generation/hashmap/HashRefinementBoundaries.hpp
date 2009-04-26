@@ -229,6 +229,9 @@ protected:
 	{
 		index_type index((*storage)[refine_index]);
 
+		//Sets leaf property of index, which is refined to false
+		(*storage)[refine_index]->setLeaf(false);
+
 		// @todo: Maybe it's possible to move predecessor/successor discovery into the storage concept
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
@@ -242,6 +245,7 @@ protected:
 				index.set(d, 1, 1);
 				if(!storage->has_key(&index))
 				{
+					index.setLeaf(true);
 					create_gridpoint(storage, index);
 				}
 			}
@@ -251,6 +255,7 @@ protected:
 				index.set(d, source_level + 1, 2 * source_index - 1);
 				if(!storage->has_key(&index))
 				{
+					index.setLeaf(true);
 					create_gridpoint(storage, index);
 				}
 
@@ -258,6 +263,7 @@ protected:
 				index.set(d, source_level + 1, 2 * source_index + 1);
 				if(!storage->has_key(&index))
 				{
+					index.setLeaf(true);
 					create_gridpoint(storage, index);
 				}
 			}
@@ -307,14 +313,34 @@ protected:
 					index.set(d, 0, 0);
 					if(!storage->has_key(&index))
 					{
-						create_gridpoint_general(storage, index);
+						// save old leaf value
+						bool saveLeaf = index.isLeaf();
+						index.setLeaf(false);
+						create_gridpoint(storage, index);
+						// restore leaf value
+						index.setLeaf(saveLeaf);
+					}
+					else
+					{
+						// set stored index to false
+						(storage->get((storage->find(&index))->second))->setLeaf(false);
 					}
 
 					// right boundary
 					index.set(d, 0, 1);
 					if(!storage->has_key(&index))
 					{
-						create_gridpoint_general(storage, index);
+						// save old leaf value
+						bool saveLeaf = index.isLeaf();
+						index.setLeaf(false);
+						create_gridpoint(storage, index);
+						// restore leaf value
+						index.setLeaf(saveLeaf);
+					}
+					else
+					{
+						// set stored index to false
+						(storage->get((storage->find(&index))->second))->setLeaf(false);
 					}
 
 					// restore values
@@ -336,7 +362,17 @@ protected:
 
 				if(!storage->has_key(&index))
 				{
-					create_gridpoint_general(storage, index);
+					// save old leaf value
+					bool saveLeaf = index.isLeaf();
+					index.setLeaf(false);
+					create_gridpoint(storage, index);
+					// restore leaf value
+					index.setLeaf(saveLeaf);
+				}
+				else
+				{
+					// set stored index to false
+					(storage->get((storage->find(&index))->second))->setLeaf(false);
 				}
 
 				// restore values
@@ -372,11 +408,21 @@ protected:
 					index.set(d, 0, 0);
 					if(storage->has_key(&index))
 					{
+						// ... we have to read leaf property
+						bool Leaf = index.isLeaf();
 						// ... we have to generate the correspondending right boundary
 						index.set(d, 0, 1);
 						if(!storage->has_key(&index))
 						{
+							bool saveLeaf = index.isLeaf();
+							index.setLeaf(Leaf);
 							create_gridpoint(storage, index);
+							index.setLeaf(saveLeaf);
+						}
+						else
+						{
+							// set stored index to Leaf from the left boundary
+							(storage->get((storage->find(&index))->second))->setLeaf(Leaf);
 						}
 					}
 
@@ -384,11 +430,21 @@ protected:
 					index.set(d, 0, 1);
 					if(storage->has_key(&index))
 					{
-						// ... we have to generate the correspondending left boundary
+						// ... we have to read leaf property
+						bool Leaf = index.isLeaf();
+						// ... we have to generate the correspondending right boundary
 						index.set(d, 0, 0);
 						if(!storage->has_key(&index))
 						{
+							bool saveLeaf = index.isLeaf();
+							index.setLeaf(Leaf);
 							create_gridpoint(storage, index);
+							index.setLeaf(saveLeaf);
+						}
+						else
+						{
+							// set stored index to Leaf from the right boundary
+							(storage->get((storage->find(&index))->second))->setLeaf(Leaf);
 						}
 					}
 
