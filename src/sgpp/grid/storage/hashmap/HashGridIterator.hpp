@@ -183,12 +183,12 @@ public:
 	/**
 	 * returns true if there are no more childs in any dimension
 	 *
-	 * @param d the moving direction !! THIS IS NOT USED !!
+	 * @return returns true if there are no more childs in any dimension
 	 */
-	bool hint(size_t d) const
+	bool hint() const
 	{
-		//return storage->get(this->seq_)->isLeaf();
-		return false;
+		return storage->get(this->seq_)->isLeaf();
+		//return false;
 	}
 
 	/**

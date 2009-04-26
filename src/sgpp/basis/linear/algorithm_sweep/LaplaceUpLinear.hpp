@@ -97,7 +97,7 @@ protected:
 		double fml = 0.0;
 		double fmr = 0.0;
 
-		if(!index.hint(dim))
+		if(!index.hint())
 		{
 			index.left_child(dim);
 			if(!storage->end(index.seq()))

@@ -100,7 +100,7 @@ protected:
 		if(l == 1)
 		{
 			f = 0.0;
-			if(!index.hint(dim))
+			if(!index.hint())
 			{
 				index.left_child(dim);
 				if(!storage->end(index.seq()))
@@ -123,7 +123,7 @@ protected:
 		else if(i == 1)
 		{
 			f = 0.0;
-			if(!index.hint(dim))
+			if(!index.hint())
 			{
 				index.left_child(dim);
 				if(!storage->end(index.seq()))
@@ -141,7 +141,7 @@ protected:
 		else if(i == (1 << l)-1)
 		{
 			f = 0.0;
-			if(!index.hint(dim))
+			if(!index.hint())
 			{
 				index.right_child(dim);
 				if(!storage->end(index.seq()))

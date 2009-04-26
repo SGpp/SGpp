@@ -101,7 +101,7 @@ public:
 		result[seq_right] += 1.0/6.0*left_boundary;
 
 		// move to root
-		if (!index.hint(dim))
+		if (!index.hint())
 		{
 			index.top(dim);
 
@@ -148,7 +148,7 @@ protected:
 		// dehierarchisation
 		double fm = (fl+fr)/2.0 + alpha_value;
 
-		if(!index.hint(dim))
+		if(!index.hint())
 		{
 			index.left_child(dim);
 			if(!storage->end(index.seq()))
