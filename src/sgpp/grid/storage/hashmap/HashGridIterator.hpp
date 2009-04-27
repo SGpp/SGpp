@@ -188,7 +188,6 @@ public:
 	bool hint() const
 	{
 		return storage->get(this->seq_)->isLeaf();
-		//return false;
 	}
 
 	/**
