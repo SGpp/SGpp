@@ -94,7 +94,7 @@ public:
      *
      * @param istream instream object the contains the information about the gridpoint
      */
-    HashGridIndex(std::istream& istream) : DIM(0), level(NULL), index(NULL)
+    HashGridIndex(std::istream& istream, int version) : DIM(0), level(NULL), index(NULL)
     {
     	size_t temp_leaf;
 
@@ -109,14 +109,22 @@ public:
 			istream >> level[d];
 			istream >> index[d];
         }
-        // read leaf option
-        istream >> temp_leaf;
-        if (temp_leaf == 0)
+
+        if (version == 2)
+        {
+			// read leaf option
+			istream >> temp_leaf;
+			if (temp_leaf == 0)
+			{
+				Leaf = false;
+			}
+			{
+				Leaf = true;
+			}
+        }
+        else
         {
         	Leaf = false;
-        }
-        {
-        	Leaf = true;
         }
 
         rehash();
