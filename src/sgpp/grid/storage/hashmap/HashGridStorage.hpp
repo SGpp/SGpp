@@ -194,7 +194,7 @@ public:
      *
      * @return returns the size of the hashmap
      */
-    int size() const
+    size_t size() const
     {
         return map.size();
     }

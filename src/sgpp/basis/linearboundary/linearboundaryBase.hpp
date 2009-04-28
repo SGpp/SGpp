@@ -57,6 +57,8 @@ public:
 		{
 			return 1.0 - fabs((1<<level) * p - index);
 		}
+		// should not happen
+		return 0.0;
 	}
 };
 
