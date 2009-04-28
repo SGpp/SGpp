@@ -415,33 +415,45 @@ def readNormfile(filename):
     return (border, minvals, maxvals, deltavals)
 
 
-
-def normalize(data, border=0.0, filename=None):
+#-------------------------------------------------------------------------------
+## Normalize values of input vectors on the segment [0,1]
+# @param data Dataset
+# @param border Specifies border of the dataset, will be added to the normalized value 
+# @param filenam Filename of normfile (optional)
+# @param minvals Array of normalization boundary min values (one per dimension) (optional)
+# @param maxvals Array of normalization boundary max values (one per dimension) (optional)
+def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None):
+    # check parameters
     if len(data) == 0:
-        return
+        raise ValueError, "Wrong or no data."
+    if minvals and maxvals:
+        if (len(minvals) <> len(data[0]["data"]) or 
+            len(maxvals) <> len(data[0]["data"])):
+            raise ValueError, "Wrong number of min- or max-values."
+        lmin = minvals
+        lmax = maxvals
+    else:
+        lmin = []
+        lmax = []
 
-    lmin = []
-    lmax = []
-    
-    for datadim in data[0]["data"]:
-        lmin.append(datadim[0])
-        lmax.append(datadim[0])
-    
-    for dataset in data:
-        for dim in xrange(len(dataset["data"])):
-            cmin = min(dataset["data"][dim])
-            lmin[dim] = min(cmin, lmin[dim])
-            
-            cmax = max(dataset["data"][dim])
-            lmax[dim] = max(cmax, lmax[dim])
-            
-    lmin = map(lambda x: x, lmin)
-    lmax = map(lambda x: x, lmax)
+        for datadim in data[0]["data"]:
+            lmin.append(datadim[0])
+            lmax.append(datadim[0])
+
+        for dataset in data:
+            for dim in xrange(len(dataset["data"])):
+                cmin = min(dataset["data"][dim])
+                lmin[dim] = min(cmin, lmin[dim])
+
+                cmax = max(dataset["data"][dim])
+                lmax[dim] = max(cmax, lmax[dim])
+
+    # delta values
     ldelta = map(lambda x,y: ((y-x)/(1.0-2.0*border)), lmin, lmax)
 
     # write normalization data to file:
     if filename:
-        writeNormfile(filename, border, lmin, lmax)
+        writeNormfile(filename, border, lmin, lmax, ldelta)
     
     for dataset in data:
         for dim in xrange(len(dataset["data"])):
@@ -451,9 +463,14 @@ def normalize(data, border=0.0, filename=None):
                 dataset["data"][dim] = map(lambda x: 0.5,dataset["data"][dim])
             else:
                 dataset["data"][dim] = map(lambda x: (x-lmin[dim]) / ldelta[dim] + border,dataset["data"][dim])
-
     return
 
+
+#-------------------------------------------------------------------------------
+## Divides the class values in two categories
+# @param data Dataset 
+# @param border Classes will be differentiated between greater and less then border 
+# @param minborder All classes under the minborder are processes as they are over border
 def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1):
     def separate(x):
         if x >= border or x < minborder:
@@ -465,7 +482,9 @@ def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1):
         dataset["classes"] = map(separate, dataset["classes"])
     return
 
-
+#-------------------------------------------------------------------------------
+## Validates Dataset
+# @param data Dataset 
 def checkData(data):
     if len(data) == 0:
     	print("No data loaded. Aborting!")
