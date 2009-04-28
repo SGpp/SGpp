@@ -4,6 +4,7 @@
 /*                                                                           */
 /* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/*               2007-2009 Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU General Public License as published by      */
@@ -391,7 +392,7 @@ void DataVector::sqr()
 double DataVector::sum()
 {
 	int n = size*dim;
-	double result;
+	double result = 0.0;
 	for(int i = 0; i < n; i++)
 	{
 		result += data[i];

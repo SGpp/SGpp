@@ -46,6 +46,8 @@ parser.add_option("--delimiter", action="store", type="string", default="", dest
 parser.add_option("--normfile", action="store", type="string", dest="normfile", default=None, help="Write normalization information to file, so that further data could be normalized")
 parser.add_option("--maple", action="store_true", default=False, dest="maple", help="If enabled, write Maple-readable format.")
 parser.add_option("--hasnoclass", action="store_false", default=True, dest="hasnoclass", help="Set, if data does not contain class attribute.")
+parser.add_option("--min", action="append", type="float", default=None, dest="min", help="Set min value of feature space (normalization boundary). One entry per dimension and in the correct order.")
+parser.add_option("--max", action="append", type="float", default=None, dest="max", help="Set max value of feature space (normalization boundary). One entry per dimension and in the correct order.")
 (options,args)=parser.parse_args()
 
 if options.infiles == None:
@@ -110,12 +112,12 @@ for i in xrange(len(options.infiles)):
 		print("Error while reading "  + options.infiles[i] +"! Aborting...");
 		print e
 		sys.exit(1)
-print(data)	
+				
 checkData(data)
 
 if not options.nonormalization:
 	if not options.nodatanormalization:
-		normalize(data, options.border, options.normfile)
+		normalize(data, options.border, options.normfile, options.min, options.max)
 	if not options.noclassnormalization:
 		normalizeClasses(data, options.c_border, options.c_border_min)
 if not options.maple:
