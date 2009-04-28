@@ -89,7 +89,7 @@ protected:
 	/// Pointer to polynoms
 	double* polynoms;
 	/// the polynom's max degree
-	int degree;
+	size_t degree;
 
 private:
 	/**
@@ -125,7 +125,7 @@ private:
 		std::vector<double> y;
 		std::vector<double> intpoly;
 
-		for(int i = 0; i < level + 1; i++)
+		for(size_t i = 0; i < level + 1; i++)
 		{
 			y.push_back(0.0);
 			intpoly.push_back(0.0);
@@ -178,7 +178,7 @@ private:
 		double* y_store = x_store + 2;
 
 		// Copy values into storage
-		for(int i = 0; i < level + 2; i++)
+		for(size_t i = 0; i < level + 2; i++)
 		{
 			y_store[i] = intpoly[i];
 		}

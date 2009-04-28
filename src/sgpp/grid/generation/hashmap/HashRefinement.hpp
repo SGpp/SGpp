@@ -137,7 +137,7 @@ public:
 		for (int i = 0; i < refinements_num; i++){
 			max_value = max_values[i];
 			max_index = max_indexes[i];
-			double start = functor->start();
+
 			if(max_value > functor->start())
 			{
 				refine_gridpoint(storage, max_index);

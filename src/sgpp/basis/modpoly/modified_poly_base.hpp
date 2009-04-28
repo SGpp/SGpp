@@ -129,7 +129,7 @@ private:
 		std::vector<double> y;
 		std::vector<double> intpoly;
 
-		for(int i = 0; i < level - 1; i++)
+		for(size_t i = 0; i < level - 1; i++)
 		{
 			y.push_back(0.0);
 			intpoly.push_back(0.0);

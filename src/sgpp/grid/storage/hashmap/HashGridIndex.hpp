@@ -393,7 +393,7 @@ public:
     void toString(std::ostream &stream)
     {
         stream << "[";
-        for(int i = 0; i < DIM; i++)
+        for(size_t i = 0; i < DIM; i++)
         {
             if(i != 0)
             {
@@ -414,7 +414,7 @@ public:
     {
     	std::stringstream return_stream;
 
-    	for(int i = 0; i < DIM; i++)
+    	for(size_t i = 0; i < DIM; i++)
     	{
     		if(level[i] == 0)
     		{

@@ -50,7 +50,7 @@ public:
 		{
 			return 2.0 - (1<<level) * p;
 		}
-		else if(index == (1<<level)-1)
+		else if(index == ((1<<level)-1))
 		{
 			return (1<<level) * p - index + 1.0;
 		}
