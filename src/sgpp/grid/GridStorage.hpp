@@ -28,8 +28,6 @@
 #include "grid/storage/hashmap/HashGridStorage.hpp"
 #include "grid/storage/hashmap/HashGridIterator.hpp"
 
-#define SERIALIZATION_VERSION 2
-
 namespace sg {
 
 /**
