@@ -104,7 +104,7 @@ protected:
 						+ 0.0;
 		}
 		// left boundary & right boundary
-		else if((i == 1) || (i == (1 << l)-1))
+		else if((i == 1) || (static_cast<int>(i) == static_cast<int>((1 << l)-1)))
 		{
 			f_local = ht * alpha_value;
 			result[seq] = 2.0 * f

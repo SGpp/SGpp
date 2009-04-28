@@ -138,7 +138,7 @@ protected:
 			f += 2.0 * alpha_value;
 		}
 		// right boundary
-		else if(i == (1 << l)-1)
+		else if(static_cast<int>(i) == static_cast<int>((1 << l)-1))
 		{
 			f = 0.0;
 			if(!index.hint())

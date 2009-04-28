@@ -139,7 +139,7 @@ protected:
 			fr += fm/2.0 + 2.0/3.0*h*alpha_value;
 		}
 		// right boundary
-		else if(i == (1 << l)-1)
+		else if(static_cast<int>(i) == static_cast<int>((1 << l)-1))
 		{
 			result[seq] = 2.0 * fr + fm;
 
