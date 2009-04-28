@@ -64,8 +64,8 @@ public:
 		//Algorithm should be able to look for several points in grid to refine
 		//So we store an array with refinements_num maximal points
 		int refinements_num = functor->getRefinementsNum();
-		RefinementFunctor::value_type max_values[refinements_num];
-		size_t max_indexes[refinements_num];
+		RefinementFunctor::value_type* max_values = new RefinementFunctor::value_type[refinements_num];
+		size_t* max_indexes = new size_t [refinements_num];
 		for (int i = 0; i<refinements_num; i++){
 			max_values[i] = functor->start();
 			max_indexes[i] = 0;
@@ -143,9 +143,12 @@ public:
 				refine_gridpoint(storage, max_index);
 			}
 		}
+		
+		delete[] max_values;
+		delete[] max_indexes;
 
 	}
-
+	
 	/**
 	 * Calculates the number of points, which can be refined
 	 *
@@ -154,7 +157,7 @@ public:
 	int getNumberOfRefinablePoints(GridStorage* storage)
 	{
 		int counter = 0;
-
+		
 		if(storage->size() == 0)
 		{
 			throw generation_exception("storage empty");
