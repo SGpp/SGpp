@@ -36,6 +36,12 @@
 #include <sstream>
 #include <exception>
 
+/**
+ * This specifies the available serialization versions
+ *
+ * Version 1: classic verions without leaf proeperty
+ * Version 2: every gridpoint is extended by one boolean that specifies if it's a leaf
+ */
 #define SERIALIZATION_VERSION 2
 
 namespace sg
@@ -79,10 +85,6 @@ public:
 
     	int version;
     	istream >> version;
-    	if(version != SERIALIZATION_VERSION)
-    	{
-    		throw generation_exception("Unsupported version!");
-    	}
 
     	istream >> DIM;
 
@@ -91,9 +93,14 @@ public:
 
     	for(size_t i = 0; i < num; i++)
     	{
-    		index_pointer index = new GIT(istream);
+    		index_pointer index = new GIT(istream, version);
     		list.push_back(index);
     		map[index] = i;
+    	}
+
+    	if (version == 1)
+    	{
+    		recalcLeafProperty();
     	}
 	}
 
@@ -106,10 +113,6 @@ public:
 	{
     	int version;
     	istream >> version;
-    	if(version != SERIALIZATION_VERSION)
-    	{
-    		throw generation_exception("Unsupported version!");
-    	}
 
     	istream >> DIM;
 
@@ -118,9 +121,14 @@ public:
 
     	for(size_t i = 0; i < num; i++)
     	{
-    		index_pointer index = new GIT(istream);
+    		index_pointer index = new GIT(istream, version);
     		list.push_back(index);
     		map[index] = i;
+    	}
+
+    	if (version == 1)
+    	{
+    		recalcLeafProperty();
     	}
 	}
 
@@ -436,6 +444,8 @@ public:
 	/**
 	 * Recalculates the leaf-property of every grid point.
 	 * This might be useful in case of a grid unserialization
+	 *
+	 * @todo do some final tests
 	 */
 	void recalcLeafProperty()
 	{
