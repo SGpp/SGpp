@@ -50,7 +50,7 @@ public:
 		{
 			return 2.0 - (1<<level) * p;
 		}
-		else if((int)index == (int)((1<<level)-1))
+		else if(static_cast<int>(index) == static_cast<int>((1<<level)-1))
 		{
 			return (1<<level) * p - index + 1.0;
 		}

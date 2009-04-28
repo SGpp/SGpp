@@ -207,7 +207,7 @@ protected:
         {
             if (l == level-current_level+1)
             {
-            	for(index_t i = 1; i <= 1<<(l-1); i++)
+            	for(index_t i = 1; static_cast<int>(i) <= static_cast<int>(1<<(l-1)); i++)
                 {
                     index.push(0, l, 2*i-1, true);
                     storage->insert(index);
@@ -215,7 +215,7 @@ protected:
             }
             else
             {
-            	for(index_t i = 1; i <= 1<<(l-1); i++)
+            	for(index_t i = 1; static_cast<int>(i) <= static_cast<int>(1<<(l-1)); i++)
                 {
                     index.push(0, l, 2*i-1, false);
                     storage->insert(index);
@@ -315,7 +315,7 @@ protected:
 				}
 				else
 				{
-					for(index_t i = 1; i <= 1<<(l-1); i++)
+					for(index_t i = 1; static_cast<int>(i) <= static_cast<int>(1<<(l-1)); i++)
 					{
 						index.push(0, l, 2*i-1, (true && bLevelGreaterZero));
 						storage->insert(index);
@@ -333,7 +333,7 @@ protected:
 				}
 				else
 				{
-					for(index_t i = 1; i <= 1<<(l-1); i++)
+					for(index_t i = 1; static_cast<int>(i) <= static_cast<int>(1<<(l-1)); i++)
 					{
 						index.push(0, l, 2*i-1, false);
 						storage->insert(index);
