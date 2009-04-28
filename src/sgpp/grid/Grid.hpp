@@ -6,8 +6,8 @@
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
-/* it under the terms of the GNU General Public License as published by      */
-/* the Free Software Foundation; either version 3 of the License, or         */
+/* it under the terms of the GNU Lesser General Public License as published  */
+/* by the Free Software Foundation; either version 3 of the License, or      */
 /* (at your option) any later version.                                       */
 /*                                                                           */
 /* sgpp is distributed in the hope that it will be useful,                   */
@@ -15,7 +15,7 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU Lesser General Public License for more details.                       */
 /*                                                                           */
-/* You should have received a copy of the GNU General Public License         */
+/* You should have received a copy of the GNU Lesser General Public License  */
 /* along with sgpp; if not, write to the Free Software                       */
 /* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 /* or see <http://www.gnu.org/licenses/>.                                    */
@@ -79,6 +79,7 @@ public:
 	 * creates a mod polynomial grid
 	 *
 	 * @param dim the grid's dimension
+	 * @param degree the polynom's max. degree
 	 */
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 
@@ -86,6 +87,7 @@ public:
 	 * creates a poly grid
 	 *
 	 * @param dim the grid's dimension
+	 * @param degree the polynom's max. degree
 	 */
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 
@@ -169,7 +171,7 @@ public:
 	/**
 	 * Returns a string that identifies the grid type uniquely
 	 *
-	 * @param string that identifies the grid type uniquely
+	 * @return string that identifies the grid type uniquely
 	 */
 	virtual const char* getType() = 0;
 

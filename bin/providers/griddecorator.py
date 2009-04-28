@@ -96,6 +96,8 @@ class GridDecorator(object):
     # grid dependent on the dimension dim, on options.level and options.polynom.
     # Sets the use of boundary functions according to options.border.
     # @param dim the grid dimension
+    # @param cls cls
+    # @param options options
     # @return a grid
     @classmethod
     def constructGrid(cls, options, dim):
