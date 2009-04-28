@@ -5,8 +5,8 @@
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU General Public License as published by      #
-# the Free Software Foundation; either version 3 of the License, or         #
+# it under the terms of the GNU Lesser General Public License as published  #
+# by the Free Software Foundation; either version 3 of the License, or      #
 # (at your option) any later version.                                       #
 #                                                                           #
 # pysgpp is distributed in the hope that it will be useful,                 #
@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
 # GNU Lesser General Public License for more details.                       #
 #                                                                           #
-# You should have received a copy of the GNU General Public License         #
+# You should have received a copy of the GNU Lesser General Public License  #
 # along with pysgpp; if not, write to the Free Software                     #
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
@@ -306,6 +306,7 @@ def buildParableBoundary(dim):
 # and evals the hierachified sparse grid
 # @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
+# @param resolution the number of testpoints in every dimension
 def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, level, resolution):
     node_values = None
     node_values_back = None
@@ -363,6 +364,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
 # and evals the hierachified sparse grid
 # @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
+# @param resolution the number of testpoints in every dimension
 def runHierarchisationDehierarchisationLinearBoundaryUScaledRegularTestPrintND(dim, level, resolution):
     node_values = None
     node_values_back = None
@@ -420,6 +422,7 @@ def runHierarchisationDehierarchisationLinearBoundaryUScaledRegularTestPrintND(d
 # and evals the hierachified sparse grid
 # @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
+# @param resolution the number of testpoints in every dimension
 def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, resolution):
     node_values = None
     node_values_back = None

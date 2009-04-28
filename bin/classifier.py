@@ -8,8 +8,8 @@
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU General Public License as published by      #
-# the Free Software Foundation; either version 3 of the License, or         #
+# it under the terms of the GNU Lesser General Public License as published  #
+# by the Free Software Foundation; either version 3 of the License, or      #
 # (at your option) any later version.                                       #
 #                                                                           #
 # pysgpp is distributed in the hope that it will be useful,                 #
@@ -17,7 +17,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
 # GNU Lesser General Public License for more details.                       #
 #                                                                           #
-# You should have received a copy of the GNU General Public License         #
+# You should have received a copy of the GNU Lesser General Public License  #
 # along with pysgpp; if not, write to the Free Software                     #
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
@@ -129,8 +129,8 @@ def exec_mode(mode):
 
 #-------------------------------------------------------------------------------
 ## Opens and read the data of an ARFF file
-#
-# @param filename of the file
+# Opens a file given by a filename
+# @param filename filename of the file
 # @return the data stored in the file as a set of arrays
 def openFile(filename):
     try:
@@ -694,12 +694,12 @@ def performFold(dvec,cvec):
             trainingCorrect.append(tr)
             testingCorrect.append(te)
 
-## Verstehe ich nicht. Habs deshalb auskommentiert (Dirk)
-##             if(adaptStep +1 == options.adaptive):
-##                 #Letzte verfeinerung, wir sind fertig
-##                 pass
-##             else:
-##                 refinealpha.add(alpha)
+# Verstehe ich nicht. Habs deshalb auskommentiert (Dirk)
+#             if(adaptStep +1 == options.adaptive):
+#                 #Letzte verfeinerung, wir sind fertig
+#                 pass
+#             else:
+#                 refinealpha.add(alpha)
             refinealpha.add(alpha)
 
         if options.verbose:

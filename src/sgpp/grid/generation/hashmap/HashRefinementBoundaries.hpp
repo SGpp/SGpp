@@ -5,8 +5,8 @@
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sg++ is free software; you can redistribute it and/or modify              */
-/* it under the terms of the GNU General Public License as published by      */
-/* the Free Software Foundation; either version 3 of the License, or         */
+/* it under the terms of the GNU Lesser General Public License as published  */
+/* by the Free Software Foundation; either version 3 of the License, or      */
 /* (at your option) any later version.                                       */
 /*                                                                           */
 /* sg++ is distributed in the hope that it will be useful,                   */
@@ -14,7 +14,7 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU Lesser General Public License for more details.                       */
 /*                                                                           */
-/* You should have received a copy of the GNU General Public License         */
+/* You should have received a copy of the GNU Lesser General Public License  */
 /* along with sg++; if not, write to the Free Software                       */
 /* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 /* or see <http://www.gnu.org/licenses/>.                                    */
@@ -47,8 +47,8 @@ public:
 	/**
 	 * Performs the refinement on grid
 	 *
-	 * @param: storage hashmap that stores the grid points
-	 * @param: functor a function used to determine if refinement is needed
+	 * @param storage hashmap that stores the grid points
+	 * @param functor a function used to determine if refinement is needed
 	 */
 	void free_refine(GridStorage* storage, RefinementFunctor* functor)
 	{
@@ -158,7 +158,7 @@ public:
 				refine_gridpoint(storage, max_index);
 			}
 		}
-		
+
 		delete[] max_values;
 		delete[] max_indexes;
 
@@ -167,7 +167,7 @@ public:
 	/**
 	 * Calculates the number of points, which can be refined
 	 *
-	 * @param: storage hashmap that stores the grid points
+	 * @param storage hashmap that stores the grid points
 	 */
 	int getNumberOfRefinablePoints(GridStorage* storage)
 	{
@@ -225,8 +225,8 @@ protected:
 	 * This method refines a grid point be generating the children in every dimension
 	 * of the grid.
 	 *
-	 * @param: storage hashmap that stores the gridpoints
-	 * @param: refine_index the index in the hashmap of the point that should be refined
+	 * @param storage hashmap that stores the gridpoints
+	 * @param refine_index the index in the hashmap of the point that should be refined
 	 */
 	void refine_gridpoint(GridStorage* storage, size_t refine_index)
 	{
@@ -461,9 +461,10 @@ protected:
 	/**
 	 * Returns the index of the first accurance of minimal element in array
 	 *
-	 * @param: array array with ???
+	 * @param array array with ???
+	 * @param length length of ??
 	 *
-	 * @return: index of the first accurance of minimal element in array
+	 * @return index of the first accurance of minimal element in array
 	 */
 	int getIndexOfMin(RefinementFunctor::value_type* array, int length)
 	{

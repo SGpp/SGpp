@@ -32,8 +32,8 @@ NOTAFILE = -1
 #-------------------------------------------------------------------------------
 ## Opens a file. If the file ends with ".gz", automatically gzip compression
 # is used for the file. Returns the filedescriptor
-# @param filename
-# @param mode, default: "r" for read only
+# @param filename file's filename
+# @param mode default: "r" for read only
 # @return file descriptor
 def gzOpen(filename, mode="r"):
     # gzip-file
@@ -419,7 +419,7 @@ def readNormfile(filename):
 ## Normalize values of input vectors on the segment [0,1]
 # @param data Dataset
 # @param border Specifies border of the dataset, will be added to the normalized value 
-# @param filenam Filename of normfile (optional)
+# @param filename Filename of normfile (optional)
 # @param minvals Array of normalization boundary min values (one per dimension) (optional)
 # @param maxvals Array of normalization boundary max values (one per dimension) (optional)
 def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None):
