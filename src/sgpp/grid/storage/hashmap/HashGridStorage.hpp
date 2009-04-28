@@ -204,7 +204,7 @@ public:
      *
      * @return the dimension of the grid stored in this GridStorage object
      */
-	int dim() const
+	size_t dim() const
 	{
 		return DIM;
 	}
@@ -431,6 +431,58 @@ public:
 	bool end(size_t s)
 	{
 		return s > map.size();
+	}
+
+	/**
+	 * Recalculates the leaf-property of every grid point.
+	 * This might be useful in case of a grid unserialization
+	 */
+	void recalcLeafProperty()
+	{
+       	index_pointer point;
+		grid_map_iterator iter;
+		size_t current_dim;
+		typename index_type::level_type l;
+		typename index_type::level_type i;
+		bool isLeaf = true;
+
+		// iterate through the grid
+		for(iter = map.begin(); iter != map.end(); iter++)
+        {
+			point = iter->first;
+			isLeaf = true;
+
+			// iterate through the dimensions
+			for (current_dim = 0; current_dim < DIM; current_dim++)
+			{
+				point->get(current_dim, l, i);
+
+				if (l > 0)
+				{
+					// Test left child
+					left_child(point, current_dim);
+					isLeaf = isLeaf && !has_key(point);
+
+					// restore value for dimension
+					point->set(current_dim, l, i);
+
+					// Test right child
+					right_child(point, current_dim);
+					isLeaf = isLeaf && !has_key(point);
+				}
+				else
+				{
+					// Test level 0
+					point->set(current_dim, 1, 1);
+					isLeaf = isLeaf && !has_key(point);
+				}
+
+				// restore value for dimension
+				point->set(current_dim, l, i);
+			}
+
+			point->setLeaf(isLeaf);
+        }
 	}
 
 protected:

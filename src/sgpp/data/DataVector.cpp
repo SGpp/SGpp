@@ -37,12 +37,12 @@ DataVector::DataVector()
 
 }
 
-DataVector::DataVector(int size) : size(size), dim(1), unused(0)
+DataVector::DataVector(size_t size) : size(size), dim(1), unused(0)
 {
 	this->data = new double[size*dim];
 }
 
-DataVector::DataVector(int size, int dim) : size(size), dim(dim), unused(0)
+DataVector::DataVector(size_t size, size_t dim) : size(size), dim(dim), unused(0)
 {
 	this->data = new double[size*dim];
 }
@@ -56,13 +56,13 @@ DataVector::DataVector(DataVector &vec) : unused(0)
 	memcpy(this->data, vec.data, size*dim*sizeof(double));
 }
 
-DataVector::DataVector(double * input, int size, int dim) : size(size), dim(dim), unused(0)
+DataVector::DataVector(double * input, size_t size, size_t dim) : size(size), dim(dim), unused(0)
 {
 	this->data = new double[size*dim];
 	memcpy(this->data, input, size*dim*sizeof(double));
 }
 
-void DataVector::resize(int size)
+void DataVector::resize(size_t size)
 {
 	if(size < this->size)
 	{
@@ -329,17 +329,17 @@ void DataVector::getLine(int row, std::vector<double>& vec)
 //#endif
 }
 
-int DataVector::getSize()
+size_t DataVector::getSize()
 {
 	return size;
 }
 
-int DataVector::getDim()
+size_t DataVector::getDim()
 {
 	return dim;
 }
 
-int DataVector::getTotalSize()
+size_t DataVector::getTotalSize()
 {
 	return dim*size;
 }

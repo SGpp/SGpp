@@ -43,7 +43,7 @@ opts.Add('JNI_OS', 'JNI os path', None)
 env = Environment(options = opts, ENV = os.environ)
 
 env.Append(CPPFLAGS=['-pthread'])
-env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic']) # '-Werror', 
+env.Append(CPPFLAGS=['-Wall', '-ansi'])
 env.Append(LINKFLAGS=['-pthread'])
 
 ####### enable omp support #######

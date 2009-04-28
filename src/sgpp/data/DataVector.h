@@ -39,7 +39,7 @@ public:
 	 *
 	 * @param size number of elements
 	 */
-	DataVector(int size);
+	DataVector(size_t size);
 
 	/**
 	 * Constructor
@@ -47,7 +47,7 @@ public:
 	 * @param size number of elements per dimension
 	 * @param dim dimension of Vector
 	 */
-	DataVector(int size, int dim);
+	DataVector(size_t size, size_t dim);
 
 	/**
 	 * Copy Constructor
@@ -63,14 +63,14 @@ public:
 	 * @param size number of elements per dimension
 	 * @param dim number of dimensions
 	 */
-	DataVector(double* input, int size, int dim);
+	DataVector(double* input, size_t size, size_t dim);
 
 	/**
 	 * resizes the DataVector
 	 *
 	 * @param size new size of the DataVector
 	 */
-	void resize(int size);
+	void resize(size_t size);
 
 	/**
 	 * add elements to the DataVector
@@ -241,21 +241,21 @@ public:
 	 *
 	 * @return elements stored in the vector
 	 */
-	int getSize();
+	size_t getSize();
 
 	/**
 	 * get the dimension of the DataVector
 	 *
 	 * @return dimension of the DataVector
 	 */
-	int getDim();
+	size_t getDim();
 
 	/**
 	 * gets number of elements in all dimensions
 	 *
 	 * @return number of elements in all dimensions
 	 */
-	int getTotalSize();
+	size_t getTotalSize();
 
 	/**
 	 * gets the unsed entries
