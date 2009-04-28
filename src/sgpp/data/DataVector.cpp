@@ -64,7 +64,7 @@ DataVector::DataVector(double * input, size_t size, size_t dim) : size(size), di
 
 void DataVector::resize(size_t size)
 {
-	if(size < this->size)
+	if((int)size < this->size)
 	{
 		return;
 	}
