@@ -59,4 +59,4 @@ double OperationEvalModLinear::test(DataVector& alpha, DataVector& data, DataVec
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-};
+}

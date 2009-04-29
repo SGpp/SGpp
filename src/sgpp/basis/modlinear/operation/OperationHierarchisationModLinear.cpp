@@ -56,4 +56,4 @@ void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha)
 	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
-};
+}
