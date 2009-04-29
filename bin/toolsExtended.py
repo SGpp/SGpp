@@ -230,7 +230,7 @@ def recGenPrintVector(dim_rem, p, grid, alpha, resolution, fout, foutvalue):
 # @param filenameValue filename of file with function values only
 # @param grid reference to the Sparse Grid
 # @param alpha hierarchical surplus of the Sparse Grid's Ansatzfunctions 
-# @param dim dimension of function
+# @param resolution number of evaluating points
 def printNDFunction(filename, filenameValue, grid, alpha, resolution):
     dim = grid.getStorage().dim()
     p = DataVector(1,dim)
@@ -340,7 +340,6 @@ def testHierarchisationResults(node1, node2):
 #-------------------------------------------------------------------------------
 ## Generates the Laplace Matrix for a given grid using numpy
 # @param factory the grid object
-# @param level used level of the sparse grid
 # @param verbose default:False prints some additional information
 def generateCMatrix(factory, verbose=False):
     from pysgpp import DataVector
