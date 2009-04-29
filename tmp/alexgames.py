@@ -261,7 +261,7 @@ def test_laplace():
                                   
 
 def test_generation():
-    factory = Grid.createLinearBoundaryGrid(2)
+    factory = Grid.createLinearBoundaryGrid(3)
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()
@@ -449,13 +449,21 @@ def test_getAffected():
     
     
 def test_grid_serialize():
-    factory = Grid.createLinearGrid(2)
+    factory = Grid.createLinearBoundaryGrid(2)
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()
-    gen.regular(2)
+    gen.regular(0)
     
-    print factory.serialize()  
+    print factory.serialize()
+    
+    vector = DataVector(4)
+    vector.setAll(0.0)
+    vector[0] = 1.0
+    func = SurplusRefinementFunctor(vector)
+    gen.refine(func);
+    
+    print factory.serialize()
 
 
 def openFile(filename):
@@ -559,7 +567,16 @@ def build_DM_Matrices():
     B_m = generateBMatrix(factory, level)
     B_trans_m = generateBtransMatrix(factory, level)    
     
+
+def calcNumberGridPoints():
+    factory = Grid.createLinearBoundaryGrid(2)
+    level = 6
+    gen = factory.createGridGenerator()
+    gen.regular(level)
+
+    print factory.getStorage().size()    
     
+
 #===============================================================================
 # Main
 #===============================================================================
@@ -567,4 +584,5 @@ def build_DM_Matrices():
 # check so that file can also be imported in other files
 if __name__=='__main__':
     #start the test programm
-    build_DM_Matrices()
+    test_grid_serialize()
+    #test_generation()
