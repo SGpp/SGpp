@@ -35,6 +35,10 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.h"
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -64,6 +68,7 @@ public:
 	}
 
 protected:
+#ifndef USEOMP
 	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 	{
 		// In direction gradient_dim we only calculate the norm of the gradient
@@ -80,6 +85,26 @@ protected:
 			downGradient(alpha, result, gradient_dim);
 		}
 	}
+#endif
+
+#ifdef USEOMP
+	virtual void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+	{
+		// In direction gradient_dim we only calculate the norm of the gradient
+		// The up-part is empty, thus omitted
+		if(dim > 0)
+		{
+			DataVector temp(alpha.getSize());
+			updown_parallel(alpha, temp, dim-1, gradient_dim);
+			downGradient(temp, result, gradient_dim);
+		}
+		else
+		{
+			// Terminates dimension recursion
+			downGradient(alpha, result, gradient_dim);
+		}
+	}
+#endif
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
