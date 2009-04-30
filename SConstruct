@@ -77,7 +77,7 @@ if not env.GetOption('clean'):
     config = env.Configure()
 	
     if env['ICC']:
-        if not config.CheckLib('guide'):
+        if not config.CheckLib('iomp5'):
             Exit(1)
 
     if env['ICC']:
