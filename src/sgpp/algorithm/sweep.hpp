@@ -31,7 +31,7 @@
 #include <utility>
 #include <iostream>
 
-#ifdef USEOMP
+#ifdef USEOMPTEST
 #include <omp.h>
 #endif
 
@@ -50,8 +50,18 @@ class sweep
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
 
+	/// Object of FUNC, this is executed by sweep
 	FUNC functor;
+	/// Pointer to the grid's storage object
 	GridStorage* storage;
+#ifdef USEOMPTEST
+	/// Number of threads max. used by sweep
+	size_t max_threads;
+	/// Counter that counts to current running threads
+	size_t run_threads;
+	/// Mutex to control the access on run_threads
+	omp_lock_t run_lock;
+#endif
 
 public:
 	/**
@@ -61,6 +71,11 @@ public:
 	 */
 	sweep(GridStorage* storage) : functor(), storage(storage)
 	{
+#ifdef USEOMPTEST
+		max_threads = 8;
+		run_threads = 0;
+		omp_init_lock(&run_lock);
+#endif
 	}
 
 	/**
@@ -71,6 +86,11 @@ public:
 	 */
 	sweep(FUNC& functor, GridStorage* storage) : functor(functor), storage(storage)
 	{
+#ifdef USEOMPTEST
+		max_threads = 8;
+		run_threads = 0
+		omp_init_lock(&run_lock);
+#endif
 	}
 
 	/**
@@ -78,6 +98,9 @@ public:
 	 */
 	~sweep()
 	{
+#ifdef USEOMPTEST
+		omp_destroy_lock(&run_lock);
+#endif
 	}
 
 	/**
@@ -102,14 +125,11 @@ public:
 
 		grid_iterator index(storage);
 
-#ifdef USEOMP
-		#pragma omp parallel
-		{
-			#pragma omp single nowait
-			{
-				sweep_rec_parallel(source, result, index, dim_list, storage->dim()-1, dim_sweep);
-			}
-		}
+#ifdef USEOMPTEST
+		max_threads = 8;
+		//omp_set_nested(1);
+		sweep_rec_parallel(source, result, index, dim_list, storage->dim()-1, dim_sweep);
+		//omp_set_nested(0);
 #else
 		sweep_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
 #endif
@@ -187,12 +207,12 @@ protected:
 		}
 	}
 
-#ifdef USEOMP
+#ifdef USEOMPTEST
 	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
 	 * Boundaries are regarded
 	 *
-	 * This Version is parallelized using the OpenMP 3 Task Concept
+	 * This Version is parallelized using the OpenMP 2 Sections part 1
 	 *
 	 * @param source coefficients of the sparse grid
 	 * @param result coefficients of the function computed by sweep
@@ -212,28 +232,51 @@ protected:
 		{
 			if (!index.hint())
 			{
-				grid_iterator indexLeft(index);
-				grid_iterator indexRight(index);
-
-				#pragma omp task
+				if (run_threads < max_threads)
 				{
-					indexLeft.left_child(dim_list[dim_rem-1]);
-					if(!storage->end(indexLeft.seq()))
-					{
-						sweep_rec_parallel(source, result, indexLeft, dim_list, dim_rem, dim_sweep);
-					}
-				}
+					grid_iterator indexLeft(index);
+					grid_iterator indexRight(index);
+					increaseRunThreads(2);
 
-				#pragma omp task
+					#pragma omp parallel sections num_threads(2) firstprivate(dim_rem, dim_sweep)
+					{
+						#pragma omp section
+						{
+							indexLeft.left_child(dim_list[dim_rem-1]);
+							if(!storage->end(indexLeft.seq()))
+							{
+								sweep_rec_parallel(source, result, indexLeft, dim_list, dim_rem, dim_sweep);
+							}
+						}
+
+						#pragma omp section
+						{
+							indexRight.right_child(dim_list[dim_rem-1]);
+							if(!storage->end(indexRight.seq()))
+							{
+								sweep_rec_parallel(source, result, indexRight, dim_list, dim_rem, dim_sweep);
+							}
+						}
+					}
+
+					decreaseRunThreads(2);
+				}
+				else
 				{
-					indexRight.right_child(dim_list[dim_rem-1]);
-					if(!storage->end(indexRight.seq()))
+					index.left_child(dim_list[dim_rem-1]);
+					if(!storage->end(index.seq()))
 					{
-						sweep_rec_parallel(source, result, indexRight, dim_list, dim_rem, dim_sweep);
+						sweep_rec_parallel(source, result, index, dim_list, dim_rem, dim_sweep);
 					}
-				}
 
-				#pragma omp taskwait
+					index.step_right(dim_list[dim_rem-1]);
+					if(!storage->end(index.seq()))
+					{
+						sweep_rec_parallel(source, result, index, dim_list, dim_rem, dim_sweep);
+					}
+
+					index.up(dim_list[dim_rem-1]);
+				}
 			}
 
 			// given current point to next dim
@@ -314,6 +357,32 @@ protected:
 			}
 		}
 	}
+
+#ifdef USEOMPTEST
+	/**
+	 * Increases the number of running threads for the current sweep instance
+	 *
+	 * \param add the delta that is added to run_threads
+	 */
+	void increaseRunThreads(size_t add)
+	{
+		omp_set_lock(&run_lock);
+		run_threads += add;
+		omp_unset_lock(&run_lock);
+	}
+
+	/**
+	 * Decreases the number of running threads for the current sweep instance
+	 *
+	 * \param sub the delta that is subtracted from run_threads
+	 */
+	void decreaseRunThreads(size_t sub)
+	{
+		omp_set_lock(&run_lock);
+		run_threads -= sub;
+		omp_unset_lock(&run_lock);
+	}
+#endif
 };
 
 }
