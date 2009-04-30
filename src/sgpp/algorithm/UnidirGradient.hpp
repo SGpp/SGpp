@@ -29,6 +29,10 @@
 
 #include <vector>
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -61,6 +65,25 @@ public:
 	 */
 	virtual void updown(DataVector& alpha, DataVector& result)
 	{
+#ifdef USEOMP
+		result.setAll(0.0);
+
+		#pragma omp parallel shared(result)
+		{
+			#pragma omp for schedule(static)
+			for(size_t i = 0; i < storage->dim(); i++)
+			{
+				DataVector beta(result.getSize());
+
+				this->updown(alpha, beta, storage->dim() - 1, i);
+
+				#pragma omp critical
+				{
+					result.add(beta);
+				}
+			}
+		}
+#else
 		DataVector beta(result.getSize());
 		result.setAll(0.0);
 
@@ -69,6 +92,7 @@ public:
 			this->updown(alpha, beta, storage->dim() - 1, i);
 			result.add(beta);
 		}
+#endif
 	}
 
 protected:
