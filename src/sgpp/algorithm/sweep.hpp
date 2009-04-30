@@ -31,6 +31,10 @@
 #include <utility>
 #include <iostream>
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -98,10 +102,17 @@ public:
 
 		grid_iterator index(storage);
 
+#ifdef USEOMP
+		#pragma omp parallel
+		{
+			#pragma omp single nowait
+			{
+				sweep_rec_parallel(source, result, index, dim_list, storage->dim()-1, dim_sweep);
+			}
+		}
+#else
 		sweep_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
-
-		// Test the parallel version
-		//sweep_rec_parallel(source, result, index, dim_list, storage->dim()-1, dim_sweep);
+#endif
 	}
 
 	/**
@@ -176,6 +187,7 @@ protected:
 		}
 	}
 
+#ifdef USEOMP
 	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
 	 * Boundaries are regarded
@@ -189,7 +201,7 @@ protected:
 	 * @param dim_rem number of remaining dims
 	 * @param dim_sweep static dimension, in this dimension the functor is executed
 	 */
-	void sweep_rec_parallel(DataVector& source, DataVector& result, grid_iterator index,
+	void sweep_rec_parallel(DataVector& source, DataVector& result, grid_iterator& index,
 				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
 	{
 		if (dim_rem == 0)
@@ -198,35 +210,37 @@ protected:
 		}
 		else
 		{
-			typedef GridStorage::index_type::level_type level_type;
-			typedef GridStorage::index_type::index_type index_type;
-
-			level_type current_level;
-			index_type current_index;
-
-			index.get(dim_list[dim_rem-1], current_level, current_index);
-
 			if (!index.hint())
 			{
-				index.left_child(dim_list[dim_rem-1]);
-				if(!storage->end(index.seq()))
+				grid_iterator indexLeft(index);
+				grid_iterator indexRight(index);
+
+				#pragma omp task
 				{
-					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+					indexLeft.left_child(dim_list[dim_rem-1]);
+					if(!storage->end(indexLeft.seq()))
+					{
+						sweep_rec_parallel(source, result, indexLeft, dim_list, dim_rem, dim_sweep);
+					}
 				}
 
-				index.step_right(dim_list[dim_rem-1]);
-				if(!storage->end(index.seq()))
+				#pragma omp task
 				{
-					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+					indexRight.right_child(dim_list[dim_rem-1]);
+					if(!storage->end(indexRight.seq()))
+					{
+						sweep_rec_parallel(source, result, indexRight, dim_list, dim_rem, dim_sweep);
+					}
 				}
 
-				index.up(dim_list[dim_rem-1]);
+				#pragma omp taskwait
 			}
 
 			// given current point to next dim
-			sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+			sweep_rec_parallel(source, result, index, dim_list, dim_rem-1, dim_sweep);
 		}
 	}
+#endif
 
 	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
