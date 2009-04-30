@@ -100,6 +100,8 @@ public:
 
 		sweep_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
 
+		// Test the parallel version
+		//sweep_rec_parallel(source, result, index, dim_list, storage->dim()-1, dim_sweep);
 	}
 
 	/**
@@ -175,8 +177,58 @@ protected:
 	}
 
 	/**
-	 * @todo check if it's possible to write a parallel implementation using OMP 3
+	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
+	 * Boundaries are regarded
 	 *
+	 * This Version is parallelized using the OpenMP 3 Task Concept
+	 *
+	 * @param source coefficients of the sparse grid
+	 * @param result coefficients of the function computed by sweep
+	 * @param index current grid position
+	 * @param dim_list list of dimensions, that should be handled
+	 * @param dim_rem number of remaining dims
+	 * @param dim_sweep static dimension, in this dimension the functor is executed
+	 */
+	void sweep_rec_parallel(DataVector& source, DataVector& result, grid_iterator index,
+				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
+	{
+		if (dim_rem == 0)
+		{
+			functor(source, result, index, dim_sweep);
+		}
+		else
+		{
+			typedef GridStorage::index_type::level_type level_type;
+			typedef GridStorage::index_type::index_type index_type;
+
+			level_type current_level;
+			index_type current_index;
+
+			index.get(dim_list[dim_rem-1], current_level, current_index);
+
+			if (!index.hint())
+			{
+				index.left_child(dim_list[dim_rem-1]);
+				if(!storage->end(index.seq()))
+				{
+					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+				}
+
+				index.step_right(dim_list[dim_rem-1]);
+				if(!storage->end(index.seq()))
+				{
+					sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+				}
+
+				index.up(dim_list[dim_rem-1]);
+			}
+
+			// given current point to next dim
+			sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+		}
+	}
+
+	/**
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
 	 * Boundaries are regarded
 	 *
