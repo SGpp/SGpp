@@ -65,7 +65,7 @@ public:
 	 */
 	virtual void updown(DataVector& alpha, DataVector& result)
 	{
-#ifdef USEOMP
+#ifdef USEOMPTEST
 		result.setAll(0.0);
 
 		#pragma omp parallel shared(result)
@@ -83,6 +83,22 @@ public:
 				}
 			}
 		}
+#endif
+#ifdef USEOMP
+		DataVector beta(result.getSize());
+		result.setAll(0.0);
+
+		for(size_t i = 0; i < storage->dim(); i++)
+		{
+			#pragma omp parallel
+			{
+				#pragma omp single nowait
+				{
+					this->updown_parallel(alpha, beta, storage->dim() - 1, i);
+				}
+			}
+			result.add(beta);
+		}
 #else
 		DataVector beta(result.getSize());
 		result.setAll(0.0);
@@ -98,8 +114,10 @@ public:
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
 
+	/// Pointer to the grid's storage object
 	GridStorage* storage;
 
+#ifndef USEOMP
 	/**
 	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
 	 * gradients is used. In all other dimensions only the L2 scalar product.
@@ -158,28 +176,6 @@ protected:
 	}
 
 	/**
-	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
-	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
-	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i < l_j} \alpha_j \phi_j(x) dx.\f]
-	 *
-	 * @param dim dimension in which to apply the up-part
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim) = 0;
-
-	/**
-	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
-	 * Applies the down-part of the one-dimensional mass matrix in one dimension.
-	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i\geq l_j} \alpha_j \phi_j(x) dx.\f]
-	 *
-	 * @param dim dimension in which to apply the down-part
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
-
-	/**
 	 * All calculations for gradient_dim. The gradient is recursivly applied to
 	 * all dimension of the grid
 	 *
@@ -228,6 +224,167 @@ protected:
 		}
 
 	}
+#endif
+
+#ifdef USEOMP
+	/**
+	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
+	 * gradients is used. In all other dimensions only the L2 scalar product.
+	 *
+	 * This version is parallelizes using the OpenMP 3 Task concept
+	 *
+	 * @param dim the current dimension
+	 * @param gradient_dim the dimension in which to use the gradient
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	virtual void updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+	{
+		if(dim == gradient_dim)
+		{
+			// this got its own function so we can use partial template specialization
+			// if more than just down is needed
+			gradient_parallel(alpha, result, dim, gradient_dim);
+		}
+		else
+		{
+			//Unidirectional scheme
+			if(dim > 0)
+			{
+				// Reordering ups and downs
+				// Use previously calculated ups for all future calculations
+				// U* -> UU* and UD*
+
+				DataVector temp(alpha.getSize());
+				DataVector temp_two(alpha.getSize());
+				DataVector result_temp(alpha.getSize());
+
+				#pragma omp task
+				{
+					up(alpha, temp, dim);
+					updown_parallel(temp, result, dim-1, gradient_dim);
+				}
+
+				// Same from the other direction:
+				// *D -> *UD and *DD
+
+				#pragma omp task
+				{
+					updown_parallel(alpha, temp_two, dim-1, gradient_dim);
+					down(temp_two, result_temp, dim);
+				}
+
+				#pragma omp taskwait
+
+				//Overall memory use: 3*|alpha|*(d-1)
+				result.add(result_temp);
+			}
+			else
+			{
+				DataVector temp(alpha.getSize());
+
+				// Terminates dimension recursion
+
+				#pragma omp task
+				up(alpha, result, dim);
+
+				#pragma omp task
+				down(alpha, temp, dim);
+
+				#pragma omp taskwait
+
+				result.add(temp);
+			}
+
+		}
+	}
+
+	/**
+	 * All calculations for gradient_dim. The gradient is recursivly applied to
+	 * all dimension of the grid
+	 *
+	 * This version is parallelizes using the OpenMP 3 Task concept
+	 *
+	 * @todo add mathematical description
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim the dimension in that the gradient is applied
+	 */
+	virtual void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+	{
+		//Unidirectional scheme
+		if(dim > 0)
+		{
+			// Reordering ups and downs
+			// Use previously calculated ups for all future calculations
+			// U* -> UU* and UD*
+
+			DataVector temp(alpha.getSize());
+			DataVector temp_two(alpha.getSize());
+			DataVector result_temp(alpha.getSize());
+
+			#pragma omp task
+			{
+				upGradient(alpha, temp, dim);
+				updown_parallel(temp, result, dim-1, gradient_dim);
+			}
+
+			// Same from the other direction:
+			// *D -> *UD and *DD
+
+			#pragma omp task
+			{
+				updown_parallel(alpha, temp_two, dim-1, gradient_dim);
+				downGradient(temp_two, result_temp, dim);
+			}
+
+			//Overall memory use: 3*|alpha|*(d-1)
+
+			#pragma omp taskwait
+
+			result.add(result_temp);
+		}
+		else
+		{
+			DataVector temp(alpha.getSize());
+			// Terminates dimension recursion
+
+			#pragma omp task
+			upGradient(alpha, result, dim);
+
+			#pragma omp task
+			downGradient(alpha, temp, dim);
+
+			#pragma omp taskwait
+
+			result.add(temp);
+		}
+	}
+#endif
+
+	/**
+	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i < l_j} \alpha_j \phi_j(x) dx.\f]
+	 *
+	 * @param dim dimension in which to apply the up-part
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	virtual void up(DataVector& alpha, DataVector& result, size_t dim) = 0;
+
+	/**
+	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the down-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i\geq l_j} \alpha_j \phi_j(x) dx.\f]
+	 *
+	 * @param dim dimension in which to apply the down-part
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
 
 	/**
 	 * down-Gradient step in dimension <i>dim</i> applies the gradient of the mass matrix
