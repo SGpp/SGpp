@@ -72,6 +72,25 @@ public:
 	}
 
 	/**
+	 * Copy Constructor of the griditerator object
+	 *
+	 * @param copy a HashGridIterator object that is used to build this instance
+	 */
+	HashGridIterator(HashGridIterator<GIT>& copy) : storage(copy.storage), index(copy.storage->dim())
+	{
+		typename index_type::level_type l;
+		typename index_type::index_type i;
+
+		for(size_t dim = 0; dim < storage->dim(); dim++)
+		{
+			copy.get(dim, l, i);
+			index.push(dim, l, i);
+		}
+		index.rehash();
+		this->seq_ = storage->seq(&index);
+	}
+
+	/**
 	 *	Sets 0,0 in every dimension (Left Level zero ansatzfunction)
 	 */
 	void resetToLevelZero()
