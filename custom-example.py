@@ -31,7 +31,7 @@ import os
 
 ####### GCC Settings #######
 # additional compiler flags
-CPPFLAGS = ['-O3','-g','-funroll-loops']
+CPPFLAGS = ['-O3','-g','-funroll-loops', '-Wall', '-ansi', '-Wno-long-long', '-pedantic']
 
 # MARCH variable for compiler optimization. See gcc man page
 #MARCH = 'nocona'
@@ -60,4 +60,4 @@ CPPFLAGS = ['-O3','-g','-funroll-loops']
 
 #ICC = 1
 #INTELHOME = '/opt/intel/cce/default/bin/'
-#CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias']
+#CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981']
