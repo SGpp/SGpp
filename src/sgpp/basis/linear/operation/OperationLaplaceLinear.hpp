@@ -68,7 +68,7 @@ public:
 	}
 
 protected:
-#ifndef USEOMP
+#ifndef USEOMPTHREE
 	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 	{
 		// In direction gradient_dim we only calculate the norm of the gradient
@@ -87,7 +87,7 @@ protected:
 	}
 #endif
 
-#ifdef USEOMP
+#ifdef USEOMPTHREE
 	virtual void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 	{
 		// In direction gradient_dim we only calculate the norm of the gradient

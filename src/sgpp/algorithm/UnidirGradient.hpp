@@ -65,7 +65,8 @@ public:
 	 */
 	virtual void updown(DataVector& alpha, DataVector& result)
 	{
-#ifdef USEOMPTEST
+#ifdef USEOMP
+#ifndef USEOMPTHREE
 		result.setAll(0.0);
 
 		#pragma omp parallel shared(result)
@@ -84,7 +85,9 @@ public:
 			}
 		}
 #endif
+#endif
 #ifdef USEOMP
+#ifdef USEOMPTHREE
 		DataVector beta(result.getSize());
 		result.setAll(0.0);
 
@@ -99,7 +102,9 @@ public:
 			}
 			result.add(beta);
 		}
-#else
+#endif
+#endif
+#ifndef USEOMP
 		DataVector beta(result.getSize());
 		result.setAll(0.0);
 
@@ -117,7 +122,7 @@ protected:
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
 
-#ifndef USEOMP
+#ifndef USEOMPTHREE
 	/**
 	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
 	 * gradients is used. In all other dimensions only the L2 scalar product.
@@ -226,7 +231,7 @@ protected:
 	}
 #endif
 
-#ifdef USEOMP
+#ifdef USEOMPTHREE
 	/**
 	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
 	 * gradients is used. In all other dimensions only the L2 scalar product.

@@ -46,8 +46,9 @@ CPPFLAGS = ['-O3','-g','-funroll-loops']
 # JNI_OS = 'linux'
 
 ####### OMP #######
-# OpenMP parallelisation directives in version 3
-#OMP = 1
+# OpenMP parallelisation directives in version 2 or 3
+#OMPTWO = 1        #tasks are not supported, badder performance of Laplace
+#OMPTHREE = 1      #good parallel performance of Laplace due to tasks, is ignored if set with g++
 
 ####### ICC #######
 # Uncomment to use Intels optimizing Compiler, please use version 11
