@@ -33,7 +33,8 @@ opts.Add('LINKFLAGS','Set additional Linker-flags','')
 opts.Add('MARCH','Set processor specific MARCH', None)
 
 opts.Add('ICC', 'Uses Intels Optimizing Compiler', False)
-opts.Add('OMP', 'Use OpenMP parallelisation', False)
+opts.Add('OMPTWO', 'Use OpenMP parallelisation verison 2', False)
+opts.Add('OMPTHREE', 'Use OpenMP parallelisation version 3', False)
 opts.Add('INTELHOME', 'Intel Compiler Home Dir', '')
 
 opts.Add('JSGPP', 'Build jsgpp if set to True', False)
@@ -48,7 +49,7 @@ env.Append(LINKFLAGS=['-pthread'])
 
 ####### enable omp support #######
 if not env['ICC']:
-    if env['OMP']:
+    if env['OMPTWO'] or env['OMPTHREE']:
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(CPPDEFINES=['USEOMP'])
         env.Append(LINKFLAGS=['-fopenmp'])
@@ -61,10 +62,16 @@ if env['ICC']:
     env['CXX'] = (env['INTELHOME'] + 'icpc')
     
 if env['ICC']:
-    if env['OMP']:
+    if env['OMPTWO'] or env['OMPTHREE']:
         env.Append(CPPFLAGS=['-openmp'])
-        env.Append(CPPDEFINES=['USEOMP'])
-        env.Append(LINKFLAGS=['-openmp'])    
+        env.Append(LINKFLAGS=['-openmp']) 
+        
+    if env['OMPTWO'] or env['OMPTHREE']:
+    	env.Append(CPPDEFINES=['USEOMP'])
+        
+    if env['OMPTHREE']:
+    	env.Append(CPPDEFINES=['USEOMP'])
+        env.Append(CPPDEFINES=['USEOMPTHREE'])
 
 if not env['ICC'] and env.has_key('MARCH'):
 	env.Append(CPPFLAGS=('-march=' + env['MARCH']))
