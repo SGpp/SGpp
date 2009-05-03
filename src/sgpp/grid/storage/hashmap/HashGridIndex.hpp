@@ -431,7 +431,7 @@ public:
     		}
     		else
     		{
-    			return_stream << (std::pow(0.5, level[i])*index[i]);
+    			return_stream << (pow(0.5, static_cast<double>(level[i]))*index[i]);
     		}
 
     		if (i < DIM-1)
