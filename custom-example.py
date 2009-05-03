@@ -57,7 +57,17 @@ CPPFLAGS = ['-O3','-g','-funroll-loops', '-Wall', '-ansi', '-Wno-long-long', '-p
 # for instance:
 # LD_LIBRARY_PATH = /opt/intel/cce/default/lib/intel64:LD_LIBRARY_PATH
 # LIBPATH = /opt/intel/cce/default/lib/intel64:LIBPATH
+#
+# FOR LRZ:
+# lib: /lrz/sys/intel/icc_110_074/lib/ia64/
+# bin: /lrz/sys/intel/icc_110_074/bin/ia64/ 
 
 #ICC = 1
+
+# FOR YOUR STANDARD X86 X86_64 System USE:
 #INTELHOME = '/opt/intel/cce/default/bin/'
 #CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981']
+
+# FOR LRZ
+#INTELHOME = '/lrz/sys/intel/icc_110_074/bin/ia64/'
+#CPPFLAGS = ['-O3', '-alias-args', '-fno_alias', '-fno-fnalias', '-funroll-loops', '-no-alias-const', '-no-ansi-alias', '-i-static', '-gcc-version=400', '-unroll-aggressive', '-opt-jump-tables=never', '-Wall', '-ansi', '-wd981']
