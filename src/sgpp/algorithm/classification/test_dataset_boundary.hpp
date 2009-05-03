@@ -53,19 +53,18 @@ double test_dataset_boundary( GridStorage* storage, BASIS& basis, DataVector& al
 
 	double correct = 0;
 
-	size_t size = data.getSize();
-
-	std::vector<double> point;
-
-	GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
-
 #ifdef USEOMP
-	#pragma omp parallel
+	#pragma omp parallel shared(correct)
 	{
+		size_t size = data.getSize();
+
+		std::vector<double> point;
+
+		GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+
 		#pragma omp for schedule(static)
 		for(size_t i = 0; i < size; i++)
 		{
-
 			IndexValVector vec;
 			double result = 0;
 
@@ -88,9 +87,14 @@ double test_dataset_boundary( GridStorage* storage, BASIS& basis, DataVector& al
 		}
 	}
 #else
+	size_t size = data.getSize();
+
+	std::vector<double> point;
+
+	GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
+
 	for(size_t i = 0; i < size; i++)
 	{
-
 		IndexValVector vec;
 		double result = 0;
 
@@ -111,7 +115,6 @@ double test_dataset_boundary( GridStorage* storage, BASIS& basis, DataVector& al
 #endif
 
 	return correct;
-
 }
 
 }
