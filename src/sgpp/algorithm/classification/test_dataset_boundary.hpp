@@ -31,6 +31,10 @@
 #include <utility>
 #include <iostream>
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg {
 
 /**
@@ -55,6 +59,35 @@ double test_dataset_boundary( GridStorage* storage, BASIS& basis, DataVector& al
 
 	GetAffectedBasisFunctionsBoundaries<BASIS> ga(storage);
 
+#ifdef USEOMP
+	#pragma omp parallel
+	{
+		#pragma omp for schedule(static)
+		for(size_t i = 0; i < size; i++)
+		{
+
+			IndexValVector vec;
+			double result = 0;
+
+			data.getLine(i, point);
+
+			ga(basis, point, vec);
+
+			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+			{
+				result += iter->second * alpha[iter->first];
+			}
+
+			#pragma omp critical
+			{
+				if( (result >= 0 && classes[i] >= 0) || (result < 0 && classes[i] < 0) )
+				{
+					correct++;
+				}
+			}
+		}
+	}
+#else
 	for(size_t i = 0; i < size; i++)
 	{
 
@@ -74,8 +107,8 @@ double test_dataset_boundary( GridStorage* storage, BASIS& basis, DataVector& al
 		{
 			correct++;
 		}
-
 	}
+#endif
 
 	return correct;
 
