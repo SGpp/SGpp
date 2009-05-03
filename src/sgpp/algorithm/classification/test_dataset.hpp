@@ -53,15 +53,15 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 
 	double correct = 0;
 
-	size_t size = data.getSize();
-
-	std::vector<double> point;
-
-	GetAffectedBasisFunctions<BASIS> ga(storage);
-
 #ifdef USEOMP
-	#pragma omp parallel
+	#pragma omp parallel shared(correct)
 	{
+		size_t size = data.getSize();
+
+		std::vector<double> point;
+
+		GetAffectedBasisFunctions<BASIS> ga(storage);
+
 		#pragma omp for schedule(static)
 		for(size_t i = 0; i < size; i++)
 		{
@@ -88,6 +88,12 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 		}
 	}
 #else
+	size_t size = data.getSize();
+
+	std::vector<double> point;
+
+	GetAffectedBasisFunctions<BASIS> ga(storage);
+
 	for(size_t i = 0; i < size; i++)
 	{
 
