@@ -1,0 +1,13 @@
+#!/bin/bash 
+#$-o $HOME/bupa-liver_uscaled-boundary_l-3_la-0.01_r-0.01.sgpp.08CPU.$JOB_ID.out -j y 
+#$-N sgpp_bupa_08_CPU 
+#$-l h_rt=0:30:00 
+#$-S /bin/bash 
+#$-pe numa_2 8 
+#$-M Alex.Heinecke@web.de 
+. /etc/profile 
+hostname 
+NUM_OMP_THREADS=8
+export NUM_OMP_THREADS
+time python ./../classifier.py --data ./../../datasets/bupa_liver/liver-disorders_normalized.arff.gz --test ./../../datasets/bupa_liver/liver-disorders_normalized.arff.gz --level 3 --zeh laplace --mode normal --lambda 0.01 -r 0.01 --uscaled-boundary
+jobperf -j $JOB_ID 
