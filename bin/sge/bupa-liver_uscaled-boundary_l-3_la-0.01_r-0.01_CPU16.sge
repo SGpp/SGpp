@@ -9,6 +9,6 @@
 hostname 
 NUM_OMP_THREADS=16
 export NUM_OMP_THREADS
-cd $HOME/SGpp/bin/sge
+cd $HOME/SGpp/bin/sge/
 time python ./../classifier.py --data ./../../datasets/bupa_liver/liver-disorders_normalized.arff.gz --test ./../../datasets/bupa_liver/liver-disorders_normalized.arff.gz --level 3 --zeh laplace --mode normal --lambda 0.01 -r 0.01 --uscaled-boundary
 jobperf -j $JOB_ID 
