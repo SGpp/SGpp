@@ -7,8 +7,8 @@
 #$-M Alex.Heinecke@web.de 
 . /etc/profile 
 hostname 
-NUM_OMP_THREADS=16
-export NUM_OMP_THREADS
+OMP_NUM_THREADS=16
+export OMP_NUM_THREADS
 module unload ccomp
 module load ccomp/intel/11.0
 cd $HOME/SGpp/bin/sge/
