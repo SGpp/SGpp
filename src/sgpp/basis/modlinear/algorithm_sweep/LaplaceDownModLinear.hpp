@@ -25,7 +25,7 @@
 #define LAPLACEDOWNMODLINEAR_HPP
 
 #include "grid/GridStorage.hpp"
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

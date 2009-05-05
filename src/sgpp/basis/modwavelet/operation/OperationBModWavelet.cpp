@@ -26,7 +26,7 @@
 
 #include "sgpp.hpp"
 
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 #include "exception/operation_exception.hpp"
 

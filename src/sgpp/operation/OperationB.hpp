@@ -24,7 +24,7 @@
 #ifndef OPERATIONB_HPP
 #define OPERATIONB_HPP
 
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

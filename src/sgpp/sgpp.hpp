@@ -41,7 +41,7 @@
 #include "basis/linearboundaryUScaled/operation/OperationLaplaceLinearBoundaryUScaled.hpp"
 #include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 #include "grid/Grid.hpp"
 #include "grid/GridStorage.hpp"

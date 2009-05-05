@@ -25,7 +25,7 @@
 #define ALGORTIHMDGEMV_HPP
 
 #include "grid/GridStorage.hpp"
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 #include "algorithm/GetAffectedBasisFunctions.hpp"
 

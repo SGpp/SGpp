@@ -43,10 +43,7 @@ def testHierarchisationResults(node1, node2):
 # @param node_values DataVector that holds the coefficients of the function's node base
 # @param grid the grid matching to the node_vector
 def doHierarchisation(node_values, grid):   
-    tmp =  DataVector(grid.getStorage().size(), 1)
-    
-    for i in xrange(len(node_values)):
-        tmp[i] = node_values[i]
+    tmp = DataVector(node_values)
     
     # create operation: hierarchisation
     hierarchisation = grid.createOperationHierarchisation()

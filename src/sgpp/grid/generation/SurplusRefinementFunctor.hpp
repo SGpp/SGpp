@@ -24,7 +24,7 @@
 #ifndef SURPLUSREFINEMENTFUNCTOR_HPP
 #define SURPLUSREFINEMENTFUNCTOR_HPP
 
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/GridStorage.hpp"
 
