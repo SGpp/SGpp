@@ -24,7 +24,7 @@
 #define GETAFFECTEDBASISFUNCTIONSBOUNDARIES_HPP
 
 #include "grid/GridStorage.hpp"
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 #include <vector>
 #include <utility>

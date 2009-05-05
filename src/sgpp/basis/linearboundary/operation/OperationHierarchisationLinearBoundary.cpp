@@ -27,7 +27,7 @@
 #include "sgpp.hpp"
 
 #include "basis/basis.hpp"
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

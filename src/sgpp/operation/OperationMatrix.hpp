@@ -24,7 +24,7 @@
 #ifndef OPERATIONMATRIX_HPP
 #define OPERATIONMATRIX_HPP
 
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

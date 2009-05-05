@@ -33,7 +33,7 @@
 #include "algorithm/sweep.hpp"
 
 #include "grid/GridStorage.hpp"
-#include "data/DataVector.h"
+#include "data/DataVector.hpp"
 
 #ifdef USEOMP
 #include <omp.h>

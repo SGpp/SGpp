@@ -2,9 +2,9 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2007-2009 Dirk Plueger (Dirk.Pflueger@in.tum.de)            #
 # Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
 # Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -888,8 +888,8 @@ def buildTrainingVector(data):
     return training
 
 #-------------------------------------------------------------------------------
-## Computes the classification accuracy on some test data. Tests on the classes
-# {+1, -1}, cut-off at 0.
+## Computes the classification accuracy on some test data. 
+# Tests on the classes {+1, -1}, cut-off at 0.
 # @param grid the sparse grid
 # @param alpha DataVector of surplusses
 # @param test a DataVector containing a dataset of points to test on
@@ -908,8 +908,9 @@ def testVector(grid,alpha,test,classes):
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-## Computes the classification accuracy on some test data. Tests on the classes
-# {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
+## Computes the classification accuracy on some test data. 
+#
+# Tests on the classes {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
 # @param grid the sparse grid
 # @param alpha DataVector of surplusses
 # @param test a DataVector containing a dataset of points to test on
