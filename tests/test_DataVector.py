@@ -55,7 +55,7 @@ class TestDataVector(unittest.TestCase):
         d = DataVector(3)
         for i in xrange(len(d)):
             d[i] = i
-        
+
         self.assertEqual(d.sum(), 3)
 
     def testDotProduct(self):
@@ -70,3 +70,6 @@ class TestDataVector(unittest.TestCase):
             
         self.assertEqual(d.dotProduct(d), x)
 
+# Run tests for this file if executed as application 
+if __name__=='__main__':
+    unittest.main()
