@@ -105,7 +105,7 @@ public:
 	}
 
 	/**
-	 * Constructor that reads the data from a input stream
+	 * Constructor that reads the data from an input stream
 	 *
 	 * @param istream the inputstream that contains the data
 	 */
