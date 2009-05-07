@@ -35,16 +35,17 @@ def callback_deprecated(option, opt, value, parser):
 #-------------------------------------------------------------------------------
 ## calculated the condition number of the DM Systemmatrix
 def calc_condition():
-    factory = Grid.createLinearBoundaryUScaledGrid(2)
+    factory = Grid.createLinearGrid(6)
     level = 3
     gen = factory.createGridGenerator()
     gen.regular(level)
     
-    training = buildTrainingVector(openFile('datasets/twospirals/twospirals.wieland.arff.gz'))
+    training = buildTrainingVector(openFile('datasets/bupa_liver/liver-disorders_normalized.arff.gz'))
     
-    aem = 194
-    lam = 0.0001
+    aem = 345
+    lam = 0.001
     
+    print "Number of gridpoints:" + str(factory.getStorage().size())
     print "generating laplacian matrix..."
     laplace_m = generateCMatrix(factory)
     print laplace_m
