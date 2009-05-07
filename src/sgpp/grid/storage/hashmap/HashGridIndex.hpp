@@ -119,6 +119,7 @@ public:
 			{
 				Leaf = false;
 			}
+			else
 			{
 				Leaf = true;
 			}
