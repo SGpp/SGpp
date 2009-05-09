@@ -534,7 +534,9 @@ def doTest():
         adaptStep += 1
         if(options.adaptive >= 0 and adaptStep <= options.adaptive) \
             or (options.epochs_limit > 0 and options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
-            or (options.regression and options.mse_limit > 0 and options.mse_limit > te_refine[-1]):
+            or (options.regression and options.mse_limit > 0 and options.mse_limit > te_refine[-1]) \
+            or (options.grid_limit > 0 and options.grid_limit > grid.getStorage().size()) \
+            :
             print("refining grid")
             
             numOfPoints = 0
@@ -989,6 +991,7 @@ if __name__=='__main__':
 #TODO: maybe a better name for parameter
     parser.add_option("--epochs_limit", action="store", type="int", default="0", dest="epochs_limit", help="Number of refinement iterations (epochs), MSE of test data have to increase, before refinement will stop.")
     parser.add_option("--mse_limit", action="store", type="float", default="0.0", dest="mse_limit", help="If MSE of test data fall below this limit, refinement will stop.")
+    parser.add_option("--grid_limit", action="store", type="int", default="0", dest="grid_limit", help="If the number of points on grid exceed grid_limit, refinement will stop.")
 
     # parse options
     (options,args)=parser.parse_args()
