@@ -53,6 +53,24 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
+    def testSerializationModLinear(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        factory = Grid.createModLinearGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
     def testSerializationLinearBoudaryUScaled(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
@@ -105,6 +123,130 @@ class TestGridFactory(unittest.TestCase):
         self.failIfEqual(newfac, None)
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+
+    def testSerializationLinearWithLeaf(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        srcLeaf = []
+        factory = Grid.createLinearGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        for i in xrange(factory.getStorage().size()):
+            srcLeaf.append(factory.getStorage().get(i).isLeaf())
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        for i in xrange(factory.getStorage().size()):
+            self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
+        
+    def testSerializationModLinearWithLeaf(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        srcLeaf = []
+        factory = Grid.createModLinearGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        for i in xrange(factory.getStorage().size()):
+            srcLeaf.append(factory.getStorage().get(i).isLeaf())
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        for i in xrange(factory.getStorage().size()):
+            self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
+        
+    def testSerializationLinearBoudaryUScaledWithLeaf(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        srcLeaf = []
+        factory = Grid.createLinearBoundaryUScaledGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        for i in xrange(factory.getStorage().size()):
+            srcLeaf.append(factory.getStorage().get(i).isLeaf())
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        for i in xrange(factory.getStorage().size()):
+            self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
+        
+    def testSerializationLinearBoudaryWithLeaf(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        srcLeaf = []
+        factory = Grid.createLinearBoundaryGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        for i in xrange(factory.getStorage().size()):
+            srcLeaf.append(factory.getStorage().get(i).isLeaf())
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        for i in xrange(factory.getStorage().size()):
+            self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])       
+        
+    def testSerializationPolyWithLeaf(self):
+        from pysgpp import Grid
+        
+        srcLeaf = []
+        factory = Grid.createPolyGrid(2,2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+        
+        for i in xrange(factory.getStorage().size()):
+            srcLeaf.append(factory.getStorage().get(i).isLeaf())
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        for i in xrange(factory.getStorage().size()):
+            self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
         
 class TestPolyGrid(unittest.TestCase):
     def testGeneration(self):
