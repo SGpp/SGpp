@@ -55,6 +55,31 @@ class TestGridStorage(unittest.TestCase):
         s2 = GridStorage(str)
         
         self.failUnlessEqual(s.size(), s2.size())
+
+    def testSerializeWithLeaf(self):
+        """Tests serialization with Leaf"""
+        from pysgpp import GridStorage, HashGenerator
+        
+        srcLeaf = []
+        s = GridStorage(2)
+        g = HashGenerator()
+        
+        g.regular(s, 2)
+        
+        for i in xrange(s.size()):
+            srcLeaf.append(s.get(i).isLeaf())
+        
+        str = s.serialize()
+        
+        self.failIfEqual(len(str), 0)
+        
+        s2 = GridStorage(str)
+
+        self.failUnlessEqual(s.size(), s2.size())
+        
+        for i in xrange(s.size()):
+            self.failUnlessEqual(s2.get(i).isLeaf(), srcLeaf[i])        
+        
         
     def testInsert(self):
         """Tests insertion of an index into a storage"""
