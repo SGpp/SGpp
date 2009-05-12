@@ -62,8 +62,7 @@ void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alp
 	{
 		for (size_t i = 0; i < this->storage->dim(); i++)
 		{
-			s.sweep1D_Boundary(alpha, alpha, (this->storage->dim()-(i+1)));
-			//s.sweep1D_Boundary(alpha, alpha, i);
+			s.sweep1D_Boundary(alpha, alpha, i);
 		}
 	}
 	// 1 D case

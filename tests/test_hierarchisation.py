@@ -188,7 +188,160 @@ class TestHierarchisationLinear(unittest.TestCase):
         #test
         self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
         
+class TestHierarchisationModLinear(unittest.TestCase):
+    ##
+    # Test hierarchisation for 1D
+    def testHierarchisation1DModLinear(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 1
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
 
+        function = buildParable(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createModLinearGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regular(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+
+  
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHierarchisationDModLinear(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 3
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
+
+        function = buildParable(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createModLinearGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regular(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+      
+
+class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
+    ##
+    # Test hierarchisation for 1D
+    def testHierarchisation1DModLinearWithBoundary(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 1
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
+
+        function = buildParableBoundary(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createModLinearGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regular(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+
+  
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHierarchisationDModLinearWithBoundary(self):
+        from pysgpp import Grid, DataVector
+        
+        dim = 3
+        node_values = None
+        node_values_back = None
+        alpha = None
+        points = None
+
+        function = buildParableBoundary(dim)
+    
+        # generate a regular test grid
+        grid = Grid.createModLinearGrid(dim)
+        generator = grid.createGridGenerator()
+        generator.regular(5)
+    
+        # generate the node_values vector
+        storage = grid.getStorage()
+    
+        node_values = DataVector(storage.size(), 1)
+    
+        for n in xrange(storage.size()):
+            points = storage.get(n).getCoordinates().split()
+            node_values[n] = evalFunction(function, points)
+        
+    
+        # do hierarchisation
+        alpha = doHierarchisation(node_values, grid)
+    
+        # do dehierarchisation
+        node_values_back = doDehierarchisation(alpha, grid)
+    
+        #test
+        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+
+        
 class TestHierarchisationLinearBoundaryUScaled(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
