@@ -23,6 +23,8 @@
 
 #include "basis/basis.hpp"
 #include "basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
+#include "basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
+#include "basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
 
 #include "sgpp.hpp"
 
@@ -41,7 +43,14 @@ namespace sg
  */
 void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_values)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+	detail::HierarchisationModLinear func(this->storage);
+	sweep<detail::HierarchisationModLinear> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(node_values, node_values, i);
+	}
 }
 
 /**
@@ -53,7 +62,14 @@ void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_value
  */
 void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+	detail::DehierarchisationModLinear func(this->storage);
+	sweep<detail::DehierarchisationModLinear> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(alpha, alpha, i);
+	}
 }
 
 }
