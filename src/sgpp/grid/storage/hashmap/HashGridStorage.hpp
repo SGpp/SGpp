@@ -54,8 +54,8 @@ template<typename GIT>
 class HashGridStorage
 {
 public:
-	typedef GIT index_type;
-	typedef GIT* index_pointer;
+    typedef GIT index_type;
+    typedef GIT* index_pointer;
 
     typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
     typedef typename grid_map::iterator grid_map_iterator;

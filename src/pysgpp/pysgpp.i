@@ -51,7 +51,7 @@ namespace std {
 #include "sgpp.hpp"
 %}
 
-// The Good,
+// The Good, i.e. without any modifications
 %include "src/sgpp/grid/storage/hashmap/HashGridIndex.hpp"
 %include "src/sgpp/grid/storage/hashmap/HashGridIterator.hpp"
 %include "src/sgpp/grid/storage/hashmap/HashGridStorage.hpp"
