@@ -25,7 +25,6 @@
 
 import os
 import distutils.sysconfig
-import toolsKbhitCountdown
 
 opts = Options('custom.py')
 
