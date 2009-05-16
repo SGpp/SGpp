@@ -2,6 +2,7 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2007-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           #
 # Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
@@ -21,7 +22,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-import unittest
+import unittest, sys, toolsKbhitCountdown
 
 import test_GridIndex
 import test_GridStorage
@@ -37,20 +38,20 @@ import test_DataVector
 import test_Classifier
 
 if __name__ == '__main__':
-    alltests = unittest.TestSuite([
-         unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
-         unittest.defaultTestLoader.loadTestsFromModule(test_GridStorage),
-         unittest.defaultTestLoader.loadTestsFromModule(test_algorithms),
-         unittest.defaultTestLoader.loadTestsFromModule(test_laplace),
-         unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
-         unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
-         unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
-         #unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
-         unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
-         unittest.defaultTestLoader.loadTestsFromModule(test_BT)
-        ])
+    sys.stdout.write("Running unit tests. ")
+    if not toolsKbhitCountdown.countdown(3):
+        alltests = unittest.TestSuite([
+                unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
+                unittest.defaultTestLoader.loadTestsFromModule(test_GridStorage),
+                unittest.defaultTestLoader.loadTestsFromModule(test_algorithms),
+                unittest.defaultTestLoader.loadTestsFromModule(test_laplace),
+                unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
+                unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
+                unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
+                #unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
+                unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
+                unittest.defaultTestLoader.loadTestsFromModule(test_BT)
+                ])
 
-    unittest.TextTestRunner().run(alltests)
+        unittest.TextTestRunner().run(alltests)
 
-
-    

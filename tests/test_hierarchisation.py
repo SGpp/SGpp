@@ -3,6 +3,7 @@
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
+# Copyright (C) 2009 Dirk Pflueger (Dirk.Pflueger@in.tum.de)                #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
 # it under the terms of the GNU Lesser General Public License as published  #
@@ -24,6 +25,7 @@ import unittest
 import re
 from pysgpp import DataVector
 
+#-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
 # @param node1 the vector of the node base values before hierarchisation and dehierarchisation
 # @param node2 the vector of the node base values after hierarchisation and dehierarchisation
@@ -36,6 +38,51 @@ def testHierarchisationResults(node1, node2):
             error = abs(abs(node1[i])-abs(node2[i]))
             
     return error
+
+
+#-------------------------------------------------------------------------------
+## Hierarchise and dechierarchise a regular sparse grid for a given function and test.
+# @param 
+# @param 
+# @return 
+def testHierarchisationDehierarchisation(obj, grid, level, function):
+    node_values = None
+    node_values_back = None
+    alpha = None
+    points = None
+    p = None
+
+    # generate a regular test grid
+    generator = grid.createGridGenerator()
+    generator.regular(level)
+
+    storage = grid.getStorage()
+    dim = storage.dim()
+
+    # generate the node_values vector
+    node_values = DataVector(storage.size(), 1)
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordinates().split()
+        node_values[n] = evalFunction(function, points)
+
+    # do hierarchisation
+    alpha = doHierarchisation(node_values, grid)
+
+    # test hierarchisation
+    p = DataVector(1, storage.dim())
+    evalOp = grid.createOperationEval()
+    for n in xrange(storage.size()):
+        storage.get(n).getCoord(p)
+        obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
+                                  node_values[n])
+        
+    # do dehierarchisation
+    node_values_back = doDehierarchisation(alpha, grid)
+
+    # test dehierarchisation
+    obj.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),
+                              0.0)
+
 
 
 #-------------------------------------------------------------------------------
@@ -114,79 +161,27 @@ def buildParableBoundary(dim):
 
 class TestHierarchisationLinear(unittest.TestCase):
     ##
-    # Test hierarchisation for 1D
+    # Test hierarchisation for 1D, LinearGrid
     def testHierarchisation1D(self):
         from pysgpp import Grid, DataVector
         
         dim = 1
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParable(dim)
-    
-        # generate a regular test grid
         grid = Grid.createLinearGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
 
   
     ##
-    # Test regular sparse grid dD, normal hat basis functions.
+    # Test regular sparse grid dD, LinearGrid
     def testHierarchisationD(self):
         from pysgpp import Grid, DataVector
         
         dim = 3
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParable(dim)
-    
-        # generate a regular test grid
         grid = Grid.createLinearGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
         
 class TestHierarchisationModLinear(unittest.TestCase):
     ##
@@ -195,36 +190,10 @@ class TestHierarchisationModLinear(unittest.TestCase):
         from pysgpp import Grid, DataVector
         
         dim = 1
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParable(dim)
-    
-        # generate a regular test grid
         grid = Grid.createModLinearGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
 
   
     ##
@@ -233,36 +202,10 @@ class TestHierarchisationModLinear(unittest.TestCase):
         from pysgpp import Grid, DataVector
         
         dim = 3
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParable(dim)
-    
-        # generate a regular test grid
         grid = Grid.createModLinearGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
       
 
 class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
@@ -272,74 +215,22 @@ class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
         from pysgpp import Grid, DataVector
         
         dim = 1
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParableBoundary(dim)
-    
-        # generate a regular test grid
         grid = Grid.createModLinearGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
 
   
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHierarchisationDModLinearWithBoundary(self):
         from pysgpp import Grid, DataVector
-        
-        dim = 3
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
 
+        dim = 3
+        level = 5
         function = buildParableBoundary(dim)
-    
-        # generate a regular test grid
         grid = Grid.createModLinearGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
 
         
 class TestHierarchisationLinearBoundaryUScaled(unittest.TestCase):
@@ -349,74 +240,23 @@ class TestHierarchisationLinearBoundaryUScaled(unittest.TestCase):
         from pysgpp import Grid, DataVector
         
         dim = 1
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParableBoundary(dim)
-    
-        # generate a regular test grid
         grid = Grid.createLinearBoundaryUScaledGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
 
-  
+
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHierarchisationDBoundaryUScaled(self):
         from pysgpp import Grid, DataVector
         
         dim = 3
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParableBoundary(dim)
-    
-        # generate a regular test grid
         grid = Grid.createLinearBoundaryUScaledGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
+
         
 class TestHierarchisationLinearBoundary(unittest.TestCase):
     ##
@@ -425,36 +265,10 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         from pysgpp import Grid, DataVector
         
         dim = 1
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParableBoundary(dim)
-    
-        # generate a regular test grid
         grid = Grid.createLinearBoundaryGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)
+        testHierarchisationDehierarchisation(self, grid, level, function)
 
   
     ##
@@ -463,36 +277,10 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         from pysgpp import Grid, DataVector
         
         dim = 3
-        node_values = None
-        node_values_back = None
-        alpha = None
-        points = None
-
+        level = 5
         function = buildParableBoundary(dim)
-    
-        # generate a regular test grid
         grid = Grid.createLinearBoundaryGrid(dim)
-        generator = grid.createGridGenerator()
-        generator.regular(5)
-    
-        # generate the node_values vector
-        storage = grid.getStorage()
-    
-        node_values = DataVector(storage.size(), 1)
-    
-        for n in xrange(storage.size()):
-            points = storage.get(n).getCoordinates().split()
-            node_values[n] = evalFunction(function, points)
-        
-    
-        # do hierarchisation
-        alpha = doHierarchisation(node_values, grid)
-    
-        # do dehierarchisation
-        node_values_back = doDehierarchisation(alpha, grid)
-    
-        #test
-        self.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),0.0)        
+        testHierarchisationDehierarchisation(self, grid, level, function)
 
         
 # Run tests for this file if executed as application 

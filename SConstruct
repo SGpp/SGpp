@@ -2,6 +2,7 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2008-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           #
 # Copyright (C) 2008 Joerg Blank (blankj@in.tum.de)                         #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
@@ -24,6 +25,7 @@
 
 import os
 import distutils.sysconfig
+import toolsKbhitCountdown
 
 opts = Options('custom.py')
 
@@ -44,11 +46,22 @@ opts.Add('JNI_OS', 'JNI os path', None)
 env = Environment(options = opts, ENV = os.environ)
 
 env.Append(CPPFLAGS=['-pthread'])
-#env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long']) # '-Werror'
+# Further CPPFlAGS
+if not env['ICC']:
+     # -Wno-long-long as swig uses long long
+     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
+     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
+     #     ensure you also compile with -fno-strict-aliasing"
+     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-fno-strict-aliasing'])
+else:
+     # ICC doesn't know '-ansi', '-pedantic'
+     env.Append(CPPFLAGS=['-Wall', '-Wno-long-long', '-fno-strict-aliasing']) 
+
+
 
 ####### enable omp support #######
 if not env['ICC']:
-    if env['OMPTWO'] or env['OMPTHREE']:
+     if env['OMPTWO'] or env['OMPTHREE']:
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(CPPDEFINES=['USEOMP'])
         env.Append(LINKFLAGS=['-fopenmp'])

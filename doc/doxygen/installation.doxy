@@ -18,7 +18,7 @@ installInstructions "below".
 - swig, http://www.swig.org/, if you want to use SGpp within python,
   e.g.<br> It allows to wrap C/C++ functions as libraries that can be used
   from within other languages.
-- STLport, http://sourceforge.net/projects/stlport/, a Multiplatform
+- <b>NOT NEEDED ANY MORE!</b> STLport, http://sourceforge.net/projects/stlport/, a Multiplatform
   C++ Standard Library (STL implementation). Highly recommended,
   though not required
 - psyco, http://psyco.sourceforge.net/, is recommended, although not
@@ -104,6 +104,7 @@ at the beginning.
    @endverbatim
    whether swig is installed. \ref installSwig "Install swig", if necessary. 
 - STLport
+ - <b>NOT NEEDED ANY MORE!</b> 
  - If during compilation SCons tells you that it can't finde stlport,
    then you quite likely either don't set the path to stlport in your
    <tt>custom.py</tt> or via the command line parameters for
@@ -176,7 +177,7 @@ required software
  - swig is platform dependent (ia64, x86_64, ...)
 
 @subsection installSTLport STLport
-- STLport is not required, but recommended
+- <b>NOT NEEDED ANY MORE!</b> STLport is not required, but recommended
 - To install locally proceed as follows:
   @verbatim
   cd tools/
@@ -203,7 +204,7 @@ required software
    that it found stlport
 
 @subsection installPsyco psyco
-- STLport is not required, but recommended for 32-Bit
+- Psyco is not required, but recommended for 32-Bit
   architectures. It can be used <b>only</b> on 32-Bit architectures.
 - To install locally proceed as follows:
   @verbatim

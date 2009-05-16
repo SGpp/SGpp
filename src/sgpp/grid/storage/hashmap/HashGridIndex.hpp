@@ -2,7 +2,8 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
+/* Copyright (C) 2008-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                         */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -25,6 +26,7 @@
 #define HASHGRIDINDEX_HPP
 
 #include "common/hash_map_config.hpp"
+#include "data/DataVector.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -273,6 +275,7 @@ public:
 	 * @param d the dimension in which the coordinate should be calculated
 	 *
 	 * @return the coordinate in the given dimension
+	 * @todo rename to getCoord
 	 */
 	double abs(size_t d) const
 	{
@@ -416,9 +419,31 @@ public:
     }
 
     /**
+     * Sets the entries of DataVector p to the coordinates of the gridpoint
+     *
+     * @param the (result) DataVector p that should be overwritten
+     */
+    void getCoord(DataVector &p)
+    {
+      for(size_t i = 0; i < DIM; i++)
+    	{
+	  if(level[i] == 0)
+	    {
+	      p.set(i, 0.3); //static_cast<double>(index[i])
+	    }
+	  else
+	    {
+	      p.set(i, pow(0.5, static_cast<double>(level[i]))*index[i]);
+	    }
+	}      
+    }
+
+
+    /**
      * generates a string with all coordinates of the gridpoint
      *
      * @return returns a string with the coordinates of the gridpoint separated by whitespace
+     * @todo rename to getCoordString()
      */
     std::string getCoordinates()
     {
