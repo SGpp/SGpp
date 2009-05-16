@@ -421,15 +421,15 @@ public:
     /**
      * Sets the entries of DataVector p to the coordinates of the gridpoint
      *
-     * @param the (result) DataVector p that should be overwritten
+     * @param p the (result) DataVector p that should be overwritten
      */
-    void getCoord(DataVector &p)
+    void getCoords(DataVector &p)
     {
       for(size_t i = 0; i < DIM; i++)
     	{
 	  if(level[i] == 0)
 	    {
-	      p.set(i, 0.3); //static_cast<double>(index[i])
+	      p.set(i, index[i]);
 	    }
 	  else
 	    {
