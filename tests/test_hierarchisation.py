@@ -72,7 +72,7 @@ def testHierarchisationDehierarchisation(obj, grid, level, function):
     p = DataVector(1, storage.dim())
     evalOp = grid.createOperationEval()
     for n in xrange(storage.size()):
-        storage.get(n).getCoord(p)
+        storage.get(n).getCoords(p)
         obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
                                   node_values[n])
         
