@@ -70,7 +70,9 @@ public:
 	}
 
 	/**
-	 * Evaluates the grid's function at a given point and tests the class
+	 * Computes the classification accuracy on some test data.
+	 *
+	 * The function is evaluated at the given points. Tests on the classes {+1, -1}, cut-off at 0.
 	 *
 	 * @param alpha the coefficients of the sparse grid's base functions
 	 * @param data the coordinates of the evaluation points

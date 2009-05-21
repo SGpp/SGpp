@@ -26,23 +26,23 @@
 import os
 import distutils.sysconfig
 
-opts = Options('custom.py')
+vars = Variables('custom.py')
 
-opts.Add('CPPFLAGS','Set additional Flags','')
-opts.Add('LINKFLAGS','Set additional Linker-flags','')
+vars.Add('CPPFLAGS','Set additional Flags','')
+vars.Add('LINKFLAGS','Set additional Linker-flags','')
 
-opts.Add('MARCH','Set processor specific MARCH', None)
+vars.Add('MARCH','Set processor specific MARCH', None)
 
-opts.Add('ICC', 'Uses Intels Optimizing Compiler', False)
-opts.Add('OMPTWO', 'Use OpenMP parallelisation verison 2', False)
-opts.Add('OMPTHREE', 'Use OpenMP parallelisation version 3', False)
-opts.Add('INTELHOME', 'Intel Compiler Home Dir', '')
+vars.Add('ICC', 'Uses Intels Optimizing Compiler', False)
+vars.Add('OMPTWO', 'Use OpenMP parallelisation verison 2', False)
+vars.Add('OMPTHREE', 'Use OpenMP parallelisation version 3', False)
+vars.Add('INTELHOME', 'Intel Compiler Home Dir', '')
 
-opts.Add('JSGPP', 'Build jsgpp if set to True', False)
-opts.Add('JNI_CPPPATH', 'Path to JNI includes', None)
-opts.Add('JNI_OS', 'JNI os path', None)
+vars.Add('JSGPP', 'Build jsgpp if set to True', False)
+vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
+vars.Add('JNI_OS', 'JNI os path', None)
 
-env = Environment(options = opts, ENV = os.environ)
+env = Environment(variables = vars, ENV = os.environ)
 
 env.Append(CPPFLAGS=['-pthread'])
 # Further CPPFlAGS
@@ -127,4 +127,4 @@ cpy += Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$T
 cpy += Command("#bin/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
 cpy += Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
 
-Help(opts.GenerateHelpText(env))
+Help(vars.GenerateHelpText(env))

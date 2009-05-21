@@ -208,12 +208,11 @@ def doApply():
     # read alpha vector
     alpha = buildTrainingVector(openFile(options.alpha))
     
-#    # construct corresponding regular grid by dim and level
-#    grid = SpGridLinear(dim, options.level)
     # construct corresponding grid
     grid = constructGrid(dim)
     if(alpha.getSize() != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
+        print "alpha size %d, grid size %d" % (alpha.getSize(),grid.getStorage().size())
         sys.exit(1)
     
     # copy data to DataVector
@@ -259,10 +258,11 @@ def doApply():
 
 
 #-------------------------------------------------------------------------------
-## Evaluate a sparse grid function given by grid and alphas at data points.
-# Evaluates a sparse grid function, given by a regular sparse grid (dim, level)
-# and an alpha-Vector (ARFF-file) at a set of data points (ARFF-file).
-# Outputs function values to ARFF-file
+## Evaluate a sparse grid function given by a grid and an 
+# alpha-Vector (ARFF-file) at a set of data points (ARFF-file).
+# If the data set contains class values, output some statistics 
+# (classification accuracy, or - if regularization - mse and other measures).
+# Outputs classification or (if regression) function values to ARFF-file.
 def doEval():
     # read data
     data = openFile(options.data[0])
@@ -284,10 +284,6 @@ def doEval():
 
     # evaluate
     q = DataVector(1,dim)
-    #print "Classifier dim: %d" % dim
-#    print "Classifier q.getDim(): %d" % q.getDim()
-    
-    #q = [1.0,1.0,1.0,1.0,1.0]
     classes = []
     # if test data contains function values, additionally compute L2-norm of error
     if data.has_key("classes"):
@@ -295,36 +291,42 @@ def doEval():
         err = 0
     else:
         compute_accuracy = False
-    # traverse Data
-    for i in xrange(numData):
-        x.getRow(i,q)
-        val = grid.createOperationEval().eval(alpha,q)
-        #print "val %f" % val
-        classes.append(val)
-    # output accuracy:
-    if compute_accuracy:
-        error = DataVector(len(classes))
-        for i in range(len(classes)):
-            error[i] = classes[i]
-#            print str(error[i]) + " - " + str(y[i])
-        
-        error.sub(y) # error vector
-        error.sqr()  # entries squared
-        # output some statistics
-        err_min = error.min(1)
-        err_max = error.max(1)
-        print "(Min,Max) error: (%2.10f,%2.10f)" % (sqrt(err_min), sqrt(err_max))
-        # output accuracy
-        err = error.sum()
-        print "L2-norm of error on data: %5.10f" % (sqrt(err))
-        print "MSE: %2.10f" %(err / error.getSize())
+
+    # classification:
+    if not options.regression:
+        # traverse Data
+        for i in xrange(numData):
+            x.getRow(i,q)
+            val = grid.createOperationEval().eval(alpha,q)
+            if compute_accuracy:
+                if (val >= 0 and data["classes"][i] >= 0) or (val < 0 and data["classes"][i] < 0):
+                    acc += 1
+            if val >= 0:
+                classes.append(1.0)
+            else:
+                classes.append(-1.0)
+        if compute_accuracy:
+            # output accuracy:
+            acc = acc / float(numData)
+            print "Accuracy on test data: %9.5f%%" % (100*acc)
+    # regression:
+    else: 
+        # traverse Data
+        for i in xrange(numData):
+            x.getRow(i,q)
+            val = grid.createOperationEval().eval(alpha,q)
+            classes.append(val)
+        if compute_accuracy:
+            # output accuracy:
+            m = Matrix(grid, x, options.regparam, options.zeh)
+            evaluateError(y, alpha, m)[0]
 
     # get filename for output file
     if(options.outfile != None):
         data["filename"] = options.outfile
     else:
         data["filename"] = data["filename"] + ".out.arff"
-    # write data with function values to ARFF-file
+    # write data with classes or function values to ARFF-file
     data["classes"] = classes
     writeDataARFF([data])
 
@@ -520,8 +522,8 @@ def doTest():
             mse = evaluateError(test_classes, alpha, m_test)[0]
             te_refine.append(mse)
         else:     
-            te_refine.append(te)
             tr_refine.append(tr)
+            te_refine.append(te)
         
         if options.verbose and not options.regression:
             print "Correct classified on training data: ",tr
@@ -909,7 +911,6 @@ def testVector(grid,alpha,test,classes):
     return float(correct)/test.getSize()
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 ## Computes the classification accuracy on some test data. 
 #
 # Tests on the classes {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
@@ -919,7 +920,7 @@ def testVector(grid,alpha,test,classes):
 # @param classes DataVector of correct class values
 # @return classification accuracy
 def testVectorFast(grid, alpha, test, classes):
-    return float(grid.createOperationEval().test(alpha, test, classes))/test.getSize()
+    return grid.createOperationEval().test(alpha, test, classes)/float(test.getSize())
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
