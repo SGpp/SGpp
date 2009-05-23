@@ -21,7 +21,7 @@
 # @version $CURR$
 
 #data = [{"data":[[x],[y]], "classes":[c]}, {"data":[[x],[y]], "classes":[c]}]
-import sys, re, time, fcntl, os, random, gzip
+import sys, re, time, fcntl, os, random, gzip, math
 from pysgpp import *
 
 # constants
@@ -621,6 +621,33 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
     return (dvec, cvec)
 
 #-------------------------------------------------------------------------------
+## perform sequential split of a DataVector into two DataVectors
+# @param data DataVector to split
+# @param proportion split into proportion, (1-proportion)
+# @return (DataVector1, DataVector2)
+#-------------------------------------------------------------------------------
+def split_DataVector_by_proportion(data, proportion):
+    dim = data.getDim()
+    size = data.getSize()
+
+    splitpoint = int(math.floor(size*proportion))
+    dv1 = DataVector(splitpoint, dim)
+    dv2 = DataVector(size-splitpoint, dim)
+    row = DataVector(1,dim)
+    
+    # copy
+    for i in xrange(splitpoint):
+        data.getRow(i, row)
+        dv1.setRow(i, row)
+    for i in xrange(size-splitpoint):
+        data.getRow(i+splitpoint, row)
+        dv2.setRow(i, row)
+
+    if len(dv1)+len(dv2) <> len(data): raise Exception("data length doesn't match")
+    return (dv1, dv2)
+
+
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 ## An array containing all modes and descriptions
 zeh_modes = {
@@ -778,19 +805,15 @@ def readGrid(filename):
     
     return restoreGrid(text)
 
-def writeCheckpoint(filename, grid, alpha, adaption = None):
+def writeCheckpoint(filename, grid, alpha, adaption = None, fold = None):
+    adapt_str = ""
+    fold_str = ""
     if adaption != None:
-        writeAlphaARFF(filename+".a" + str(adaption) + ".alpha.arff", alpha)
-        writeGrid(filename+".a" + str(adaption) + ".grid", grid)
-#        fout = open(filename+".stats", "w")
-#        fout.write(txt+"\n");
-#        fout.close()
-    else:
-        writeAlphaARFF(filename+".alpha.arff", alpha)
-        writeGrid(filename+".grid", grid)
-#        fout = open(filename+".stats", "w")
-#        fout.write(txt+"\n");
-#        fout.close()
+        adapt_str = ".a%d" % (adaption)
+    if fold != None:
+        fold_str = ".f%d" % (fold)
+    writeAlphaARFF("%s%s%s.alpha.arff.gz" % (filename, fold_str, adapt_str), alpha)
+    writeGrid("%s%s%s.grid.gz" % (filename, fold_str, adapt_str), grid)
     
 def writeStats(filename, txt, mode = "a"):
     writeLockFile(filename + ".stats", txt, mode)

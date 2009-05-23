@@ -1,4 +1,4 @@
-#############################################################################
+############################################################################
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
@@ -432,7 +432,7 @@ def run(grid, training, classes):
         m = Matrix(grid, training, options.regparam, options.zeh)
         b = m.generateb(classes)
             
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
         print "Conjugate Gradient output:"
         print res
 
@@ -505,7 +505,7 @@ def doTest():
         
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose)
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
         print "Conjugate Gradient output:"
         print res
 
@@ -596,14 +596,14 @@ def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
     
     return txt + "\n"
 
-###
-## returns txt variable for stats
 ##
-#def formTxt(te_refine, tr_refine, num_points, withHeader = True):
-#    txt = "%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-#    for i in xrange(len(tr_refine)):
-#        txt = txt + ", %f, %.10f, %.10f" % (num_points[i], tr_refine[i], te_refine[i])
-#    return txt + "\n"
+# returns txt variable for stats
+#
+def formTxtVal(te_refine, val_refine, tr_refine, num_points, withHeader = True):
+    txt = "%d, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+    for i in xrange(len(tr_refine)):
+        txt = txt + ", %f, %.10f, %.10f, %.10f" % (num_points[i], tr_refine[i], val_refine[i], te_refine[i])
+    return txt + "\n"
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a random n-fold.
@@ -639,6 +639,18 @@ def doFoldr():
         performFoldRegression(dvec, cvec)
     else:
         performFold(dvec, cvec)
+
+#-------------------------------------------------------------------------------
+## Learn a dataset with a stratified n-fold.
+def doFoldStratified():
+    data = openFile(options.data[0])
+    (dvec, cvec) = split_n_folds_stratified(data, options.f_level, options.seed)
+
+    if options.regression:
+        raise Exception("Not implemented!")
+    else:
+        for i in range(options.f_level):
+            performFoldNew(dvec, cvec, i)
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a n-fold from a set of files.
@@ -689,7 +701,7 @@ def performFold(dvec,cvec):
             m = Matrix(grid, training, options.regparam, options.zeh)
             b = m.generateb(classes)
 
-            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose)
+            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
             print res
 
             tr = testVectorFast(grid, alpha, training, classes)
@@ -745,6 +757,69 @@ def performFold(dvec,cvec):
     return
 
 #-------------------------------------------------------------------------------
+## Perform n-fold cross validation for fold ifold.
+# Splits the training data set into a training and a validation set
+# @param dvec List of DataVectors, containing the test data for each fold
+# @param cvec List of DataVectors, containing the classes of the test data for each fold
+# @param ifold Number of fold to perform
+def performFoldNew(dvec,cvec,ifold):
+
+    print "Starting fold %d" % (ifold)
+
+    # init
+    grid = constructGrid(dvec[0].getDim())
+    num_points = []
+    tr_refine = []
+    val_refine = []
+    te_refine = []
+    
+    # loop until number of refinements reached
+    for adaptStep in xrange(options.adaptive + 1):
+        if options.verbose: print "Step %d" % (adaptStep)
+        trainingCorrect = []
+        testingCorrect =[]
+
+        training,classes = assembleTrainingVector(dvec, cvec, ifold)
+        data_tr,data_val = split_DataVector_by_proportion(training, 0.66)
+        class_tr,class_val = split_DataVector_by_proportion(classes, 0.66)
+        
+        alpha = DataVector(grid.getStorage().size())
+        alpha.setAll(0.0)
+            
+        m = Matrix(grid, data_tr, options.regparam, options.zeh)
+        b = m.generateb(class_tr)
+
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
+        if options.verbose: print res
+
+        tr = testVectorFast(grid, alpha, data_tr, class_tr)
+        val = testVectorFast(grid, alpha, data_val, class_val)
+        te = testVectorFast(grid, alpha, dvec[ifold], cvec[ifold])
+
+        num_points.append(grid.getStorage().size())
+        tr_refine.append(tr)
+        val_refine.append(val)
+        te_refine.append(te)
+
+        if options.verbose:
+            print "training:  ", tr
+            print "validating:", val
+            print "testing:   ", te
+
+        if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, alpha, options.adapt_start + adaptStep, fold=ifold)
+        
+        if(adaptStep < options.adaptive):
+            if options.verbose: print "refining"
+            grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha))
+
+    txt = formTxtVal(tr_refine, val_refine, te_refine, num_points)
+    print txt
+    if options.stats != None:
+        writeStats(options.stats, txt)
+
+    return
+
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 def performFoldRegression(dvec,cvec):
     
@@ -774,7 +849,7 @@ def performFoldRegression(dvec,cvec):
             m = Matrix(grid, training, options.regparam, options.zeh)
             b = m.generateb(classes)
 
-            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose)
+            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
             print res
             tr = testVector(grid,alpha,training,classes)
             te = testVector(grid,alpha,dvec[foldSetNumber],cvec[foldSetNumber])
@@ -971,6 +1046,7 @@ if __name__=='__main__':
     parser.add_option("-L", "--lambda", action="store", type="float",default=0.000001, metavar="LAMBDA", dest="regparam", help="Lambda")
     parser.add_option("-i", "--imax", action="store", type="int",default=500, metavar="MAX", dest="imax", help="Max number of iterations")
     parser.add_option("-r", "--accuracy", action="store", type="float",default=0.0001, metavar="ACCURACY", dest="r", help="Specifies the accuracy of the CG-Iteration")
+    parser.add_option("--max_accuracy", action="store", type="float", default=None, metavar="ACCURACY", dest="max_r", help="If the norm of the residuum falls below ACCURACY, stop the CG iterations")
     parser.add_option("-d", "--data", action="append", type="string", dest="data", help="Filename for the Datafile.")
     parser.add_option("-t", "--test", action="store", type="string", dest="test", help="File containing the testdata")
     parser.add_option("-A", "--alpha", action="store", type="string", dest="alpha", help="Filename for a file containing an alpha-Vector")
@@ -1048,6 +1124,9 @@ if __name__=='__main__':
         'folds'    : {'help': "learn a dataset with a sequential n-fold",
                       'required_options': ['data', ['level', 'grid']],
                       'action': doFolds},
+        'foldstratified'    : {'help': "learn a dataset with a stratified n-fold",
+                      'required_options': ['data', ['level', 'grid']],
+                      'action': doFoldStratified},
         'foldr'    : {'help': "learn a dataset with a stratified n-fold",
                       'required_options': ['data', ['level', 'grid']],
                       'action': doFoldr},

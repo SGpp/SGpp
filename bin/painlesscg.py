@@ -237,7 +237,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
 # @param reuse starting vector is 0 by default. If true, use current values in alpha
 # @param verbose verbose output (default False)
 # @return tuple (number of iterations, final norm of residuum)
-def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
+def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, max_threshold=None):
     if verbose:
         print "Starting Conjugated Gradients"
  
@@ -247,7 +247,7 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
 
     epsilon2 = epsilon*epsilon
     
-    i = 1
+    i = 0
     temp = DataVector(alpha.getSize())
     q = DataVector(alpha.getSize())
     
@@ -277,9 +277,9 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
         delta_0 = delta_new*epsilon2
     
     if verbose:
-        print "Starting norm of residuum: %g" % (delta_0)
+        print "Starting norm of residuum: %g" % (delta_0/epsilon2)
 
-    while (i < imax+1) and (delta_new > delta_0):
+    while (i < imax) and (delta_new > delta_0) and (max_threshold == None or delta_new > max_threshold):
         # q = A*d
         ApplyMatrix(d, q)
         # a = d_new / d.q
@@ -297,12 +297,12 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True):
             # r = r - a*q
             r.axpy(-a, q)
         
-        if verbose:
-            print "delta: %g" % delta_new
-        
         delta_old = delta_new
         delta_new = r.dotProduct(r)
         beta = delta_new/delta_old
+        
+        if verbose:
+            print "delta: %g" % delta_new
         
         d.mult(beta)
         d.add(r)
