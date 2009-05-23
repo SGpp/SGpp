@@ -48,6 +48,7 @@ parser.add_option("--maple", action="store_true", default=False, dest="maple", h
 parser.add_option("--hasnoclass", action="store_false", default=True, dest="hasnoclass", help="Set, if data does not contain class attribute.")
 parser.add_option("--min", action="append", type="float", default=None, dest="min", help="Set min value of feature space (normalization boundary). One entry per dimension and in the correct order.")
 parser.add_option("--max", action="append", type="float", default=None, dest="max", help="Set max value of feature space (normalization boundary). One entry per dimension and in the correct order.")
+parser.add_option("--omitt", action="append", type="int", default=None, dest="omitt", help="Can be set multiple times to omitt certain attributes (0,1,2,...)")
 (options,args)=parser.parse_args()
 
 if options.infiles == None:
@@ -72,7 +73,7 @@ if options.outfiles == None:
 if options.types == None:
 	options.types = []
 
-# Nun sind alle Arrays angelegt, und nur noch so lang wie infile[]
+# Now all arrays have been created and are only as lang as infile[]
 
 for i in xrange(len(options.infiles)):
 	if i >= len(options.outfiles):
@@ -94,9 +95,10 @@ for i in xrange(len(options.infiles)):
 			print("Filetype " + options.types[i] + " is unknown. Aborting ...")
 			sys.exit(1)
 
-# Ok, alles zusammen, kann losgehen: in options.infiles[] sind alle inputfiles, 
-# in options.outfiles[] sind die ausgaben, in options.merge ist ein boolean, 
-# options.types[] sind alle Typen drinnen, alle Arrays sind gleich lang.
+# Gathered all information:
+# in options.infiles[] there are the inputfiles,
+# in options.outfiles[] the output files
+# in options.types[] all types
 
 data = []
 
@@ -112,8 +114,17 @@ for i in xrange(len(options.infiles)):
 		print("Error while reading "  + options.infiles[i] +"! Aborting...");
 		print e
 		sys.exit(1)
-				
+
+# sanity check				
 checkData(data)
+
+# omitt certain attributes?
+if options.omitt:
+	dim = len(data[0]["data"])
+	attribs = range(dim)
+	for a in options.omitt:
+		attribs.remove(a)
+	data = [data[i] for i in attribs]
 
 if not options.nonormalization:
 	if not options.nodatanormalization:
