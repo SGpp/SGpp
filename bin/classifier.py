@@ -779,21 +779,28 @@ def performFoldNew(dvec,cvec,ifold):
         trainingCorrect = []
         testingCorrect =[]
 
+        # construct/split DataVectors
         training,classes = assembleTrainingVector(dvec, cvec, ifold)
         data_tr,data_val = split_DataVector_by_proportion(training, 0.66)
         class_tr,class_val = split_DataVector_by_proportion(classes, 0.66)
         
+        # construct and solve CG
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
-            
         m = Matrix(grid, data_tr, options.regparam, options.zeh)
         b = m.generateb(class_tr)
-
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
         if options.verbose: print res
 
+        # training and validation accuracy
         tr = testVectorFast(grid, alpha, data_tr, class_tr)
         val = testVectorFast(grid, alpha, data_val, class_val)
+
+        # compute accuracy on test set
+        # Therefore construct and solve CG again for whole training data and evaluate on test data
+        m = Matrix(grid, training, options.regparam, options.zeh)
+        b = m.generateb(classes)
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, True, options.verbose, max_threshold=options.max_r)
         te = testVectorFast(grid, alpha, dvec[ifold], cvec[ifold])
 
         num_points.append(grid.getStorage().size())
@@ -802,6 +809,7 @@ def performFoldNew(dvec,cvec,ifold):
         te_refine.append(te)
 
         if options.verbose:
+            print "num_points:", grid.getStorage().size()
             print "training:  ", tr
             print "validating:", val
             print "testing:   ", te

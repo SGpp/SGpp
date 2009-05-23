@@ -630,7 +630,7 @@ def split_DataVector_by_proportion(data, proportion):
     dim = data.getDim()
     size = data.getSize()
 
-    splitpoint = int(math.floor(size*proportion))
+    splitpoint = int(min(size-1, round(size*proportion)))
     dv1 = DataVector(splitpoint, dim)
     dv2 = DataVector(size-splitpoint, dim)
     row = DataVector(1,dim)
@@ -816,7 +816,7 @@ def writeCheckpoint(filename, grid, alpha, adaption = None, fold = None):
     writeGrid("%s%s%s.grid.gz" % (filename, fold_str, adapt_str), grid)
     
 def writeStats(filename, txt, mode = "a"):
-    writeLockFile(filename + ".stats", txt, mode)
+    writeLockFile(filename + ".stats.gz", txt, mode)
 
 def readCheckpoint(filename):
     alpha = readAlphaARFF(filename+".alpha.arff")
