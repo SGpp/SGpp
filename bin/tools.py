@@ -646,6 +646,58 @@ def split_DataVector_by_proportion(data, proportion):
     if len(dv1)+len(dv2) <> len(data): raise Exception("data length doesn't match")
     return (dv1, dv2)
 
+#-------------------------------------------------------------------------------
+## perform stratified split of a data set given by two DataVectors into two DataVectors each
+# @param data DataVector with data points to split
+# @param classes DataVector with class values to split
+# @param proportion split into proportion, (1-proportion)
+# @return (data1, data2, classes1, classes2)
+#-------------------------------------------------------------------------------
+def split_DataVectors_by_proportion_stratified(data, 
+                                               classes,
+                                               proportion):
+    proportion = float(proportion)
+    dim = data.getDim()
+    size = data.getSize()
+
+    splitpoint = int(min(size-1, round(size*proportion)))
+    dv1 = DataVector(splitpoint, dim)
+    dv2 = DataVector(size-splitpoint, dim)
+    cv1 = DataVector(splitpoint, 1)
+    cv2 = DataVector(size-splitpoint, 1)
+    row = DataVector(1,dim)
+    
+    # get index ranges for stratification
+    index_pos = [i for i in range(size) if classes[i]>=0]
+    index_neg = [i for i in range(size) if classes[i]<0]
+    index_pos_splitpoint = int(min(size-1, round(len(index_pos)*proportion)))
+    index_neg_splitpoint = int(min(size-1, round(len(index_neg)*proportion)))
+    if (index_pos_splitpoint+index_neg_splitpoint > splitpoint):
+        proportion_pos = len(index_pos)*proportion
+        if proportion_pos-math.floor(proportion_pos) > proportion_neg-math.floor(proportion_neg):
+            index_neg_splitpoint -= 1
+        else:
+            index_pos_splitpoint -= 1
+
+    # copy Data and Classes
+    indices1 = index_pos[0:index_pos_splitpoint]+index_neg[0:index_neg_splitpoint]
+    indices2 = index_pos[index_pos_splitpoint:]+index_neg[index_neg_splitpoint:]
+    i = 0
+    for j in indices1:
+        data.getRow(j, row)
+        dv1.setRow(i, row)
+        cv1[i] = classes[j]
+        i += 1
+    i = 0
+    for j in indices2:
+        data.getRow(i+splitpoint, row)
+        dv2.setRow(i, row)
+        cv2[i] = classes[j]
+        i += 1
+
+    if len(dv1)+len(dv2) <> len(data): raise Exception("data length doesn't match")
+    return (dv1, dv2, cv1, cv2)
+
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

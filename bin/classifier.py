@@ -787,9 +787,8 @@ def performFoldNew(dvec,cvec,ifold):
 
         # construct/split DataVectors
         training,classes = assembleTrainingVector(dvec, cvec, ifold)
-        data_tr,data_val = split_DataVector_by_proportion(training, 0.66)
-        class_tr,class_val = split_DataVector_by_proportion(classes, 0.66)
-        
+        data_tr,data_val,class_tr,class_val = split_DataVectors_by_proportion_stratified(training, classes, 0.66)
+
         # construct and solve CG
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
