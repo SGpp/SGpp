@@ -67,3 +67,6 @@ sg_env.Append(CPPPATH=['#/src/sgpp'])
 
 src_objs = sg_env.SharedObject(srcs)
 Export('src_objs')
+
+libsgpp = sg_env.Library(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+Export('libsgpp')
