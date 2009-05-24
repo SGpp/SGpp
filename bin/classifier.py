@@ -649,8 +649,14 @@ def doFoldStratified():
     if options.regression:
         raise Exception("Not implemented!")
     else:
-        for i in range(options.f_level):
-            performFoldNew(dvec, cvec, i)
+        # run all folds?
+        if not options.onlyfoldnum:
+            for i in range(options.f_level):
+                performFoldNew(dvec, cvec, i)
+        # run only single one of the folds
+        else:
+            performFoldNew(dvec, cvec, options.onlyfoldnum)
+
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a n-fold from a set of files.
@@ -1051,6 +1057,7 @@ if __name__=='__main__':
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default=10, metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
+    parser.add_option("--onlyfoldnum", action="store", type="int", default=None, metavar="I", dest="onlyfoldnum", help="Run only fold I in n-fold cross-validation")
     parser.add_option("-L", "--lambda", action="store", type="float",default=0.000001, metavar="LAMBDA", dest="regparam", help="Lambda")
     parser.add_option("-i", "--imax", action="store", type="int",default=500, metavar="MAX", dest="imax", help="Max number of iterations")
     parser.add_option("-r", "--accuracy", action="store", type="float",default=0.0001, metavar="ACCURACY", dest="r", help="Specifies the accuracy of the CG-Iteration")
@@ -1069,7 +1076,7 @@ if __name__=='__main__':
     parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Provides extra output")
     parser.add_option("--normfile", action="store", type="string", dest="normfile", metavar="FILE", help="For all modes that read data via stdin. Normalizes data according to boundaries in FILE")
     parser.add_option("--reuse", action="store_true", default=False, dest="reuse", help="Reuse alpha-values for CG")
-    parser.add_option("--seed", action="store", type="int", dest="seed", help="Random seed used for initializing")
+    parser.add_option("--seed", action="store", type="float", dest="seed", help="Random seed used for initializing")
     parser.add_option("--regression", action="store_true", default=False, dest="regression", help="Use regression approach.")
     parser.add_option("--checkpoint", action="store", type="string", dest="checkpoint", help="Filename for checkpointing. For fold? and test. No file extension.")
     parser.add_option("--grid", action="store", type="string", dest="grid", help="Filename for Grid-resume. For fold? and test. Full filename.")
@@ -1104,6 +1111,10 @@ if __name__=='__main__':
     if options.polynom > 1 and options.border:
         print("Special border bases do not work for High-Order Grids")
         sys.exit(1)
+
+    # check further parameters:
+    if options.onlyfoldnum and (not options.onlyfoldnum in range(options.f_level)):
+        raise Exception("--onlyfoldnum: Not in range 0,...,--foldlevel")
 
 
 
