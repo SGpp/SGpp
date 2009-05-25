@@ -35,6 +35,7 @@ vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 # define the target
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
 vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'opteronICC', 'core2ICC', 'ia64ICC'; here Intel Compiler in version 11 must be used", 'default')
+vars.Add('OMPGCC', "Sets if OpenMP should be used with gcc, with all icc configurations OpenMP must be used!", False)
 
 # for building the the jsgpp lib
 vars.Add('JSGPP', 'Build jsgpp if set to True', False)
@@ -70,8 +71,10 @@ if env['TARGETCPU'] == 'default':
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
                          '-fno-strict-aliasing', '-fopenmp', '-O3', '-g',
                          '-funroll-loops', '-pthread'])
-    env.Append(CPPDEFINES=['USEOMP'])
-    env.Append(LINKFLAGS=['-fopenmp'])
+    if env['OMPGCC']:
+    	env.Append(CPPDEFINES=['USEOMP'])
+    	env.Append(LINKFLAGS=['-fopenmp'])
+    	
 elif env['TARGETCPU'] == 'ia64ICC':
     print "Using icc 11.0 for Itanium systems"
     # ICC doesn't know '-pedantic'
