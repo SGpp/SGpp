@@ -70,7 +70,7 @@ if env['TARGETCPU'] == 'default':
 elif env['TARGETCPU'] == 'ia64ICC':
      # ICC doesn't know '-pedantic'
      # ICC has different options on ia64
-     env.Append(CPPFLAGS = ['-O3', '-fno-fnalias', '-funroll-loops', '-no-alias-const', '-no-ansi-alias', '-i-static', '-gcc-version=400', '-unroll-aggressive', '-opt-jump-tables=never', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
+     env.Append(CPPFLAGS = ['-O3', '-fno-fnalias', '-funroll-loops', '-no-alias-const', '-no-ansi-alias', '-i-static', '-gcc-version=400', '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
 elif env['TARGETCPU'] == 'opteronICC':
      env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
 elif env['TARGETCPU'] == 'core2ICC':
