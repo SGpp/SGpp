@@ -26,85 +26,91 @@
 import os
 import distutils.sysconfig
 
-vars = Variables('custom.py')
+vars = Variables()
 
-vars.Add('CPPFLAGS','Set additional Flags','')
-vars.Add('LINKFLAGS','Set additional Linker-flags','')
+# define the flags 
+vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','')
+vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 
-vars.Add('MARCH','Set processor specific MARCH', None)
+# define the target
+vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
+vars.Add('TARGETCPU','Sets the processor you are compiling for. default means using gcc with standard configuration. Also available are: opteronICC, core2ICC, ia64ICC; Here Intel Compiler in version 11 must be used', 'default')
 
-vars.Add('ICC', 'Uses Intels Optimizing Compiler', False)
-vars.Add('OMPTWO', 'Use OpenMP parallelisation verison 2', False)
-vars.Add('OMPTHREE', 'Use OpenMP parallelisation version 3', False)
-vars.Add('INTELHOME', 'Intel Compiler Home Dir', '')
-
+# for building the the jsgpp lib
 vars.Add('JSGPP', 'Build jsgpp if set to True', False)
 vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
 vars.Add('JNI_OS', 'JNI os path', None)
 
 env = Environment(variables = vars, ENV = os.environ)
 
-env.Append(CPPFLAGS=['-pthread'])
-# Further CPPFlAGS
-if not env['ICC']:
+# Specifying the target
+# there are several target avialable:
+# 	- default: using the gcc toolchain with OpenMP 2
+#	- opertonICC: using the ICC 11.0 toolchain with OpenMP 3 with standard x86_64 options
+#	- core2ICC: using the ICC 11.0 toolchain with OpenMP 3 with Intel x86_64 options
+#	- ia64ICC: using the ICC 11.0 toolchain with OpenMP 3 with Itanium options
+#
+# Take care that you have defined following env. variables for loading the shared libraries: LD_LIBRARY_PATH and LIBPATH
+# both must contain the path to the intel shared libs
+# for instance:
+# LD_LIBRARY_PATH = /opt/intel/cce/default/lib/intel64:LD_LIBRARY_PATH
+# LIBPATH = /opt/intel/cce/default/lib/intel64:LIBPATH
+#
+# FOR LRZ:
+# lib: /lrz/sys/intel/icc_110_074/lib/ia64/
+# bin: /lrz/sys/intel/icc_110_074/bin/ia64/
+if env['TARGETCPU'] == 'default':
      # -Wno-long-long as swig uses long long
      # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
      #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
      #     ensure you also compile with -fno-strict-aliasing"
-     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-fno-strict-aliasing'])
+     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-fno-strict-aliasing', '-fopenmp', '-O3','-g','-funroll-loops', '-pthread'])
+     env.Append(CPPDEFINES=['USEOMP'])
+     env.Append(LINKFLAGS=['-fopenmp'])
+elif env['TARGETCPU'] == 'ia64ICC':
+     # ICC doesn't know '-pedantic'
+     # ICC has different options on ia64
+     env.Append(CPPFLAGS = ['-O3', '-alias-args', '-fno_alias', '-fno-fnalias', '-funroll-loops', '-no-alias-const', '-no-ansi-alias', '-i-static', '-gcc-version=400', '-unroll-aggressive', '-opt-jump-tables=never', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
+elif env['TARGETCPU'] == 'opteronICC':
+     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
+elif env['TARGETCPU'] == 'core2ICC':
+     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
 else:
-     # ICC doesn't know '-ansi', '-pedantic'
-     env.Append(CPPFLAGS=['-Wall', '-Wno-long-long', '-fno-strict-aliasing']) 
+	 print "You must specify a valid value for TARGETCPU. Available configurations are: default, core2ICC, opteronICC, ia64ICC"
+	 Exit(1)
 
+#Sets ICC-wide commen options and the tool chain   
+if env['TARGETCPU'] != 'default':
+     env.Append(LINKFLAGS=['-openmp']) 
+     env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE'])
+     env['CC'] = ('icc')
+     env['LINK'] = ('icpc')
+     env['CXX'] = ('icpc')	
 
-
-####### enable omp support #######
-if not env['ICC']:
-     if env['OMPTWO'] or env['OMPTHREE']:
-        env.Append(CPPFLAGS=['-fopenmp'])
-        env.Append(CPPDEFINES=['USEOMP'])
-        env.Append(LINKFLAGS=['-fopenmp'])
-
-####### Sets icc tool chain #######
-if env['ICC']:
-#    env.Tool(env['INTELHOME'] + 'icpc')
-    env['CC'] = (env['INTELHOME'] + 'icc')
-    env['LINK'] = (env['INTELHOME'] + 'icpc')
-    env['CXX'] = (env['INTELHOME'] + 'icpc')
-    
-if env['ICC']:
-    if env['OMPTWO'] or env['OMPTHREE']:
-        env.Append(CPPFLAGS=['-openmp'])
-        env.Append(LINKFLAGS=['-openmp']) 
-        
-    if env['OMPTWO'] or env['OMPTHREE']:
-    	env.Append(CPPDEFINES=['USEOMP'])
-        
-    if env['OMPTHREE']:
-    	env.Append(CPPDEFINES=['USEOMP'])
-        env.Append(CPPDEFINES=['USEOMPTHREE'])
-
-if not env['ICC'] and env.has_key('MARCH'):
+# sets the architecture option for gcc
+if env['TARGETCPU'] == 'default' and env.has_key('MARCH'):
 	env.Append(CPPFLAGS=('-march=' + env['MARCH']))
 
-
 env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
-
 
 if not env.GetOption('clean'):	
     config = env.Configure()
 	
-    if env['ICC']:
+	# check if the intel omp lib is available
+    if env['TARGETCPU'] != 'default':
         if not config.CheckLib('iomp5'):
             Exit(1)
 
-    if env['ICC']:
+	# check if the the intel vector lib is available
+    if env['TARGETCPU'] != 'default':
         if not config.CheckLib('svml'):
             print "SVML should be available when using intelc. Consider runnning scons --config=force!"
 
+	# check if the math header is available
     if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
         Exit(1)
         
+    # check if the Python headers are available
     if not config.CheckCHeader('Python.h'):
     	print "Python not found. Check path to Python include files."
     	Exit(1)
@@ -113,6 +119,7 @@ if not env.GetOption('clean'):
 
 Export('env')
 
+#start build of pysgpp and jsgpp
 SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
 SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
 
