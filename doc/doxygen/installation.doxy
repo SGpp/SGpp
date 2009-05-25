@@ -76,14 +76,23 @@ it. A local installation to <tt>$HOME/tools</tt> is done e.g. via
 
 @subsection sconsConfiguration Configuration for compilation
 
-SCons uses the file <tt>SConstruct</tt>. General settings for SCons,
-like compiler flags e.g., can be specified in a
-<tt>custom.py</tt>-file. An example-file with some recommendations is
-the <tt>custom-example.py</tt>-file residing in the main folder. For a
-start, just copy it to a new <tt>custom.py</tt>-file, e.g.  @verbatim
-  cp custom-example.py custom.py
+SCons uses the file <tt>SConstruct</tt>. This file
+contains all information for compiling SGpp. Several platforms are 
+supported: @verbatim
+  all platforms that have a gcc
+  Intel Core2 Platforms using icc
+  general x86 / x86_64 SSE3 Platforms such as AMD Opteron or Intel Pentium4 using icc
+  Intel Itanium Platforms using icc
 @endverbatim
-
+If you just execute @verbatim
+  scons
+@endverbatim
+the default compilation with gcc is selected. For all other cases please execute:
+@verbatim
+  scons TARGETCPU=core2ICC
+  scons TARGETCPU=opteronICC
+  scons TARGETCPU=ia64ICC
+@endverbatim
 
 @section stepByStep Step-by-step instructions (Linux)
 
