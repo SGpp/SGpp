@@ -26,7 +26,7 @@
 import os
 import distutils.sysconfig
 
-vars = Variables()
+vars = Variables("custom.py")
 
 # define the flags 
 vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','')
