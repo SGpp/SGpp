@@ -104,7 +104,7 @@ if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
     env['CXX'] = ('icpc')	
 
 # sets the architecture option for gcc
-if env['MARCH']:
+if env.has_key('MARCH'):
     if env['TARGETCPU'] == 'default':
         env.Append(CPPFLAGS=('-march=' + env['MARCH']))
     else:
