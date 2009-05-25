@@ -46,11 +46,12 @@ env = Environment(variables = vars, ENV = os.environ)
 # Specifying the target
 # there are several target avialable:
 # 	- default: using the gcc toolchain with OpenMP 2
-#	- opertonICC: using the ICC 11.0 toolchain with OpenMP 3 with standard x86_64 options
+#	- opteronICC: using the ICC 11.0 toolchain with OpenMP 3 with standard x86_64 options
 #	- core2ICC: using the ICC 11.0 toolchain with OpenMP 3 with Intel x86_64 options
 #	- ia64ICC: using the ICC 11.0 toolchain with OpenMP 3 with Itanium options
 #
-# Take care that you have defined following env. variables for loading the shared libraries: LD_LIBRARY_PATH and LIBPATH
+# Take care that you have defined following env. variables for loading the 
+# shared libraries: LD_LIBRARY_PATH and LIBPATH
 # both must contain the path to the intel shared libs
 # for instance:
 # LD_LIBRARY_PATH = /opt/intel/cce/default/lib/intel64:LD_LIBRARY_PATH
@@ -59,63 +60,82 @@ env = Environment(variables = vars, ENV = os.environ)
 # FOR LRZ:
 # lib: /lrz/sys/intel/icc_110_074/lib/ia64/
 # bin: /lrz/sys/intel/icc_110_074/bin/ia64/
-if env['TARGETCPU'] == 'default':
-     # -Wno-long-long as swig uses long long
-     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
-     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
-     #     ensure you also compile with -fno-strict-aliasing"
-     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-fno-strict-aliasing', '-fopenmp', '-O3','-g','-funroll-loops', '-pthread'])
-     env.Append(CPPDEFINES=['USEOMP'])
-     env.Append(LINKFLAGS=['-fopenmp'])
-elif env['TARGETCPU'] == 'ia64ICC':
-     # ICC doesn't know '-pedantic'
-     # ICC has different options on ia64
-     env.Append(CPPFLAGS = ['-O3', '-fno-fnalias', '-funroll-loops', '-no-alias-const', '-no-ansi-alias', '-i-static', '-gcc-version=400', '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
-elif env['TARGETCPU'] == 'opteronICC':
-     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
-elif env['TARGETCPU'] == 'core2ICC':
-     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
-else:
-     print "You must specify a valid value for TARGETCPU. Available configurations are: default, core2ICC, opteronICC, ia64ICC"
-     Exit(1)
 
-#Sets ICC-wide commen options and the tool chain   
-if env['TARGETCPU'] != 'default':
-     env.Append(LINKFLAGS=['-openmp']) 
-     env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE'])
-     env['CC'] = ('icc')
-     env['LINK'] = ('icpc')
-     env['CXX'] = ('icpc')	
+if env['TARGETCPU'] == 'default':
+    print "Using default gcc"
+    # -Wno-long-long as swig uses long long
+    # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
+    #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
+    #     ensure you also compile with -fno-strict-aliasing"
+    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
+                         '-fno-strict-aliasing', '-fopenmp', '-O3', '-g',
+                         '-funroll-loops', '-pthread'])
+    env.Append(CPPDEFINES=['USEOMP'])
+    env.Append(LINKFLAGS=['-fopenmp'])
+elif env['TARGETCPU'] == 'ia64ICC':
+    print "Using icc 11.0 for Itanium systems"
+    # ICC doesn't know '-pedantic'
+    # ICC has different options on ia64
+    env.Append(CPPFLAGS = ['-O3', '-fno-fnalias', '-funroll-loops', '-no-alias-const', 
+                           '-no-ansi-alias', '-i-static', '-gcc-version=400', 
+                           '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
+                           '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
+elif env['TARGETCPU'] == 'opteronICC':
+    print "Using icc 11.0 for Opteron systems"
+    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
+                           '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing', '-openmp', '-pthread'])
+elif env['TARGETCPU'] == 'core2ICC':
+    print "Using icc 11.0 for Core2 systems"
+    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
+                           '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing', '-openmp', '-pthread'])
+else:
+    print "You must specify a valid value for TARGETCPU."
+    print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"
+    Exit(1)
+    
+# sets ICC-wide commen options and the tool chain   
+if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
+    env.Append(LINKFLAGS=['-openmp']) 
+    env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE'])
+    env['CC'] = ('icc')
+    env['LINK'] = ('icpc')
+    env['CXX'] = ('icpc')	
 
 # sets the architecture option for gcc
-if env['TARGETCPU'] == 'default' and env.has_key('MARCH'):
-     env.Append(CPPFLAGS=('-march=' + env['MARCH']))
-
+if env['MARCH']:
+    if env['TARGETCPU'] == 'default':
+        env.Append(CPPFLAGS=('-march=' + env['MARCH']))
+    else:
+        print "Warning: Ignoring option MARCH"
+         
+# add path of python includes
 env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 if not env.GetOption('clean'):	
-     config = env.Configure()
+    config = env.Configure()
 	
-     # check if the intel omp lib is available
-     if env['TARGETCPU'] != 'default':
-          if not config.CheckLib('iomp5'):
-               print "Error: Intel omp library iomp5 is missing."
-               Exit(1)
+    # check if the intel omp lib is available
+    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
+        if not config.CheckLib('iomp5'):
+            print "Error: Intel omp library iomp5 is missing."
+            Exit(1)
                
     # check if the the intel vector lib is available
-    if env['TARGETCPU'] != 'default':
-         if not config.CheckLib('svml'):
-              print "SVML should be available when using intelc. Consider runnning scons --config=force!"
+    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
+        if not config.CheckLib('svml'):
+            print "SVML should be available when using intelc. Consider runnning scons --config=force!"
 
     # check if the math header is available
     if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
-         print "Error: Math headers are missing."
-         Exit(1)
+        print "Error: Math headers are missing."
+        Exit(1)
         
     # check if the Python headers are available
     if not config.CheckCHeader('Python.h'):
-         print "Python not found. Check path to Python include files."
-         Exit(1)
+        print "Error: Python.h not found. Check path to Python include files."
+        Exit(1)
 
     env = config.Finish()
 
@@ -124,12 +144,10 @@ Export('env')
 #start build of pysgpp and jsgpp
 SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
 SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
-
 if env['JSGPP']:
     SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
 
-SConscript('tests/SConscript')
-
+# Copy required files
 cpy = []
 cpy += Command("#lib/pysgpp/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
 cpy += Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
@@ -137,6 +155,9 @@ cpy += Command("#bin/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET
 cpy += Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
 cpy += Command("#lib/sgpp/libsgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
 cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
+
+# Execute Unit Tests
+SConscript('tests/SConscript')
 
 
 Help(vars.GenerateHelpText(env))
