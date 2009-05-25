@@ -72,9 +72,9 @@ elif env['TARGETCPU'] == 'ia64ICC':
      # ICC has different options on ia64
      env.Append(CPPFLAGS = ['-O3', '-alias-args', '-fno_alias', '-fno-fnalias', '-funroll-loops', '-no-alias-const', '-no-ansi-alias', '-i-static', '-gcc-version=400', '-unroll-aggressive', '-opt-jump-tables=never', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
 elif env['TARGETCPU'] == 'opteronICC':
-     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
+     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
 elif env['TARGETCPU'] == 'core2ICC':
-     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-intel-static', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
+     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
 else:
 	 print "You must specify a valid value for TARGETCPU. Available configurations are: default, core2ICC, opteronICC, ia64ICC"
 	 Exit(1)
