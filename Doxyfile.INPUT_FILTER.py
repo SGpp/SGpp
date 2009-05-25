@@ -42,7 +42,7 @@ if re.search('\$SVN_LOG\$', txt):
     s = ""
     counter = 0
     while (counter < len(data)-1):
-        if re.match('-', data[counter]):
+        if re.match('------------------------------------------------------------------------', data[counter]):
             counter += 1
             rev_info_line = data[counter].strip()
             rev_info_with_files = [rev_info_line]
@@ -54,7 +54,7 @@ if re.search('\$SVN_LOG\$', txt):
             s += '''<tr><td colspan="2" onmouseover="this.innerHTML = '<tt>%s</tt>'" onmouseout="this.innerHTML = '<tt>%s</tt>'"><tt>%s</tt></td></tr><tr><td></td><td>''' % (
                 rev_info_with_files_string, rev_info_line, rev_info_line)
             counter += 1
-            while (not re.match('-', data[counter])):
+            while (not re.match('------------------------------------------------------------------------', data[counter])):
                 if (not data[counter].isspace()):
                     s += data[counter].strip()+"<br>"
                 counter += 1

@@ -34,7 +34,7 @@ vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 
 # define the target
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
-vars.Add('TARGETCPU','Sets the processor you are compiling for. default means using gcc with standard configuration. Also available are: opteronICC, core2ICC, ia64ICC; Here Intel Compiler in version 11 must be used', 'default')
+vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'opteronICC', 'core2ICC', 'ia64ICC'; here Intel Compiler in version 11 must be used", 'default')
 
 # for building the the jsgpp lib
 vars.Add('JSGPP', 'Build jsgpp if set to True', False)
@@ -76,8 +76,8 @@ elif env['TARGETCPU'] == 'opteronICC':
 elif env['TARGETCPU'] == 'core2ICC':
      env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread'])
 else:
-	 print "You must specify a valid value for TARGETCPU. Available configurations are: default, core2ICC, opteronICC, ia64ICC"
-	 Exit(1)
+     print "You must specify a valid value for TARGETCPU. Available configurations are: default, core2ICC, opteronICC, ia64ICC"
+     Exit(1)
 
 #Sets ICC-wide commen options and the tool chain   
 if env['TARGETCPU'] != 'default':
@@ -89,31 +89,33 @@ if env['TARGETCPU'] != 'default':
 
 # sets the architecture option for gcc
 if env['TARGETCPU'] == 'default' and env.has_key('MARCH'):
-	env.Append(CPPFLAGS=('-march=' + env['MARCH']))
+     env.Append(CPPFLAGS=('-march=' + env['MARCH']))
 
 env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 if not env.GetOption('clean'):	
-    config = env.Configure()
+     config = env.Configure()
 	
-	# check if the intel omp lib is available
+     # check if the intel omp lib is available
+     if env['TARGETCPU'] != 'default':
+          if not config.CheckLib('iomp5'):
+               print "Error: Intel omp library iomp5 is missing."
+               Exit(1)
+               
+    # check if the the intel vector lib is available
     if env['TARGETCPU'] != 'default':
-        if not config.CheckLib('iomp5'):
-            Exit(1)
+         if not config.CheckLib('svml'):
+              print "SVML should be available when using intelc. Consider runnning scons --config=force!"
 
-	# check if the the intel vector lib is available
-    if env['TARGETCPU'] != 'default':
-        if not config.CheckLib('svml'):
-            print "SVML should be available when using intelc. Consider runnning scons --config=force!"
-
-	# check if the math header is available
+    # check if the math header is available
     if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
-        Exit(1)
+         print "Error: Math headers are missing."
+         Exit(1)
         
     # check if the Python headers are available
     if not config.CheckCHeader('Python.h'):
-    	print "Python not found. Check path to Python include files."
-    	Exit(1)
+         print "Python not found. Check path to Python include files."
+         Exit(1)
 
     env = config.Finish()
 
