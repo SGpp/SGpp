@@ -599,8 +599,10 @@ def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
 ##
 # returns txt variable for stats
 #
-def formTxtVal(te_refine, val_refine, tr_refine, num_points, withHeader = True):
-    txt = "%d, %-10g, %f" % (options.level, options.regparam, options.adaptive)
+def formTxtVal(te_refine, tr_refine, val_refine, num_points, withHeader = True):
+    txt = ""
+    if withHeader:
+        txt = "%d, %-10g, %2d" % (options.level, options.regparam, options.adaptive)
     for i in xrange(len(tr_refine)):
         txt = txt + ", %f, %.10f, %.10f, %.10f" % (num_points[i], tr_refine[i], val_refine[i], te_refine[i])
     return txt + "\n"
@@ -650,7 +652,8 @@ def doFoldStratified():
         raise Exception("Not implemented!")
     else:
         # run all folds?
-        if not options.onlyfoldnum:
+        if options.onlyfoldnum == -1:
+            print "Running all folds"
             for i in range(options.f_level):
                 performFoldNew(dvec, cvec, i)
         # run only single one of the folds
@@ -782,8 +785,6 @@ def performFoldNew(dvec,cvec,ifold):
     # loop until number of refinements reached
     for adaptStep in xrange(options.adaptive + 1):
         if options.verbose: print "Step %d" % (adaptStep)
-        trainingCorrect = []
-        testingCorrect =[]
 
         # construct/split DataVectors
         training,classes = assembleTrainingVector(dvec, cvec, ifold)
@@ -794,7 +795,8 @@ def performFoldNew(dvec,cvec,ifold):
         alpha.setAll(0.0)
         m = Matrix(grid, data_tr, options.regparam, options.zeh)
         b = m.generateb(class_tr)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, 
+                     options.reuse, options.verbose, max_threshold=options.max_r)
         if options.verbose: print res
 
         # training and validation accuracy
@@ -805,7 +807,8 @@ def performFoldNew(dvec,cvec,ifold):
         # Therefore construct and solve CG again for whole training data and evaluate on test data
         m = Matrix(grid, training, options.regparam, options.zeh)
         b = m.generateb(classes)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, True, options.verbose, max_threshold=options.max_r)
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, 
+                     True, options.verbose, max_threshold=options.max_r)
         te = testVectorFast(grid, alpha, dvec[ifold], cvec[ifold])
 
         num_points.append(grid.getStorage().size())
@@ -819,13 +822,17 @@ def performFoldNew(dvec,cvec,ifold):
             print "validating:", val
             print "testing:   ", te
 
-        if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, alpha, options.adapt_start + adaptStep, fold=ifold)
+        # write checkpoint
+        if options.checkpoint != None: 
+            writeCheckpoint(options.checkpoint, grid, alpha, options.adapt_start + adaptStep, fold=ifold)
         
+        # refine
         if(adaptStep < options.adaptive):
             if options.verbose: print "refining"
             grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha))
 
-    txt = formTxtVal(tr_refine, val_refine, te_refine, num_points)
+    # statistics
+    txt = formTxtVal(te_refine, tr_refine, val_refine, num_points)
     print txt
     if options.stats != None:
         writeStats(options.stats, txt)
@@ -1056,7 +1063,7 @@ if __name__=='__main__':
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default=10, metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
-    parser.add_option("--onlyfoldnum", action="store", type="int", default=None, metavar="I", dest="onlyfoldnum", help="Run only fold I in n-fold cross-validation")
+    parser.add_option("--onlyfoldnum", action="store", type="int", default=-1, metavar="I", dest="onlyfoldnum", help="Run only fold I in n-fold cross-validation. Default: run all")
     parser.add_option("-L", "--lambda", action="store", type="float",default=0.000001, metavar="LAMBDA", dest="regparam", help="Lambda")
     parser.add_option("-i", "--imax", action="store", type="int",default=500, metavar="MAX", dest="imax", help="Max number of iterations")
     parser.add_option("-r", "--accuracy", action="store", type="float",default=0.0001, metavar="ACCURACY", dest="r", help="Specifies the accuracy of the CG-Iteration")
@@ -1112,8 +1119,8 @@ if __name__=='__main__':
         sys.exit(1)
 
     # check further parameters:
-    if options.onlyfoldnum and (not options.onlyfoldnum in range(options.f_level)):
-        raise Exception("--onlyfoldnum: Not in range 0,...,--foldlevel")
+    if options.onlyfoldnum <> -1 and (not options.onlyfoldnum in range(options.f_level)):
+        raise Exception("--onlyfoldnum: Not in range 0,...,--foldlevel -1")
 
 
 
