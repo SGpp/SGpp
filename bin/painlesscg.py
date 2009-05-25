@@ -278,6 +278,7 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
     
     if verbose:
         print "Starting norm of residuum: %g" % (delta_0/epsilon2)
+        print "Target norm:               %g" % (delta_0)
 
     while (i < imax) and (delta_new > delta_0) and (max_threshold == None or delta_new > max_threshold):
         # q = A*d
