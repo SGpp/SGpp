@@ -35,7 +35,7 @@ vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 # define the target
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
 vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'opteronICC', 'core2ICC', 'ia64ICC'; here Intel Compiler in version 11 must be used", 'default')
-vars.Add('OMPGCC', "Sets if OpenMP should be used with gcc, with all icc configurations OpenMP must be used!", False)
+vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
 
 # for building the the jsgpp lib
 vars.Add('JSGPP', 'Build jsgpp if set to True', False)
@@ -71,7 +71,7 @@ if env['TARGETCPU'] == 'default':
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
                          '-fno-strict-aliasing', '-fopenmp', '-O3', '-g',
                          '-funroll-loops', '-pthread'])
-    if env['OMPGCC']:
+    if env['OMP']:
     	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
     	
@@ -100,12 +100,13 @@ else:
     
 # sets ICC-wide commen options and the tool chain   
 if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
-    env.Append(LINKFLAGS=['-openmp']) 
-    env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE'])
     env['CC'] = ('icc')
     env['LINK'] = ('icpc')
-    env['CXX'] = ('icpc')	
-
+    env['CXX'] = ('icpc')	    
+    if env['OMP']:
+        env.Append(LINKFLAGS=['-openmp']) 
+        env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE'])
+    
 # sets the architecture option for gcc
 if env.has_key('MARCH'):
     if env['TARGETCPU'] == 'default':
