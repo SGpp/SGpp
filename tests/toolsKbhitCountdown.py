@@ -1,5 +1,9 @@
 # Copyright (C) 2009  Dirk Pflueger (pflueged@in.tum.de)
-# Version 1.0, 2009/05/16
+# Version 1.00, 2009/05/16
+# Version 1.01, 2009/05/26
+# Version 1.02, 2009/05/27    Alexander Heinecke
+# - If no terminal available (e.g. run in eclipse), countdown
+#   just returns False
 
 import sys, time
 
@@ -42,8 +46,12 @@ def countdown(timeout):
             if dr <> []:
                 keypressed = True
         finally:
-            # switch to normal terminal
-            termios.tcsetattr(fd, termios.TCSAFLUSH, old_term)
+            try:
+                # switch to normal terminal
+                termios.tcsetattr(fd, termios.TCSAFLUSH, old_term)
+            except:
+                sys.stdout.write("Warning: Terminal unacessable. If SGpp was built within Eclipse, everything is fine!")
+                return keypressed
 
     sys.stdout.write("\n")
     sys.stdout.flush()
