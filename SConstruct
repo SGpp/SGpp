@@ -121,7 +121,7 @@ if not env.GetOption('clean'):
     config = env.Configure()
 	
     # check if the intel omp lib is available
-    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
+    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC'] and env['OMP']:
         if not config.CheckLib('iomp5'):
             print "Error: Intel omp library iomp5 is missing."
             Exit(1)
