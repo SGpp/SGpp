@@ -295,6 +295,7 @@ def doEval():
     # classification:
     if not options.regression:
         # traverse Data
+        acc = 0
         for i in xrange(numData):
             x.getRow(i,q)
             val = grid.createOperationEval().eval(alpha,q)
@@ -1058,7 +1059,7 @@ if __name__=='__main__':
     parser.add_option("-D", "--dim", action="callback", type="int",dest="dim", help="Griddimension", callback=callback_deprecated)
     parser.add_option("-a", "--adaptive", action="store", type="int", default=0, dest="adaptive", metavar="NUM", help="Using an adaptive Grid with NUM of refines")
     parser.add_option("--adapt_points", action="store", type="int", default=1, dest="adapt_points", metavar="NUM", help="Number of points in one refinement iteration")
-    parser.add_option("--adapt_rate", action="store", type="int", dest="adapt_rate", metavar="NUM", help="Percentage of points from all refinable points in one refinement iteration")
+    parser.add_option("--adapt_rate", action="store", type="float", dest="adapt_rate", metavar="NUM", help="Percentage of points from all refinable points in one refinement iteration")
     parser.add_option("--adapt_start", action="store", type="int", default=0, dest="adapt_start", metavar="NUM", help="The index of adapt step to begin with")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
