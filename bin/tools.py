@@ -29,6 +29,21 @@ ARFF = 1
 SIMPLE = 0
 NOTAFILE = -1
 
+
+
+#-------------------------------------------------------------------------------
+## A value pair is added to a dictionary's value entry. Each entry of the 
+# dictionary is a list. If the dictionary has no entry for key, [value] is 
+# added. Otherwise value is appended to the list under key.
+# @param dict the dictionary
+# @param key the key
+# @param value the value
+def appendToDict(dict, key, val):
+    if dict.has_key(key):
+        dict[key].append(val)
+    else:
+        dict[key] = [val]
+
 #-------------------------------------------------------------------------------
 ## Opens a file. If the file ends with ".gz", automatically gzip compression
 # is used for the file. Returns the filedescriptor
