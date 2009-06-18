@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2007-20009 Dirk Pflueger (dirk.pflueger@in.tum.de)          */
 /* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
@@ -80,7 +81,7 @@ public:
 protected:
 
 	/**
-	 * recursive function for the calculation of Down
+	 * recursive function for the calculation of Up
 	 *
 	 * @param source DataVector that contains the coefficients of the ansatzfunction
 	 * @param result DataVector in which the result of the operation is stored
