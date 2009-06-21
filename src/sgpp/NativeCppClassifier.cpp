@@ -36,6 +36,17 @@ int main(int argc, char *argv[])
 
 	sg::Classifier myClassifier;
 
+	std::cout << "Starting the Native Cpp Classifier" << std::endl;
+	std::cout << "==================================" << std::endl;
+	std::cout << "lambda: " << lambda << std::endl;
+	std::cout << "epsilon: " << epsilon << std::endl;
+	std::cout << "imax: " << imax << std::endl;
+	std::cout << "level: " << level << std::endl;
+	std::cout << "GridType: " << GridType << std::endl;
+	std::cout << "Stiffness Matrix: " << StiffMode << std::endl;
+	std::cout << "Trainingdata: " << tfileTrain << std::endl;
+	std::cout << "Testdata: " << tfileTest << std::endl;
+
 	myClassifier.trainNtestRegular(tfileTrain, tfileTest, level, lambda, GridType, StiffMode, epsilon, imax);
 
 	return 0;
