@@ -7,7 +7,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearBoundaryUScaledGrid.o Line
 OBJSSRC = tmp/build_native/DataVector.o tmp/build_native/Grid.o tmp/build_native/LinearBoundaryGrid.o tmp/build_native/LinearBoundaryUScaledGrid.o tmp/build_native/LinearGrid.o tmp/build_native/ModLinearGrid.o tmp/build_native/ModPolyGrid.o tmp/build_native/PolyGrid.o tmp/build_native/StandardGridGenerator.o tmp/build_native/BoundaryGridGenerator.o tmp/build_native/BoundaryUScaledGridGenerator.o tmp/build_native/OperationBLinear.o tmp/build_native/OperationEvalLinear.o tmp/build_native/OperationHierarchisationLinear.o tmp/build_native/OperationBModLinear.o tmp/build_native/OperationEvalModLinear.o tmp/build_native/OperationHierarchisationModLinear.o tmp/build_native/OperationBModPoly.o tmp/build_native/OperationEvalModPoly.o tmp/build_native/OperationHierarchisationModPoly.o tmp/build_native/OperationBPoly.o tmp/build_native/OperationEvalPoly.o tmp/build_native/OperationHierarchisationPoly.o tmp/build_native/OperationHierarchisationLinearBoundaryUScaled.o tmp/build_native/OperationEvalLinearBoundaryUScaled.o tmp/build_native/OperationBLinearBoundaryUScaled.o tmp/build_native/OperationHierarchisationLinearBoundary.o tmp/build_native/OperationEvalLinearBoundary.o tmp/build_native/OperationBLinearBoundary.o tmp/build_native/ARFFTools.o tmp/build_native/ApplyDMMatrix.o tmp/build_native/Classifier.o tmp/build_native/NativeCppClassifier.o
 
 NativeCppClassifier : $(OBJS)
-	mkdir tmp/build_native
+	mkdir -p tmp/build_native
 	\mv *.o tmp/build_native/
 	$(CC) $(LFLAGS) $(OBJSSRC) -o bin/NativeCppClassifier
 

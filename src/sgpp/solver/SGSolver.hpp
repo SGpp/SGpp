@@ -45,7 +45,11 @@ public:
 	/**
 	 * Std-Constructor
 	 */
-	SGSolver(size_t nMaximumIterations) : nMaxIterations(nMaximumIterations), nIterations(0), finalResiduum(0.0) { }
+	SGSolver(size_t nMaximumIterations) : nMaxIterations(nMaximumIterations)
+	{
+		nIterations = 0;
+		finalResiduum = 0.0;
+	}
 
 	/**
 	 * Std-Destructor
