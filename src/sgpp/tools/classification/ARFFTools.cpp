@@ -56,7 +56,8 @@ size_t ARFFTools::getDimension(std::string tfilename)
 	}
 	else
 	{
-		throw new file_exception("Unable to open file: " + tfilename.c_str());
+		std::string msg = "Unable to open file: " + tfilename;
+		throw new file_exception(msg.c_str());
 	}
 
 	// the class is not regarded when getting the dimension
@@ -89,7 +90,8 @@ size_t ARFFTools::getNumberInstances(std::string tfilename)
 	}
 	else
 	{
-		throw new file_exception("Unable to open file: " + tfilename.c_str());
+		std::string msg = "Unable to open file: " + tfilename;
+		throw new file_exception(msg.c_str());
 	}
 
 	return numInst;
@@ -122,7 +124,8 @@ void ARFFTools::readTrainingData(std::string tfilename, DataVector& destination)
 	}
 	else
 	{
-		throw new file_exception("Unable to open file: " + tfilename.c_str());
+		std::string msg = "Unable to open file: " + tfilename;
+		throw new file_exception(msg.c_str());
 	}
 }
 
@@ -153,7 +156,8 @@ void ARFFTools::readClasses(std::string tfilename, DataVector& destination)
 	}
 	else
 	{
-		throw new file_exception("Unable to open file: " + tfilename.c_str());
+		std::string msg = "Unable to open file: " + tfilename;
+		throw new file_exception(msg.c_str());
 	}
 }
 
@@ -161,7 +165,7 @@ void ARFFTools::writeNewElement(std::string& instance, DataVector& destination, 
 {
 	size_t cur_pos = 0;
 	size_t cur_find = 0;
-	size_t dim = (size_t)destination.dim;
+	size_t dim = destination.getDim();
 	std::string cur_value;
 	double dbl_cur_value;
 
@@ -169,7 +173,7 @@ void ARFFTools::writeNewElement(std::string& instance, DataVector& destination, 
 	{
 		cur_find = instance.find(",", cur_pos);
 		cur_value = instance.substr(cur_pos, cur_find-cur_pos);
-		dbl_cur_value = atof(cur_value);
+		dbl_cur_value = atof(cur_value.c_str());
 		destination.set((instanceNo*dim) + i, dbl_cur_value);
 		cur_pos = cur_find + 1;
 	}
@@ -179,7 +183,7 @@ void ARFFTools::writeNewClass(std::string& instance, DataVector& destination, si
 {
 	size_t cur_pos = instance.find_last_of(",");
 	std::string cur_value = instance.substr(cur_pos+1);
-	double dbl_cur_value = atof(cur_value);
+	double dbl_cur_value = atof(cur_value.c_str());
 	destination.set(instanceNo, dbl_cur_value);
 }
 

@@ -48,7 +48,7 @@ private:
 	 * L = Laplacian matrix
 	 * I = Identity matrix
 	 */
-	char StiffMode;
+	std::string StiffMode;
 	/// the lambda
 	double lamb;
 	/// OperationLaplace for calculating the laplace matrix
@@ -62,14 +62,14 @@ public:
 	 *
 	 * @param StiffnessMode the mode that is used for the Stiffness Matrix
 	 */
-	ApplyDMMatrix(Grid& SparseGrid, char StiffnessMode, double lambda);
+	ApplyDMMatrix(Grid* SparseGrid, std::string StiffnessMode, double lambda);
 
 	/**
 	 * Std-Destructor
 	 */
-	~ApplyDMMatrix();
+	virtual ~ApplyDMMatrix();
 
-	void operator(DataVector& data, DataVector& x, DataVector& b);
+	virtual void operator()(DataVector& data, DataVector& alpha, DataVector& result);
 
 	/**
 	 * Generates the right hand side of the classification equation

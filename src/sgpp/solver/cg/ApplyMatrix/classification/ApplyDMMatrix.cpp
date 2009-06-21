@@ -23,20 +23,22 @@
 #include "solver/cg/ApplyMatrix/classification/ApplyDMMatrix.hpp"
 #include "exception/operation_exception.hpp"
 
+
 namespace sg
 {
 
-ApplyDMMatrix::ApplyDMMatrix(Grid& SparseGrid, char StiffnessMode, double lambda)
+ApplyDMMatrix::ApplyDMMatrix(Grid* SparseGrid, std::string StiffnessMode, double lambda)
 {
 	this->StiffMode = StiffnessMode;
-	if (this->StiffMode != "L" || this->StiffMode != "I")
+
+	if (this->StiffMode != "L"|| this->StiffMode != "I")
 	{
 		throw new operation_exception("You have chosen an invalid stiffness mode in ApplyDMMatrix! L or I are valid");
 	}
 	// create the operations needed in ApplyMatrix
-	this->C = SparseGrid.createOperationLaplace();
-	this->B = SparseGrid.createOperationB();
-	this->lam = lambda;
+	this->C = SparseGrid->createOperationLaplace();
+	this->B = SparseGrid->createOperationB();
+	this->lamb = lambda;
 }
 
 ApplyDMMatrix::~ApplyDMMatrix()
@@ -45,7 +47,7 @@ ApplyDMMatrix::~ApplyDMMatrix()
 	delete this->B;
 }
 
-void ApplyDMMatrix::operator(DataVector& data, DataVector& x, DataVector& b)
+void ApplyDMMatrix::operator()(DataVector& data, DataVector& alpha, DataVector& result)
 {
 	DataVector temp(data.getSize());
     size_t M = data.getSize();
@@ -59,13 +61,13 @@ void ApplyDMMatrix::operator(DataVector& data, DataVector& x, DataVector& b)
     {
 		DataVector temptwo(alpha.getSize());
 		this->C->mult(alpha, temptwo);
-		result.axpy(M*this->lam, temptwo);
+		result.axpy(M*this->lamb, temptwo);
     }
 
     // Identity Matrix
     if (this->StiffMode == "I")
     {
-		result.axpy(M*this->lam, alpha);
+		result.axpy(M*this->lamb, alpha);
     }
 }
 

@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef APPLAYMATRIX_HPP
-#define APPLAYMATRIX_HPP
+#ifndef APPLYMATRIX_HPP
+#define APPLYMATRIX_HPP
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
@@ -45,12 +45,12 @@ public:
 	/**
 	 * Std-Constructor
 	 */
-	ApplyMatrix() { };
+	ApplyMatrix() {}
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~ApplayMatrix() { };
+	virtual ~ApplyMatrix() {}
 
 	/**
 	 * Operator, that implements the ApplyMatrix Method in the Conjugate Gradients solver
@@ -59,10 +59,10 @@ public:
 	 * @param x the vector that is multiplied by the matrix
 	 * @param b the result of the matrix vector multplication
 	 */
-	virtual void operator(DataVector& data, DataVector& x, DataVector& b) = 0;
+	virtual void operator()(DataVector& data, DataVector& x, DataVector& b) = 0;
 };
 
 }
 
 
-#endif /* APPLAYMATRIX_HPP */
+#endif /* APPLYMATRIX_HPP */

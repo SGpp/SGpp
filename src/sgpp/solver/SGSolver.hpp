@@ -33,6 +33,8 @@ namespace sg
 class SGSolver
 {
 private:
+
+public:
 	/// Number of Iterations needed for the solve
 	size_t nIterations;
 	/// Number of maximum iterations for cg
@@ -40,7 +42,6 @@ private:
 	/// final residuum
 	double finalResiduum;
 
-public:
 	/**
 	 * Std-Constructor
 	 */
@@ -54,7 +55,7 @@ public:
 	/**
 	 * Pure virtual Function that defines a solve method
 	 */
-	virtual void solve() = 0;
+	//virtual void solve() = 0;
 
 	/**
 	 * function that returns the number of needed solve steps

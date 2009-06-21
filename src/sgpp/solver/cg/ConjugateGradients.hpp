@@ -54,9 +54,8 @@ public:
 	/**
 	 * Executes the Conjugate Gradients solver
 	 *
-	 * @return returns the final norm of the residual
 	 */
-	void solve(APPLYMATRIX& AppMatrix, DataVector& alpha, DataVector& data, DataVector b, bool reuse = false, bool verbose = false)
+	virtual void solve(APPLYMATRIX& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool verbose = false)
 	{
 		if (verbose == true)
 			std::cout << "Starting Conjugated Gradients" << std::endl;
@@ -64,46 +63,29 @@ public:
 		// needed for residuum calculation
 		double epsilonSquared = myEpsilon*myEpsilon;
 		// number off current iterations
-		nIteratios = 0;
+		this->nIterations = 0;
 
 		// define temporal vectors
 		DataVector temp(alpha.getSize());
 		DataVector q(alpha.getSize());
-		DataVector res;
-		DataVector delta;
+		DataVector r(b);
 
 		double delta_0 = 0.0;
 		double delta_old = 0.0;
 		double delta_new = 0.0;
 		double beta = 0.0;
+		double a = 0.0;
 
 		// calculate the starting residuum
-		if (reuse == true)
-		{
-			q.setAll(0.0);
-			AppMatrix(data, q, temp);
-			r = DataVector(b);
-			r.sub(temp);
-			delta_0 = r.dotProduct(r)*epsilonSquared;
-		}
-		else
-		{
-			alpha.setAll(0.0);
-		}
-
 		AppMatrix(data, alpha, temp);
-		r = DataVector(b);
 		r.sub(temp);
 
-		delta = DataVector(r);
+		DataVector d(r);
 
 		delta_old = 0.0;
 		delta_new = r.dotProduct(r);
 
-		if (reuse == false)
-		{
-			delta_0 = delta_new*epsilonSquared;
-		}
+		delta_0 = delta_new*epsilonSquared;
 
 		if (verbose == true)
 		{
@@ -111,7 +93,7 @@ public:
 			std::cout << "Target norm:               " << (delta_0) << std::endl;
 		}
 
-		while ((nIteratios < nMaxIterations) && (delta_new > delta_0))
+		while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0))
 		{
 			// q = A*d
 			AppMatrix(data, d, q);
@@ -123,7 +105,7 @@ public:
 			alpha.axpy(a, d);
 
 			// Why ????
-			if ((nIteratios % 50) == 0)
+			if ((this->nIterations % 50) == 0)
 			{
 				// r = b - A*x
 				AppMatrix(data, alpha, temp);
@@ -149,14 +131,14 @@ public:
 			d.mult(beta);
 			d.add(r);
 
-			nIteratios++;
+			this->nIterations++;
 		}
 
 		finalResiduum = delta_new;
 
 		if (verbose == true)
 		{
-			std::cout << "Number of iterations: " << nIteratios << " (max. " << nMaxIterations << ")" << std::endl;
+			std::cout << "Number of iterations: " << this->nIterations << " (max. " << nMaxIterations << ")" << std::endl;
 			std::cout << "Final norm of residuum: " << delta_new << std::endl;
 		}
 	}
