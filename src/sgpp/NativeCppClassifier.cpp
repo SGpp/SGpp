@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 	double epsilon = 0.00001;
 	size_t imax = 2000;
 	size_t level = 4;
-	char GridType = "N";
-	char StiffMode = "L";
+	std::string GridType = "N";
+	std::string StiffMode = "L";
 	std::string tfileTrain = "ripleyGarcke.train.arff";
 	std::string tfileTest = "ripleyGarcke.test.arff";
 

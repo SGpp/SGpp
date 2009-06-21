@@ -25,6 +25,10 @@
 #include "solver/cg/ApplyMatrix/classification/ApplyDMMatrix.hpp"
 #include "solver/cg/ConjugateGradients.hpp"
 #include "tools/classification/ARFFTools.hpp"
+#include "grid/type/LinearGrid.hpp"
+#include "grid/type/LinearBoundaryGrid.hpp"
+#include "grid/type/LinearBoundaryUScaledGrid.hpp"
+#include "grid/type/ModLinearGrid.hpp"
 #include <iostream>
 
 namespace sg
@@ -48,7 +52,7 @@ Classifier::~Classifier()
 	delete myGrid;
 }
 
-void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest, size_t level, double lambda, char GridType, char StiffMode, double epsilon, size_t imax)
+void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest, size_t level, double lambda, std::string GridType, std::string StiffMode, double epsilon, size_t imax)
 {
 	ARFFTools ARFFTool;
 
@@ -65,7 +69,7 @@ void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest
 	createRegularGrid();
 
 	DataVector alpha(this->myGrid->getStorage()->size());
-	alpha.set(0.0);
+	alpha.setAll(0.0);
 
 	// start the train process
 	trainGrid(alpha, tfileTrain);
@@ -76,23 +80,25 @@ void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest
 
 void Classifier::createRegularGrid()
 {
-	switch (this->GridType)
+	if (this->GridType == "N")
 	{
-	case "N":
 		myGrid = new LinearGrid(this->dim);
-		break;
-	case "U":
+	}
+	else if (this->GridType == "U")
+	{
 		myGrid = new LinearBoundaryUScaledGrid(this->dim);
-		break;
-	case "B":
+	}
+	else if (this->GridType == "B")
+	{
 		myGrid = new LinearBoundaryGrid(this->dim);
-		break;
-	case "E":
+	}
+	else if (this->GridType == "E")
+	{
 		myGrid = new ModLinearGrid(this->dim);
-		break;
-	default:
+	}
+	else
+	{
 		throw new operation_exception("No valid GridType was specified!");
-		break;
 	}
 
 	myGrid->createGridGenerator()->regular(this->levels);
@@ -114,10 +120,10 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     DMMatrix.generateb(training, classes, rhs);
 
     // get a CG
-    ConjugateGradients<ApplyDMMatrix> myCG(this->IterationsMax, this->epsilon);
+    ConjugateGradients<ApplyDMMatrix> myCG(this->IterationMax, this->epsilon);
 
     // slove the system of linear equations
-    myCG.solve(DDMatrix, alpha, training, rhs, false, true);
+    myCG.solve(DMMatrix, alpha, training, rhs, true);
 
     // Write the data of CG
     std::cout << "Final norm of residual: " << myCG.getFinalResiduum() << std::endl;

@@ -39,7 +39,7 @@ private:
 	/// the number of levels used for an regular grid
 	size_t levels;
 	/// the type of grid used
-	char GridType;
+	std::string GridType;
 	/// the dimension of the grid
 	size_t dim;
 	/// the number of instances
@@ -47,7 +47,7 @@ private:
 	/// regularisation parameter lambda
 	double lambda;
 	/// kind of stiffness matrix
-	char StiffnessMode;
+	std::string StiffnessMode;
 	/// maximum number of iterations that are executed to train the grid
 	size_t IterationMax;
 	/// epsilon needed in the cg method
@@ -101,7 +101,7 @@ public:
 	 * @param epsilon epsilon needed in the cg method
 	 * @param imax maximum number of iterations that are executed to train the grid
 	 */
-	void trainNtestRegular(std::string tfileTrain, std::string tfileTest, size_t level, double lambda, char GridType, char StiffMode, double epsilon, size_t imax);
+	void trainNtestRegular(std::string tfileTrain, std::string tfileTest, size_t level, double lambda, std::string GridType, std::string StiffMode, double epsilon, size_t imax);
 };
 
 }

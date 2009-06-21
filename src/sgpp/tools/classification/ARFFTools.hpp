@@ -69,7 +69,7 @@ public:
 	 * @param tfilename filename of the ARFF file
 	 * @return number of dimensions in the dataset
 	 */
-	size_t ARFFTools::getDimension(std::string tfilename);
+	size_t getDimension(std::string tfilename);
 
 	/**
 	 * Determine how many instances the dataset contains
@@ -77,7 +77,7 @@ public:
 	 * @param tfilename filename of the ARFF file
 	 * @return number of instances in the dataset
 	 */
-	size_t ARFFTools::getNumberInstances(std::string tfilename);
+	size_t getNumberInstances(std::string tfilename);
 
 	/**
 	 * reads an ARFF file (except the last attribute) and writes its content into a DataVector object
