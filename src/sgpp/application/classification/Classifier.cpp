@@ -41,10 +41,12 @@ Classifier::Classifier()
 	this->GridType = "N";
 	this->dim = 0;
 	this->instancesNo = 0;
+	this->testinstancesNo = 0;
 	this->lambda = 0.0;
 	this->StiffnessMode = "L";
 	this->IterationMax = 1000;
 	this->epsilon = 0.0;
+	std::cout << "A new Classifier instance wass created" << std::endl;
 }
 
 Classifier::~Classifier()
@@ -54,6 +56,7 @@ Classifier::~Classifier()
 
 void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest, size_t level, double lambda, std::string GridType, std::string StiffMode, double epsilon, size_t imax)
 {
+	std::cout << "trainNtestRegular was called within this classifier instance" << std::endl;
 	ARFFTools ARFFTool;
 
 	this->levels = level;
@@ -63,10 +66,22 @@ void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest
 	this->IterationMax = imax;
 	this->epsilon = epsilon;
 	this->dim = ARFFTool.getDimension(tfileTrain);
-	this->instancesNo = ARFFTool.getDimension(tfileTrain);
+	this->instancesNo = ARFFTool.getNumberInstances(tfileTrain);
+	this->testinstancesNo = ARFFTool.getNumberInstances(tfileTest);
+
+	std::cout << "the problem has " << this->dim << " dimensions" << std::endl;
+	std::cout << "the training set contains " << this->instancesNo << " instances" << std::endl;
+	std::cout << "the test set contains " << this->testinstancesNo << " instances" << std::endl;
+	std::cout << "classifier instance is initialized by trainNtestRegular" << std::endl;
+	std::cout << "------------------------------------------------------" << std::endl;
+	std::cout << "start constructing regular grid" << std::endl;
 
 	// create the grid
 	createRegularGrid();
+
+	std::cout << "finished construction regular grid" << std::endl;
+	std::cout << "------------------------------------------------------" << std::endl;
+	std::cout << "start training grid" << std::endl;
 
 	DataVector alpha(this->myGrid->getStorage()->size());
 	alpha.setAll(0.0);
@@ -74,8 +89,14 @@ void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest
 	// start the train process
 	trainGrid(alpha, tfileTrain);
 
+	std::cout << "finished training grid" << std::endl;
+	std::cout << "------------------------------------------------------" << std::endl;
+	std::cout << "start testing trained grid" << std::endl;
+
 	// start test process
 	applyTestdata(alpha, tfileTest);
+
+	std::cout << "finished testing trained grid" << std::endl;
 }
 
 void Classifier::createRegularGrid()
@@ -83,18 +104,22 @@ void Classifier::createRegularGrid()
 	if (this->GridType == "N")
 	{
 		myGrid = new LinearGrid(this->dim);
+		std::cout << "A LinearGrid was created" << std::endl;
 	}
 	else if (this->GridType == "U")
 	{
 		myGrid = new LinearBoundaryUScaledGrid(this->dim);
+		std::cout << "A LinearBoundaryUScaledGrid was created" << std::endl;
 	}
 	else if (this->GridType == "B")
 	{
 		myGrid = new LinearBoundaryGrid(this->dim);
+		std::cout << "A LinearBoundaryGrid was created" << std::endl;
 	}
 	else if (this->GridType == "E")
 	{
 		myGrid = new ModLinearGrid(this->dim);
+		std::cout << "A ModlinearGrid was created" << std::endl;
 	}
 	else
 	{
@@ -102,6 +127,7 @@ void Classifier::createRegularGrid()
 	}
 
 	myGrid->createGridGenerator()->regular(this->levels);
+	std::cout << levels << " levels were added to the above created grid" << std::endl;
 }
 
 void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
@@ -110,17 +136,23 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
 	DataVector training(this->instancesNo, this->dim);
     DataVector classes(this->instancesNo);
     DataVector rhs(this->myGrid->getStorage()->size());
+    std::cout << "The datavectors for training and the right hand side have been created" << std::endl;
 
     ARFFTool.readTrainingData(tfileTrain, training);
+    std::cout << "The training vector has been initialized" << std::endl;
     ARFFTool.readClasses(tfileTrain, classes);
+    std::cout << "The class training vector has been initialized" << std::endl;
 
     // init the Systemmatrix Functor
     ApplyDMMatrix DMMatrix(this->myGrid, this->StiffnessMode, this->lambda);
+    std::cout << "Instance of the matrix functor has been created and initialized" << std::endl;
     // generate the rhs of the equation
     DMMatrix.generateb(training, classes, rhs);
+    std::cout << "The rhs of the equation has been initialized" << std::endl;
 
     // get a CG
     ConjugateGradients<ApplyDMMatrix> myCG(this->IterationMax, this->epsilon);
+    std::cout << "An instance of the CG method has been created" << std::endl;
 
     // slove the system of linear equations
     myCG.solve(DMMatrix, alpha, training, rhs, true);
@@ -135,13 +167,17 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
     double correct;
 
 	ARFFTools ARFFTool;
-	DataVector test(this->instancesNo, this->dim);
-    DataVector testclasses(this->instancesNo);
+	DataVector test(this->testinstancesNo, this->dim);
+    DataVector testclasses(this->testinstancesNo);
+    std::cout << "the test datavectors have been created" << std::endl;
 
     ARFFTool.readTrainingData(tfileTest, test);
     ARFFTool.readClasses(tfileTest, testclasses);
+    std::cout << "the test datavectors have been initialized" << std::endl;
 
+    std::cout << "start evaluating the test instances" << std::endl;
     correct = myGrid->createOperationEval()->test(alpha, test, testclasses);
+    std::cout << "finishes evaluating the test instances" << std::endl;
 
     std::cout << "Correctly classified elements: " << correct/((double)test.getSize()) << " percentage" << std::endl;
 

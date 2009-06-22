@@ -44,6 +44,8 @@ private:
 	size_t dim;
 	/// the number of instances
 	size_t instancesNo;
+	/// the number of test instances
+	size_t testinstancesNo;
 	/// regularisation parameter lambda
 	double lambda;
 	/// kind of stiffness matrix
