@@ -61,7 +61,7 @@ public:
     typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif
 #ifdef WINDOWS
-	typedef stdext::hash_map<index_pointer, size_t> grid_map;
+	typedef stdext::hash_map<index_pointer, size_t, WinSGHasher<index_pointer>> grid_map;
 #endif
     typedef typename grid_map::iterator grid_map_iterator;
     typedef typename grid_map::const_iterator grid_map_const_iterator;

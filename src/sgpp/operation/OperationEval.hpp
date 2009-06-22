@@ -26,6 +26,10 @@
 
 #include "data/DataVector.hpp"
 
+#ifdef WINDOWS
+#pragma warning(disable: 4267)
+#endif
+
 namespace sg
 {
 
