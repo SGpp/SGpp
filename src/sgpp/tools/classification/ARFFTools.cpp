@@ -24,6 +24,7 @@
 #include "exception/file_exception.hpp"
 #include <fstream>
 #include <stdlib.h>
+#include <iostream>
 
 namespace sg
 {

@@ -31,7 +31,7 @@ ApplyDMMatrix::ApplyDMMatrix(Grid* SparseGrid, std::string StiffnessMode, double
 {
 	this->StiffMode = StiffnessMode;
 
-	if (this->StiffMode != "L"|| this->StiffMode != "I")
+	if (this->StiffMode != "L" && this->StiffMode != "I")
 	{
 		throw new operation_exception("You have chosen an invalid stiffness mode in ApplyDMMatrix! L or I are valid");
 	}
