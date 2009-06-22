@@ -76,6 +76,8 @@ public:
 		double beta = 0.0;
 		double a = 0.0;
 
+		std::cout << "All temp variables used in CG have been intialized" << std::endl;
+
 		// calculate the starting residuum
 		AppMatrix(data, alpha, temp);
 		r.sub(temp);

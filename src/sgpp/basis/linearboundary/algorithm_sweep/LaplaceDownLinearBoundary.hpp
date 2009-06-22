@@ -137,8 +137,7 @@ protected:
 			GridStorage::index_type::index_type i;
 
 			index.get(dim, l, i);
-
-			double h = 1/pow(2.0, l);
+			double h = 1/pow(2.0, static_cast<int>(l));
 
 			// integration
 			result[seq] = (  h * (fl+fr)/2.0

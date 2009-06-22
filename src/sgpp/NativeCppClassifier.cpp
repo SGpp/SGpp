@@ -34,8 +34,6 @@ int main(int argc, char *argv[])
 	std::string tfileTrain = "ripleyGarcke.train.arff";
 	std::string tfileTest = "ripleyGarcke.test.arff";
 
-	sg::Classifier myClassifier;
-
 	std::cout << "Starting the Native Cpp Classifier" << std::endl;
 	std::cout << "==================================" << std::endl;
 	std::cout << "lambda: " << lambda << std::endl;
@@ -46,6 +44,8 @@ int main(int argc, char *argv[])
 	std::cout << "Stiffness Matrix: " << StiffMode << std::endl;
 	std::cout << "Trainingdata: " << tfileTrain << std::endl;
 	std::cout << "Testdata: " << tfileTest << std::endl;
+
+	sg::Classifier myClassifier;
 
 	myClassifier.trainNtestRegular(tfileTrain, tfileTest, level, lambda, GridType, StiffMode, epsilon, imax);
 

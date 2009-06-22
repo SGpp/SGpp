@@ -105,7 +105,7 @@ protected:
 			//only affects the diagonal of the stiffness matrix
 			else
 			{
-				result[i] = alpha[i]*pow(2.0, level+1);
+				result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
 			}
 		}
 	}

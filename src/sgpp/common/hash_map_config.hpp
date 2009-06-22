@@ -20,14 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef HASH_MAP_CONFIG
 #define HASH_MAP_CONFIG
 
+#ifndef WINDOWS
 #include <ext/hash_map>
-
 namespace std {
 
     using namespace __gnu_cxx;
 
 }
-
+#endif
+#ifdef WINDOWS
+#include <hash_map>
+#endif
 
 namespace sg {
 	
