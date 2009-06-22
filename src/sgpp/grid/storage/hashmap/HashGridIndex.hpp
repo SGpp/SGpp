@@ -482,6 +482,7 @@ private:
 	size_t hash_value;
 };
 
+#ifndef WINDOWS
 template<class LT, class IT>
 struct hash<HashGridIndex<LT, IT>* > {
     size_t operator()(HashGridIndex<LT, IT>* index) const {
@@ -495,7 +496,42 @@ struct eqIndex<HashGridIndex<LT, IT>* > {
         return s1->equals(*s2);
     }
 };
+#endif
+#ifdef WINDOWS
+#include <hash_map>
 
+/**
+ * hash_compare function needed on Windows boxes
+ * for configuring the hash_hap
+ */
+template<class LT, class IT>
+class WinSGHasher<HashGridIndex<LT, IT>*> : public stdext::hash_compare<HashGridIndex<LT, IT>*>
+{
+public:
+	/**
+	 * operator that calculates the hash values
+	 *
+	 * @param index pointer to an element of the hash_map
+	 * @return the hash value
+	 */
+	size_t operator() (HashGridIndex<LT, IT>* index) const
+	{
+		return index->hash();
+	}
+
+	/**
+	 * operator that compares to elements in the hash_map
+	 *
+	 * @param s1 first element
+	 * @param s2 second element
+	 * @return returns true if s1 == s2, otherwise false
+	 */
+	bool operator() (HashGridIndex<LT, IT>* s1, HashGridIndex<LT, IT>* s2) const
+	{
+		return s1->equals(*s2);
+	}
+};
+#endif
 }
 
 #endif /* HASHGRIDINDEX_HPP */
