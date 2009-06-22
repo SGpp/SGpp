@@ -129,7 +129,7 @@ protected:
 			GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			//only affects the diagonal of the stiffness matrix
-			result[i] = alpha[i]*pow(2.0, level+1);
+			result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
 		}
 	}
 

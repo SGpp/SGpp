@@ -96,7 +96,7 @@ protected:
 
 		index.get(dim, l, i);
 
-		double h = 1/pow(2.0, l);
+		double h = 1/pow(2.0, static_cast<int>(l));
 		double fm;
 
 		// level 1, constant function

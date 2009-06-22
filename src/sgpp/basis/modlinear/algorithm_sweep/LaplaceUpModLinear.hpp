@@ -98,8 +98,7 @@ protected:
 
 		index.get(dim, l, i);
 
-		double h = 1/pow(2.0, l);
-
+		double h = 1/pow(2.0, static_cast<int>(l));
 		double fml = 0.0;
 		double fmr = 0.0;
 

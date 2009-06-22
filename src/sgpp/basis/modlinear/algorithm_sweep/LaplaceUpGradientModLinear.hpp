@@ -95,7 +95,7 @@ protected:
 		index.get(dim, l, i);
 
 		double alpha_value = source[seq];
-		double ht = pow(2.0, l);
+		double ht = pow(2.0, static_cast<int>(l));
 
 		if(l == 1)
 		{

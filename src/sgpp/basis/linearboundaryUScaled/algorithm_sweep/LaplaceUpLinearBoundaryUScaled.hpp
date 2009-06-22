@@ -148,7 +148,7 @@ protected:
 			double fm = fml + fmr;
 
 			double alpha_value = source[seq];
-			double h = 1/pow(2.0,current_level);
+			double h = 1/pow(2.0,static_cast<int>(current_level));
 
 			// transposed operations:
 			result[seq] = fm;

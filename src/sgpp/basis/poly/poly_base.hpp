@@ -103,7 +103,7 @@ private:
 
 		double y_val = y_store[deg+1];
 		// scale val back into the right range
-		double x_val = x_store[0] + val * pow(2.0, -(double)deg);
+		double x_val = x_store[0] + val * pow(2.0, -(1.0)*(static_cast<double>(deg)));
 
 		//Horner
 		for(int i = deg; i >= 0; i--)
@@ -120,7 +120,7 @@ private:
 	void initPolynoms(std::vector<double>& x, LT level, IT index)
 	{
 		// Add new point
-		x.push_back(index * pow(2.0, -(double)level));
+		x.push_back(index * pow(2.0, -(1.0)*(static_cast<double>(level))));
 
 		std::vector<double> y;
 		std::vector<double> intpoly;
