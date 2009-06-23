@@ -49,7 +49,6 @@ ApplyDMMatrix::~ApplyDMMatrix()
 
 void ApplyDMMatrix::operator()(DataVector& data, DataVector& alpha, DataVector& result)
 {
-	std::cout << "start applying the systemmatrix" << std::endl;
 	DataVector temp(data.getSize());
     size_t M = data.getSize();
 
@@ -70,7 +69,6 @@ void ApplyDMMatrix::operator()(DataVector& data, DataVector& alpha, DataVector& 
     {
 		result.axpy(M*this->lamb, alpha);
     }
-	std::cout << "finished applying the systemmatrix" << std::endl;
 }
 
 void ApplyDMMatrix::generateb(DataVector& data, DataVector& classes, DataVector& b)

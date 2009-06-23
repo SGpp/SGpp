@@ -79,6 +79,7 @@ void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest
 	// create the grid
 	createRegularGrid();
 
+	std::cout << "the grid has " << myGrid->getStorage()->size() << " gridpoints" << std::endl;
 	std::cout << "finished construction regular grid" << std::endl;
 	std::cout << "------------------------------------------------------" << std::endl;
 	std::cout << "start training grid" << std::endl;
@@ -155,10 +156,9 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "An instance of the CG method has been created" << std::endl;
 
     // slove the system of linear equations
-    myCG.solve(DMMatrix, alpha, training, rhs, true);
+    myCG.solve(DMMatrix, alpha, training, rhs, true, false);
 
     // Write the data of CG
-    std::cout << "Final norm of residual: " << myCG.getFinalResiduum() << std::endl;
     std::cout << "Needed iterations: " << myCG.getNumberIterations() << std::endl;
 }
 
@@ -179,7 +179,7 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
     correct = myGrid->createOperationEval()->test(alpha, test, testclasses);
     std::cout << "finishes evaluating the test instances" << std::endl;
 
-    std::cout << "Correctly classified elements: " << correct/((double)test.getSize()) << " percentage" << std::endl;
+    std::cout << "Correctly classified elements: " << (correct/((double)test.getSize()))*100.0 << " percentage" << std::endl;
 
     return correct/((double)test.getSize());
 }
