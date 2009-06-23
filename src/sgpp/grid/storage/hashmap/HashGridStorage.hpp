@@ -269,7 +269,7 @@ public:
 	{
 		index_pointer insert = new GIT(&index);
 		list.push_back(insert);
-		return (map[insert] = this->seq()-1);
+		return (map[insert] = this->seq() - 1);
 	}
 
 	/**

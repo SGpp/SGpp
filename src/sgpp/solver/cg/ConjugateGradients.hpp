@@ -55,10 +55,12 @@ public:
 	 * Executes the Conjugate Gradients solver
 	 *
 	 */
-	virtual void solve(APPLYMATRIX& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool verbose = false)
+	virtual void solve(APPLYMATRIX& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool output = false, bool verbose = false)
 	{
-		if (verbose == true)
+		if (output == true)
+		{
 			std::cout << "Starting Conjugated Gradients" << std::endl;
+		}
 
 		// needed for residuum calculation
 		double epsilonSquared = myEpsilon*myEpsilon;
@@ -76,7 +78,10 @@ public:
 		double beta = 0.0;
 		double a = 0.0;
 
-		std::cout << "All temp variables used in CG have been intialized" << std::endl;
+		if (output == true)
+		{
+			std::cout << "All temp variables used in CG have been intialized" << std::endl;
+		}
 
 		// calculate the starting residuum
 		AppMatrix(data, alpha, temp);
@@ -89,7 +94,7 @@ public:
 
 		delta_0 = delta_new*epsilonSquared;
 
-		if (verbose == true)
+		if (output == true)
 		{
 			std::cout << "Starting norm of residuum: " << (delta_0/epsilonSquared) << std::endl;
 			std::cout << "Target norm:               " << (delta_0) << std::endl;
@@ -125,7 +130,7 @@ public:
 			delta_new = r.dotProduct(r);
 			beta = delta_new/delta_old;
 
-			if (verbose == true)
+			if (verbose == true && output == true)
 			{
 				std::cout << "delta: " << delta_new << std::endl;
 			}
@@ -138,7 +143,7 @@ public:
 
 		finalResiduum = delta_new;
 
-		if (verbose == true)
+		if (output == true)
 		{
 			std::cout << "Number of iterations: " << this->nIterations << " (max. " << nMaxIterations << ")" << std::endl;
 			std::cout << "Final norm of residuum: " << delta_new << std::endl;

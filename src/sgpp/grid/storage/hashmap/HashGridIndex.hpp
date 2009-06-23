@@ -312,11 +312,20 @@ public:
      */
     size_t hash() const
     {
-        return hash_value;
+		return hash_value;
     }
 
     /**
      * checks whether this gridpoints is identical to another one
+	 *
+	 * Running under WINDOW this is defined the way around, MSDN 2009:
+	 * A binary predicate f(x,y) is a function object that has two 
+	 * argument objects x and y and a return value of true or false. 
+	 * An ordering imposed on a hash_map is a strict weak ordering 
+	 * if the binary predicate is irreflexive, antisymmetric, 
+	 * and transitive and if equivalence is transitive, where 
+	 * two objects x and y are defined to be equivalent 
+	 * when both f(x,y) and f(y,x) are false -> equalsSGWinHash
      *
      * @param rhs reference the another HashGridIndex instance
      *
@@ -338,8 +347,45 @@ public:
                 return false;
             }
         }
-        return true;
+		return true;
     }
+
+    /**
+     * checks whether this gridpoints is identical to another one
+	 *
+	 * Running under WINDOW this is defined the way around, MSDN 2009:
+	 * A binary predicate f(x,y) is a function object that has two 
+	 * argument objects x and y and a return value of true or false. 
+	 * An ordering imposed on a hash_map is a strict weak ordering 
+	 * if the binary predicate is irreflexive, antisymmetric, 
+	 * and transitive and if equivalence is transitive, where 
+	 * two objects x and y are defined to be equivalent 
+	 * when both f(x,y) and f(y,x) are false -> equalsSGWinHash
+     *
+     * @param rhs reference the another HashGridIndex instance
+     *
+     * @return true if the gridpoints are identical otherwise false
+     */
+#ifdef WINDOWS
+    bool equalsSGWinHash(HashGridIndex<LT, IT> &rhs) const
+    {
+        for(size_t d = 0; d < DIM; d++)
+        {
+            if(level[d] != rhs.level[d])
+            {
+                return true;
+            }
+        }
+        for(size_t d = 0; d < DIM; d++)
+        {
+            if(index[d] != rhs.index[d])
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+#endif
 
 	/**
 	 * This is just wrapper for operator= until I cant get swig to wrap it
@@ -528,7 +574,7 @@ public:
 	 */
 	bool operator() (HashGridIndex<LT, IT>* s1, HashGridIndex<LT, IT>* s2) const
 	{
-		return s1->equals(*s2);
+		return s1->equalsSGWinHash(*s2);
 	}
 };
 #endif
