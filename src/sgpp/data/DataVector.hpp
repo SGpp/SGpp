@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include "data/DataVectorDefinition.hpp"
 
 /**
  * a data holding class of base function's coefficients
@@ -64,6 +65,13 @@ public:
 	 * @param dim number of dimensions
 	 */
 	DataVector(double* input, size_t size, size_t dim);
+
+	/**
+	 * Constructor that constructs a DataVector from a DataVectorDefinition structure
+	 *
+	 * @param DataVectorDef reference to a DataVectorDefinition structure
+	 */
+	DataVector(DataVectorDefinition& DataVectorDef);
 
 	/**
 	 * resizes the DataVector

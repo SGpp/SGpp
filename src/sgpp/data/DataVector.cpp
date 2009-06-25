@@ -62,6 +62,14 @@ DataVector::DataVector(double * input, size_t size, size_t dim) : size(size), di
 	memcpy(this->data, input, size*dim*sizeof(double));
 }
 
+DataVector::DataVector(DataVectorDefinition& DataVectorDef)
+{
+	this->size = DataVectorDef.size;
+	this->dim = DataVectorDef.dim;
+	this->unused = DataVectorDef.unused;
+	this->data = DataVectorDef.pointerToData;
+}
+
 void DataVector::resize(size_t size)
 {
 	if((int)size < this->size)
