@@ -884,6 +884,10 @@
 				RelativePath=".\src\sgpp\data\DataVector.hpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\sgpp\data\DataVectorDefinition.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="exception"
