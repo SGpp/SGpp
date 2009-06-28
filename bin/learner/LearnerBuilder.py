@@ -19,8 +19,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
+
 ## @package LearnerBuilder
-# @ingroup learner
+# @ingroup bin.learner
 # @brief Realization of Builder Pattern for Learner Subclasses
 # @version $CURR$
 
@@ -45,10 +46,6 @@ class LearnerBuilder(object):
     specificationDescriptor = None
     stopPolicyDescriptor = None
     
-#@todo: check, if this method can eventually produce infinite recursion
-#    def __getattr__(self, attr):
-#        if not hasattr(self,attr):
-#            raise AttributeError
         
     ##
     # Default constuctor
