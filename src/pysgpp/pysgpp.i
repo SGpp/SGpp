@@ -93,6 +93,7 @@ namespace std {
 %include "src/sgpp/basis/poly/poly_base.hpp"
 %include "src/sgpp/basis/modwavelet/modified_wavelet_base.hpp"
 
+%include "src/sgpp/linearSystem/LinearSystem.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 

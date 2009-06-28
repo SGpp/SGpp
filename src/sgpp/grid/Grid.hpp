@@ -29,6 +29,7 @@
 #include "operation/OperationHierarchisation.hpp"
 #include "operation/OperationMatrix.hpp"
 
+
 #include "grid/GridStorage.hpp"
 #include "grid/generation/GridGenerator.hpp"
 
@@ -167,6 +168,14 @@ public:
 	 * @return point to the OperationLaplace object
 	 */
 	virtual OperationMatrix* createOperationLaplace() = 0;
+	
+	
+	/**
+	 * gets a pointer to OperationIdentity (OperationMatrix) object
+	 *
+	 * @return point to the OperationIdentity object
+	 */
+	 OperationMatrix* createOperationIdentity();
 
 	/**
 	 * Returns a string that identifies the grid type uniquely
@@ -191,6 +200,24 @@ public:
 	 * @param ostr stream to which the grid is written
 	 */
 	virtual void serialize(std::ostream& ostr);
+	
+	/**
+	 * Refine grid
+	 * Refine the given number of points on the grid according to the vector
+	 * 
+	 * @param vector DataVector vector with errors for each basis function or alpha-vector
+	 * @param numOfPoints integer number of points to refine
+	 */
+	void refine(DataVector* vector, int numOfPoints);
+	
+	/**
+	 * Evaluate the value of function in the point
+	 * 
+	 * @param alpha DataVector alpha vector of the grid
+	 * @param point DataVector point where the function should be evaluated
+	 */
+	virtual double eval(DataVector& alpha, DataVector& point);
+	
 
 protected:
 	/// pointer the GridStorage object of the grid

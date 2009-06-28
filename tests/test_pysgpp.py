@@ -2,7 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           #
 # Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 #                                                                           #
@@ -35,7 +34,8 @@ import test_BT
 import test_GridFactory
 import test_DataVector
 
-import test_Classifier
+#import test_Classifier
+from tbin.tdata.testsuite import alltests
 
 if __name__ == '__main__':
     sys.stdout.write("Running unit tests. ")
@@ -49,9 +49,12 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
                 unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
                 #unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
+                alltests,
                 unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
                 unittest.defaultTestLoader.loadTestsFromModule(test_BT)
                 ])
 
-        unittest.TextTestRunner().run(alltests)
+    unittest.TextTestRunner().run(alltests)
 
+
+    

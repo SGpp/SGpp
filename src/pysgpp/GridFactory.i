@@ -70,12 +70,15 @@ public:
 	virtual OperationB* createOperationB() = 0;
 	virtual OperationEval* createOperationEval() = 0;
 	virtual OperationMatrix* createOperationLaplace() = 0;
+	virtual OperationMatrix* createOperationIdentity() = 0;
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 	
 	virtual GridStorage* getStorage();
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr);
+	void refine(DataVector* vector, int num);
+	virtual double eval(DataVector& alpha, DataVector& point);
 
 };
 

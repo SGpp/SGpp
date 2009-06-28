@@ -55,6 +55,8 @@
 #include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 
+#include "linearSystem/LinearSystem.hpp"
+
 namespace sg
 {
 

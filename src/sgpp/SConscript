@@ -57,6 +57,8 @@ basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUSca
 basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.cpp
 basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.cpp
 
+linearSystem/LinearSystem.cpp
+
 """)
 
 
