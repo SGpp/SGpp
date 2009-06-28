@@ -31,10 +31,10 @@ class RefineProvider:
         self.alpha.setAll(0.0)
         self.i = 0
         
-    def refine(self, options):
+    def refine(self, adapt_points):
         """Called after learning all folds"""
         self.alpha.mult(1.0/self.i)
-        self.gridDecorator.grid.createGridGenerator().refine(SurplusRefinementFunctor(self.alpha, options.adapt_points))
+        self.gridDecorator.grid.createGridGenerator().refine(SurplusRefinementFunctor(self.alpha, adapt_points))
         print "GridPoints: ", self.gridDecorator.getSize()
         
     

@@ -2,10 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -36,15 +32,18 @@ import math
 from FoldingPolicy import FoldingPolicy
 from bin.data.ARFFAdapter import ARFFAdapter
 
-
+#FIXME: this implementation is different from the RandomFoldingPolicy, since there no __dataFold in the last one, check which on is correct
 class SequentialFoldingPolicy(FoldingPolicy):
     
-    random = None
-    seed = None
-    seq = None
-    window = None
-    __dataFold = []
+    seq = None          #Sequence of indeces of points from data set
+    window = None       #Number of points in one subset
+    __dataFold = []     #List of partitioned data sets
     
+    
+    ##Constructor
+    #
+    #@param dataset: DataContainer with data set
+    #@param level: Integer folding level, default value: 1
     def __init__(self, dataContainer, level):
         self.__dataFold = []
         FoldingPolicy.__init__(self,  dataContainer, level)
@@ -55,19 +54,31 @@ class SequentialFoldingPolicy(FoldingPolicy):
             self.__dataFold.append(self.__createFoldsets(dataContainer, validationIndeces))
             
 
+    ## Create fold new data set
+    # Brings points given by validationIndeces together as test subset and the rest of points
+    # as train subset
+    #
+    # @param dataContainer: DataContainer with points
+    # @param validationIndeces: list of indeces for validation subset
+    # @return: DataContainer partitioned data set
     def __createFoldsets(self, dataContainer, validationIndeces):
         foldContainerValidation = dataContainer.getDataSubsetByIndexList(validationIndeces, "test")
         trainIndeces = [i for i in self.seq if i not in validationIndeces]
         foldContainerTrain = dataContainer.getDataSubsetByIndexList(trainIndeces, "train")
         return foldContainerTrain.combine(foldContainerValidation)
 
-            
-        
+ 
+    ##Implementation of iterator method next()
+    #
+    # @return: the next subset        
     def next(self):
         for step in xrange(self.level):
             yield self.__dataFold[step]
         return
-    
+
+
+    ##Implementation of iterator method __iter__()
+    # iterates through subsets     
     def __iter__(self):
         return self.next()
             

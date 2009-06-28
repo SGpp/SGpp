@@ -2,10 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -25,18 +21,18 @@
 #############################################################################
 
 ## @package Types
-# @ingroup learner
+# @ingroup bin.learner
 # @brief Different enumerable types used in the group
 # @version $CURR$
 
 
-
+## Constants for types of grid borders
 class BorderTypes(object):
     NONE = 100
     USCALEDBOUNDARY = 200
     COMPLETEBOUNDARY = 300
     
     
-    
+## Constants for types of linear solvers    
 class SolverTypes(object):
     CG = 100

@@ -2,10 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -25,59 +21,92 @@
 #############################################################################
 
 ## @package TrainingSpecification
-# @ingroup learner
+# @ingroup bin.learner
 # @brief Stores different parameters of the learning process
 # @version $CURR$
 
 class TrainingSpecification(object):
-    """ generated source for TrainingSpecification
+    __adaptPoints = 0       #Number of points to refine in one refinement iteration
+    __l = None              #Regularization parameter
+    __adaptRate = 0         #Rate of points to refine in one refinement iteration, between 0 and 1
+    __cOperator = None      #C operator
+    __bOperator = None      #B operator
 
-    """
-    __adaptPoints = 0
-    __l = None
-    __adaptRate = 0
-    __cOperator = None
-    __bOperator = None
-
+    
+    ## Setter for Number of points to refine
+    #
+    # @param value: integer Number of points to refine
     def setAdaptPoints(self, value):
         self.__adaptPoints = value
 
 
+    ## Setter for Regularization parameter
+    #
+    # @param value: double Regularization parameter
     def setL(self, value):
         self.__l = value
 
 
+    ## Setter for Rate of points to refine
+    #
+    # @param value: double in [0,1] Rate of points to refine
     def setAdaptRate(self, value):
         self.__adaptRate = value
 
 
+    ## Setter for C operator
+    #
+    # @param value: OperationMatrix
     def setCOperator(self, value):
         self.__cOperator = value
 
 
+    ## Setter for B operator
+    #
+    # @param value: OperationB
     def setBOperator(self, value):
         self.__bOperator = value
 
 
+    ## Getter for Number of points to refine
+    #
+    # @return: integer Number of points to refine
     def getAdaptPoints(self):
         return self.__adaptPoints
 
 
+    ## Getter for Regularization parameter
+    #
+    # @return: double Regularization parameter
     def getL(self):
         return self.__l
 
 
+    ## Getter for Rate of points to refine
+    #
+    # @return: double in [0,1] Rate of points to refine
     def getAdaptRate(self):
         return self.__adaptRate
 
 
+    ## Getter for C operator
+    #
+    # @return: OperationMatrix
     def getCOperator(self):
         return self.__cOperator
 
 
+    ## Getter for B operator
+    #
+    # @return: OperationB
     def getBOperator(self):
         return self.__bOperator
     
+    
+    ## Calculates the number of points which should be refined
+    #
+    # @param refinablePoints: integer number of points which can be refined
+    # @return: integer number of point which should be refined
     def getNumOfPointsToRefine(self, refinablePoints):
         ratePoints = self.__adaptRate * refinablePoints
         if self.__adaptPoints == 0:

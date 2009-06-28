@@ -2,9 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -24,23 +21,40 @@
 #############################################################################
 
 ## @package LinearSolver
-# @ingroup learner
+# @ingroup bin.learner
 # @brief Abstract class for solving of linear equations
 # @version $CURR$
 
 
 class LinearSolver(object):
-    eventControllers = []
+    eventControllers = []   #list of object listening to the solver events
 
+    
+    ## Solver linear system
+    # this method is not implemented
+    #
+    # @param linearSystem: LinearSystem to solve
     def solve(self, linearSystem):
         raise NotImplementedError
 
+    
+    ## Add observer to the list
+    #
+    # @param observer: ProgressInfoPresentor object
     def attachEventController(self, observer):
         if observer not in self.eventControllers: self.eventControllers.append(observer)
 
+    
+    ## Remove observer from the list
+    #
+    # @param observer: ProgressInfoPresentor object
     def detachEventController(self, observer):
         if observer in self.eventControllers: self.eventControllers.remove(observer)
 
+
+    ## Notify all observers about the new event
+    #
+    # @param event: LinearSolverEvents event
     def notifyEventControllers(self, event):
         for controller in self.eventControllers:
             controller.handleSolvingEvent(self, event)

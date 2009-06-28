@@ -24,15 +24,29 @@ from bin.providers.refineproviders import *
 #
 class GridDecorator(object):
     """Grid status type. Contains everything needed for datamining"""
+    
+    #Parameters:
+    basetype = None #Specifies basetype. Values: linear, modlinear, poly, modpoly
+    dim  = None #
+    grid = None #Grid Storage
+    l = None #Lambda
+    level = None #Gridlevel
+    mode = None
+    polynom = None #Specifies maximal polynomial degree for polynomial base functions
+    zeh = None #Specifies the action to do.
+    
+    __eval = None #
+    __refine = None #
 
-    def __init__(self, grid, mode, basetype, zeh):
-        self.grid = grid
-        self.mode = mode
+    def __init__(self, grid, mode, basetype, zeh, l, level, polynom, dim):
         self.basetype = basetype
+        self.dim = dim
+        self.grid = grid
+        self.l = l
+        self.level = level
+        self.mode = mode
+        self.polynom = polynom
         self.zeh = zeh
-        
-        self.__refine = None
-        self.__eval = None
 
     def getRefine(self):
         return self.__refine
@@ -43,7 +57,10 @@ class GridDecorator(object):
     ##
     # @param type String 
     def setRefine(self, type):
-        self.__refine = self.refine_providers[type](self)
+        try:
+            self.__refine = self.refine_providers[type](self) 
+        except:
+            raise NameError("Value of --refine Parameter incorrect")
 
     def getEval(self):
         return self.__eval
@@ -54,7 +71,10 @@ class GridDecorator(object):
     ##
     # @param type String 
     def setEval(self, type):
-        self.__eval = self.eval_providers[type](self)
+        try:
+            self.__eval = self.eval_providers[type](self)
+        except:
+            raise NameError("Value of --eval Parameter incorrect")
 
     def __getstate__(self):
         odict = self.__dict__.copy()
@@ -87,10 +107,31 @@ class GridDecorator(object):
             gridDecorator = pickle.load(fin)
             fin.close()
         else:
-            gridDecorator = GridDecorator(cls.constructGrid(options, dim), mode, options.basetype, options.zeh)
+            gridDecorator = GridDecorator( 
+                        cls.constructGrid(options.basetype, dim, options.polynom, options.level), 
+                        mode, options.basetype, options.zeh, options.l, options.level, options.polynom, dim)
+            
+        if options.eval: gridDecorator.setEval(options.eval)
+        if options.refine: gridDecorator.setRefine(options.refine)
         
         return gridDecorator
     
+    def updateStatistics(self, adaptive, stats, verbose):
+        if self.__eval: self.__eval.updateStatistics(adaptive, self.l, self.level, stats, verbose)
+    
+    def refine(self, adapt_points):
+        if self.__refine: self.__refine.refine(adapt_points)
+        
+    def reset(self):
+        if self.__eval: self.__eval.reset()
+        if self.__refine: self.__refine.reset()
+        
+    def updateEvalResults(self, alpha, trainingData, testingData):
+        if self.__eval: self.__eval.updateResults(alpha, trainingData, testingData)
+        
+    def addToRefine(self, alpha, trainingData):
+        if self.__refine: self.__refine.add(alpha, trainingData)
+        
     ## Constructs a new grid.
     # If options.grid is set, then read in a stored grid. If not, construct a new
     # grid dependent on the dimension dim, on options.level and options.polynom.
@@ -100,15 +141,15 @@ class GridDecorator(object):
     # @param options options
     # @return a grid
     @classmethod
-    def constructGrid(cls, options, dim):
+    def constructGrid(cls, basetype, dim, polynom, level):
         factories = {"linear" : lambda : Grid.createLinearGrid(dim),
                  "modlinear" : lambda : Grid.createModLinearGrid(dim),
-                 "poly" : lambda : Grid.createPolyGrid(dim, options.polynom),
-                 "modpoly" : lambda : Grid.createModPolyGrid(dim, options.polynom),
+                 "poly" : lambda : Grid.createPolyGrid(dim, polynom),
+                 "modpoly" : lambda : Grid.createModPolyGrid(dim, polynom),
                  }
-        grid = factories[options.basetype]()
+        grid = factories[basetype]()
         gen = grid.createGridGenerator()
-        gen.regular(options.level)
+        gen.regular(level)
         
         return grid
     
@@ -126,5 +167,5 @@ class GridDecorator(object):
             "error" : ErrorRefineProvider,
             }
 
-    eval = property(getEval, setEval, "Eval's Docstring")
-    refine = property(getRefine, setRefine, "Refine's Docstring")
+   # eval = property(getEval, setEval, "Eval's Docstring")
+   # refine = property(getRefine, setRefine, "Refine's Docstring")

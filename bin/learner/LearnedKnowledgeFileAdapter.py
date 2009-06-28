@@ -24,11 +24,11 @@
 #############################################################################
 
 ## @package LearnedKnowledgeFileAdapter
-# @ingroup learner
+# @ingroup bin.learner
 # @brief Storing and restoring learned knowledge in files
 # @version $CURR$
 
-import sys, re
+import sys, re, gzip
 
 from LearnedKnowledge import LearnedKnowledge
 from KnowledgeAdapter import KnowledgeAdapter
@@ -47,28 +47,36 @@ class LearnedKnowledgeFileAdapter(KnowledgeAdapter):
         knowledge.update(alphas)
         return knowledge
         
-
+        
+    ## Save knowledge data to the file
+    #
+    # @param knowledge: LearnedKnowledge object to save
+    # @param dest: String file name
+    # @return: LearnedKnowledge object
     def save(self, knowledge, dest):
         if type(dest) != type(''): raise AttributeError, "Filename as destination expected"
         alphas = knowledge.getAlphas();
         self.__writeAlphaARFF(dest, alphas)
         return knowledge
     
+    
+    ## Reads alpha vector from the ARFF file
+    #
+    # @param filename: String file name
+    # @param alpha: DataVector alpha file
+    # @return: alpha DataVector
     def __readAlphaARFF(self, filename):
-#        try:
-        print "filename: ", filename
         data = self.__readDataARFF(filename)
-#        except:
-#            print ("An error occured while reading from " + filename + "!")
-#            sys.exit(1)
-        
         alpha = DataVector(len(data["data"][0]), 1)
-        
         for i in xrange(len(data["data"][0])):
             alpha[i] = data["data"][0][i]
-        
         return alpha
     
+    
+    ## Writes alpha vector to the ARFF file
+    #
+    # @param filename: String file name
+    # @param alpha: DataVector of alpha
     def __writeAlphaARFF(self, filename, alpha):
         fout = self.__gzOpen(filename, "w")
         fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % filename)
@@ -80,6 +88,7 @@ class LearnedKnowledgeFileAdapter(KnowledgeAdapter):
             fout.write("%1.20f\n" % alpha[i])
         
         fout.close()
+        
         
     ## Reads in an ARFF file:
     # The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
@@ -126,7 +135,7 @@ class LearnedKnowledgeFileAdapter(KnowledgeAdapter):
         fin.close()
         return {"data":data, "classes":classes, "filename":filename}
         
-    #-------------------------------------------------------------------------------
+        
     ## Opens a file. If the file ends with ".gz", automatically gzip compression
     # is used for the file. Returns the filedescriptor
     # @param filename
