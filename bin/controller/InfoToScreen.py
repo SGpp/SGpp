@@ -1,0 +1,101 @@
+##############################################################################
+# This file is part of pysgpp, a program package making use of spatially    #
+# adaptive sparse grids to solve numerical problems                         #
+#                                                                           #
+# Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
+#                                                                           #
+# pysgpp is free software; you can redistribute it and/or modify            #
+# it under the terms of the GNU General Public License as published by      #
+# the Free Software Foundation; either version 3 of the License, or         #
+# (at your option) any later version.                                       #
+#                                                                           #
+# pysgpp is distributed in the hope that it will be useful,                 #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU Lesser General Public License for more details.                       #
+#                                                                           #
+# You should have received a copy of the GNU General Public License         #
+# along with pysgpp; if not, write to the Free Software                     #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
+# or see <http://www.gnu.org/licenses/>.                                    #
+#############################################################################
+
+## @package InfoToScreen
+# @ingroup bin.controller
+# @brief Class for handling events from Learner and Solver and printing informations on screen
+# @version $CURR$
+
+from bin.controller.ProgressInfoPresentor import ProgressInfoPresentor
+from bin.learner.LinearSolver import LinearSolverEvents
+from bin.learner.Learner import LearnerEvents
+
+class InfoToScreen(ProgressInfoPresentor):
+    
+    ##
+    #Handles events from Linear Solver 
+    #
+    #@param subject: Linear Solver object
+    #@param status: Event Status of type LinearSolverEvents
+    ##
+    def handleSolvingEvent(self, subject, status):
+        if status == LinearSolverEvents.STARTING:
+            print "Solution started"
+        elif status == LinearSolverEvents.CALC_STARTING:
+            print "Starting norm of residuum: %g" % (subject.delta_0)
+        elif status == LinearSolverEvents.ITERATION_COMPLETE:
+            print "delta: %g" % subject.delta_new
+        elif status == LinearSolverEvents.COMPLETE:
+            print "Number of iterations: %d (max. %d)" % (subject.iteration, subject.imax)
+            print "Final norm of residuum: %g" % subject.delta_new
+            
+            
+    ##
+    #Handles events from Learner 
+    #
+    #@param subject: Learner object
+    #@param status: Event Status of type LearnerEvents
+    ##        
+    def handleLearningEvent(self, subject, status):
+        if status == LearnerEvents.LEARNING_STARTED:
+            print "Dimension is:", subject.dataContainer.getDim()
+            print "Number of datasets is:", subject.dataContainer.getSize()
+            
+        elif status == LearnerEvents.LEARNING_COMPLETE:
+            print "Learning complete"
+        
+        elif status == LearnerEvents.LEARNING_WITH_FOLDING_STARTED:
+            pass
+        
+        elif status == LearnerEvents.LEARNING_WITH_FOLDING_COMPLETE:
+            print "Learning complete"
+        
+        elif status == LearnerEvents.LEARNING_STEP_STARTED:
+            print "Adaptive Step: ", subject.iteration
+            
+        elif status == LearnerEvents.LEARNING_STEP_COMPLETE:
+            print "Number of points: ", subject.numberPoints[-1]
+            print "Correct classified on training data: ",subject.trainAccuracy[-1]
+            
+        elif status == LearnerEvents.LEARNING_WITH_TESTING_STARTED:
+            print "Dimension is:", subject.dataContainer.getDim()
+            print "Number of datasets is:", subject.dataContainer.getSize()
+        
+        elif status == LearnerEvents.LEARNING_WITH_TESTING_COMPLETE:
+            print "Learning complete"
+        
+        elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_STARTED:
+            print "Adaptive Step:", subject.iteration
+            
+        elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
+            print "Number of points: ", subject.numberPoints[-1]
+            print "Correct classified on training data: ",subject.trainAccuracy[-1]
+            print "Correct classified on testing data:  ",subject.testAccuracy[-1]
+            
+        elif status == LearnerEvents.APPLICATION_STARTED:
+            pass
+        
+        elif status == LearnerEvents.APPLICATION_COMPLETE:
+            pass
+        
+        elif status == LearnerEvents.REFINING_GRID:
+            print "Refining Grid"

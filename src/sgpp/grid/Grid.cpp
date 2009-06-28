@@ -29,6 +29,10 @@
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
 
+//#include "grid/generation/RefinementFunctor.hpp"
+#include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "operation/OperationIdentity.hpp"
+
 #include "exception/factory_exception.hpp"
 
 #include <iostream>
@@ -60,6 +64,11 @@ Grid* Grid::createModLinearGrid(size_t dim)
 Grid* Grid::createPolyGrid(size_t dim, size_t degree)
 {
 	return new PolyGrid(dim, degree);
+}
+
+OperationMatrix* Grid::createOperationIdentity()
+{
+	return new OperationIdentity();
 }
 
 Grid* Grid::createModPolyGrid(size_t dim, size_t degree)
@@ -171,6 +180,17 @@ void Grid::serialize(std::ostream& ostr)
 	{
 		ostr << "0" << std::endl;
 	}
+}
+
+void Grid::refine(DataVector* vector, int numOfPoints)
+{
+	//@todo different refinemente Functors
+	this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
+}
+
+double Grid::eval(DataVector& alpha, DataVector& point){
+	OperationEval* evalOp = this->createOperationEval();
+	return evalOp->eval(alpha, point);
 }
 
 }
