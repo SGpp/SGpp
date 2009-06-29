@@ -30,6 +30,7 @@ namespace sg
  * Abstract class that defines a solver used in Sparse Grids
  * Applications
  */
+template<class APPLYMATRIX>
 class SGSolver
 {
 private:
@@ -59,7 +60,8 @@ public:
 	/**
 	 * Pure virtual Function that defines a solve method
 	 */
-	//virtual void solve() = 0;
+	virtual void solve(APPLYMATRIX& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool output = false, bool verbose = false) = 0;
+
 
 	/**
 	 * function that returns the number of needed solve steps
