@@ -27,7 +27,7 @@
 namespace sg
 {
 
-ApplyDMMatrix::ApplyDMMatrix(Grid* SparseGrid, std::string StiffnessMode, double lambda)
+ApplyDMMatrix::ApplyDMMatrix(Grid& SparseGrid, std::string StiffnessMode, double lambda)
 {
 	this->StiffMode = StiffnessMode;
 
@@ -36,8 +36,8 @@ ApplyDMMatrix::ApplyDMMatrix(Grid* SparseGrid, std::string StiffnessMode, double
 		throw new operation_exception("You have chosen an invalid stiffness mode in ApplyDMMatrix! L or I are valid");
 	}
 	// create the operations needed in ApplyMatrix
-	this->C = SparseGrid->createOperationLaplace();
-	this->B = SparseGrid->createOperationB();
+	this->C = SparseGrid.createOperationLaplace();
+	this->B = SparseGrid.createOperationB();
 	this->lamb = lambda;
 }
 

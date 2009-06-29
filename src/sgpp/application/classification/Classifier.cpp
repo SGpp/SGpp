@@ -145,7 +145,7 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "The class training vector has been initialized" << std::endl;
 
     // init the Systemmatrix Functor
-    ApplyDMMatrix DMMatrix(this->myGrid, this->StiffnessMode, this->lambda);
+    ApplyDMMatrix DMMatrix(*this->myGrid, this->StiffnessMode, this->lambda);
     std::cout << "Instance of the matrix functor has been created and initialized" << std::endl;
     // generate the rhs of the equation
     DMMatrix.generateb(training, classes, rhs);
