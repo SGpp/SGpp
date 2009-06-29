@@ -30,7 +30,7 @@ namespace sg
 {
 
 template<class APPLYMATRIX>
-class ConjugateGradients : public SGSolver
+class ConjugateGradients : public SGSolver<APPLYMATRIX>
 {
 private:
 	/// epsilon needed in the cg method
@@ -40,7 +40,7 @@ public:
 	/**
 	 * Std-Constructor
 	 */
-	ConjugateGradients(size_t imax, double epsilon) : SGSolver(imax)
+	ConjugateGradients(size_t imax, double epsilon) : SGSolver<APPLYMATRIX>(imax)
 	{
 		myEpsilon = epsilon;
 	}
@@ -141,11 +141,11 @@ public:
 			this->nIterations++;
 		}
 
-		finalResiduum = delta_new;
+		this->finalResiduum = delta_new;
 
 		if (output == true)
 		{
-			std::cout << "Number of iterations: " << this->nIterations << " (max. " << nMaxIterations << ")" << std::endl;
+			std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations << ")" << std::endl;
 			std::cout << "Final norm of residuum: " << delta_new << std::endl;
 		}
 	}
