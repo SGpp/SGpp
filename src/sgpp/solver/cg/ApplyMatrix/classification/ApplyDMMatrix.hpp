@@ -60,9 +60,11 @@ public:
 	/**
 	 * Std-Constructor
 	 *
+	 * @param SparseGrid reference to the sparse grid
 	 * @param StiffnessMode the mode that is used for the Stiffness Matrix
+	 * @param lambda the lambda, the regression parameter
 	 */
-	ApplyDMMatrix(Grid* SparseGrid, std::string StiffnessMode, double lambda);
+	ApplyDMMatrix(Grid& SparseGrid, std::string StiffnessMode, double lambda);
 
 	/**
 	 * Std-Destructor
