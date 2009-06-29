@@ -58,10 +58,17 @@ public:
     typedef GIT* index_pointer;
 
 #ifndef WINDOWS
+#ifndef USETRONE
     typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif
+#endif
 #ifdef WINDOWS
+#ifndef USETRONE
 	typedef stdext::hash_map<index_pointer, size_t, WinSGHasher<index_pointer>> grid_map;
+#endif
+#endif
+#ifdef USETRONE
+    typedef std::tr1::unordered_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif
     typedef typename grid_map::iterator grid_map_iterator;
     typedef typename grid_map::const_iterator grid_map_const_iterator;

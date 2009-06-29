@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
 
 	myClassifier.trainNtestRegular(tfileTrain, tfileTest, level, lambda, GridType, StiffMode, epsilon, imax);
 
+#ifdef WINDOWS
 	system("pause");
-
+#endif
 	return 0;
 }

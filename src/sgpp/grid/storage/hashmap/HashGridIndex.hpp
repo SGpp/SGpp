@@ -319,12 +319,12 @@ public:
      * checks whether this gridpoints is identical to another one
 	 *
 	 * Running under WINDOW this is defined the way around, MSDN 2009:
-	 * A binary predicate f(x,y) is a function object that has two 
-	 * argument objects x and y and a return value of true or false. 
-	 * An ordering imposed on a hash_map is a strict weak ordering 
-	 * if the binary predicate is irreflexive, antisymmetric, 
-	 * and transitive and if equivalence is transitive, where 
-	 * two objects x and y are defined to be equivalent 
+	 * A binary predicate f(x,y) is a function object that has two
+	 * argument objects x and y and a return value of true or false.
+	 * An ordering imposed on a hash_map is a strict weak ordering
+	 * if the binary predicate is irreflexive, antisymmetric,
+	 * and transitive and if equivalence is transitive, where
+	 * two objects x and y are defined to be equivalent
 	 * when both f(x,y) and f(y,x) are false -> equalsSGWinHash
      *
      * @param rhs reference the another HashGridIndex instance
@@ -354,12 +354,12 @@ public:
      * checks whether this gridpoints is identical to another one
 	 *
 	 * Running under WINDOW this is defined the way around, MSDN 2009:
-	 * A binary predicate f(x,y) is a function object that has two 
-	 * argument objects x and y and a return value of true or false. 
-	 * An ordering imposed on a hash_map is a strict weak ordering 
-	 * if the binary predicate is irreflexive, antisymmetric, 
-	 * and transitive and if equivalence is transitive, where 
-	 * two objects x and y are defined to be equivalent 
+	 * A binary predicate f(x,y) is a function object that has two
+	 * argument objects x and y and a return value of true or false.
+	 * An ordering imposed on a hash_map is a strict weak ordering
+	 * if the binary predicate is irreflexive, antisymmetric,
+	 * and transitive and if equivalence is transitive, where
+	 * two objects x and y are defined to be equivalent
 	 * when both f(x,y) and f(y,x) are false -> equalsSGWinHash
      *
      * @param rhs reference the another HashGridIndex instance
@@ -367,6 +367,7 @@ public:
      * @return true if the gridpoints are identical otherwise false
      */
 #ifdef WINDOWS
+#ifndef USETRONE
     bool equalsSGWinHash(HashGridIndex<LT, IT> &rhs) const
     {
         for(size_t d = 0; d < DIM; d++)
@@ -385,6 +386,7 @@ public:
         }
         return false;
     }
+#endif
 #endif
 
 	/**
@@ -481,7 +483,7 @@ public:
 	    {
 	      p.set(i, pow(0.5, static_cast<double>(level[i]))*index[i]);
 	    }
-	}      
+	}
     }
 
 
@@ -529,6 +531,7 @@ private:
 };
 
 #ifndef WINDOWS
+#ifndef USETRONE
 template<class LT, class IT>
 struct hash<HashGridIndex<LT, IT>* > {
     size_t operator()(HashGridIndex<LT, IT>* index) const {
@@ -543,7 +546,9 @@ struct eqIndex<HashGridIndex<LT, IT>* > {
     }
 };
 #endif
+#endif
 #ifdef WINDOWS
+#ifndef USETRONE
 #include <hash_map>
 
 /**
@@ -576,6 +581,23 @@ public:
 	{
 		return s1->equalsSGWinHash(*s2);
 	}
+};
+#endif
+#endif
+
+#ifdef USETRONE
+template<class LT, class IT>
+struct hash<HashGridIndex<LT, IT>* > {
+    size_t operator()(HashGridIndex<LT, IT>* index) const {
+        return index->hash();
+    }
+};
+
+template<class LT, class IT>
+struct eqIndex<HashGridIndex<LT, IT>* > {
+    size_t operator()(HashGridIndex<LT, IT>* s1, HashGridIndex<LT, IT>* s2) const {
+        return s1->equals(*s2);
+    }
 };
 #endif
 }
