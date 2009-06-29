@@ -25,6 +25,7 @@
 #define HASH_MAP_CONFIG
 
 #ifndef WINDOWS
+#ifndef USETRONE
 #include <ext/hash_map>
 namespace std {
 
@@ -36,12 +37,34 @@ namespace std {
 namespace sg {
 	template<class key>
 	struct hash { };
-	
+
 	template<class key>
 	struct eqIndex { };
 }
 #endif
+#endif
+
+#ifdef USETRONE
+// do some defines for icc, avoiding
+// errors:
+// See:
+// http://software.intel.com/en-us/forums/intel-c-compiler/topic/65041/
+#define __aligned__   ignored
+#include <tr1/unordered_map>
+#undef __aligned__
+
+// forward declaration
+namespace sg {
+	template<class key>
+	struct hash { };
+
+	template<class key>
+	struct eqIndex { };
+}
+#endif
+
 #ifdef WINDOWS
+#ifndef USETRONE
 #pragma warning(disable: 4267)
 
 #include <hash_map>
@@ -51,6 +74,7 @@ namespace sg {
 	template<class key>
 	class WinSGHasher;
 }
+#endif
 #endif
 
 #endif /* HASH_MAP_CONFIG */

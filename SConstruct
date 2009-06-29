@@ -36,6 +36,7 @@ vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
 vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'opteronICC', 'core2ICC', 'ia64ICC'; here Intel Compiler in version 11 must be used", 'default')
 vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
+vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
 
 # for building the the jsgpp lib
 vars.Add('JSGPP', 'Build jsgpp if set to True', False)
@@ -47,20 +48,24 @@ env = Environment(variables = vars, ENV = os.environ)
 # Specifying the target
 # there are several target avialable:
 # 	- default: using the gcc toolchain with OpenMP 2
-#	- opteronICC: using the ICC 11.0 toolchain with OpenMP 3 with standard x86_64 options
-#	- core2ICC: using the ICC 11.0 toolchain with OpenMP 3 with Intel x86_64 options
-#	- ia64ICC: using the ICC 11.0 toolchain with OpenMP 3 with Itanium options
+#	- opteronICC: using the ICC 11.x toolchain with OpenMP 3 with standard x86_64 options
+#	- core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options
+#	- ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
 #
 # Take care that you have defined following env. variables for loading the 
 # shared libraries: LD_LIBRARY_PATH and LIBPATH
 # both must contain the path to the intel shared libs
 # for instance:
-# LD_LIBRARY_PATH = /opt/intel/cce/default/lib/intel64:LD_LIBRARY_PATH
-# LIBPATH = /opt/intel/cce/default/lib/intel64:LIBPATH
+# LD_LIBRARY_PATH = /opt/intel/cce/default/lib:LD_LIBRARY_PATH
+# LIBPATH = /opt/intel/cce/default/lib:LIBPATH
 #
 # FOR LRZ:
 # lib: /lrz/sys/intel/icc_110_074/lib/ia64/
 # bin: /lrz/sys/intel/icc_110_074/bin/ia64/
+
+if env['TRONE']:
+    env.Append(CPPDEFINES=['USETRONE'])
+    env.Append(CPPFLAGS=['-std=c++0x'])
 
 if env['TARGETCPU'] == 'default':
     print "Using default gcc"
@@ -84,12 +89,12 @@ elif env['TARGETCPU'] == 'ia64ICC':
                            '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
                            '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
 elif env['TARGETCPU'] == 'opteronICC':
-    print "Using icc 11.0 for Opteron systems"
+    print "Using icc 11.x for Opteron systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
                            '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp', '-pthread'])
 elif env['TARGETCPU'] == 'core2ICC':
-    print "Using icc 11.0 for Core2 systems"
+    print "Using icc 11.x for Core2 systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
                            '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp', '-pthread'])
