@@ -23,14 +23,14 @@
 #ifndef CONJUGATEGRADIENTS_HPP
 #define CONJUGATEGRADIENTS_HPP
 
+#include "solver/cg/ApplyMatrix/ApplyMatrix.hpp"
 #include "solver/SGSolver.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-template<class APPLYMATRIX>
-class ConjugateGradients : public SGSolver<APPLYMATRIX>
+class ConjugateGradients : public SGSolver
 {
 private:
 	/// epsilon needed in the cg method
@@ -40,7 +40,7 @@ public:
 	/**
 	 * Std-Constructor
 	 */
-	ConjugateGradients(size_t imax, double epsilon) : SGSolver<APPLYMATRIX>(imax)
+	ConjugateGradients(size_t imax, double epsilon) : SGSolver(imax)
 	{
 		myEpsilon = epsilon;
 	}
@@ -55,7 +55,7 @@ public:
 	 * Executes the Conjugate Gradients solver
 	 *
 	 */
-	virtual void solve(APPLYMATRIX& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool output = false, bool verbose = false)
+	virtual void solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool output = false, bool verbose = false)
 	{
 		if (output == true)
 		{

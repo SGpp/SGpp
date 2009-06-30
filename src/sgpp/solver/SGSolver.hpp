@@ -23,6 +23,8 @@
 #ifndef SGSOLVER_HPP
 #define SGSOLVER_HPP
 
+#include "solver/cg/ApplyMatrix/ApplyMatrix.hpp"
+
 namespace sg
 {
 
@@ -30,7 +32,6 @@ namespace sg
  * Abstract class that defines a solver used in Sparse Grids
  * Applications
  */
-template<class APPLYMATRIX>
 class SGSolver
 {
 private:
@@ -60,7 +61,7 @@ public:
 	/**
 	 * Pure virtual Function that defines a solve method
 	 */
-	virtual void solve(APPLYMATRIX& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool output = false, bool verbose = false) = 0;
+	virtual void solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool output = false, bool verbose = false) = 0;
 
 
 	/**
