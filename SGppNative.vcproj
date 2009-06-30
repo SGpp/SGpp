@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WINDOWS"
+				PreprocessorDefinitions="USETRONE;WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -112,7 +112,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WINDOWS"
+				PreprocessorDefinitions="USETRONE;WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -182,6 +182,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				PreprocessorDefinitions="USETRONE;WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -253,7 +254,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WINDOWS"
+				PreprocessorDefinitions="USETRONE;WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -311,6 +312,10 @@
 			<Filter
 				Name="cg"
 				>
+				<File
+					RelativePath=".\src\sgpp\solver\cg\ConjugateGradients.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\sgpp\solver\cg\ConjugateGradients.hpp"
 					>
