@@ -70,6 +70,14 @@ DataVector::DataVector(DataVectorDefinition& DataVectorDef)
 	this->data = DataVectorDef.pointerToData;
 }
 
+void DataVector::getDataVectorDefinition(DataVectorDefinition& DataVectorDef)
+{
+	DataVectorDef.size = this->size;
+	DataVectorDef.dim = this->dim;
+	DataVectorDef.unused = this->unused;
+	DataVectorDef.pointerToData = this->data;
+}
+
 void DataVector::resize(size_t size)
 {
 	if((int)size < this->size)

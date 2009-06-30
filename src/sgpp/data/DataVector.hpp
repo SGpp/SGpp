@@ -74,6 +74,13 @@ public:
 	DataVector(DataVectorDefinition& DataVectorDef);
 
 	/**
+	 * Fill DataVectorDefintion with data from the current DataVector
+	 *
+	 * @param DataVectorDef reference to a DataVectorDefinition struct
+	 */
+	void getDataVectorDefinition(DataVectorDefinition& DataVectorDef);
+
+	/**
 	 * resizes the DataVector
 	 *
 	 * @param size new size of the DataVector

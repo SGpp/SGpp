@@ -20,28 +20,19 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef DATAVECTORDEFINITION_HPP
-#define DATAVECTORDEFINITION_HPP
+#ifndef SGSOLVERRESULT_HPP
+#define SGSOLVERRESULT_HPP
 
 /**
- * This struct is needed for exporting a DataVector
- * to another address space, so it contains all 
- * information that is needed to reconstruct a 
- * DataVector object
- *
- * The spave required by a DataVector object is:
- * (size+unused)*dim*sizeof(double)
+ * This struct is needed for exchanging the SGSolver Results
+ * to another address space.
  */
-struct DataVectorDefinition
+struct SGSolverResult
 {
-	/// Pointer to the data of the DataVector
-	double* pointerToData;
-	/// Number of Dimensions
-	int dim;
-	/// Number of Elements per Dim
-	int size;
-	/// Number of unused slots;
-	int unused;
+	/// Iterations that where needed to solve the system
+	size_t nNeededIterations;
+	/// Final residuum of SGSolver
+	double finalResiduum;
 };
 
-#endif /* DATAVECTORDEFINITION_HPP */
+#endif /* SGSOLVERRESULT_HPP */
