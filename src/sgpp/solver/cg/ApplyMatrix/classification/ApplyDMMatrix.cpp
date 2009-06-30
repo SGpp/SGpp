@@ -27,7 +27,7 @@
 namespace sg
 {
 
-ApplyDMMatrix::ApplyDMMatrix(Grid& SparseGrid, std::string StiffnessMode, double lambda)
+ApplyDMMatrix::ApplyDMMatrix(Grid& SparseGrid, DataVector& trainData, std::string StiffnessMode, double lambda)
 {
 	this->StiffMode = StiffnessMode;
 
@@ -39,6 +39,7 @@ ApplyDMMatrix::ApplyDMMatrix(Grid& SparseGrid, std::string StiffnessMode, double
 	this->C = SparseGrid.createOperationLaplace();
 	this->B = SparseGrid.createOperationB();
 	this->lamb = lambda;
+	this->data = &trainData;
 }
 
 ApplyDMMatrix::~ApplyDMMatrix()
@@ -47,14 +48,14 @@ ApplyDMMatrix::~ApplyDMMatrix()
 	delete this->B;
 }
 
-void ApplyDMMatrix::operator()(DataVector& data, DataVector& alpha, DataVector& result)
+void ApplyDMMatrix::operator()(DataVector& alpha, DataVector& result)
 {
-	DataVector temp(data.getSize());
-    size_t M = data.getSize();
+	DataVector temp((*data).getSize());
+    size_t M = (*data).getSize();
 
     // Operation B
-    this->B->multTranspose(alpha, data, temp);
-    this->B->mult(temp, data, result);
+    this->B->multTranspose(alpha, (*data), temp);
+    this->B->mult(temp, (*data), result);
 
     // Laplace Matrix
     if (this->StiffMode == "L")
@@ -71,9 +72,9 @@ void ApplyDMMatrix::operator()(DataVector& data, DataVector& alpha, DataVector& 
     }
 }
 
-void ApplyDMMatrix::generateb(DataVector& data, DataVector& classes, DataVector& b)
+void ApplyDMMatrix::generateb(DataVector& classes, DataVector& b)
 {
-	this->B->mult(classes, data, b);
+	this->B->mult(classes, (*data), b);
 }
 
 }

@@ -55,32 +55,34 @@ private:
 	OperationMatrix* C;
 	/// OperationB for calculating the data matrix
 	OperationB* B;
+	/// Pointer to the data vector
+	DataVector* data;
 
 public:
 	/**
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
+	 * @param trainData reference to DataVector that contains the training data
 	 * @param StiffnessMode the mode that is used for the Stiffness Matrix
 	 * @param lambda the lambda, the regression parameter
 	 */
-	ApplyDMMatrix(Grid& SparseGrid, std::string StiffnessMode, double lambda);
+	ApplyDMMatrix(Grid& SparseGrid, DataVector& trainData, std::string StiffnessMode, double lambda);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~ApplyDMMatrix();
 
-	virtual void operator()(DataVector& data, DataVector& alpha, DataVector& result);
+	virtual void operator()(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Generates the right hand side of the classification equation
 	 *
-	 * @param data the training data
 	 * @param classes the class information of the training data
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
-	void generateb(DataVector& data, DataVector& classes, DataVector& b);
+	void generateb(DataVector& classes, DataVector& b);
 };
 
 }

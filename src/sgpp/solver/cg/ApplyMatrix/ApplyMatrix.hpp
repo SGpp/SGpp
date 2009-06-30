@@ -55,11 +55,10 @@ public:
 	/**
 	 * Operator, that implements the ApplyMatrix Method in the Conjugate Gradients solver
 	 *
-	 * @param SparseGrid the grid whose matrix is applied to the vector x
 	 * @param x the vector that is multiplied by the matrix
 	 * @param b the result of the matrix vector multplication
 	 */
-	virtual void operator()(DataVector& data, DataVector& x, DataVector& b) = 0;
+	virtual void operator()(DataVector& x, DataVector& b) = 0;
 };
 
 }
