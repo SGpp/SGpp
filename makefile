@@ -114,4 +114,4 @@ NativeCppClassifier.o : src/sgpp/NativeCppClassifier.cpp
 	$(CC) $(CFLAGS) src/sgpp/NativeCppClassifier.cpp
 	
 clean:
-	\rm tmp/build_native/*.o bin/NativeCppClassifier *.o
+	\rm tmp/build_native/*.o *.o
