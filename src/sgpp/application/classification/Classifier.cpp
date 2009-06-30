@@ -152,7 +152,7 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "The rhs of the equation has been initialized" << std::endl;
 
     // get a CG
-    ConjugateGradients<ApplyDMMatrix> myCG(this->IterationMax, this->epsilon);
+    ConjugateGradients myCG(this->IterationMax, this->epsilon);
     std::cout << "An instance of the CG method has been created" << std::endl;
 
     // slove the system of linear equations
