@@ -145,10 +145,10 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "The class training vector has been initialized" << std::endl;
 
     // init the Systemmatrix Functor
-    ApplyDMMatrix DMMatrix(*this->myGrid, this->StiffnessMode, this->lambda);
+    ApplyDMMatrix DMMatrix(*this->myGrid, training, this->StiffnessMode, this->lambda);
     std::cout << "Instance of the matrix functor has been created and initialized" << std::endl;
     // generate the rhs of the equation
-    DMMatrix.generateb(training, classes, rhs);
+    DMMatrix.generateb(classes, rhs);
     std::cout << "The rhs of the equation has been initialized" << std::endl;
 
     // get a CG
@@ -156,10 +156,11 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "An instance of the CG method has been created" << std::endl;
 
     // slove the system of linear equations
-    myCG.solve(DMMatrix, alpha, training, rhs, true, false);
+    myCG.solve(DMMatrix, alpha, rhs, false, false, -1.0);
 
     // Write the data of CG
     std::cout << "Needed iterations: " << myCG.getNumberIterations() << std::endl;
+    std::cout << "Final norm of residuum: " << myCG.getFinalResiduum() << std::endl;
 }
 
 double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)

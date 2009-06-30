@@ -43,11 +43,16 @@ public:
 	size_t nMaxIterations;
 	/// final residuum
 	double finalResiduum;
+	/// epsilon needed in the, e.g. final error in the iterative solver
+	double myEpsilon;
 
 	/**
 	 * Std-Constructor
+	 *
+	 * @param nMaximumIterations number of maximum executed iterations
+	 * @param epsilon the final error in the iterative solver
 	 */
-	SGSolver(size_t nMaximumIterations) : nMaxIterations(nMaximumIterations)
+	SGSolver(size_t nMaximumIterations, double epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon)
 	{
 		nIterations = 0;
 		finalResiduum = 0.0;
@@ -59,9 +64,16 @@ public:
 	virtual ~SGSolver() { }
 
 	/**
-	 * Pure virtual Function that defines a solve method
+	 * Pure virtual Function that defines a solve method for an iterative solver
+	 *
+	 * @param AppMatrix reference to an ApplyMatrix Object that implements the matrix vector multiplication
+	 * @parma alpha the sparse grid's coefficients which have to be determined
+	 * @param b the right hand side of the system of linear equations
+	 * @param reuse identifies if the alphas, stored in alpha at calling time, should be reused
+	 * @param verbose prints information during execution of the solver
+	 * @param max_threshold additional abort criteria for solver
 	 */
-	virtual void solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVector& data, DataVector& b, bool output = false, bool verbose = false) = 0;
+	virtual void solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0) = 0;
 
 
 	/**
@@ -77,7 +89,7 @@ public:
 	/**
 	 * function the returns the final residuum, error of the solver
 	 *
-	 * @sreturn the final residuum
+	 * @return the final residuum
 	 */
 	double getFinalResiduum()
 	{
