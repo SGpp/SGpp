@@ -24,6 +24,8 @@
 #define SGSOLVER_HPP
 
 #include "solver/cg/ApplyMatrix/ApplyMatrix.hpp"
+#include "solver/SGSolverInfo.hpp"
+#include "solver/SGSolverResult.hpp"
 
 namespace sg
 {
