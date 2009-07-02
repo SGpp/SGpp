@@ -301,6 +301,7 @@ public:
 	 */
 	void normalizeDimension(int d, double border);
 
+#ifndef LARRABEE
 	/**
 	 * Returns the minimum.
 	 *
@@ -327,6 +328,7 @@ public:
 	 * @param max reference variable for the maximum
 	 */
 	void minmax(int d, double* min, double* max);
+#endif
 
 	/**
 	 * Writes the data stored in the Vector into a string

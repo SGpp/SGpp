@@ -498,6 +498,7 @@ void DataVector::toString(std::string& text)
 	text = str.str();
 }
 
+#ifndef LARRABEE
 double DataVector::min(int d)
 {
 	int n = size*dim;
@@ -545,6 +546,7 @@ void DataVector::minmax(int d, double* min, double* max)
 	(*min) = min_t;
 	(*max) = max_t;
 }
+#endif
 
 double* DataVector::getPointer()
 {
