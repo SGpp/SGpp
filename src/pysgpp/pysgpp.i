@@ -39,6 +39,10 @@
   }
 }
 
+%include "carrays.i"
+//%array_class(double, doubleArray);
+%array_class(unsigned int, unsignedIntArray);
+
 
 namespace std {
 	%template(DoubleVector) vector<double>;

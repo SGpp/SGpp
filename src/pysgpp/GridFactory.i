@@ -79,6 +79,7 @@ public:
 	virtual void serialize(std::string& ostr);
 	void refine(DataVector* vector, int num);
 	virtual double eval(DataVector& alpha, DataVector& point);
+	virtual void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 
 };
 

@@ -31,6 +31,7 @@
 
 //#include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "grid/storage/hashmap/HashGridIndex.hpp"
 #include "operation/OperationIdentity.hpp"
 
 #include "exception/factory_exception.hpp"
@@ -191,6 +192,18 @@ void Grid::refine(DataVector* vector, int numOfPoints)
 double Grid::eval(DataVector& alpha, DataVector& point){
 	OperationEval* evalOp = this->createOperationEval();
 	return evalOp->eval(alpha, point);
+}
+
+void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf){
+	//create HashGridIndex object for the point
+	HashGridIndex<unsigned int, unsigned int> pointIndex = new HashGridIndex<unsigned int, unsigned int>(dim);
+	for (int i=0; i<dim-1; i++){
+		pointIndex.push(i, levels[i], indeces[i]);
+	}
+	//insert last level/index and hash
+	pointIndex.set(dim-1, levels[dim-1], indeces[dim-1], isLeaf);
+	//insert point to the GridStorage
+	storage->insert(pointIndex);
 }
 
 }

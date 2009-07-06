@@ -105,6 +105,7 @@ public:
 	 * @param istr inputstream that contains the grid information
 	 */
 	static Grid* unserialize(std::istream& istr);
+	
 
 protected:
 	/**
@@ -217,6 +218,16 @@ public:
 	 * @param point DataVector point where the function should be evaluated
 	 */
 	virtual double eval(DataVector& alpha, DataVector& point);
+	
+	/**
+	 * Insert one point to the grid
+	 * 
+	 * @param dim size_t dimension of the grid
+	 * @param unsigned_int[] levels array with levels of the point
+	 * @param unsigned_int[] indeces array with indeces of the point
+	 * @param bool isLeaf indicator whether the point is a leaf
+	 */
+	virtual void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	
 
 protected:
