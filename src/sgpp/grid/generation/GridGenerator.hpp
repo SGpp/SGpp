@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
@@ -30,7 +31,7 @@ namespace sg
 {
 
 /**
- * abstract class that defines the interfaces for the different grid's GridGenerators
+ * Abstract class that defines the interfaces for the different grid's GridGenerators
  */
 class GridGenerator
 {
@@ -46,14 +47,14 @@ public:
 	virtual ~GridGenerator() {}
 
 	/**
-	 * creates a regular grid
+	 * Creates a regular grid for a certain level @f$ n @f$, i.e., @f$ V_n^{(1)} = \bigoplus_{|\vec{l}|_1 \leq n+d-1} W_{\vec{l}}@f$.
 	 *
 	 * @param level maximum level of the grid
 	 */
 	virtual void regular(size_t level) = 0;
 
 	/**
-	 * refines a regular grid
+	 * Refines a regular grid
 	 *
 	 * @param func pointer to refinement function
 	 */

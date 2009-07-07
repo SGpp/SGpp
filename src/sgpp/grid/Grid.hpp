@@ -224,10 +224,10 @@ public:
 	 * 
 	 * @param dim size_t dimension of the grid
 	 * @param unsigned_int[] levels array with levels of the point
-	 * @param unsigned_int[] indeces array with indeces of the point
+	 * @param unsigned_int[] indices array with indices of the point
 	 * @param bool isLeaf indicator whether the point is a leaf
 	 */
-	virtual void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
+	virtual void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
 	
 
 protected:

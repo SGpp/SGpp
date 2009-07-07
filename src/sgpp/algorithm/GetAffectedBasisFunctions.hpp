@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Dirk Pflüger (pflueged@in.tum.de)                      */
+/* Copyright (C) 2008-2009 Dirk Pflüger (pflueged@in.tum.de)                 */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
