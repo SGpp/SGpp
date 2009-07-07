@@ -51,6 +51,18 @@ Python search path by
   export PYTHONPATH=path_to_main_dir/bin:$PYTHONPATH
 @endverbatim
 
+To speed up compilation, you might want to consider a parallel build
+(at least, if you have a multi-core machine available). This can be
+easily done with scons by specifying to use <code>n</code> cores with
+the parameter 
+@verbatim
+  scons -j n 
+@endverbatim
+
+You can get help on the options that are set and available to
+configure the build with the parameter <code>-h</code> and help on
+general options for scons with <code>-H</code>.
+
 
 @subsection sconsInstallation How to get and use SCons
 
