@@ -449,7 +449,8 @@ public:
 
 
     /**
-     * generates a string with all coordinates of the gridpoint
+     * generates a string with all coordinates of the gridpoint. 
+     * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
      *
      * @return returns a string with the coordinates of the gridpoint separated by whitespace
      * @todo rename to getCoordString()
@@ -457,7 +458,8 @@ public:
     std::string getCoordinates()
     {
     	std::stringstream return_stream;
-
+	// switch on scientific notation:
+	//return_stream << std::scientific;
     	for(size_t i = 0; i < DIM; i++)
     	{
     		if(level[i] == 0)

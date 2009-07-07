@@ -194,14 +194,14 @@ double Grid::eval(DataVector& alpha, DataVector& point){
 	return evalOp->eval(alpha, point);
 }
 
-void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf){
+void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf){
 	//create HashGridIndex object for the point
 	HashGridIndex<unsigned int, unsigned int> pointIndex = new HashGridIndex<unsigned int, unsigned int>(dim);
 	for (int i=0; i<dim-1; i++){
-		pointIndex.push(i, levels[i], indeces[i]);
+		pointIndex.push(i, levels[i], indices[i]);
 	}
 	//insert last level/index and hash
-	pointIndex.set(dim-1, levels[dim-1], indeces[dim-1], isLeaf);
+	pointIndex.set(dim-1, levels[dim-1], indices[dim-1], isLeaf);
 	//insert point to the GridStorage
 	storage->insert(pointIndex);
 }
