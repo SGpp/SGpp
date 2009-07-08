@@ -320,26 +320,6 @@
 					RelativePath=".\src\sgpp\solver\cg\ConjugateGradients.hpp"
 					>
 				</File>
-				<Filter
-					Name="ApplyMatrix"
-					>
-					<File
-						RelativePath=".\src\sgpp\solver\cg\ApplyMatrix\ApplyMatrix.hpp"
-						>
-					</File>
-					<Filter
-						Name="classification"
-						>
-						<File
-							RelativePath=".\src\sgpp\solver\cg\ApplyMatrix\classification\ApplyDMMatrix.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\src\sgpp\solver\cg\ApplyMatrix\classification\ApplyDMMatrix.hpp"
-							>
-						</File>
-					</Filter>
-				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -372,6 +352,14 @@
 			<Filter
 				Name="classification"
 				>
+				<File
+					RelativePath=".\src\sgpp\algorithm\classification\DMSystemMatrix.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\sgpp\algorithm\classification\DMSystemMatrix.hpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\sgpp\algorithm\classification\test_dataset.hpp"
 					>
