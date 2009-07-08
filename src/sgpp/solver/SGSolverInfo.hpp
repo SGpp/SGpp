@@ -23,6 +23,8 @@
 #ifndef SGSOLVERINFO_HPP
 #define SGSOLVERINFO_HPP
 
+namespace sg
+{
 /**
  * This struct is needed for exchanging the SGSolver Settings
  * to another address space.
@@ -40,5 +42,7 @@ struct SGSolverInfo
 	/// GridType
 	std::string GridType;
 };
+
+}
 
 #endif /* SGSOLVERINFO_HPP */

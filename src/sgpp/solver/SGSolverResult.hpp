@@ -23,6 +23,8 @@
 #ifndef SGSOLVERRESULT_HPP
 #define SGSOLVERRESULT_HPP
 
+namespace sg
+{
 /**
  * This struct is needed for exchanging the SGSolver Results
  * to another address space.
@@ -34,5 +36,7 @@ struct SGSolverResult
 	/// Final residuum of SGSolver
 	double finalResiduum;
 };
+
+}
 
 #endif /* SGSOLVERRESULT_HPP */
