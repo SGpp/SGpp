@@ -33,6 +33,7 @@
 #include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/classification/test_dataset.hpp"
 #include "algorithm/classification/test_dataset_boundary.hpp"
+#include "algorithm/classification/DMSystemMatrix.hpp"
 
 #include "basis/basis.hpp"
 
@@ -54,6 +55,8 @@
 #include "grid/generation/hashmap/HashRefinement.hpp"
 #include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
+
+#include "solver/cg/ConjugateGradients.hpp"
 
 #include "linearSystem/LinearSystem.hpp"
 
