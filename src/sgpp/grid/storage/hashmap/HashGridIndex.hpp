@@ -325,7 +325,7 @@ public:
 	 * if the binary predicate is irreflexive, antisymmetric,
 	 * and transitive and if equivalence is transitive, where
 	 * two objects x and y are defined to be equivalent
-	 * when both f(x,y) and f(y,x) are false -> equalsSGWinHash
+	 * when both f(x,y) and f(y,x) are false -> equalsSGLRBHash
      *
      * @param rhs reference the another HashGridIndex instance
      *
@@ -349,6 +349,43 @@ public:
         }
 		return true;
     }
+
+#ifdef LARRABEENATIVE
+    /**
+     * checks whether this gridpoints is identical to another one
+	 *
+	 * Running under LARRABEE this is defined the way around, MSDN 2009:
+	 * A binary predicate f(x,y) is a function object that has two
+	 * argument objects x and y and a return value of true or false.
+	 * An ordering imposed on a hash_map is a strict weak ordering
+	 * if the binary predicate is irreflexive, antisymmetric,
+	 * and transitive and if equivalence is transitive, where
+	 * two objects x and y are defined to be equivalent
+	 * when both f(x,y) and f(y,x) are false -> equalsSGLRBHash
+     *
+     * @param rhs reference the another HashGridIndex instance
+     *
+     * @return true if the gridpoints are identical otherwise false
+     */
+    bool equalsSGLRBHash(HashGridIndex<LT, IT> &rhs) const
+    {
+        for(size_t d = 0; d < DIM; d++)
+        {
+            if(level[d] != rhs.level[d])
+            {
+                return true;
+            }
+        }
+        for(size_t d = 0; d < DIM; d++)
+        {
+            if(index[d] != rhs.index[d])
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+#endif
 
 	/**
 	 * This is just wrapper for operator= until I cant get swig to wrap it
@@ -493,6 +530,7 @@ private:
 	size_t hash_value;
 };
 
+#ifndef LARRABEENATIVE
 template<class LT, class IT>
 struct hash<HashGridIndex<LT, IT>* > {
     size_t operator()(HashGridIndex<LT, IT>* index) const {
@@ -506,6 +544,43 @@ struct eqIndex<HashGridIndex<LT, IT>* > {
         return s1->equals(*s2);
     }
 };
+#endif
+
+#ifdef LARRABEENATIVE
+#include <ext/hash_map>
+
+/**
+ * hash_compare function needed on Larrabee
+ * for configuring the hash_hap
+ */
+template<class LT, class IT>
+class LRBSGHasher<HashGridIndex<LT, IT>*> : public std::hash_compare<HashGridIndex<LT, IT>*>
+{
+public:
+	/**
+	 * operator that calculates the hash values
+	 *
+	 * @param index pointer to an element of the hash_map
+	 * @return the hash value
+	 */
+	size_t operator() (HashGridIndex<LT, IT>* index) const
+	{
+		return index->hash();
+	}
+
+	/**
+	 * operator that compares to elements in the hash_map
+	 *
+	 * @param s1 first element
+	 * @param s2 second element
+	 * @return returns true if s1 == s2, otherwise false
+	 */
+	bool operator() (HashGridIndex<LT, IT>* s1, HashGridIndex<LT, IT>* s2) const
+	{
+		return s1->equalsSGLRBHash(*s2);
+	}
+};
+#endif
 
 }
 

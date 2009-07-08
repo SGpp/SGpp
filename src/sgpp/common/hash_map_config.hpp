@@ -24,11 +24,14 @@
 #ifndef HASH_MAP_CONFIG
 #define HASH_MAP_CONFIG
 
-// use the gnu hashmap (SGI/STLPort Hashmap on Larrabee, TR1 is not supported, yet) on Larrabee
+// use the MS hashmap (TR1 is not supported, yet) on Larrabee
 #ifdef LARRABEENATIVE
-#include <alt/hash_map>
+#include <ext/hash_map>
+namespace sg {
+	template<class key>
+	class LRBSGHasher;
+}
 #endif
-
 
 // backward compatible: able to use the  standard gnu hashmap of linux (SGI/STLPort)
 #ifndef LARRABEENATIVE
@@ -61,6 +64,7 @@ namespace std {
 #endif
 
 // forward declaration of hash function and hash comparison function
+#ifndef LARRABEENATIVE
 namespace sg {
 	template<class key>
 	struct hash { };
@@ -68,6 +72,7 @@ namespace sg {
 	template<class key>
 	struct eqIndex { };
 }
+#endif
 
 #endif /* HASH_MAP_CONFIG */
 
