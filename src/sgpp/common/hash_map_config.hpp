@@ -24,7 +24,14 @@
 #ifndef HASH_MAP_CONFIG
 #define HASH_MAP_CONFIG
 
+// use the gnu hashmap (SGI/STLPort Hashmap on Larrabee, TR1 is not supported, yet) on Larrabee
+#ifdef LARRABEENATIVE
+#include <alt/hash_map>
+#endif
 
+
+// backward compatible: able to use the  standard gnu hashmap of linux (SGI/STLPort)
+#ifndef LARRABEENATIVE
 #ifndef USETRONE
 #include <ext/hash_map>
 namespace std {
@@ -33,7 +40,9 @@ namespace std {
 
 }
 #endif
+#endif
 
+// if available you can use the upcoming standard: unorded_map
 #ifdef USETRONE
 // do some defines for icc, avoiding
 // errors:
