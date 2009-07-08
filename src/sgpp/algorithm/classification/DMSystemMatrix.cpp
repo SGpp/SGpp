@@ -20,35 +20,28 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/cg/ApplyMatrix/classification/ApplyDMMatrix.hpp"
+#include "algorithm/classification/DMSystemMatrix.hpp"
 #include "exception/operation_exception.hpp"
 
 
 namespace sg
 {
 
-ApplyDMMatrix::ApplyDMMatrix(Grid& SparseGrid, DataVector& trainData, std::string StiffnessMode, double lambda)
+DMSystemMatrix::DMSystemMatrix(Grid& SparseGrid, DataVector& trainData, OperationMatrix& C, double lambda)
 {
-	this->StiffMode = StiffnessMode;
-
-	if (this->StiffMode != "L" && this->StiffMode != "I")
-	{
-		throw new operation_exception("You have chosen an invalid stiffness mode in ApplyDMMatrix! L or I are valid");
-	}
 	// create the operations needed in ApplyMatrix
-	this->C = SparseGrid.createOperationLaplace();
+	this->C = &C;
 	this->B = SparseGrid.createOperationB();
 	this->lamb = lambda;
 	this->data = &trainData;
 }
 
-ApplyDMMatrix::~ApplyDMMatrix()
+DMSystemMatrix::~DMSystemMatrix()
 {
-	delete this->C;
 	delete this->B;
 }
 
-void ApplyDMMatrix::operator()(DataVector& alpha, DataVector& result)
+void DMSystemMatrix::mult(DataVector& alpha, DataVector& result)
 {
 	DataVector temp((*data).getSize());
     size_t M = (*data).getSize();
@@ -57,22 +50,12 @@ void ApplyDMMatrix::operator()(DataVector& alpha, DataVector& result)
     this->B->multTranspose(alpha, (*data), temp);
     this->B->mult(temp, (*data), result);
 
-    // Laplace Matrix
-    if (this->StiffMode == "L")
-    {
-		DataVector temptwo(alpha.getSize());
-		this->C->mult(alpha, temptwo);
-		result.axpy(M*this->lamb, temptwo);
-    }
-
-    // Identity Matrix
-    if (this->StiffMode == "I")
-    {
-		result.axpy(M*this->lamb, alpha);
-    }
+	DataVector temptwo(alpha.getSize());
+	this->C->mult(alpha, temptwo);
+	result.axpy(M*this->lamb, temptwo);
 }
 
-void ApplyDMMatrix::generateb(DataVector& classes, DataVector& b)
+void DMSystemMatrix::generateb(DataVector& classes, DataVector& b)
 {
 	this->B->mult(classes, (*data), b);
 }

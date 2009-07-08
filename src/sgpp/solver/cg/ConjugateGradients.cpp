@@ -33,7 +33,7 @@ ConjugateGradients::~ConjugateGradients()
 {
 }
 
-void ConjugateGradients::solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVector& b, bool reuse, bool verbose, double max_threshold)
+void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
 	if (verbose == true)
 	{
@@ -64,7 +64,7 @@ void ConjugateGradients::solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVe
 	if (reuse == true)
 	{
 		q.setAll(0.0);
-		AppMatrix(q, temp);
+		SystemMatrix.mult(q, temp);
 		r.sub(temp);
 		delta_0 = r.dotProduct(r)*epsilonSquared;
 	}
@@ -74,7 +74,7 @@ void ConjugateGradients::solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVe
 	}
 
 	// calculate the starting residuum
-	AppMatrix(alpha, temp);
+	SystemMatrix.mult(alpha, temp);
 	r.sub(temp);
 
 	DataVector d(r);
@@ -96,7 +96,7 @@ void ConjugateGradients::solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVe
 	while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold))
 	{
 		// q = A*d
-		AppMatrix(d, q);
+		SystemMatrix.mult(d, q);
 
 		// a = d_new / d.q
 		a = delta_new/d.dotProduct(q);
@@ -108,7 +108,7 @@ void ConjugateGradients::solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVe
 		if ((this->nIterations % 50) == 0)
 		{
 			// r = b - A*x
-			AppMatrix(alpha, temp);
+			SystemMatrix.mult(alpha, temp);
 			r.copyFrom(b);
 			r.sub(temp);
 		}

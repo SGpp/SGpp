@@ -23,7 +23,7 @@
 #ifndef SGSOLVER_HPP
 #define SGSOLVER_HPP
 
-#include "solver/cg/ApplyMatrix/ApplyMatrix.hpp"
+#include "operation/OperationMatrix.hpp"
 #include "solver/SGSolverInfo.hpp"
 #include "solver/SGSolverResult.hpp"
 
@@ -68,14 +68,14 @@ public:
 	/**
 	 * Pure virtual Function that defines a solve method for an iterative solver
 	 *
-	 * @param AppMatrix reference to an ApplyMatrix Object that implements the matrix vector multiplication
+	 * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector multiplication
 	 * @parma alpha the sparse grid's coefficients which have to be determined
 	 * @param b the right hand side of the system of linear equations
 	 * @param reuse identifies if the alphas, stored in alpha at calling time, should be reused
 	 * @param verbose prints information during execution of the solver
 	 * @param max_threshold additional abort criteria for solver
 	 */
-	virtual void solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0) = 0;
+	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0) = 0;
 
 
 	/**
