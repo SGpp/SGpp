@@ -23,7 +23,7 @@
 #ifndef CONJUGATEGRADIENTS_HPP
 #define CONJUGATEGRADIENTS_HPP
 
-#include "solver/cg/ApplyMatrix/ApplyMatrix.hpp"
+#include "algorithm/classification/DMSystemMatrix.hpp"
 #include "solver/SGSolver.hpp"
 #include "data/DataVector.hpp"
 
@@ -46,7 +46,7 @@ public:
 	 */
 	virtual ~ConjugateGradients();
 
-	virtual void solve(ApplyMatrix& AppMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
+	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
 };
 
 }

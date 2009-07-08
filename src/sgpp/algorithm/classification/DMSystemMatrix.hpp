@@ -20,10 +20,9 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef APPLYDMMATRIX_HPP
-#define APPLYDMMATRIX_HPP
+#ifndef DMSYSTEMMATRIX_HPP
+#define DMSYSTEMMATRIX_HPP
 
-#include "solver/cg/ApplyMatrix/ApplyMatrix.hpp"
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
 #include "operation/OperationB.hpp"
@@ -33,25 +32,15 @@ namespace sg
 {
 
 /**
- * Class that implements the virtual class ApplyMatrix for the
- * application of classification
+ * Class that implements the virtual class OperationMatrix for the
+ * application of classification for the Systemmatrix
  */
-class ApplyDMMatrix : public ApplyMatrix
+class DMSystemMatrix : public OperationMatrix
 {
 private:
-	/**
-	 * describes the kind of stiffness matrix that is used
-	 * for classification
-	 *
-	 * Valid modes are
-	 *
-	 * L = Laplacian matrix
-	 * I = Identity matrix
-	 */
-	std::string StiffMode;
-	/// the lambda
+	/// the lambda, the regularisation parameter
 	double lamb;
-	/// OperationLaplace for calculating the laplace matrix
+	/// OperationMatrix, the regularisation mehtod
 	OperationMatrix* C;
 	/// OperationB for calculating the data matrix
 	OperationB* B;
@@ -64,17 +53,17 @@ public:
 	 *
 	 * @param SparseGrid reference to the sparse grid
 	 * @param trainData reference to DataVector that contains the training data
-	 * @param StiffnessMode the mode that is used for the Stiffness Matrix
+	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
 	 */
-	ApplyDMMatrix(Grid& SparseGrid, DataVector& trainData, std::string StiffnessMode, double lambda);
+	DMSystemMatrix(Grid& SparseGrid, DataVector& trainData, OperationMatrix& C, double lambda);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~ApplyDMMatrix();
+	virtual ~DMSystemMatrix();
 
-	virtual void operator()(DataVector& alpha, DataVector& result);
+	virtual void mult(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Generates the right hand side of the classification equation
@@ -87,4 +76,4 @@ public:
 
 }
 
-#endif /* APPLYDMMATRIX_HPP */
+#endif /* DMSYSTEMMATRIX_HPP */

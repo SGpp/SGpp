@@ -22,7 +22,7 @@
 
 #include "application/classification/Classifier.hpp"
 #include "exception/operation_exception.hpp"
-#include "solver/cg/ApplyMatrix/classification/ApplyDMMatrix.hpp"
+#include "algorithm/classification/DMSystemMatrix.hpp"
 #include "solver/cg/ConjugateGradients.hpp"
 #include "tools/classification/ARFFTools.hpp"
 #include "grid/type/LinearGrid.hpp"
@@ -145,7 +145,8 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "The class training vector has been initialized" << std::endl;
 
     // init the Systemmatrix Functor
-    ApplyDMMatrix DMMatrix(*this->myGrid, training, this->StiffnessMode, this->lambda);
+    OperationMatrix* C = this->myGrid->createOperationLaplace();
+    DMSystemMatrix DMMatrix(*this->myGrid, training, *C, this->lambda);
     std::cout << "Instance of the matrix functor has been created and initialized" << std::endl;
     // generate the rhs of the equation
     DMMatrix.generateb(classes, rhs);
@@ -157,6 +158,8 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
 
     // slove the system of linear equations
     myCG.solve(DMMatrix, alpha, rhs, false, false, -1.0);
+
+    delete C;
 
     // Write the data of CG
     std::cout << "Needed iterations: " << myCG.getNumberIterations() << std::endl;
