@@ -29,9 +29,7 @@
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
 
-//#include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
-#include "grid/storage/hashmap/HashGridIndex.hpp"
 #include "operation/OperationIdentity.hpp"
 
 #include "exception/factory_exception.hpp"
@@ -185,7 +183,7 @@ void Grid::serialize(std::ostream& ostr)
 
 void Grid::refine(DataVector* vector, int numOfPoints)
 {
-	//@todo different refinemente Functors
+	//TODO: different refinemente Functors (khakhutv)
 	this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
 }
 
@@ -196,7 +194,7 @@ double Grid::eval(DataVector& alpha, DataVector& point){
 
 void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf){
 	//create HashGridIndex object for the point
-	HashGridIndex<unsigned int, unsigned int> pointIndex = new HashGridIndex<unsigned int, unsigned int>(dim);
+	GridIndex pointIndex = new GridIndex(dim);
 	for (int i=0; i<dim-1; i++){
 		pointIndex.push(i, levels[i], indices[i]);
 	}
