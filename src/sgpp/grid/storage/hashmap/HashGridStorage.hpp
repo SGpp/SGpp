@@ -57,7 +57,12 @@ public:
     typedef GIT index_type;
     typedef GIT* index_pointer;
 #ifndef USETRONE
+#ifndef LARRABEENATIVE
     typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
+#endif
+#ifdef LARRABEENATIVE
+	typedef std::hash_map<index_pointer, size_t, LRBSGHasher<index_pointer> > grid_map;
+#endif
 #endif
 #ifdef USETRONE
     typedef std::tr1::unordered_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
