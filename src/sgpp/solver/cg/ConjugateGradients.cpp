@@ -35,6 +35,8 @@ ConjugateGradients::~ConjugateGradients()
 
 void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
+	this->starting();
+
 	if (verbose == true)
 	{
 		std::cout << "Starting Conjugated Gradients" << std::endl;
@@ -93,6 +95,8 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 		std::cout << "Target norm:               " << (delta_0) << std::endl;
 	}
 
+	this->calcStarting();
+
 	while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold))
 	{
 		// q = A*d
@@ -118,6 +122,8 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 			r.axpy(-a, q);
 		}
 
+		this->iterationComplete();
+
 		// calculate new deltas and determine beta
 		delta_old = delta_new;
 		delta_new = r.dotProduct(r);
@@ -136,10 +142,29 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 
 	this->finalResiduum = delta_new;
 
+	this->complete();
+
 	if (verbose == true)
 	{
 		std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations << ")" << std::endl;
 		std::cout << "Final norm of residuum: " << delta_new << std::endl;
 	}
 }
+
+void ConjugateGradients::starting()
+{
+}
+
+void ConjugateGradients::calcStarting()
+{
+}
+
+void ConjugateGradients::iterationComplete()
+{
+}
+
+void ConjugateGradients::complete()
+{
+}
+
 }
