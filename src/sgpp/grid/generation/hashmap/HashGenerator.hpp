@@ -44,12 +44,12 @@ namespace sg
  * 1. the classic sparse grid with level 0 and a diagonal
  * cut through the sub space scheme.
  *
- * @todo add picture here
+ * @todo (heinecke, nice) add picture here
  *
  * 2. a modified boundary grid with level 0 and a pentagon cut
  * trough the sub space scheme.
  *
- * @todo add picture here
+ * @todo (heinecke, nice) add picture here
  */
 class HashGenerator
 {
@@ -63,7 +63,7 @@ public:
 	/**
 	 * Generates a regular sparse grid of level levels, without boundaries
 	 *
-	 * @todo level should be of type level_t but swig doesnt want that
+	 * @todo (blank) level should be of type level_t but swig doesnt want that
 	 *
 	 * @param storage Hashmap, that stores the grid points
 	 * @param level maximum level of the grid
@@ -88,7 +88,7 @@ public:
 	/**
 	 * Generates a regular sparse grid of level levels with boundaries
 	 *
-	 * @todo: level should be of type level_t but swig doesnt want that
+	 * @todo (blank) level should be of type level_t but swig doesnt want that
 	 *
 	 * @param storage Hashmap, that stores the grid points
 	 * @param level maximum level of the sparse grid

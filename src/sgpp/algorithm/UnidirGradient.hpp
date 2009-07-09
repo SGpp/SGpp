@@ -184,7 +184,7 @@ protected:
 	 * All calculations for gradient_dim. The gradient is recursivly applied to
 	 * all dimension of the grid
 	 *
-	 * @todo add mathematical description
+	 * @todo (heinecke, nice) add mathematical description
 	 *
 	 * @param alpha the coefficients of the grid points
 	 * @param result the result of the operations
@@ -310,7 +310,7 @@ protected:
 	 *
 	 * This version is parallelizes using the OpenMP 3 Task concept
 	 *
-	 * @todo add mathematical description
+	 * @todo (heinecke, nice) add mathematical description
 	 *
 	 * @param alpha the coefficients of the grid points
 	 * @param result the result of the operations
@@ -395,7 +395,7 @@ protected:
 	 * down-Gradient step in dimension <i>dim</i> applies the gradient of the mass matrix
 	 * in one dimension
 	 *
-	 * @todo complete mathematical description
+	 * @todo (heinecke, nice) complete mathematical description
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
@@ -407,7 +407,7 @@ protected:
 	 * up-Gradient step in dimension <i>dim</i> applies the gradient of the mass matrix
 	 * in one dimension
 	 *
-	 * @todo complete mathematical description
+	 * @todo (heinecke, nice) complete mathematical description
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation

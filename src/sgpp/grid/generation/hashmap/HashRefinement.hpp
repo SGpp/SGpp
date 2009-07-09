@@ -84,7 +84,7 @@ public:
 
 			GridStorage::grid_map_iterator child_iter;
 
-			// TODO: Maybe it's possible to move predecessor/successor discovery into the storage concept
+			// @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
 			for(size_t d = 0; d < storage->dim(); d++)
 			{
 				index_t source_index;
@@ -219,7 +219,7 @@ protected:
 		//Sets leaf property of index, which is refined to false
 		(*storage)[refine_index]->setLeaf(false);
 
-		// @todo: Maybe it's possible to move predecessor/successor discovery into the storage concept
+		// @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
 			index_t source_index;
@@ -263,7 +263,7 @@ protected:
 
 			if(source_level > 1)
 			{
-				// TODO: Maybe it's possible to move predecessor/successor discovery into the storage concept
+				// @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
 				if(((source_index + 1) / 2) % 2 == 1)
 				{
 					index.set(d, source_level - 1, (source_index + 1) / 2);

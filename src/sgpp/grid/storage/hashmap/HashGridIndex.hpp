@@ -275,7 +275,7 @@ public:
 	 * @param d the dimension in which the coordinate should be calculated
 	 *
 	 * @return the coordinate in the given dimension
-	 * @todo rename to getCoord
+	 * @todo (heinecke, should) rename to getCoord
 	 */
 	double abs(size_t d) const
 	{
@@ -404,7 +404,7 @@ public:
 	 *
 	 * @param rhs a reference to a HashGridIndex that contains the values that should be copied
 	 *
-	 * @todo: generate working swig-wrapper
+	 * @todo (blank) generate working swig-wrapper
 	 *
 	 * @return returns a reference HashGridIndex
 	 */
@@ -486,11 +486,11 @@ public:
 
 
     /**
-     * generates a string with all coordinates of the gridpoint. 
+     * generates a string with all coordinates of the gridpoint.
      * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
      *
      * @return returns a string with the coordinates of the gridpoint separated by whitespace
-     * @todo rename to getCoordString()
+     * @todo (heinecke, should) rename to getCoordString()
      */
     std::string getCoordinates()
     {

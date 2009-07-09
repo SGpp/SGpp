@@ -39,7 +39,7 @@ namespace sg
  *
  * @param node_values the functions values in the node base
  *
- * @todo Implement the hierarchisation on the sparse grid with mod linear base functions
+ * @todo (heinecke, nice) Implement the hierarchisation on the sparse grid with mod linear base functions
  */
 void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_values)
 {
@@ -58,7 +58,7 @@ void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_value
  *
  * @param alpha the coefficients of the sparse grid's base functions
  *
- * @todo Implement the dehierarchisation on the sparse grid with mod linear base functions
+ * @todo (heinecke, nice) Implement the dehierarchisation on the sparse grid with mod linear base functions
  */
 void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha)
 {

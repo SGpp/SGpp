@@ -36,7 +36,7 @@ namespace sg {
  * This implicitly assumes a tensor-product approach and local support.
  * Grid points on the border are supported.
  *
- * @todo add graphical description
+ * @todo (heinecke, nice) add graphical description
  */
 template<class BASIS>
 class GetAffectedBasisFunctionsBoundaries
@@ -80,8 +80,6 @@ protected:
 	 * Recursive traversal of the "tree" of basis functions for evaluation, used in operator().
 	 * For a given evaluation point \f$x\f$, it stores tuples (std::pair) of
 	 * \f$(i,\phi_i(x))\f$ in the result vector for all basis functions that are non-zero.
-	 *
-	 * @todo check this routine with Dirk
 	 *
 	 * @param basis a sparse grid basis
 	 * @param point evaluation point within the domain

@@ -42,7 +42,7 @@ namespace sg {
  * Basic multiplaction with B and B^T on grids with boundaries.
  * The common known name for this operation is the BLAS routine DGEMV
  *
- * @todo check if it is possible to have some functor for the BASIS type
+ * @todo (blank) check if it is possible to have some functor for the BASIS type
  */
 template<class BASIS>
 class AlgorithmDGEMVBoundaries
@@ -54,7 +54,7 @@ public:
 	 *
 	 * This operation can be executed in parallel by setting the USEOMP define
 	 *
-	 * @todo add mathematical description
+	 * @todo (heinecke, nice) add mathematical description
 	 *
 	 * @param storage GridStorage object that contains the grid's points information
 	 * @param basis a reference to a class that implements a specific basis
@@ -128,7 +128,7 @@ public:
 	 *
 	 * This operation can be executed in parallel by setting the USEOMP define
 	 *
-	 * @todo add mathematical description
+	 * @todo (heinecke, nice) add mathematical description
 	 *
 	 * @param storage GridStorage object that contains the grid's points information
 	 * @param basis a reference to a class that implements a specific basis

@@ -453,8 +453,6 @@ public:
 	/**
 	 * Recalculates the leaf-property of every grid point.
 	 * This might be useful in case of a grid unserialization
-	 *
-	 * @todo do some final tests
 	 */
 	void recalcLeafProperty()
 	{
