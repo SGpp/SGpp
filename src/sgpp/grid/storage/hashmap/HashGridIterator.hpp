@@ -156,7 +156,7 @@ public:
 	/**
 	 * resets the iterator to the top if dimension d
 	 *
-	 * @todo maybe rename to steptoLevelOne
+	 * @todo (heinecke, must) maybe rename to steptoLevelOne
 	 *
 	 * @param d the moving direction
 	 */

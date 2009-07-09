@@ -81,7 +81,7 @@ protected:
 	/**
 	 * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
 	 *
-	 * @todo add graphical explanation here
+	 * @todo (heinecke, nice) add graphical explanation here
 	 *
 	 * @param source this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
 	 * @param result this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions

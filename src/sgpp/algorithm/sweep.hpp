@@ -132,8 +132,6 @@ public:
 protected:
 
 	/**
-	 * @todo check if it's possible to write a parallel implementation using OMP 3
-	 *
 	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
 	 * Boundaries are not regarded
 	 *

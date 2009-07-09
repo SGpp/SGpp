@@ -138,7 +138,7 @@ protected:
 		typedef GridStorage::index_type::level_type level_type;
 		typedef GridStorage::index_type::index_type index_type;
 
-		// @TODO: Remove 'magic' number
+		// @todo (blank) Remove 'magic' number
 		level_type src_level = static_cast<level_type>(sizeof(index_type) * 8 - 1);
 		index_type src_index = source[current_dim];
 

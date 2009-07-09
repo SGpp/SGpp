@@ -105,8 +105,8 @@ private:
 		double* x_store = this->polynoms + (degree + 1 + 2) * id;
 		double* y_store = x_store + 2;
 
-		double y_val = y_store[deg-1]; // TODO
-		// scale val back into the right range
+		double y_val = y_store[deg-1];
+		// @todo (blank) scale val back into the right range
 		double x_val = x_store[0] + val * pow(2.0, -(1.0)*(static_cast<double>(deg)));
 
 		//Horner
