@@ -97,6 +97,26 @@ public:
 	{
 		return finalResiduum;
 	}
+
+	/**
+	 * resets the number of maximum iterations
+	 *
+	 * @data iterations the new number of maximum iterations
+	 */
+	void setMaxIterations(size_t nIterations)
+	{
+		nMaxIterations = nIterations;
+	}
+
+	/**
+	 * resets the epsilon, that is used in the SGSolver
+	 *
+	 * @data eps the new value of epsilon
+	 */
+	void setEpsilon(double eps)
+	{
+		myEpsilon = eps;
+	}
 };
 
 }
