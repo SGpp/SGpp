@@ -22,9 +22,7 @@
 
 from CGSolver import CGSolver
 from Classifier import Classifier
-#from FilesFoldingPolicy import FilesFoldingPolicy
 from FoldingPolicy import FoldingPolicy
-#from Grid import Grid
 from GridAdapter import GridAdapter
 from GridFileAdapter import GridFileAdapter
 from KnowledgeAdapter import KnowledgeAdapter
@@ -34,7 +32,7 @@ from Learner import Learner, LearnerEvents
 from LearnerBuilder import LearnerBuilder
 from LinearSolver import LinearSolver, LinearSolverEvents
 from RandomFoldingPolicy import RandomFoldingPolicy
-#from Regressor import Regressor
+from Regressor import Regressor
 from SequentialFoldingPolicy import SequentialFoldingPolicy
 from TrainingSpecification import TrainingSpecification
 from TrainingStopPolicy import TrainingStopPolicy

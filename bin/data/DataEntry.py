@@ -25,7 +25,7 @@
 # @brief Container for the tuple of point as DataVector and corresponding function value as float 
 # @version $CURR$
 
-from DataVector import DataVector
+from bin.pysgpp import DataVector
 from DataSpecification import DataSpecification
 
 

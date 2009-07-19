@@ -63,7 +63,7 @@ class LearnerBuilder(object):
     ##         
     def buildRegressor(self):
         self.learner = Regressor()
-        #@todo: check if there are no better solution to deal with adapter
+        #TODO: check if there is no better solution to deal with adapter
         learnedKnowledge = LearnedKnowledge()
         self.learner.setLearnedKnowledge(learnedKnowledge)
         stopPolicy = TrainingStopPolicy()
@@ -77,7 +77,7 @@ class LearnerBuilder(object):
     ##
     def buildClassifier(self,):
         self.learner = Classifier()
-        #@todo: check if there are no better solution to deal with adapter
+        #TODO: check if there is no better solution to deal with adapter
         learnedKnowledge = LearnedKnowledge()
         self.learner.setLearnedKnowledge(learnedKnowledge)
         stopPolicy = TrainingStopPolicy()
@@ -128,7 +128,7 @@ class LearnerBuilder(object):
     # @return: Learner (Classifier of Regressor)
     ##
     def andGetResult(self):
-        #@todo: construction of default parameters should be done here
+        #TODO: construction of default parameters should be done here
         return self.learner
 
 

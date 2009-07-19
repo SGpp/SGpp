@@ -26,18 +26,13 @@
 # @version $CURR$
 
 import time
-import random
 import math
 
 from FoldingPolicy import FoldingPolicy
 from bin.data.ARFFAdapter import ARFFAdapter
 
-#FIXME: this implementation is different from the RandomFoldingPolicy, since there no __dataFold in the last one, check which on is correct
+#FIXME: this implementation is different from the RandomFoldingPolicy, since there no dataFold in the last one, check which on is correct
 class SequentialFoldingPolicy(FoldingPolicy):
-    
-    seq = None          #Sequence of indeces of points from data set
-    window = None       #Number of points in one subset
-    __dataFold = []     #List of partitioned data sets
     
     
     ##Constructor
@@ -45,40 +40,10 @@ class SequentialFoldingPolicy(FoldingPolicy):
     #@param dataset: DataContainer with data set
     #@param level: Integer folding level, default value: 1
     def __init__(self, dataContainer, level):
-        self.__dataFold = []
         FoldingPolicy.__init__(self,  dataContainer, level)
-        self.window = int( math.ceil( float(self.size) / self.level ) ) #number of points in validation set
         self.seq = range(self.size)
         for step in xrange(self.level):
             validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
-            self.__dataFold.append(self.__createFoldsets(dataContainer, validationIndeces))
+            self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))
             
-
-    ## Create fold new data set
-    # Brings points given by validationIndeces together as test subset and the rest of points
-    # as train subset
-    #
-    # @param dataContainer: DataContainer with points
-    # @param validationIndeces: list of indeces for validation subset
-    # @return: DataContainer partitioned data set
-    def __createFoldsets(self, dataContainer, validationIndeces):
-        foldContainerValidation = dataContainer.getDataSubsetByIndexList(validationIndeces, "test")
-        trainIndeces = [i for i in self.seq if i not in validationIndeces]
-        foldContainerTrain = dataContainer.getDataSubsetByIndexList(trainIndeces, "train")
-        return foldContainerTrain.combine(foldContainerValidation)
-
- 
-    ##Implementation of iterator method next()
-    #
-    # @return: the next subset        
-    def next(self):
-        for step in xrange(self.level):
-            yield self.__dataFold[step]
-        return
-
-
-    ##Implementation of iterator method __iter__()
-    # iterates through subsets     
-    def __iter__(self):
-        return self.next()
             

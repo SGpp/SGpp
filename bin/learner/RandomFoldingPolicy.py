@@ -34,19 +34,17 @@ from FoldingPolicy import FoldingPolicy
 
 class RandomFoldingPolicy(FoldingPolicy):
     
-    random = None   #Random number generator
-    seed = None     #Seed, the random number generator is initialized with
-    seq = None      #Sequence of indeces of points from data set
-    window = None   #Number of points in one subset
     
+    random = None   #Random number generator
+
     
     ##Constructor
     #
     #@param dataset: DataContainer with data set
     #@param level: Integer folding level, default value: 1
-    #@param seed: Integer seed, default None so it ist set to the timestamp
-    def __init__(self,  dataset, level=1, seed = None):
-        FoldingPolicy.__init__(self,  dataset, level)
+    #@param seed: Integer seed, default None so it is set to the timestamp
+    def __init__(self,  dataContainer, level=1, seed = None):
+        FoldingPolicy.__init__(self,  dataContainer, level)
         self.window = int( math.ceil( self.size / self.level ) )
         if seed == None:
             self.seed = int(time.time())
@@ -55,21 +53,7 @@ class RandomFoldingPolicy(FoldingPolicy):
         self.random = random.seed(self.seed)
         self.seq = range(self.size)
         random.shuffle(self.seq, self.random)
-
-
-    ##Implementation of iterator method next()
-    #
-    # @return: the next subset     
-    def next(self):
         for step in xrange(self.level):
-            if step != (self.level-1):
-                yield self.seq[ step * self.window : (step+1) * self.window ]
-            else:
-                yield self.seq[ step * self.window : ]
-        return
+            validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
+            self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))
 
-
-    ##Implementation of iterator method __iter__()
-    # iterates through subsets   
-    def __iter__(self):
-        return self.next()

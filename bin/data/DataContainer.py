@@ -26,7 +26,7 @@
 # @version $CURR$
 
 from DataSpecification import DataSpecification
-from DataVector import DataVector
+from bin.pysgpp import DataVector
 from DataAdapter import DataAdapter
 from DataEntry import DataEntry
 
@@ -149,7 +149,7 @@ class DataContainer(object):
         if isinstance(args[0], DataAdapter): #takes (adapter: DataAdapter)
             pass
         elif type(args[0]) == type(0): #takes (size: int, dim: int, name="train")
-            #@todo: here IndexError is possible
+            #FIXME: here IndexError is possible
             try:
                 if args[2] is None:
                     self.name = self.TRAIN_CATEGORY

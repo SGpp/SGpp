@@ -43,10 +43,10 @@ class TrainingStopPolicy(object):
     
     
     ## Checks if learning process have to be stopped
-    # @todo: Make it more advanced
     # @param learner: Learner object 
     # @return: boolean value, true if learning has to stop, false otherwise
     def isTrainingComplete(self, learner):
+        #TODO: Make it more advanced
         if self.__adaptiveIterationLimit != None and self.__adaptiveIterationLimit < learner.getCurrentIterationNumber():
             return True
         return False

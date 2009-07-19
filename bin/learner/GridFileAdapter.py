@@ -2,6 +2,9 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2007-2009 Dirk Plueger (Dirk.Pflueger@in.tum.de)            #
+# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
+# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -50,7 +53,7 @@ class GridFileAdapter(GridAdapter):
     #@param text: String with serialized grid information
     #@return: Grid object
     def __restoreGrid(self, text):
-        #@todo: is there any control of correctness of text?
+        #TODO: is there any control of correctness of text? (khakhutv)
         return Grid.unserialize(text)
 
 
@@ -59,8 +62,10 @@ class GridFileAdapter(GridAdapter):
     #@param grid: Grid object
     #@param destination: Filename the grid should be saved to
     def save(self, grid, destination):
-        #TODO: implement grid storing!
-        return
+        text = grid.serialize()
+        fout = self.__gzOpen(destination, "w")
+        fout.write(text)
+        fout.close()
     
     
     ## Opens a file. If the file ends with ".gz", automatically gzip compression
