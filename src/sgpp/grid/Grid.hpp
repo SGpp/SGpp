@@ -217,7 +217,7 @@ public:
 	 * @param alpha DataVector alpha vector of the grid
 	 * @param point DataVector point where the function should be evaluated
 	 */
-	virtual double eval(DataVector& alpha, DataVector& point);
+	double eval(DataVector& alpha, DataVector& point);
 	
 	/**
 	 * Insert one point to the grid
@@ -227,7 +227,7 @@ public:
 	 * @param unsigned_int[] indices array with indices of the point
 	 * @param bool isLeaf indicator whether the point is a leaf
 	 */
-	virtual void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
+	void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
 	
 
 protected:
