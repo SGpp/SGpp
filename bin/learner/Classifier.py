@@ -61,7 +61,7 @@ class Classifier(Learner):
             
         self.trainingOverall.append(sum(self.trainAccuracy)/i)
 
-        #@todo: grid.getSize() change Grid interface
+        #TODO: grid.getSize() change Grid interface
         self.numberPoints.append(self.grid.getStorage().size())
     
     

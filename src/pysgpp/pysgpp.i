@@ -21,7 +21,7 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-%module pysgpp
+%module(directors="1") pysgpp
 
 %include "stl.i"
 %include "std_vector.i"
@@ -88,6 +88,7 @@ namespace std {
 %include "src/sgpp/algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
 %include "src/sgpp/algorithm/sweep.hpp"
 %include "src/sgpp/algorithm/UnidirGradient.hpp"
+%include "src/sgpp/algorithm/classification/DMSystemMatrix.hpp"
 
 %include "src/sgpp/basis/linear/linear_base.hpp"
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"
@@ -98,6 +99,11 @@ namespace std {
 %include "src/sgpp/basis/modwavelet/modified_wavelet_base.hpp"
 
 %include "src/sgpp/linearSystem/LinearSystem.hpp"
+%include "src/sgpp/solver/SGSolver.hpp"
+%feature("director") ConjugateGradients;
+%include "src/sgpp/solver/cg/ConjugateGradients.hpp"
+
+
 
 %apply std::string *INPUT { std::string& istr };
 

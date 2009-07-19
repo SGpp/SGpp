@@ -43,8 +43,8 @@ public:
 	size_t nIterations;
 	/// Number of maximum iterations for cg
 	size_t nMaxIterations;
-	/// final residuum
-	double finalResiduum;
+	/// residuum
+	double residuum;
 	/// epsilon needed in the, e.g. final error in the iterative solver
 	double myEpsilon;
 
@@ -57,7 +57,7 @@ public:
 	SGSolver(size_t nMaximumIterations, double epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon)
 	{
 		nIterations = 0;
-		finalResiduum = 0.0;
+		residuum = 0.0;
 	}
 
 	/**
@@ -89,13 +89,13 @@ public:
 	}
 
 	/**
-	 * function the returns the final residuum, error of the solver
+	 * function the returns the residuum (current or final), error of the solver
 	 *
-	 * @return the final residuum
+	 * @return the residuum
 	 */
-	double getFinalResiduum()
+	double getResiduum()
 	{
-		return finalResiduum;
+		return residuum;
 	}
 
 	/**
