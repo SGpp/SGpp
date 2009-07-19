@@ -163,7 +163,7 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
 
     // Write the data of CG
     std::cout << "Needed iterations: " << myCG.getNumberIterations() << std::endl;
-    std::cout << "Final norm of residuum: " << myCG.getFinalResiduum() << std::endl;
+    std::cout << "Final norm of residuum: " << myCG.getResiduum() << std::endl;
 }
 
 double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
