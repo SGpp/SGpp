@@ -2,10 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -29,12 +25,17 @@
 # @brief Abstract class for folding rules
 # @version $CURR$
 
+import math
+
 class FoldingPolicy(object):
 
 
-    level = None    #Folding level
-    size = None     #Size of dataset
-    dataset = None  #Dataset
+    level = None        #Folding level
+    size = None         #Size of dataset
+    dataset = None      #Dataset
+    dataFold = []       #List of partitioned data sets
+    window = None       #Number of points in one subset
+    seq = None          #Sequence of indices of points from data set
     
     
     ##Constructor
@@ -42,9 +43,11 @@ class FoldingPolicy(object):
     #@param dataset: DataContainer with data set
     #@param level: Integer folding level, default value: 1
     def __init__(self, dataset, level=1):
+        self.dataFold = []
         self.level = level
         self.dataset = dataset
         self.size = dataset.getPoints().getSize()
+        self.window = int( math.ceil( float(self.size) / self.level ) ) #number of points in validation set
 
         
     ##Implementation of iterator method next()
@@ -52,8 +55,22 @@ class FoldingPolicy(object):
     # @return: the next subset
     def next(self):
         for step in xrange(self.level):
-                yield range(self.size)
+            yield self.dataFold[step]
         return
+    
+    ## Create fold new data set
+    # Brings points given by validationIndeces together as test subset and the rest of points
+    # as train subset
+    #
+    # @param dataContainer: DataContainer with points
+    # @param validationIndeces: list of indices for validation subset
+    # @return: DataContainer partitioned data set
+    def createFoldsets(self, dataContainer, validationIndeces):
+        foldContainerValidation = dataContainer.getDataSubsetByIndexList(validationIndeces, "test")
+        trainIndeces = [i for i in self.seq if i not in validationIndeces]
+        foldContainerTrain = dataContainer.getDataSubsetByIndexList(trainIndeces, "train")
+        return foldContainerTrain.combine(foldContainerValidation)
+
     
     
     ##Implementation of iterator method __iter__()

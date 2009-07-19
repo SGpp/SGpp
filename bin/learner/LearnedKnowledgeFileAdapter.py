@@ -32,7 +32,7 @@ import sys, re, gzip
 
 from LearnedKnowledge import LearnedKnowledge
 from KnowledgeAdapter import KnowledgeAdapter
-from bin.data.DataVector import DataVector
+from bin.pysgpp import DataVector
 
 class LearnedKnowledgeFileAdapter(KnowledgeAdapter):
 

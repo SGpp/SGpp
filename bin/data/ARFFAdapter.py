@@ -31,7 +31,7 @@
 import re
 import gzip
 from DataAdapter import DataAdapter
-from DataVector import DataVector
+from bin.pysgpp import DataVector
 from DataContainer import DataContainer
 
 
@@ -64,15 +64,15 @@ class ARFFAdapter(DataAdapter):
         
         hasclass = False
         if values != None:
-           hasclass = True
+            hasclass = True
         
-        #@todo: get attributes from specification
+        #TODO: get attributes from specification
         if attributes == None:
             for i in xrange(dim):
                 fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
                
             if hasclass:
-               fout.write("@ATTRIBUTE class NUMERIC\n")
+                fout.write("@ATTRIBUTE class NUMERIC\n")
         else:
             for key in attributes.keys():
                 fout.write("@ATTRIBUTE %s %s\n" % (key, attributes[key]))

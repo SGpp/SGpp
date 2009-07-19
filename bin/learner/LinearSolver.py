@@ -27,7 +27,10 @@
 
 
 class LinearSolver(object):
-    eventControllers = []   #list of object listening to the solver events
+    eventControllers = None   #list of object listening to the solver events
+    
+    def __init__(self):
+        self.eventControllers = []
 
     
     ## Solver linear system
