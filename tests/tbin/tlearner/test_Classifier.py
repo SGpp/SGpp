@@ -18,7 +18,7 @@
 # along with pysgpp; if not, write to the Free Software                     #
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
+############################################################################
 
 
 import unittest
@@ -35,6 +35,7 @@ from bin.data.ARFFAdapter import ARFFAdapter
 from bin.pysgpp import *
 from bin.learner import CGSolver, Learner, LearnedKnowledge, TrainingSpecification, TrainingStopPolicy, FoldingPolicy, Classifier
 from bin.learner import SequentialFoldingPolicy
+from bin.controller.InfoToScreen import InfoToScreen
 
 class TestClassifier(unittest.TestCase):
     
@@ -55,12 +56,16 @@ class TestClassifier(unittest.TestCase):
         self.classifier.setLearnedKnowledge(LearnedKnowledge(None))
         spec = TrainingSpecification()
         spec.setL(l)
+        spec.setCOperator(grid.createOperationLaplace())
         self.classifier.setSpecification(spec)
         stopPolicy = TrainingStopPolicy()
         stopPolicy.setAdaptiveIterationLimit(0)
         self.classifier.setStopPolicy(stopPolicy)
-        self.classifier.setSolver(CGSolver())
-       # self.classifier.
+        solver = CGSolver()
+        #solver.attachEventController(InfoToScreen())
+        solver.setImax(500)
+        self.classifier.setSolver(solver)
+
     
     def testLearnDataWithTest(self,):
         correct = [-0.33360635579319858346,
@@ -96,9 +101,7 @@ class TestClassifier(unittest.TestCase):
         self.assertEqual(val.getSize(), len(correct))
         for i in xrange(len(correct)):
             self.assertAlmostEqual(val[i], correct[i])
-    
-#    def testCalcResult(self,):
-#        self.fail("Not implemented")
+
 
     def testLearnData(self):
         correct = [-0.03105750236900508068, 
@@ -137,6 +140,7 @@ class TestClassifier(unittest.TestCase):
         self.classifier.setLearnedKnowledge(LearnedKnowledge(None))
         spec = TrainingSpecification()
         spec.setL(l)
+        spec.setCOperator(grid.createOperationLaplace())
         self.classifier.setSpecification(spec)
         stopPolicy = TrainingStopPolicy()
         stopPolicy.setAdaptiveIterationLimit(0)
@@ -148,15 +152,6 @@ class TestClassifier(unittest.TestCase):
             self.assertAlmostEqual(correct[2*i], self.classifier.trainAccuracy[i])
             self.assertAlmostEqual(correct[2*i+1], self.classifier.testAccuracy[i])
         
-        
-#    def testEvalError(self, ):
-#        self.fail("Not implemented")
-    
-#    def testAddToRefine(self,):
-#        self.fail("Not implemented")
-    
-#    def testUpdateResults(self,):
-#        self.fail("Not implemented")
         
 if __name__=="__main__":
     unittest.main() 

@@ -29,15 +29,22 @@ from bin.controller.LearnerEventController import LearnerEventController
 
 
 class ProgressInfoPresentor(LearnerEventController):
-    """ generated source for ProgressInfoPresentor
 
-    """
-    verbose = None
-    outputStream = None
-
+    ##
+    #Handles events from Linear Solver 
+    #This method is not implemented!
+    #@param subject: Linear Solver object
+    #@param status: Event Status of type LinearSolverEvents
+    ##
     def handleSolvingEvent(self, subject, status):
         raise NotImplementedError
 
+    ##
+    #Handles events from Learner 
+    #This method is not implemented!
+    #@param subject: Learner object
+    #@param status: Event Status of type LearnerEvents
+    ##   
     def handleLearningEvent(self, subject, status):
         raise NotImplementedError
 

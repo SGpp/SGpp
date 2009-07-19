@@ -35,19 +35,12 @@ namespace sg
 
 	LinearSystem::LinearSystem(DataVector& d, DataVector& y, OperationB& bOp, OperationMatrix& cOp, Grid& grid, double l)
 	{
-		//std::cout<<"B Operation & "<<(std::string)&bOperation<<std::endl;
-//		std::cout<<"B Operation * "<<bOperation<<std::endl;
-////		std::cout<<"B Operation"<<(std::string)bOp<<std::endl;
-		
 		this->data = &d;
 		this->y = &y;
 		this->bOperation = &bOp;
 		this->cOperation = &cOp;
 		this->grid = &grid;
 		this->l = l;
-//		this->numInputPoints = this->data->getSize();
-//		this->numGridPoints = this->bOperation->
-			
 	}
 	
 	void LinearSystem::apply(DataVector& vector, DataVector& result)
@@ -57,7 +50,6 @@ namespace sg
 			DataVector* temp = new  DataVector(size);
 	        int M = this->data->getSize();
 	    
-	        //@todo: put data in the constructor of Operation, so mult() doesn't data as parameter
 	        this->bOperation->multTranspose(vector, *this->data, *temp);
 	        this->bOperation->mult(*temp, *this->data, result);
 	
@@ -71,20 +63,17 @@ namespace sg
 		}
         
         /*
-         * @todo: impelment C Operators for 
-         * - laplace
-         * - identity
+         * @todo: impelment C Operators for (khakhutv)
          * - ratio
          * - levelsum
          * - energy
          * - copy
-         * - pseudounit
+         * - pseudounit 
          */
 	}
 	
 	void LinearSystem::getRightHandSide(DataVector& result)
 	{
-//		int dim = this->data->getDim();
         this->bOperation->mult(*(this->y), *(this->data), result);
 	}
 	

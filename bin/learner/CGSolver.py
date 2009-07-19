@@ -30,15 +30,19 @@
 
 from LinearSolver import LinearSolver, LinearSolverEvents
 from bin.pysgpp import *
+from bin.learner.LinearSolver import LinearSolver
 
-
-class CGSolver(LinearSolver):
+class CGSolver(ConjugateGradients, LinearSolver):
 
     accuracy = 0.0001   #the relationaship of the norm of end residual to the normal of initial residual
     imax = 400          #maximal number of iterations used in CG
     delta_0 = 0         #norm of initial residual
     delta_new = 0       #norm of current residual
     alpha = None        #result vector
+    
+    def __init__(self,):
+        ConjugateGradients.__init__(self, self.imax, self.accuracy)
+        LinearSolver.__init__(self)
 
 
     ##Sets the accuracy parameter
@@ -46,94 +50,37 @@ class CGSolver(LinearSolver):
     # @param accuracy: float value of accuracy parameter
     # @return: CG Solver itself
     def setAccuracy(self, accuracy):
-        self.accuracy = accuracy
+        ConjugateGradients.setEpsilon(self, accuracy)
         return self
     
+    
+    def getAccuracy(self):
+        return self.myEpsilon
     
     ##Sets the maximal number of iterations
     #
     # @param imax: integer limit of number of iterations
     # @return: SG Solver itself 
     def setImax(self, imax):
-        self.imax = imax
+        ConjugateGradients.setMaxIterations(self, imax)
+        return self
     
     
-    ##Solve linear system with CG Method
-    #
-    # @param linearSystem: LinearSystem to solve
-    # @return: DataVector with solution 
-    def solve(self, linearSystem): #taken from new_cg() in painlesscg.py
-        self.notifyEventControllers(LinearSolverEvents.STARTING)
-
-        epsilon2 = self.accuracy*self.accuracy
+    def getImax(self):
+        return self.nMaxIterations
         
-        self.alpha = DataVector(linearSystem.getNumGridPoints())
-        self.alpha.setAll(0.0)
         
-        b = DataVector(linearSystem.getNumGridPoints())
-        linearSystem.getRightHandSide(b)
-        
-        self.iteration = 1
-        temp = DataVector(self.alpha.getSize())
-        q = DataVector(self.alpha.getSize())
-        
-        self.delta_0 = 0.0
-        
-        # calculate residuum
-#        if reuse:
-#            q.setAll(0)
-#            linearSystem.apply(q, temp)
-#            r = DataVector(b)
-#            r.sub(temp)
-#            self.delta_0 = r.dotProduct(r)*epsilon2
-#        else:
-        self.alpha.setAll(0) #@fixme: alpha reusing so far not supported
+    def starting(self):
+        LinearSolver.notifyEventControllers(self, LinearSolverEvents.STARTING)
     
-        linearSystem.apply(self.alpha, temp)
-        r = DataVector(b)
-        r.sub(temp)
     
-        # delta
-        d = DataVector(r)
-        
-        delta_old = 0.0
-        self.delta_new = r.dotProduct(r)
+    def calcStarting(self, ):
+        LinearSolver.notifyEventControllers(self, LinearSolverEvents.CALC_STARTING)
     
-#        if not reuse:
-        self.delta_0 = self.delta_new*epsilon2 #@fixme: alpha reuse so far not supported
-        
-        self.notifyEventControllers(LinearSolverEvents.CALC_STARTING)
     
-        while (self.iteration < self.imax+1) and (self.delta_new > self.delta_0):
-            # q = A*d
-            linearSystem.apply(d, q)
-            # a = d_new / d.q
-            a = self.delta_new/d.dotProduct(q)
+    def iterationComplete(self, ):
+        LinearSolver.notifyEventControllers(self, LinearSolverEvents.ITERATION_COMPLETE)
     
-            # x = x + a*d
-            self.alpha.axpy(a, d)
     
-            if self.iteration % 50 == 0:
-            # r = b - A*x
-                linearSystem.apply(self.alpha, temp)
-                r.copyFrom(b)
-                r.sub(temp)
-            else:
-                # r = r - a*q
-                r.axpy(-a, q)
-            
-            self.notifyEventControllers(LinearSolverEvents.ITERATION_COMPLETE)
-            
-            delta_old = self.delta_new
-            self.delta_new = r.dotProduct(r)
-            beta = self.delta_new/delta_old
-            
-            d.mult(beta)
-            d.add(r)
-            
-            self.iteration += 1
-            
-        self.notifyEventControllers(LinearSolverEvents.COMPLETE)
-        return self.alpha
-
-
+    def complete(self, ):
+        LinearSolver.notifyEventControllers(self, LinearSolverEvents.COMPLETE)

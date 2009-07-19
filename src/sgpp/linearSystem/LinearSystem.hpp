@@ -83,8 +83,6 @@ class LinearSystem
 		OperationMatrix* cOperation;
 		double l;
 		Grid* grid;
-//		int numInputPoints;
-		
 };
 
 }

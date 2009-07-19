@@ -31,7 +31,7 @@ from bin.learner.FoldingPolicy import FoldingPolicy
 
 class Learner(object):
     
-    eventControllers = []   #list of object listening to the learning events
+    eventControllers = None   #list of object listening to the learning events
     dataContainer = None    #DataContainer object with training (and maybe test) data
     stopPolicy = None       #TrainingStopPolicy object associated with this Learner
     specification = None    #TrainingSpecification object associated with this Learner
@@ -51,6 +51,7 @@ class Learner(object):
     
     ## Constructor
     def __init__(self):
+        self.eventControllers = []
         self.trainAccuracy = []
         self.trainingOverall = []
         self.testAccuracy = []
@@ -76,7 +77,6 @@ class Learner(object):
         testSubset = dataset.getTestDataset()
 
         while True: #repeat until policy says "stop"
-            #@todo: better event name
             self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STEP_STARTED)
 
             self.alpha = self.doLearningIteration(trainSubset)
@@ -91,7 +91,7 @@ class Learner(object):
             if(self.stopPolicy.isTrainingComplete(self)): break
             
             #refine grid
-            #@todo: here comes some average alpha
+            #TODO: here comes some average alpha
             self.refineGrid()
        
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_COMPLETE)
@@ -126,8 +126,6 @@ class Learner(object):
     def learnData(self):
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
         self.specification.setBOperator(self.grid.createOperationB())
-        #@fixme: its not always a laplace operation
-        #self.specification.setCOperator(self.grid.createOperationLaplace())
         
         while True: #repeat until policy says "stop"
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_STARTED)
@@ -148,17 +146,15 @@ class Learner(object):
 
 
     ## Learn data with cross-fold validation
-    # TODO: make it possible to run jobs parallel
+    # TODO: make it possible to run jobs concurrently (khakhutv)
     #
     # @return: list of DataVector alpha in different folds
     def learnDataWithFolding(self,):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_FOLDING_STARTED)
         self.specification.setBOperator(self.grid.createOperationB())
-        #@fixme: its not always a laplace operation
-        #self.specification.setCOperator(self.grid.createOperationLaplace())
      
         alphas = []
-        #@todo: can be called concurrently
+        # TODO: can be called concurrently (khakhutv)
         for dataset in self.foldingPolicy:
             alphas.append(self.learnDataWithTest(dataset))
             
@@ -172,14 +168,19 @@ class Learner(object):
     # @return: DataVector alpha vector
     def doLearningIteration(self, set):
         #initialize values
-        self.linearSystem = LinearSystem(set.getPoints(),
-                                     set.getValues(), 
-                                     self.specification.getBOperator(), 
-                                     self.specification.getCOperator(),
-                                     self.grid,
-                                     self.specification.getL())
+        self.linearSystem = DMSystemMatrix(self.grid,
+                                           set.getPoints(),
+                                           self.specification.getCOperator(),
+                                           self.specification.getL())
+        size =  self.grid.getStorage().size() 
+        alpha = DataVector(size)
+        alpha.setAll( 0.0 )
+        b = DataVector(size)
+        self.linearSystem.generateb(set.getValues(), b)
+        reuse = False
         #calculates alphas
-        alpha = self.solver.solve(self.linearSystem)
+        #TODO: one has to pass correct value as max_treshold and reuse (khakhutv)
+        self.solver.solve(self.linearSystem, alpha, b, reuse, False, 10**(-20))
         return alpha
 
 

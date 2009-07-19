@@ -88,14 +88,15 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 	{
 		delta_0 = delta_new*epsilonSquared;
 	}
+	
+	this->residuum = (delta_0/epsilonSquared);
+	this->calcStarting();
 
 	if (verbose == true)
 	{
 		std::cout << "Starting norm of residuum: " << (delta_0/epsilonSquared) << std::endl;
 		std::cout << "Target norm:               " << (delta_0) << std::endl;
 	}
-
-	this->calcStarting();
 
 	while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold))
 	{
@@ -122,12 +123,14 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 			r.axpy(-a, q);
 		}
 
-		this->iterationComplete();
 
 		// calculate new deltas and determine beta
 		delta_old = delta_new;
 		delta_new = r.dotProduct(r);
 		beta = delta_new/delta_old;
+		
+		this->residuum = delta_new;
+		this->iterationComplete();
 
 		if (verbose == true)
 		{
@@ -140,8 +143,7 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 		this->nIterations++;
 	}
 
-	this->finalResiduum = delta_new;
-
+	this->residuum = delta_new;
 	this->complete();
 
 	if (verbose == true)

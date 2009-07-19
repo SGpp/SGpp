@@ -34,8 +34,6 @@ import test_BT
 import test_GridFactory
 import test_DataVector
 
-#import test_Classifier
-from tbin.tdata.testsuite import alltests
 
 if __name__ == '__main__':
     sys.stdout.write("Running unit tests. ")
@@ -48,8 +46,6 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
                 unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
                 unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
-                #unittest.defaultTestLoader.loadTestsFromModule(test_Classifier),
-                alltests,
                 unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
                 unittest.defaultTestLoader.loadTestsFromModule(test_BT)
                 ])

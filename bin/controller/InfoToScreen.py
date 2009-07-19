@@ -39,14 +39,15 @@ class InfoToScreen(ProgressInfoPresentor):
     ##
     def handleSolvingEvent(self, subject, status):
         if status == LinearSolverEvents.STARTING:
-            print "Solution started"
+            print "Solving started"
         elif status == LinearSolverEvents.CALC_STARTING:
-            print "Starting norm of residuum: %g" % (subject.delta_0)
+            print "Starting norm of residuum: %g" % subject.getResiduum()
         elif status == LinearSolverEvents.ITERATION_COMPLETE:
-            print "delta: %g" % subject.delta_new
+            print "delta: %g" % subject.getResiduum()
         elif status == LinearSolverEvents.COMPLETE:
-            print "Number of iterations: %d (max. %d)" % (subject.iteration, subject.imax)
-            print "Final norm of residuum: %g" % subject.delta_new
+            print "Solving Complete"
+            print "Number of iterations: %d (max. %d)" % (subject.getNumberIterations(), subject.getImax())
+            print "Final norm of residuum: %g" % subject.getResiduum()
             
             
     ##

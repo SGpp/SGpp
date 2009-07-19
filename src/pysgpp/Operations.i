@@ -68,15 +68,4 @@ public:
 	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
 
-/*%feature("notabstract") LinearSystem;
-class LinearSystem
-{
-public:
-	LinearSystem(DataVector& data, OperationB& bOperation, OperationMatrix& cOperation, Grid& grid, double l);
-	void apply(DataVector& vector,  DataVector& result);
-	void getRightHandSide(DataVector& y, DataVector& result);
-	int getNumGridPoints();
-	int getNumInputPoints();
-};*/
-
 }
