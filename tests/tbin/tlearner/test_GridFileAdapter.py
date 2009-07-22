@@ -2,10 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -29,24 +25,42 @@ import unittest
 #correct the syspath, so python looks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
+pathlocal = os.path.abspath(pathname)
+if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.LearnedKnowledge import LearnedKnowledge
+from bin.learner.GridFileAdapter import GridFileAdapter
+from bin.pysgpp import Grid
 
-class TestTrainingSpecification(unittest.TestCase):
+class TestGridFileAdapter(unittest.TestCase):
+    
+    adapter = None
+    filename = pathlocal + "/datasets/grid.gz"
+    savefile = pathlocal + "/datasets/savetest.grid.gz"
+    correct_str = ""
+    grid = None
+    
+    def setUp(self,):
+        self.adapter = GridFileAdapter()
+        dim = 3
+        self.grid = Grid.createLinearGrid(dim)
+        self.grid.createGridGenerator().regular(3)
+        self.correct_str = self.grid.serialize()
 
-    def testSetLambda(self, ):
-        self.fail("Not Implemented")
-
-    def testSetAdaptPoints(self, ):
-        self.fail("Not Implemented")
-
-    def testSetCOperator(self, ):
-        self.fail("Not Implemented")
-
-    def testSetBOperator(self, ):
-        self.fail("Not Implemented")
-
-    def testSetAdaptRate(self, ):
-        self.fail("Not Implemented")
+    
+    def testLoad(self,):
+        grid = self.adapter.load(self.filename)
+        test_str = grid.serialize()
+        self.assertEqual(test_str, self.correct_str)
+        
+    def testSave(self,):
+        self.adapter.save(self.grid, self.savefile)
+        grid = self.adapter.load(self.savefile)
+        test_str = grid.serialize()
+        self.assertEqual(test_str, self.correct_str)
+        
+        
+        
+if __name__=="__main__":
+    unittest.main() 

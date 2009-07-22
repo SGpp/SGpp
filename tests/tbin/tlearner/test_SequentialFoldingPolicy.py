@@ -33,6 +33,8 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.SequentialFoldingPolicy import SequentialFoldingPolicy
+from bin.data.DataContainer import DataContainer
+from bin.pysgpp import DataVector
 
 class TestSequentialFoldingPolicy(unittest.TestCase):
     policy = None
@@ -40,14 +42,20 @@ class TestSequentialFoldingPolicy(unittest.TestCase):
     level = 10
     
     def setUp(self):
-        self.policy = SequentialFoldingPolicy(self.level, self.size)
+        points = DataVector(self.size, 1)
+        values = DataVector(self.size, 1)
+        for i in xrange(self.size):
+            points[i] = i
+            values[i] = i
+        self.dataContainer = DataContainer(points, values)
+        self.policy = SequentialFoldingPolicy(self.dataContainer, self.level)
         
     def testNext(self):
-        seq = [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9, 10]]
-        step = 0
+        self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:
-            self.assertEqual(l, seq[step])
-            step += 1
+            sizeTrain = l.getTrainDataset().getPoints().getSize()
+            sizeValidation = l.getTestDataset().getPoints().getSize()
+            self.assertEqual(self.size, sizeTrain + sizeValidation)
         
 if __name__=="__main__":
     unittest.main() 

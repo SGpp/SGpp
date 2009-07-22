@@ -33,7 +33,7 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.data.DataEntry import DataEntry
-from bin.data.DataVector import DataVector
+from bin.pysgpp import DataVector
 from bin.data.DataContainer import DataContainer
 
 class TestDataContainer(unittest.TestCase):
