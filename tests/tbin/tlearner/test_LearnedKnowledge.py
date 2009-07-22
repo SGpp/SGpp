@@ -39,13 +39,13 @@ class TestLearnedKnowledge(unittest.TestCase):
         pass
     
     def testSave(self, iteration):
-        fail("Not Implemented")
+        self.fail("Not Implemented")
         
-    def testLoad(cls, source):
-        fail("Not Implemented")
+    def testLoad(self, source):
+        self.fail("Not Implemented")
         
     def testGetAlphas(self):
-        fail("Not Implemented")
+        self.fail("Not Implemented")
         
     def testUpdate(self, alphas):
-        fail("Not Implemented")
+        self.fail("Not Implemented")

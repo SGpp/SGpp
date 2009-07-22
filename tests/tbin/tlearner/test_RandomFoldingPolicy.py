@@ -23,6 +23,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
+#from twisted import im
 
 import unittest
 
@@ -32,23 +33,33 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.StraitifiedFoldingPolicy import StraitifiedFoldingPolicy
+#from bin.learner.StraitifiedFoldingPolicy import StraitifiedFoldingPolicy
+from bin.learner import RandomFoldingPolicy
+from bin.data.DataContainer import DataContainer
+from bin.pysgpp import DataVector
 
 class TestRandomFoldingPolicy(unittest.TestCase):
     policy = None
     size = 11
     level = 10
     seed = 42
+    dataContainer = None
     
     def setUp(self):
-        self.policy = RandomFoldingPolicy(self.level, self.size, self.seed)
+        points = DataVector(self.size, 1)
+        values = DataVector(self.size, 1)
+        for i in xrange(self.size):
+            points[i] = i
+            values[i] = i
+        self.dataContainer = DataContainer(points, values)
+        self.policy = RandomFoldingPolicy(self.dataContainer, self.level, self.seed)
         
     def testNext(self):
-        seq = [[8], [3], [10], [9], [6], [4], [5], [1], [2], [0, 7]]
-        step = 0
+        self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:
-            self.assertEqual(l, seq[step])
-            step += 1
+            sizeTrain = l.getTrainDataset().getPoints().getSize()
+            sizeValidation = l.getTestDataset().getPoints().getSize()
+            self.assertEqual(self.size, sizeTrain + sizeValidation)
         
 if __name__=="__main__":
     unittest.main() 

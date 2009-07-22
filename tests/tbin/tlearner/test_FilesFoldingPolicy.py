@@ -36,4 +36,4 @@ from bin.learner.LearnedKnowledge import LearnedKnowledge
 
 class TestFilesFoldingPolicy(unittest.TestCase):
     def testNext(self):
-        fail("Not Implemented")
+        self.fail("Not Implemented")

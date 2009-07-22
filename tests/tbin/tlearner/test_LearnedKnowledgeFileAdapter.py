@@ -36,7 +36,7 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.LearnedKnowledgeFileAdapter import LearnedKnowledgeFileAdapter
 from bin.learner.LearnedKnowledge import LearnedKnowledge
-from bin.data.DataVector import DataVector
+from bin.pysgpp import DataVector
 
 class TestLearnedKnowledgeFileAdapter(unittest.TestCase):
     
