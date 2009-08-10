@@ -537,7 +537,7 @@ def doTest():
         adaptStep += 1
         if(options.adaptive >= 0 and adaptStep <= options.adaptive) \
             or (options.epochs_limit > 0 and options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
-            or (options.regression and options.mse_limit > 0 and options.mse_limit > te_refine[-1]) \
+            or (options.regression and options.mse_limit > 0 and options.mse_limit < te_refine[-1]) \
             or (options.grid_limit > 0 and options.grid_limit > grid.getStorage().size()) \
             :
             print("refining grid")
