@@ -112,6 +112,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="src/sgpp"
 				PreprocessorDefinitions="USETRONE;WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -254,6 +255,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="src/sgpp"
 				PreprocessorDefinitions="USETRONE;WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
