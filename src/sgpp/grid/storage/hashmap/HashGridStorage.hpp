@@ -516,8 +516,9 @@ protected:
 private:
 	/// the dimension of the grid
 	size_t DIM;
-	///
+	/// the gridpoints
 	grid_list list;
+	/// the indecies of the grid points
     grid_map map;
 };
 
