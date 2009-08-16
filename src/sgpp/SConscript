@@ -28,6 +28,7 @@ srcs = Split("""
 data/DataVector.cpp
 
 grid/Grid.cpp
+grid/common/BoundingBox.cpp
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearBoundaryUScaledGrid.cpp
 grid/type/LinearGrid.cpp

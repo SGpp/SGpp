@@ -30,19 +30,14 @@
 
 #include "grid/storage/hashmap/HashGridIndex.hpp"
 #include "grid/storage/hashmap/HashGridIterator.hpp"
+#include "grid/storage/hashmap/SerializationVersion.hpp"
+
+#include "grid/common/BoundingBox.hpp"
 
 #include <memory>
 #include <string>
 #include <sstream>
 #include <exception>
-
-/**
- * This specifies the available serialization versions
- *
- * Version 1: classic verions without leaf proeperty
- * Version 2: every gridpoint is extended by one boolean that specifies if it's a leaf
- */
-#define SERIALIZATION_VERSION 2
 
 namespace sg
 {
@@ -76,10 +71,28 @@ public:
 	typedef HashGridIterator<GIT> grid_iterator;
 
 	/**
-	 * Standard-Constructor
+	 * Constructor
+	 *
+	 * initializes the boundingBox with a trivial cube
+	 *
+	 * @param dim the dimension of the sparse grid
 	 */
 	HashGridStorage(size_t dim) : DIM(dim), list(), map()
 	{
+		boundingBox = new BoundingBox(DIM);
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * initializes the boundingBox with a reference to another boundingbox
+	 *
+	 * @param dim the dimension of the sparse grid
+	 */
+	HashGridStorage(BoundingBox& creationBoundingBox) : DIM(), list(), map()
+	{
+		boundingBox = new BoundingBox(creationBoundingBox);
+		DIM = boundingBox->getDimensions();
 	}
 
 	/**
@@ -92,25 +105,7 @@ public:
     	std::istringstream istream;
     	istream.str(istr);
 
-    	int version;
-    	istream >> version;
-
-    	istream >> DIM;
-
-    	size_t num;
-    	istream >> num;
-
-    	for(size_t i = 0; i < num; i++)
-    	{
-    		index_pointer index = new GIT(istream, version);
-    		list.push_back(index);
-    		map[index] = i;
-    	}
-
-    	if (version == 1)
-    	{
-    		recalcLeafProperty();
-    	}
+		parseGridDescription(istream);
 	}
 
 	/**
@@ -120,25 +115,7 @@ public:
 	 */
 	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
 	{
-    	int version;
-    	istream >> version;
-
-    	istream >> DIM;
-
-    	size_t num;
-    	istream >> num;
-
-    	for(size_t i = 0; i < num; i++)
-    	{
-    		index_pointer index = new GIT(istream, version);
-    		list.push_back(index);
-    		map[index] = i;
-    	}
-
-    	if (version == 1)
-    	{
-    		recalcLeafProperty();
-    	}
+		parseGridDescription(istream);
 	}
 
 
@@ -147,10 +124,17 @@ public:
 	 */
 	~HashGridStorage()
 	{
+		// delete all grid points
 		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
 		{
 			delete *iter;
 		}
+
+		// delete hash map of grid indices
+		// --> is auto deleted, because it's a class's element
+
+		// delete the grid's bounding box
+		delete boundingBox;
 	}
 
 	/**
@@ -172,10 +156,22 @@ public:
 	 */
 	void serialize(std::ostream& ostream)
 	{
+		DimensionBoundary tempBound;
+
+		// Print version, dimensions and number of gridpoints
 		ostream << SERIALIZATION_VERSION << " ";
 		ostream << DIM << " ";
 		ostream << list.size() << std::endl;
 
+		// Print the bounding box
+		for (size_t i = 0; i < DIM; i++)
+		{
+			tempBound = boundingBox->getBoundary(i);
+			ostream << tempBound.leftBoundary << " " << tempBound.rightBoundary << " ";
+		}
+		ostream << std::endl;
+
+		// print the coordinates of the grid points
 		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
 		{
 			(*iter)->serialize(ostream);
@@ -502,6 +498,16 @@ public:
         }
 	}
 
+	/**
+	 * get the bounding box of the current grid
+	 *
+	 * @return returns a pointer to GridStorage's bounding box
+	 */
+	BoundingBox* getBoundingBox()
+	{
+		return boundingBox;
+	}
+
 protected:
 	/**
 	 * returns the next sequence numbers
@@ -520,6 +526,55 @@ private:
 	grid_list list;
 	/// the indecies of the grid points
     grid_map map;
+    /// the grids bounding box
+    BoundingBox* boundingBox;
+
+    /**
+     * Parses the gird's information (grid points, dimensions, bounding box) from a string stream
+     *
+     * @param istream the string stream that contains the information
+     */
+    void parseGridDescription(std::istream& istream)
+    {
+    	int version;
+    	istream >> version;
+
+    	istream >> DIM;
+
+    	// create a standard bounding box
+    	boundingBox = new BoundingBox(DIM);
+
+    	size_t num;
+    	istream >> num;
+
+    	// read the bounding box
+    	if (version == 3)
+    	{
+    		DimensionBoundary tempBound;
+
+    		// reads the bounding box
+    		for (size_t i = 0; i < DIM; i++)
+    		{
+    			istream >> tempBound.leftBoundary;
+    			istream >> tempBound.rightBoundary;
+
+    			boundingBox->setBoundary(i, tempBound);
+    		}
+    	}
+
+    	for(size_t i = 0; i < num; i++)
+    	{
+    		index_pointer index = new GIT(istream, version);
+    		list.push_back(index);
+    		map[index] = i;
+    	}
+
+    	// set's the grid point's leaf information which is not saved in version 1
+    	if (version == 1)
+    	{
+    		recalcLeafProperty();
+    	}
+    }
 };
 
 }
