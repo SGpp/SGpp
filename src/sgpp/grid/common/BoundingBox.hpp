@@ -23,7 +23,9 @@
 #ifndef BOUNDINGBOX_HPP
 #define BOUNDINGBOX_HPP
 
-namespace sgpp
+#include <cstddef>
+
+namespace sg
 {
 
 /**
@@ -73,6 +75,15 @@ public:
 	BoundingBox(size_t dim, DimensionBoundary* boundaries);
 
 	/**
+	 * Copy-Constructor
+	 *
+	 * initializes the Bounding with values of another bounding Box
+	 *
+	 * @param copyBoundingBox reference to a BoundingBox Object whose values are copied
+	 */
+	BoundingBox(BoundingBox& copyBoundingBox);
+
+	/**
 	 * Desctructor
 	 */
 	~BoundingBox();
@@ -93,6 +104,13 @@ public:
 	 * @return a DimensionBoundary object, that contains the boundaries
 	 */
 	DimensionBoundary getBoundary(size_t dimension);
+
+	/**
+	 * gets the dimensions of the cube stored in this bounding box
+	 *
+	 * @return the number of dimensions
+	 */
+	size_t getDimensions();
 };
 
 }

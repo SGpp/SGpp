@@ -32,6 +32,7 @@
 
 #include "grid/GridStorage.hpp"
 #include "grid/generation/GridGenerator.hpp"
+#include "grid/common/BoundingBox.hpp"
 
 #include <iostream>
 #include <string>
@@ -105,7 +106,7 @@ public:
 	 * @param istr inputstream that contains the grid information
 	 */
 	static Grid* unserialize(std::istream& istr);
-	
+
 
 protected:
 	/**
@@ -134,6 +135,13 @@ public:
 	 * @return pointer to the GridStorage obeject
 	 */
 	virtual GridStorage* getStorage();
+
+	/**
+	 * gets a pointer to the GridStorage's BoundingsBox object
+	 *
+	 * @return pointer to the GridStorage's BoundingsBox object
+	 */
+	virtual BoundingBox* getBoundingBox();
 
 	/**
 	 * gets a pointer to GridGenerator object
@@ -169,8 +177,8 @@ public:
 	 * @return point to the OperationLaplace object
 	 */
 	virtual OperationMatrix* createOperationLaplace() = 0;
-	
-	
+
+
 	/**
 	 * gets a pointer to OperationIdentity (OperationMatrix) object
 	 *
@@ -201,34 +209,34 @@ public:
 	 * @param ostr stream to which the grid is written
 	 */
 	virtual void serialize(std::ostream& ostr);
-	
+
 	/**
 	 * Refine grid
 	 * Refine the given number of points on the grid according to the vector
-	 * 
+	 *
 	 * @param vector DataVector vector with errors for each basis function or alpha-vector
 	 * @param numOfPoints integer number of points to refine
 	 */
 	void refine(DataVector* vector, int numOfPoints);
-	
+
 	/**
 	 * Evaluate the value of function in the point
-	 * 
+	 *
 	 * @param alpha DataVector alpha vector of the grid
 	 * @param point DataVector point where the function should be evaluated
 	 */
 	double eval(DataVector& alpha, DataVector& point);
-	
+
 	/**
 	 * Insert one point to the grid
-	 * 
+	 *
 	 * @param dim size_t dimension of the grid
 	 * @param unsigned_int[] levels array with levels of the point
 	 * @param unsigned_int[] indices array with indices of the point
 	 * @param bool isLeaf indicator whether the point is a leaf
 	 */
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
-	
+
 
 protected:
 	/// pointer the GridStorage object of the grid

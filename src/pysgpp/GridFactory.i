@@ -74,6 +74,7 @@ public:
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 	
 	virtual GridStorage* getStorage();
+	virtual BoundingBox* getBoundingBox();
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr);

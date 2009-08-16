@@ -20,61 +20,16 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "grid/common/BoundingBox.hpp"
+#ifndef SERIALIZATIONVERSION_HPP
+#define SERIALIZATIONVERSION_HPP
 
-namespace sg
-{
+/**
+ * This specifies the available serialization versions
+ *
+ * Version 1: classic verions without leaf proeperty
+ * Version 2: every gridpoint is extended by one boolean that specifies if it's a leaf
+ * Version 3: added support for the grid's bounding box
+ */
+#define SERIALIZATION_VERSION 3
 
-BoundingBox::BoundingBox(size_t dim)
-{
-	nDim = dim;
-	dimensionBoundaries = new DimensionBoundary[nDim];
-	for (size_t i = 0; i < nDim; i++)
-	{
-		dimensionBoundaries[i].leftBoundary = 0.0;
-		dimensionBoundaries[i].rightBoundary = 1.0;
-	}
-}
-
-BoundingBox::BoundingBox(size_t dim, DimensionBoundary* boundaries)
-{
-	nDim = dim;
-	dimensionBoundaries = new DimensionBoundary[nDim];
-	for (size_t i = 0; i < nDim; i++)
-	{
-		dimensionBoundaries[i] = boundaries[i];
-	}
-}
-
-BoundingBox::BoundingBox(BoundingBox& copyBoundingBox)
-{
-	nDim = copyBoundingBox.getDimensions();
-	dimensionBoundaries = new DimensionBoundary[nDim];
-	for (size_t i = 0; i < nDim; i++)
-	{
-		dimensionBoundaries[i] = copyBoundingBox.getBoundary(i);
-	}
-}
-
-BoundingBox::~BoundingBox()
-{
-	delete[] dimensionBoundaries;
-}
-
-void BoundingBox::setBoundary(size_t dimension, DimensionBoundary& newBoundaries)
-{
-	dimensionBoundaries[dimension].leftBoundary = newBoundaries.leftBoundary;
-	dimensionBoundaries[dimension].rightBoundary = newBoundaries.rightBoundary;
-}
-
-DimensionBoundary BoundingBox::getBoundary(size_t dimension)
-{
-	return dimensionBoundaries[dimension];
-}
-
-size_t BoundingBox::getDimensions()
-{
-	return nDim;
-}
-
-}
+#endif /* SERIALIZATIONVERSION_HPP */

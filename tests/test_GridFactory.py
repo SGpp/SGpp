@@ -124,6 +124,150 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
 
+    def testSerializationLinearBoundingBox(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        factory = Grid.createLinearGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+        
+        boundingBox = factory.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        tempBound.leftBoundary = 0.0
+        tempBound.rightBoundary = 100.0
+        boundingBox.setBoundary(0, tempBound)
+        
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        boundingBox = newfac.getBoundingBox()    
+        tempBound = boundingBox.getBoundary(0)
+        self.assertEqual(0.0, tempBound.leftBoundary)
+        self.assertEqual(100.0, tempBound.rightBoundary)
+        
+    def testSerializationModLinearBoundingBox(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        factory = Grid.createModLinearGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        boundingBox = factory.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        tempBound.leftBoundary = 0.0
+        tempBound.rightBoundary = 100.0
+        boundingBox.setBoundary(0, tempBound)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        boundingBox = newfac.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        self.assertEqual(0.0, tempBound.leftBoundary)
+        self.assertEqual(100.0, tempBound.rightBoundary)
+        
+    def testSerializationLinearBoudaryUScaledBoundingBox(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        factory = Grid.createLinearBoundaryUScaledGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        boundingBox = factory.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        tempBound.leftBoundary = 0.0
+        tempBound.rightBoundary = 100.0
+        boundingBox.setBoundary(0, tempBound)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        boundingBox = newfac.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        self.assertEqual(0.0, tempBound.leftBoundary)
+        self.assertEqual(100.0, tempBound.rightBoundary)
+        
+    def testSerializationLinearBoudaryBoundingBox(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        factory = Grid.createLinearBoundaryGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        boundingBox = factory.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        tempBound.leftBoundary = 0.0
+        tempBound.rightBoundary = 100.0
+        boundingBox.setBoundary(0, tempBound)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+            
+        boundingBox = newfac.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        self.assertEqual(0.0, tempBound.leftBoundary)
+        self.assertEqual(100.0, tempBound.rightBoundary)
+        
+    def testSerializationPolyBoundingBox(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPolyGrid(2,2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        boundingBox = factory.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        tempBound.leftBoundary = 0.0
+        tempBound.rightBoundary = 100.0
+        boundingBox.setBoundary(0, tempBound)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        boundingBox = newfac.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        self.assertEqual(0.0, tempBound.leftBoundary)
+        self.assertEqual(100.0, tempBound.rightBoundary)
+
     def testSerializationLinearWithLeaf(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid

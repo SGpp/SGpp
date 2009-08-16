@@ -30,13 +30,12 @@
 
 #include "grid/storage/hashmap/HashGridIndex.hpp"
 #include "grid/GridStorage.hpp"
+#include "grid/storage/hashmap/SerializationVersion.hpp"
 
 #include <memory>
 #include <string>
 #include <sstream>
 #include <exception>
-
-#define SERIALIZATION_VERSION 2
 
 namespace sg
 {
