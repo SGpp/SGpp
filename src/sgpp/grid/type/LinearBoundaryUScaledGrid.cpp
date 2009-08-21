@@ -31,6 +31,9 @@
 #include "basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.hpp"
 #include "basis/linearboundaryUScaled/operation/OperationLaplaceLinearBoundaryUScaled.hpp"
 
+// @todo (heinecke) removed this when done
+#include "basis/linearboundaryUScaled/operation/OperationUpDownTestLinearBoundaryUScaled.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>
@@ -89,6 +92,12 @@ OperationEval* LinearBoundaryUScaledGrid::createOperationEval()
 OperationHierarchisation* LinearBoundaryUScaledGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationLinearBoundaryUScaled(this->storage);
+}
+
+// @todo (heinecke) removed this when done
+OperationMatrix* LinearBoundaryUScaledGrid::createOperationUpDownTest()
+{
+	return new OperationUpDownTestLinearBoundaryUScaled(this->storage);
 }
 
 }

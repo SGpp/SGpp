@@ -73,6 +73,9 @@ public:
 	virtual OperationMatrix* createOperationIdentity() = 0;
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 	
+	// @todo remove this when done
+	virtual OperationMatrix* createOperationUpDownTest() = 0;
+	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
 

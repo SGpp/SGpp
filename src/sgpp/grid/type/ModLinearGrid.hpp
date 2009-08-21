@@ -60,6 +60,9 @@ public:
 	virtual OperationEval* createOperationEval();
 	virtual OperationHierarchisation* createOperationHierarchisation();
 
+	// @todo (heinecke) remove this when done
+	virtual OperationMatrix* createOperationUpDownTest();
+
 	static Grid* unserialize(std::istream& istr);
 
 };
