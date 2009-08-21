@@ -99,4 +99,10 @@ OperationHierarchisation* ModPolyGrid::createOperationHierarchisation()
 	return new OperationHierarchisationModPoly(this->storage, this->degree);
 }
 
+// @todo (heinecke) removed this when done
+OperationMatrix* ModPolyGrid::createOperationUpDownTest()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

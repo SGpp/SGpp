@@ -178,13 +178,19 @@ public:
 	 */
 	virtual OperationMatrix* createOperationLaplace() = 0;
 
+	/**
+	 * (heinecke) temporal function
+	 *
+	 * @todo remove this when done
+	 */
+	virtual OperationMatrix* createOperationUpDownTest() = 0;
 
 	/**
 	 * gets a pointer to OperationIdentity (OperationMatrix) object
 	 *
 	 * @return point to the OperationIdentity object
 	 */
-	 OperationMatrix* createOperationIdentity();
+	OperationMatrix* createOperationIdentity();
 
 	/**
 	 * Returns a string that identifies the grid type uniquely

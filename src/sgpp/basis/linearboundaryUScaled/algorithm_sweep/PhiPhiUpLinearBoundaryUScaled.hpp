@@ -21,8 +21,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEUPLINEARBOUNDARYUSCALED_HPP
-#define LAPLACEUPLINEARBOUNDARYUSCALED_HPP
+#ifndef PHIPHIUPLINEARBOUNDARYUSCALED_HPP
+#define PHIPHIUPLINEARBOUNDARYUSCALED_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -36,7 +36,7 @@ namespace detail
 /**
  * up-operation in dimension dim. for use with sweep
  */
-class LaplaceUpLinearBoundaryUScaled
+class PhiPhiUpLinearBoundaryUScaled
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -50,14 +50,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	LaplaceUpLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
+	PhiPhiUpLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~LaplaceUpLinearBoundaryUScaled()
+	~PhiPhiUpLinearBoundaryUScaled()
 	{
 	}
 
@@ -184,4 +184,4 @@ protected:
 
 } // namespace sg
 
-#endif /* LAPLACEUPLINEARBOUNDARYUSCALED_HPP */
+#endif /* PHIPHIUPLINEARBOUNDARYUSCALED_HPP */

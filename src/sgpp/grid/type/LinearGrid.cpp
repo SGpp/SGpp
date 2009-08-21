@@ -92,4 +92,10 @@ OperationHierarchisation* LinearGrid::createOperationHierarchisation()
 	return new OperationHierarchisationLinear(this->storage);
 }
 
+// @todo (heinecke) removed this when done
+OperationMatrix* LinearGrid::createOperationUpDownTest()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }
