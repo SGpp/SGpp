@@ -48,7 +48,7 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	OperationUpDownTestLinearBoundaryUScaled(GridStorage* storage)
+	OperationUpDownTestLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
 	{
 	}
 

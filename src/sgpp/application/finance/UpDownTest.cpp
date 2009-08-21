@@ -32,13 +32,14 @@
 
 int main(int argc, char *argv[])
 {
-	size_t levels = 4;
+	size_t levels = 3;
 	size_t dim = 1;
 	size_t numGridPoints;
 
 	sg::Grid* myGrid;
 	sg::OperationMatrix* myUpDown;
 
+	std::cout << std::endl;
 	std::cout << "Starting the Up / Down Test" << std::endl;
 	std::cout << "===========================" << std::endl;
 	std::cout << std::endl;
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
 	myUpDown = myGrid->createOperationUpDownTest();
 
 	std::cout << "start constructing the operator's matrix" << std::endl;
-	for (size_t i = 0; i < 1; i++)
+	for (size_t i = 0; i < numGridPoints; i++)
 	{
 		// init alpha
 		alpha.setAll(0.0);
@@ -95,6 +96,8 @@ int main(int argc, char *argv[])
 		}
 		std::cout << std::endl;
 	}
+
+	std::cout << std::endl;
 
 	delete myUpDown;
 	delete myGrid;
