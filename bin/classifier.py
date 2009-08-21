@@ -128,13 +128,16 @@ def exec_mode(mode):
 
 
 #-------------------------------------------------------------------------------
-## Opens and read the data of an ARFF file
-# Opens a file given by a filename
+## Opens and read the data of an ARFF (or plain whitespace-separated data) file.
+# Opens a file given by a filename.
 # @param filename filename of the file
 # @return the data stored in the file as a set of arrays
 def openFile(filename):
     try:
-        data = readDataARFF(filename)
+        if isARFFFile(filename):
+            data = readDataARFF(filename)
+        else:
+            data = readDataTrivial(filename)
     except:
         print ("An error occured while reading " + filename + "!")
         sys.exit(1)

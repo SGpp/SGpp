@@ -4,6 +4,7 @@
 /*                                                                           */
 /* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/*               2007-2009 Dirk Pflueger (Dirk.Pflueger@in.tum.de)           */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU General Public License as published by      */
@@ -331,11 +332,18 @@ public:
 #endif
 
 	/**
-	 * Writes the data stored in the Vector into a string
+	 * Writes the data stored in the DataVector into a string
 	 *
 	 * @param text string to which the data is written
 	 */
 	void toString(std::string& text);
+
+	/**
+	 * Returns a description of the DataVector as a string.
+	 *
+	 * @returns string of the DataVector
+	 */
+  std::string toString();
 
 	/**
 	 * gets a pointer to the data array
