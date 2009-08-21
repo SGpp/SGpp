@@ -179,7 +179,7 @@ public:
 	}
 
 	/**
-	 * Sets the ansatzfunction in dimension <i>d</i> and rehashs the HashGridIndex object
+	 * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and rehashs the HashGridIndex object
 	 *
 	 * @param d the dimension in which the ansatzfunction is set
 	 * @param l the level of the ansatzfunction
@@ -193,7 +193,7 @@ public:
 	}
 
 	/**
-	 * Sets the ansatzfunction in dimension <i>d</i> and the Leaf property and rehashs the HashGridIndex object
+	 * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and rehashs the HashGridIndex object
 	 *
 	 * @param d the dimension in which the ansatzfunction is set
 	 * @param l the level of the ansatzfunction
@@ -209,7 +209,7 @@ public:
 	}
 
 	/**
-	 * Sets the ansatzfunction in dimension <i>d</i> and doesn't rehash the HashGridIndex object
+	 * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and doesn't rehash the HashGridIndex object
 	 *
 	 * @param d the dimension in which the ansatzfunction is set
 	 * @param l the level of the ansatzfunction
@@ -222,7 +222,7 @@ public:
 	}
 
 	/**
-	 * Sets the ansatzfunction in dimension <i>d</i> and the Leaf property and doesn't rehash the HashGridIndex object
+	 * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and doesn't rehash the HashGridIndex object
 	 *
 	 * @param d the dimension in which the ansatzfunction is set
 	 * @param l the level of the ansatzfunction
@@ -237,11 +237,11 @@ public:
 	}
 
 	/**
-	 * gets the ansatzfunction in given dimension by reference parameters
+	 * gets level <i>l</i> and index <i>i</i> in dimension <i>d</i> by reference parameters
 	 *
-	 * @param d the dimension in which the ansatzfunction should be read
-	 * @param l reference parameter for the level of the ansatzfunction
-	 * @param i reference parameter for the index of the ansatzfunction
+	 * @param d the dimension in which the ansatz function should be read
+	 * @param l reference parameter for the level of the ansatz function
+	 * @param i reference parameter for the index of the ansatz function
 	 */
 	void get(size_t d, LT &l, IT &i) const
 	{
@@ -252,7 +252,7 @@ public:
 	/**
 	 * sets the Leaf option of this index
 	 *
-	 * @param isLeaf specifies if the current index is a leaf or not
+	 * @param isLeaf specifies if the current index is a leaf (i.e. has <b>no</b> child nodes) or not
 	 */
 	void setLeaf(bool isLeaf)
 	{
@@ -260,9 +260,9 @@ public:
 	}
 
 	/**
-	 * checks if this gridpoint has any succesors in any dimension
+	 * checks if this grid point has any successors in any dimension
 	 *
-	 * @return returns true if this gridpoint has no children otherwise false
+	 * @return returns true if this grid point has no children otherwise false
 	 */
 	bool isLeaf()
 	{
@@ -389,6 +389,7 @@ public:
 
 	/**
 	 * This is just wrapper for operator= until I cant get swig to wrap it
+	 * @todo who is "I"??????
 	 *
 	 * @param rhs a reference to a HashGridIndex that contains the values that should be copied
 	 *
@@ -400,7 +401,7 @@ public:
 	}
 
 	/**
-	 * operator to assign the current gridpoint with the values of another one
+	 * operator to assign the current grid point with the values of another one
 	 *
 	 * @param rhs a reference to a HashGridIndex that contains the values that should be copied
 	 *
@@ -445,7 +446,8 @@ public:
     }
 
     /**
-     * generates a string with ansatzfunctions of the gridpoint
+     * Generates a string with level and index of the gridpoint.
+     * The format is <tt>[l1, i1, l2, i2, ..., ld, id]</tt>.
      *
      * @param stream reference to a output stream
      */
@@ -486,10 +488,10 @@ public:
 
 
     /**
-     * generates a string with all coordinates of the gridpoint.
+     * Generates a string with all coordinates of the grid point.
      * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
      *
-     * @return returns a string with the coordinates of the gridpoint separated by whitespace
+     * @return returns a string with the coordinates of the grid point separated by whitespace
      * @todo (heinecke, should) rename to getCoordString()
      */
     std::string getCoordinates()
@@ -516,6 +518,36 @@ public:
 
     	return return_stream.str();
     }
+
+    /**
+      * Returns the sum of the one-dimensional levels, i.e. @f$ |\vec{l}|_1 @f$.
+      *
+      * @return the sum of the one-dimensional levels
+      */
+     LT getLevelSum()
+     {
+         LT levelsum = 0;
+         for (size_t i = 0; i < DIM; i++)
+         {
+             levelsum += level[i];
+         }
+         return levelsum;
+     }
+
+     /**
+       * Returns the maximum of the one-dimensional levels, i.e. @f$ |\vec{l}|_\infty @f$.
+       *
+       * @return  the maximum of the one-dimensional levels
+       */
+      LT getLevelMax()
+      {
+          LT levelmax = 0;
+          for (size_t i = 0; i < DIM; i++)
+          {
+              levelmax = max(levelmax, level[i]);
+          }
+          return levelmax;
+      }
 
 private:
 	/// the dimension of the gridpoint

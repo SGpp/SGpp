@@ -36,7 +36,7 @@ class LinearSystem
 	public:
 		/**
 		 * Constructor
-		 * 
+		 *
 		 * @param data DataVector points
 		 * @param result DataVector values
 		 * @param bOberation OperationB B operator
@@ -45,37 +45,37 @@ class LinearSystem
 		 * @param l double regression parameter
 		 */
 		LinearSystem(DataVector& data, DataVector& result, OperationB& bOperation, OperationMatrix& cOperation, Grid& grid, double l);
-	
-	
+
+
 		/**
 		 * Apply linear system on the vector
-		 * 
+		 *
 		 * @param vector DataVector [in] vector the linear system should be applied to
 		 * @param result DataVector [out] vector for results
 		 */
 		void apply(DataVector& vector,  DataVector& result);
-	
+
 		/**
 		 * Calculate the right side of the linear system
-		 * 
+		 *
 		 * @param result DataVector [out] vector for result
 		 */
 		void getRightHandSide(DataVector& result);
-		
+
 		/**
 		 * Returns the number of points on the grid
-		 * 
+		 *
 		 * @return int number of points on the grid
 		 */
 		int getNumGridPoints();
-		
+
 		/**
 		 * Return number of point in the dataset
-		 * 
+		 *
 		 * @return int number of point in the dataset
 		 */
 		int getNumInputPoints();
-		
+
 	private:
 		DataVector* data;
 		DataVector* y;
