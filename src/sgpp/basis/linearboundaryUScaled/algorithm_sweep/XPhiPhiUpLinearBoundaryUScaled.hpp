@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2007-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef PHIPHIUPLINEARBOUNDARYUSCALED_HPP
-#define PHIPHIUPLINEARBOUNDARYUSCALED_HPP
+#ifndef XPHIPHIUPLINEARBOUNDARYUSCALED_HPP
+#define XPHIPHIUPLINEARBOUNDARYUSCALED_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -36,7 +35,7 @@ namespace detail
 /**
  * up-operation in dimension dim. for use with sweep
  */
-class PhiPhiUpLinearBoundaryUScaled
+class XPhiPhiUpLinearBoundaryUScaled
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -50,14 +49,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	PhiPhiUpLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
+	XPhiPhiUpLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~PhiPhiUpLinearBoundaryUScaled()
+	~XPhiPhiUpLinearBoundaryUScaled()
 	{
 	}
 
@@ -148,13 +147,18 @@ protected:
 			double fm = fml + fmr;
 
 			double alpha_value = source[seq];
-			double h = 1/pow(2.0,static_cast<int>(current_level));
+
+			double hhalf = 1/pow(4.0, static_cast<int>(current_level));
+			double i_dbl = static_cast<double>(current_index);
+
+			double ihelp = i_dbl/2.0;
+			double twelve = 1.0/12.0;
 
 			// transposed operations:
 			result[seq] = fm;
 
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
+			fl = fm/2.0 + (alpha_value*hhalf*(ihelp-twelve)) + fl;
+			fr = fm/2.0 + (alpha_value*hhalf*(ihelp+twelve)) + fr;
 		}
 		else
 		{
@@ -173,7 +177,7 @@ protected:
 			result[seq_left] = fl;
 			result[seq_right] = fr;
 
-			result[seq_left] += 1.0/6.0*source[seq_right];
+			result[seq_left] += 1.0/12.0*source[seq_right];
 
 			index.left_levelzero(dim);
 		}
@@ -184,4 +188,4 @@ protected:
 
 } // namespace sg
 
-#endif /* PHIPHIUPLINEARBOUNDARYUSCALED_HPP */
+#endif /* XPHIPHIUPLINEARBOUNDARYUSCALED_HPP */
