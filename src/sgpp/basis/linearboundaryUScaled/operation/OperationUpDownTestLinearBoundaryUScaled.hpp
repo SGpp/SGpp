@@ -29,6 +29,9 @@
 #include "basis/linearboundaryUScaled/algorithm_sweep/SqXdPhidPhiDownLinearBoundaryUScaled.hpp"
 #include "basis/linearboundaryUScaled/algorithm_sweep/SqXdPhidPhiUpLinearBoundaryUScaled.hpp"
 
+#include "basis/linearboundaryUScaled/algorithm_sweep/XPhiPhiDownLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/algorithm_sweep/XPhiPhiUpLinearBoundaryUScaled.hpp"
+
 #include "operation/OperationMatrix.hpp"
 
 #include "algorithm/UnidirGradient.hpp"
@@ -142,8 +145,12 @@ protected:
 		//sweep<detail::PhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
 
 		// x^2 * dphi * dphi
-		detail::SqXdPhidPhiUpLinearBoundaryUScaled func(this->storage);
-		sweep<detail::SqXdPhidPhiUpLinearBoundaryUScaled> s(func, this->storage);
+		//detail::SqXdPhidPhiUpLinearBoundaryUScaled func(this->storage);
+		//sweep<detail::SqXdPhidPhiUpLinearBoundaryUScaled> s(func, this->storage);
+
+		// x * phi * phi
+		detail::XPhiPhiUpLinearBoundaryUScaled func(this->storage);
+		sweep<detail::XPhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
@@ -155,8 +162,12 @@ protected:
 		//sweep<detail::PhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
 
 		// x^2 * dphi * dphi
-		detail::SqXdPhidPhiDownLinearBoundaryUScaled func(this->storage);
-		sweep<detail::SqXdPhidPhiDownLinearBoundaryUScaled> s(func, this->storage);
+		//detail::SqXdPhidPhiDownLinearBoundaryUScaled func(this->storage);
+		//sweep<detail::SqXdPhidPhiDownLinearBoundaryUScaled> s(func, this->storage);
+
+		// x * phi * phi
+		detail::XPhiPhiDownLinearBoundaryUScaled func(this->storage);
+		sweep<detail::XPhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}

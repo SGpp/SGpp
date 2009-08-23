@@ -30,6 +30,8 @@
 
 #include <iostream>
 
+//#define PRINTMATRIX
+
 int main(int argc, char *argv[])
 {
 	size_t levels = 3;
@@ -86,8 +88,8 @@ int main(int argc, char *argv[])
 	}
 	std::cout << "finished constructing the operator's matrix" << std::endl;
 
+#ifdef PRINTMATRIX
 	std::cout << "The operator's matrix is:" << std::endl << std::endl;
-
 	for (size_t i = 0; i < numGridPoints; i++)
 	{
 		for (size_t j = 0; j < numGridPoints; j++)
@@ -96,18 +98,25 @@ int main(int argc, char *argv[])
 		}
 		std::cout << std::endl;
 	}
+#endif
 
 	std::cout << std::endl;
 
 	std::cout << "Test symmetry:" << std::endl;
+	double symTest = 0.0;
+	double tempSym = 0.0;
 	for (size_t i = 0; i < numGridPoints; i++)
 	{
 		for (size_t j = 0; j < numGridPoints; j++)
 		{
-			std::cout << UpDownMatrix.get((i*numGridPoints) + j)-UpDownMatrix.get((j*numGridPoints) + i) << " ";
+			tempSym = fabs(UpDownMatrix.get((i*numGridPoints) + j)-UpDownMatrix.get((j*numGridPoints) + i));
+			if (tempSym > symTest)
+			{
+				symTest = tempSym;
+			}
 		}
-		std::cout << std::endl;
 	}
+	std::cout << "Maximum symmetry error: " << symTest << std::endl << std::endl;
 
 	delete myUpDown;
 	delete myGrid;
