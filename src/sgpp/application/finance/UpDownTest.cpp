@@ -99,6 +99,16 @@ int main(int argc, char *argv[])
 
 	std::cout << std::endl;
 
+	std::cout << "Test symmetry:" << std::endl;
+	for (size_t i = 0; i < numGridPoints; i++)
+	{
+		for (size_t j = 0; j < numGridPoints; j++)
+		{
+			std::cout << UpDownMatrix.get((i*numGridPoints) + j)-UpDownMatrix.get((j*numGridPoints) + i) << " ";
+		}
+		std::cout << std::endl;
+	}
+
 	delete myUpDown;
 	delete myGrid;
 
