@@ -30,11 +30,11 @@
 
 #include <iostream>
 
-//#define PRINTMATRIX
+#define PRINTMATRIX
 
 int main(int argc, char *argv[])
 {
-	size_t levels = 3;
+	size_t levels = 2;
 	size_t dim = 1;
 	size_t numGridPoints;
 
