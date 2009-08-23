@@ -146,16 +146,13 @@ protected:
 		{
 			double fm = fml + fmr;
 
-			double alpha_value = source[seq];
-
-			double i_dbl = static_cast<double>(current_index);
-			double tmp = alpha_value * (1/pow(4.0, static_cast<int>(current_level))) * i_dbl;
+			double tmp = source[seq] * (1/pow(4.0, static_cast<int>(current_level))) * static_cast<double>(current_index);
 
 			// transposed operations:
 			result[seq] = pow(2.0, static_cast<int>(current_level))*(fml - fmr);
 
-			fl = fm/2.0 + tmp + fl;
-			fr = fm/2.0 + tmp + fr;
+			fl = fm + tmp;
+			fr = fm + tmp;
 		}
 		else
 		{
@@ -171,8 +168,8 @@ protected:
 
 			// up
 			//////////////////////////////////////
-			result[seq_left] = (fr-fl);
-			result[seq_right] = (fl-fr);
+			result[seq_left] = (-1.0)*fl;
+			result[seq_right] = fr;
 
 			result[seq_left] += -1.0/3.0*source[seq_right];
 
