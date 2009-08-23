@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008-2009 Dirk Pflueger (pflueged@in.tum.de)                */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
@@ -30,7 +31,10 @@ namespace sg
 {
 
 /**
- * Multiplication with Matrix B ansd B^T
+ * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
+ * 
+ * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data points, then B is a @f$N\times m@f$ matrix, with
+ * @f[ (B)_{i,j} = \varphi_i(x_j). @f]
  */
 class OperationB
 {
@@ -46,19 +50,19 @@ public:
 	virtual ~OperationB() {}
 
 	/**
-	 * Multiplication with vector, not transposed
+	 * Multiplication of @f$B@f$ with vector @f$\alpha@f$
 	 *
-	 * @param alpha coefficients of the sparse grid's base functions
-	 * @param data the vector that should be multiplied
+	 * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
+	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
 	 */
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result) = 0;
 
 	/**
-	 * Multiplication with vector, transposed
+	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
 	 *
-	 * @param alpha coefficients of the sparse grid's base functions
-	 * @param data the vector that should be multiplied
+	 * @param alpha vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
+	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
 	 */
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result) = 0;
