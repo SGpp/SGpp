@@ -32,7 +32,9 @@ NOTAFILE = -1
 
 
 #-------------------------------------------------------------------------------
-## A value pair is added to a dictionary's value entry. Each entry of the 
+## @brief A value pair is added to a dictionary's value entry. 
+#
+# Each entry of the 
 # dictionary is a list. If the dictionary has no entry for key, [value] is 
 # added. Otherwise value is appended to the list under key.
 # @param dict the dictionary
@@ -45,8 +47,10 @@ def appendToDict(dict, key, val):
         dict[key] = [val]
 
 #-------------------------------------------------------------------------------
-## Opens a file. If the file ends with ".gz", automatically gzip compression
-# is used for the file. Returns the filedescriptor
+## @brief Opens a file. If the file ends with ".gz", automatically gzip compression
+# is used for the file. 
+#
+# Returns the filedescriptor
 # @param filename file's filename
 # @param mode default: "r" for read only
 # @return file descriptor
@@ -63,8 +67,9 @@ def gzOpen(filename, mode="r"):
     return fd
 
 #-------------------------------------------------------------------------------
-## Writes a String txt to File filename, appends by default.
+## @brief Writes a String txt to File filename, appends by default.
 # Uses secure writing, i.e. locks file.
+#
 # On Windows concurrent access raises an error wich is handled.
 # On Linux/Unix it should block until lock released!!
 #     param: filename
@@ -86,9 +91,9 @@ def writeLockFile(filename, txt, mode="a"):
         f.close()
 
 #-------------------------------------------------------------------------------
-## checks whether a file given by a filename is an ARFF-file
-#     param: filename
-#     returns: ARFF, SIMPLE or NOTAFILE
+## @brief Checks whether a file given by a filename is an ARFF-file
+#  @param filename the file's name
+#  @return ARFF, SIMPLE or NOTAFILE
 def isARFFFile(filename):
     try:
         # read lines until non-empty line found
@@ -106,7 +111,8 @@ def isARFFFile(filename):
         return NOTAFILE
 
 #-------------------------------------------------------------------------------
-## Writes String to File and checks if file existant
+## @brief Writes String to File and checks if file existant
+#
 def writeStringToFile(s, filename, check=True):
     if check and os.path.exists(filename):
         i = raw_input("File <%s> exists. Overwrite [y/n]? " % (filename))
@@ -120,7 +126,8 @@ def writeStringToFile(s, filename, check=True):
         f.close()
     
 #-------------------------------------------------------------------------------
-## Converts a python "dataset"-structure into two object of type DataVector (X,Y)
+## @brief Converts a python "dataset"-structure into two object of type DataVector (X,Y)
+#
 def createDataVectorFromDataset(dataset):
     dim = len(dataset["data"])
     entries = len(dataset["data"][0])
@@ -142,8 +149,8 @@ def createDataVectorFromDataset(dataset):
     return (x,y)
 
 #-------------------------------------------------------------------------------
-## Converts one or two (data + optionally classes) objects of type DataVector
-# to a python "dataset"-structure
+## @brief Converts one or two (data + optionally classes) objects of type DataVector
+# to a python "dataset"-structure.
 def createDatasetFromDataVector(data, classes=None):
     dataset = {}
     dataset['data'] = []
@@ -156,6 +163,16 @@ def createDatasetFromDataVector(data, classes=None):
     
     return dataset
 
+## @brief Reads in a whitespace separated data file. 
+#
+# Last column is assumend to be class, if <tt>hasclass=True</tt>.
+# The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
+# [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
+#
+# @param filename the file's filename that should be read
+# @param delim (optional) separator between columns. Default: space
+# @param hasclass (optional) sets, whether last column contains class attribute. Default: True
+# @return returns a set of a array with the data (named data), a array with the classes (named classes) and the filename named as filename
 def readDataTrivial(filename, delim = "", hasclass = True):
     fin = gzOpen(filename, "r")
     data = []
@@ -197,7 +214,8 @@ def readDataTrivial(filename, delim = "", hasclass = True):
     else:
         return {"data":data, "filename":filename}
 
-## Reads in an ARFF file:
+## @brief Reads in an ARFF file
+#
 # The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
 # [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
 #
@@ -244,8 +262,29 @@ def readDataARFF(filename):
 
 
 #-------------------------------------------------------------------------------
-## Writes gnuplot data of function into file
-# 
+## @brief Opens and read the data of an ARFF (or plain whitespace-separated data) file.
+#
+# @param filename filename of the file
+# @return the data stored in the file as a set of arrays
+def readData(filename):
+    try:
+        if isARFFFile(filename):
+            data = readDataARFF(filename)
+        else:
+            data = readDataTrivial(filename)
+    except Exception, e:
+        print ("An error occured while reading " + filename + "!")
+        raise e
+        
+    if data.has_key("classes") == False:
+        print ("No classes found in the given File " + filename + "!")
+        sys.exit(1)
+        
+    return data
+
+#-------------------------------------------------------------------------------
+## @brief Writes gnuplot data of function into file
+#
 def writeGnuplot(filename, grid, alpha, resolution):
     p = DataVector(1,2)
     fout = file(filename, "w")
@@ -261,7 +300,7 @@ def writeGnuplot(filename, grid, alpha, resolution):
     return
 
 #-------------------------------------------------------------------------------
-## Writes gnuplot data of grid into file
+## @brief Writes gnuplot data of grid into file
 # 
 def writeGnuplotGrid(filename, grid):
     p = DataVector(1,2)
@@ -371,7 +410,8 @@ def writeDataMaple(data, merge):
     return
 
 #-------------------------------------------------------------------------------
-## Writes a DataVector object to a file, specified by filename.
+## @brief Writes a DataVector object to a file, specified by filename.
+#
 # Output in the file is "X := Matrix([[...],[...],...,[...]]);"
 # @param data a DataVector object
 # @param filename the file's name
@@ -395,7 +435,8 @@ def writeDataVectorMaple(data, filename, format="%s", maple_name="X", check=True
 
 
 #-------------------------------------------------------------------------------
-## Writes information that is needed for the normalization of data to a file.
+## @brief Writes information that is needed for the normalization of data to a file.
+#
 # Using this information one can then later on reverse the normalization or
 # normalize further data.
 # @param filename a filename
@@ -409,12 +450,13 @@ def writeNormfile(filename, border, minvals, maxvals):
     writeStringToFile(s, filename)
     
 #-------------------------------------------------------------------------------
-## Reads information that is needed for the normalization of data from a file.
+## @brief Reads information that is needed for the normalization of data from a file.
+#
 # @param filename a filename
-# @return (border, minvals, maxvals, deltavals)
-# border: offset for normalization
-# minvals: the minimum value of each attribute
-# maxvals: the maximum value of each attribute
+# @return (border, minvals, maxvals, deltavals) @n
+# border: offset for normalization @n
+# minvals: the minimum value of each attribute @n
+# maxvals: the maximum value of each attribute @n
 # deltavals: (max-min)/(1.0-2*border), provided for convenience
 def readNormfile(filename):
     fd = gzOpen(filename, 'r')
@@ -431,7 +473,8 @@ def readNormfile(filename):
 
 
 #-------------------------------------------------------------------------------
-## Normalize values of input vectors on the segment [0,1]
+## @brief Normalize values of input vectors on the segment [0,1]
+#
 # @param data Dataset
 # @param border Specifies border of the dataset, will be added to the normalized value 
 # @param filename Filename of normfile (optional)
@@ -482,7 +525,8 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None):
 
 
 #-------------------------------------------------------------------------------
-## Divides the class values in two categories
+## @brief Divides the class values in two categories
+#
 # @param data Dataset 
 # @param border Classes will be differentiated between greater and less then border 
 # @param minborder All classes under the minborder are processes as they are over border
@@ -498,7 +542,8 @@ def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1):
     return
 
 #-------------------------------------------------------------------------------
-## Validates Dataset
+## @brief Validates Dataset
+#
 # @param data Dataset 
 def checkData(data):
     if len(data) == 0:
@@ -662,7 +707,7 @@ def split_DataVector_by_proportion(data, proportion):
     return (dv1, dv2)
 
 #-------------------------------------------------------------------------------
-## perform stratified split of a data set given by two DataVectors into two DataVectors each
+## @brief perform stratified split of a data set given by two DataVectors into two DataVectors each
 # @param data DataVector with data points to split
 # @param classes DataVector with class values to split
 # @param proportion split into proportion, (1-proportion)

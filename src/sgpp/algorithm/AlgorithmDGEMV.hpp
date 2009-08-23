@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008-2009 Dirk Pflueger (pflueged@in.tum.de)                */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
@@ -41,7 +42,9 @@ namespace sg {
 
 /**
  * Basic multiplaction with B and B^T on grids with no boundaries.
- * The common known name for this operation is the BLAS routine DGEMV
+ * If there are @f$N@f$ basis functions @f$\varphi(\vec{x})@f$ and @f$m@f$ data points, then B is a (Nxm) matrix, with
+ * @f[ (B)_{i,j} = \varphi_i(x_j). @f]
+ * (The common known name for this operation is the BLAS routine DGEMV.)
  *
  * @todo (blank) check if it is possible to have some functor for the BASIS type
  */
@@ -60,7 +63,7 @@ public:
 	 * @param storage GridStorage object that contains the grid's points information
 	 * @param basis a reference to a class that implements a specific basis
 	 * @param source the coefficients of the grid points
-	 * @param x the right hand side of the matrix vector product
+	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
 	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
@@ -134,7 +137,7 @@ public:
 	 * @param storage GridStorage object that contains the grid's points information
 	 * @param basis a reference to a class that implements a specific basis
 	 * @param source the coefficients of the grid points
-	 * @param x the right hand side of the matrix vector product
+	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
 	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)

@@ -133,20 +133,21 @@ def exec_mode(mode):
 # @param filename filename of the file
 # @return the data stored in the file as a set of arrays
 def openFile(filename):
-    try:
-        if isARFFFile(filename):
-            data = readDataARFF(filename)
-        else:
-            data = readDataTrivial(filename)
-    except:
-        print ("An error occured while reading " + filename + "!")
-        sys.exit(1)
-        
-    if data.has_key("classes") == False:
-        print ("No classes found in the given File " + filename + "!")
-        sys.exit(1)
-        
-    return data
+    return readData(filename)
+#    try:
+#        if isARFFFile(filename):
+#            data = readDataARFF(filename)
+#        else:
+#            data = readDataTrivial(filename)
+#    except:
+#        print ("An error occured while reading " + filename + "!")
+#        sys.exit(1)
+#        
+#    if data.has_key("classes") == False:
+#        print ("No classes found in the given File " + filename + "!")
+#        sys.exit(1)
+#        
+#    return data
 
 #-------------------------------------------------------------------------------
 ## Constructs a new grid.
