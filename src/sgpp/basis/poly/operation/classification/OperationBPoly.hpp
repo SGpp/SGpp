@@ -24,7 +24,7 @@
 #ifndef OPERATIONBPOLY_HPP
 #define OPERATIONBPOLY_HPP
 
-#include "operation/OperationB.hpp"
+#include "operation/classification/OperationB.hpp"
 #include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"

@@ -30,7 +30,7 @@
 #include "grid/type/PolyGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
-#include "operation/OperationIdentity.hpp"
+#include "operation/common/OperationIdentity.hpp"
 
 #include "exception/factory_exception.hpp"
 

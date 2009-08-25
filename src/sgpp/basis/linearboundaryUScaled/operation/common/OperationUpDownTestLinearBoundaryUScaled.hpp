@@ -35,7 +35,7 @@
 #include "basis/linearboundaryUScaled/algorithm_sweep/XdPhiPhiDownLinearBoundaryUScaled.hpp"
 #include "basis/linearboundaryUScaled/algorithm_sweep/XdPhiPhiUpLinearBoundaryUScaled.hpp"
 
-#include "operation/OperationMatrix.hpp"
+#include "operation/common/OperationMatrix.hpp"
 
 #include "algorithm/classification/UnidirGradient.hpp"
 #include "algorithm/common/sweep.hpp"

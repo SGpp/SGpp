@@ -25,8 +25,8 @@
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/OperationB.hpp"
-#include "operation/OperationMatrix.hpp"
+#include "operation/classification/OperationB.hpp"
+#include "operation/common/OperationMatrix.hpp"
 
 namespace sg
 {
