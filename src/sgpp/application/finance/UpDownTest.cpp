@@ -118,6 +118,19 @@ int main(int argc, char *argv[])
 	}
 	std::cout << "Maximum symmetry error: " << symTest << std::endl << std::endl;
 
+	std::cout << "Do a Test multiplication:" << std::endl << std::endl;
+
+	alpha.setAll(0.0);
+	alpha.set(0, 0.5);
+	alpha.set(alpha.getSize()-1, 0.5);
+	result.setAll(0.0);
+
+	myUpDown->mult(alpha, result);
+
+	std::cout << result.toString() << std::endl;
+
+	std::cout << std::endl;
+
 	delete myUpDown;
 	delete myGrid;
 
