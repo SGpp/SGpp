@@ -1,7 +1,8 @@
- /*****************************************************************************/
+/*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -20,56 +21,26 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/algorithm_sweep/HierarchisationLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/algorithm_sweep/DehierarchisationLinearBoundaryUScaled.hpp"
+#include "basis/basis.hpp"
+#include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
 
 #include "sgpp.hpp"
 
-#include "basis/basis.hpp"
+#include "exception/operation_exception.hpp"
+
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-void OperationHierarchisationLinearBoundaryUScaled::doHierarchisation(DataVector& node_values)
+void OperationHierarchisationModPoly::doHierarchisation(DataVector& node_values)
 {
-	detail::HierarchisationLinearBoundaryUScaled func(this->storage);
-	sweep<detail::HierarchisationLinearBoundaryUScaled> s(func, this->storage);
-
-	// N D case
-	if (this->storage->dim() > 1)
-	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(node_values, node_values, i);
-		}
-	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(node_values, node_values, 0);
-	}
+	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
-void OperationHierarchisationLinearBoundaryUScaled::doDehierarchisation(DataVector& alpha)
+void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha)
 {
-	detail::DehierarchisationLinearBoundaryUScaled func(this->storage);
-	sweep<detail::DehierarchisationLinearBoundaryUScaled> s(func, this->storage);
-
-	// N D case
-	if (this->storage->dim() > 1)
-	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(alpha, alpha, i);
-		}
-	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(alpha, alpha, 0);
-	}
+	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
 }

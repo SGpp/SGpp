@@ -1,7 +1,8 @@
- /*****************************************************************************/
+/*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -20,56 +21,42 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linearboundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp"
+#include "basis/basis.hpp"
+#include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
 
 #include "sgpp.hpp"
 
-#include "basis/basis.hpp"
 #include "data/DataVector.hpp"
+
+#include "exception/operation_exception.hpp"
 
 namespace sg
 {
 
-void OperationHierarchisationLinearBoundary::doHierarchisation(DataVector& node_values)
+double OperationEvalModWavelet::eval(DataVector& alpha, std::vector<double>& point)
 {
-	detail::HierarchisationLinearBoundary func(this->storage);
-	sweep<detail::HierarchisationLinearBoundary> s(func, this->storage);
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-	// N D case
-	if (this->storage->dim() > 1)
+	IndexValVector vec;
+	mod_Wavelet_base<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<mod_Wavelet_base<unsigned int, unsigned int> > ga(storage);
+
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(node_values, node_values, i);
-		}
+		result += iter->second * alpha[iter->first];
 	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(node_values, node_values, 0);
-	}
+
+	return result;
 }
 
-void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alpha)
+double OperationEvalModWavelet::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	detail::DehierarchisationLinearBoundary func(this->storage);
-	sweep<detail::DehierarchisationLinearBoundary> s(func, this->storage);
-
-	// N D case
-	if (this->storage->dim() > 1)
-	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(alpha, alpha, i);
-		}
-	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(alpha, alpha, 0);
-	}
+	mod_Wavelet_base<unsigned int, unsigned int> base;
+	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-}
+};

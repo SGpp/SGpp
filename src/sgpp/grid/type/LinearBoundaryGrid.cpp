@@ -26,10 +26,10 @@
 #include "grid/generation/BoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linearboundary/operation/OperationBLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationEvalLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/operation/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linearboundary/operation/classification/OperationBLinearBoundary.hpp"
+#include "basis/linearboundary/operation/common/OperationEvalLinearBoundary.hpp"
+#include "basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+#include "basis/linearboundary/operation/classification/OperationLaplaceLinearBoundary.hpp"
 
 #include "sgpp.hpp"
 

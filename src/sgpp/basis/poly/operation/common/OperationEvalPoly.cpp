@@ -22,54 +22,40 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
-#include "basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
-#include "basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
+#include "basis/poly/operation/common/OperationEvalPoly.hpp"
 
 #include "sgpp.hpp"
 
-#include "exception/operation_exception.hpp"
-
 #include "data/DataVector.hpp"
+
+#include "exception/operation_exception.hpp"
 
 namespace sg
 {
-/**
- * Implements the hierarchisation on a sprase grid with mod linear base functions
- *
- * @param node_values the functions values in the node base
- *
- * @todo (heinecke, nice) Implement the hierarchisation on the sparse grid with mod linear base functions
- */
-void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_values)
-{
-	detail::HierarchisationModLinear func(this->storage);
-	sweep<detail::HierarchisationModLinear> s(func, this->storage);
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
+double OperationEvalPoly::eval(DataVector& alpha, std::vector<double>& point)
+{
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+
+	IndexValVector vec;
+	GetAffectedBasisFunctions<SPolyBase> ga(storage);
+
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 	{
-		s.sweep1D(node_values, node_values, i);
+		result += iter->second * alpha[iter->first];
 	}
+
+	return result;
 }
 
-/**
- * Implements the dehierarchisation on a sprase grid with mod linear base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- *
- * @todo (heinecke, nice) Implement the dehierarchisation on the sparse grid with mod linear base functions
- */
-void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha)
+double OperationEvalPoly::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	detail::DehierarchisationModLinear func(this->storage);
-	sweep<detail::DehierarchisationModLinear> s(func, this->storage);
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(alpha, alpha, i);
-	}
+	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
 }

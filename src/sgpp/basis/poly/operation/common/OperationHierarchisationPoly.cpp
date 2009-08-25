@@ -22,7 +22,7 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/modwavelet/operation/OperationBModWavelet.hpp"
+#include "basis/poly/operation/common/OperationHierarchisationPoly.hpp"
 
 #include "sgpp.hpp"
 
@@ -33,20 +33,14 @@
 namespace sg
 {
 
-void OperationBModWavelet::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values)
 {
-	AlgorithmDGEMV<SModWaveletBase> op;
-	mod_Wavelet_base<unsigned int, unsigned int> base;
-
-	op.mult(storage, base, alpha, data, result);
+	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
-void OperationBModWavelet::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha)
 {
-	AlgorithmDGEMV<SModWaveletBase> op;
-	mod_Wavelet_base<unsigned int, unsigned int> base;
-
-	op.mult_transpose(storage, base, alpha, data, result);
+	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
-};
+}

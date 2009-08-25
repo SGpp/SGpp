@@ -37,10 +37,10 @@
 
 #include "basis/basis.hpp"
 
-#include "basis/linear/operation/OperationLaplaceLinear.hpp"
-#include "basis/linearboundary/operation/OperationLaplaceLinearBoundary.hpp"
-#include "basis/linearboundaryUScaled/operation/OperationLaplaceLinearBoundaryUScaled.hpp"
-#include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"
+#include "basis/linear/operation/classification/OperationLaplaceLinear.hpp"
+#include "basis/linearboundary/operation/classification/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linearboundaryUScaled/operation/classification/OperationLaplaceLinearBoundaryUScaled.hpp"
+#include "basis/modlinear/operation/classification/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.hpp"
 

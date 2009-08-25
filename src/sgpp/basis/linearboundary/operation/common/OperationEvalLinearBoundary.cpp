@@ -22,7 +22,7 @@
 
 #include "basis/basis.hpp"
 
-#include "basis/linearboundary/operation/OperationBLinearBoundary.hpp"
+#include "basis/linearboundary/operation/common/OperationEvalLinearBoundary.hpp"
 
 #include "sgpp.hpp"
 
@@ -31,20 +31,31 @@
 namespace sg
 {
 
-void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVector& result)
+double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>& point)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
-	linearboundaryBase<unsigned int, unsigned int> base;
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-	op.mult(storage, base, alpha, data, result);
+	IndexValVector vec;
+	linearboundaryBase<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctionsBoundaries<linearboundaryBase<unsigned int, unsigned int> > ga(storage);
+
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	{
+		result += iter->second * alpha[iter->first];
+	}
+
+	return result;
 }
 
-void OperationBLinearBoundary::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+double OperationEvalLinearBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
 	linearboundaryBase<unsigned int, unsigned int> base;
-
-	op.mult_transpose(storage, base, alpha, data, result);
+	return test_dataset_boundary(this->storage, base, alpha, data, classes);
 }
 
 }
+

@@ -22,38 +22,41 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/modwavelet/operation/OperationHierarchisationModWavelet.hpp"
+
+#include "basis/linear/operation/common/OperationEvalLinear.hpp"
 
 #include "sgpp.hpp"
 
 #include "data/DataVector.hpp"
 
-#include "exception/operation_exception.hpp"
-
 namespace sg
 {
-/**
- * Implements the hierarchisation on a sprase grid with mod wavelets base functions
- *
- * @param node_values the functions values in the node base
- *
- * @todo (heinecke, nice) Implement the hierarchisation on the sparse grid with mod wavelets base functions
- */
-void OperationhierarchisationModWavelet::doHierarchisation(DataVector& node_values)
+
+double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+
+	IndexValVector vec;
+	linear_base<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<linear_base<unsigned int, unsigned int> > ga(storage);
+
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	{
+		result += iter->second * alpha[iter->first];
+	}
+
+	return result;
 }
 
-/**
- * Implements the dehierarchisation on a sprase grid with mod wavelets base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- *
- * @todo (heinecke, nice) Implement the dehierarchisation on the sparse grid with mod wavelets base functions
- */
-void OperationhierarchisationModWavelet::doDehierarchisation(DataVector& alpha)
+double OperationEvalLinear::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+	linear_base<unsigned int, unsigned int> base;
+	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-};
+}
+

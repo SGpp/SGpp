@@ -22,23 +22,24 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/poly/operation/OperationEvalPoly.hpp"
+#include "basis/modlinear/operation/common/OperationEvalModLinear.hpp"
 
 #include "sgpp.hpp"
 
-#include "data/DataVector.hpp"
-
 #include "exception/operation_exception.hpp"
+
+#include "data/DataVector.hpp"
 
 namespace sg
 {
 
-double OperationEvalPoly::eval(DataVector& alpha, std::vector<double>& point)
+double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	GetAffectedBasisFunctions<SPolyBase> ga(storage);
+	modified_linear_base<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<modified_linear_base<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 
@@ -52,9 +53,9 @@ double OperationEvalPoly::eval(DataVector& alpha, std::vector<double>& point)
 	return result;
 }
 
-double OperationEvalPoly::test(DataVector& alpha, DataVector& data, DataVector& classes)
+double OperationEvalModLinear::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-
+	modified_linear_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 

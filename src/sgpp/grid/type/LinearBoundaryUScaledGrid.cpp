@@ -26,13 +26,13 @@
 #include "grid/generation/BoundaryUScaledGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/operation/OperationLaplaceLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/classification/OperationBLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/common/OperationHierarchisationLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/classification/OperationLaplaceLinearBoundaryUScaled.hpp"
 
 // @todo (heinecke) removed this when done
-#include "basis/linearboundaryUScaled/operation/OperationUpDownTestLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/operation/common/OperationUpDownTestLinearBoundaryUScaled.hpp"
 
 #include "sgpp.hpp"
 

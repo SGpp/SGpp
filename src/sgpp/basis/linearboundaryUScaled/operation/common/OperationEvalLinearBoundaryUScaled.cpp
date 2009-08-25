@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -22,31 +21,41 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/modlinear/operation/OperationBModLinear.hpp"
+
+#include "basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
 
 #include "sgpp.hpp"
-
-#include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
+double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<double>& point)
 {
-	AlgorithmDGEMV<SModLinearBase> op;
-	modified_linear_base<unsigned int, unsigned int> base;
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-	op.mult(storage, base, alpha, data, result);
+	IndexValVector vec;
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctionsBoundaries<linearboundaryUScaledBase<unsigned int, unsigned int> > ga(storage);
+
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	{
+		result += iter->second * alpha[iter->first];
+	}
+
+	return result;
 }
 
-void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+double OperationEvalLinearBoundaryUScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	AlgorithmDGEMV<SModLinearBase> op;
-	modified_linear_base<unsigned int, unsigned int> base;
-
-	op.mult_transpose(storage, base, alpha, data, result);
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	return test_dataset_boundary(this->storage, base, alpha, data, classes);
 }
 
 }
+

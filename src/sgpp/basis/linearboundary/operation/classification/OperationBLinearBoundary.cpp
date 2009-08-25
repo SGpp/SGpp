@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -22,40 +21,30 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/modpoly/operation/OperationEvalModPoly.hpp"
+
+#include "basis/linearboundary/operation/classification/OperationBLinearBoundary.hpp"
 
 #include "sgpp.hpp"
-
-#include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-double OperationEvalModPoly::eval(DataVector& alpha, std::vector<double>& point)
+void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
+	linearboundaryBase<unsigned int, unsigned int> base;
 
-	IndexValVector vec;
-	GetAffectedBasisFunctions<SModPolyBase> ga(storage);
-
-	ga(base, point, vec);
-
-	double result = 0.0;
-
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-	{
-		result += iter->second * alpha[iter->first];
-	}
-
-	return result;
+	op.mult(storage, base, alpha, data, result);
 }
 
-double OperationEvalModPoly::test(DataVector& alpha, DataVector& data, DataVector& classes)
+void OperationBLinearBoundary::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
+	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
+	linearboundaryBase<unsigned int, unsigned int> base;
 
-	return test_dataset(this->storage, base, alpha, data, classes);
+	op.mult_transpose(storage, base, alpha, data, result);
 }
 
 }

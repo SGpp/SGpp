@@ -22,7 +22,7 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/modpoly/operation/OperationBModPoly.hpp"
+#include "basis/modlinear/operation/classification/OperationBModLinear.hpp"
 
 #include "sgpp.hpp"
 
@@ -33,16 +33,18 @@
 namespace sg
 {
 
-void OperationBModPoly::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMV<SModPolyBase> op;
+	AlgorithmDGEMV<SModLinearBase> op;
+	modified_linear_base<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBModPoly::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMV<SModPolyBase> op;
+	AlgorithmDGEMV<SModLinearBase> op;
+	modified_linear_base<unsigned int, unsigned int> base;
 
 	op.mult_transpose(storage, base, alpha, data, result);
 }
