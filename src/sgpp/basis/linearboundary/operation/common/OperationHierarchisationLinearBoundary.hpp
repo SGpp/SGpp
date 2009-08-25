@@ -23,7 +23,7 @@
 #ifndef OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP
 #define OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP
 
-#include "operation/OperationHierarchisation.hpp"
+#include "operation/common/OperationHierarchisation.hpp"
 #include "grid/GridStorage.hpp"
 
 namespace sg

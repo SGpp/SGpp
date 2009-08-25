@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -22,17 +21,9 @@
 /*****************************************************************************/
 
 
-#include "operation/OperationMatrix.hpp"
+#include "operation/common/OperationMatrix.hpp"
 
-#include "algorithm/classification/UnidirGradient.hpp"
-#include "algorithm/common/sweep.hpp"
-
-#include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-
-#ifdef USEOMP
-#include <omp.h>
-#endif
 
 namespace sg
 {
@@ -45,8 +36,6 @@ class OperationIdentity: public OperationMatrix
 public:
 	/**
 	 * Construtor of OperationIdentity
-	 *
-	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
 	OperationIdentity()
 	{
@@ -55,11 +44,12 @@ public:
 	/**
 	 * Destructor
 	 */
-	//virtual ~OperationLaplaceLinear() {}
+	virtual ~OperationIdentity() {}
 
 	void mult(DataVector& alpha, DataVector& result)
 	{
 		result = alpha;
 	}
 };
+
 }

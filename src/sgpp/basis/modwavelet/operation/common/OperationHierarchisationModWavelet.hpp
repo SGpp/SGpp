@@ -24,7 +24,7 @@
 #ifndef OPERATIONHIERARCHISATIONMODWAVELET_HPP
 #define OPERATIONHIERARCHISATIONMODWAVELET_HPP
 
-#include "operation/OperationHierarchisation.hpp"
+#include "operation/common/OperationHierarchisation.hpp"
 #include "grid/GridStorage.hpp"
 
 namespace sg

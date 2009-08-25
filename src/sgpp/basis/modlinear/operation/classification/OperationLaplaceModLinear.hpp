@@ -29,7 +29,7 @@
 #include "basis/modlinear/algorithm_sweep/LaplaceUpGradientModLinear.hpp"
 #include "basis/modlinear/algorithm_sweep/LaplaceUpModLinear.hpp"
 
-#include "operation/OperationMatrix.hpp"
+#include "operation/common/OperationMatrix.hpp"
 
 #include "algorithm/classification/UnidirGradient.hpp"
 #include "algorithm/common/sweep.hpp"

@@ -23,7 +23,7 @@
 #ifndef OPERATIONEVALLINEARBOUNDARYUSCALED_HPP
 #define OPERATIONEVALLINEARBOUNDARYUSCALED_HPP
 
-#include "operation/OperationEval.hpp"
+#include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
 
 namespace sg

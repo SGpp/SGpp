@@ -24,10 +24,10 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-#include "operation/OperationB.hpp"
-#include "operation/OperationEval.hpp"
-#include "operation/OperationHierarchisation.hpp"
-#include "operation/OperationMatrix.hpp"
+#include "operation/classification/OperationB.hpp"
+#include "operation/common/OperationEval.hpp"
+#include "operation/common/OperationHierarchisation.hpp"
+#include "operation/common/OperationMatrix.hpp"
 
 
 #include "grid/GridStorage.hpp"

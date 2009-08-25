@@ -2,7 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)       */
+/* Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -21,10 +21,6 @@
 /*****************************************************************************/
 
 #include "linearSystem/LinearSystem.hpp"
-#include "data/DataVector.hpp"
-#include "grid/Grid.hpp"
-#include "operation/OperationB.hpp"
-#include "operation/OperationMatrix.hpp"
 
 #include "sgpp.hpp"
 
@@ -42,18 +38,18 @@ namespace sg
 		this->grid = &grid;
 		this->l = l;
 	}
-	
+
 	void LinearSystem::apply(DataVector& vector, DataVector& result)
 	{
 		try{
 			size_t size = (*this->data).getSize();
 			DataVector* temp = new  DataVector(size);
 	        int M = this->data->getSize();
-	    
+
 	        this->bOperation->multTranspose(vector, *this->data, *temp);
 	        this->bOperation->mult(*temp, *this->data, result);
-	
-	        
+
+
 	        temp = new DataVector(vector.getSize());
 	        this->cOperation->mult(vector, *temp);
 	        result.axpy(M * this->l, *temp);
@@ -61,31 +57,31 @@ namespace sg
 		catch(int ex){
 			std::cout<<"Exception #"<<ex<<"catched"<<std::endl;
 		}
-        
+
         /*
          * @todo: impelment C Operators for (khakhutv)
          * - ratio
          * - levelsum
          * - energy
          * - copy
-         * - pseudounit 
+         * - pseudounit
          */
 	}
-	
+
 	void LinearSystem::getRightHandSide(DataVector& result)
 	{
         this->bOperation->mult(*(this->y), *(this->data), result);
 	}
-	
+
 	int LinearSystem::getNumGridPoints()
 	{
 		return this->grid->getStorage()->size();
 	}
-	
+
 	int LinearSystem::getNumInputPoints()
 	{
 		return this->data->getSize();
 	}
-	
+
 
 }
