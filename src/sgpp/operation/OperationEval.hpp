@@ -78,6 +78,8 @@ public:
 	 *
 	 * The function is evaluated at the given points. Tests on the classes {+1, -1}, cut-off at 0.
 	 *
+	 * @todo (heinecke) build own operation for the test routine, so it can be clearly count as classification operation
+	 *
 	 * @param alpha the coefficients of the sparse grid's base functions
 	 * @param data the coordinates of the evaluation points
 	 * @param classes DataVector the holds the class information
