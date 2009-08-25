@@ -116,8 +116,8 @@ SGppStopwatch.o : src/sgpp/common/SGppStopwatch.cpp
 BoundingBox.o : src/sgpp/grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/common/BoundingBox.cpp
 		
-UpDownTest.o : src/sgpp/application/finance/UpDownTest.cpp
-	$(CC) $(CFLAGS) src/sgpp/application/finance/UpDownTest.cpp
+UpDownTest.o : src/sgpp/application/common/UpDownTest.cpp
+	$(CC) $(CFLAGS) src/sgpp/application/common/UpDownTest.cpp
 	
 clean:
 	\rm tmp/build_native/*.o *.o
