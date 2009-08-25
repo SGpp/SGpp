@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -20,40 +21,30 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linear/operation/OperationHierarchisationLinear.hpp"
-#include "basis/linear/algorithm_sweep/HierarchisationLinear.hpp"
-#include "basis/linear/algorithm_sweep/DehierarchisationLinear.hpp"
+#include "basis/basis.hpp"
+#include "basis/poly/operation/classification/OperationBPoly.hpp"
 
 #include "sgpp.hpp"
 
-#include "basis/basis.hpp"
 #include "data/DataVector.hpp"
+
+#include "exception/operation_exception.hpp"
 
 namespace sg
 {
 
-void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
+void OperationBPoly::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	detail::HierarchisationLinear func(this->storage);
-	sweep<detail::HierarchisationLinear> s(func, this->storage);
+	AlgorithmDGEMV<SPolyBase> op;
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(node_values, node_values, i);
-	}
+	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
+void OperationBPoly::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	detail::DehierarchisationLinear func(this->storage);
-	sweep<detail::DehierarchisationLinear> s(func, this->storage);
+	AlgorithmDGEMV<SPolyBase> op;
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(alpha, alpha, i);
-	}
+	op.mult_transpose(storage, base, alpha, data, result);
 }
 
 }

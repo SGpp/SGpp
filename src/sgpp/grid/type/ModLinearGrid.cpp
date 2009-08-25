@@ -27,10 +27,10 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod linear grid
-#include "basis/modlinear/operation/OperationBModLinear.hpp"
-#include "basis/modlinear/operation/OperationEvalModLinear.hpp"
-#include "basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
-#include "basis/modlinear/operation/OperationLaplaceModLinear.hpp"
+#include "basis/modlinear/operation/classification/OperationBModLinear.hpp"
+#include "basis/modlinear/operation/common/OperationEvalModLinear.hpp"
+#include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
+#include "basis/modlinear/operation/classification/OperationLaplaceModLinear.hpp"
 
 #include "sgpp.hpp"
 

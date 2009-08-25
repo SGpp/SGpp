@@ -44,59 +44,59 @@ BoundaryGridGenerator.o : src/sgpp/grid/generation/BoundaryGridGenerator.cpp
 BoundaryUScaledGridGenerator.o : src/sgpp/grid/generation/BoundaryUScaledGridGenerator.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/generation/BoundaryUScaledGridGenerator.cpp
 
-OperationBLinear.o : src/sgpp/basis/linear/operation/OperationBLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/OperationBLinear.cpp
+OperationBLinear.o : src/sgpp/basis/linear/operation/classification/OperationBLinear.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/classification/OperationBLinear.cpp
 
-OperationEvalLinear.o : src/sgpp/basis/linear/operation/OperationEvalLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/OperationEvalLinear.cpp
+OperationEvalLinear.o : src/sgpp/basis/linear/operation/common/OperationEvalLinear.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/common/OperationEvalLinear.cpp
 
-OperationHierarchisationLinear.o : src/sgpp/basis/linear/operation/OperationHierarchisationLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/OperationHierarchisationLinear.cpp
+OperationHierarchisationLinear.o : src/sgpp/basis/linear/operation/common/OperationHierarchisationLinear.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/common/OperationHierarchisationLinear.cpp
 
-OperationBModLinear.o : src/sgpp/basis/modlinear/operation/OperationBModLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/OperationBModLinear.cpp
+OperationBModLinear.o : src/sgpp/basis/modlinear/operation/classification/OperationBModLinear.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/classification/OperationBModLinear.cpp
 
-OperationEvalModLinear.o : src/sgpp/basis/modlinear/operation/OperationEvalModLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/OperationEvalModLinear.cpp
+OperationEvalModLinear.o : src/sgpp/basis/modlinear/operation/common/OperationEvalModLinear.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/common/OperationEvalModLinear.cpp
 
-OperationHierarchisationModLinear.o : src/sgpp/basis/modlinear/operation/OperationHierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/OperationHierarchisationModLinear.cpp
+OperationHierarchisationModLinear.o : src/sgpp/basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
 
-OperationBModPoly.o : src/sgpp/basis/modpoly/operation/OperationBModPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/OperationBModPoly.cpp
+OperationBModPoly.o : src/sgpp/basis/modpoly/operation/classification/OperationBModPoly.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/classification/OperationBModPoly.cpp
 
-OperationEvalModPoly.o : src/sgpp/basis/modpoly/operation/OperationEvalModPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/OperationEvalModPoly.cpp
+OperationEvalModPoly.o : src/sgpp/basis/modpoly/operation/common/OperationEvalModPoly.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/common/OperationEvalModPoly.cpp
 
-OperationHierarchisationModPoly.o : src/sgpp/basis/modpoly/operation/OperationHierarchisationModPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/OperationHierarchisationModPoly.cpp
+OperationHierarchisationModPoly.o : src/sgpp/basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 
-OperationBPoly.o : src/sgpp/basis/poly/operation/OperationBPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/OperationBPoly.cpp
+OperationBPoly.o : src/sgpp/basis/poly/operation/classification/OperationBPoly.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/classification/OperationBPoly.cpp
 
-OperationEvalPoly.o : src/sgpp/basis/poly/operation/OperationEvalPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/OperationEvalPoly.cpp
+OperationEvalPoly.o : src/sgpp/basis/poly/operation/common/OperationEvalPoly.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/common/OperationEvalPoly.cpp
 
-OperationHierarchisationPoly.o : src/sgpp/basis/poly/operation/OperationHierarchisationPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/OperationHierarchisationPoly.cpp
+OperationHierarchisationPoly.o : src/sgpp/basis/poly/operation/common/OperationHierarchisationPoly.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/common/OperationHierarchisationPoly.cpp
 
-OperationHierarchisationLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.cpp
+OperationHierarchisationLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/common/OperationHierarchisationLinearBoundaryUScaled.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/common/OperationHierarchisationLinearBoundaryUScaled.cpp
 
-OperationEvalLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.cpp
+OperationEvalLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.cpp
 
-OperationBLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.cpp
+OperationBLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/classification/OperationBLinearBoundaryUScaled.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/classification/OperationBLinearBoundaryUScaled.cpp
 
-OperationHierarchisationLinearBoundary.o : src/sgpp/basis/linearboundary/operation/OperationHierarchisationLinearBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/OperationHierarchisationLinearBoundary.cpp
+OperationHierarchisationLinearBoundary.o : src/sgpp/basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 
-OperationEvalLinearBoundary.o : src/sgpp/basis/linearboundary/operation/OperationEvalLinearBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/OperationEvalLinearBoundary.cpp
+OperationEvalLinearBoundary.o : src/sgpp/basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
 
-OperationBLinearBoundary.o : src/sgpp/basis/linearboundary/operation/OperationBLinearBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/OperationBLinearBoundary.cpp
+OperationBLinearBoundary.o : src/sgpp/basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
 	
 ARFFTools.o : src/sgpp/tools/classification/ARFFTools.cpp
 	$(CC) $(CFLAGS) src/sgpp/tools/classification/ARFFTools.cpp

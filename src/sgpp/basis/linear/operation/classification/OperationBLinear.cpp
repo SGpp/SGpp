@@ -22,27 +22,28 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/poly/operation/OperationBPoly.hpp"
+
+#include "basis/linear/operation/classification/OperationBLinear.hpp"
 
 #include "sgpp.hpp"
 
 #include "data/DataVector.hpp"
 
-#include "exception/operation_exception.hpp"
-
 namespace sg
 {
 
-void OperationBPoly::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMV<SPolyBase> op;
+	AlgorithmDGEMV<SLinearBase> op;
+	linear_base<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBPoly::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMV<SPolyBase> op;
+	AlgorithmDGEMV<SLinearBase> op;
+	linear_base<unsigned int, unsigned int> base;
 
 	op.mult_transpose(storage, base, alpha, data, result);
 }

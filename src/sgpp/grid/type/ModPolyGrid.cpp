@@ -27,9 +27,9 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod poly grid
-#include "basis/modpoly/operation/OperationBModPoly.hpp"
-#include "basis/modpoly/operation/OperationEvalModPoly.hpp"
-#include "basis/modpoly/operation/OperationHierarchisationModPoly.hpp"
+#include "basis/modpoly/operation/classification/OperationBModPoly.hpp"
+#include "basis/modpoly/operation/common/OperationEvalModPoly.hpp"
+#include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
 
 #include "sgpp.hpp"
 

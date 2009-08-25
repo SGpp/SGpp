@@ -39,24 +39,24 @@ grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
 grid/generation/BoundaryUScaledGridGenerator.cpp
 
-basis/linear/operation/OperationBLinear.cpp
-basis/linear/operation/OperationEvalLinear.cpp
-basis/linear/operation/OperationHierarchisationLinear.cpp
-basis/modlinear/operation/OperationBModLinear.cpp
-basis/modlinear/operation/OperationEvalModLinear.cpp
-basis/modlinear/operation/OperationHierarchisationModLinear.cpp
-basis/modpoly/operation/OperationBModPoly.cpp
-basis/modpoly/operation/OperationEvalModPoly.cpp
-basis/modpoly/operation/OperationHierarchisationModPoly.cpp
-basis/poly/operation/OperationBPoly.cpp
-basis/poly/operation/OperationEvalPoly.cpp
-basis/poly/operation/OperationHierarchisationPoly.cpp
-basis/linearboundary/operation/OperationHierarchisationLinearBoundary.cpp
-basis/linearboundary/operation/OperationEvalLinearBoundary.cpp
-basis/linearboundary/operation/OperationBLinearBoundary.cpp
-basis/linearboundaryUScaled/operation/OperationHierarchisationLinearBoundaryUScaled.cpp
-basis/linearboundaryUScaled/operation/OperationEvalLinearBoundaryUScaled.cpp
-basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.cpp
+basis/linear/operation/classification/OperationBLinear.cpp
+basis/linear/operation/common/OperationEvalLinear.cpp
+basis/linear/operation/common/OperationHierarchisationLinear.cpp
+basis/modlinear/operation/classification/OperationBModLinear.cpp
+basis/modlinear/operation/common/OperationEvalModLinear.cpp
+basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+basis/modpoly/operation/classification/OperationBModPoly.cpp
+basis/modpoly/operation/common/OperationEvalModPoly.cpp
+basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
+basis/poly/operation/classification/OperationBPoly.cpp
+basis/poly/operation/common/OperationEvalPoly.cpp
+basis/poly/operation/common/OperationHierarchisationPoly.cpp
+basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
+basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
+basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
+basis/linearboundaryUScaled/operation/common/OperationHierarchisationLinearBoundaryUScaled.cpp
+basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.cpp
+basis/linearboundaryUScaled/operation/classification/OperationBLinearBoundaryUScaled.cpp
 
 algorithm/classification/DMSystemMatrix.cpp
 

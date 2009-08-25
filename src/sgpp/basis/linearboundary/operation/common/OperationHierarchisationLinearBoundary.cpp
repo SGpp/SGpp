@@ -1,4 +1,4 @@
-/*****************************************************************************/
+ /*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
@@ -20,31 +20,56 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/basis.hpp"
-
-#include "basis/linearboundaryUScaled/operation/OperationBLinearBoundaryUScaled.hpp"
+#include "basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+#include "basis/linearboundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"
+#include "basis/linearboundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp"
 
 #include "sgpp.hpp"
 
+#include "basis/basis.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-void OperationBLinearBoundaryUScaled::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationHierarchisationLinearBoundary::doHierarchisation(DataVector& node_values)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryUScaledBase> op;
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	detail::HierarchisationLinearBoundary func(this->storage);
+	sweep<detail::HierarchisationLinearBoundary> s(func, this->storage);
 
-	op.mult(storage, base, alpha, data, result);
+	// N D case
+	if (this->storage->dim() > 1)
+	{
+		for (size_t i = 0; i < this->storage->dim(); i++)
+		{
+			s.sweep1D_Boundary(node_values, node_values, i);
+		}
+	}
+	// 1 D case
+	else
+	{
+		s.sweep1D(node_values, node_values, 0);
+	}
 }
 
-void OperationBLinearBoundaryUScaled::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alpha)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryUScaledBase> op;
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	detail::DehierarchisationLinearBoundary func(this->storage);
+	sweep<detail::DehierarchisationLinearBoundary> s(func, this->storage);
 
-	op.mult_transpose(storage, base, alpha, data, result);
+	// N D case
+	if (this->storage->dim() > 1)
+	{
+		for (size_t i = 0; i < this->storage->dim(); i++)
+		{
+			s.sweep1D_Boundary(alpha, alpha, i);
+		}
+	}
+	// 1 D case
+	else
+	{
+		s.sweep1D(alpha, alpha, 0);
+	}
 }
 
 }

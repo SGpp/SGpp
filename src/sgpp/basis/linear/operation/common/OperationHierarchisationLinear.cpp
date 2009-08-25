@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,42 +20,40 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/basis.hpp"
-
-#include "basis/linear/operation/OperationEvalLinear.hpp"
+#include "basis/linear/operation/common/OperationHierarchisationLinear.hpp"
+#include "basis/linear/algorithm_sweep/HierarchisationLinear.hpp"
+#include "basis/linear/algorithm_sweep/DehierarchisationLinear.hpp"
 
 #include "sgpp.hpp"
 
+#include "basis/basis.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
+void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
 {
-	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+	detail::HierarchisationLinear func(this->storage);
+	sweep<detail::HierarchisationLinear> s(func, this->storage);
 
-	IndexValVector vec;
-	linear_base<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<linear_base<unsigned int, unsigned int> > ga(storage);
-
-	ga(base, point, vec);
-
-	double result = 0.0;
-
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
 	{
-		result += iter->second * alpha[iter->first];
+		s.sweep1D(node_values, node_values, i);
 	}
-
-	return result;
 }
 
-double OperationEvalLinear::test(DataVector& alpha, DataVector& data, DataVector& classes)
+void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
 {
-	linear_base<unsigned int, unsigned int> base;
-	return test_dataset(this->storage, base, alpha, data, classes);
+	detail::DehierarchisationLinear func(this->storage);
+	sweep<detail::DehierarchisationLinear> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(alpha, alpha, i);
+	}
 }
 
 }
-
