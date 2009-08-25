@@ -27,10 +27,10 @@
 // Optimizations currently useless
 //#define SGPP_OPTIMIZE
 
-#include "algorithm/AlgorithmDGEMV.hpp"
-#include "algorithm/AlgorithmDGEMVBoundaries.hpp"
-#include "algorithm/GetAffectedBasisFunctions.hpp"
-#include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
+#include "algorithm/classification/AlgorithmDGEMV.hpp"
+#include "algorithm/classification/AlgorithmDGEMVBoundaries.hpp"
+#include "algorithm/common/GetAffectedBasisFunctions.hpp"
+#include "algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/classification/test_dataset.hpp"
 #include "algorithm/classification/test_dataset_boundary.hpp"
 #include "algorithm/classification/DMSystemMatrix.hpp"

@@ -26,7 +26,7 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
-#include "algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
+#include "algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
 
 #include <vector>
 #include <utility>
