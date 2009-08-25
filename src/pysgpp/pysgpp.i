@@ -82,14 +82,14 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
-%include "src/sgpp/algorithm/AlgorithmDGEMV.hpp"
-%include "src/sgpp/algorithm/AlgorithmDGEMVBoundaries.hpp"
+%include "src/sgpp/algorithm/classification/AlgorithmDGEMV.hpp"
+%include "src/sgpp/algorithm/classification/AlgorithmDGEMVBoundaries.hpp"
 %include "src/sgpp/algorithm/classification/test_dataset.hpp"
 %include "src/sgpp/algorithm/classification/test_dataset_boundary.hpp"
-%include "src/sgpp/algorithm/GetAffectedBasisFunctions.hpp"
-%include "src/sgpp/algorithm/GetAffectedBasisFunctionsBoundaries.hpp"
-%include "src/sgpp/algorithm/sweep.hpp"
-%include "src/sgpp/algorithm/UnidirGradient.hpp"
+%include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
+%include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
+%include "src/sgpp/algorithm/common/sweep.hpp"
+%include "src/sgpp/algorithm/classification/UnidirGradient.hpp"
 %include "src/sgpp/algorithm/classification/DMSystemMatrix.hpp"
 
 %include "src/sgpp/basis/linear/linear_base.hpp"

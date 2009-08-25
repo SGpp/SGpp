@@ -28,8 +28,8 @@
 
 #include "operation/OperationMatrix.hpp"
 
-#include "algorithm/UnidirGradient.hpp"
-#include "algorithm/sweep.hpp"
+#include "algorithm/classification/UnidirGradient.hpp"
+#include "algorithm/common/sweep.hpp"
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"

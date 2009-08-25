@@ -28,7 +28,7 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
-#include "algorithm/GetAffectedBasisFunctions.hpp"
+#include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
 #include <vector>
 #include <utility>
