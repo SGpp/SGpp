@@ -20,58 +20,23 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYGRID_HPP
-#define LINEARBOUNDARYGRID_HPP
-
-#include "grid/Grid.hpp"
-
-#include <iostream>
+#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"
 
 namespace sg
 {
 
-/**
- * grid with linear base functions with boundaries
- */
-class LinearBoundaryGrid : public Grid
+OperationGammaPartOneLinearTrapezoidBoundary::OperationGammaPartOneLinearTrapezoidBoundary(GridStorage* storage)
 {
-protected:
-	LinearBoundaryGrid(std::istream& istr);
-
-public:
-	/**
-	 * Constructor for the Linear Boundary Grid
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	LinearBoundaryGrid(size_t dim);
-
-	/**
-	 * Destructor
-	 */
-	virtual ~LinearBoundaryGrid();
-
-	virtual const char* getType();
-
-	virtual OperationB* createOperationB();
-	virtual GridGenerator* createGridGenerator();
-	virtual OperationMatrix* createOperationLaplace();
-	virtual OperationEval* createOperationEval();
-	virtual OperationHierarchisation* createOperationHierarchisation();
-
-	// @todo (heinecke) remove this when done
-	virtual OperationMatrix* createOperationUpDownTest();
-
-	// finance operations
-	virtual OperationMatrix* createOperationDelta();
-	virtual OperationMatrix* createOperationGammaPartOne();
-	virtual OperationMatrix* createOperationGammaPartTwo();
-	virtual OperationMatrix* createOperationGammaPartThree();
-	virtual OperationMatrix* createOperationRiskfreeRate();
-
-	static Grid* unserialize(std::istream& istr);
-};
-
+	this->storage = storage;
 }
 
-#endif /* LINEARBOUNDARYGRID_HPP */
+OperationGammaPartOneLinearTrapezoidBoundary::~OperationGammaPartOneLinearTrapezoidBoundary()
+{
+}
+
+void OperationGammaPartOneLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
+{
+	// @todo heinecke implement this method
+}
+
+}

@@ -20,58 +20,46 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYGRID_HPP
-#define LINEARBOUNDARYGRID_HPP
+#ifndef OPERATIONGAMMAPARTONELINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONGAMMAPARTONELINEARTRAPEZOIDBOUNDARY_HPP
 
-#include "grid/Grid.hpp"
+#include "operation/common/OperationMatrix.hpp"
 
-#include <iostream>
+#include "grid/GridStorage.hpp"
+#include "data/DataVector.hpp"
 
 namespace sg
 {
 
 /**
- * grid with linear base functions with boundaries
+ * @todo heinecke add description
  */
-class LinearBoundaryGrid : public Grid
+class OperationGammaPartOneLinearTrapezoidBoundary: public OperationMatrix
 {
-protected:
-	LinearBoundaryGrid(std::istream& istr);
-
 public:
 	/**
-	 * Constructor for the Linear Boundary Grid
+	 * Constructor
 	 *
-	 * @param dim the dimension of the grid
+	 * @param storage the grid's GridStorage object
 	 */
-	LinearBoundaryGrid(size_t dim);
+	OperationGammaPartOneLinearTrapezoidBoundary(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~LinearBoundaryGrid();
+	virtual ~OperationGammaPartOneLinearTrapezoidBoundary();
 
-	virtual const char* getType();
 
-	virtual OperationB* createOperationB();
-	virtual GridGenerator* createGridGenerator();
-	virtual OperationMatrix* createOperationLaplace();
-	virtual OperationEval* createOperationEval();
-	virtual OperationHierarchisation* createOperationHierarchisation();
+	virtual void mult(DataVector& alpha, DataVector& result);
 
-	// @todo (heinecke) remove this when done
-	virtual OperationMatrix* createOperationUpDownTest();
+protected:
+	typedef GridStorage::grid_iterator grid_iterator;
 
-	// finance operations
-	virtual OperationMatrix* createOperationDelta();
-	virtual OperationMatrix* createOperationGammaPartOne();
-	virtual OperationMatrix* createOperationGammaPartTwo();
-	virtual OperationMatrix* createOperationGammaPartThree();
-	virtual OperationMatrix* createOperationRiskfreeRate();
+	/// Pointer to the grid's storage object
+	GridStorage* storage;
 
-	static Grid* unserialize(std::istream& istr);
 };
 
 }
 
-#endif /* LINEARBOUNDARYGRID_HPP */
+#endif /* OPERATIONGAMMAPARTONELINEARTRAPEZOIDBOUNDARY_HPP */

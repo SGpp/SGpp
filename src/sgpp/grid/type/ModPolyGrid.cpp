@@ -105,4 +105,31 @@ OperationMatrix* ModPolyGrid::createOperationUpDownTest()
 	throw factory_exception("Unsupported operation");
 }
 
+// finance operations
+/////////////////////
+OperationMatrix* ModPolyGrid::createOperationDelta()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModPolyGrid::createOperationGammaPartOne()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModPolyGrid::createOperationGammaPartTwo()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModPolyGrid::createOperationGammaPartThree()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModPolyGrid::createOperationRiskfreeRate()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

@@ -20,58 +20,68 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYGRID_HPP
-#define LINEARBOUNDARYGRID_HPP
+#ifndef BLACKSCHOLESTIMESTEPMATRIX_HPP
+#define BLACKSCHOLESTIMESTEPMATRIX_HPP
 
+#include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-
-#include <iostream>
+#include "operation/common/OperationMatrix.hpp"
 
 namespace sg
 {
 
 /**
- * grid with linear base functions with boundaries
+ * @todo (heinecke) add description here
  */
-class LinearBoundaryGrid : public Grid
+class BlackScholesTimestepMatrix : public OperationMatrix
 {
-protected:
-	LinearBoundaryGrid(std::istream& istr);
+private:
+	/// the riskfree interest rate
+	double r;
+	/// the delta Operation
+	OperationMatrix* OpDelta;
+	/// First part of the Gamma Operation
+	OperationMatrix* OpGammaOne;
+	/// Second part of the Gamma Operation
+	OperationMatrix* OpGammaTwo;
+	/// Third part of the Gamma Operation
+	OperationMatrix* OpGammaThree;
+	/// applying the riskfree rate
+	OperationMatrix* OpRiskfree;
+	/// Pointer to the mus
+	DataVector* mus;
+	/// Pointer to the sigmas
+	DataVector* sigmas;
+	/// Pointer to the rhos;
+	DataVector* rhos;
 
 public:
 	/**
-	 * Constructor for the Linear Boundary Grid
+	 * Std-Constructor
 	 *
-	 * @param dim the dimension of the grid
+	 * @param SparseGrid reference to the sparse grid
+	 * @param sigma reference to the mus
+	 * @param sigma reference to the sigmas
+	 * @param rho reference to the rhos
+	 * @param r the riskfree interest rate
 	 */
-	LinearBoundaryGrid(size_t dim);
+	BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r);
 
 	/**
-	 * Destructor
+	 * Std-Destructor
 	 */
-	virtual ~LinearBoundaryGrid();
+	virtual ~BlackScholesTimestepMatrix();
 
-	virtual const char* getType();
+	virtual void mult(DataVector& alpha, DataVector& result);
 
-	virtual OperationB* createOperationB();
-	virtual GridGenerator* createGridGenerator();
-	virtual OperationMatrix* createOperationLaplace();
-	virtual OperationEval* createOperationEval();
-	virtual OperationHierarchisation* createOperationHierarchisation();
-
-	// @todo (heinecke) remove this when done
-	virtual OperationMatrix* createOperationUpDownTest();
-
-	// finance operations
-	virtual OperationMatrix* createOperationDelta();
-	virtual OperationMatrix* createOperationGammaPartOne();
-	virtual OperationMatrix* createOperationGammaPartTwo();
-	virtual OperationMatrix* createOperationGammaPartThree();
-	virtual OperationMatrix* createOperationRiskfreeRate();
-
-	static Grid* unserialize(std::istream& istr);
+	/**
+	 * Generates the right hand side of the system of linear equation
+	 *
+	 * @param rhs reference to the vector that will contain the result of the matrix vector multiplication on the rhs
+	 */
+	void generateRHS(DataVector& rhs);
 };
 
 }
 
-#endif /* LINEARBOUNDARYGRID_HPP */
+#endif /* BLACKSCHOLESTIMESTEPMATRIX_HPP */

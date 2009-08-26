@@ -103,4 +103,31 @@ OperationMatrix* PolyGrid::createOperationUpDownTest()
 	throw factory_exception("Unsupported operation");
 }
 
+// finance operations
+/////////////////////
+OperationMatrix* PolyGrid::createOperationDelta()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* PolyGrid::createOperationGammaPartOne()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* PolyGrid::createOperationGammaPartTwo()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* PolyGrid::createOperationGammaPartThree()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* PolyGrid::createOperationRiskfreeRate()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }
