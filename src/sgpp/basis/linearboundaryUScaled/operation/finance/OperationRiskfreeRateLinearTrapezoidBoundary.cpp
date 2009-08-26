@@ -21,6 +21,10 @@
 /*****************************************************************************/
 
 #include "basis/linearboundaryUScaled/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
+#include "basis/linearboundaryUScaled/algorithm_sweep/PhiPhiDownLinearBoundaryUScaled.hpp"
+#include "basis/linearboundaryUScaled/algorithm_sweep/PhiPhiUpLinearBoundaryUScaled.hpp"
+
+#include "algorithm/common/sweep.hpp"
 
 namespace sg
 {
@@ -36,7 +40,69 @@ OperationRiskfreeRateLinearTrapezoidBoundary::~OperationRiskfreeRateLinearTrapez
 
 void OperationRiskfreeRateLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
-	// @todo heinecke implement this method
+	result.setAll(0.0);
+
+	this->updown(alpha, result, storage->dim()-1);
+}
+
+/**
+ * Recursive procedure for updown
+ *
+ * @param dim the current dimension
+ * @param alpha vector of coefficients
+ * @param result vector to store the results in
+ */
+void OperationRiskfreeRateLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector& result, size_t dim)
+{
+	//Unidirectional scheme
+	if(dim > 0)
+	{
+		// Reordering ups and downs
+		// Use previously calculated ups for all future calculations
+		// U* -> UU* and UD*
+
+		DataVector temp(alpha.getSize());
+		up(alpha, temp, dim);
+		updown(temp, result, dim-1);
+
+		// Same from the other direction:
+		// *D -> *UD and *DD
+
+		DataVector result_temp(alpha.getSize());
+		updown(alpha, temp, dim-1);
+		down(temp, result_temp, dim);
+
+		//Overall memory use: 2*|alpha|*(d-1)
+		result.add(result_temp);
+	}
+	else
+	{
+		// Terminates dimension recursion
+		up(alpha, result, dim);
+
+		DataVector temp(alpha.getSize());
+		down(alpha, temp, dim);
+
+		result.add(temp);
+	}
+}
+
+void OperationRiskfreeRateLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+{
+	// phi * phi
+	detail::PhiPhiUpLinearBoundaryUScaled func(this->storage);
+	sweep<detail::PhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
+}
+
+void OperationRiskfreeRateLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+{
+	// phi * phi
+	detail::PhiPhiDownLinearBoundaryUScaled func(this->storage);
+	sweep<detail::PhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
 }
 
 }
