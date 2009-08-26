@@ -76,6 +76,12 @@ public:
 	// @todo remove this when done
 	virtual OperationMatrix* createOperationUpDownTest() = 0;
 	
+	virtual OperationMatrix* createOperationDelta() = 0;
+	virtual OperationMatrix* createOperationGammaPartOne() = 0;
+	virtual OperationMatrix* createOperationGammaPartTwo() = 0;
+	virtual OperationMatrix* createOperationGammaPartThree() = 0;
+	virtual OperationMatrix* createOperationRiskfreeRate() = 0;
+	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
 

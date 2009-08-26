@@ -97,4 +97,31 @@ OperationMatrix* LinearBoundaryGrid::createOperationUpDownTest()
 	throw factory_exception("Unsupported operation");
 }
 
+// finance operations
+/////////////////////
+OperationMatrix* LinearBoundaryGrid::createOperationDelta()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationGammaPartOne()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationGammaPartTwo()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationGammaPartThree()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationRiskfreeRate()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

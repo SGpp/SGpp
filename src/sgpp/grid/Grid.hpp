@@ -186,6 +186,31 @@ public:
 	virtual OperationMatrix* createOperationUpDownTest() = 0;
 
 	/**
+	 * @todo (heinecke) add description
+	 */
+	virtual OperationMatrix* createOperationDelta() = 0;
+
+	/**
+	 * @todo (heinecke) add description
+	 */
+	virtual OperationMatrix* createOperationGammaPartOne() = 0;
+
+	/**
+	 * @todo (heinecke) add description
+	 */
+	virtual OperationMatrix* createOperationGammaPartTwo() = 0;
+
+	/**
+	 * @todo (heinecke) add description
+	 */
+	virtual OperationMatrix* createOperationGammaPartThree() = 0;
+
+	/**
+	 * @todo (heinecke) add description
+	 */
+	virtual OperationMatrix* createOperationRiskfreeRate() = 0;
+
+	/**
 	 * gets a pointer to OperationIdentity (OperationMatrix) object
 	 *
 	 * @return point to the OperationIdentity object

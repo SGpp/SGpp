@@ -20,58 +20,44 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYGRID_HPP
-#define LINEARBOUNDARYGRID_HPP
-
-#include "grid/Grid.hpp"
-
-#include <iostream>
+#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 
 namespace sg
 {
 
-/**
- * grid with linear base functions with boundaries
- */
-class LinearBoundaryGrid : public Grid
+BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r)
 {
-protected:
-	LinearBoundaryGrid(std::istream& istr);
-
-public:
-	/**
-	 * Constructor for the Linear Boundary Grid
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	LinearBoundaryGrid(size_t dim);
-
-	/**
-	 * Destructor
-	 */
-	virtual ~LinearBoundaryGrid();
-
-	virtual const char* getType();
-
-	virtual OperationB* createOperationB();
-	virtual GridGenerator* createGridGenerator();
-	virtual OperationMatrix* createOperationLaplace();
-	virtual OperationEval* createOperationEval();
-	virtual OperationHierarchisation* createOperationHierarchisation();
-
-	// @todo (heinecke) remove this when done
-	virtual OperationMatrix* createOperationUpDownTest();
-
-	// finance operations
-	virtual OperationMatrix* createOperationDelta();
-	virtual OperationMatrix* createOperationGammaPartOne();
-	virtual OperationMatrix* createOperationGammaPartTwo();
-	virtual OperationMatrix* createOperationGammaPartThree();
-	virtual OperationMatrix* createOperationRiskfreeRate();
-
-	static Grid* unserialize(std::istream& istr);
-};
-
+	this->OpDelta = SparseGrid.createOperationDelta();
+	this->OpGammaOne = SparseGrid.createOperationGammaPartOne();
+	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo();
+	this->OpGammaThree = SparseGrid.createOperationGammaPartThree();
+	this->OpRiskfree = SparseGrid.createOperationRiskfreeRate();
+	this->r = r;
+	this->mus = &mu;
+	this->sigmas = &sigma;
+	this->rhos = &rho;
 }
 
-#endif /* LINEARBOUNDARYGRID_HPP */
+BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
+{
+	delete this->OpDelta;
+	delete this->OpGammaOne;
+	delete this->OpGammaTwo;
+	delete this->OpGammaThree;
+	delete this->OpRiskfree;
+}
+
+void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
+{
+	// Apply the riskfree rate
+	DataVector tempRiskfree(alpha.getSize());
+	this->OpRiskfree->mult(alpha, tempRiskfree);
+	result.axpy(((-1.0)*this->r), tempRiskfree);
+}
+
+void BlackScholesTimestepMatrix::generateRHS(DataVector& rhs)
+{
+	// @todo (heinecke) implement
+}
+
+}

@@ -62,6 +62,13 @@ public:
 	// @todo (heinecke) remove this when done
 	virtual OperationMatrix* createOperationUpDownTest();
 
+	// finance operations
+	virtual OperationMatrix* createOperationDelta();
+	virtual OperationMatrix* createOperationGammaPartOne();
+	virtual OperationMatrix* createOperationGammaPartTwo();
+	virtual OperationMatrix* createOperationGammaPartThree();
+	virtual OperationMatrix* createOperationRiskfreeRate();
+
 	static Grid* unserialize(std::istream& istr);
 };
 

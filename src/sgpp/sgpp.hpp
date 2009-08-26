@@ -34,6 +34,7 @@
 #include "algorithm/classification/test_dataset.hpp"
 #include "algorithm/classification/test_dataset_boundary.hpp"
 #include "algorithm/classification/DMSystemMatrix.hpp"
+#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 
 #include "basis/basis.hpp"
 

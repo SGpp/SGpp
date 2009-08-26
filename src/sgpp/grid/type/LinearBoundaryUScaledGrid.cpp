@@ -34,6 +34,12 @@
 // @todo (heinecke) removed this when done
 #include "basis/linearboundaryUScaled/operation/common/OperationUpDownTestLinearBoundaryUScaled.hpp"
 
+#include "basis/linearboundaryUScaled/operation/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
+#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"
+#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.hpp"
+#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
+#include "basis/linearboundaryUScaled/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>
@@ -98,6 +104,33 @@ OperationHierarchisation* LinearBoundaryUScaledGrid::createOperationHierarchisat
 OperationMatrix* LinearBoundaryUScaledGrid::createOperationUpDownTest()
 {
 	return new OperationUpDownTestLinearBoundaryUScaled(this->storage);
+}
+
+// finance operations
+/////////////////////
+OperationMatrix* LinearBoundaryUScaledGrid::createOperationDelta()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryUScaledGrid::createOperationGammaPartOne()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryUScaledGrid::createOperationGammaPartTwo()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryUScaledGrid::createOperationGammaPartThree()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearBoundaryUScaledGrid::createOperationRiskfreeRate()
+{
+	throw factory_exception("Unsupported operation");
 }
 
 }
