@@ -23,17 +23,17 @@
 #ifndef OPERATIONUPDOWNTESTLINEARBOUNDARYUSCALED_HPP
 #define OPERATIONUPDOWNTESTLINEARBOUNDARYUSCALED_HPP
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiDownLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiUpLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiUpLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XPhiPhiDownLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XPhiPhiUpLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XPhiPhiDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XPhiPhiUpLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpLinearTrapezoidBoundary.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
 

@@ -20,7 +20,7 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /******************************************************************************/
 
-#include "grid/generation/BoundaryUScaledGridGenerator.hpp"
+#include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 #include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"
