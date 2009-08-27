@@ -66,7 +66,7 @@ public:
 	virtual OperationMatrix* createOperationUpDownTest();
 
 	// finance operations
-	virtual OperationMatrix* createOperationDelta();
+	virtual OperationMatrix* createOperationDelta(DataVector& mu);
 	virtual OperationMatrix* createOperationGammaPartOne();
 	virtual OperationMatrix* createOperationGammaPartTwo();
 	virtual OperationMatrix* createOperationGammaPartThree();

@@ -108,29 +108,29 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
 
 // finance operations
 /////////////////////
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& mu)
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationDeltaLinearTrapezoidBoundary(this->storage, mu);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartOne()
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationGammaPartOneLinearTrapezoidBoundary(this->storage);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartTwo()
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationGammaPartTwoLinearTrapezoidBoundary(this->storage);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartThree()
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationGammaPartThreeLinearTrapezoidBoundary(this->storage);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationRiskfreeRate()
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationRiskfreeRateLinearTrapezoidBoundary(this->storage);
 }
 
 }

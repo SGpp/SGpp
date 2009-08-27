@@ -27,7 +27,7 @@ namespace sg
 
 BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r)
 {
-	this->OpDelta = SparseGrid.createOperationDelta();
+	this->OpDelta = SparseGrid.createOperationDelta(mu);
 	this->OpGammaOne = SparseGrid.createOperationGammaPartOne();
 	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo();
 	this->OpGammaThree = SparseGrid.createOperationGammaPartThree();
@@ -49,6 +49,11 @@ BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 
 void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 {
+	// Apply the the delta method
+	DataVector tempDelta(alpha.getSize());
+	this->OpDelta->mult(alpha, tempDelta);
+	result.add(tempDelta);
+
 	// Apply the riskfree rate
 	DataVector tempRiskfree(alpha.getSize());
 	this->OpRiskfree->mult(alpha, tempRiskfree);

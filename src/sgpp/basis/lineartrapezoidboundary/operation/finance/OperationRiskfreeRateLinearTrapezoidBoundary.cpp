@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
+
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
 
@@ -40,6 +41,8 @@ OperationRiskfreeRateLinearTrapezoidBoundary::~OperationRiskfreeRateLinearTrapez
 
 void OperationRiskfreeRateLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
+	result.setAll(0.0);
+
 	this->updown(alpha, result, storage->dim()-1);
 }
 
