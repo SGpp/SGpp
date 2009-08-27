@@ -21,18 +21,18 @@
 /*****************************************************************************/
 
 #include "grid/Grid.hpp"
-#include "grid/type/LinearBoundaryUScaledGrid.hpp"
+#include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 
-#include "grid/generation/BoundaryUScaledGridGenerator.hpp"
+#include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/lineartrapezoidboundary/operation/classification/OperationBLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearTrapezoidBoundary.hpp"
 
 // @todo (heinecke) removed this when done
-#include "basis/lineartrapezoidboundary/operation/common/OperationUpDownTestLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationUpDownTestLinearTrapezoidBoundary.hpp"
 
 #include "basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"

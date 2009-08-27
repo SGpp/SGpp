@@ -1,4 +1,4 @@
-/*****************************************************************************/
+ /*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
@@ -20,42 +20,56 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/basis.hpp"
-
-#include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/HierarchisationLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/DehierarchisationLinearTrapezoidBoundary.hpp"
 
 #include "sgpp.hpp"
 
+#include "basis/basis.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<double>& point)
+void OperationHierarchisationLinearBoundaryUScaled::doHierarchisation(DataVector& node_values)
 {
-	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+	detail::HierarchisationLinearBoundaryUScaled func(this->storage);
+	sweep<detail::HierarchisationLinearBoundaryUScaled> s(func, this->storage);
 
-	IndexValVector vec;
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctionsBoundaries<linearboundaryUScaledBase<unsigned int, unsigned int> > ga(storage);
-
-	ga(base, point, vec);
-
-	double result = 0.0;
-
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	// N D case
+	if (this->storage->dim() > 1)
 	{
-		result += iter->second * alpha[iter->first];
+		for (size_t i = 0; i < this->storage->dim(); i++)
+		{
+			s.sweep1D_Boundary(node_values, node_values, i);
+		}
 	}
-
-	return result;
+	// 1 D case
+	else
+	{
+		s.sweep1D(node_values, node_values, 0);
+	}
 }
 
-double OperationEvalLinearBoundaryUScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
+void OperationHierarchisationLinearBoundaryUScaled::doDehierarchisation(DataVector& alpha)
 {
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
-	return test_dataset_boundary(this->storage, base, alpha, data, classes);
+	detail::DehierarchisationLinearBoundaryUScaled func(this->storage);
+	sweep<detail::DehierarchisationLinearBoundaryUScaled> s(func, this->storage);
+
+	// N D case
+	if (this->storage->dim() > 1)
+	{
+		for (size_t i = 0; i < this->storage->dim(); i++)
+		{
+			s.sweep1D_Boundary(alpha, alpha, i);
+		}
+	}
+	// 1 D case
+	else
+	{
+		s.sweep1D(alpha, alpha, 0);
+	}
 }
 
 }
-

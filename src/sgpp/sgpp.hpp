@@ -40,7 +40,7 @@
 
 #include "basis/linear/operation/classification/OperationLaplaceLinear.hpp"
 #include "basis/linearboundary/operation/classification/OperationLaplaceLinearBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearTrapezoidBoundary.hpp"
 #include "basis/modlinear/operation/classification/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.hpp"
@@ -50,7 +50,7 @@
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/StandardGridGenerator.hpp"
 #include "grid/generation/BoundaryGridGenerator.hpp"
-#include "grid/generation/BoundaryUScaledGridGenerator.hpp"
+#include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/generation/hashmap/HashGenerator.hpp"
 #include "grid/generation/hashmap/HashRefinement.hpp"

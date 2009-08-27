@@ -30,14 +30,14 @@ data/DataVector.cpp
 grid/Grid.cpp
 grid/common/BoundingBox.cpp
 grid/type/LinearBoundaryGrid.cpp
-grid/type/LinearBoundaryUScaledGrid.cpp
+grid/type/LinearTrapezoidBoundaryGrid.cpp
 grid/type/LinearGrid.cpp
 grid/type/ModLinearGrid.cpp
 grid/type/ModPolyGrid.cpp
 grid/type/PolyGrid.cpp
 grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
-grid/generation/BoundaryUScaledGridGenerator.cpp
+grid/generation/TrapezoidBoundaryGridGenerator.cpp
 
 basis/linear/operation/classification/OperationBLinear.cpp
 basis/linear/operation/common/OperationEvalLinear.cpp
@@ -54,9 +54,9 @@ basis/poly/operation/common/OperationHierarchisationPoly.cpp
 basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
 basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
-basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearBoundaryUScaled.cpp
-basis/lineartrapezoidboundary/operation/common/OperationEvalLinearBoundaryUScaled.cpp
-basis/lineartrapezoidboundary/operation/classification/OperationBLinearBoundaryUScaled.cpp
+basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.cpp
+basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.cpp
+basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.cpp

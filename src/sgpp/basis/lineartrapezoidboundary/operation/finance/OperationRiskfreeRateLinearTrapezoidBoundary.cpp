@@ -21,8 +21,8 @@
 /*****************************************************************************/
 
 #include "basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearBoundaryUScaled.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
 

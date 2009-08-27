@@ -24,7 +24,7 @@
 #include "grid/Grid.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
-#include "grid/type/LinearBoundaryUScaledGrid.hpp"
+#include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
