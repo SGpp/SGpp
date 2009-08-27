@@ -23,8 +23,8 @@
 #ifndef OPERATIONLAPLACELINEARBOUNDARYUSCALED_HPP
 #define OPERATIONLAPLACELINEARBOUNDARYUSCALED_HPP
 
-#include "basis/linearboundaryUScaled/algorithm_sweep/PhiPhiDownLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/algorithm_sweep/PhiPhiUpLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearBoundaryUScaled.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
 

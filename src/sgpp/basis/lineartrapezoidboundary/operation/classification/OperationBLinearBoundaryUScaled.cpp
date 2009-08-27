@@ -20,23 +20,31 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.hpp"
+#include "basis/basis.hpp"
+
+#include "basis/lineartrapezoidboundary/operation/classification/OperationBLinearBoundaryUScaled.hpp"
+
+#include "sgpp.hpp"
+
+#include "data/DataVector.hpp"
 
 namespace sg
 {
 
-OperationGammaPartTwoLinearTrapezoidBoundary::OperationGammaPartTwoLinearTrapezoidBoundary(GridStorage* storage)
+void OperationBLinearBoundaryUScaled::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	this->storage = storage;
+	AlgorithmDGEMVBoundaries<SLinearBoundaryUScaledBase> op;
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+
+	op.mult(storage, base, alpha, data, result);
 }
 
-OperationGammaPartTwoLinearTrapezoidBoundary::~OperationGammaPartTwoLinearTrapezoidBoundary()
+void OperationBLinearBoundaryUScaled::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-}
+	AlgorithmDGEMVBoundaries<SLinearBoundaryUScaledBase> op;
+	linearboundaryUScaledBase<unsigned int, unsigned int> base;
 
-void OperationGammaPartTwoLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
-{
-	// @todo heinecke implement this method
+	op.mult_transpose(storage, base, alpha, data, result);
 }
 
 }

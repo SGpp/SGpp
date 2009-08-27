@@ -95,7 +95,7 @@ namespace std {
 
 %include "src/sgpp/basis/linear/linear_base.hpp"
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"
-%include "src/sgpp/basis/linearboundaryUScaled/linearboundaryUScaledBase.hpp"
+%include "src/sgpp/basis/lineartrapezoidboundary/linearboundaryUScaledBase.hpp"
 %include "src/sgpp/basis/modlinear/modified_linear_base.hpp"
 %include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
 %include "src/sgpp/basis/poly/poly_base.hpp"
