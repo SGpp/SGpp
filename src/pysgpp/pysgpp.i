@@ -117,7 +117,7 @@ namespace std {
 
 %template(SLinearBase) sg::linear_base<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) sg::linearboundaryBase<unsigned int, unsigned int>;
-%template(SLinearBoundaryUScaledBase) sg::linearboundaryUScaledBase<unsigned int, unsigned int>;
+%template(SLinearTrapezoidBoundaryBase) sg::lineartrapezoidboundaryBase<unsigned int, unsigned int>;
 %template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
 %template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
@@ -126,9 +126,9 @@ namespace std {
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryBase>;
-%template(SGetAffectedBasisFunctionsBoundariesUScaled) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryUScaledBase>;
+%template(SGetAffectedBasisFunctionsTrapezoidBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearTrapezoidBoundaryBase>;
 
 %template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
 %template(test_dataset_linearboundary) sg::test_dataset_boundary<sg::SLinearBoundaryBase>;
-%template(test_dataset_linearboundaryUScaled) sg::test_dataset_boundary<sg::SLinearBoundaryUScaledBase>;
+%template(test_dataset_lineartrapezoidboundary) sg::test_dataset_boundary<sg::SLinearTrapezoidBoundaryBase>;
 %template(test_dataset_modlin) sg::test_dataset<sg::SModLinearBase>;

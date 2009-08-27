@@ -68,7 +68,7 @@ public:
 	 *
 	 * @param dim the grid's dimension
 	 */
-	static Grid* createLinearBoundaryUScaledGrid(size_t dim);
+	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
 
 	/**
 	 * creates a mod linear grid

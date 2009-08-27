@@ -50,9 +50,9 @@ Grid* Grid::createLinearBoundaryGrid(size_t dim)
 	return new LinearBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearBoundaryUScaledGrid(size_t dim)
+Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim)
 {
-	return new LinearBoundaryUScaledGrid(dim);
+	return new LinearTrapezoidBoundaryGrid(dim);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim)
@@ -114,7 +114,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("NULL",Grid::nullFactory));
 		tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
 		tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
-		tMap->insert(std::make_pair("linearBoundaryUScaled", LinearBoundaryUScaledGrid::unserialize));
+		tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));

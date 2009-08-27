@@ -64,7 +64,7 @@
 namespace sg
 {
 
-typedef linearboundaryUScaledBase<unsigned int, unsigned int> SLinearBoundaryUScaledBase;
+typedef lineartrapezoidboundaryBase<unsigned int, unsigned int> SLinearTrapezoidBoundaryBase;
 typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
 typedef linear_base<unsigned int, unsigned int> SLinearBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
@@ -73,7 +73,7 @@ typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
 
 typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
 typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;
-typedef AlgorithmDGEMV<SLinearBoundaryUScaledBase> SGridBoundaryUScaledOperationB;
+typedef AlgorithmDGEMV<SLinearTrapezoidBoundaryBase> SGridTrapezoidBoundaryOperationB;
 typedef AlgorithmDGEMV<SModLinearBase> SGridModOperationB;
 
 }

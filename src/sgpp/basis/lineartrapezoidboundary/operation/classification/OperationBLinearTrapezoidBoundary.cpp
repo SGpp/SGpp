@@ -33,16 +33,16 @@ namespace sg
 
 void OperationBLinearBoundaryUScaled::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryUScaledBase> op;
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	AlgorithmDGEMVBoundaries<SLinearTrapezoidBoundaryBase> op;
+	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
 void OperationBLinearBoundaryUScaled::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryUScaledBase> op;
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	AlgorithmDGEMVBoundaries<SLinearTrapezoidBoundaryBase> op;
+	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
 
 	op.mult_transpose(storage, base, alpha, data, result);
 }

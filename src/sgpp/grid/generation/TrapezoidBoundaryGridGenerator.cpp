@@ -28,27 +28,27 @@
 namespace sg
 {
 
-BoundaryUScaledGridGenerator::BoundaryUScaledGridGenerator(GridStorage* storage) : storage(storage)
+TrapezoidBoundaryGridGenerator::TrapezoidBoundaryGridGenerator(GridStorage* storage) : storage(storage)
 {
 }
 
-BoundaryUScaledGridGenerator::~BoundaryUScaledGridGenerator()
+TrapezoidBoundaryGridGenerator::~TrapezoidBoundaryGridGenerator()
 {
 }
 
-void BoundaryUScaledGridGenerator::regular(size_t level)
+void TrapezoidBoundaryGridGenerator::regular(size_t level)
 {
 	HashGenerator gen;
 	gen.regularWithBoundaries(this->storage, level, true);
 }
 
-void BoundaryUScaledGridGenerator::refine(RefinementFunctor* func)
+void TrapezoidBoundaryGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinementBoundaries refine;
 	refine.free_refine(this->storage, func);
 }
 
-int BoundaryUScaledGridGenerator::getNumberOfRefinablePoints()
+int TrapezoidBoundaryGridGenerator::getNumberOfRefinablePoints()
 {
 	HashRefinementBoundaries refine;
 	return refine.getNumberOfRefinablePoints(this->storage);

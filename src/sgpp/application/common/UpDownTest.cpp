@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	std::cout << std::endl;
 
 	std::cout << "start constructing regular grid" << std::endl;
-	myGrid = new sg::LinearBoundaryUScaledGrid(dim);
+	myGrid = new sg::LinearTrapezoidBoundaryGrid(dim);
 	std::cout << "A LinearBoundaryUScaledGrid was created" << std::endl;
 
 	myGrid->createGridGenerator()->regular(levels);

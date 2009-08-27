@@ -29,7 +29,7 @@
 ## Constants for types of grid borders
 class BorderTypes(object):
     NONE = 100
-    USCALEDBOUNDARY = 200
+    TRAPEZOIDBOUNDARY = 200
     COMPLETEBOUNDARY = 300
     
     

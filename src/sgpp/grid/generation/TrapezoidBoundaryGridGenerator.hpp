@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef BOUNDARYUSCALEDGRIDGENERATOR_HPP
-#define BOUNDARYUSCALEDGRIDGENERATOR_HPP
+#ifndef TRAPEZOIDBOUNDARYGRIDGENERATOR_HPP
+#define TRAPEZOIDBOUNDARYGRIDGENERATOR_HPP
 
 #include "grid/GridStorage.hpp"
 #include "grid/generation/GridGenerator.hpp"
@@ -33,7 +33,7 @@ namespace sg
  * This class provides the interface for the grid generation
  * for grids with boundaries, pentagon cut through sub space scheme
  */
-class BoundaryUScaledGridGenerator : public GridGenerator
+class TrapezoidBoundaryGridGenerator : public GridGenerator
 {
 public:
 	/**
@@ -41,12 +41,12 @@ public:
 	 *
 	 * @param storage template type that holds the grid points
 	 */
-	BoundaryUScaledGridGenerator(GridStorage* storage);
+	TrapezoidBoundaryGridGenerator(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~BoundaryUScaledGridGenerator();
+	virtual ~TrapezoidBoundaryGridGenerator();
 
 	virtual void regular(size_t level);
 	virtual void refine(RefinementFunctor* func);
@@ -59,4 +59,4 @@ protected:
 
 }
 
-#endif /* BOUNDARYUSCALEDGRIDGEMERATOR_HPP */
+#endif /* TRAPEZOIDBOUNDARYGRIDGENERATOR_HPP */

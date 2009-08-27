@@ -109,7 +109,7 @@ void Classifier::createRegularGrid()
 	}
 	else if (this->GridType == "U")
 	{
-		myGrid = new LinearBoundaryUScaledGrid(this->dim);
+		myGrid = new LinearTrapezoidBoundaryGrid(this->dim);
 		std::cout << "A LinearBoundaryUScaledGrid was created" << std::endl;
 	}
 	else if (this->GridType == "B")
