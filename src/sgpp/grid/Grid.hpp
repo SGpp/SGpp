@@ -64,7 +64,7 @@ public:
 	static Grid* createLinearBoundaryGrid(size_t dim);
 
 	/**
-	 * creates a linear boundary uscaled grid
+	 * creates a linear trapezoid boundary grid
 	 *
 	 * @param dim the grid's dimension
 	 */

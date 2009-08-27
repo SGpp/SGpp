@@ -82,28 +82,28 @@ GridGenerator* LinearTrapezoidBoundaryGrid::createGridGenerator()
 
 OperationB* LinearTrapezoidBoundaryGrid::createOperationB()
 {
-	return new OperationBLinearBoundaryUScaled(this->storage);
+	return new OperationBLinearTrapezoidBoundary(this->storage);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
 {
-	return new OperationLaplaceLinearBoundaryUScaled(this->storage);
+	return new OperationLaplaceLinearTrapezoidBoundary(this->storage);
 }
 
 OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 {
-	return new OperationEvalLinearBoundaryUScaled(this->storage);
+	return new OperationEvalLinearTrapezoidBoundary(this->storage);
 }
 
 OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchisation()
 {
-	return new OperationHierarchisationLinearBoundaryUScaled(this->storage);
+	return new OperationHierarchisationLinearTrapezoidBoundary(this->storage);
 }
 
 // @todo (heinecke) removed this when done
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
 {
-	return new OperationUpDownTestLinearBoundaryUScaled(this->storage);
+	return new OperationUpDownTestLinearTrapezoidBoundary(this->storage);
 }
 
 // finance operations

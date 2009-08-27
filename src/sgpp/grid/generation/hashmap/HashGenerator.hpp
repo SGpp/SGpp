@@ -92,9 +92,9 @@ public:
 	 *
 	 * @param storage Hashmap, that stores the grid points
 	 * @param level maximum level of the sparse grid
-	 * @param UScaledBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
+	 * @param TrapezoidBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
 	 */
-	void regularWithBoundaries(GridStorage* storage, int level, bool UScaledBoundaries)
+	void regularWithBoundaries(GridStorage* storage, int level, bool bTrapezoidBoundaries)
 	{
 		if(storage->size() > 0)
 		{
@@ -103,7 +103,7 @@ public:
 
 		index_type index(storage->dim());
 
-		if (UScaledBoundaries == true)
+		if (bTrapezoidBoundaries == true)
 		{
 			if (level == 0)
 			{
@@ -121,7 +121,7 @@ public:
 					index.push(d, 1, 1, false);
 				}
 
-				this->boundaries_UScaled_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
+				this->boundaries_trapezoid_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
 			}
 		}
 		else
@@ -234,11 +234,11 @@ protected:
 	 * @param level maximum level of the sparse grid
 	 * @param bLevelZero specifies if the current index has a level zero component
 	 */
-	void boundaries_UScaled_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool bLevelZero)
+	void boundaries_trapezoid_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool bLevelZero)
 	{
 		if(current_dim == 0)
 		{
-			boundaries_UScaled_rec_1d(storage, index, current_level, level, bLevelZero);
+			boundaries_Trapezoid_rec_1d(storage, index, current_level, level, bLevelZero);
 		}
 		else
 		{
@@ -263,26 +263,26 @@ protected:
 				if (source_level == 1)
 				{
 					index.push(current_dim, 0, 0, false);
-					this->boundaries_UScaled_rec(storage, index, current_dim-1, current_level, level, true);
+					this->boundaries_trapezoid_rec(storage, index, current_dim-1, current_level, level, true);
 
 					index.push(current_dim, 0, 1, false);
-					this->boundaries_UScaled_rec(storage, index, current_dim-1, current_level, level, true);
+					this->boundaries_trapezoid_rec(storage, index, current_dim-1, current_level, level, true);
 
 					index.push(current_dim, source_level, source_index);
 				}
 
 				// d-1 recursion
 				index.setLeaf(bLeafProperty);
-				this->boundaries_UScaled_rec(storage, index, current_dim - 1, current_level, level, bLevelZero);
+				this->boundaries_trapezoid_rec(storage, index, current_dim - 1, current_level, level, bLevelZero);
 			}
 
 			if(current_level < level)
 			{
 				index.push(current_dim, source_level + 1, 2*source_index - 1);
-				this->boundaries_UScaled_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
+				this->boundaries_trapezoid_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
 
 				index.push(current_dim, source_level + 1, 2*source_index + 1);
-				this->boundaries_UScaled_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
+				this->boundaries_trapezoid_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
 			}
 
 			index.push(current_dim, source_level, source_index);
@@ -299,7 +299,7 @@ protected:
 	 * @param level maximum level of grid
 	 * @param bLevelZero specifies if the current index has a level zero component
 	 */
-	void boundaries_UScaled_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool bLevelZero)
+	void boundaries_Trapezoid_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool bLevelZero)
 	{
 		bool bLevelGreaterZero = !bLevelZero;
 		for(level_t l = 0; l <= level-current_level + 1; l++)

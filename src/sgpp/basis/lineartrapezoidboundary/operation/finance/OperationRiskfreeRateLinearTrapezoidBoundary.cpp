@@ -82,8 +82,8 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::updown(DataVector& alpha, Dat
 void OperationRiskfreeRateLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpLinearBoundaryUScaled func(this->storage);
-	sweep<detail::PhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
+	detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -91,8 +91,8 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::up(DataVector& alpha, DataVec
 void OperationRiskfreeRateLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownLinearBoundaryUScaled func(this->storage);
-	sweep<detail::PhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
+	detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

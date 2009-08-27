@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONBLINEARBOUNDARYUSCALED_HPP
-#define OPERATIONBLINEARBOUNDARYUSCALED_HPP
+#ifndef OPERATIONBLINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONBLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "operation/classification/OperationB.hpp"
 #include "grid/GridStorage.hpp"
@@ -33,7 +33,7 @@ namespace sg
  * This class implements OperationB for a grids with linear basis ansatzfunctions
  * with boundaries (pentagon cut through subspace scheme)
  */
-class OperationBLinearBoundaryUScaled : public OperationB
+class OperationBLinearTrapezoidBoundary : public OperationB
 {
 public:
 	/**
@@ -41,12 +41,12 @@ public:
 	 *
 	 * @param storage the grid's GirdStorage object
 	 */
-	OperationBLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+	OperationBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage) {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationBLinearBoundaryUScaled() {}
+	virtual ~OperationBLinearTrapezoidBoundary() {}
 
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
@@ -58,4 +58,4 @@ protected:
 
 }
 
-#endif /* OPERATIONBLINEARBOUNDARYUSCALED_HPP */
+#endif /* OPERATIONBLINEARTRAPEZOIDBOUNDARY_HPP */

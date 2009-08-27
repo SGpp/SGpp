@@ -31,7 +31,7 @@
 namespace sg
 {
 
-void OperationBLinearBoundaryUScaled::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmDGEMVBoundaries<SLinearTrapezoidBoundaryBase> op;
 	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
@@ -39,7 +39,7 @@ void OperationBLinearBoundaryUScaled::mult(DataVector& alpha, DataVector& data, 
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBLinearBoundaryUScaled::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinearTrapezoidBoundary::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
 	AlgorithmDGEMVBoundaries<SLinearTrapezoidBoundaryBase> op;
 	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
