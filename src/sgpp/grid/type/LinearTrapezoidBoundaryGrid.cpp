@@ -47,88 +47,88 @@
 namespace sg
 {
 
-LinearBoundaryUScaledGrid::LinearBoundaryUScaledGrid(std::istream& istr) : Grid(istr)
+LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(std::istream& istr) : Grid(istr)
 {
 
 }
 
-LinearBoundaryUScaledGrid::LinearBoundaryUScaledGrid(size_t dim)
+LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(size_t dim)
 {
 	this->storage = new GridStorage(dim);
 }
 
-LinearBoundaryUScaledGrid::~LinearBoundaryUScaledGrid()
+LinearTrapezoidBoundaryGrid::~LinearTrapezoidBoundaryGrid()
 {
 }
 
-const char* LinearBoundaryUScaledGrid::getType()
+const char* LinearTrapezoidBoundaryGrid::getType()
 {
-	return "linearBoundaryUScaled";
+	return "linearTrapezoidBoundary";
 }
 
-Grid* LinearBoundaryUScaledGrid::unserialize(std::istream& istr)
+Grid* LinearTrapezoidBoundaryGrid::unserialize(std::istream& istr)
 {
-	return new LinearBoundaryUScaledGrid(istr);
+	return new LinearTrapezoidBoundaryGrid(istr);
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearBoundaryUScaledGrid::createGridGenerator()
+GridGenerator* LinearTrapezoidBoundaryGrid::createGridGenerator()
 {
-	return new BoundaryUScaledGridGenerator(this->storage);
+	return new TrapezoidBoundaryGridGenerator(this->storage);
 }
 
-OperationB* LinearBoundaryUScaledGrid::createOperationB()
+OperationB* LinearTrapezoidBoundaryGrid::createOperationB()
 {
 	return new OperationBLinearBoundaryUScaled(this->storage);
 }
 
-OperationMatrix* LinearBoundaryUScaledGrid::createOperationLaplace()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
 {
 	return new OperationLaplaceLinearBoundaryUScaled(this->storage);
 }
 
-OperationEval* LinearBoundaryUScaledGrid::createOperationEval()
+OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 {
 	return new OperationEvalLinearBoundaryUScaled(this->storage);
 }
 
-OperationHierarchisation* LinearBoundaryUScaledGrid::createOperationHierarchisation()
+OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationLinearBoundaryUScaled(this->storage);
 }
 
 // @todo (heinecke) removed this when done
-OperationMatrix* LinearBoundaryUScaledGrid::createOperationUpDownTest()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
 {
 	return new OperationUpDownTestLinearBoundaryUScaled(this->storage);
 }
 
 // finance operations
 /////////////////////
-OperationMatrix* LinearBoundaryUScaledGrid::createOperationDelta()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta()
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearBoundaryUScaledGrid::createOperationGammaPartOne()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartOne()
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearBoundaryUScaledGrid::createOperationGammaPartTwo()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartTwo()
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearBoundaryUScaledGrid::createOperationGammaPartThree()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartThree()
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearBoundaryUScaledGrid::createOperationRiskfreeRate()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationRiskfreeRate()
 {
 	throw factory_exception("Unsupported operation");
 }

@@ -432,13 +432,13 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref)     
         
 
-class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
+class TestOperationBBTLinearTrapezoidBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryUScaledGrid(1)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 4
         gen = factory.createGridGenerator()
@@ -456,7 +456,7 @@ class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
     def testHatRegular1D_two(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryUScaledGrid(1)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
         gen = factory.createGridGenerator()
@@ -474,7 +474,7 @@ class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
     def testHatRegulardD_one(self):  
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryUScaledGrid(3)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 2
         gen = factory.createGridGenerator()
@@ -492,7 +492,7 @@ class TestOperationBBTLinearBoundaryUscaled(unittest.TestCase):
     def testHatRegulardD_two(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryUScaledGrid(3)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
         gen = factory.createGridGenerator()

@@ -233,28 +233,28 @@ class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
         testHierarchisationDehierarchisation(self, grid, level, function)
 
         
-class TestHierarchisationLinearBoundaryUScaled(unittest.TestCase):
+class TestHierarchisationLinearTrapezoidBoundary(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
-    def testHierarchisation1DBoundaryUScaled(self):
+    def testHierarchisation1DTrapezoidBoundary(self):
         from pysgpp import Grid, DataVector
         
         dim = 1
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryUScaledGrid(dim)
+        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
         testHierarchisationDehierarchisation(self, grid, level, function)
 
 
     ##
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationDBoundaryUScaled(self):
+    def testHierarchisationDTrapezoidBoundary(self):
         from pysgpp import Grid, DataVector
         
         dim = 3
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryUScaledGrid(dim)
+        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
         testHierarchisationDehierarchisation(self, grid, level, function)
 
         

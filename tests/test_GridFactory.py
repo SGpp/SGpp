@@ -71,11 +71,11 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
-    def testSerializationLinearBoudaryUScaled(self):
+    def testSerializationLinearTrapezoidBoudary(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryUScaledGrid(2)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
         self.failIfEqual(factory, None)
 
         gen = factory.createGridGenerator()
@@ -182,11 +182,11 @@ class TestGridFactory(unittest.TestCase):
         self.assertEqual(0.0, tempBound.leftBoundary)
         self.assertEqual(100.0, tempBound.rightBoundary)
         
-    def testSerializationLinearBoudaryUScaledBoundingBox(self):
+    def testSerializationLinearTrapezoidBoudaryBoundingBox(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
-        factory = Grid.createLinearBoundaryUScaledGrid(2)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
         self.failIfEqual(factory, None)
 
         gen = factory.createGridGenerator()
@@ -318,12 +318,12 @@ class TestGridFactory(unittest.TestCase):
         for i in xrange(factory.getStorage().size()):
             self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
         
-    def testSerializationLinearBoudaryUScaledWithLeaf(self):
+    def testSerializationLinearTrapezoidBoudaryWithLeaf(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
         srcLeaf = []
-        factory = Grid.createLinearBoundaryUScaledGrid(2)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
         self.failIfEqual(factory, None)
 
         gen = factory.createGridGenerator()
@@ -555,10 +555,10 @@ class TestLinearGrid(unittest.TestCase):
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 0.5)
 
-class TestLinearBoundaryUScaledGrid(unittest.TestCase):
+class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
     def testGeneration(self):
         from pysgpp import Grid, DataVector
-        factory = Grid.createLinearBoundaryUScaledGrid(2)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -573,7 +573,7 @@ class TestLinearBoundaryUScaledGrid(unittest.TestCase):
         
     def testRefinement2d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        factory = Grid.createLinearBoundaryUScaledGrid(2)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -597,7 +597,7 @@ class TestLinearBoundaryUScaledGrid(unittest.TestCase):
         
     def testRefinement3d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        factory = Grid.createLinearBoundaryUScaledGrid(3)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -616,7 +616,7 @@ class TestLinearBoundaryUScaledGrid(unittest.TestCase):
 
     def testOperationB(self):
         from pysgpp import Grid, DataVector
-        factory = Grid.createLinearBoundaryUScaledGrid(1)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
         
@@ -651,7 +651,7 @@ class TestLinearBoundaryUScaledGrid(unittest.TestCase):
     def testOperationEval_test(self):
         from pysgpp import Grid, DataVector
 
-        factory = Grid.createLinearBoundaryUScaledGrid(1)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(1)
         
@@ -680,7 +680,7 @@ class TestLinearBoundaryUScaledGrid(unittest.TestCase):
     def testOperationEval_eval(self):
         from pysgpp import Grid, DataVector
 
-        factory = Grid.createLinearBoundaryUScaledGrid(1)
+        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(1)
         

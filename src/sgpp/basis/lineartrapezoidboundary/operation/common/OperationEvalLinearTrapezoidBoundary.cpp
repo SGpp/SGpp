@@ -36,8 +36,8 @@ double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<d
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctionsBoundaries<linearboundaryUScaledBase<unsigned int, unsigned int> > ga(storage);
+	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctionsBoundaries<lineartrapezoidboundaryBase<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 
@@ -53,7 +53,7 @@ double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<d
 
 double OperationEvalLinearBoundaryUScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	linearboundaryUScaledBase<unsigned int, unsigned int> base;
+	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
 	return test_dataset_boundary(this->storage, base, alpha, data, classes);
 }
 

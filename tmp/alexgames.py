@@ -122,7 +122,7 @@ def refinement2d():
 
 
 def refinement3d():
-    factory = Grid.createLinearBoundaryUScaledGrid(3)
+    factory = Grid.createLinearTrapezoidBoundaryGrid(3)
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()

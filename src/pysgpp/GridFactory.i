@@ -51,7 +51,7 @@ class Grid
 public:
 	static Grid* createLinearGrid(size_t dim);
 	static Grid* createLinearBoundaryGrid(size_t dim);
-	static Grid* createLinearBoundaryUScaledGrid(size_t dim);
+	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);

@@ -48,10 +48,10 @@ class TestBase(unittest.TestCase):
 
         self.baseTest(b, points)
         
-    def testLinearBoundaryUScaled(self):
-        from pysgpp import SLinearBoundaryUScaledBase
+    def testLinearTrapezoidBoundary(self):
+        from pysgpp import SLinearTrapezoidBoundaryBase
         
-        b = SLinearBoundaryUScaledBase()
+        b = SLinearTrapezoidBoundaryBase()
         
         points = [(0, 0, 0.0, 1.0),
                   (0, 0, 1.0, 0.0),
@@ -236,14 +236,14 @@ class TestFunctions(unittest.TestCase):
         self.failUnlessEqual(x[0][1], 0.5)
         
         
-    def testGetAffectedBoundariesUScaled(self):
-        from pysgpp import GridIndex, GridStorage, SLinearBoundaryUScaledBase
-        from pysgpp import SGetAffectedBasisFunctionsBoundariesUScaled
+    def testGetAffectedTrapezoidBoundaries(self):
+        from pysgpp import GridIndex, GridStorage, SLinearTrapezoidBoundaryBase
+        from pysgpp import SGetAffectedBasisFunctionsTrapezoidBoundaries
         
         i = GridIndex(1)
         s = GridStorage(1)
         
-        b = SLinearBoundaryUScaledBase()
+        b = SLinearTrapezoidBoundaryBase()
 
         i.set(0,0,0)
         s.insert(i)
@@ -252,7 +252,7 @@ class TestFunctions(unittest.TestCase):
         i.set(0,1,1)
         s.insert(i)
         
-        ga = SGetAffectedBasisFunctionsBoundariesUScaled(s)
+        ga = SGetAffectedBasisFunctionsTrapezoidBoundaries(s)
         
         x = ga(b, [0.5])
         

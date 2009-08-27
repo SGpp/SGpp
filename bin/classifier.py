@@ -159,11 +159,11 @@ def openFile(filename):
 # @todo Integrate into all modes
 def constructGrid(dim):
     if options.grid == None:
-        if options.uscaledboundary == True or options.completeboundary == True:
-            if options.uscaledboundary == True:
+        if options.trapezoidboundary == True or options.completeboundary == True:
+            if options.trapezoidboundary == True:
                 if options.verbose:
-                    print "LinearBoundaryUScaledGrid, l=%s" % (options.level)
-                grid = Grid.createLinearBoundaryUScaledGrid(dim)            
+                    print "LinearTrapezoidBoundaryGrid, l=%s" % (options.level)
+                grid = Grid.createLinearTrapezoidBoundaryGrid(dim)            
             if options.completeboundary == True:
                 if options.verbose:
                     print "LinearBoundaryGrid, l=%s" % (options.level)
@@ -1082,7 +1082,7 @@ if __name__=='__main__':
     parser.add_option("-s", "--stats", action="store", type="string", dest="stats", help="In this file the statistics from the test are stored")
     parser.add_option("-p", "--polynom", action="store", type="int", default=0, dest="polynom", help="Sets the maximum degree for high order basis functions. Set to 2 or larger to activate. Works only with 'identity' and 'fold'-modes.")
     parser.add_option("-b", "--border", action="store_true", default=False, dest="border", help="Enables special border base functions")
-    parser.add_option("--uscaled-boundary", action="store_true", default=False, dest="uscaledboundary", help="Enables boundary functions that have a point on the boundary for every inner point")
+    parser.add_option("--trapezoid-boundary", action="store_true", default=False, dest="trapezoidboundary", help="Enables boundary functions that have a point on the boundary for every inner point (Trapezoid)")
     parser.add_option("--complete-boundary", action="store_true", default=False, dest="completeboundary", help="Enables boundary functions that have more points on the boundary than inner points")
     parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Provides extra output")
     parser.add_option("--normfile", action="store", type="string", dest="normfile", metavar="FILE", help="For all modes that read data via stdin. Normalizes data according to boundaries in FILE")

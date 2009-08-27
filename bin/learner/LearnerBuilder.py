@@ -241,8 +241,8 @@ class LearnerBuilder(object):
                 if self.dim == None or self.level == None:
                     raise AttributeError, "Not all attributes assigned to create grid"                
                 if self.border != None: 
-                    if self.border == Types.BorderTypes.USCALEDBOUNDARY:
-                        grid = Grid.createLinearBoundaryUScaledGrid(self.dim)            
+                    if self.border == Types.BorderTypes.TRAPEZOIDBOUNDARY:
+                        grid = Grid.createLinearTrapezoidBoundaryGrid(self.dim)            
                     elif self.border == Types.BorderTypes.COMPLETEBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.dim)            
                     else:

@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYUSCALEDBASE_HPP
-#define LINEARBOUNDARYUSCALEDBASE_HPP
+#ifndef LINEARTRAPEZOIDBOUNDARYBASE_HPP
+#define LINEARTRAPEZOIDBOUNDARYBASE_HPP
 
 #include <cmath>
 
@@ -33,7 +33,7 @@ namespace sg
  * And here we have another implicit dependence on tensor products
  */
 template<class LT, class IT>
-class linearboundaryUScaledBase
+class lineartrapezoidboundaryBase
 {
 public:
 	/**

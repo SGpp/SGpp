@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LINEARBOUNDARYGRIDUSCALED_HPP
-#define LINEARBOUNDARYGRIDUSCALED_HPP
+#ifndef LINEARTRAPEZOIDBOUNDARYGRID_HPP
+#define LINEARTRAPEZOIDBOUNDARYGRID_HPP
 
 #include "grid/Grid.hpp"
 
@@ -33,10 +33,10 @@ namespace sg
 /**
  * grid with linear base functions with boundaries, pentagon cut
  */
-class LinearBoundaryUScaledGrid : public Grid
+class LinearTrapezoidBoundaryGrid : public Grid
 {
 protected:
-	LinearBoundaryUScaledGrid(std::istream& istr);
+	LinearTrapezoidBoundaryGrid(std::istream& istr);
 
 public:
 	/**
@@ -44,12 +44,12 @@ public:
 	 *
 	 * @param dim the dimension of the grid
 	 */
-	LinearBoundaryUScaledGrid(size_t dim);
+	LinearTrapezoidBoundaryGrid(size_t dim);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~LinearBoundaryUScaledGrid();
+	virtual ~LinearTrapezoidBoundaryGrid();
 
 	virtual const char* getType();
 
@@ -74,4 +74,4 @@ public:
 
 }
 
-#endif /* LINEARBOUNDARYGRIDUSCALED_HPP */
+#endif /* LINEARTRAPEZOIDBOUNDARYGRID_HPP */
