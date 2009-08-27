@@ -100,7 +100,7 @@ OperationMatrix* LinearGrid::createOperationUpDownTest()
 
 // finance operations
 /////////////////////
-OperationMatrix* LinearGrid::createOperationDelta()
+OperationMatrix* LinearGrid::createOperationDelta(DataVector& mu)
 {
 	throw factory_exception("Unsupported operation");
 }

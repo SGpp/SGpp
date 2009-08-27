@@ -99,7 +99,7 @@ OperationMatrix* ModLinearGrid::createOperationUpDownTest()
 
 // finance operations
 /////////////////////
-OperationMatrix* ModLinearGrid::createOperationDelta()
+OperationMatrix* ModLinearGrid::createOperationDelta(DataVector& mu)
 {
 	throw factory_exception("Unsupported operation");
 }

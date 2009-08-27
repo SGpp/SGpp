@@ -87,8 +87,6 @@ protected:
 	void updown(DataVector& alpha, DataVector& result)
 	{
 		DataVector beta(result.getSize());
-		result.setAll(0.0);
-		beta.setAll(0.0);
 
 		this->updown(alpha, beta, storage->dim() - 1);
 
@@ -109,23 +107,15 @@ protected:
 		if(dim > 0)
 		{
 			// Reordering ups and downs
-			// Use previously calculated ups for all future calculations
-			// U* -> UU* and UD*
-
 			DataVector temp(alpha.getSize());
 			up(alpha, temp, dim);
 			updown(temp, result, dim-1);
 
 
-			// Same from the other direction:
-			// *D -> *UD and *DD
-
+			// Same from the other direction
 			DataVector result_temp(alpha.getSize());
 			updown(alpha, temp, dim-1);
 			down(temp, result_temp, dim);
-
-
-			//Overall memory use: 2*|alpha|*(d-1)
 
 			result.add(result_temp);
 		}

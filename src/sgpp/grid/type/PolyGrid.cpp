@@ -105,7 +105,7 @@ OperationMatrix* PolyGrid::createOperationUpDownTest()
 
 // finance operations
 /////////////////////
-OperationMatrix* PolyGrid::createOperationDelta()
+OperationMatrix* PolyGrid::createOperationDelta(DataVector& mu)
 {
 	throw factory_exception("Unsupported operation");
 }

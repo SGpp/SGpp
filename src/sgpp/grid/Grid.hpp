@@ -188,7 +188,7 @@ public:
 	/**
 	 * @todo (heinecke) add description
 	 */
-	virtual OperationMatrix* createOperationDelta() = 0;
+	virtual OperationMatrix* createOperationDelta(DataVector& mu) = 0;
 
 	/**
 	 * @todo (heinecke) add description

@@ -22,12 +22,21 @@
 
 #include "basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
 
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
+
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpLinearTrapezoidBoundary.hpp"
+
+#include "algorithm/common/sweep.hpp"
+
 namespace sg
 {
 
-OperationDeltaLinearTrapezoidBoundary::OperationDeltaLinearTrapezoidBoundary(GridStorage* storage)
+OperationDeltaLinearTrapezoidBoundary::OperationDeltaLinearTrapezoidBoundary(GridStorage* storage, DataVector& mu)
 {
 	this->storage = storage;
+	this->mus = &mu;
 }
 
 OperationDeltaLinearTrapezoidBoundary::~OperationDeltaLinearTrapezoidBoundary()
@@ -36,7 +45,126 @@ OperationDeltaLinearTrapezoidBoundary::~OperationDeltaLinearTrapezoidBoundary()
 
 void OperationDeltaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
-	// @todo heinecke implement this method
+	DataVector beta(result.getSize());
+	result.setAll(0.0);
+
+	for(size_t i = 0; i < storage->dim(); i++)
+	{
+		this->updown(alpha, beta, storage->dim() - 1, i);
+		result.axpy((-1.0)*mus->get(i),beta);
+	}
+}
+
+void OperationDeltaLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+{
+	if(dim == gradient_dim)
+	{
+		gradient(alpha, result, dim, gradient_dim);
+	}
+	else
+	{
+		//Unidirectional scheme
+		if(dim > 0)
+		{
+			// Reordering ups and downs
+			// Use previously calculated ups for all future calculations
+			// U* -> UU* and UD*
+
+			DataVector temp(alpha.getSize());
+			up(alpha, temp, dim);
+			updown(temp, result, dim-1, gradient_dim);
+
+
+			// Same from the other direction:
+			// *D -> *UD and *DD
+
+			DataVector result_temp(alpha.getSize());
+			updown(alpha, temp, dim-1, gradient_dim);
+			down(temp, result_temp, dim);
+
+
+			//Overall memory use: 2*|alpha|*(d-1)
+
+			result.add(result_temp);
+		}
+		else
+		{
+			// Terminates dimension recursion
+			up(alpha, result, dim);
+
+			DataVector temp(alpha.getSize());
+			down(alpha, temp, dim);
+
+			result.add(temp);
+		}
+
+	}
+}
+
+void OperationDeltaLinearTrapezoidBoundary::gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+{
+	//Unidirectional scheme
+	if(dim > 0)
+	{
+		// Reordering ups and downs
+		DataVector temp(alpha.getSize());
+		upGradient(alpha, temp, dim);
+		updown(temp, result, dim-1, gradient_dim);
+
+
+		// Same from the other direction:
+		DataVector result_temp(alpha.getSize());
+		updown(alpha, temp, dim-1, gradient_dim);
+		downGradient(temp, result_temp, dim);
+
+		result.add(result_temp);
+	}
+	else
+	{
+		// Terminates dimension recursion
+		upGradient(alpha, result, dim);
+
+		DataVector temp(alpha.getSize());
+		downGradient(alpha, temp, dim);
+
+		result.add(temp);
+	}
+}
+
+void OperationDeltaLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+{
+	// phi * phi
+	detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
+}
+
+void OperationDeltaLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+{
+	// phi * phi
+	detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
+}
+
+void OperationDeltaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
+{
+	// x * dphi * phi
+	detail::XdPhiPhiUpLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XdPhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
+}
+
+void OperationDeltaLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+{
+	// x * dphi * phi
+	detail::XdPhiPhiDownLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XdPhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
 }
 
 }
