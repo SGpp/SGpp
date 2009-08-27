@@ -25,7 +25,7 @@
 #include "exception/operation_exception.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
-#include "grid/type/LinearBoundaryUScaledGrid.hpp"
+#include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 
 #include <iostream>
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
 	std::cout << "start constructing regular grid" << std::endl;
 	myGrid = new sg::LinearTrapezoidBoundaryGrid(dim);
-	std::cout << "A LinearBoundaryUScaledGrid was created" << std::endl;
+	std::cout << "A LinearTrapezoidBoundaryGrid was created" << std::endl;
 
 	myGrid->createGridGenerator()->regular(levels);
 	std::cout << levels << " levels were added to the above created grid" << std::endl;

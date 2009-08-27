@@ -32,10 +32,10 @@
 namespace sg
 {
 
-void OperationHierarchisationLinearBoundaryUScaled::doHierarchisation(DataVector& node_values)
+void OperationHierarchisationLinearTrapezoidBoundary::doHierarchisation(DataVector& node_values)
 {
-	detail::HierarchisationLinearBoundaryUScaled func(this->storage);
-	sweep<detail::HierarchisationLinearBoundaryUScaled> s(func, this->storage);
+	detail::HierarchisationLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::HierarchisationLinearTrapezoidBoundary> s(func, this->storage);
 
 	// N D case
 	if (this->storage->dim() > 1)
@@ -52,10 +52,10 @@ void OperationHierarchisationLinearBoundaryUScaled::doHierarchisation(DataVector
 	}
 }
 
-void OperationHierarchisationLinearBoundaryUScaled::doDehierarchisation(DataVector& alpha)
+void OperationHierarchisationLinearTrapezoidBoundary::doDehierarchisation(DataVector& alpha)
 {
-	detail::DehierarchisationLinearBoundaryUScaled func(this->storage);
-	sweep<detail::DehierarchisationLinearBoundaryUScaled> s(func, this->storage);
+	detail::DehierarchisationLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::DehierarchisationLinearTrapezoidBoundary> s(func, this->storage);
 
 	// N D case
 	if (this->storage->dim() > 1)

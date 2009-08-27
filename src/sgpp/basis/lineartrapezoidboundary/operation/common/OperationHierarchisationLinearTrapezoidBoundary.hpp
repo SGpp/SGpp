@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONHIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
-#define OPERATIONHIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
+#ifndef OPERATIONHIERARCHISATIONLINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONHIERARCHISATIONLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "operation/common/OperationHierarchisation.hpp"
 #include "grid/GridStorage.hpp"
@@ -33,7 +33,7 @@ namespace sg
  * Hierarchisation on sparse grid, linear case with boundaries
  * (pentagon cut through subspace scheme)
  */
-class OperationHierarchisationLinearBoundaryUScaled : public OperationHierarchisation
+class OperationHierarchisationLinearTrapezoidBoundary : public OperationHierarchisation
 {
 public:
 	/**
@@ -41,12 +41,12 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	OperationHierarchisationLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+	OperationHierarchisationLinearTrapezoidBoundary(GridStorage* storage) : storage(storage) {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationHierarchisationLinearBoundaryUScaled() {}
+	virtual ~OperationHierarchisationLinearTrapezoidBoundary() {}
 
 	virtual void doHierarchisation(DataVector& node_values);
 	virtual void doDehierarchisation(DataVector& alpha);
@@ -58,4 +58,4 @@ protected:
 
 }
 
-#endif /* OPERATIONHIERARCHISATIONBOUNDARYUSCALED_HPP */
+#endif /* OPERATIONHIERARCHISATIONLINEARTRAPEZOIDBOUNDARY_HPP */

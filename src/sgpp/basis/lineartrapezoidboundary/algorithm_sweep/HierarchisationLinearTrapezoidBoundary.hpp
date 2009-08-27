@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef HIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
-#define HIERARCHISATIONLINEARBOUNDARYUSCALED_HPP
+#ifndef HIERARCHISATIONLINEARTRAPEZOIDBOUNDARY_HPP
+#define HIERARCHISATIONLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -37,7 +37,7 @@ namespace detail
  * the ()operator has to be implement in order to use the sweep algorithm for
  * the grid traversal
  */
-class HierarchisationLinearBoundaryUScaled
+class HierarchisationLinearTrapezoidBoundary
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -51,14 +51,14 @@ public:
 	 *
 	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
 	 */
-	HierarchisationLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
+	HierarchisationLinearTrapezoidBoundary(GridStorage* storage) : storage(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~HierarchisationLinearBoundaryUScaled()
+	~HierarchisationLinearTrapezoidBoundary()
 	{
 	}
 
@@ -156,4 +156,4 @@ protected:
 
 }	// namespace sg
 
-#endif /* HIERARCHISATIONLINEARBOUNDARYUSCALED_HPP */
+#endif /* HIERARCHISATIONLINEARTRAPEZOIDBOUNDARY_HPP */

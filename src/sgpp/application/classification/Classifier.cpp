@@ -27,7 +27,7 @@
 #include "tools/classification/ARFFTools.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
-#include "grid/type/LinearBoundaryUScaledGrid.hpp"
+#include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 #include <iostream>
 
@@ -110,7 +110,7 @@ void Classifier::createRegularGrid()
 	else if (this->GridType == "U")
 	{
 		myGrid = new LinearTrapezoidBoundaryGrid(this->dim);
-		std::cout << "A LinearBoundaryUScaledGrid was created" << std::endl;
+		std::cout << "A LinearTrapezoidBoundaryGrid was created" << std::endl;
 	}
 	else if (this->GridType == "B")
 	{

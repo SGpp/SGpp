@@ -31,7 +31,7 @@
 namespace sg
 {
 
-double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<double>& point)
+double OperationEvalLinearTrapezoidBoundary::eval(DataVector& alpha, std::vector<double>& point)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -51,7 +51,7 @@ double OperationEvalLinearBoundaryUScaled::eval(DataVector& alpha, std::vector<d
 	return result;
 }
 
-double OperationEvalLinearBoundaryUScaled::test(DataVector& alpha, DataVector& data, DataVector& classes)
+double OperationEvalLinearTrapezoidBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
 	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
 	return test_dataset_boundary(this->storage, base, alpha, data, classes);

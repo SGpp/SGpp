@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONUPDOWNTESTLINEARBOUNDARYUSCALED_HPP
-#define OPERATIONUPDOWNTESTLINEARBOUNDARYUSCALED_HPP
+#ifndef OPERATIONUPDOWNTESTLINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONUPDOWNTESTLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
@@ -49,7 +49,7 @@ namespace sg
 /**
  * Temporal Test class for Up/Down Algorithm
  */
-class OperationUpDownTestLinearBoundaryUScaled: public OperationMatrix
+class OperationUpDownTestLinearTrapezoidBoundary: public OperationMatrix
 {
 public:
 	/**
@@ -57,14 +57,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	OperationUpDownTestLinearBoundaryUScaled(GridStorage* storage) : storage(storage)
+	OperationUpDownTestLinearTrapezoidBoundary(GridStorage* storage) : storage(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationUpDownTestLinearBoundaryUScaled() {}
+	virtual ~OperationUpDownTestLinearTrapezoidBoundary() {}
 
 
 	virtual void mult(DataVector& alpha, DataVector& result)
@@ -144,20 +144,20 @@ protected:
 	void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// phi * phi
-		//detail::PhiPhiUpLinearBoundaryUScaled func(this->storage);
-		//sweep<detail::PhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
+		//detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x^2 * dphi * dphi
-		//detail::SqXdPhidPhiUpLinearBoundaryUScaled func(this->storage);
-		//sweep<detail::SqXdPhidPhiUpLinearBoundaryUScaled> s(func, this->storage);
+		//detail::SqXdPhidPhiUpLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::SqXdPhidPhiUpLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x * phi * phi
-		//detail::XPhiPhiUpLinearBoundaryUScaled func(this->storage);
-		//sweep<detail::XPhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
+		//detail::XPhiPhiUpLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::XPhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x * dphi * phi
-		detail::XdPhiPhiUpLinearBoundaryUScaled func(this->storage);
-		sweep<detail::XdPhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
+		detail::XdPhiPhiUpLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::XdPhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
@@ -165,20 +165,20 @@ protected:
 	void down(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// phi * phi
-		//detail::PhiPhiDownLinearBoundaryUScaled func(this->storage);
-		//sweep<detail::PhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
+		//detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x^2 * dphi * dphi
-		//detail::SqXdPhidPhiDownLinearBoundaryUScaled func(this->storage);
-		//sweep<detail::SqXdPhidPhiDownLinearBoundaryUScaled> s(func, this->storage);
+		//detail::SqXdPhidPhiDownLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::SqXdPhidPhiDownLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x * phi * phi
-		//detail::XPhiPhiDownLinearBoundaryUScaled func(this->storage);
-		//sweep<detail::XPhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
+		//detail::XPhiPhiDownLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::XPhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x * dphi * phi
-		detail::XdPhiPhiDownLinearBoundaryUScaled func(this->storage);
-		sweep<detail::XdPhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
+		detail::XdPhiPhiDownLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::XdPhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
@@ -186,4 +186,4 @@ protected:
 
 }
 
-#endif /* OPERATIONUPDOWNTESTLINEARBOUNDARYUSCALED_HPP */
+#endif /* OPERATIONUPDOWNTESTLINEARTRAPEZOIDBOUNDARY_HPP */

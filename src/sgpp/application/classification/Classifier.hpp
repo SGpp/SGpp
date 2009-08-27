@@ -98,7 +98,7 @@ public:
 	 * @param tfileTest the filename of the file containing the test data
 	 * @param level the number of levels used for the regular Sparse Grid
 	 * @param lambda the regularisation parameter
-	 * @param GridType the kind of grid that is used in the classification problem: N = no boundary, B = Boundaries, E = expanded inner functions, U = uscaled boundaries (trapeze boundaries)
+	 * @param GridType the kind of grid that is used in the classification problem: N = no boundary, B = Boundaries, E = expanded inner functions, U = trapezoid boundaries (trapeze boundaries)
 	 * @param StiffMode the kind of Stiffnessmatrix used: L: Laplacianmatrix, I: Identitymatrix
 	 * @param epsilon epsilon needed in the cg method
 	 * @param imax maximum number of iterations that are executed to train the grid

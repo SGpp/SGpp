@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONEVALLINEARBOUNDARYUSCALED_HPP
-#define OPERATIONEVALLINEARBOUNDARYUSCALED_HPP
+#ifndef OPERATIONEVALLINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONEVALLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
@@ -33,7 +33,7 @@ namespace sg
  * This class implements OperationEval for a grids with linear basis ansatzfunctions with
  * boundaries (pentagon cut through subspace scheme)
  */
-class OperationEvalLinearBoundaryUScaled : public OperationEval
+class OperationEvalLinearTrapezoidBoundary : public OperationEval
 {
 public:
 	/**
@@ -41,12 +41,12 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	OperationEvalLinearBoundaryUScaled(GridStorage* storage) : storage(storage) {}
+	OperationEvalLinearTrapezoidBoundary(GridStorage* storage) : storage(storage) {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationEvalLinearBoundaryUScaled() {}
+	virtual ~OperationEvalLinearTrapezoidBoundary() {}
 
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
@@ -58,4 +58,4 @@ protected:
 
 }
 
-#endif /* OPERATIONEVALLINEARBOUNDARYUSCALED_HPP */
+#endif /* OPERATIONEVALLINEARTRAPEZOIDBOUNDARY_HPP */

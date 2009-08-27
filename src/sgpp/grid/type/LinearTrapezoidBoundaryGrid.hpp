@@ -40,7 +40,7 @@ protected:
 
 public:
 	/**
-	 * Constructor Linear Boundary UScaled Grid
+	 * Constructor Linear Trapezoid Boundary Grid
 	 *
 	 * @param dim the dimension of the grid
 	 */

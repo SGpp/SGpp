@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONLAPLACELINEARBOUNDARYUSCALED_HPP
-#define OPERATIONLAPLACELINEARBOUNDARYUSCALED_HPP
+#ifndef OPERATIONLAPLACELINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONLAPLACELINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
@@ -40,7 +40,7 @@ namespace sg
 /**
  * Implementation of Laplace for linear functions with boundaries pentagon cut through subspace scheme
  */
-class OperationLaplaceLinearBoundaryUScaled: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinearTrapezoidBoundary: public OperationMatrix, public UnidirGradient
 {
 public:
 	/**
@@ -48,14 +48,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	OperationLaplaceLinearBoundaryUScaled(GridStorage* storage) : UnidirGradient(storage)
+	OperationLaplaceLinearTrapezoidBoundary(GridStorage* storage) : UnidirGradient(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationLaplaceLinearBoundaryUScaled() {}
+	virtual ~OperationLaplaceLinearTrapezoidBoundary() {}
 
 
 	virtual void mult(DataVector& alpha, DataVector& result)
@@ -66,15 +66,15 @@ public:
 protected:
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::PhiPhiUpLinearBoundaryUScaled func(this->storage);
-		sweep<detail::PhiPhiUpLinearBoundaryUScaled> s(func, this->storage);
+		detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::PhiPhiDownLinearBoundaryUScaled func(this->storage);
-		sweep<detail::PhiPhiDownLinearBoundaryUScaled> s(func, this->storage);
+		detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
 
@@ -137,4 +137,4 @@ protected:
 
 }
 
-#endif /* OPERATIONLAPLACELINEAROSCALEDUSCALED_HPP */
+#endif /* OPERATIONLAPLACELINEARTRAPEZOIDBOUNDARY_HPP */
