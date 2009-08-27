@@ -20,9 +20,9 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linearboundaryUScaled/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
-#include "basis/linearboundaryUScaled/algorithm_sweep/PhiPhiDownLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/algorithm_sweep/PhiPhiUpLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearBoundaryUScaled.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -40,8 +40,6 @@ OperationRiskfreeRateLinearTrapezoidBoundary::~OperationRiskfreeRateLinearTrapez
 
 void OperationRiskfreeRateLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
-	result.setAll(0.0);
-
 	this->updown(alpha, result, storage->dim()-1);
 }
 
@@ -58,15 +56,9 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::updown(DataVector& alpha, Dat
 	if(dim > 0)
 	{
 		// Reordering ups and downs
-		// Use previously calculated ups for all future calculations
-		// U* -> UU* and UD*
-
 		DataVector temp(alpha.getSize());
 		up(alpha, temp, dim);
 		updown(temp, result, dim-1);
-
-		// Same from the other direction:
-		// *D -> *UD and *DD
 
 		DataVector result_temp(alpha.getSize());
 		updown(alpha, temp, dim-1);

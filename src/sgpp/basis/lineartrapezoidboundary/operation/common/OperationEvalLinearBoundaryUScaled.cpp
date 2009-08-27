@@ -22,7 +22,7 @@
 
 #include "basis/basis.hpp"
 
-#include "basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
 
 #include "sgpp.hpp"
 

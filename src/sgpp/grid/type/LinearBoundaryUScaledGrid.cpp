@@ -26,19 +26,19 @@
 #include "grid/generation/BoundaryUScaledGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linearboundaryUScaled/operation/classification/OperationBLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/operation/common/OperationHierarchisationLinearBoundaryUScaled.hpp"
-#include "basis/linearboundaryUScaled/operation/classification/OperationLaplaceLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/classification/OperationBLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearBoundaryUScaled.hpp"
 
 // @todo (heinecke) removed this when done
-#include "basis/linearboundaryUScaled/operation/common/OperationUpDownTestLinearBoundaryUScaled.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationUpDownTestLinearBoundaryUScaled.hpp"
 
-#include "basis/linearboundaryUScaled/operation/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
-#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"
-#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.hpp"
-#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
-#include "basis/linearboundaryUScaled/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
 
 #include "sgpp.hpp"
 

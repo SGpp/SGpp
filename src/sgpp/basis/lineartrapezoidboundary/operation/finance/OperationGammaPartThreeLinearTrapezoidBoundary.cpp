@@ -20,7 +20,7 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linearboundaryUScaled/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
 
 namespace sg
 {
