@@ -113,19 +113,19 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& m
 	return new OperationDeltaLinearTrapezoidBoundary(this->storage, mu);
 }
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartOne()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartOne(DataVector& sigma, DataVector& rho)
 {
-	return new OperationGammaPartOneLinearTrapezoidBoundary(this->storage);
+	return new OperationGammaPartOneLinearTrapezoidBoundary(this->storage, sigma, rho);
 }
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartTwo()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartTwo(DataVector& sigma, DataVector& rho)
 {
-	return new OperationGammaPartTwoLinearTrapezoidBoundary(this->storage);
+	return new OperationGammaPartTwoLinearTrapezoidBoundary(this->storage, sigma, rho);
 }
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartThree()
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartThree(DataVector& sigma, DataVector& rho)
 {
-	return new OperationGammaPartThreeLinearTrapezoidBoundary(this->storage);
+	return new OperationGammaPartThreeLinearTrapezoidBoundary(this->storage, sigma, rho);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationRiskfreeRate()

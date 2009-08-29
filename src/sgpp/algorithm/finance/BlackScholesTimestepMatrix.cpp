@@ -28,9 +28,9 @@ namespace sg
 BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r)
 {
 	this->OpDelta = SparseGrid.createOperationDelta(mu);
-	this->OpGammaOne = SparseGrid.createOperationGammaPartOne();
-	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo();
-	this->OpGammaThree = SparseGrid.createOperationGammaPartThree();
+	this->OpGammaOne = SparseGrid.createOperationGammaPartOne(sigma, rho);
+	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo(sigma, rho);
+	this->OpGammaThree = SparseGrid.createOperationGammaPartThree(sigma, rho);
 	this->OpRiskfree = SparseGrid.createOperationRiskfreeRate();
 	this->r = r;
 	this->mus = &mu;
@@ -49,15 +49,29 @@ BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 
 void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 {
-	// Apply the the delta method
-	DataVector tempDelta(alpha.getSize());
-	this->OpDelta->mult(alpha, tempDelta);
-	result.add(tempDelta);
+	DataVector temp(alpha.getSize());
 
 	// Apply the riskfree rate
-	DataVector tempRiskfree(alpha.getSize());
-	this->OpRiskfree->mult(alpha, tempRiskfree);
-	result.axpy(((-1.0)*this->r), tempRiskfree);
+	this->OpRiskfree->mult(alpha, temp);
+	result.axpy((-1.0)*this->r, temp);
+
+	// Apply the delta method
+	this->OpDelta->mult(alpha, temp);
+	result.add(temp);
+
+	// Apply the gamma method, part 3
+	this->OpGammaThree->mult(alpha, temp);
+	result.axpy((-1.0), temp);
+
+	// Apply the gamma method, part 2
+	this->OpGammaTwo->mult(alpha, temp);
+	result.axpy((-1.0), temp);
+
+	// Apply the gamma method, part 1
+	// @todo (heinecke) resolve the the mathematical difficulties here
+	temp.setAll(0.0);
+	//this->OpGammaOne(alpha, temp);
+	result.add(temp);
 }
 
 void BlackScholesTimestepMatrix::generateRHS(DataVector& rhs)

@@ -67,9 +67,9 @@ public:
 
 	// finance operations
 	virtual OperationMatrix* createOperationDelta(DataVector& mu);
-	virtual OperationMatrix* createOperationGammaPartOne();
-	virtual OperationMatrix* createOperationGammaPartTwo();
-	virtual OperationMatrix* createOperationGammaPartThree();
+	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho);
+	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho);
+	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho);
 	virtual OperationMatrix* createOperationRiskfreeRate();
 
 	static Grid* unserialize(std::istream& istr);

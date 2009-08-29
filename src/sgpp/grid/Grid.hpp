@@ -187,23 +187,34 @@ public:
 
 	/**
 	 * @todo (heinecke) add description
+	 *
+	 * @param mu vector that contains the underlyings' expected values
 	 */
 	virtual OperationMatrix* createOperationDelta(DataVector& mu) = 0;
 
 	/**
 	 * @todo (heinecke) add description
+	 *
+	 * @param sigma vector that contains the underlyings' standard derivation
+	 * @param rho matrix that contains the correlations between the underlyings
 	 */
-	virtual OperationMatrix* createOperationGammaPartOne() = 0;
+	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho) = 0;
 
 	/**
 	 * @todo (heinecke) add description
+	 *
+	 * @param sigma vector that contains the underlyings' standard derivation
+	 * @param rho matrix that contains the correlations between the underlyings
 	 */
-	virtual OperationMatrix* createOperationGammaPartTwo() = 0;
+	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho) = 0;
 
 	/**
 	 * @todo (heinecke) add description
+	 *
+	 * @param sigma vector that contains the underlyings' standard derivation
+	 * @param rho matrix that contains the correlations between the underlyings
 	 */
-	virtual OperationMatrix* createOperationGammaPartThree() = 0;
+	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho) = 0;
 
 	/**
 	 * @todo (heinecke) add description

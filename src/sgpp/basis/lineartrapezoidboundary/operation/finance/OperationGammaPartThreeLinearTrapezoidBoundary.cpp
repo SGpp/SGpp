@@ -25,9 +25,11 @@
 namespace sg
 {
 
-OperationGammaPartThreeLinearTrapezoidBoundary::OperationGammaPartThreeLinearTrapezoidBoundary(GridStorage* storage)
+OperationGammaPartThreeLinearTrapezoidBoundary::OperationGammaPartThreeLinearTrapezoidBoundary(GridStorage* storage, DataVector& sigma, DataVector rho)
 {
 	this->storage = storage;
+	this->sigmas = &sigma;
+	this->rhos = &rho;
 }
 
 OperationGammaPartThreeLinearTrapezoidBoundary::~OperationGammaPartThreeLinearTrapezoidBoundary()
