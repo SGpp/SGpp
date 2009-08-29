@@ -42,8 +42,10 @@ public:
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
+	 * @param sigma vector that contains the underlyings' standard derivation
+	 * @param rho matrix that contains the correlations between the underlyings
 	 */
-	OperationGammaPartThreeLinearTrapezoidBoundary(GridStorage* storage);
+	OperationGammaPartThreeLinearTrapezoidBoundary(GridStorage* storage, DataVector& sigma, DataVector rho);
 
 	/**
 	 * Destructor
@@ -58,6 +60,10 @@ protected:
 
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
+	/// Pointer to the DataVector of the sigmas
+	DataVector* sigmas;
+	/// Pointer to the DataVector of the rhos
+	DataVector* rhos;
 
 };
 

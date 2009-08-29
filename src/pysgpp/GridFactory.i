@@ -77,9 +77,9 @@ public:
 	virtual OperationMatrix* createOperationUpDownTest() = 0;
 	
 	virtual OperationMatrix* createOperationDelta(DataVector& mu) = 0;
-	virtual OperationMatrix* createOperationGammaPartOne() = 0;
-	virtual OperationMatrix* createOperationGammaPartTwo() = 0;
-	virtual OperationMatrix* createOperationGammaPartThree() = 0;
+	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho) = 0;
+	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho) = 0;
+	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho) = 0;
 	virtual OperationMatrix* createOperationRiskfreeRate() = 0;
 	
 	virtual GridStorage* getStorage();

@@ -105,17 +105,17 @@ OperationMatrix* LinearGrid::createOperationDelta(DataVector& mu)
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearGrid::createOperationGammaPartOne()
+OperationMatrix* LinearGrid::createOperationGammaPartOne(DataVector& sigma, DataVector& rho)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearGrid::createOperationGammaPartTwo()
+OperationMatrix* LinearGrid::createOperationGammaPartTwo(DataVector& sigma, DataVector& rho)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearGrid::createOperationGammaPartThree()
+OperationMatrix* LinearGrid::createOperationGammaPartThree(DataVector& sigma, DataVector& rho)
 {
 	throw factory_exception("Unsupported operation");
 }

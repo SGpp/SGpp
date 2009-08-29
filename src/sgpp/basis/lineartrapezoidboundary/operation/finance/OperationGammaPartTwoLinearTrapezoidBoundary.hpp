@@ -42,8 +42,10 @@ public:
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
+	 * @param sigma vector that contains the underlyings' standard derivation
+	 * @param rho matrix that contains the correlations between the underlyings
 	 */
-	OperationGammaPartTwoLinearTrapezoidBoundary(GridStorage* storage);
+	OperationGammaPartTwoLinearTrapezoidBoundary(GridStorage* storage, DataVector& sigma, DataVector rho);
 
 	/**
 	 * Destructor
@@ -53,12 +55,85 @@ public:
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
-protected:
+private:
 	typedef GridStorage::grid_iterator grid_iterator;
 
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
+	/// Pointer to the DataVector of the sigmas
+	DataVector* sigmas;
+	/// Pointer to the DataVector of the rhos
+	DataVector* rhos;
 
+	/**
+	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
+	 * gradients is used. In all other dimensions only the L2 scalar product.
+	 *
+	 * @param dim the current dimension
+	 * @param gradient_dim the dimension in which to use the gradient
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
+
+	/**
+	 * All calculations for gradient_dim. The gradient is recursivly applied to
+	 * all dimension of the grid
+	 *
+	 * @todo (heinecke, nice) add mathematical description
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim the dimension in that the gradient is applied
+	 */
+	void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
+
+	/**
+	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i < l_j} \alpha_j \phi_j(x) dx.\f]
+	 *
+	 * @param dim dimension in which to apply the up-part
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void up(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the down-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i\geq l_j} \alpha_j \phi_j(x) dx.\f]
+	 *
+	 * @param dim dimension in which to apply the down-part
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void down(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * in one dimension
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that down-Gradient is applied
+	 */
+	void downGradient(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * in one dimension
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that up-Gradient is applied
+	 */
+	void upGradient(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }
