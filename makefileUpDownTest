@@ -3,8 +3,8 @@ DEBUG =
 SRCDIR = src/sgpp/
 CFLAGS = -Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -Isrc/sgpp/
 LFLAGS = -Wall -pedantic -ansi -O3 -pthread
-OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearBoundaryUScaledGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o BoundaryUScaledGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundaryUScaled.o OperationEvalLinearBoundaryUScaled.o OperationBLinearBoundaryUScaled.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o ARFFTools.o DMSystemMatrix.o Classifier.o UpDownTest.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o
-OBJSSRC = tmp/build_native/DataVector.o tmp/build_native/Grid.o tmp/build_native/LinearBoundaryGrid.o tmp/build_native/LinearBoundaryUScaledGrid.o tmp/build_native/LinearGrid.o tmp/build_native/ModLinearGrid.o tmp/build_native/ModPolyGrid.o tmp/build_native/PolyGrid.o tmp/build_native/StandardGridGenerator.o tmp/build_native/BoundaryGridGenerator.o tmp/build_native/BoundaryUScaledGridGenerator.o tmp/build_native/OperationBLinear.o tmp/build_native/OperationEvalLinear.o tmp/build_native/OperationHierarchisationLinear.o tmp/build_native/OperationBModLinear.o tmp/build_native/OperationEvalModLinear.o tmp/build_native/OperationHierarchisationModLinear.o tmp/build_native/OperationBModPoly.o tmp/build_native/OperationEvalModPoly.o tmp/build_native/OperationHierarchisationModPoly.o tmp/build_native/OperationBPoly.o tmp/build_native/OperationEvalPoly.o tmp/build_native/OperationHierarchisationPoly.o tmp/build_native/OperationHierarchisationLinearBoundaryUScaled.o tmp/build_native/OperationEvalLinearBoundaryUScaled.o tmp/build_native/OperationBLinearBoundaryUScaled.o tmp/build_native/OperationHierarchisationLinearBoundary.o tmp/build_native/OperationEvalLinearBoundary.o tmp/build_native/OperationBLinearBoundary.o tmp/build_native/ARFFTools.o tmp/build_native/DMSystemMatrix.o tmp/build_native/Classifier.o tmp/build_native/UpDownTest.o tmp/build_native/ConjugateGradients.o tmp/build_native/SGppStopwatch.o tmp/build_native/BoundingBox.o
+OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearTrapezoidBoundary.o OperationEvalLinearTrapezoidBoundary.o OperationBLinearTrapezoidBoundary.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o ARFFTools.o DMSystemMatrix.o Classifier.o  ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationRiskfreeRateLinearTrapezoidBoundary.o OperationDeltaLinearTrapezoidBoundary.o OperationGammaPartOneLinearTrapezoidBoundary.o OperationGammaPartTwoLinearTrapezoidBoundary.o OperationGammaPartThreeLinearTrapezoidBoundary.o UpDownTest.o
+OBJSSRC = tmp/build_native/DataVector.o tmp/build_native/Grid.o tmp/build_native/LinearBoundaryGrid.o tmp/build_native/LinearTrapezoidBoundaryGrid.o tmp/build_native/LinearGrid.o tmp/build_native/ModLinearGrid.o tmp/build_native/ModPolyGrid.o tmp/build_native/PolyGrid.o tmp/build_native/StandardGridGenerator.o tmp/build_native/BoundaryGridGenerator.o tmp/build_native/TrapezoidBoundaryGridGenerator.o tmp/build_native/OperationBLinear.o tmp/build_native/OperationEvalLinear.o tmp/build_native/OperationHierarchisationLinear.o tmp/build_native/OperationBModLinear.o tmp/build_native/OperationEvalModLinear.o tmp/build_native/OperationHierarchisationModLinear.o tmp/build_native/OperationBModPoly.o tmp/build_native/OperationEvalModPoly.o tmp/build_native/OperationHierarchisationModPoly.o tmp/build_native/OperationBPoly.o tmp/build_native/OperationEvalPoly.o tmp/build_native/OperationHierarchisationPoly.o tmp/build_native/OperationHierarchisationLinearTrapezoidBoundary.o tmp/build_native/OperationEvalLinearTrapezoidBoundary.o tmp/build_native/OperationBLinearTrapezoidBoundary.o tmp/build_native/OperationHierarchisationLinearBoundary.o tmp/build_native/OperationEvalLinearBoundary.o tmp/build_native/OperationBLinearBoundary.o tmp/build_native/ARFFTools.o tmp/build_native/DMSystemMatrix.o tmp/build_native/Classifier.o tmp/build_native/ConjugateGradients.o tmp/build_native/SGppStopwatch.o tmp/build_native/BoundingBox.o tmp/build_native/OperationRiskfreeRateLinearTrapezoidBoundary.o tmp/build_native/OperationDeltaLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartOneLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartTwoLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartThreeLinearTrapezoidBoundary.o tmp/build_native/UpDownTest.o
 
 UpDownTest : $(OBJS)
 	mkdir -p tmp/build_native
@@ -20,8 +20,8 @@ Grid.o : src/sgpp/grid/Grid.cpp
 LinearBoundaryGrid.o : src/sgpp/grid/type/LinearBoundaryGrid.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/type/LinearBoundaryGrid.cpp
 
-LinearBoundaryUScaledGrid.o : src/sgpp/grid/type/LinearBoundaryUScaledGrid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/type/LinearBoundaryUScaledGrid.cpp
+LinearTrapezoidBoundaryGrid.o : src/sgpp/grid/type/LinearTrapezoidBoundaryGrid.cpp
+	$(CC) $(CFLAGS) src/sgpp/grid/type/LinearTrapezoidBoundaryGrid.cpp
 	
 LinearGrid.o : src/sgpp/grid/type/LinearGrid.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/type/LinearGrid.cpp
@@ -41,8 +41,8 @@ StandardGridGenerator.o : src/sgpp/grid/generation/StandardGridGenerator.cpp
 BoundaryGridGenerator.o : src/sgpp/grid/generation/BoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/generation/BoundaryGridGenerator.cpp
 
-BoundaryUScaledGridGenerator.o : src/sgpp/grid/generation/BoundaryUScaledGridGenerator.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/generation/BoundaryUScaledGridGenerator.cpp
+TrapezoidBoundaryGridGenerator.o : src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.cpp
+	$(CC) $(CFLAGS) src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 
 OperationBLinear.o : src/sgpp/basis/linear/operation/classification/OperationBLinear.cpp
 	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/classification/OperationBLinear.cpp
@@ -80,15 +80,30 @@ OperationEvalPoly.o : src/sgpp/basis/poly/operation/common/OperationEvalPoly.cpp
 OperationHierarchisationPoly.o : src/sgpp/basis/poly/operation/common/OperationHierarchisationPoly.cpp
 	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/common/OperationHierarchisationPoly.cpp
 
-OperationHierarchisationLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/common/OperationHierarchisationLinearBoundaryUScaled.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/common/OperationHierarchisationLinearBoundaryUScaled.cpp
+OperationHierarchisationLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.cpp
 
-OperationEvalLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/common/OperationEvalLinearBoundaryUScaled.cpp
+OperationEvalLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.cpp
 
-OperationBLinearBoundaryUScaled.o : src/sgpp/basis/linearboundaryUScaled/operation/classification/OperationBLinearBoundaryUScaled.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundaryUScaled/operation/classification/OperationBLinearBoundaryUScaled.cpp
+OperationBLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.cpp
+	
+OperationRiskfreeRateLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.cpp
 
+OperationDeltaLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.cpp
+	
+OperationGammaPartOneLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.cpp
+	
+OperationGammaPartTwoLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.cpp
+
+OperationGammaPartThreeLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.cpp
+	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.cpp
+		
 OperationHierarchisationLinearBoundary.o : src/sgpp/basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 
