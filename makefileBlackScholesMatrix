@@ -1,15 +1,15 @@
-CC = icpc
+CC = g++
 DEBUG = 
 SRCDIR = src/sgpp/
-CFLAGS = -std=c++0x -Wall -ansi -c -fno-strict-aliasing -openmp -O3 -funroll-loops -pthread -DUSEOMP -DUSETRONE -DUSEOMPTHREE -Isrc/sgpp/
-LFLAGS = -std=c++0x -Wall -ansi -openmp -O3 -pthread
-OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearTrapezoidBoundary.o OperationEvalLinearTrapezoidBoundary.o OperationBLinearTrapezoidBoundary.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o ARFFTools.o DMSystemMatrix.o Classifier.o NativeCppClassifier.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationRiskfreeRateLinearTrapezoidBoundary.o OperationDeltaLinearTrapezoidBoundary.o OperationGammaPartOneLinearTrapezoidBoundary.o OperationGammaPartTwoLinearTrapezoidBoundary.o OperationGammaPartThreeLinearTrapezoidBoundary.o
-OBJSSRC = tmp/build_native/DataVector.o tmp/build_native/Grid.o tmp/build_native/LinearBoundaryGrid.o tmp/build_native/LinearTrapezoidBoundaryGrid.o tmp/build_native/LinearGrid.o tmp/build_native/ModLinearGrid.o tmp/build_native/ModPolyGrid.o tmp/build_native/PolyGrid.o tmp/build_native/StandardGridGenerator.o tmp/build_native/BoundaryGridGenerator.o tmp/build_native/TrapezoidBoundaryGridGenerator.o tmp/build_native/OperationBLinear.o tmp/build_native/OperationEvalLinear.o tmp/build_native/OperationHierarchisationLinear.o tmp/build_native/OperationBModLinear.o tmp/build_native/OperationEvalModLinear.o tmp/build_native/OperationHierarchisationModLinear.o tmp/build_native/OperationBModPoly.o tmp/build_native/OperationEvalModPoly.o tmp/build_native/OperationHierarchisationModPoly.o tmp/build_native/OperationBPoly.o tmp/build_native/OperationEvalPoly.o tmp/build_native/OperationHierarchisationPoly.o tmp/build_native/OperationHierarchisationLinearTrapezoidBoundary.o tmp/build_native/OperationEvalLinearTrapezoidBoundary.o tmp/build_native/OperationBLinearTrapezoidBoundary.o tmp/build_native/OperationHierarchisationLinearBoundary.o tmp/build_native/OperationEvalLinearBoundary.o tmp/build_native/OperationBLinearBoundary.o tmp/build_native/ARFFTools.o tmp/build_native/DMSystemMatrix.o tmp/build_native/Classifier.o tmp/build_native/NativeCppClassifier.o tmp/build_native/ConjugateGradients.o tmp/build_native/SGppStopwatch.o tmp/build_native/BoundingBox.o tmp/build_native/OperationRiskfreeRateLinearTrapezoidBoundary.o tmp/build_native/OperationDeltaLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartOneLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartTwoLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartThreeLinearTrapezoidBoundary.o
+CFLAGS = -Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -Isrc/sgpp/
+LFLAGS = -Wall -pedantic -ansi -O3 -pthread
+OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearTrapezoidBoundary.o OperationEvalLinearTrapezoidBoundary.o OperationBLinearTrapezoidBoundary.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o ARFFTools.o DMSystemMatrix.o Classifier.o  ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationRiskfreeRateLinearTrapezoidBoundary.o OperationDeltaLinearTrapezoidBoundary.o OperationGammaPartOneLinearTrapezoidBoundary.o OperationGammaPartTwoLinearTrapezoidBoundary.o OperationGammaPartThreeLinearTrapezoidBoundary.o TestBlackScholesMatrix.o BlackScholesTimestepMatrix.o
+OBJSSRC = tmp/build_native/DataVector.o tmp/build_native/Grid.o tmp/build_native/LinearBoundaryGrid.o tmp/build_native/LinearTrapezoidBoundaryGrid.o tmp/build_native/LinearGrid.o tmp/build_native/ModLinearGrid.o tmp/build_native/ModPolyGrid.o tmp/build_native/PolyGrid.o tmp/build_native/StandardGridGenerator.o tmp/build_native/BoundaryGridGenerator.o tmp/build_native/TrapezoidBoundaryGridGenerator.o tmp/build_native/OperationBLinear.o tmp/build_native/OperationEvalLinear.o tmp/build_native/OperationHierarchisationLinear.o tmp/build_native/OperationBModLinear.o tmp/build_native/OperationEvalModLinear.o tmp/build_native/OperationHierarchisationModLinear.o tmp/build_native/OperationBModPoly.o tmp/build_native/OperationEvalModPoly.o tmp/build_native/OperationHierarchisationModPoly.o tmp/build_native/OperationBPoly.o tmp/build_native/OperationEvalPoly.o tmp/build_native/OperationHierarchisationPoly.o tmp/build_native/OperationHierarchisationLinearTrapezoidBoundary.o tmp/build_native/OperationEvalLinearTrapezoidBoundary.o tmp/build_native/OperationBLinearTrapezoidBoundary.o tmp/build_native/OperationHierarchisationLinearBoundary.o tmp/build_native/OperationEvalLinearBoundary.o tmp/build_native/OperationBLinearBoundary.o tmp/build_native/ARFFTools.o tmp/build_native/DMSystemMatrix.o tmp/build_native/Classifier.o tmp/build_native/ConjugateGradients.o tmp/build_native/SGppStopwatch.o tmp/build_native/BoundingBox.o tmp/build_native/OperationRiskfreeRateLinearTrapezoidBoundary.o tmp/build_native/OperationDeltaLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartOneLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartTwoLinearTrapezoidBoundary.o tmp/build_native/OperationGammaPartThreeLinearTrapezoidBoundary.o tmp/build_native/TestBlackScholesMatrix.o tmp/build_native/BlackScholesTimestepMatrix.o
 
-NativeCppClassifier : $(OBJS)
+TestBlackScholesMatrix : $(OBJS)
 	mkdir -p tmp/build_native
 	\mv *.o tmp/build_native/
-	$(CC) $(LFLAGS) $(OBJSSRC) -o bin/NativeCppClassifier
+	$(CC) $(LFLAGS) $(OBJSSRC) -o bin/TestBlackScholesMatrix
 
 DataVector.o : src/sgpp/data/DataVector.cpp
 	$(CC) $(CFLAGS) src/sgpp/data/DataVector.cpp
@@ -131,8 +131,11 @@ SGppStopwatch.o : src/sgpp/common/SGppStopwatch.cpp
 BoundingBox.o : src/sgpp/grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/common/BoundingBox.cpp
 	
-NativeCppClassifier.o : src/sgpp/application/classification/NativeCppClassifier.cpp
-	$(CC) $(CFLAGS) src/sgpp/application/classification/NativeCppClassifier.cpp
+BlackScholesTimestepMatrix.o : src/sgpp/algorithm/finance/BlackScholesTimestepMatrix.cpp
+	$(CC) $(CFLAGS) src/sgpp/algorithm/finance/BlackScholesTimestepMatrix.cpp
+		
+TestBlackScholesMatrix.o : src/sgpp/application/finance/TestBlackScholesMatrix.cpp
+	$(CC) $(CFLAGS) src/sgpp/application/finance/TestBlackScholesMatrix.cpp
 	
 clean:
 	\rm tmp/build_native/*.o *.o

@@ -62,8 +62,7 @@ private:
 	DataVector* mus;
 
 	/**
-	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
-	 * gradients is used. In all other dimensions only the L2 scalar product.
+	 * Recursive procedure for updown().
 	 *
 	 * @param dim the current dimension
 	 * @param gradient_dim the dimension in which to use the gradient
@@ -73,8 +72,7 @@ private:
 	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
 
 	/**
-	 * All calculations for gradient_dim. The gradient is recursivly applied to
-	 * all dimension of the grid
+	 * All calculations for gradient_dim.
 	 *
 	 * @todo (heinecke, nice) add mathematical description
 	 *

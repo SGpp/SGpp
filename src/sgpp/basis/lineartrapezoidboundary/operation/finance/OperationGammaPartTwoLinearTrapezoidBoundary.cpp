@@ -54,7 +54,7 @@ void OperationGammaPartTwoLinearTrapezoidBoundary::mult(DataVector& alpha, DataV
 		this->updown(alpha, beta, storage->dim() - 1, i);
 		for(size_t j = 0; j < storage->dim(); j++)
 		{
-			result.axpy((-0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+			result.axpy((0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
 		}
 	}
 }

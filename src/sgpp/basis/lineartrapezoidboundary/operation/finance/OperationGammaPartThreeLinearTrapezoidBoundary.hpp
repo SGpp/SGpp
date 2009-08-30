@@ -65,6 +65,114 @@ protected:
 	/// Pointer to the DataVector of the rhos
 	DataVector* rhos;
 
+	/**
+	 * Recursive procedure for updown().
+	 *
+	 * @todo (heinecke) add description
+	 *
+	 * @param dim the current dimension
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+
+	/**
+	 * All calculations for gradient
+	 *
+	 * @todo (heinecke) add description
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 */
+	void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+
+	/**
+	 * All calculations for the combined gradient
+	 *
+	 * @todo (heinecke) add description
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 */
+	void gradientSquared(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+
+	/**
+	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i < l_j} \alpha_j \phi_j(x) dx.\f]
+	 *
+	 * @param dim dimension in which to apply the up-part
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void up(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the down-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i\geq l_j} \alpha_j \phi_j(x) dx.\f]
+	 *
+	 * @param dim dimension in which to apply the down-part
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void down(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * in one dimension
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that down-Gradient is applied
+	 */
+	void downGradient(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * in one dimension
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that up-Gradient is applied
+	 */
+	void upGradient(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * down-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
+	 * in one dimension
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that down-Gradient is applied
+	 */
+	void downGradientSquared(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * up-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
+	 * in one dimension
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that up-Gradient is applied
+	 */
+	void upGradientSquared(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }
