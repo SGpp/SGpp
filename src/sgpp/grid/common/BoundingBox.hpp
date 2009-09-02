@@ -111,6 +111,24 @@ public:
 	 * @return the number of dimensions
 	 */
 	size_t getDimensions();
+
+	/**
+	 * gets the width of the interval in one dimension
+	 *
+	 * @param dimension the dimension in which the width of the interval should be determined
+	 *
+	 * @return the width of the interval
+	 */
+	double getIntervalWidth(size_t dimension);
+
+	/**
+	 * gets the offset in positive x-direction of the interval in one dimension
+	 *
+	 * @param dimension the dimension in which the offset of the interval should be determined
+	 *
+	 * @return the offset in positive x-direction of the interval
+	 */
+	double getIntervalOffset(size_t dimension);
 };
 
 }
