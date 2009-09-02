@@ -77,4 +77,14 @@ size_t BoundingBox::getDimensions()
 	return nDim;
 }
 
+double BoundingBox::getIntervalWidth(size_t dimension)
+{
+	return dimensionBoundaries[dimension].rightBoundary - dimensionBoundaries[dimension].leftBoundary;
+}
+
+double BoundingBox::getIntervalOffset(size_t dimension)
+{
+	return dimensionBoundaries[dimension].leftBoundary;
+}
+
 }
