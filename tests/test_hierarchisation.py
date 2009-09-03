@@ -62,7 +62,7 @@ def testHierarchisationDehierarchisation(obj, grid, level, function):
     # generate the node_values vector
     node_values = DataVector(storage.size(), 1)
     for n in xrange(storage.size()):
-        points = storage.get(n).getCoordinates().split()
+        points = storage.get(n).getCoordsString().split()
         node_values[n] = evalFunction(function, points)
 
     # do hierarchisation

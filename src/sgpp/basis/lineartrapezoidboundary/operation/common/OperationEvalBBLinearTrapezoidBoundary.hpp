@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,65 +20,44 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef MODPOLYGRID_HPP
-#define MODPOLYGRID_HPP
+#ifndef OPERATIONEVALBBLINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONEVALBBLINEARTRAPEZOIDBOUNDARY_HPP
 
-#include "grid/Grid.hpp"
-
-#include <iostream>
+#include "operation/common/OperationEval.hpp"
+#include "grid/GridStorage.hpp"
 
 namespace sg
 {
 
 /**
- * grid with modified polynomial base functions
+ * This class implements OperationEval for a grids with linear basis ansatzfunctions with
+ * boundaries (pentagon cut through subspace scheme)
+ *
+ * This version has support for bounding box
  */
-class ModPolyGrid : public Grid
+class OperationEvalBBLinearTrapezoidBoundary : public OperationEval
 {
-protected:
-	ModPolyGrid(std::istream& istr);
-
 public:
 	/**
-	 * Constructor of grid with modified polynomial base functions
+	 * Constructor
 	 *
-	 * @param dim the dimension of the grid
-	 * @param degree the max. polynom's degree
+	 * @param storage the grid's GridStorage object
 	 */
-	ModPolyGrid(size_t dim, size_t degree);
+	OperationEvalBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage) {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~ModPolyGrid();
+	virtual ~OperationEvalBBLinearTrapezoidBoundary() {}
 
-	virtual const char* getType();
-	virtual void serialize(std::ostream& ostr);
-
-	virtual OperationB* createOperationB();
-	virtual GridGenerator* createGridGenerator();
-	virtual OperationMatrix* createOperationLaplace();
-	virtual OperationEval* createOperationEval();
-	virtual OperationEval* createOperationEvalBB();
-	virtual OperationHierarchisation* createOperationHierarchisation();
-
-	// @todo (heinecke) remove this when done
-	virtual OperationMatrix* createOperationUpDownTest();
-
-	// finance operations
-	virtual OperationMatrix* createOperationDelta(DataVector& mu);
-	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationRiskfreeRate();
-
-	static Grid* unserialize(std::istream& istr);
+	virtual double eval(DataVector& alpha, std::vector<double>& point);
+	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
 
 protected:
-	/// max. polynom's degree
-	size_t degree;
+	/// Pointer to GridStorage object
+	GridStorage* storage;
 };
 
 }
 
-#endif /* MODPOLYGRID_HPP */
+#endif /* OPERATIONEVALBBLINEARTRAPEZOIDBOUNDARY_HPP */

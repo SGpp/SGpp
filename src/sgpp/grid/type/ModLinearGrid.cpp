@@ -86,6 +86,11 @@ OperationEval* ModLinearGrid::createOperationEval()
 	return new OperationEvalModLinear(this->storage);
 }
 
+OperationEval* ModLinearGrid::createOperationEvalBB()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationHierarchisation* ModLinearGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationModLinear(this->storage);

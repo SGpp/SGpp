@@ -28,6 +28,7 @@
 // Include all operations on the linear boundary grid
 #include "basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearTrapezoidBoundary.hpp"
 
@@ -93,6 +94,11 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
 OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 {
 	return new OperationEvalLinearTrapezoidBoundary(this->storage);
+}
+
+OperationEval* LinearTrapezoidBoundaryGrid::createOperationEvalBB()
+{
+	return new OperationEvalBBLinearTrapezoidBoundary(this->storage);
 }
 
 OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchisation()

@@ -28,6 +28,8 @@
 #include "common/hash_map_config.hpp"
 #include "data/DataVector.hpp"
 
+#include "grid/common/BoundingBox.hpp"
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -283,6 +285,20 @@ public:
 	}
 
 	/**
+	 * determines the coordinate in a given dimension
+	 *
+	 * @param d the dimension in which the coordinate should be calculated
+	 * @param q the intervals width in this dimension
+	 * @param t the offset in this dimension
+	 *
+	 * @return the coordinate in the given dimension
+	 */
+	double getCoordBB(size_t d, double q, double t) const
+	{
+		return q*(index[d] * pow(2.0, -static_cast<double>(level[d]))) + t;
+	}
+
+	/**
 	 * gets a Pointer to the instance of the HashGridIndex Object
 	 *
 	 * @return Pointer to this instance
@@ -473,32 +489,54 @@ public:
      */
     void getCoords(DataVector &p)
     {
-      for(size_t i = 0; i < DIM; i++)
-    	{
-	  if(level[i] == 0)
-	    {
-	      p.set(i, index[i]);
-	    }
-	  else
-	    {
-	      p.set(i, pow(0.5, static_cast<double>(level[i]))*index[i]);
-	    }
-	}
+		for(size_t i = 0; i < DIM; i++)
+		{
+			if(level[i] == 0)
+			{
+				p.set(i, index[i]);
+			}
+			else
+			{
+				p.set(i, pow(0.5, static_cast<double>(level[i]))*index[i]);
+			}
+		}
     }
 
+
+    /**
+     * Sets the entries of DataVector p to the coordinates of the gridpoint with bounding box
+     *
+     * @param p the (result) DataVector p that should be overwritten
+     * @param BB reference to BoundingBox Object, that stores all boundaries for all dimensions
+     */
+    void getCoordsBB(DataVector& p, BoundingBox& BB)
+    {
+		for(size_t i = 0; i < DIM; i++)
+		{
+			if(level[i] == 0)
+			{
+				p.set(i, (BB.getIntervalWidth(i)*index[i])+BB.getIntervalOffset(i));
+			}
+			else
+			{
+				p.set(i, (BB.getIntervalWidth(i)*(pow(0.5, static_cast<double>(level[i]))*index[i]))+BB.getIntervalOffset(i));
+			}
+		}
+    }
 
     /**
      * Generates a string with all coordinates of the grid point.
      * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
      *
      * @return returns a string with the coordinates of the grid point separated by whitespace
-     * @todo (heinecke, should) rename to getCoordString()
      */
-    std::string getCoordinates()
+    std::string getCoordsString()
     {
     	std::stringstream return_stream;
-	// switch on scientific notation:
-	//return_stream << std::scientific;
+
+    	// switch on scientific notation:
+		//return_stream << std::scientific;
+
     	for(size_t i = 0; i < DIM; i++)
     	{
     		if(level[i] == 0)
@@ -508,6 +546,40 @@ public:
     		else
     		{
     			return_stream << (pow(0.5, static_cast<double>(level[i]))*index[i]);
+    		}
+
+    		if (i < DIM-1)
+    		{
+    			return_stream << " ";
+    		}
+    	}
+
+    	return return_stream.str();
+    }
+
+    /**
+     * Generates a string with all coordinates of the grid point with bounding box
+     * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
+     *
+     * This version scales the coordinates with q and t
+     *
+     * @param BB reference to BoundingBox Object, that stores all boundaries for all dimensionst
+     *
+     * @return returns a string with the coordinates of the grid point separated by whitespace
+     */
+    std::string getCoordsStringBB(BoundingBox& BB)
+    {
+    	std::stringstream return_stream;
+
+    	for(size_t i = 0; i < DIM; i++)
+    	{
+    		if(level[i] == 0)
+    		{
+    			return_stream << (BB.getIntervalWidth(i)*index[i]) + BB.getIntervalOffset(i);
+    		}
+    		else
+    		{
+    			return_stream << (BB.getIntervalWidth(i)*(pow(0.5, static_cast<double>(level[i]))*index[i]))+BB.getIntervalOffset(i);
     		}
 
     		if (i < DIM-1)
