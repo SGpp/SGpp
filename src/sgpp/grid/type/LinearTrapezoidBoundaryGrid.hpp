@@ -43,8 +43,9 @@ public:
 	 * Constructor Linear Trapezoid Boundary Grid
 	 *
 	 * @param dim the dimension of the grid
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	LinearTrapezoidBoundaryGrid(size_t dim);
+	LinearTrapezoidBoundaryGrid(size_t dim, bool bfixDirechletBoundaries = false);
 
 	/**
 	 * Destructor
@@ -70,6 +71,24 @@ public:
 	virtual OperationMatrix* createOperationRiskfreeRate();
 
 	static Grid* unserialize(std::istream& istr);
+
+	/**
+	 * Sets the fixDirechletBoundaries property of the grid storage
+	 *
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
+	 *
+	 * @todo (heinecke) do some refactoring here
+	 */
+	void setfixDirechletBoundaries(bool bfixDirechletBoundaries);
+
+	/**
+	 * gets the fixDirechletBoundaries property of the grid storage
+	 *
+	 * @return boolean that specifies that the boundary values are fixed during the computation on the grid (direchlet boundaries)
+	 *
+	 * @todo (heinecke) do some refactoring here
+	 */
+	bool getfixDirechletBoundaries();
 };
 
 }

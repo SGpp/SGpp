@@ -52,9 +52,9 @@ LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(std::istream& istr) : G
 
 }
 
-LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(size_t dim)
+LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(size_t dim, bool bfixDirechletBoundaries)
 {
-	this->storage = new GridStorage(dim);
+	this->storage = new GridStorage(dim, bfixDirechletBoundaries);
 }
 
 LinearTrapezoidBoundaryGrid::~LinearTrapezoidBoundaryGrid()
@@ -131,6 +131,16 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartThree(Data
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationRiskfreeRate()
 {
 	return new OperationRiskfreeRateLinearTrapezoidBoundary(this->storage);
+}
+
+void LinearTrapezoidBoundaryGrid::setfixDirechletBoundaries(bool bfixDirechletBoundaries)
+{
+	this->storage->setfixDirechletBoundaries(bfixDirechletBoundaries);
+}
+
+bool LinearTrapezoidBoundaryGrid::getfixDirechletBoundaries()
+{
+	return this->storage->getfixDirechletBoundaries();
 }
 
 }
