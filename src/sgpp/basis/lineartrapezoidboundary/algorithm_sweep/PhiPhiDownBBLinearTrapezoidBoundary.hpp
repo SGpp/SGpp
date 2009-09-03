@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2007-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef PHIPHIUPLINEARTRAPEZOIDBOUNDARY_HPP
-#define PHIPHIUPLINEARTRAPEZOIDBOUNDARY_HPP
+#ifndef PHIPHIDOWNBBLINEARTRAPEZOIDBOUNDARY_HPP
+#define PHIPHIDOWNBBLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -34,15 +33,19 @@ namespace detail
 {
 
 /**
- * up-operation in dimension dim. for use with sweep
+ * down-operation in dimension dim. for use with sweep
  */
-class PhiPhiUpLinearTrapezoidBoundary
+class PhiPhiDownBBLinearTrapezoidBoundary
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
 
-	/// Pointer to GridStorage object
+	/// Pointer to the GridStorage Object
 	GridStorage* storage;
+	/// width of the interval in dimension
+	double q;
+	/// intervals offset in dimension
+	double t;
 
 public:
 	/**
@@ -50,132 +53,130 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	PhiPhiUpLinearTrapezoidBoundary(GridStorage* storage) : storage(storage)
+	PhiPhiDownBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage), q(1.0), t(0.0)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~PhiPhiUpLinearTrapezoidBoundary()
+	~PhiPhiDownBBLinearTrapezoidBoundary()
 	{
 	}
 
 	/**
-	 * This operations performs the calculation of up in the direction of dimension <i>dim</i>
+	 * This operations performs the calculation of down in the direction of dimension <i>dim</i>
 	 *
 	 * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
 	 * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
 	 * result)
 	 * So please assure that both functions do exist!
 	 *
+	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
+	 *
 	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-	 * @param result DataVector that contains the result of the up operation
+	 * @param result DataVector that contains the result of the down operation
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		// get boundary values
-		double fl = 0.0;
-		double fr = 0.0;
+		q = storage->getBoundingBox()->getIntervalWidth(dim);
+		t = storage->getBoundingBox()->getIntervalOffset(dim);
 
-		rec(source, result, index, dim, fl, fr);
+		// get boundary values
+		double left_boundary;
+		double right_boundary;
+		size_t seq_left;
+		size_t seq_right;
+
+		/*
+		 * Handle Level 0
+		 */
+		// This handles the diagonal only
+		//////////////////////////////////////
+		// left boundary
+		index.left_levelzero(dim);
+		seq_left = index.seq();
+		left_boundary = source[seq_left];
+
+		// right boundary
+		index.right_levelzero(dim);
+		seq_right = index.seq();
+		right_boundary = source[seq_right];
+
+		if (!storage->getfixDirechletBoundaries())
+		{
+			result[seq_left] = (1.0/3.0)*left_boundary*q;
+
+			result[seq_right] = (1.0/3.0)*right_boundary*q;
+
+			// down
+			//////////////////////////////////////
+			result[seq_right] += (1.0/6.0)*left_boundary*q;
+		}
+
+		// move to root
+		if (!index.hint())
+		{
+			index.top(dim);
+
+			if(!storage->end(index.seq()))
+			{
+				rec(source, result, index, dim, left_boundary, right_boundary);
+			}
+
+			index.left_levelzero(dim);
+		}
 	}
 
 protected:
 
 	/**
-	 * recursive function for the calculation of Up
+	 * recursive function for the calculation of Down
 	 *
 	 * @param source DataVector that contains the coefficients of the ansatzfunction
 	 * @param result DataVector in which the result of the operation is stored
 	 * @param index reference to a griditerator object that is used navigate through the grid
 	 * @param dim the dimension in which the operation is executed
-	 * @param fl function value on the left boundary, reference parameter
-	 * @param fr function value on the right boundary, reference parameter
+	 * @param fl function value on the left boundary
+	 * @param fr function value on the right boundary
 	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 	{
 		size_t seq = index.seq();
 
-		fl = fr = 0.0;
-		double fml = 0.0;
-		double fmr = 0.0;
+		double alpha_value = source[seq];
 
-		GridStorage::index_type::level_type current_level;
-		GridStorage::index_type::index_type current_index;
+		GridStorage::index_type::level_type l;
+		GridStorage::index_type::index_type i;
 
-		index.get(dim, current_level, current_index);
+		index.get(dim, l, i);
 
-		if(current_level > 0)
+		double h = 1/pow(2.0, static_cast<int>(l));
+
+		// integration
+		result[seq] = (  h * ((fl+fr)/2.0) * q
+							  + (2.0/3.0) * h * alpha_value * q);    // diagonal entry
+
+		// dehierarchisation
+		double fm = (fl+fr)/2.0 + alpha_value;
+
+		if(!index.hint())
 		{
-			if(!index.hint())
+			index.left_child(dim);
+			if(!storage->end(index.seq()))
 			{
-				index.left_child(dim);
-				if(!storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fl, fml);
-				}
-
-				index.step_right(dim);
-				if(!storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fmr, fr);
-				}
-
-				index.up(dim);
+				rec(source, result, index, dim, fl, fm);
 			}
-		}
-		else
-		{
-			if(!index.hint())
+
+			index.step_right(dim);
+			if(!storage->end(index.seq()))
 			{
-				index.top(dim);
-				if(!storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fl, fr);
-				}
-
-				index.left_levelzero(dim);
+				rec(source, result, index, dim, fm, fr);
 			}
-		}
 
-		index.get(dim, current_level, current_index);
-
-		if (current_level > 0)
-		{
-			double fm = fml + fmr;
-
-			double alpha_value = source[seq];
-			double h = 1/pow(2.0,static_cast<int>(current_level));
-
-			// transposed operations:
-			result[seq] = fm;
-
-			fl = fm/2.0 + alpha_value*h/2.0 + fl;
-			fr = fm/2.0 + alpha_value*h/2.0 + fr;
-		}
-		else
-		{
-			size_t seq_left;
-			size_t seq_right;
-
-			// left boundary
-			seq_left = index.seq();
-
-			// right boundary
-			index.right_levelzero(dim);
-			seq_right = index.seq();
-
-			// up
-			//////////////////////////////////////
-			result[seq_left] = fl;
-			result[seq_right] = fr;
-
-			result[seq_left] += 1.0/6.0*source[seq_right];
-
-			index.left_levelzero(dim);
+			index.up(dim);
 		}
 	}
 };
@@ -184,4 +185,4 @@ protected:
 
 } // namespace sg
 
-#endif /* PHIPHIUPLINEARTRAPEZOIDBOUNDARY_HPP */
+#endif /* PHIPHIDOWNBBLINEARTRAPEZOIDBOUNDARY_HPP */

@@ -22,8 +22,8 @@
 
 #include "basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownBBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -85,8 +85,8 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::updown(DataVector& alpha, Dat
 void OperationRiskfreeRateLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+	detail::PhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -94,8 +94,8 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::up(DataVector& alpha, DataVec
 void OperationRiskfreeRateLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+	detail::PhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

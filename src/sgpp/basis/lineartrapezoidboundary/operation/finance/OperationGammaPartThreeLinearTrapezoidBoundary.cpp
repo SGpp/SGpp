@@ -22,14 +22,14 @@
 
 #include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownBBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownBBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiDownLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiUpLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearTrapezoidBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -177,8 +177,8 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::gradientSquared(DataVector&
 void OperationGammaPartThreeLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+	detail::PhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -186,8 +186,8 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::up(DataVector& alpha, DataV
 void OperationGammaPartThreeLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+	detail::PhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -195,8 +195,8 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::down(DataVector& alpha, Dat
 void OperationGammaPartThreeLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiUpLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::XdPhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+	detail::XdPhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XdPhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -204,8 +204,8 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::upGradient(DataVector& alph
 void OperationGammaPartThreeLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiDownLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::XdPhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+	detail::XdPhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XdPhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -213,8 +213,8 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::downGradient(DataVector& al
 void OperationGammaPartThreeLinearTrapezoidBoundary::upGradientSquared(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x^2 * dphi * dphi
-	detail::SqXdPhidPhiUpLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::SqXdPhidPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+	detail::SqXdPhidPhiUpBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::SqXdPhidPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -222,8 +222,8 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::upGradientSquared(DataVecto
 void OperationGammaPartThreeLinearTrapezoidBoundary::downGradientSquared(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x^2 * dphi * dphi
-	detail::SqXdPhidPhiDownLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::SqXdPhidPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+	detail::SqXdPhidPhiDownBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::SqXdPhidPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

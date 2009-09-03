@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef XDPHIPHIDOWNLINEARTRAPEZOIDBOUNDARY_HPP
-#define XDPHIPHIDOWNLINEARTRAPEZOIDBOUNDARY_HPP
+#ifndef XPHIPHIDOWNBBLINEARTRAPEZOIDBOUNDARY_HPP
+#define XPHIPHIDOWNBBLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -35,13 +35,17 @@ namespace detail
 /**
  * down-operation in dimension dim. for use with sweep
  */
-class XdPhiPhiDownLinearTrapezoidBoundary
+class XPhiPhiDownBBLinearTrapezoidBoundary
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
 
 	/// Pointer to the GridStorage Object
 	GridStorage* storage;
+	/// width of the interval in dimension
+	double q;
+	/// intervals offset in dimension
+	double t;
 
 public:
 	/**
@@ -49,14 +53,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	XdPhiPhiDownLinearTrapezoidBoundary(GridStorage* storage) : storage(storage)
+	XPhiPhiDownBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage), q(1.0), t(0.0)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~XdPhiPhiDownLinearTrapezoidBoundary()
+	~XPhiPhiDownBBLinearTrapezoidBoundary()
 	{
 	}
 
@@ -68,6 +72,8 @@ public:
 	 * result)
 	 * So please assure that both functions do exist!
 	 *
+	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
+	 *
 	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
 	 * @param result DataVector that contains the result of the down operation
 	 * @param index a iterator object of the grid
@@ -75,6 +81,9 @@ public:
 	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
+		q = storage->getBoundingBox()->getIntervalWidth(dim);
+		t = storage->getBoundingBox()->getIntervalOffset(dim);
+
 		// get boundary values
 		double left_boundary;
 		double right_boundary;
@@ -90,18 +99,22 @@ public:
 		index.left_levelzero(dim);
 		seq_left = index.seq();
 		left_boundary = source[seq_left];
-		result[seq_left] = -1.0/6.0*left_boundary;
 
 		// right boundary
 		index.right_levelzero(dim);
 		seq_right = index.seq();
 		right_boundary = source[seq_right];
-		result[seq_right] = 1.0/3.0*right_boundary;
 
-		// down
-		//////////////////////////////////////
-		result[seq_right] += 1.0/6.0*left_boundary;
+		if (!storage->getfixDirechletBoundaries())
+		{
+			result[seq_left] = (1.0/12.0) * q * (q + (4.0*t)) *left_boundary;
 
+			result[seq_right] = (1.0/12.0) * q * (3.0*q + (4.0*t)) * right_boundary;
+
+			// down
+			//////////////////////////////////////
+			result[seq_right] += (1.0/12.0) * q * (q + (2.0*t)) * left_boundary;
+		}
 		// move to root
 		if (!index.hint())
 		{
@@ -139,12 +152,16 @@ protected:
 
 		index.get(dim, l, i);
 
-		double bhelp = (1/pow(2.0, static_cast<int>(l+1)));
+		double hhalf = 1.0/pow(4.0, static_cast<int>(l));
 		double i_dbl = static_cast<double>(i);
 
+		double ihelp = i_dbl/2.0 * q * q;
+		double twelve = 1.0/12.0 * q * q;
+		double thelp = (1.0/pow(2.0, static_cast<int>(l+1))) * t * q;
+
 		// integration
-		result[seq] = (  (((bhelp*i_dbl - bhelp) * fl) - ((bhelp*i_dbl + bhelp) * fr))
-							  - (1.0/3.0 * (1/pow(2.0, static_cast<int>(l))) * alpha_value) );    // diagonal entry
+		result[seq] = (  ((hhalf*(ihelp-twelve) + thelp)*fl) + ((hhalf*(ihelp+twelve) + thelp)*fr)
+							  + ((1.0/3.0) * q * ((2.0 * hhalf * i_dbl * q) + (t * (1.0/pow(2.0, static_cast<int>(l-1))))) * alpha_value) );    // diagonal entry
 
 		// dehierarchisation
 		double fm = (fl+fr)/2.0 + alpha_value;
@@ -172,4 +189,4 @@ protected:
 
 } // namespace sg
 
-#endif /* XDPHIPHIDOWNLINEARTRAPEZOIDBOUNDARY_HPP */
+#endif /* XPHIPHIDOWNBBLINEARTRAPEZOIDBOUNDARY_HPP */
