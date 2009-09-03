@@ -94,6 +94,11 @@ OperationEval* ModPolyGrid::createOperationEval()
 	return new OperationEvalModPoly(this->storage, this->degree);
 }
 
+OperationEval* ModPolyGrid::createOperationEvalBB()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationHierarchisation* ModPolyGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationModPoly(this->storage, this->degree);

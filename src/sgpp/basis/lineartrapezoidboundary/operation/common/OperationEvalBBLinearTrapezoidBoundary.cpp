@@ -2,7 +2,6 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -21,65 +20,44 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef MODPOLYGRID_HPP
-#define MODPOLYGRID_HPP
+#include "basis/basis.hpp"
 
-#include "grid/Grid.hpp"
+#include "basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.hpp"
 
-#include <iostream>
+#include "sgpp.hpp"
+
+#include "data/DataVector.hpp"
 
 namespace sg
 {
 
-/**
- * grid with modified polynomial base functions
- */
-class ModPolyGrid : public Grid
+double OperationEvalBBLinearTrapezoidBoundary::eval(DataVector& alpha, std::vector<double>& point)
 {
-protected:
-	ModPolyGrid(std::istream& istr);
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-public:
-	/**
-	 * Constructor of grid with modified polynomial base functions
-	 *
-	 * @param dim the dimension of the grid
-	 * @param degree the max. polynom's degree
-	 */
-	ModPolyGrid(size_t dim, size_t degree);
+	IndexValVector vec;
+	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctionsBBBoundaries<lineartrapezoidboundaryBase<unsigned int, unsigned int> > ga(storage);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~ModPolyGrid();
+	ga(base, point, vec);
 
-	virtual const char* getType();
-	virtual void serialize(std::ostream& ostr);
+	double result = 0.0;
 
-	virtual OperationB* createOperationB();
-	virtual GridGenerator* createGridGenerator();
-	virtual OperationMatrix* createOperationLaplace();
-	virtual OperationEval* createOperationEval();
-	virtual OperationEval* createOperationEvalBB();
-	virtual OperationHierarchisation* createOperationHierarchisation();
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	{
+		result += iter->second * alpha[iter->first];
+	}
 
-	// @todo (heinecke) remove this when done
-	virtual OperationMatrix* createOperationUpDownTest();
+	return result;
+}
 
-	// finance operations
-	virtual OperationMatrix* createOperationDelta(DataVector& mu);
-	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationRiskfreeRate();
-
-	static Grid* unserialize(std::istream& istr);
-
-protected:
-	/// max. polynom's degree
-	size_t degree;
-};
+/**
+ * @todo (heinecke) implement with bounding box
+ */
+double OperationEvalBBLinearTrapezoidBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
+{
+	return 0.0;
+}
 
 }
 
-#endif /* MODPOLYGRID_HPP */

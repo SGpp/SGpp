@@ -86,6 +86,11 @@ OperationEval* LinearBoundaryGrid::createOperationEval()
 	return new OperationEvalLinearBoundary(this->storage);
 }
 
+OperationEval* LinearBoundaryGrid::createOperationEvalBB()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationLinearBoundary(this->storage);

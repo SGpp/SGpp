@@ -34,6 +34,7 @@
 %newobject sg::Grid::createGridGenerator();
 %newobject sg::Grid::createOperationLaplace();
 %newobject sg::Grid::createOperationEval();
+%newobject sg::Grid::createOperationEvalBB();
 %newobject sg::Grid::createOperationHierarchisation();
 
 %include "stl.i"

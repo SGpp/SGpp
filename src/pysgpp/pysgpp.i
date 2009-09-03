@@ -88,6 +88,7 @@ namespace std {
 %include "src/sgpp/algorithm/classification/test_dataset_boundary.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
+%include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBBBoundaries.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/classification/UnidirGradient.hpp"
 %include "src/sgpp/algorithm/classification/DMSystemMatrix.hpp"
@@ -105,7 +106,6 @@ namespace std {
 %include "src/sgpp/solver/SGSolver.hpp"
 %feature("director") ConjugateGradients;
 %include "src/sgpp/solver/cg/ConjugateGradients.hpp"
-
 
 
 %apply std::string *INPUT { std::string& istr };
@@ -127,6 +127,7 @@ namespace std {
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryBase>;
 %template(SGetAffectedBasisFunctionsTrapezoidBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearTrapezoidBoundaryBase>;
+%template(SGetAffectedBasisFunctionsBBTrapezoidBoundaries) sg::GetAffectedBasisFunctionsBBBoundaries<sg::SLinearTrapezoidBoundaryBase>;
 
 %template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
 %template(test_dataset_linearboundary) sg::test_dataset_boundary<sg::SLinearBoundaryBase>;
