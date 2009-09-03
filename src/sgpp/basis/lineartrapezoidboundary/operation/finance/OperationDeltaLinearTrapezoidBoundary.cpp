@@ -22,11 +22,11 @@
 
 #include "basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownBBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownBBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -134,8 +134,8 @@ void OperationDeltaLinearTrapezoidBoundary::gradient(DataVector& alpha, DataVect
 void OperationDeltaLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+	detail::PhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -143,8 +143,8 @@ void OperationDeltaLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& re
 void OperationDeltaLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+	detail::PhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::PhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -152,8 +152,8 @@ void OperationDeltaLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& 
 void OperationDeltaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiUpLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::XdPhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+	detail::XdPhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XdPhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -161,8 +161,8 @@ void OperationDeltaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVe
 void OperationDeltaLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiDownLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::XdPhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+	detail::XdPhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XdPhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

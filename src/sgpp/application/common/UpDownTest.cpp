@@ -60,6 +60,17 @@ int main(int argc, char *argv[])
 	std::cout << "the grid has " << numGridPoints << " gridpoints" << std::endl;
 	std::cout << "finished construction regular grid" << std::endl;
 
+	sg::BoundingBox* myBoundingBox;
+	myBoundingBox = myGrid->getBoundingBox();
+	sg::DimensionBoundary myInterval;
+
+	myInterval.leftBoundary = -300.0;
+	myInterval.rightBoundary = -100.0;
+
+	myBoundingBox->setBoundary(0, myInterval);
+
+	std::cout << "Changed Bounding Box to: " << myInterval.leftBoundary << " to " << myInterval.rightBoundary << std::endl;
+
 	DataVector alpha(numGridPoints);
 	alpha.setAll(0.0);
 

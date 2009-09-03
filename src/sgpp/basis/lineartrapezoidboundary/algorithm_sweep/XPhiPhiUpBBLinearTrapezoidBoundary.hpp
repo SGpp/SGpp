@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef XPHIPHIUPLINEARTRAPEZOIDBOUNDARY_HPP
-#define XPHIPHIUPLINEARTRAPEZOIDBOUNDARY_HPP
+#ifndef XPHIPHIUPBBLINEARTRAPEZOIDBOUNDARY_HPP
+#define XPHIPHIUPBBLINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -35,13 +35,17 @@ namespace detail
 /**
  * up-operation in dimension dim. for use with sweep
  */
-class XPhiPhiUpLinearTrapezoidBoundary
+class XPhiPhiUpBBLinearTrapezoidBoundary
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
 
 	/// Pointer to GridStorage object
 	GridStorage* storage;
+	/// width of the interval in dimension
+	double q;
+	/// intervals offset in dimension
+	double t;
 
 public:
 	/**
@@ -49,14 +53,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	XPhiPhiUpLinearTrapezoidBoundary(GridStorage* storage) : storage(storage)
+	XPhiPhiUpBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage), q(1.0), t(0.0)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~XPhiPhiUpLinearTrapezoidBoundary()
+	~XPhiPhiUpBBLinearTrapezoidBoundary()
 	{
 	}
 
@@ -68,6 +72,8 @@ public:
 	 * result)
 	 * So please assure that both functions do exist!
 	 *
+	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
+	 *
 	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
 	 * @param result DataVector that contains the result of the up operation
 	 * @param index a iterator object of the grid
@@ -75,6 +81,9 @@ public:
 	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
+		q = storage->getBoundingBox()->getIntervalWidth(dim);
+		t = storage->getBoundingBox()->getIntervalOffset(dim);
+
 		// get boundary values
 		double fl = 0.0;
 		double fr = 0.0;
@@ -151,14 +160,15 @@ protected:
 			double hhalf = 1/pow(4.0, static_cast<int>(current_level));
 			double i_dbl = static_cast<double>(current_index);
 
-			double ihelp = i_dbl/2.0;
-			double twelve = 1.0/12.0;
+			double ihelp = i_dbl/2.0 * q * q;
+			double twelve = 1.0/12.0 * q * q;
+			double thelp = (1.0/pow(2.0, static_cast<int>(current_level+1))) * t * q;
 
 			// transposed operations:
 			result[seq] = fm;
 
-			fl = fm/2.0 + (alpha_value*hhalf*(ihelp-twelve)) + fl;
-			fr = fm/2.0 + (alpha_value*hhalf*(ihelp+twelve)) + fr;
+			fl = fm/2.0 + (alpha_value*(hhalf*(ihelp-twelve) + thelp)) + fl;
+			fr = fm/2.0 + (alpha_value*(hhalf*(ihelp+twelve) + thelp)) + fr;
 		}
 		else
 		{
@@ -172,12 +182,15 @@ protected:
 			index.right_levelzero(dim);
 			seq_right = index.seq();
 
-			// up
-			//////////////////////////////////////
-			result[seq_left] = fl;
-			result[seq_right] = fr;
+			if (!storage->getfixDirechletBoundaries())
+			{
+				// up
+				//////////////////////////////////////
+				result[seq_left] = fl;
+				result[seq_right] = fr;
 
-			result[seq_left] += 1.0/12.0*source[seq_right];
+				result[seq_left] += 1.0/12.0 * q * (q + (2.0*t)) *source[seq_right];
+			}
 
 			index.left_levelzero(dim);
 		}
@@ -188,4 +201,4 @@ protected:
 
 } // namespace sg
 
-#endif /* XPHIPHIUPLINEARTRAPEZOIDBOUNDARY_HPP */
+#endif /* XPHIPHIUPBBLINEARTRAPEZOIDBOUNDARY_HPP */
