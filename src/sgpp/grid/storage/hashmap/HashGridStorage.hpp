@@ -76,8 +76,9 @@ public:
 	 * initializes the boundingBox with a trivial cube
 	 *
 	 * @param dim the dimension of the sparse grid
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(size_t dim) : DIM(dim), list(), map()
+	HashGridStorage(size_t dim, bool bfixDirechletBoundaries = false) : DIM(dim), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
 	{
 		boundingBox = new BoundingBox(DIM);
 	}
@@ -88,8 +89,9 @@ public:
 	 * initializes the boundingBox with a reference to another boundingbox
 	 *
 	 * @param dim the dimension of the sparse grid
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(BoundingBox& creationBoundingBox) : DIM(), list(), map()
+	HashGridStorage(BoundingBox& creationBoundingBox, bool bfixDirechletBoundaries = false) : DIM(), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
 	{
 		boundingBox = new BoundingBox(creationBoundingBox);
 		DIM = boundingBox->getDimensions();
@@ -99,8 +101,9 @@ public:
 	 * Constructor that reads the data from a string
 	 *
 	 * @param istr the string that contains the data
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(std::string& istr) : DIM(0), list(), map()
+	HashGridStorage(std::string& istr, bool bfixDirechletBoundaries = false) : DIM(0), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
 	{
     	std::istringstream istream;
     	istream.str(istr);
@@ -112,8 +115,9 @@ public:
 	 * Constructor that reads the data from an input stream
 	 *
 	 * @param istream the inputstream that contains the data
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
+	HashGridStorage(std::istream& istream, bool bfixDirechletBoundaries = false) : DIM(0), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
 	{
 		parseGridDescription(istream);
 	}
@@ -508,6 +512,30 @@ public:
 		return boundingBox;
 	}
 
+	/**
+	 * Sets the fixDirechletBoundaries property of the grid storage
+	 *
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
+	 *
+	 * @todo (heinecke) do some refactoring here
+	 */
+	void setfixDirechletBoundaries(bool bfixDirechletBoundaries)
+	{
+		bUsefixDirechletBoundaries = bfixDirechletBoundaries;
+	}
+
+	/**
+	 * gets the fixDirechletBoundaries property of the grid storage
+	 *
+	 * @return boolean that specifies that the boundary values are fixed during the computation on the grid (direchlet boundaries)
+	 *
+	 * @todo (heinecke) do some refactoring here
+	 */
+	bool getfixDirechletBoundaries()
+	{
+		return bUsefixDirechletBoundaries;
+	}
+
 protected:
 	/**
 	 * returns the next sequence numbers
@@ -528,6 +556,8 @@ private:
     grid_map map;
     /// the grids bounding box
     BoundingBox* boundingBox;
+	/// boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
+	bool bUsefixDirechletBoundaries;
 
     /**
      * Parses the gird's information (grid points, dimensions, bounding box) from a string stream

@@ -23,7 +23,7 @@
 
 %newobject sg::Grid::createLinearGrid(size_t dim);
 %newobject sg::Grid::createLinearBoundaryGrid(size_t dim);
-%newobject sg::Grid::createLinearBoundaryUScaledGrid(size_t dim);
+%newobject sg::Grid::createLinearTrapezoidBoundaryGrid(size_t dim, bool bfixDirechletBoundaries);
 %newobject sg::Grid::createModLinearGrid(size_t dim);
 %newobject sg::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sg::Grid::createModPolyGrid(size_t dim, size_t degree);

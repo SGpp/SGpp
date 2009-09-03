@@ -23,8 +23,8 @@
 #ifndef OPERATIONLAPLACELINEARTRAPEZOIDBOUNDARY_HPP
 #define OPERATIONLAPLACELINEARTRAPEZOIDBOUNDARY_HPP
 
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/LaplaceDownLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/LaplaceUpLinearTrapezoidBoundary.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
 
@@ -66,15 +66,15 @@ public:
 protected:
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::PhiPhiUpLinearTrapezoidBoundary func(this->storage);
-		sweep<detail::PhiPhiUpLinearTrapezoidBoundary> s(func, this->storage);
+		detail::LaplaceUpLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::LaplaceUpLinearTrapezoidBoundary> s(func, this->storage);
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::PhiPhiDownLinearTrapezoidBoundary func(this->storage);
-		sweep<detail::PhiPhiDownLinearTrapezoidBoundary> s(func, this->storage);
+		detail::LaplaceDownLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::LaplaceDownLinearTrapezoidBoundary> s(func, this->storage);
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
 

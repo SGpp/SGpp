@@ -50,9 +50,9 @@ Grid* Grid::createLinearBoundaryGrid(size_t dim)
 	return new LinearBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim)
+Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim, bool bfixDirechletBoundaries)
 {
-	return new LinearTrapezoidBoundaryGrid(dim);
+	return new LinearTrapezoidBoundaryGrid(dim, bfixDirechletBoundaries);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim)
