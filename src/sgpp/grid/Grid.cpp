@@ -188,12 +188,12 @@ void Grid::serialize(std::ostream& ostr)
 
 void Grid::refine(DataVector* vector, int numOfPoints)
 {
-	//TODO: different refinemente Functors (khakhutv)
+	// @todo (khakhutv) different refinemente Functors 
 	this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
 }
 
 double Grid::eval(DataVector& alpha, DataVector& point){
-	OperationEval* evalOp = this->createOperationEval();
+	static OperationEval* evalOp = this->createOperationEval();
 	return evalOp->eval(alpha, point);
 }
 
