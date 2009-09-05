@@ -45,18 +45,19 @@ BlackScholesSolver::~BlackScholesSolver()
 	}
 }
 
-void BlackScholesSolver::constructGrid(BoundingBox& myBoundingBox, size_t level)
+void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 {
-	dim = myBoundingBox.getDimensions();
+	dim = BoundingBox.getDimensions();
 	levels = level;
 
-	myGrid = new LinearTrapezoidBoundaryGrid(dim, true);
+	myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox, true);
 
 	GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(levels);
 	delete myGenerator;
 
-
+	myBoundingBox = myGrid->getBoundingBox();
+	myGridStorage = myGrid->getStorage();
 
 	bGridConstructed = true;
 }
@@ -68,9 +69,9 @@ void BlackScholesSolver::constructGrid(std::string tfilename)
 
 void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r)
 {
-	this->mus = DataVector(mus);
-	this->sigmas = DataVector(sigmas);
-	this->rhos = DataVector(rhos);
+	this->mus = new DataVector(mus);
+	this->sigmas = new DataVector(sigmas);
+	this->rhos = new DataVector(rhos);
 	this->r = r;
 
 	bStochasticDataAlloc = true;
@@ -81,7 +82,7 @@ void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, Da
 	// @todo (heinecke) implement this
 }
 
-void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::string filename)
+void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::string tfilename)
 {
 	DimensionBoundary dimOne;
 	DimensionBoundary dimTwo;
@@ -96,14 +97,14 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 		else
 		{
 			// Open filehandle
-			fileout.open(tfilename.str().c_str());
+			fileout.open(tfilename.c_str());
 			OperationEval* myEval = myGrid->createOperationEvalBB();
 
 			if (dim == 1)
 			{
 				dimOne = myGrid->getBoundingBox()->getBoundary(0);
 
-				for (double i = dimOne.leftBoundary; i < dimOne.rightBoundary; i+=resolution)
+				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=resolution)
 				{
 					std::vector<double> point;
 					point.push_back(i);
@@ -115,9 +116,9 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 				dimOne = myGrid->getBoundingBox()->getBoundary(0);
 				dimTwo = myGrid->getBoundingBox()->getBoundary(1);
 
-				for (double i = dimOne.leftBoundary; i < dimOne.rightBoundary; i+=resolution)
+				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=resolution)
 				{
-					for (double j = dimTwo.leftBoundary; j < dimTwo.rightBoundary; j+=resolution)
+					for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary; j+=resolution)
 					{
 						std::vector<double> point;
 						point.push_back(i);
@@ -135,6 +136,60 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 	else
 	{
 		// @todo (heinecke) thrown an application exception
+	}
+}
+
+void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike)
+{
+	double tmp;
+
+	if (bGridConstructed)
+	{
+		if (dim == 1)
+		{
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
+				alpha[i] = get1DPayoffValue(tmp, strike);
+				std::cout << alpha[i] << std::endl;
+			}
+
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+
+			myHierarchisation->doHierarchisation(alpha);
+			//std::cout << alpha.toString() << std::endl;
+			//myHierarchisation->doDehierarchisation(alpha);
+			//std::cout << alpha.toString() << std::endl;
+			delete myHierarchisation;
+		}
+	}
+	else
+	{
+		// @todo (heinecke) throw an application exception
+	}
+}
+
+size_t BlackScholesSolver:: getNumberGridPoints()
+{
+	if (bGridConstructed)
+	{
+		return myGridStorage->size();
+	}
+	else
+	{
+		// @todo (heinecke) throw an application exception
+	}
+}
+
+double BlackScholesSolver::get1DPayoffValue(double assetValue, double strike)
+{
+	if (assetValue <= strike)
+	{
+		return 0.0;
+	}
+	else
+	{
+		return assetValue - strike;
 	}
 }
 

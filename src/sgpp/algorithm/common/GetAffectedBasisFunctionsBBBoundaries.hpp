@@ -118,7 +118,7 @@ protected:
 
 				if (work_level > 0)
 				{
-					double new_value = basis.eval(work_level, work_index, point[current_dim]);
+					double new_value = basis.eval(work_level, work_index, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
 					if(current_dim == storage->dim()-1)
 					{

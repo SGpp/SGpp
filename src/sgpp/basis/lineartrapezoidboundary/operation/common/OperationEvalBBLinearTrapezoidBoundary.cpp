@@ -33,7 +33,7 @@ namespace sg
 
 double OperationEvalBBLinearTrapezoidBoundary::eval(DataVector& alpha, std::vector<double>& point)
 {
-	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+	typedef std::vector< std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
 	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;

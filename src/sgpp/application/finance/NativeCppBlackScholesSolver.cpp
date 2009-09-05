@@ -25,6 +25,8 @@
 int main(int argc, char *argv[])
 {
 	size_t dim = 1;
+	size_t level = 6;
+	double strike = 65.0;
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
 
@@ -35,21 +37,21 @@ int main(int argc, char *argv[])
 		myBoundaries[i].rightBoundary = 100.0;
 	}
 
-	sg::BlackScholesSolver myBSSolver = new sg::BlackScholesSolver();
-	sg::BoundingBox myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
 	// Construct a grid
-	myBSSolver->constructGrid(*myBoundingBox, 4);
+	myBSSolver->constructGrid(*myBoundingBox, level);
 
 	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSSolver->getnumberGridPoints());
+	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
 
 	// Init the grid with on payoff function
-	//myBSSolver->
+	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.001, "payoff.gnuplot");
+	myBSSolver->printGrid(*alpha, 0.01, "payoff.gnuplot");
 
 	// Set stochastic data
 	//myBSSolver->setStochasticData();
@@ -58,7 +60,7 @@ int main(int argc, char *argv[])
 	//myBSSolver->solveEuler();
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.001, "solvedBS.gnuplot");
+	myBSSolver->printGrid(*alpha, 0.01, "solvedBS.gnuplot");
 
 	delete myBSSolver;
 	delete myBoundingBox;

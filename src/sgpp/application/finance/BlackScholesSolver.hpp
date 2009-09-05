@@ -69,12 +69,26 @@ private:
 	bool bStochasticDataAlloc;
 	/// stores if the grid was created inside the solver
 	bool bGridConstructed;
+	/// Stores Pointer to the Grid's Bounding Box
+	BoundingBox* myBoundingBox;
+	/// Stores Pointer to the Girs's Storage
+	GridStorage* myGridStorage;
+
+	/**
+	 * returns the option value (payoff value) for an European call option
+	 *
+	 * @param assetValue the current asset's value
+	 * @param strike the strike price of the option
+	 *
+	 * @return the call premium
+	 */
+	double get1DPayoffValue(double assetValue, double strike);
 
 public:
 	/**
 	 * Std-Constructor of the solver
 	 */
-	BlackScholeSolver();
+	BlackScholesSolver();
 
 	/**
 	 * Std-Destructor of the solver
@@ -127,11 +141,26 @@ public:
 	 *
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 * @param resolution the distance between evalution points
-	 * @param filename absolute path to file into which the grid's evaluation is written
+	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 *
 	 * @todo (heinecke) move this into a class that is located in the folder tool, e.g. GridPrinter
 	 */
-	void printGrid(DataVector& alpha, double resolution, std::string filename);
+	void printGrid(DataVector& alpha, double resolution, std::string tfilename);
+
+	/**
+	 * Inits the alpha vector with a payoff function
+	 *
+	 * @todo (heinecke) move this into a class that provide such tools
+	 */
+	void initGridWithPayoff(DataVector& alpha, double strike);
+
+	/**
+	 * use this to determine the number of grid points, used to solve
+	 * the current problem
+	 *
+	 * @return the number of grid points
+	 */
+	size_t getNumberGridPoints();
 };
 
 }
