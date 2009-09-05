@@ -115,7 +115,7 @@ class Learner(object):
         row = DataVector(1, dim)
         for i in xrange(size):
             points.getRow(i, row)
-            values[i] = self.grid.eval(self.alpha, row)
+            values[i] = self.grid.eval(self.knowledge.getAlphas(), row)
         self.notifyEventControllers(LearnerEvents.APPLICATION_COMPLETE)
         return values
     
@@ -146,7 +146,7 @@ class Learner(object):
 
 
     ## Learn data with cross-fold validation
-    # TODO: make it possible to run jobs concurrently (khakhutv)
+    #  @todo (khakhutv) make it possible to run jobs concurrently 
     #
     # @return: list of DataVector alpha in different folds
     def learnDataWithFolding(self,):
@@ -154,7 +154,7 @@ class Learner(object):
         self.specification.setBOperator(self.grid.createOperationB())
      
         alphas = []
-        # TODO: can be called concurrently (khakhutv)
+        #  @todo (khakhutv) can be called concurrently 
         for dataset in self.foldingPolicy:
             alphas.append(self.learnDataWithTest(dataset))
             
@@ -179,7 +179,7 @@ class Learner(object):
         self.linearSystem.generateb(set.getValues(), b)
         reuse = False
         #calculates alphas
-        #TODO: one has to pass correct value as max_treshold and reuse (khakhutv)
+        # @todo (khakhutv) one has to pass correct value as max_treshold and reuse 
         self.solver.solve(self.linearSystem, alpha, b, reuse, False, 10**(-20))
         return alpha
 

@@ -60,7 +60,8 @@ class Regressor(Learner):
     # @param trainSubset: DataContainer with training data
     # @param testSubset: DataContainer with validation data, default value: None
     def updateResults(self, alpha, trainSubset, testSubset = None):
-        #TODO: Add L2-norm of error as well as min/max errors
+        self.knowledge.update(alpha)
+        # @todo (khakhutv) Add L2-norm of error as well as min/max errors
         #eval Error for training data and append it to other in this iteration
         self.trainAccuracy.append(self.evalError(trainSubset, alpha))
         
@@ -73,7 +74,7 @@ class Regressor(Learner):
             
         self.trainingOverall.append(sum(self.trainAccuracy)/i)
 
-        #TODO: grid.getSize() change Grid interface
+        # @todo (khakhutv) grid.getSize() change Grid interface
         self.numberPoints.append(self.grid.getStorage().size())
     
     
