@@ -66,9 +66,9 @@ public:
 	virtual double start() = 0;
 
 	/**
-	 * makes it possible to refine on several points
+	 * Returns the maximal number of points that should be refined
 	 *
-	 * @return number of refinements ????
+	 * @return number of points that should refined
 	 */
 	virtual int getRefinementsNum(){ return 1;}
 };
