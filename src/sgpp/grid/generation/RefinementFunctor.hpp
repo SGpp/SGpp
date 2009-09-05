@@ -71,6 +71,8 @@ public:
 	 * @return number of points that should refined
 	 */
 	virtual int getRefinementsNum(){ return 1;}
+	
+	virtual double getRefinementThreshold() = 0;
 };
 
 }

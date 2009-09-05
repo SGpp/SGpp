@@ -42,8 +42,9 @@ public:
 	 *
 	 * @param alpha DataVector that is basis for refinement decisions
 	 * @param refinements_num number of refinements
+	 * @param threshold
 	 */
-	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1) : alpha(alpha), refinements_num(refinements_num)
+	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1, double threshold = 0.0) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
 	{
 	}
 
@@ -67,13 +68,22 @@ public:
 	{
 		return this->refinements_num;
 	}
+	
+	virtual double getRefinementThreshold()
+	{
+		return this->threshold;
+	}
 
 
 protected:
 	/// pointe to the vector that stores the alpha values
 	DataVector* alpha;
+	
 	/// number of points to refine
 	int refinements_num;
+	
+	/// treshold, only the points with greater absolute values or error
+	double threshold;
 };
 
 }

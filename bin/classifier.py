@@ -197,6 +197,17 @@ def constructGrid(dim):
     
     return grid
 
+## Calculates the number of points, that should be refined
+# @param options: options object
+# @param grid: grid
+# @return: number of points, that should be refined
+def getNumOfPoints(options, grid):
+    numOfPoints = 0
+    if options.adapt_rate: 
+        numOfPoints = int(ceil( options.adapt_rate * grid.createGridGenerator().getNumberOfRefinablePoints()))
+    else: numOfPoints = options.adapt_points
+    return numOfPoints
+
 
 #-------------------------------------------------------------------------------
 ## Classify a dataset with an existing grid (compute accuracy).
@@ -452,9 +463,9 @@ def run(grid, training, classes):
             #if(options.verbose):
             print("refining grid")
             if options.regression:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, options.adapt_points))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, getNumOfPoints(options, grid)))
             else:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, options.adapt_points))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid)))
     return alpha
 
 ##
@@ -545,16 +556,10 @@ def doTest():
             or (options.grid_limit > 0 and options.grid_limit > grid.getStorage().size()) \
             :
             print("refining grid")
-            
-            numOfPoints = 0
-            if options.adapt_rate: 
-                numOfPoints = int(ceil( options.adapt_rate * grid.createGridGenerator().getNumberOfRefinablePoints()))
-            else: numOfPoints = options.adapt_points
-            
             if options.regression:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, numOfPoints))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, getNumOfPoints(options, grid), options.adapt_threshold))
             else:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, numOfPoints))
+                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid), options.adapt_threshold))
            
             if(options.verbose): print("Number of points: %d" %(grid.getStorage().size(),))
             
@@ -761,7 +766,7 @@ def performFold(dvec,cvec):
             print grid
         if(adaptStep < options.adaptive):
             print "refine"
-            grid.createGridGenerator().refine(SurplusRefinementFunctor(refinealpha))
+            grid.createGridGenerator().refine(SurplusRefinementFunctor(getNumOfPoints(options, grid)))
 
     if options.stats != None:
         txt = formTxt(te_refine, tr_refine, num_points)
@@ -834,7 +839,7 @@ def performFoldNew(dvec,cvec,ifold):
         # refine
         if(adaptStep < options.adaptive):
             if options.verbose: print "refining"
-            grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha))
+            grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid)))
 
     # statistics
     txt = formTxtVal(te_refine, tr_refine, val_refine, num_points)
@@ -933,7 +938,7 @@ def performFoldRegression(dvec,cvec):
         
         if(adpatStep + 1 < options.adaptive):
             print "refine"
-            grid.createGridGenerator().refine(SurplusRefinementFunctor(refineerrors))
+            grid.createGridGenerator().refine(SurplusRefinementFunctor(refineerrors, getNumOfPoints(options, grid)))
 
     if options.stats != None:
             txt = formTxt(te_meanSqrError, tr_meanSqrError, num_points)
@@ -1065,6 +1070,7 @@ if __name__=='__main__':
     parser.add_option("--adapt_points", action="store", type="int", default=1, dest="adapt_points", metavar="NUM", help="Number of points in one refinement iteration")
     parser.add_option("--adapt_rate", action="store", type="float", dest="adapt_rate", metavar="NUM", help="Percentage of points from all refinable points in one refinement iteration")
     parser.add_option("--adapt_start", action="store", type="int", default=0, dest="adapt_start", metavar="NUM", help="The index of adapt step to begin with")
+    parser.add_option("--adapt_threshold", action="store", type="float", default=0.0, dest="adapt_threshold", metavar="NUM", help="The threshold, an error or alpha has to be greater than in order to be reined.")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
     parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default=10, metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
@@ -1091,7 +1097,7 @@ if __name__=='__main__':
     parser.add_option("--regression", action="store_true", default=False, dest="regression", help="Use regression approach.")
     parser.add_option("--checkpoint", action="store", type="string", dest="checkpoint", help="Filename for checkpointing. For fold? and test. No file extension.")
     parser.add_option("--grid", action="store", type="string", dest="grid", help="Filename for Grid-resume. For fold? and test. Full filename.")
-#TODO: maybe a better name for parameter
+# @todo (khakhutv) maybe a better name for parameter
     parser.add_option("--epochs_limit", action="store", type="int", default="0", dest="epochs_limit", help="Number of refinement iterations (epochs), MSE of test data have to increase, before refinement will stop.")
     parser.add_option("--mse_limit", action="store", type="float", default="0.0", dest="mse_limit", help="If MSE of test data fall below this limit, refinement will stop.")
     parser.add_option("--grid_limit", action="store", type="int", default="0", dest="grid_limit", help="If the number of points on grid exceed grid_limit, refinement will stop.")

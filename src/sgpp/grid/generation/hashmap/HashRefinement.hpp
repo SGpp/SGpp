@@ -98,7 +98,7 @@ public:
 				// if there no more grid points --> test if we should refine the grid
 				if(child_iter == end_iter)
 				{
-					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+					RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
 					if(current_value > max_value)
 					{
 						//Replace the minimal point in result array, find the new  minimal point
@@ -115,7 +115,7 @@ public:
 				child_iter = storage->find(&index);
 				if(child_iter == end_iter)
 				{
-					RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+					RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
 					if(current_value > max_value)
 					{
 						//Replace the minimal point in result array, find the new minimal point
@@ -133,11 +133,12 @@ public:
 
 
 		//can refine grid on several points
+		double threshold = functor->getRefinementThreshold();
 		for (int i = 0; i < refinements_num; i++){
 			max_value = max_values[i];
 			max_index = max_indexes[i];
 
-			if(max_value > functor->start())
+			if(max_value > functor->start() && fabs(max_value) >= threshold)
 			{
 				refine_gridpoint(storage, max_index);
 			}
