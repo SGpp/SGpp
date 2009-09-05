@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008-2009 Dirk Pflueger (pflueged@in.tum.de                 */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
@@ -576,6 +577,15 @@ private:
 
     	size_t num;
     	istream >> num;
+
+   	// check whether grid was created with a version that is too new
+    	if (version > SERIALIZATION_VERSION) 
+	{
+	  //	    throw generation_exception("Version of serialized grid is too new. Max. recognized version is "+string(SERIALIZATION_VERSION));
+	  std::ostringstream errstream;
+	  errstream << "Version of serialized grid (" << version << ") is too new. Max. recognized version is " << SERIALIZATION_VERSION << ".";
+	  throw generation_exception(errstream.str().c_str());
+    	}
 
     	// read the bounding box
     	if (version == 3)
