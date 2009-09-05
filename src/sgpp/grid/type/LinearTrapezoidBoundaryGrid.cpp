@@ -58,6 +58,11 @@ LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(size_t dim, bool bfixDi
 	this->storage = new GridStorage(dim, bfixDirechletBoundaries);
 }
 
+LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(BoundingBox& BB, bool bfixDirechletBoundaries)
+{
+	this->storage = new GridStorage(BB, bfixDirechletBoundaries);
+}
+
 LinearTrapezoidBoundaryGrid::~LinearTrapezoidBoundaryGrid()
 {
 }

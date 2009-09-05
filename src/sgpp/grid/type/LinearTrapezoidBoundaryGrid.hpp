@@ -48,6 +48,14 @@ public:
 	LinearTrapezoidBoundaryGrid(size_t dim, bool bfixDirechletBoundaries = false);
 
 	/**
+	 * Constructor Linear Trapezoid Boundary Grid
+	 *
+	 * @param BB the BoundingBox of the grid
+	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
+	 */
+	LinearTrapezoidBoundaryGrid(BoundingBox& BB, bool bfixDirechletBoundaries = false);
+
+	/**
 	 * Destructor
 	 */
 	virtual ~LinearTrapezoidBoundaryGrid();
