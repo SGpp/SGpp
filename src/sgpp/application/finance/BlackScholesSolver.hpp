@@ -21,19 +21,27 @@
 /*****************************************************************************/
 
 #include "sgpp.hpp"
-#include "exception/operation_exception.hpp"
-#include "grid/type/LinearGrid.hpp"
-#include "grid/type/LinearBoundaryGrid.hpp"
+
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
-#include "grid/type/ModLinearGrid.hpp"
+#include "grid/common/BoundingBox.hpp"
 
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 
 #include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
 
 namespace sg
 {
 
+/**
+ * This class provides a simple-to-use solver of the multi dimensional Black
+ * Scholes Equation that uses Sparse Grids.
+ *
+ * The class's aim is, to hide all complex details of solving the Black Scholes
+ * Equation with Sparse Grids!
+ */
 class BlackScholesSolver
 {
 private:
@@ -55,26 +63,75 @@ private:
 	Grid* myGrid;
 	/// the number of levels used for an regular grid
 	size_t levels;
-	/// the type of grid used
-	std::string GridType;
 	/// the dimension of the grid
 	size_t dim;
+	/// stores if the stochastic asset data was passed to the solver
+	bool bStochasticDataAlloc;
+	/// stores if the grid was created inside the solver
+	bool bGridConstructed;
 
 public:
+	/**
+	 * Std-Constructor of the solver
+	 */
 	BlackScholeSolver();
 
+	/**
+	 * Std-Destructor of the solver
+	 */
 	~BlackScholesSolver();
 
-	void constructGrid(size_t dim, size_t level);
+	/**
+	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
+	 *
+	 * @param myBoundingBox reference to a bounding box that describes the grid
+	 * @param level number of the regular's grid levels
+	 */
+	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
-	void setStatData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r);
+	/**
+	 * Use this routine if you want to solve a problem stored in the format provided by the solving system
+	 * released by the University of Bonn, Germany
+	 *
+	 * @param tfilename absolute path of the file
+	 */
+	void constructGrid(std::string tfilename);
 
+	/**
+	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
+	 * some statistical data about the underlying (expected values, standard deviation
+	 * and the correlation between them). This function allows you to set this data.
+	 *
+	 * @param mus a DataVector that contains the underlyings' expected values
+	 * @param sigmas a DataVector that contains the underlyings' standard deviations
+	 * @param rhos a DataVector that contains the correlations between the underlyings
+	 * @param r the riskfree rate used in the market model
+	 */
+	void setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r);
+
+	/**
+	 * Call this routine to use an explicit Euler algorithm to solve the multi dimensional
+	 * Black Scholes Equation.
+	 *
+	 * @param numTimestpes the number of timesteps that should be executed
+	 * @param timestepsize the size of the interval one timestep moves forward
+	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 */
 	void solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha);
 
-	void printGrid(DataVector& alpha);
-
-	void get1Dpayoff(DataVector& alpha, size_t levels, double strike);
-
+	/**
+	 * This is some kind of debug functionality. It writes a file,
+	 * that can be used with gnuplot the print the grid.
+	 *
+	 * Is only implemented for 1D and 2D grids!
+	 *
+	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param resolution the distance between evalution points
+	 * @param filename absolute path to file into which the grid's evaluation is written
+	 *
+	 * @todo (heinecke) move this into a class that is located in the folder tool, e.g. GridPrinter
+	 */
+	void printGrid(DataVector& alpha, double resolution, std::string filename);
 };
 
 }

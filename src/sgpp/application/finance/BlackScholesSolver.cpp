@@ -22,12 +22,120 @@
 
 #include "application/finance/BlackScholesSolver.hpp"
 
-BlackScholesSolver::BlackScholesSolver()
+namespace sg
 {
 
+BlackScholesSolver::BlackScholesSolver()
+{
+	bStochasticDataAlloc = false;
+	bGridConstructed = false;
 }
 
 BlackScholesSolver::~BlackScholesSolver()
 {
+	if (bStochasticDataAlloc)
+	{
+		delete mus;
+		delete sigmas;
+		delete rhos;
+	}
+	if (bGridConstructed)
+	{
+		delete myGrid;
+	}
+}
+
+void BlackScholesSolver::constructGrid(BoundingBox& myBoundingBox, size_t level)
+{
+	dim = myBoundingBox.getDimensions();
+	levels = level;
+
+	myGrid = new LinearTrapezoidBoundaryGrid(dim, true);
+
+	GridGenerator* myGenerator = myGrid->createGridGenerator();
+	myGenerator->regular(levels);
+	delete myGenerator;
+
+
+
+	bGridConstructed = true;
+}
+
+void BlackScholesSolver::constructGrid(std::string tfilename)
+{
+	// @todo (heinecke) implement this
+}
+
+void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r)
+{
+	this->mus = DataVector(mus);
+	this->sigmas = DataVector(sigmas);
+	this->rhos = DataVector(rhos);
+	this->r = r;
+
+	bStochasticDataAlloc = true;
+}
+
+void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha)
+{
+	// @todo (heinecke) implement this
+}
+
+void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::string filename)
+{
+	DimensionBoundary dimOne;
+	DimensionBoundary dimTwo;
+	std::ofstream fileout;
+
+	if (bGridConstructed)
+	{
+		if (dim > 2)
+		{
+			// @todo (heinecke) thrown an application exception
+		}
+		else
+		{
+			// Open filehandle
+			fileout.open(tfilename.str().c_str());
+			OperationEval* myEval = myGrid->createOperationEvalBB();
+
+			if (dim == 1)
+			{
+				dimOne = myGrid->getBoundingBox()->getBoundary(0);
+
+				for (double i = dimOne.leftBoundary; i < dimOne.rightBoundary; i+=resolution)
+				{
+					std::vector<double> point;
+					point.push_back(i);
+					fileout << i << " " << myEval->eval(alpha,point) << std::endl;
+				}
+			}
+			else
+			{
+				dimOne = myGrid->getBoundingBox()->getBoundary(0);
+				dimTwo = myGrid->getBoundingBox()->getBoundary(1);
+
+				for (double i = dimOne.leftBoundary; i < dimOne.rightBoundary; i+=resolution)
+				{
+					for (double j = dimTwo.leftBoundary; j < dimTwo.rightBoundary; j+=resolution)
+					{
+						std::vector<double> point;
+						point.push_back(i);
+						point.push_back(j);
+						fileout << i << " " << j << " " << myEval->eval(alpha,point) << std::endl;
+					}
+				}
+			}
+
+			delete myEval;
+			// close filehandle
+			fileout.close();
+		}
+	}
+	else
+	{
+		// @todo (heinecke) thrown an application exception
+	}
+}
 
 }

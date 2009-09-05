@@ -236,7 +236,7 @@ protected:
 	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
 	 * gradients is used. In all other dimensions only the L2 scalar product.
 	 *
-	 * This version is parallelizes using the OpenMP 3 Task concept
+	 * This version is parallelized using the OpenMP 3 Task concept
 	 *
 	 * @param dim the current dimension
 	 * @param gradient_dim the dimension in which to use the gradient

@@ -20,3 +20,47 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "application/finance/BlackScholesSolver.hpp"
+
+int main(int argc, char *argv[])
+{
+	size_t dim = 1;
+
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+
+	// set the bounding box
+	for (size_t i = 0; i < dim; i++)
+	{
+		myBoundaries[i].leftBoundary = 0.0;
+		myBoundaries[i].rightBoundary = 100.0;
+	}
+
+	sg::BlackScholesSolver myBSSolver = new sg::BlackScholesSolver();
+	sg::BoundingBox myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	delete[] myBoundaries;
+
+	// Construct a grid
+	myBSSolver->constructGrid(*myBoundingBox, 4);
+
+	// init the basis functions' coefficient vector
+	DataVector* alpha = new DataVector(myBSSolver->getnumberGridPoints());
+
+	// Init the grid with on payoff function
+	//myBSSolver->
+
+	// Print the payoff function into a gnuplot file
+	myBSSolver->printGrid(*alpha, 0.001, "payoff.gnuplot");
+
+	// Set stochastic data
+	//myBSSolver->setStochasticData();
+
+	// Start solving the Black Scholes Equation
+	//myBSSolver->solveEuler();
+
+	// Print the solved Black Scholes Equation into a gnuplot file
+	myBSSolver->printGrid(*alpha, 0.001, "solvedBS.gnuplot");
+
+	delete myBSSolver;
+	delete myBoundingBox;
+	delete alpha;
+}
