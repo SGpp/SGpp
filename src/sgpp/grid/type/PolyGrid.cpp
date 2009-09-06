@@ -92,11 +92,6 @@ OperationEval* PolyGrid::createOperationEval()
 	return new OperationEvalPoly(this->storage, this->degree);
 }
 
-OperationEval* PolyGrid::createOperationEvalBB()
-{
-	throw factory_exception("Unsupported operation");
-}
-
 OperationHierarchisation* PolyGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationPoly(this->storage, this->degree);

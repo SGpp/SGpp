@@ -166,13 +166,6 @@ public:
 	virtual OperationEval* createOperationEval() = 0;
 
 	/**
-	 * gets a pointer to OperationEval object with BoundingBox support
-	 *
-	 * @return pointer to the OperationEvalBB object
-	 */
-	virtual OperationEval* createOperationEvalBB() = 0;
-
-	/**
 	 * gets a pointer to OperationHierarchisation object
 	 *
 	 * @return pointer to the OperationHierarchisation object

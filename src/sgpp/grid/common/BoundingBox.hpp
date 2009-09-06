@@ -53,6 +53,8 @@ private:
 	size_t nDim;
 	/// Array that contains all left boundaries for all dimensions
 	DimensionBoundary* dimensionBoundaries;
+	/// is true if the complete Bounding Box desribes a trivial cube
+	bool bTrivialCube;
 
 public:
 	/**
@@ -129,6 +131,13 @@ public:
 	 * @return the offset in positive x-direction of the interval
 	 */
 	double getIntervalOffset(size_t dimension);
+
+	/**
+	 * Use this function to determine if this bounding box describes a trivial cube [0;1]^d
+	 *
+	 * @return true if this bounding boy is a trivial cube otherwise false
+	 */
+	bool isTrivialCube();
 };
 
 }
