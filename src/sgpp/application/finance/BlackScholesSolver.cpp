@@ -98,7 +98,7 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 		{
 			// Open filehandle
 			fileout.open(tfilename.c_str());
-			OperationEval* myEval = myGrid->createOperationEvalBB();
+			OperationEval* myEval = myGrid->createOperationEval();
 
 			if (dim == 1)
 			{

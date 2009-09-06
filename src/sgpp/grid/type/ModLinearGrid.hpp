@@ -58,7 +58,6 @@ public:
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
-	virtual OperationEval* createOperationEvalBB();
 	virtual OperationHierarchisation* createOperationHierarchisation();
 
 	// @todo (heinecke) remove this when done

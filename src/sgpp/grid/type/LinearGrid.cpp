@@ -87,11 +87,6 @@ OperationEval* LinearGrid::createOperationEval()
 	return new OperationEvalLinear(this->storage);
 }
 
-OperationEval* LinearGrid::createOperationEvalBB()
-{
-	throw factory_exception("Unsupported operation");
-}
-
 OperationHierarchisation* LinearGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationLinear(this->storage);
