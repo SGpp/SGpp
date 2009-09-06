@@ -184,6 +184,7 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
     std::cout << "finishes evaluating the test instances" << std::endl;
 
     std::cout << "Correctly classified elements: " << (correct/((double)test.getSize()))*100.0 << " percentage" << std::endl;
+    delete correct;
 
     return correct/((double)test.getSize());
 }
