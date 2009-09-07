@@ -55,7 +55,7 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	XSurfaceIntegralBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage), q(1.0), t(0.0)
+	XSurfaceIntegralBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage), q(1.0), t(0.0), r(1.0)
 	{
 	}
 

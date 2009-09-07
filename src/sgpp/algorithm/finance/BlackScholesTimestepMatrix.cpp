@@ -50,23 +50,28 @@ BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
+	temp.setAll(0.0);
 
 	// Apply the riskfree rate
 	this->OpRiskfree->mult(alpha, temp);
 	result.axpy((-1.0)*this->r, temp);
 
+	temp.setAll(0.0);
 	// Apply the delta method
 	this->OpDelta->mult(alpha, temp);
 	result.add(temp);
 
+	temp.setAll(0.0);
 	// Apply the gamma method, part 3
 	this->OpGammaThree->mult(alpha, temp);
 	result.axpy((-1.0), temp);
 
+	temp.setAll(0.0);
 	// Apply the gamma method, part 2
 	this->OpGammaTwo->mult(alpha, temp);
 	result.axpy((-1.0), temp);
 
+	temp.setAll(0.0);
 	// Apply the gamma method, part 1
 	this->OpGammaOne->mult(alpha, temp);
 	result.add(temp);

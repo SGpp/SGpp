@@ -45,14 +45,14 @@ public:
 	size_t nMaxIterations;
 	/// residuum
 	double residuum;
-	/// epsilon needed in the, e.g. final error in the iterative solver
+	/// epsilon needed in the, e.g. final error in the iterative solver, or a timestep
 	double myEpsilon;
 
 	/**
 	 * Std-Constructor
 	 *
 	 * @param nMaximumIterations number of maximum executed iterations
-	 * @param epsilon the final error in the iterative solver
+	 * @param epsilon the final error in the iterative solver, or the size of one timestep
 	 */
 	SGSolver(size_t nMaximumIterations, double epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon)
 	{
@@ -64,18 +64,6 @@ public:
 	 * Std-Destructor
 	 */
 	virtual ~SGSolver() { }
-
-	/**
-	 * Pure virtual Function that defines a solve method for an iterative solver
-	 *
-	 * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector multiplication
-	 * @parma alpha the sparse grid's coefficients which have to be determined
-	 * @param b the right hand side of the system of linear equations
-	 * @param reuse identifies if the alphas, stored in alpha at calling time, should be reused
-	 * @param verbose prints information during execution of the solver
-	 * @param max_threshold additional abort criteria for solver
-	 */
-	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0) = 0;
 
 
 	/**
@@ -101,7 +89,7 @@ public:
 	/**
 	 * resets the number of maximum iterations
 	 *
-	 * @data iterations the new number of maximum iterations
+	 * @param iterations the new number of maximum iterations
 	 */
 	void setMaxIterations(size_t nIterations)
 	{
@@ -111,11 +99,21 @@ public:
 	/**
 	 * resets the epsilon, that is used in the SGSolver
 	 *
-	 * @data eps the new value of epsilon
+	 * @param eps the new value of epsilon
 	 */
 	void setEpsilon(double eps)
 	{
 		myEpsilon = eps;
+	}
+
+	/**
+	 * gets the the epsilon, that is used in the SGSolver
+	 *
+	 * @return the epsilon, used in the solver
+	 */
+	double getEpsilon()
+	{
+		return myEpsilon;
 	}
 };
 

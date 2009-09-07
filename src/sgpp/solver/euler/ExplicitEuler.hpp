@@ -20,57 +20,40 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef CONJUGATEGRADIENTS_HPP
-#define CONJUGATEGRADIENTS_HPP
+#ifndef EXPLICITEULER_HPP
+#define EXPLICITEULER_HPP
 
-#include "algorithm/classification/DMSystemMatrix.hpp"
-#include "solver/LSESolver.hpp"
-#include "data/DataVector.hpp"
+#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "solver/ODESolver.hpp"
 
 namespace sg
 {
 
-class ConjugateGradients : public LSESolver
+/**
+ * This class implements the explicit Euler method
+ * for solving ordinary partial equations
+ */
+class ExplicitEuler : public ODESolver
 {
 private:
 
-
 public:
 	/**
-	 * Std-Constructor
+	 * Std-Constructer
+	 *
+	 * @param imax number of maximum executed iterations
+	 * @param timestepSize the size of one timestep
 	 */
-	ConjugateGradients(size_t imax, double epsilon);
+	ExplicitEuler(size_t imax, double timestepSize);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~ConjugateGradients();
+	virtual ~ExplicitEuler();
 
-	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
-
-	// Define functions for observer pattern in python
-
-	/**
-	 * function that signals the start of the CG method (used in python)
-	 */
-	virtual void starting();
-
-	/**
-	 * function that signals the start of the calculation of the CG method (used in python)
-	 */
-	virtual void calcStarting();
-
-	/**
-	 * function that signals that one iteration step of the CG method has been completed (used in python)
-	 */
-	virtual void iterationComplete();
-
-	/**
-	 * function that signals the finish of the cg method (used in python)
-	 */
-	virtual void complete();
+	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
 };
 
 }
 
-#endif /* CONJUGATEGRADIENTS_HPP */
+#endif /* EXPLICITEULER_HPP */

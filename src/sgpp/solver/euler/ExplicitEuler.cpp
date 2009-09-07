@@ -20,57 +20,33 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef CONJUGATEGRADIENTS_HPP
-#define CONJUGATEGRADIENTS_HPP
-
-#include "algorithm/classification/DMSystemMatrix.hpp"
-#include "solver/LSESolver.hpp"
-#include "data/DataVector.hpp"
+#include "solver/euler/ExplicitEuler.hpp"
 
 namespace sg
 {
 
-class ConjugateGradients : public LSESolver
+ExplicitEuler::ExplicitEuler(size_t imax, double epsilon) : ODESolver(imax, epsilon)
 {
-private:
-
-
-public:
-	/**
-	 * Std-Constructor
-	 */
-	ConjugateGradients(size_t imax, double epsilon);
-
-	/**
-	 * Std-Destructor
-	 */
-	virtual ~ConjugateGradients();
-
-	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
-
-	// Define functions for observer pattern in python
-
-	/**
-	 * function that signals the start of the CG method (used in python)
-	 */
-	virtual void starting();
-
-	/**
-	 * function that signals the start of the calculation of the CG method (used in python)
-	 */
-	virtual void calcStarting();
-
-	/**
-	 * function that signals that one iteration step of the CG method has been completed (used in python)
-	 */
-	virtual void iterationComplete();
-
-	/**
-	 * function that signals the finish of the cg method (used in python)
-	 */
-	virtual void complete();
-};
-
+	this->residuum = 0.0;
 }
 
-#endif /* CONJUGATEGRADIENTS_HPP */
+ExplicitEuler::~ExplicitEuler()
+{
+}
+
+void ExplicitEuler::solve(OperationMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+{
+	DataVector temp(alpha.getSize());
+	temp.setAll(0.0);
+
+	for (size_t i = 0; i < this->nMaxIterations; i++)
+	{
+		SystemMatrix.mult(alpha, temp);
+
+		std::cout << temp.toString() << std::endl;
+
+		alpha.axpy(this->myEpsilon, temp);
+	}
+}
+
+}

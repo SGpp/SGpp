@@ -59,6 +59,7 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 
 #include "solver/cg/ConjugateGradients.hpp"
+#include "solver/euler/ExplicitEuler.hpp"
 
 #include "linearSystem/LinearSystem.hpp"
 
