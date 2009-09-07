@@ -127,7 +127,10 @@ void Classifier::createRegularGrid()
 		throw new operation_exception("No valid GridType was specified!");
 	}
 
-	myGrid->createGridGenerator()->regular(this->levels);
+	GridGenerator* myGenerator = myGrid->createGridGenerator();
+	myGenerator->regular(this->levels);
+	delete myGenerator;
+
 	std::cout << levels << " levels were added to the above created grid" << std::endl;
 }
 
@@ -180,11 +183,14 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
     std::cout << "the test datavectors have been initialized" << std::endl;
 
     std::cout << "start evaluating the test instances" << std::endl;
-    correct = myGrid->createOperationEval()->test(alpha, test, testclasses);
+
+    OperationEval* myEval = myGrid->createOperationEval();
+    correct = myEval->test(alpha, test, testclasses);
+    delete myEval;
+
     std::cout << "finishes evaluating the test instances" << std::endl;
 
     std::cout << "Correctly classified elements: " << (correct/((double)test.getSize()))*100.0 << " percentage" << std::endl;
-    delete correct;
 
     return correct/((double)test.getSize());
 }

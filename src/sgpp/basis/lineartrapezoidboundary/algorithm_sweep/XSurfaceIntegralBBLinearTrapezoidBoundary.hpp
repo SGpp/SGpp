@@ -44,8 +44,10 @@ protected:
 	GridStorage* storage;
 	/// width of the interval in dimension
 	double q;
-	/// intervals offset in dimension
+	/// intervals offset in dimension = left boundary value
 	double t;
+	/// right boundary value = t + q
+	double r;
 
 public:
 	/**
@@ -65,7 +67,7 @@ public:
 	}
 
 	/**
-	 * This operations performs the calculation of down in the direction of dimension <i>dim</i>
+	 * This operations performs the calculation the surface integral in dimension <i>dim</i>
 	 *
 	 * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
 	 * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
@@ -74,7 +76,7 @@ public:
 	 *
 	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
 	 *
-	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+	 * @param source DataVector that contains the gridpoint's coefficients
 	 * @param result DataVector that contains the result of the down operation
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
@@ -83,37 +85,27 @@ public:
 	{
 		q = storage->getBoundingBox()->getIntervalWidth(dim);
 		t = storage->getBoundingBox()->getIntervalOffset(dim);
+		r = t+q;
 
-		// get boundary values
-		double left_boundary;
-		double right_boundary;
 		size_t seq_left;
 		size_t seq_right;
 
 		/*
 		 * Handle Level 0
 		 */
-		// This handles the diagonal only
-		//////////////////////////////////////
 		// left boundary
 		index.left_levelzero(dim);
 		seq_left = index.seq();
-		left_boundary = source[seq_left];
 
 		// right boundary
 		index.right_levelzero(dim);
 		seq_right = index.seq();
-		right_boundary = source[seq_right];
 
 		if (!storage->getfixDirechletBoundaries())
 		{
-			result[seq_left] = (1.0/3.0)*left_boundary*q;
+			result[seq_left] = (-1.0)*(source[seq_left]*t);
 
-			result[seq_right] = (1.0/3.0)*right_boundary*q;
-
-			// down
-			//////////////////////////////////////
-			result[seq_right] += (1.0/6.0)*left_boundary*q;
+			result[seq_right] = (source[seq_right]*r);
 		}
 
 		// move to root
@@ -123,7 +115,8 @@ public:
 
 			if(!storage->end(index.seq()))
 			{
-				rec(source, result, index, dim, left_boundary, right_boundary);
+				// set everything else to zero
+				rec(source, result, index, dim);
 			}
 
 			index.left_levelzero(dim);
@@ -133,47 +126,39 @@ public:
 protected:
 
 	/**
-	 * recursive function for the calculation of Down
+	 * recursive function for the calculation of the surface integral
+	 *
+	 * traverse all basis function in dimension <i>dim</i> with level greater than zero
+	 * and set their coefficients to zero.
 	 *
 	 * @param source DataVector that contains the coefficients of the ansatzfunction
 	 * @param result DataVector in which the result of the operation is stored
 	 * @param index reference to a griditerator object that is used navigate through the grid
 	 * @param dim the dimension in which the operation is executed
-	 * @param fl function value on the left boundary
-	 * @param fr function value on the right boundary
 	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
 		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
 
 		GridStorage::index_type::level_type l;
 		GridStorage::index_type::index_type i;
 
 		index.get(dim, l, i);
 
-		double h = 1/pow(2.0, static_cast<int>(l));
-
-		// integration
-		result[seq] = (  h * ((fl+fr)/2.0) * q
-							  + (2.0/3.0) * h * alpha_value * q);    // diagonal entry
-
-		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		result[seq] = 0.0;
 
 		if(!index.hint())
 		{
 			index.left_child(dim);
 			if(!storage->end(index.seq()))
 			{
-				rec(source, result, index, dim, fl, fm);
+				rec(source, result, index, dim);
 			}
 
 			index.step_right(dim);
 			if(!storage->end(index.seq()))
 			{
-				rec(source, result, index, dim, fm, fr);
+				rec(source, result, index, dim);
 			}
 
 			index.up(dim);

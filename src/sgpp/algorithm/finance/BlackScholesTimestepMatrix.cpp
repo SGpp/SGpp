@@ -68,15 +68,13 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 	result.axpy((-1.0), temp);
 
 	// Apply the gamma method, part 1
-	// @todo (heinecke) resolve the the mathematical difficulties here
-	temp.setAll(0.0);
-	//this->OpGammaOne(alpha, temp);
+	this->OpGammaOne->mult(alpha, temp);
 	result.add(temp);
 }
 
 void BlackScholesTimestepMatrix::generateRHS(DataVector& rhs)
 {
-	// @todo (heinecke) implement
+	// @todo (heinecke) implement, when used with Crank Nicholson method insted of Euler
 }
 
 }
