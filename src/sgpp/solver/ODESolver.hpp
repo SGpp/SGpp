@@ -20,57 +20,43 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef CONJUGATEGRADIENTS_HPP
-#define CONJUGATEGRADIENTS_HPP
+#ifndef ODESOLVER_HPP
+#define ODESOLVER_HPP
 
-#include "algorithm/classification/DMSystemMatrix.hpp"
-#include "solver/LSESolver.hpp"
+#include "solver/SGSolver.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-class ConjugateGradients : public LSESolver
+class ODESolver : public SGSolver
 {
-private:
-
-
 public:
 	/**
 	 * Std-Constructor
+	 *
+	 * @param imax number of maximum executed iterations
+	 * @param timestepSize the size of one timestep
 	 */
-	ConjugateGradients(size_t imax, double epsilon);
+	ODESolver(size_t imax, double timestepSize) : SGSolver(imax, timestepSize)
+	{
+	}
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~ConjugateGradients();
-
-	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
-
-	// Define functions for observer pattern in python
+	virtual ~ODESolver() { }
 
 	/**
-	 * function that signals the start of the CG method (used in python)
+	 * Pure virtual Function that defines a solve method for an ODE solver
+	 *
+	 * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector multiplication
+	 * @parma alpha the sparse grid's coefficients which have to be determined
+	 * @param verbose prints information during execution of the solver
 	 */
-	virtual void starting();
-
-	/**
-	 * function that signals the start of the calculation of the CG method (used in python)
-	 */
-	virtual void calcStarting();
-
-	/**
-	 * function that signals that one iteration step of the CG method has been completed (used in python)
-	 */
-	virtual void iterationComplete();
-
-	/**
-	 * function that signals the finish of the cg method (used in python)
-	 */
-	virtual void complete();
+	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, bool verbose = false) = 0;
 };
 
 }
 
-#endif /* CONJUGATEGRADIENTS_HPP */
+#endif /* ODESOLVER_HPP */

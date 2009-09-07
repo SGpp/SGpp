@@ -28,6 +28,9 @@ int main(int argc, char *argv[])
 	size_t level = 6;
 	double strike = 65.0;
 
+	size_t timesteps = 1;
+	double stepsize = 0.0001;
+
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
 
 	// set the bounding box
@@ -51,16 +54,24 @@ int main(int argc, char *argv[])
 	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.01, "payoff.gnuplot");
+	myBSSolver->printGrid(*alpha, 0.1, "payoff.gnuplot");
 
 	// Set stochastic data
-	//myBSSolver->setStochasticData();
+	DataVector mu(1);
+	DataVector sigma(1);
+	DataVector rho(1);
+
+	mu.set(0, 60.0);
+	sigma.set(0, 0.20);
+	rho.set(0, 1.0);
+
+	myBSSolver->setStochasticData(mu, sigma, rho, 0.0);
 
 	// Start solving the Black Scholes Equation
-	//myBSSolver->solveEuler();
+	myBSSolver->solveEuler(timesteps, stepsize, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.01, "solvedBS.gnuplot");
+	myBSSolver->printGrid(*alpha, 0.1, "solvedBS.gnuplot");
 
 	delete myBSSolver;
 	delete myBoundingBox;

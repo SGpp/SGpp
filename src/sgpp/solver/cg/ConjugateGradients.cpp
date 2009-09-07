@@ -25,7 +25,7 @@
 namespace sg
 {
 
-ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : SGSolver(imax, epsilon)
+ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : LSESolver(imax, epsilon)
 {
 }
 
@@ -88,7 +88,7 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 	{
 		delta_0 = delta_new*epsilonSquared;
 	}
-	
+
 	this->residuum = (delta_0/epsilonSquared);
 	this->calcStarting();
 
@@ -128,7 +128,7 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 		delta_old = delta_new;
 		delta_new = r.dotProduct(r);
 		beta = delta_new/delta_old;
-		
+
 		this->residuum = delta_new;
 		this->iterationComplete();
 

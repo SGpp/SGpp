@@ -68,6 +68,7 @@ algorithm/classification/DMSystemMatrix.cpp
 algorithm/finance/BlackScholesTimestepMatrix.cpp
 
 solver/cg/ConjugateGradients.cpp
+solver/euler/ExplicitEuler.cpp
 
 linearSystem/LinearSystem.cpp
 

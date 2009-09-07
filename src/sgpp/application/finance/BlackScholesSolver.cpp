@@ -20,7 +20,10 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 #include "application/finance/BlackScholesSolver.hpp"
+#include "solver/euler/ExplicitEuler.hpp"
+#include "grid/Grid.hpp"
 
 namespace sg
 {
@@ -79,7 +82,20 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 
 void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha)
 {
-	// @todo (heinecke) implement this
+	if (bGridConstructed && bStochasticDataAlloc)
+	{
+		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize);
+		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r);
+
+		myEuler->solve(*myBSMatrix, alpha, false);
+
+		delete myBSMatrix;
+		delete myEuler;
+	}
+	else
+	{
+		// @todo (heinecke) through an application exception here
+	}
 }
 
 void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::string tfilename)
@@ -151,15 +167,10 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike)
 			{
 				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
 				alpha[i] = get1DPayoffValue(tmp, strike);
-				std::cout << alpha[i] << std::endl;
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
-
 			myHierarchisation->doHierarchisation(alpha);
-			//std::cout << alpha.toString() << std::endl;
-			//myHierarchisation->doDehierarchisation(alpha);
-			//std::cout << alpha.toString() << std::endl;
 			delete myHierarchisation;
 		}
 	}
