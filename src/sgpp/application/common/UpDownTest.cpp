@@ -53,7 +53,9 @@ int main(int argc, char *argv[])
 	myGrid = new sg::LinearTrapezoidBoundaryGrid(dim);
 	std::cout << "A LinearTrapezoidBoundaryGrid was created" << std::endl;
 
-	myGrid->createGridGenerator()->regular(levels);
+	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
+	myGenerator->regular(levels);
+	delete myGenerator;
 	std::cout << levels << " levels were added to the above created grid" << std::endl;
 
 	numGridPoints = myGrid->getStorage()->size();

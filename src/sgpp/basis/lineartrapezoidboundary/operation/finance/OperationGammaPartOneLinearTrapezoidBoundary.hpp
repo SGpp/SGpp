@@ -144,7 +144,7 @@ protected:
 	 *
 	 * @todo (heinecke, nice) complete mathematical description
 	 *
-	 * @param alpha the coefficients of the gridpoints
+	 *s @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
@@ -162,8 +162,26 @@ protected:
 	 */
 	void upGradient(DataVector& alpha, DataVector& result, size_t dim);
 
+	/**
+	 * calculate the surface integral in dimension <i>dim</i> multiplied with x
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that the surface integral is calculated
+	 */
 	void calcSurfaceIntegral(DataVector& alpha, DataVector& result, size_t dim);
 
+	/**
+	 * calculate the surface integral in dimension <i>dim</i> multiplied with x^2
+	 *
+	 * @todo (heinecke, nice) complete mathematical description
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that the surface integral is calculated
+	 */
 	void calcSurfaceIntegralSquared(DataVector& alpha, DataVector& result, size_t dim);
 };
 
