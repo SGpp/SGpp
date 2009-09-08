@@ -25,11 +25,11 @@
 int main(int argc, char *argv[])
 {
 	size_t dim = 1;
-	size_t level = 6;
+	size_t level = 4;
 	double strike = 65.0;
 
-	size_t timesteps = 10000;
-	double stepsize = 0.0001;
+	size_t timesteps = 100000;
+	double stepsize = 0.00001;
 
 	DataVector mu(1);
 	DataVector sigma(1);
@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 	// set the bounding box
 	for (size_t i = 0; i < dim; i++)
 	{
-		myBoundaries[i].leftBoundary = 0.0;
-		myBoundaries[i].rightBoundary = 100.0;
+		myBoundaries[i].leftBoundary = 62.5;
+		myBoundaries[i].rightBoundary = 67.5;
 	}
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.1, "payoff.gnuplot");
+	myBSSolver->printGrid(*alpha, 0.001, "payoff.gnuplot");
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, 0.0);
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	myBSSolver->solveEuler(timesteps, stepsize, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.1, "solvedBS.gnuplot");
+	myBSSolver->printGrid(*alpha, 0.001, "solvedBS.gnuplot");
 
 	delete myBSSolver;
 	delete myBoundingBox;

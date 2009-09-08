@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
 	myBoundingBox = myGrid->getBoundingBox();
 	sg::DimensionBoundary myInterval;
 
-	myInterval.leftBoundary = -300.0;
-	myInterval.rightBoundary = -100.0;
+	myInterval.leftBoundary = 62.5;
+	myInterval.rightBoundary = 67.5;
 
 	myBoundingBox->setBoundary(0, myInterval);
 
