@@ -20,6 +20,9 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#ifndef BLACKSCHOLESSOLVER_HPP
+#define BLACKSCHOLESSOLVER_HPP
+
 #include "sgpp.hpp"
 
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
@@ -164,3 +167,5 @@ public:
 };
 
 }
+
+#endif /* BLACKSCHOLESSOLVER_HPP */

@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LSESOLVER_HPP
-#define LSESOLVER_HPP
+#ifndef SLESOLVER_HPP
+#define SLESOLVER_HPP
 
 #include "solver/SGSolver.hpp"
 #include "data/DataVector.hpp"
@@ -29,7 +29,7 @@
 namespace sg
 {
 
-class LSESolver : public SGSolver
+class SLESolver : public SGSolver
 {
 public:
 	/**
@@ -38,14 +38,14 @@ public:
 	 * @param imax number of maximum executed iterations
 	 * @param epsilon the final error in the iterative solver
 	 */
-	LSESolver(size_t imax, double epsilon) : SGSolver(imax, epsilon)
+	SLESolver(size_t imax, double epsilon) : SGSolver(imax, epsilon)
 	{
 	}
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~LSESolver() { }
+	virtual ~SLESolver() { }
 
 	/**
 	 * Pure virtual Function that defines a solve method for an iterative solver
@@ -62,4 +62,4 @@ public:
 
 }
 
-#endif /* LSESOLVER_HPP */
+#endif /* SLESOLVER_HPP */

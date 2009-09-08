@@ -23,7 +23,7 @@
 #include "application/classification/Classifier.hpp"
 #include "exception/operation_exception.hpp"
 #include "algorithm/classification/DMSystemMatrix.hpp"
-#include "solver/cg/ConjugateGradients.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 #include "tools/classification/ARFFTools.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"

@@ -20,12 +20,12 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/cg/ConjugateGradients.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 
 namespace sg
 {
 
-ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : LSESolver(imax, epsilon)
+ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : SLESolver(imax, epsilon)
 {
 }
 

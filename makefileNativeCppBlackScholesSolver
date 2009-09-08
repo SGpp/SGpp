@@ -119,11 +119,11 @@ OperationBLinearBoundary.o : src/sgpp/basis/linearboundary/operation/classificat
 BlackScholesTimestepMatrix.o : src/sgpp/algorithm/finance/BlackScholesTimestepMatrix.cpp
 	$(CC) $(CFLAGS) src/sgpp/algorithm/finance/BlackScholesTimestepMatrix.cpp
 	
-ConjugateGradients.o : src/sgpp/solver/cg/ConjugateGradients.cpp
-	$(CC) $(CFLAGS) src/sgpp/solver/cg/ConjugateGradients.cpp
+ConjugateGradients.o : src/sgpp/solver/sle/ConjugateGradients.cpp
+	$(CC) $(CFLAGS) src/sgpp/solver/sle/ConjugateGradients.cpp
 
-ExplicitEuler.o : src/sgpp/solver/euler/ExplicitEuler.cpp
-	$(CC) $(CFLAGS) src/sgpp/solver/euler/ExplicitEuler.cpp
+ExplicitEuler.o : src/sgpp/solver/ode/ExplicitEuler.cpp
+	$(CC) $(CFLAGS) src/sgpp/solver/ode/ExplicitEuler.cpp
 
 BlackScholesSolver.o : src/sgpp/application/finance/BlackScholesSolver.cpp
 	$(CC) $(CFLAGS) src/sgpp/application/finance/BlackScholesSolver.cpp

@@ -22,8 +22,9 @@
 
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 #include "application/finance/BlackScholesSolver.hpp"
-#include "solver/euler/ExplicitEuler.hpp"
+#include "solver/ode/ExplicitEuler.hpp"
 #include "grid/Grid.hpp"
+#include "stdlib.h"
 
 namespace sg
 {

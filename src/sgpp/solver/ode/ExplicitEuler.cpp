@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/euler/ExplicitEuler.hpp"
-#include "solver/cg/ConjugateGradients.hpp"
+#include "solver/ode/ExplicitEuler.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 
 namespace sg
 {

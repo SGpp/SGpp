@@ -20,7 +20,7 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "application/finance/BlackScholesSolver.hpp"
+#include "sgpp.hpp"
 
 int main(int argc, char *argv[])
 {

@@ -104,11 +104,11 @@ namespace std {
 
 %include "src/sgpp/linearSystem/LinearSystem.hpp"
 %include "src/sgpp/solver/SGSolver.hpp"
-%include "src/sgpp/solver/LSESolver.hpp"
+%include "src/sgpp/solver/SLESolver.hpp"
 %include "src/sgpp/solver/ODESolver.hpp"
 %feature("director") ConjugateGradients;
-%include "src/sgpp/solver/cg/ConjugateGradients.hpp"
-%include "src/sgpp/solver/euler/ExplicitEuler.hpp"
+%include "src/sgpp/solver/sle/ConjugateGradients.hpp"
+%include "src/sgpp/solver/ode/ExplicitEuler.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 
