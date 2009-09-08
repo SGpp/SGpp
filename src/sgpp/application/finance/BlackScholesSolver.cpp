@@ -53,7 +53,7 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	dim = BoundingBox.getDimensions();
 	levels = level;
 
-	myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox, true);
+	myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
 
 	GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(levels);

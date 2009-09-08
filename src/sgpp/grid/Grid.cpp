@@ -50,9 +50,9 @@ Grid* Grid::createLinearBoundaryGrid(size_t dim)
 	return new LinearBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim, bool bfixDirechletBoundaries)
+Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim)
 {
-	return new LinearTrapezoidBoundaryGrid(dim, bfixDirechletBoundaries);
+	return new LinearTrapezoidBoundaryGrid(dim);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim)
@@ -188,7 +188,7 @@ void Grid::serialize(std::ostream& ostr)
 
 void Grid::refine(DataVector* vector, int numOfPoints)
 {
-	// @todo (khakhutv) different refinemente Functors 
+	// @todo (khakhutv) different refinemente Functors
 	this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
 }
 

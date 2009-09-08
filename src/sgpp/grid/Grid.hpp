@@ -67,9 +67,8 @@ public:
 	 * creates a linear trapezoid boundary grid
 	 *
 	 * @param dim the grid's dimension
-	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim, bool bfixDirechletBoundaries = false);
+	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
 
 	/**
 	 * creates a mod linear grid

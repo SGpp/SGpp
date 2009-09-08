@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
 
 	myInterval.leftBoundary = 62.5;
 	myInterval.rightBoundary = 67.5;
+	myInterval.bDirichletLeft = false;
+	myInterval.bDirichletRight = false;
 
 	myBoundingBox->setBoundary(0, myInterval);
 

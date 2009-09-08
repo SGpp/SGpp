@@ -46,6 +46,8 @@ int main(int argc, char *argv[])
 	{
 		myBoundaries[i].leftBoundary = 62.5;
 		myBoundaries[i].rightBoundary = 67.5;
+		myBoundaries[i].bDirichletLeft = true;
+		myBoundaries[i].bDirichletRight = true;
 	}
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
