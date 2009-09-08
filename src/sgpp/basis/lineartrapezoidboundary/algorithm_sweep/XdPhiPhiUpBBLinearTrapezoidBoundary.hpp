@@ -184,6 +184,11 @@ protected:
 
 				result[seq_left] += source[seq_right] * (((-1.0/3.0)*q) - (0.5*t));
 			}
+			else
+			{
+				result[seq_left] = 0.0; // source[seq_left];
+				result[seq_right] = 0.0; //source[seq_right];
+			}
 
 			index.left_levelzero(dim);
 		}

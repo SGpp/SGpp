@@ -28,8 +28,16 @@ int main(int argc, char *argv[])
 	size_t level = 6;
 	double strike = 65.0;
 
-	size_t timesteps = 1;
+	size_t timesteps = 10000;
 	double stepsize = 0.0001;
+
+	DataVector mu(1);
+	DataVector sigma(1);
+	DataVector rho(1);
+
+	mu.set(0, 60.0);
+	sigma.set(0, 0.15);
+	rho.set(0, 1.0);
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
 
@@ -57,14 +65,6 @@ int main(int argc, char *argv[])
 	myBSSolver->printGrid(*alpha, 0.1, "payoff.gnuplot");
 
 	// Set stochastic data
-	DataVector mu(1);
-	DataVector sigma(1);
-	DataVector rho(1);
-
-	mu.set(0, 60.0);
-	sigma.set(0, 0.20);
-	rho.set(0, 1.0);
-
 	myBSSolver->setStochasticData(mu, sigma, rho, 0.0);
 
 	// Start solving the Black Scholes Equation
