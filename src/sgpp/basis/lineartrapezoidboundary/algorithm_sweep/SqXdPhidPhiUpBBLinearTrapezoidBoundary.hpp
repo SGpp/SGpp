@@ -42,6 +42,8 @@ protected:
 
 	/// Pointer to GridStorage object
 	GridStorage* storage;
+	/// Pointer to the bounding box Obejct
+	BoundingBox* boundingBox;
 	/// width of the interval in dimension
 	double q;
 	/// intervals offset in dimension
@@ -53,7 +55,7 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	SqXdPhidPhiUpBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage), q(1.0), t(0.0)
+	SqXdPhidPhiUpBBLinearTrapezoidBoundary(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()), q(1.0), t(0.0)
 	{
 	}
 
@@ -79,8 +81,8 @@ public:
 	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		q = storage->getBoundingBox()->getIntervalWidth(dim);
-		t = storage->getBoundingBox()->getIntervalOffset(dim);
+		q = boundingBox->getIntervalWidth(dim);
+		t = boundingBox->getIntervalOffset(dim);
 
 		// get boundary values
 		double fl = 0.0;
@@ -179,19 +181,25 @@ protected:
 
 			// up
 			//////////////////////////////////////
-			if (!storage->getfixDirechletBoundaries())
+			// check boundary conditions
+			if (boundingBox->hasDirichletBoundaryLeft(dim))
 			{
-				result[seq_left] = fl;
-				result[seq_right] = fr;
-
-				double bbFactor = ((q*q) + (3.0*q*t) + (3.0*t*t))/(q);
-
-				result[seq_left] -= 1.0/3.0*source[seq_right]*bbFactor;
+				result[seq_left] = 0.0; // source[seq_left];
 			}
 			else
 			{
-				result[seq_left] = 0.0; // source[seq_left];
+				result[seq_left] = fl;
+				double bbFactor = ((q*q) + (3.0*q*t) + (3.0*t*t))/(q);
+				result[seq_left] -= 1.0/3.0*source[seq_right]*bbFactor;
+			}
+
+			if (boundingBox->hasDirichletBoundaryRight(dim))
+			{
 				result[seq_right] = 0.0; //source[seq_right];
+			}
+			else
+			{
+				result[seq_right] = fr;
 			}
 
 			index.left_levelzero(dim);

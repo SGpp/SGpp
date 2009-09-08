@@ -33,6 +33,8 @@ BoundingBox::BoundingBox(size_t dim)
 	{
 		dimensionBoundaries[i].leftBoundary = 0.0;
 		dimensionBoundaries[i].rightBoundary = 1.0;
+		dimensionBoundaries[i].bDirichletLeft = false;
+		dimensionBoundaries[i].bDirichletRight = false;
 	}
 	bTrivialCube = true;
 }
@@ -74,8 +76,8 @@ BoundingBox::~BoundingBox()
 
 void BoundingBox::setBoundary(size_t dimension, DimensionBoundary& newBoundaries)
 {
-	dimensionBoundaries[dimension].leftBoundary = newBoundaries.leftBoundary;
-	dimensionBoundaries[dimension].rightBoundary = newBoundaries.rightBoundary;
+	dimensionBoundaries[dimension] = newBoundaries;
+
 	if (dimensionBoundaries[dimension].leftBoundary != 0.0 || dimensionBoundaries[dimension].rightBoundary != 1.0)
 	{
 		bTrivialCube = false;
@@ -106,6 +108,16 @@ double BoundingBox::getIntervalOffset(size_t dimension)
 bool BoundingBox::isTrivialCube()
 {
 	return bTrivialCube;
+}
+
+bool BoundingBox::hasDirichletBoundaryLeft(size_t dimension)
+{
+	return dimensionBoundaries[dimension].bDirichletLeft;
+}
+
+bool BoundingBox::hasDirichletBoundaryRight(size_t dimension)
+{
+	return dimensionBoundaries[dimension].bDirichletRight;
 }
 
 }

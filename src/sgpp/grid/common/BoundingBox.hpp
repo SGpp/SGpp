@@ -37,6 +37,10 @@ struct DimensionBoundary
 	double leftBoundary;
 	/// the right boundary
 	double rightBoundary;
+	/// Use Dirichlet-Boundaries on the left boundary
+	bool bDirichletLeft;
+	/// Use Dirichlet-Boundaries on the right boundary
+	bool bDirichletRight;
 };
 
 /**
@@ -138,6 +142,24 @@ public:
 	 * @return true if this bounding boy is a trivial cube otherwise false
 	 */
 	bool isTrivialCube();
+
+	/**
+	 * Determines, if the interval in the specified dimension has left dirichlet boundary conditions
+	 *
+	 * @param dimension the dimension for which the left boundary condition should be determined
+	 *
+	 * @return true if Dirichlet Boundary conditions, otherwise false
+	 */
+	bool hasDirichletBoundaryLeft(size_t dimension);
+
+	/**
+	 * Determines, if the interval in the specified dimension has right dirichlet boundary conditions
+	 *
+	 * @param dimension the dimension for which the right boundary condition should be determined
+	 *
+	 * @return true if Dirichlet Boundary conditions, otherwise false
+	 */
+	bool hasDirichletBoundaryRight(size_t dimension);
 };
 
 }

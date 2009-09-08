@@ -77,9 +77,8 @@ public:
 	 * initializes the boundingBox with a trivial cube
 	 *
 	 * @param dim the dimension of the sparse grid
-	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(size_t dim, bool bfixDirechletBoundaries = false) : DIM(dim), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
+	HashGridStorage(size_t dim) : DIM(dim), list(), map()
 	{
 		boundingBox = new BoundingBox(DIM);
 	}
@@ -90,9 +89,8 @@ public:
 	 * initializes the boundingBox with a reference to another boundingbox
 	 *
 	 * @param dim the dimension of the sparse grid
-	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(BoundingBox& creationBoundingBox, bool bfixDirechletBoundaries = false) : DIM(), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
+	HashGridStorage(BoundingBox& creationBoundingBox) : DIM(), list(), map()
 	{
 		boundingBox = new BoundingBox(creationBoundingBox);
 		DIM = boundingBox->getDimensions();
@@ -102,9 +100,8 @@ public:
 	 * Constructor that reads the data from a string
 	 *
 	 * @param istr the string that contains the data
-	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(std::string& istr, bool bfixDirechletBoundaries = false) : DIM(0), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
+	HashGridStorage(std::string& istr) : DIM(0), list(), map()
 	{
     	std::istringstream istream;
     	istream.str(istr);
@@ -118,7 +115,7 @@ public:
 	 * @param istream the inputstream that contains the data
 	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
-	HashGridStorage(std::istream& istream, bool bfixDirechletBoundaries = false) : DIM(0), list(), map(), bUsefixDirechletBoundaries(bfixDirechletBoundaries)
+	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
 	{
 		parseGridDescription(istream);
 	}
@@ -513,30 +510,6 @@ public:
 		return boundingBox;
 	}
 
-	/**
-	 * Sets the fixDirechletBoundaries property of the grid storage
-	 *
-	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
-	 *
-	 * @todo (heinecke) do some refactoring here
-	 */
-	void setfixDirechletBoundaries(bool bfixDirechletBoundaries)
-	{
-		bUsefixDirechletBoundaries = bfixDirechletBoundaries;
-	}
-
-	/**
-	 * gets the fixDirechletBoundaries property of the grid storage
-	 *
-	 * @return boolean that specifies that the boundary values are fixed during the computation on the grid (direchlet boundaries)
-	 *
-	 * @todo (heinecke) do some refactoring here
-	 */
-	bool getfixDirechletBoundaries()
-	{
-		return bUsefixDirechletBoundaries;
-	}
-
 protected:
 	/**
 	 * returns the next sequence numbers
@@ -557,8 +530,6 @@ private:
     grid_map map;
     /// the grids bounding box
     BoundingBox* boundingBox;
-	/// boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
-	bool bUsefixDirechletBoundaries;
 
     /**
      * Parses the gird's information (grid points, dimensions, bounding box) from a string stream
@@ -579,7 +550,7 @@ private:
     	istream >> num;
 
    	// check whether grid was created with a version that is too new
-    	if (version > SERIALIZATION_VERSION) 
+    	if (version > SERIALIZATION_VERSION)
 	{
 	  //	    throw generation_exception("Version of serialized grid is too new. Max. recognized version is "+string(SERIALIZATION_VERSION));
 	  std::ostringstream errstream;
