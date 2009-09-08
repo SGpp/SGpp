@@ -122,8 +122,8 @@ ARFFTools.o : src/sgpp/tools/classification/ARFFTools.cpp
 DMSystemMatrix.o : src/sgpp/algorithm/classification/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) src/sgpp/algorithm/classification/DMSystemMatrix.cpp
 	
-ConjugateGradients.o : src/sgpp/solver/cg/ConjugateGradients.cpp
-	$(CC) $(CFLAGS) src/sgpp/solver/cg/ConjugateGradients.cpp
+ConjugateGradients.o : src/sgpp/solver/sle/ConjugateGradients.cpp
+	$(CC) $(CFLAGS) src/sgpp/solver/sle/ConjugateGradients.cpp
 
 Classifier.o : src/sgpp/application/classification/Classifier.cpp
 	$(CC) $(CFLAGS) src/sgpp/application/classification/Classifier.cpp

@@ -24,13 +24,13 @@
 #define CONJUGATEGRADIENTS_HPP
 
 #include "algorithm/classification/DMSystemMatrix.hpp"
-#include "solver/LSESolver.hpp"
+#include "solver/SLESolver.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
 {
 
-class ConjugateGradients : public LSESolver
+class ConjugateGradients : public SLESolver
 {
 private:
 

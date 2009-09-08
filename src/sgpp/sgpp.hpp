@@ -37,6 +37,9 @@
 #include "algorithm/classification/DMSystemMatrix.hpp"
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 
+#include "application/classification/Classifier.hpp"
+#include "application/finance/BlackScholesSolver.hpp"
+
 #include "basis/basis.hpp"
 
 #include "basis/linear/operation/classification/OperationLaplaceLinear.hpp"
@@ -58,8 +61,8 @@
 #include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 
-#include "solver/cg/ConjugateGradients.hpp"
-#include "solver/euler/ExplicitEuler.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
+#include "solver/ode/ExplicitEuler.hpp"
 
 #include "linearSystem/LinearSystem.hpp"
 
