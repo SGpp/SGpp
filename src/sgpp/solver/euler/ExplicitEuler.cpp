@@ -25,7 +25,7 @@
 namespace sg
 {
 
-ExplicitEuler::ExplicitEuler(size_t imax, double epsilon) : ODESolver(imax, epsilon)
+ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize) : ODESolver(imax, timestepSize)
 {
 	this->residuum = 0.0;
 }
@@ -37,14 +37,14 @@ ExplicitEuler::~ExplicitEuler()
 void ExplicitEuler::solve(OperationMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
 	DataVector temp(alpha.getSize());
-	temp.setAll(0.0);
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
+		temp.setAll(0.0);
+
 		SystemMatrix.mult(alpha, temp);
-
-		std::cout << temp.toString() << std::endl;
-
+		//std::cout << temp.toString() << std::endl;
+		//std::cout << this->myEpsilon << std::endl;
 		alpha.axpy(this->myEpsilon, temp);
 	}
 }

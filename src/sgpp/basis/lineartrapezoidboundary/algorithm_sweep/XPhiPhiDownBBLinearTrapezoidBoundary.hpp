@@ -115,6 +115,12 @@ public:
 			//////////////////////////////////////
 			result[seq_right] += (1.0/12.0) * q * (q + (2.0*t)) * left_boundary;
 		}
+		else
+		{
+			result[seq_left] = 0.0; //left_boundary;
+			result[seq_right] = 0.0; //right_boundary;
+		}
+
 		// move to root
 		if (!index.hint())
 		{

@@ -107,6 +107,11 @@ public:
 
 			result[seq_right] = (source[seq_right]*(r*r));
 		}
+		else
+		{
+			result[seq_left] = 0.0; //source[seq_left];
+			result[seq_right] = 0.0; //source[seq_right];
+		}
 
 		// move to root
 		if (!index.hint())

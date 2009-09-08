@@ -45,7 +45,7 @@ public:
 	 * @param sigma vector that contains the underlyings' standard derivation
 	 * @param rho matrix that contains the correlations between the underlyings
 	 */
-	OperationGammaPartTwoLinearTrapezoidBoundary(GridStorage* storage, DataVector& sigma, DataVector rho);
+	OperationGammaPartTwoLinearTrapezoidBoundary(GridStorage* storage, DataVector& sigma, DataVector& rho);
 
 	/**
 	 * Destructor
