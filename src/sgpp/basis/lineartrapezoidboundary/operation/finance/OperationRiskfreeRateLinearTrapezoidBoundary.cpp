@@ -88,7 +88,16 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::up(DataVector& alpha, DataVec
 	detail::PhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
 	sweep<detail::PhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
+	// allow boundary value changes on the right boundary
+	BoundingBox* myBoundingBox = this->storage->getBoundingBox();
+	DimensionBoundary myBoundary = myBoundingBox->getBoundary(dim);
+	myBoundary.bDirichletRight = false;
+	myBoundingBox->setBoundary(dim, myBoundary);
+
 	s.sweep1D_Boundary(alpha, result, dim);
+
+	myBoundary.bDirichletRight = true;
+	myBoundingBox->setBoundary(dim, myBoundary);
 }
 
 void OperationRiskfreeRateLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
@@ -97,7 +106,16 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::down(DataVector& alpha, DataV
 	detail::PhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
 	sweep<detail::PhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
+	// allow boundary value changes on the right boundary
+	BoundingBox* myBoundingBox = this->storage->getBoundingBox();
+	DimensionBoundary myBoundary = myBoundingBox->getBoundary(dim);
+	myBoundary.bDirichletRight = false;
+	myBoundingBox->setBoundary(dim, myBoundary);
+
 	s.sweep1D_Boundary(alpha, result, dim);
+
+	myBoundary.bDirichletRight = true;
+	myBoundingBox->setBoundary(dim, myBoundary);
 }
 
 }

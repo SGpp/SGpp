@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 	DataVector sigma(1);
 	DataVector rho(1);
 
+	double r = 0.05;
 	mu.set(0, 0.0);
 	sigma.set(0, 0.15);
 	rho.set(0, 1.0);
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
 	myBSSolver->printGrid(*alpha, 0.1, "payoff.gnuplot");
 
 	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigma, rho, 0.0);
+	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
 	myBSSolver->solveEuler(timesteps, stepsize, *alpha);
