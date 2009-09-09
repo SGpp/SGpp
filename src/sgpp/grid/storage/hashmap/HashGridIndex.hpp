@@ -115,7 +115,7 @@ public:
 			istream >> index[d];
         }
 
-        if (version >= 2)
+        if (version >= 2 && version != 4)
         {
 			// read leaf option
 			istream >> temp_leaf;

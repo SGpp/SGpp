@@ -190,6 +190,7 @@ size_t BlackScholesSolver:: getNumberGridPoints()
 	else
 	{
 		// @todo (heinecke) throw an application exception
+		return 0;
 	}
 }
 
