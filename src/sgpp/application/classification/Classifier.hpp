@@ -23,6 +23,7 @@
 #ifndef CLASSIFIER_HPP
 #define CLASSIFIER_HPP
 
+#include "application/classification/Classifier.hpp"
 #include "sgpp.hpp"
 
 namespace sg
