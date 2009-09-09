@@ -23,6 +23,7 @@
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 #include "application/finance/BlackScholesSolver.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
+#include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
 #include "stdlib.h"
 
@@ -86,12 +87,30 @@ void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, Da
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
 		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r);
+		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, numTimesteps, false);
 
 		myEuler->solve(*myBSMatrix, alpha, false);
 
 		delete myBSMatrix;
 		delete myEuler;
+	}
+	else
+	{
+		// @todo (heinecke) through an application exception here
+	}
+}
+
+void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha)
+{
+	if (bGridConstructed && bStochasticDataAlloc)
+	{
+		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
+		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, numTimesteps, true);
+
+		myCN->solve(*myBSMatrix, alpha, false);
+
+		delete myBSMatrix;
+		delete myCN;
 	}
 	else
 	{

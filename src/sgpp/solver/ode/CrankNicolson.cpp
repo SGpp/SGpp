@@ -20,31 +20,33 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/ode/ExplicitEuler.hpp"
+#include "solver/ode/CrankNicolson.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 
 namespace sg
 {
 
-ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize) : ODESolver(imax, timestepSize)
+CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG) : ODESolver(nTimesteps, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG)
 {
 	this->residuum = 0.0;
 }
 
-ExplicitEuler::~ExplicitEuler()
+CrankNicolson::~CrankNicolson()
 {
 }
 
-void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
-	DataVector temp(alpha.getSize());
+	DataVector rhs(alpha.getSize());
+    ConjugateGradients myCG(this->maxCGIterations, this->epsilonCG);
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
-		temp.setAll(0.0);
+		rhs.setAll(0.0);
 
-		SystemMatrix.mult(alpha, temp);
+		SystemMatrix.generateRHS(alpha, rhs);
 
-		alpha.axpy(this->myEpsilon, temp);
+	    myCG.solve(SystemMatrix, alpha, rhs, false, true, -1.0);
 	}
 }
 

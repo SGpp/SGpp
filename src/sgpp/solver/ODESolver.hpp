@@ -54,7 +54,7 @@ public:
 	 * @parma alpha the sparse grid's coefficients which have to be determined
 	 * @param verbose prints information during execution of the solver
 	 */
-	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, bool verbose = false) = 0;
+	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false) = 0;
 };
 
 }

@@ -24,6 +24,7 @@
 #define SGSOLVER_HPP
 
 #include "operation/common/OperationMatrix.hpp"
+#include "operation/common/OperationSolverMatrix.hpp"
 #include "solver/SGSolverInfo.hpp"
 #include "solver/SGSolverResult.hpp"
 

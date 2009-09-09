@@ -25,7 +25,7 @@
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/common/OperationMatrix.hpp"
+#include "operation/common/OperationSolverMatrix.hpp"
 
 namespace sg
 {
@@ -33,7 +33,7 @@ namespace sg
 /**
  * @todo (heinecke) add description here
  */
-class BlackScholesTimestepMatrix : public OperationMatrix
+class BlackScholesTimestepMatrix : public OperationSolverMatrix
 {
 private:
 	/// the riskfree interest rate
@@ -54,6 +54,19 @@ private:
 	DataVector* sigmas;
 	/// Pointer to the rhos;
 	DataVector* rhos;
+	/// specifies if the matrix is used within Crank Nicolson solver
+	bool bIsCrankNicolsonMatrix;
+	// @todo (heinecke) try to do some refactoring here with the timestep size
+	/// the size of one timestep used in the ODE Solver
+	double TimestepSize;
+
+	/**
+	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
+	 * @param return reference to the DataVector into which the result is written
+	 */
+	void applyL(DataVector& alpha, DataVector& result);
 
 public:
 	/**
@@ -64,8 +77,10 @@ public:
 	 * @param sigma reference to the sigmas
 	 * @param rho reference to the rhos
 	 * @param r the riskfree interest rate
+	 * @param TimestepSize the size of one timestep used in the ODE Solver
+	 * @param bCrankNicolsonMatrix specifies whether this class is used by Euler or Crank Nicoloson
 	 */
-	BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r);
+	BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, bool bCrankNicolsonMatrix = false);
 
 	/**
 	 * Std-Destructor
@@ -77,9 +92,10 @@ public:
 	/**
 	 * Generates the right hand side of the system of linear equation
 	 *
+	 * @param data the coefficients of the sparse grid's ansatzfunctions
 	 * @param rhs reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
-	void generateRHS(DataVector& rhs);
+	virtual void generateRHS(DataVector& data, DataVector& rhs);
 };
 
 }

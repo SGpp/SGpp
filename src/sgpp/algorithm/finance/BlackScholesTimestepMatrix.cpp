@@ -25,7 +25,7 @@
 namespace sg
 {
 
-BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r)
+BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, bool bCrankNicolsonMatrix)
 {
 	this->OpDelta = SparseGrid.createOperationDelta(mu);
 	this->OpGammaOne = SparseGrid.createOperationGammaPartOne(sigma, rho);
@@ -36,6 +36,8 @@ BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVec
 	this->mus = &mu;
 	this->sigmas = &sigma;
 	this->rhos = &rho;
+	this->bIsCrankNicolsonMatrix = bCrankNicolsonMatrix;
+	this->TimestepSize = TimestepSize;
 }
 
 BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
@@ -48,6 +50,38 @@ BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 }
 
 void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
+{
+	if (this->bIsCrankNicolsonMatrix == false)
+	{
+		applyL(alpha, result);
+	}
+	else
+	{
+		result.setAll(0.0);
+
+		applyL(alpha, result);
+		result.mult((-0.5)*this->TimestepSize);
+		result.add(alpha);
+	}
+}
+
+void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
+{
+	if (this->bIsCrankNicolsonMatrix == false)
+	{
+		// @todo (heinecke) throw some exception here
+	}
+	else
+	{
+		rhs.setAll(0.0);
+
+		applyL(data, rhs);
+		rhs.mult(0.5*this->TimestepSize);
+		rhs.add(data);
+	}
+}
+
+void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -70,11 +104,6 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 	// Apply the gamma method, part 1
 	this->OpGammaOne->mult(alpha, temp);
 	result.add(temp);
-}
-
-void BlackScholesTimestepMatrix::generateRHS(DataVector& rhs)
-{
-	// @todo (heinecke) implement, when used with Crank Nicholson method insted of Euler
 }
 
 }
