@@ -37,7 +37,6 @@
 #include "algorithm/classification/DMSystemMatrix.hpp"
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 
-#include "application/classification/Classifier.hpp"
 #include "application/finance/BlackScholesSolver.hpp"
 
 #include "basis/basis.hpp"

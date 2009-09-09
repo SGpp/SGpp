@@ -67,6 +67,8 @@ basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrape
 algorithm/classification/DMSystemMatrix.cpp
 algorithm/finance/BlackScholesTimestepMatrix.cpp
 
+application/finance/BlackScholesSolver.cpp
+
 solver/sle/ConjugateGradients.cpp
 solver/ode/ExplicitEuler.cpp
 
