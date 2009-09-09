@@ -54,6 +54,13 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
+class OperationSolverMatrix : public OperationMatrix
+{
+public:
+	virtual void mult(DataVector& alpha, DataVector& result) = 0;
+	virtual void generateRHS(DataVector& data, DataVector& result) = 0;
+};
+
 class OperationEval
 {
 public:

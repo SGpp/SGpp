@@ -71,6 +71,7 @@ application/finance/BlackScholesSolver.cpp
 
 solver/sle/ConjugateGradients.cpp
 solver/ode/ExplicitEuler.cpp
+solver/ode/CrankNicolson.cpp
 
 linearSystem/LinearSystem.cpp
 

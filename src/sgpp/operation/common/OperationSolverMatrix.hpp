@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -20,32 +21,48 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/ode/ExplicitEuler.hpp"
+#ifndef OPERATIONSOLVERMATRIX_HPP
+#define OPERATIONSOLVERMATRIX_HPP
+
+#include "operation/common/OperationMatrix.hpp"
+#include "data/DataVector.hpp"
 
 namespace sg
 {
 
-ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize) : ODESolver(imax, timestepSize)
+/**
+ * Defines a Systemmatrix for the CG method
+ */
+class OperationSolverMatrix : public OperationMatrix
 {
-	this->residuum = 0.0;
+public:
+	/**
+	 * Constructor
+	 */
+	OperationSolverMatrix() {}
+
+	/**
+	 * Destructor
+	 */
+	virtual ~OperationSolverMatrix() {}
+
+	/**
+	 * Multiplicates a vector with the matrix
+	 *
+	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
+	 * @param result DataVector into which the result of the Laplace operation is stored
+	 */
+	virtual void mult(DataVector& alpha, DataVector& result) = 0;
+
+	/**
+	 * generates the right hand side of the system
+	 *
+	 * @param data data that is needed to generate the RHS of the system of linear equations
+	 * @param rhs DataVector the contains the RHS
+	 */
+	virtual void generateRHS(DataVector& data, DataVector& rhs) = 0;
+};
+
 }
 
-ExplicitEuler::~ExplicitEuler()
-{
-}
-
-void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
-{
-	DataVector temp(alpha.getSize());
-
-	for (size_t i = 0; i < this->nMaxIterations; i++)
-	{
-		temp.setAll(0.0);
-
-		SystemMatrix.mult(alpha, temp);
-
-		alpha.axpy(this->myEpsilon, temp);
-	}
-}
-
-}
+#endif /* OperationSolverMatrix */

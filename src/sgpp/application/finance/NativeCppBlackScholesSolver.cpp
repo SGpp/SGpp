@@ -30,12 +30,14 @@ int main(int argc, char *argv[])
 
 	size_t timesteps = 100;
 	double stepsize = 0.001;
+	size_t CGiterations = 8000;
+	double CGepsilon = 0.001;
 
 	DataVector mu(1);
 	DataVector sigma(1);
 	DataVector rho(1);
 
-	double r = 0.05;
+	double r = 0.0;
 	mu.set(0, 0.0);
 	sigma.set(0, 0.15);
 	rho.set(0, 1.0);
@@ -71,7 +73,8 @@ int main(int argc, char *argv[])
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	myBSSolver->solveEuler(timesteps, stepsize, *alpha);
+	//myBSSolver->solveEuler(timesteps, stepsize, *alpha);
+	myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
 	myBSSolver->printGrid(*alpha, 0.1, "solvedBS.gnuplot");

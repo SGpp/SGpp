@@ -51,7 +51,7 @@ public:
 	 */
 	virtual ~ExplicitEuler();
 
-	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
 };
 
 }

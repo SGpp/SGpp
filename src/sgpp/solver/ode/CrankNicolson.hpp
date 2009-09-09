@@ -20,32 +20,49 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/ode/ExplicitEuler.hpp"
+#ifndef CRANKNICOLSON_HPP
+#define CRANKNICOLSON_HPP
+
+#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "solver/ODESolver.hpp"
 
 namespace sg
 {
 
-ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize) : ODESolver(imax, timestepSize)
+/**
+ * This class implements the Crank-Nicolson method
+ * for solving ordinary partial equations
+ *
+ * For solving the system of linear equations the
+ * already implemented CG-method is used
+ */
+class CrankNicolson : public ODESolver
 {
-	this->residuum = 0.0;
+private:
+	/// the number of CG maximum CG iterations
+	size_t maxCGIterations;
+	/// the CG's epsilon
+	double epsilonCG;
+
+public:
+	/**
+	 * Std-Constructer
+	 *
+	 * @param nTimesteps number of maximum executed iterations
+	 * @param timestepSize the size of one timestep
+	 * @param iMaxCG maximum number of CG steps
+	 * @param epsilonCG the epsilon used in CG
+	 */
+	CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG);
+
+	/**
+	 * Std-Destructor
+	 */
+	virtual ~CrankNicolson();
+
+	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+};
+
 }
 
-ExplicitEuler::~ExplicitEuler()
-{
-}
-
-void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
-{
-	DataVector temp(alpha.getSize());
-
-	for (size_t i = 0; i < this->nMaxIterations; i++)
-	{
-		temp.setAll(0.0);
-
-		SystemMatrix.mult(alpha, temp);
-
-		alpha.axpy(this->myEpsilon, temp);
-	}
-}
-
-}
+#endif /* CRANKNICOLSON_HPP */

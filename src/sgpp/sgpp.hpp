@@ -62,6 +62,7 @@
 
 #include "solver/sle/ConjugateGradients.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
+#include "solver/ode/CrankNicolson.hpp"
 
 #include "linearSystem/LinearSystem.hpp"
 
