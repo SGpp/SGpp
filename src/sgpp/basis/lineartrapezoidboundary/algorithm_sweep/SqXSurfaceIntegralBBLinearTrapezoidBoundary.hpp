@@ -110,7 +110,7 @@ public:
 		}
 		else
 		{
-			result[seq_left] = (-1.0)*(source[seq_left]*(t*t));
+			result[seq_left] = (-1.0)*((source[seq_left]*(t*t))*(-1.0/q));
 		}
 
 		if (boundingBox->hasDirichletBoundaryRight(dim))
@@ -119,7 +119,7 @@ public:
 		}
 		else
 		{
-			result[seq_right] = (source[seq_right]*(r*r));
+			result[seq_right] = (source[seq_right]*(r*r))*(1.0/q);
 		}
 
 		// move to root
