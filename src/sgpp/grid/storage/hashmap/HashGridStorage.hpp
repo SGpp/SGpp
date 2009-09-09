@@ -169,7 +169,7 @@ public:
 		for (size_t i = 0; i < DIM; i++)
 		{
 			tempBound = boundingBox->getBoundary(i);
-			ostream << tempBound.leftBoundary << " " << tempBound.rightBoundary << " ";
+			ostream << tempBound.leftBoundary << " " << tempBound.rightBoundary << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
 		}
 		ostream << std::endl;
 
@@ -549,17 +549,20 @@ private:
     	size_t num;
     	istream >> num;
 
-   	// check whether grid was created with a version that is too new
-    	if (version > SERIALIZATION_VERSION)
-	{
-	  //	    throw generation_exception("Version of serialized grid is too new. Max. recognized version is "+string(SERIALIZATION_VERSION));
-	  std::ostringstream errstream;
-	  errstream << "Version of serialized grid (" << version << ") is too new. Max. recognized version is " << SERIALIZATION_VERSION << ".";
-	  throw generation_exception(errstream.str().c_str());
-    	}
+		// check whether grid was created with a version that is too new
+		if (version > SERIALIZATION_VERSION)
+		{
+			if (version != 4)
+			{
+				//	    throw generation_exception("Version of serialized grid is too new. Max. recognized version is "+string(SERIALIZATION_VERSION));
+				std::ostringstream errstream;
+				errstream << "Version of serialized grid (" << version << ") is too new. Max. recognized version is " << SERIALIZATION_VERSION << ".";
+				throw generation_exception(errstream.str().c_str());
+			}
+		}
 
     	// read the bounding box
-    	if (version == 3)
+    	if (version == 3 || version == 4)
     	{
     		DimensionBoundary tempBound;
 
@@ -568,6 +571,8 @@ private:
     		{
     			istream >> tempBound.leftBoundary;
     			istream >> tempBound.rightBoundary;
+    			istream >> tempBound.bDirichletLeft;
+    			istream >> tempBound.bDirichletRight;
 
     			boundingBox->setBoundary(i, tempBound);
     		}
@@ -581,7 +586,7 @@ private:
     	}
 
     	// set's the grid point's leaf information which is not saved in version 1
-    	if (version == 1)
+    	if (version == 1 || version == 4)
     	{
     		recalcLeafProperty();
     	}

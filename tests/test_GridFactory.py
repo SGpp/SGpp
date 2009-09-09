@@ -138,6 +138,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         tempBound.leftBoundary = 0.0
         tempBound.rightBoundary = 100.0
+        tempBound.bDirichletLeft = False;
+        tempBound.bDirichletRight = False;
         boundingBox.setBoundary(0, tempBound)
         
         str = factory.serialize()
@@ -152,6 +154,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         self.assertEqual(0.0, tempBound.leftBoundary)
         self.assertEqual(100.0, tempBound.rightBoundary)
+        self.assertEqual(False, tempBound.bDirichletLeft)
+        self.assertEqual(False, tempBound.bDirichletRight)
         
     def testSerializationModLinearBoundingBox(self):
         """Uses Linear grid for tests"""
@@ -167,6 +171,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         tempBound.leftBoundary = 0.0
         tempBound.rightBoundary = 100.0
+        tempBound.bDirichletLeft = False;
+        tempBound.bDirichletRight = False;
         boundingBox.setBoundary(0, tempBound)
 
         str = factory.serialize()
@@ -181,6 +187,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         self.assertEqual(0.0, tempBound.leftBoundary)
         self.assertEqual(100.0, tempBound.rightBoundary)
+        self.assertEqual(False, tempBound.bDirichletLeft)
+        self.assertEqual(False, tempBound.bDirichletRight)
         
     def testSerializationLinearTrapezoidBoudaryBoundingBox(self):
         """Uses Linear grid for tests"""
@@ -196,6 +204,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         tempBound.leftBoundary = 0.0
         tempBound.rightBoundary = 100.0
+        tempBound.bDirichletLeft = False;
+        tempBound.bDirichletRight = False;
         boundingBox.setBoundary(0, tempBound)
 
         str = factory.serialize()
@@ -210,6 +220,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         self.assertEqual(0.0, tempBound.leftBoundary)
         self.assertEqual(100.0, tempBound.rightBoundary)
+        self.assertEqual(False, tempBound.bDirichletLeft)
+        self.assertEqual(False, tempBound.bDirichletRight)
         
     def testSerializationLinearBoudaryBoundingBox(self):
         """Uses Linear grid for tests"""
@@ -225,6 +237,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         tempBound.leftBoundary = 0.0
         tempBound.rightBoundary = 100.0
+        tempBound.bDirichletLeft = False;
+        tempBound.bDirichletRight = False;
         boundingBox.setBoundary(0, tempBound)
 
         str = factory.serialize()
@@ -239,6 +253,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         self.assertEqual(0.0, tempBound.leftBoundary)
         self.assertEqual(100.0, tempBound.rightBoundary)
+        self.assertEqual(False, tempBound.bDirichletLeft)
+        self.assertEqual(False, tempBound.bDirichletRight)
         
     def testSerializationPolyBoundingBox(self):
         from pysgpp import Grid
@@ -253,6 +269,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         tempBound.leftBoundary = 0.0
         tempBound.rightBoundary = 100.0
+        tempBound.bDirichletLeft = False;
+        tempBound.bDirichletRight = False;
         boundingBox.setBoundary(0, tempBound)
 
         str = factory.serialize()
@@ -267,6 +285,8 @@ class TestGridFactory(unittest.TestCase):
         tempBound = boundingBox.getBoundary(0)
         self.assertEqual(0.0, tempBound.leftBoundary)
         self.assertEqual(100.0, tempBound.rightBoundary)
+        self.assertEqual(False, tempBound.bDirichletLeft)
+        self.assertEqual(False, tempBound.bDirichletRight)
 
     def testSerializationLinearWithLeaf(self):
         """Uses Linear grid for tests"""
