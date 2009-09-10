@@ -26,6 +26,7 @@
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
 #include "stdlib.h"
+#include <sstream>
 
 namespace sg
 {
@@ -147,7 +148,7 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 					fileout << i << " " << myEval->eval(alpha,point) << std::endl;
 				}
 			}
-			else
+			else if (dim == 2)
 			{
 				dimOne = myGrid->getBoundingBox()->getBoundary(0);
 				dimTwo = myGrid->getBoundingBox()->getBoundary(1);
@@ -161,7 +162,12 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 						point.push_back(j);
 						fileout << i << " " << j << " " << myEval->eval(alpha,point) << std::endl;
 					}
+					fileout << std::endl;
 				}
+			}
+			else
+			{
+				// @todo (heinecke) thrown an application exception
 			}
 
 			delete myEval;
@@ -175,9 +181,10 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 	}
 }
 
-void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike)
+void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
 {
 	double tmp;
+	double tmp2;
 
 	if (bGridConstructed)
 	{
@@ -186,12 +193,33 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike)
 			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
 			{
 				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
-				alpha[i] = get1DPayoffValue(tmp, strike);
+				alpha[i] = get1DPayoffValue(tmp, strike[0]);
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
+		}
+		else if (dim == 2)
+		{
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+					std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+					std::stringstream coordsStream(coords);
+
+					coordsStream >> tmp;
+					coordsStream >> tmp2;
+
+					alpha[i] = max(get1DPayoffValue(tmp, strike[0]),get1DPayoffValue(tmp2, strike[1]));
+			}
+
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			myHierarchisation->doHierarchisation(alpha);
+			delete myHierarchisation;
+		}
+		else
+		{
+			// @todo (heinecke) thrown an application exception
 		}
 	}
 	else
