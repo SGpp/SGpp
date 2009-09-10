@@ -545,7 +545,7 @@ public:
     		}
     		else
     		{
-    			return_stream << (pow(0.5, static_cast<double>(level[i]))*index[i]);
+    			return_stream << std::scientific << (pow(0.5, static_cast<double>(level[i]))*index[i]);
     		}
 
     		if (i < DIM-1)
@@ -575,11 +575,11 @@ public:
     	{
     		if(level[i] == 0)
     		{
-    			return_stream << (BB.getIntervalWidth(i)*index[i]) + BB.getIntervalOffset(i);
+    			return_stream << std::scientific << (BB.getIntervalWidth(i)*index[i]) + BB.getIntervalOffset(i);
     		}
     		else
     		{
-    			return_stream << (BB.getIntervalWidth(i)*(pow(0.5, static_cast<double>(level[i]))*index[i]))+BB.getIntervalOffset(i);
+    			return_stream << std::scientific << (BB.getIntervalWidth(i)*(pow(0.5, static_cast<double>(level[i]))*index[i]))+BB.getIntervalOffset(i);
     		}
 
     		if (i < DIM-1)
