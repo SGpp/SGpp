@@ -167,7 +167,7 @@ public:
 	 *
 	 * @todo (heinecke) move this into a class that provide such tools
 	 */
-	void initGridWithPayoff(DataVector& alpha, double strike);
+	void initGridWithPayoff(DataVector& alpha, double* strike);
 
 	/**
 	 * use this to determine the number of grid points, used to solve
