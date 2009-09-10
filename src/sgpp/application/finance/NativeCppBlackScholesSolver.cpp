@@ -22,23 +22,23 @@
 
 #include "sgpp.hpp"
 
-int main(int argc, char *argv[])
+void testOneUnderlying()
 {
 	size_t dim = 1;
-	size_t level = 7;
+	size_t level = 5;
 	double strike = 65.0;
 
-	size_t timesteps = 100;
-	double stepsize = 0.001;
-	size_t CGiterations = 8000;
+	size_t timesteps = 2500;
+	double stepsize = 0.0001;
+	size_t CGiterations = 150;
 	double CGepsilon = 0.001;
 
 	DataVector mu(1);
 	DataVector sigma(1);
 	DataVector rho(1);
 
-	double r = 0.0;
-	mu.set(0, 0.0);
+	double r = 0.05;
+	mu.set(0, 0.05);
 	sigma.set(0, 0.15);
 	rho.set(0, 1.0);
 
@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	//myBSSolver->solveEuler(timesteps, stepsize, *alpha);
-	myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	myBSSolver->solveEuler(timesteps, stepsize, *alpha);
+	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
 	myBSSolver->printGrid(*alpha, 0.1, "solvedBS.gnuplot");
@@ -82,4 +82,9 @@ int main(int argc, char *argv[])
 	delete myBSSolver;
 	delete myBoundingBox;
 	delete alpha;
+}
+
+int main(int argc, char *argv[])
+{
+	testOneUnderlying();
 }

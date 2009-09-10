@@ -169,7 +169,7 @@ public:
 		for (size_t i = 0; i < DIM; i++)
 		{
 			tempBound = boundingBox->getBoundary(i);
-			ostream << tempBound.leftBoundary << " " << tempBound.rightBoundary << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
+			ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
 		}
 		ostream << std::endl;
 

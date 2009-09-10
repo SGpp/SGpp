@@ -61,6 +61,11 @@ int main(int argc, char *argv[])
 	numGridPoints = myGrid->getStorage()->size();
 	std::cout << "the grid has " << numGridPoints << " gridpoints" << std::endl;
 	std::cout << "finished construction regular grid" << std::endl;
+	std::cout << "the grid is:" << std::endl;
+
+	std::string ser;
+	myGrid->serialize(ser);
+	std::cout << ser << std::endl;
 
 	sg::BoundingBox* myBoundingBox;
 	myBoundingBox = myGrid->getBoundingBox();
