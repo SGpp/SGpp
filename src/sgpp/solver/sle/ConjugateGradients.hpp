@@ -23,9 +23,11 @@
 #ifndef CONJUGATEGRADIENTS_HPP
 #define CONJUGATEGRADIENTS_HPP
 
-#include "algorithm/classification/DMSystemMatrix.hpp"
+#include "operation/common/OperationMatrix.hpp"
 #include "solver/SLESolver.hpp"
 #include "data/DataVector.hpp"
+
+#include <iostream>
 
 namespace sg
 {

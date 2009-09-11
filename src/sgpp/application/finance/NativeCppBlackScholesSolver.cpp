@@ -25,11 +25,11 @@
 void testOneUnderlying()
 {
 	size_t dim = 1;
-	size_t level = 5;
+	size_t level = 6;
 	double* strike = new double[dim];
 	strike[0] = 65.0;
 
-	size_t timesteps = 2500;
+	size_t timesteps = 10000;
 	double stepsize = 0.0001;
 	size_t CGiterations = 150;
 	double CGepsilon = 0.001;
@@ -38,9 +38,9 @@ void testOneUnderlying()
 	DataVector sigma(1);
 	DataVector rho(1);
 
-	double r = 0.05;
-	mu.set(0, 0.05);
-	sigma.set(0, 0.15);
+	double r = 0.0;
+	mu.set(0, 1.00);
+	sigma.set(0, 0.50);
 	rho.set(0, 1.0);
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
@@ -88,13 +88,13 @@ void testOneUnderlying()
 void testTwoUnderlyings()
 {
 	size_t dim = 2;
-	size_t level = 6;
+	size_t level = 5;
 	double* strike = new double[dim];
 	strike[0] = 65.0;
 	strike[1] = 55.0;
 
-	size_t timesteps = 100;
-	double stepsize = 0.0001;
+	size_t timesteps = 50000;
+	double stepsize = 0.00001;
 	size_t CGiterations = 150;
 	double CGepsilon = 0.001;
 
@@ -103,10 +103,10 @@ void testTwoUnderlyings()
 	DataVector rho(2,2);
 
 	double r = 0.00;
-	mu.set(0, 0.00);
-	mu.set(1, 0.00);
-	sigma.set(0, 0.05);
-	sigma.set(1, 0.05);
+	mu.set(0, 0.50);
+	mu.set(1, 0.50);
+	sigma.set(0, 0.60);
+	sigma.set(1, 0.60);
 	rho.set(0, 1.0);
 	rho.set(1, 0.1);
 	rho.set(2, 0.1);
@@ -156,5 +156,5 @@ void testTwoUnderlyings()
 
 int main(int argc, char *argv[])
 {
-	testTwoUnderlyings();
+	testOneUnderlying();
 }
