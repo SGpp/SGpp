@@ -253,4 +253,35 @@ double BlackScholesSolver::get1DPayoffValue(double assetValue, double strike)
 	}
 }
 
+void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t)
+{
+	double stock = 0.0;
+	double vola = this->sigmas->get(0);
+	StdNormalDistribution* myStdNDis = new StdNormalDistribution();
+
+	for (stock = 0.0; stock <= maxStock; stock += StockInc)
+	{
+		double dOne = ((log((stock/strike)) + ((this->r + (vola*vola*0.5))*(t)))/(vola*t));
+		double dTwo = dOne - (vola*t);
+		double prem = (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*this->r*t)));
+
+		premiums.push_back(std::make_pair(stock, prem));
+	}
+
+	delete myStdNDis;
+}
+
+void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename)
+{
+	typedef std::vector< std::pair<double, double> > printVector;
+	std::ofstream fileout;
+
+	fileout.open(tfilename.c_str());
+	for(printVector::iterator iter = premiums.begin(); iter != premiums.end(); iter++)
+	{
+		fileout << iter->first << " " << iter->second << " " << std::endl;
+	}
+	fileout.close();
+}
+
 }

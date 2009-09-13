@@ -25,7 +25,7 @@
 void testOneUnderlying()
 {
 	size_t dim = 1;
-	size_t level = 6;
+	size_t level = 5;
 	double* strike = new double[dim];
 	strike[0] = 65.0;
 
@@ -40,7 +40,7 @@ void testOneUnderlying()
 
 	double r = 0.0;
 	mu.set(0, 1.00);
-	sigma.set(0, 0.50);
+	sigma.set(0, 0.40);
 	rho.set(0, 1.0);
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
@@ -79,6 +79,11 @@ void testOneUnderlying()
 
 	// Print the solved Black Scholes Equation into a gnuplot file
 	myBSSolver->printGrid(*alpha, 0.1, "solvedBS.gnuplot");
+
+	// Do analytic test
+	std::vector< std::pair<double, double> >premium;
+	myBSSolver->solve1DAnalytic(premium, 100.0, 0.1, strike[0], (((double)timesteps)*stepsize));
+	myBSSolver->print1DAnalytic(premium, "analyticBS.gnuplot");
 
 	delete myBSSolver;
 	delete myBoundingBox;
