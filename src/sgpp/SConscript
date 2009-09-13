@@ -73,6 +73,8 @@ solver/sle/ConjugateGradients.cpp
 solver/ode/ExplicitEuler.cpp
 solver/ode/CrankNicolson.cpp
 
+tools/common/StdNormalDistribution.cpp
+
 linearSystem/LinearSystem.cpp
 
 """)
