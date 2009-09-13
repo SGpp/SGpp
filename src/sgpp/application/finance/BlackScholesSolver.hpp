@@ -30,10 +30,13 @@
 
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
 
+#include "tools/common/StdNormalDistribution.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
+#include <cmath>
 
 namespace sg
 {
@@ -147,6 +150,29 @@ public:
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 */
 	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha);
+
+	/**
+	 * Solves the closed form of the Black Scholes equation, the Black Scholes
+	 * formular. It evaluates the Black Scholes formular in a Stock Price Range
+	 * from 0.0 to maxStock, by increasing the stock price in every step by
+	 * a given (small) values, so the analytical solution of the PDE can
+	 * be determined and compared.
+	 *
+	 * @param premiums the result vector, here the combinations of stock price and premium are stored
+	 * @parma maxStock the maximum stock regarded in these calculations
+	 * @param StockInc the increase of the stockprice in one step
+	 * @param strike the strike price of the Option
+	 * @param t time to maturity
+	 */
+	void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t);
+
+	/**
+	 * Writes the premiums into a file that can be easily plot with gnuplot
+	 *
+	 * @param premiums the result vector, here the combinations of stock price and premium are stored
+	 * @param tfilename absolute path to file into which the grid's evaluation is written
+	 */
+	void print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename);
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,

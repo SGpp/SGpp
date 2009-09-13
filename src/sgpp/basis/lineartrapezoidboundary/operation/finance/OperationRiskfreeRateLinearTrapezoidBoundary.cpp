@@ -91,12 +91,13 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::up(DataVector& alpha, DataVec
 	// allow boundary value changes on the right boundary
 	BoundingBox* myBoundingBox = this->storage->getBoundingBox();
 	DimensionBoundary myBoundary = myBoundingBox->getBoundary(dim);
+	bool save = myBoundary.bDirichletRight;
 	myBoundary.bDirichletRight = false;
 	myBoundingBox->setBoundary(dim, myBoundary);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 
-	myBoundary.bDirichletRight = true;
+	myBoundary.bDirichletRight = save;
 	myBoundingBox->setBoundary(dim, myBoundary);
 }
 
@@ -109,12 +110,13 @@ void OperationRiskfreeRateLinearTrapezoidBoundary::down(DataVector& alpha, DataV
 	// allow boundary value changes on the right boundary
 	BoundingBox* myBoundingBox = this->storage->getBoundingBox();
 	DimensionBoundary myBoundary = myBoundingBox->getBoundary(dim);
+	bool save = myBoundary.bDirichletRight;
 	myBoundary.bDirichletRight = false;
 	myBoundingBox->setBoundary(dim, myBoundary);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 
-	myBoundary.bDirichletRight = true;
+	myBoundary.bDirichletRight = save;
 	myBoundingBox->setBoundary(dim, myBoundary);
 }
 
