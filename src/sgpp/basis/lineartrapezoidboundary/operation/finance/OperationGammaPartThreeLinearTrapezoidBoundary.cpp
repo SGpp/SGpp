@@ -78,7 +78,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::updown(DataVector& alpha, D
 	{
 		gradientSquared(alpha, result, dim, gradient_dim_one, gradient_dim_two);
 	}
-	else if (dim == gradient_dim_one || dim == gradient_dim_two)
+	else if ((dim == gradient_dim_one || dim == gradient_dim_two) && (gradient_dim_one != gradient_dim_two))
 	{
 		gradient(alpha, result, dim, gradient_dim_one, gradient_dim_two);
 	}
@@ -110,7 +110,6 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::updown(DataVector& alpha, D
 
 			result.add(temp);
 		}
-
 	}
 }
 

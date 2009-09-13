@@ -38,7 +38,7 @@ void testOneUnderlying()
 	DataVector sigma(1);
 	DataVector rho(1);
 
-	double r = 0.0;
+	double r = 0.00;
 	mu.set(0, 1.00);
 	sigma.set(0, 0.40);
 	rho.set(0, 1.0);
@@ -82,7 +82,8 @@ void testOneUnderlying()
 
 	// Do analytic test
 	std::vector< std::pair<double, double> >premium;
-	myBSSolver->solve1DAnalytic(premium, 100.0, 0.1, strike[0], (((double)timesteps)*stepsize));
+	double t = (((double)timesteps)*stepsize);
+	myBSSolver->solve1DAnalytic(premium, 100.0, 0.1, strike[0], t);
 	myBSSolver->print1DAnalytic(premium, "analyticBS.gnuplot");
 
 	delete myBSSolver;
