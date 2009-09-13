@@ -41,7 +41,7 @@ public:
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
-	 * @param mu vector that contains the underlyings' drift
+	 * @param mu vector that contains the underlyings' weight
 	 */
 	OperationDeltaLinearTrapezoidBoundary(GridStorage* storage, DataVector& mu);
 
