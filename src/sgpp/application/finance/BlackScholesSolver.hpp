@@ -53,7 +53,7 @@ class BlackScholesSolver
 private:
 	/// vector that contains the sparse's grid coefficients
 	DataVector* alpha;
-	/// vector that contains the drift
+	/// vector that contains the assets' weight
 	DataVector* mus;
 	/// vector that contains the standard deviations
 	DataVector* sigmas;
@@ -119,10 +119,10 @@ public:
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
-	 * some statistical data about the underlying (drift, standard deviation
+	 * some statistical data about the underlying (assets' weight, standard deviation
 	 * and the correlation between them). This function allows you to set this data.
 	 *
-	 * @param mus a DataVector that contains the underlyings' drift
+	 * @param mus a DataVector that contains the underlyings' weight
 	 * @param sigmas a DataVector that contains the underlyings' standard deviations
 	 * @param rhos a DataVector that contains the correlations between the underlyings
 	 * @param r the riskfree rate used in the market model
