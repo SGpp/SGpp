@@ -95,11 +95,11 @@ void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
 
 	// Apply the gamma method, part 3
 	this->OpGammaThree->mult(alpha, temp);
-	result.axpy((-1.0), temp);
+	result.sub(temp);
 
 	// Apply the gamma method, part 2
 	this->OpGammaTwo->mult(alpha, temp);
-	result.axpy((-1.0), temp);
+	result.sub(temp);
 
 	// Apply the gamma method, part 1
 	this->OpGammaOne->mult(alpha, temp);

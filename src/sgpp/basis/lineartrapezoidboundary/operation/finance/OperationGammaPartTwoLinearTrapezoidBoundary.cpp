@@ -93,7 +93,6 @@ void OperationGammaPartTwoLinearTrapezoidBoundary::updown(DataVector& alpha, Dat
 
 			result.add(temp);
 		}
-
 	}
 }
 

@@ -79,11 +79,11 @@ void OperationGammaPartOneLinearTrapezoidBoundary::updown(DataVector& alpha, Dat
 	{
 		SurfaceIntegralSquared(alpha, result, dim, operation_dim_one, operation_dim_two);
 	}
-	else if (dim == operation_dim_two)
+	else if ((dim == operation_dim_two) && (dim != operation_dim_one))
 	{
 		SurfaceIntegral(alpha, result, dim, operation_dim_one, operation_dim_two);
 	}
-	else if (dim == operation_dim_one)
+	else if ((dim != operation_dim_two) && (dim == operation_dim_one))
 	{
 		gradient(alpha, result, dim, operation_dim_one, operation_dim_two);
 	}

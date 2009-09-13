@@ -29,8 +29,11 @@
 #include "grid/type/ModLinearGrid.hpp"
 
 #include <iostream>
+#include <string>
+#include <fstream>
 
-#define PRINTMATRIX
+//#define PRINTMATRIX
+#define PRINTDIFF
 
 int main(int argc, char *argv[])
 {
@@ -71,8 +74,8 @@ int main(int argc, char *argv[])
 	myBoundingBox = myGrid->getBoundingBox();
 	sg::DimensionBoundary myInterval;
 
-	myInterval.leftBoundary = 62.5;
-	myInterval.rightBoundary = 67.5;
+	myInterval.leftBoundary = 0.0;
+	myInterval.rightBoundary = 100.0;
 	myInterval.bDirichletLeft = false;
 	myInterval.bDirichletRight = false;
 
@@ -118,6 +121,27 @@ int main(int argc, char *argv[])
 		}
 		std::cout << std::endl;
 	}
+#endif
+
+#ifdef PRINTDIFF
+	std::string file = "SqXdPhidPhi1D.txt";
+	std::ifstream infile;
+
+	infile.open(file.c_str());
+
+	double filedata = 0.0;
+
+	for (size_t i = 0; i < numGridPoints; i++)
+	{
+		for (size_t j = 0; j < numGridPoints; j++)
+		{
+			infile >> filedata;
+			std::cout << (UpDownMatrix.get((i*numGridPoints) + j) - filedata) << " ";
+		}
+		std::cout << std::endl;
+	}
+
+	infile.close();
 #endif
 
 	std::cout << std::endl;
