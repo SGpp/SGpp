@@ -67,8 +67,6 @@
 
 #include "tools/finance/IOToolBonnSG.hpp"
 
-#include "linearSystem/LinearSystem.hpp"
-
 namespace sg
 {
 
