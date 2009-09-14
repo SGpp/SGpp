@@ -296,6 +296,9 @@ private:
 	 * @return a map with all available grid types for serialization
 	 */
 	static factoryMap& typeMap();
+	
+	//pointer to the Operation Eval used in Grid.eval()
+	static OperationEval* evalOp;
 };
 
 
