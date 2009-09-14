@@ -20,38 +20,45 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/sle/BiCGStab.hpp"
+#ifndef BICGSTAB_HPP
+#define BICGSTAB_HPP
+
+#include "operation/common/OperationMatrix.hpp"
+#include "solver/SLESolver.hpp"
+#include "data/DataVector.hpp"
+
+#include <iostream>
 
 namespace sg
 {
 
-CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG) : ODESolver(nTimesteps, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG)
+class BiCGStab : public SLESolver
 {
-	this->residuum = 0.0;
+private:
+
+
+public:
+	/**
+	 * Std-Constructor
+	 */
+	BiCGStab(size_t imax, double epsilon);
+
+	/**
+	 * Std-Destructor
+	 */
+	virtual ~BiCGStab();
+
+	/**
+	 * max_threashold is ignored in this solver
+	 *
+	 * Reference:
+	 * http://www.iue.tuwien.ac.at/phd/heinreichsberger/node70.html
+	 * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
+	 * http://netlib.org
+	 */
+	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
+};
+
 }
 
-CrankNicolson::~CrankNicolson()
-{
-}
-
-void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
-{
-	DataVector rhs(alpha.getSize());
-    BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
-
-	for (size_t i = 0; i < this->nMaxIterations; i++)
-	{
-		rhs.setAll(0.0);
-
-		SystemMatrix.generateRHS(alpha, rhs);
-
-	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
-	    if (verbose)
-	    {
-	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
-	    }
-	}
-}
-
-}
+#endif /*BICGSTAB_HPP */

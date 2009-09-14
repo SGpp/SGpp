@@ -61,6 +61,7 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 
 #include "solver/sle/ConjugateGradients.hpp"
+#include "solver/sle/BiCGStab.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 
