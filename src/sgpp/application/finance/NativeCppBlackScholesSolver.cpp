@@ -31,8 +31,8 @@ void testOneUnderlying()
 
 	size_t timesteps = 10000;
 	double stepsize = 0.0001;
-	size_t CGiterations = 150;
-	double CGepsilon = 0.001;
+	size_t CGiterations = 8000;
+	double CGepsilon = 0.00000001;
 
 	DataVector mu(1);
 	DataVector sigma(1);
@@ -51,7 +51,7 @@ void testOneUnderlying()
 		myBoundaries[i].leftBoundary = 0.0;
 		myBoundaries[i].rightBoundary = 100.0;
 		myBoundaries[i].bDirichletLeft = true;
-		myBoundaries[i].bDirichletRight = true;
+		myBoundaries[i].bDirichletRight = false;
 	}
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();

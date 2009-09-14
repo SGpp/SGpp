@@ -108,7 +108,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, numTimesteps, true);
 
-		myCN->solve(*myBSMatrix, alpha, false);
+		myCN->solve(*myBSMatrix, alpha, true);
 
 		delete myBSMatrix;
 		delete myCN;
