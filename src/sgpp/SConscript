@@ -75,6 +75,7 @@ solver/ode/ExplicitEuler.cpp
 solver/ode/CrankNicolson.cpp
 
 tools/common/StdNormalDistribution.cpp
+tools/finance/IOToolBonnSG.cpp
 
 linearSystem/LinearSystem.cpp
 

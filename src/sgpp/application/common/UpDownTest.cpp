@@ -178,6 +178,16 @@ int main(int argc, char *argv[])
 	delete myUpDown;
 	delete myGrid;
 
+	sg::IOToolBonnSG* myImporter = new sg::IOToolBonnSG();
+
+	DataVector serAlpha(0);
+	std::string serGrid;
+	bool hier;
+
+	myImporter->readFile("sparse_bonn.grid", serGrid, serAlpha, hier);
+
+	delete myImporter;
+
 #ifdef WINDOWS
 	system("pause");
 #endif
