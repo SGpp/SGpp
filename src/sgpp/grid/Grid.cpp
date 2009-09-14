@@ -152,6 +152,12 @@ Grid::~Grid()
 	{
 		delete storage;
 	}
+	
+	if(evalOp != NULL)
+	{
+		delete evalOp;
+		evalOp = NULL;
+	}
 }
 
 GridStorage* Grid::getStorage()
@@ -192,9 +198,11 @@ void Grid::refine(DataVector* vector, int numOfPoints)
 	this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
 }
 
+OperationEval* Grid::evalOp(NULL);
+
 double Grid::eval(DataVector& alpha, DataVector& point){
-	static OperationEval* evalOp = this->createOperationEval();
-	return evalOp->eval(alpha, point);
+	if(this->evalOp == NULL) this->evalOp = this->createOperationEval();
+	return this->evalOp->eval(alpha, point);
 }
 
 void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf){
