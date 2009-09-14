@@ -65,6 +65,8 @@
 #include "solver/ode/ExplicitEuler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 
+#include "tools/finance/IOToolBonnSG.hpp"
+
 #include "linearSystem/LinearSystem.hpp"
 
 namespace sg
