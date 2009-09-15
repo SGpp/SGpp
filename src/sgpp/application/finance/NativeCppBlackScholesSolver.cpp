@@ -39,7 +39,7 @@ void testOneUnderlying()
 	DataVector rho(1);
 
 	double r = 0.00;
-	mu.set(0, 1.00);
+	mu.set(0, 0.00);
 	sigma.set(0, 0.40);
 	rho.set(0, 1.0);
 
@@ -51,7 +51,7 @@ void testOneUnderlying()
 		myBoundaries[i].leftBoundary = 0.0;
 		myBoundaries[i].rightBoundary = 100.0;
 		myBoundaries[i].bDirichletLeft = true;
-		myBoundaries[i].bDirichletRight = false;
+		myBoundaries[i].bDirichletRight = true;
 	}
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
@@ -109,8 +109,8 @@ void testTwoUnderlyings()
 	DataVector rho(2,2);
 
 	double r = 0.00;
-	mu.set(0, 0.50);
-	mu.set(1, 0.50);
+	mu.set(0, 0.00);
+	mu.set(1, 0.00);
 	sigma.set(0, 0.60);
 	sigma.set(1, 0.60);
 	rho.set(0, 1.0);

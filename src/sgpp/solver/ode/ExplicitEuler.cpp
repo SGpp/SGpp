@@ -22,6 +22,8 @@
 
 #include "solver/ode/ExplicitEuler.hpp"
 
+#include <iostream>
+
 namespace sg
 {
 
@@ -44,7 +46,9 @@ void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 
 		SystemMatrix.mult(alpha, temp);
 
+		//std::cout << alpha.toString() << std::endl;
 		alpha.axpy(this->myEpsilon, temp);
+		//std::cout << alpha.toString() << std::endl;
 	}
 }
 
