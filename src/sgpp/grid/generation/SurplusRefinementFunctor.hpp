@@ -33,6 +33,7 @@ namespace sg
 
 /**
  * This abstracts the refinement criteria out of the refinement algorithm
+ * @version $HEAD$ 
  */
 class SurplusRefinementFunctor : public RefinementFunctor
 {
@@ -41,7 +42,7 @@ public:
 	 * Constructor
 	 *
 	 * @param alpha DataVector that is basis for refinement decisions
-	 * @param refinements_num number of refinements
+	 * @param refinements_num number of grid points which should be refined
 	 * @param threshold
 	 */
 	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1, double threshold = 0.0) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
@@ -64,25 +65,25 @@ public:
 		return 0.0;
 	}
 
-	virtual int getRefinementsNum()
+	int getRefinementsNum()
 	{
 		return this->refinements_num;
 	}
 	
-	virtual double getRefinementThreshold()
+	double getRefinementThreshold()
 	{
 		return this->threshold;
 	}
 
 
 protected:
-	/// pointe to the vector that stores the alpha values
+	/// pointer to the vector that stores the alpha values
 	DataVector* alpha;
 	
-	/// number of points to refine
+	/// number of grid points to refine
 	int refinements_num;
 	
-	/// treshold, only the points with greater absolute values or error
+	/// treshold, only the points with greater ot equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
 	double threshold;
 };
 
