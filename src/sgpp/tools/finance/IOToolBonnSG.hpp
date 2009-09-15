@@ -71,8 +71,9 @@ public:
 	 * @param tFilename path and filename of the file that should be written
 	 * @param SparseGrid reference to a Grid object that contains the sparse grid that should be exported
 	 * @param alpha the surplus vector of the exported sparse grid
+	 * @param ishierarchized set to true, if alpha contains hierarchizied coefficients, otherwise false
 	 */
-	void writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha);
+	void writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha, bool ishierarchized);
 };
 
 }

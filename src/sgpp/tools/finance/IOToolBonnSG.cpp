@@ -54,6 +54,8 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	if(!file.is_open())
 	{
 		// @todo (heinecke) throw some file exception
+		std::cout << "Error while reading file: " << tFilename << std::endl;
+		return;
 	}
 
 	// parse the global grid information
@@ -197,9 +199,89 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	//std::cout << alpha.toString() << std::endl;
 }
 
-void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha)
+void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha, bool ishierarchized)
 {
+	std::ofstream fout;
 
+	fout.open(tFilename.c_str());
+	if(!fout.is_open())
+	{
+		// @todo (heinecke) throw some file exception
+		std::cout << "Error while writing file: " << tFilename << std::endl;
+		return;
+	}
+
+	// Write global gird information
+	fout << "datastructure=hash::adp,dim=" << SparseGrid.getStorage()->dim() <<  ",basissize=" << SparseGrid.getStorage()->size() << ",basis=";
+
+	if (ishierarchized == true)
+	{
+		fout << "BASIS_HAT_HIER_LINEAR";
+	}
+	else
+	{
+		fout << "BASIS_NODAL";
+	}
+
+	// serialize the gridpoints
+	for (size_t i = 0; i < SparseGrid.getStorage()->size(); i++)
+	{
+		std::stringstream strlevel;
+		std::stringstream strindex;
+		unsigned int level;
+		unsigned int index;
+		bool isBoundary = false;
+
+		// print the sparse grid index
+		for (size_t j = 0; j <  SparseGrid.getStorage()->dim(); j++)
+		{
+			SparseGrid.getStorage()->get(i)->get(j, level, index);
+			if (level == 0)
+			{
+				isBoundary = true;
+			}
+			strlevel << level;
+			strindex << index;
+
+			if (j < (SparseGrid.getStorage()->dim()-1))
+			{
+				strlevel << ",";
+				strindex << ",";
+			}
+		}
+		fout << std::endl << "(" << strlevel.str() << "|" << strindex.str() << ")	= ";
+
+		// print the 'real' coordinates
+		fout << "(";
+		for (size_t j = 0; j <  SparseGrid.getStorage()->dim(); j++)
+		{
+			fout << std::scientific << SparseGrid.getStorage()->get(i)->getCoordBB(j, SparseGrid.getBoundingBox()->getIntervalWidth(j), SparseGrid.getBoundingBox()->getIntervalOffset(j));
+
+			if (j < (SparseGrid.getStorage()->dim()-1))
+			{
+				fout << ",";
+			}
+		}
+		fout << ")	= ";
+
+		// print point description
+		std::stringstream hash;  // use this to avoid scientific format
+		hash << i;
+		if (isBoundary == true)
+		{
+			fout << "Boundary:";
+		}
+		else
+		{
+			fout << "Inner:";
+		}
+		fout << hash.str() << "	=";
+
+		// print alpha
+		fout << std::scientific << alpha.get(i);
+	}
+
+	fout.close();
 }
 
 }
