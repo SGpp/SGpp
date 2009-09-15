@@ -76,6 +76,7 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 		rhs.setAll(0.0);
 
 		applyL(data, rhs);
+
 		rhs.mult(0.5*this->TimestepSize);
 		rhs.add(data);
 	}
@@ -104,11 +105,6 @@ void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
 	// Apply the gamma method, part 1
 	this->OpGammaOne->mult(alpha, temp);
 	result.add(temp);
-
-	//std::cout << result.toString() << std::endl;
-	//result.set(0, 0.0);
-	//result.set(1, 0.0);
-	//std::cout << result.toString() << std::endl;
 }
 
 }

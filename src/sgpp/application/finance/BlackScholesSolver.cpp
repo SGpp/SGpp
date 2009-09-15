@@ -106,7 +106,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, numTimesteps, true);
+		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, true);
 
 		myCN->solve(*myBSMatrix, alpha, true);
 

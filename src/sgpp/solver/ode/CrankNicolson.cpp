@@ -22,6 +22,7 @@
 
 #include "solver/ode/CrankNicolson.hpp"
 #include "solver/sle/BiCGStab.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 
 namespace sg
 {
@@ -38,19 +39,30 @@ CrankNicolson::~CrankNicolson()
 void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
 	DataVector rhs(alpha.getSize());
+	DataVector saveAlpha(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
 		rhs.setAll(0.0);
 
+		saveAlpha = alpha;
+
 		SystemMatrix.generateRHS(alpha, rhs);
+
+		alpha.set(0,0.0);
+		rhs.set(0,0.0);
+		alpha.set(1,0.0);
+		rhs.set(1,0.0);
 
 	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
 	    if (verbose)
 	    {
 	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
 	    }
+
+	    alpha.set(0, saveAlpha.get(0));
+	    alpha.set(1, saveAlpha.get(1));
 	}
 }
 

@@ -72,6 +72,11 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 
 	DataVector s(alpha.getSize());
 	DataVector v(alpha.getSize());
+	DataVector w(alpha.getSize());
+
+	s.setAll(0.0);
+	v.setAll(0.0);
+	w.setAll(0.0);
 
 	while (this->nIterations < this->nMaxIterations)
 	{
@@ -79,8 +84,10 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 		s.setAll(0.0);
 		SystemMatrix.mult(p, s);
 
+		//std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
+
 		sigma = s.dotProduct(rZero);
-		if (fabs(sigma) < 10e-13)
+		if (fabs(sigma) == 0.0)
 		{
 			break;
 		}
@@ -88,12 +95,14 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 		a = rho/sigma;
 
 		// w = r - a*s
-		DataVector w(r);
+		w = r;
 		w.axpy((-1.0)*a, s);
 
 		// v = Aw
 		v.setAll(0.0);
 		SystemMatrix.mult(w, v);
+
+		//std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
 
 		omega = v.dotProduct(w) / v.dotProduct(v);
 
