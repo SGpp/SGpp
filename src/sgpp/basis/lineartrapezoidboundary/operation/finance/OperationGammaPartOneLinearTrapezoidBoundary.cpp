@@ -34,6 +34,8 @@
 
 #include "algorithm/common/sweep.hpp"
 
+#include <iostream>
+
 namespace sg
 {
 
@@ -58,6 +60,7 @@ void OperationGammaPartOneLinearTrapezoidBoundary::mult(DataVector& alpha, DataV
 		for(size_t j = 0; j < storage->dim(); j++)
 		{
 			// Calculate the "diagonal" of the operation
+			//std::cout << sigmas->get(i) << " " << sigmas->get(j) << " " << rhos->get((storage->dim()*i)+j) << std::endl;
 			if (j == i)
 			{
 				this->updown(alpha, beta, storage->dim() - 1, i, j);
@@ -69,6 +72,7 @@ void OperationGammaPartOneLinearTrapezoidBoundary::mult(DataVector& alpha, DataV
 				this->updown(alpha, beta, storage->dim() - 1, i, j);
 				result.axpy((1.0)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
 			}
+			//std::cout << beta.toString() << std::endl;
 		}
 	}
 }
