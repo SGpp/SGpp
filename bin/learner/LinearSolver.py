@@ -23,7 +23,7 @@
 ## @package LinearSolver
 # @ingroup bin.learner
 # @brief Abstract class for solving of linear equations
-# @version $CURR$
+# @version $HEAD$ 
 
 
 class LinearSolver(object):
@@ -36,7 +36,7 @@ class LinearSolver(object):
     ## Solver linear system
     # this method is not implemented
     #
-    # @param linearSystem: LinearSystem to solve
+    # @param linearSystem: DMSystemMatrix object of Linear System to solve
     def solve(self, linearSystem):
         raise NotImplementedError
 

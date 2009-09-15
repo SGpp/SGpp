@@ -23,7 +23,7 @@
 ## @package bin.Learner
 # @ingroup learner
 # @brief Abstract class for learning
-# @version $CURR$
+# @version $HEAD$
 
 from bin.pysgpp import *
 from CGSolver import CGSolver
@@ -39,7 +39,7 @@ class Learner(object):
     knowledge = None        #LearnedKnowledge where alpha is stored
     foldingPolicy = None    #Implementation of folding policy if training with folding is used
     solver = None           #LinearSolver object associated with this Learner
-    linearSystem = None     #LinearSystem object associated with this Learner
+    linearSystem = None     #DMSystemMatrix object associated with this Learner
     iteration = 0           #Number of current iterations
     trainAccuracy = []      #list of train accuracy values measured in refinement iteration
     testAccuracy = []       #list of test accuracy values measured in refinement iteration
@@ -91,7 +91,7 @@ class Learner(object):
             if(self.stopPolicy.isTrainingComplete(self)): break
             
             #refine grid
-            #TODO: here comes some average alpha
+            #@todo (khakhutv) here comes some average alpha
             self.refineGrid()
        
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_COMPLETE)
