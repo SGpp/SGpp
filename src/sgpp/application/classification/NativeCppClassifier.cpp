@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "sgpp.hpp"
+#include "application/classification/Classifier.hpp"
 #include <iostream>
 
 int main(int argc, char *argv[])
