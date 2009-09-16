@@ -228,8 +228,8 @@ void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector
 	{
 		std::stringstream strlevel;
 		std::stringstream strindex;
-		unsigned int level;
-		unsigned int index;
+		GridStorage::index_type::level_type level;
+		GridStorage::index_type::index_type index;
 		bool isBoundary = false;
 
 		// print the sparse grid index
