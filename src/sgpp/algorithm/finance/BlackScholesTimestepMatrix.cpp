@@ -38,6 +38,7 @@ BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVec
 	this->rhos = &rho;
 	this->bIsCrankNicolsonMatrix = bCrankNicolsonMatrix;
 	this->TimestepSize = TimestepSize;
+	this->myGrid = &SparseGrid;
 }
 
 BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
@@ -105,6 +106,11 @@ void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
 	// Apply the gamma method, part 1
 	this->OpGammaOne->mult(alpha, temp);
 	result.add(temp);
+}
+
+Grid* BlackScholesTimestepMatrix::getGrid()
+{
+	return myGrid;
 }
 
 }

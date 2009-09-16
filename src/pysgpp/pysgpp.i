@@ -56,12 +56,13 @@ namespace std {
 %}
 
 // The Good, i.e. without any modifications
-%include "src/sgpp/grid/common/BoundingBox.hpp"
 %include "src/sgpp/grid/storage/hashmap/SerializationVersion.hpp"
 %include "src/sgpp/grid/storage/hashmap/HashGridIndex.hpp"
 %include "src/sgpp/grid/storage/hashmap/HashGridIterator.hpp"
 %include "src/sgpp/grid/storage/hashmap/HashGridStorage.hpp"
 %include "src/sgpp/grid/GridStorage.hpp"
+%include "src/sgpp/grid/common/BoundingBox.hpp"
+%include "src/sgpp/grid/common/DirichletUpdateVector.hpp"
 
 %include "Operations.i"
 

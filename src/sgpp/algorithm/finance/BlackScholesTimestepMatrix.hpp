@@ -59,6 +59,8 @@ private:
 	// @todo (heinecke) try to do some refactoring here with the timestep size
 	/// the size of one timestep used in the ODE Solver
 	double TimestepSize;
+	/// Pointer to the grid object
+	Grid* myGrid;
 
 	/**
 	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix
@@ -89,13 +91,9 @@ public:
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
-	/**
-	 * Generates the right hand side of the system of linear equation
-	 *
-	 * @param data the coefficients of the sparse grid's ansatzfunctions
-	 * @param rhs reference to the vector that will contain the result of the matrix vector multiplication on the rhs
-	 */
 	virtual void generateRHS(DataVector& data, DataVector& rhs);
+
+	virtual Grid* getGrid();
 };
 
 }

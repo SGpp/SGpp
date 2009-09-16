@@ -25,6 +25,7 @@
 #define OPERATIONSOLVERMATRIX_HPP
 
 #include "operation/common/OperationMatrix.hpp"
+#include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
@@ -61,6 +62,13 @@ public:
 	 * @param rhs DataVector the contains the RHS
 	 */
 	virtual void generateRHS(DataVector& data, DataVector& rhs) = 0;
+
+	/**
+	 * get the pointer to the underlying grid object
+	 *
+	 * @return returns a pointer to the underlying grid object
+	 */
+	virtual Grid* getGrid() = 0;
 };
 
 }

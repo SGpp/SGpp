@@ -20,49 +20,70 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-
 #include "grid/common/DirichletUpdateVector.hpp"
 
 namespace sg
 {
 
-CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG) : ODESolver(nTimesteps, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG)
-{
-	this->residuum = 0.0;
-}
-
-CrankNicolson::~CrankNicolson()
+DirichletUpdateVector::DirichletUpdateVector(GridStorage* storage): myBoundingBox(storage->getBoundingBox()), storage(storage)
 {
 }
 
-void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+DirichletUpdateVector::~DirichletUpdateVector()
 {
-	DataVector rhs(alpha.getSize());
-	DataVector saveAlpha(alpha.getSize());
-    BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
-    DirichletUpdateVector myDirichletUpdate(SystemMatrix.getGrid()->getStorage());
+}
 
-	for (size_t i = 0; i < this->nMaxIterations; i++)
+void DirichletUpdateVector::applyDirichletConditions(DataVector& updateVector, DataVector& sourceVector)
+{
+	for (size_t i = 0; i < storage->size(); i++)
 	{
-		rhs.setAll(0.0);
+		GridStorage::index_type::level_type level;
+		GridStorage::index_type::index_type index;
+		size_t dim;
+		DimensionBoundary myBounds;
+		for (size_t j = 0; j < storage->dim(); j++)
+		{
+			(*storage)[i]->get(dim, level, index);
+			myBounds = myBoundingBox->getBoundary(dim);
+			if (level == 0)
+			{
+				if (index == 0 && myBounds.bDirichletLeft == true)
+				{
+					updateVector.set(i, sourceVector.get(i));
+				}
+				if (index == 1 && myBounds.bDirichletRight == true)
+				{
+					updateVector.set(i, sourceVector.get(i));
+				}
+			}
+		}
+	}
+}
 
-		saveAlpha = alpha;
-
-		SystemMatrix.generateRHS(alpha, rhs);
-
-		myDirichletUpdate.setBoundariesToZero(alpha);
-		myDirichletUpdate.setBoundariesToZero(rhs);
-
-	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
-	    if (verbose)
-	    {
-	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
-	    }
-
-	    myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
+void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
+{
+	for (size_t i = 0; i < storage->size(); i++)
+	{
+		GridStorage::index_type::level_type level;
+		GridStorage::index_type::index_type index;
+		size_t dim;
+		DimensionBoundary myBounds;
+		for (size_t j = 0; j < storage->dim(); j++)
+		{
+			(*storage)[i]->get(dim, level, index);
+			myBounds = myBoundingBox->getBoundary(dim);
+			if (level == 0)
+			{
+				if (index == 0 && myBounds.bDirichletLeft == true)
+				{
+					updateVector.set(i, 0.0);
+				}
+				if (index == 1 && myBounds.bDirichletRight == true)
+				{
+					updateVector.set(i, 0.0);
+				}
+			}
+		}
 	}
 }
 

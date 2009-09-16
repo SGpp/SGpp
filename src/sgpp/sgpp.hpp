@@ -50,6 +50,8 @@
 
 #include "grid/Grid.hpp"
 #include "grid/GridStorage.hpp"
+#include "grid/common/BoundingBox.hpp"
+#include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/StandardGridGenerator.hpp"
 #include "grid/generation/BoundaryGridGenerator.hpp"
