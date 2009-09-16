@@ -27,6 +27,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <list>
 
 namespace sg
 {
@@ -44,6 +45,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	size_t dim;
 	size_t gridpoints;
 	std::string curLine;
+	std::string GridPointSerialization;
 	char* curLine_cstr;
 	char* token;
 
@@ -105,6 +107,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	}
 
 	sgppSerialization = "";
+	GridPointSerialization = "";
 	std::stringstream gridinfo;
 	gridinfo << "linearTrapezoidBoundary" << std::endl;
 	gridinfo << "1" << std::endl;
@@ -113,10 +116,10 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 
 	alpha.resize(gridpoints);
 
-	// Bounding Box????
-	// @todo (heinecke) handle bounding box
+	std::list<double>* coords = new std::list<double>[dim];		// Array of Lists that store all coordiantes
+	std::string curCoords;				// contains coordinates of current grid point
 
-	// parse the grid points
+	// parse the grid points and dertermine bounding box
 	for (size_t i = 0; i < gridpoints; i++)
 	{
 		// read next line from file
@@ -139,6 +142,10 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 		SGPoint.assign(token);
 
 		token = strtok (0, "=");
+
+		// read cooradinates
+		curCoords.assign(token);
+
 		token = strtok (0, "=");
 		token = strtok (0, "=");
 
@@ -146,7 +153,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 		curAlpha.assign(token);
 
 		// remave brackets
-		SGPoint = SGPoint.substr(1,SGPoint.length());
+		SGPoint = SGPoint.substr(SGPoint.find("(")+1, (SGPoint.find(")") - SGPoint.find("(")) - 1);
 
 		// Split level and index
 		char* SGPoint_cstr;
@@ -191,12 +198,51 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 		delete[] indeces;
 
 		// append definition to string, write alpha entry
-		sgppSerialization.append(streamSGPoint.str());
+		GridPointSerialization.append(streamSGPoint.str());
 		alpha.set(i, atof(curAlpha.c_str()));
+
+		// Determine Coordinates
+		// remove brackets
+		curCoords = curCoords.substr(curCoords.find("(")+1 ,  (curCoords.find(")") - curCoords.find("(")) - 1);
+		// Split Coordinates
+		char* curCoords_cstr = (char *)curCoords.c_str();
+		token = strtok(curCoords_cstr, ",");
+		coords[0].push_back(atof(token));
+		for (size_t j = 1; j < dim; j++)
+		{
+			token = strtok(0, ",");
+			coords[j].push_back(atof(token));
+		}
 	}
 
-	//std::cout << sgppSerialization << std::endl;
-	//std::cout << alpha.toString() << std::endl;
+	// Determin Bounding Box
+	std::stringstream streamBoudingBox;
+	typedef std::list<double>::iterator iter;
+
+	streamBoudingBox << std::endl;
+
+	for (size_t j = 0; j < dim; j++)
+	{
+		coords[j].sort();
+
+		size_t counter = 0;
+
+		for (iter i = coords[j].begin(); i != coords[j].end(); i++)
+		{
+			if (counter == 0 || counter == (gridpoints - 1))
+			{
+				streamBoudingBox << std::scientific << *i << " ";
+			}
+			counter++;
+		}
+		streamBoudingBox << "0 0 ";
+	}
+
+	sgppSerialization.append(streamBoudingBox.str());
+	sgppSerialization.append(GridPointSerialization);
+
+	std::cout << sgppSerialization << std::endl;
+	std::cout << alpha.toString() << std::endl;
 }
 
 void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha, bool ishierarchized)
