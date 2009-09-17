@@ -41,6 +41,7 @@
 #include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"
+#include "application/pde/HeatEquationSolver.hpp"
 
 #include "basis/basis.hpp"
 

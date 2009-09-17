@@ -20,73 +20,60 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "grid/common/DirichletUpdateVector.hpp"
+#include "sgpp.hpp"
 
-namespace sg
+void testHeatEquation()
 {
+	size_t dim = 1;
+	size_t level = 6;
 
-DirichletUpdateVector::DirichletUpdateVector(GridStorage* storage): myBoundingBox(storage->getBoundingBox()), storage(storage)
-{
-}
+	size_t timesteps = 1000;
+	double stepsize = 0.0001;
+	size_t CGiterations = 8000;
+	double CGepsilon = 0.00000001;
 
-DirichletUpdateVector::~DirichletUpdateVector()
-{
-}
+	double a = 0.5;
 
-void DirichletUpdateVector::applyDirichletConditions(DataVector& updateVector, DataVector& sourceVector)
-{
-	for (size_t i = 0; i < storage->size(); i++)
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+
+	// set the bounding box
+	for (size_t i = 0; i < dim; i++)
 	{
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
-		size_t dim;
-		DimensionBoundary myBounds;
-		for (size_t j = 0; j < storage->dim(); j++)
-		{
-			dim = j;
-			(*storage)[i]->get(dim, level, index);
-			myBounds = myBoundingBox->getBoundary(dim);
-			if (level == 0)
-			{
-				if (index == 0 && myBounds.bDirichletLeft == true)
-				{
-					updateVector.set(i, sourceVector.get(i));
-				}
-				if (index == 1 && myBounds.bDirichletRight == true)
-				{
-					updateVector.set(i, sourceVector.get(i));
-				}
-			}
-		}
+		myBoundaries[i].leftBoundary = 0.0;
+		myBoundaries[i].rightBoundary = 1.0;
+		myBoundaries[i].bDirichletLeft = true;
+		myBoundaries[i].bDirichletRight = true;
 	}
+
+	sg::HeatEquationSolver* myHESolver = new sg::HeatEquationSolver();
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	delete[] myBoundaries;
+
+	// Construct a grid
+	myHESolver->constructGrid(*myBoundingBox, level);
+
+	// init the basis functions' coefficient vector
+	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
+
+	myHESolver->initGridWithSingleHeat(*alpha, 100.0);
+
+	// Print the payoff function into a gnuplot file
+	myHESolver->printGrid(*alpha, 0.001, "heatStart.gnuplot");
+
+	// Start solving the Black Scholes Equation
+	myHESolver->solveEuler(timesteps, stepsize, a, *alpha);
+	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha);
+
+	// Print the solved Black Scholes Equation into a gnuplot file
+	myHESolver->printGrid(*alpha, 0.001, "solvedHeat.gnuplot");
+
+	delete myHESolver;
+	delete myBoundingBox;
+	delete alpha;
 }
 
-void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
+
+int main(int argc, char *argv[])
 {
-	for (size_t i = 0; i < storage->size(); i++)
-	{
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
-		size_t dim;
-		DimensionBoundary myBounds;
-		for (size_t j = 0; j < storage->dim(); j++)
-		{
-			dim = j;
-			(*storage)[i]->get(dim, level, index);
-			myBounds = myBoundingBox->getBoundary(dim);
-			if (level == 0)
-			{
-				if (index == 0 && myBounds.bDirichletLeft == true)
-				{
-					updateVector.set(i, 0.0);
-				}
-				if (index == 1 && myBounds.bDirichletRight == true)
-				{
-					updateVector.set(i, 0.0);
-				}
-			}
-		}
-	}
-}
-
+	testHeatEquation();
 }

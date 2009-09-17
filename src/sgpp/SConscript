@@ -73,6 +73,7 @@ algorithm/pde/BlackScholesTimestepMatrix.cpp
 algorithm/pde/HeatEquationTimestepMatrix.cpp
 
 application/pde/BlackScholesSolver.cpp
+application/pde/HeatEquationSolver.cpp
 
 solver/sle/ConjugateGradients.cpp
 solver/sle/BiCGStab.cpp
