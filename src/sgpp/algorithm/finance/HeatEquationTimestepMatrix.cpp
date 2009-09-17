@@ -20,37 +20,26 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/finance/HeatEquationTimestepMatrix.hpp"
 
 namespace sg
 {
 
-BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, bool bCrankNicolsonMatrix)
+HeatEquationTimestepMatrix::HeatEquationTimestepMatrix(Grid& SparseGrid, double a, double TimestepSize, bool bCrankNicolsonMatrix)
 {
-	this->OpDelta = SparseGrid.createOperationLaplace();
-	this->OpGammaOne = SparseGrid.createOperationGammaPartOne(sigma, rho);
-	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo(sigma, rho);
-	this->OpGammaThree = SparseGrid.createOperationGammaPartThree(sigma, rho);
-	this->OpRiskfree = SparseGrid.createOperationRiskfreeRate();
-	this->r = r;
-	this->mus = &mu;
-	this->sigmas = &sigma;
-	this->rhos = &rho;
+	this->OpLaplace = SparseGrid.createOperationLaplace();
+	this->a = a;
 	this->bIsCrankNicolsonMatrix = bCrankNicolsonMatrix;
 	this->TimestepSize = TimestepSize;
 	this->myGrid = &SparseGrid;
 }
 
-BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
+HeatEquationTimestepMatrix::~HeatEquationTimestepMatrix()
 {
-	delete this->OpDelta;
-	delete this->OpGammaOne;
-	delete this->OpGammaTwo;
-	delete this->OpGammaThree;
-	delete this->OpRiskfree;
+	delete this->OpLaplace;
 }
 
-void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
+void HeatEquationTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->bIsCrankNicolsonMatrix == false)
 	{
@@ -66,7 +55,7 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 	}
 }
 
-void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
+void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 {
 	if (this->bIsCrankNicolsonMatrix == false)
 	{
@@ -83,32 +72,16 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 }
 
-void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
+void HeatEquationTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
 	// Apply the riskfree rate
-	this->OpRiskfree->mult(alpha, temp);
-	result.axpy((-1.0)*this->r, temp);
-
-	// Apply the delta method
-	this->OpDelta->mult(alpha, temp);
-	result.add(temp);
-
-	// Apply the gamma method, part 3
-	this->OpGammaThree->mult(alpha, temp);
-	result.sub(temp);
-
-	// Apply the gamma method, part 2
-	this->OpGammaTwo->mult(alpha, temp);
-	result.sub(temp);
-
-	// Apply the gamma method, part 1
-	this->OpGammaOne->mult(alpha, temp);
-	result.add(temp);
+	this->OpLaplace->mult(alpha, temp);
+	result.axpy((-1.0)*this->a, temp);
 }
 
-Grid* BlackScholesTimestepMatrix::getGrid()
+Grid* HeatEquationTimestepMatrix::getGrid()
 {
 	return myGrid;
 }

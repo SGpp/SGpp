@@ -26,6 +26,7 @@
 #include "sgpp.hpp"
 
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
+#include "grid/type/LinearGrid.hpp"
 #include "grid/common/BoundingBox.hpp"
 
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
@@ -202,6 +203,10 @@ public:
 	 * @return the number of grid points
 	 */
 	size_t getNumberGridPoints();
+
+	void solveHeatEquation(size_t numTimesteps, double timestepsize, DataVector& alpha);
+
+	void initGridWithHeat(DataVector& alpha, double heat);
 };
 
 }

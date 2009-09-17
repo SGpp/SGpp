@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/finance/HeatEquationTimestepMatrix.hpp"
 #include "application/finance/BlackScholesSolver.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -56,7 +57,8 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	dim = BoundingBox.getDimensions();
 	levels = level;
 
-	myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
+	//myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
+	myGrid = new LinearGrid(dim);
 
 	GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(levels);
@@ -112,6 +114,25 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 
 		delete myBSMatrix;
 		delete myCN;
+	}
+	else
+	{
+		// @todo (heinecke) through an application exception here
+	}
+}
+
+void BlackScholesSolver::solveHeatEquation(size_t numTimesteps, double timestepsize, DataVector& alpha)
+{
+	if (bGridConstructed)
+	{
+		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize);
+		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, 0.5, numTimesteps, false);
+
+		std::cout << "Heat Equation: Start Euler" << std::endl;
+		myEuler->solve(*myHEMatrix, alpha, false);
+
+		delete myHEMatrix;
+		delete myEuler;
 	}
 	else
 	{
@@ -215,6 +236,76 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
+			delete myHierarchisation;
+		}
+		else
+		{
+			// @todo (heinecke) thrown an application exception
+		}
+	}
+	else
+	{
+		// @todo (heinecke) throw an application exception
+	}
+}
+
+void BlackScholesSolver::initGridWithHeat(DataVector& alpha, double heat)
+{
+	double tmp;
+	double tmp2;
+
+	if (bGridConstructed)
+	{
+		if (dim == 1)
+		{
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
+
+				if (tmp == 0.5)
+				{
+					alpha[i] = heat;
+				}
+				else
+				{
+					alpha[i] = 0.0;
+				}
+			}
+
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			myHierarchisation->doHierarchisation(alpha);
+			delete myHierarchisation;
+		}
+		else if (dim == 2)
+		{
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+					std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+					std::stringstream coordsStream(coords);
+
+					coordsStream >> tmp;
+					coordsStream >> tmp2;
+
+					if (tmp == 0.5 && tmp2 == 0.5)
+					{
+						alpha[i] = heat;
+					}
+					else
+					{
+						alpha[i] = 0.0;
+					}
+			}
+
+			//std::cout << alpha.toString() << std::endl;
+
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			myHierarchisation->doHierarchisation(alpha);
+
+			//std::cout << alpha.toString() << std::endl;
+
+			//myHierarchisation->doDehierarchisation(alpha);
+
+			//std::cout << alpha.toString() << std::endl;
 			delete myHierarchisation;
 		}
 		else
