@@ -93,8 +93,8 @@ namespace std {
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/classification/UnidirGradient.hpp"
 %include "src/sgpp/algorithm/classification/DMSystemMatrix.hpp"
-%include "src/sgpp/algorithm/finance/BlackScholesTimestepMatrix.hpp"
-%include "src/sgpp/algorithm/finance/HeatEquationTimestepMatrix.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.hpp"
+%include "src/sgpp/algorithm/pde/HeatEquationTimestepMatrix.hpp"
 
 %include "src/sgpp/basis/linear/linear_base.hpp"
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"

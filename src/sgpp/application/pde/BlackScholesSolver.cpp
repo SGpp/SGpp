@@ -20,9 +20,9 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
-#include "algorithm/finance/HeatEquationTimestepMatrix.hpp"
-#include "application/finance/BlackScholesSolver.hpp"
+#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
+#include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"

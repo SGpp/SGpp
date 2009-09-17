@@ -29,7 +29,7 @@
 #include "grid/type/LinearGrid.hpp"
 #include "grid/common/BoundingBox.hpp"
 
-#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
 
 #include "tools/common/StdNormalDistribution.hpp"
 

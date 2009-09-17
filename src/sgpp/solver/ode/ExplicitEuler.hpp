@@ -23,7 +23,7 @@
 #ifndef EXPLICITEULER_HPP
 #define EXPLICITEULER_HPP
 
-#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "operation/common/OperationMatrix.hpp"
 #include "solver/ODESolver.hpp"
 
 namespace sg

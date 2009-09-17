@@ -116,11 +116,11 @@ OperationEvalLinearBoundary.o : src/sgpp/basis/linearboundary/operation/common/O
 OperationBLinearBoundary.o : src/sgpp/basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
 	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
 	
-BlackScholesTimestepMatrix.o : src/sgpp/algorithm/finance/BlackScholesTimestepMatrix.cpp
-	$(CC) $(CFLAGS) src/sgpp/algorithm/finance/BlackScholesTimestepMatrix.cpp
+BlackScholesTimestepMatrix.o : src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.cpp
+	$(CC) $(CFLAGS) src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.cpp
 	
-HeatEquationTimestepMatrix.o : src/sgpp/algorithm/finance/HeatEquationTimestepMatrix.cpp
-	$(CC) $(CFLAGS) src/sgpp/algorithm/finance/HeatEquationTimestepMatrix.cpp
+HeatEquationTimestepMatrix.o : src/sgpp/algorithm/pde/HeatEquationTimestepMatrix.cpp
+	$(CC) $(CFLAGS) src/sgpp/algorithm/pde/HeatEquationTimestepMatrix.cpp
 	
 ConjugateGradients.o : src/sgpp/solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) src/sgpp/solver/sle/ConjugateGradients.cpp
@@ -134,8 +134,8 @@ ExplicitEuler.o : src/sgpp/solver/ode/ExplicitEuler.cpp
 CrankNicolson.o : src/sgpp/solver/ode/CrankNicolson.cpp
 	$(CC) $(CFLAGS) src/sgpp/solver/ode/CrankNicolson.cpp
 
-BlackScholesSolver.o : src/sgpp/application/finance/BlackScholesSolver.cpp
-	$(CC) $(CFLAGS) src/sgpp/application/finance/BlackScholesSolver.cpp
+BlackScholesSolver.o : src/sgpp/application/pde/BlackScholesSolver.cpp
+	$(CC) $(CFLAGS) src/sgpp/application/pde/BlackScholesSolver.cpp
 
 SGppStopwatch.o : src/sgpp/common/SGppStopwatch.cpp
 	$(CC) $(CFLAGS) src/sgpp/common/SGppStopwatch.cpp

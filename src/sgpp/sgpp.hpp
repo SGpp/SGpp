@@ -37,10 +37,10 @@
 #include "algorithm/classification/test_dataset_boundary.hpp"
 #include "algorithm/classification/DMSystemMatrix.hpp"
 
-#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
-#include "algorithm/finance/HeatEquationTimestepMatrix.hpp"
+#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
 
-#include "application/finance/BlackScholesSolver.hpp"
+#include "application/pde/BlackScholesSolver.hpp"
 
 #include "basis/basis.hpp"
 
