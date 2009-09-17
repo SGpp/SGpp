@@ -23,7 +23,7 @@
 #ifndef CRANKNICOLSON_HPP
 #define CRANKNICOLSON_HPP
 
-#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "operation/common/OperationSolverMatrix.hpp"
 #include "solver/ODESolver.hpp"
 
 namespace sg

@@ -28,7 +28,7 @@
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 
-#include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
 
 #include <iostream>
 

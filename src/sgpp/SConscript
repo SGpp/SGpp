@@ -69,10 +69,10 @@ basis/lineartrapezoidboundary/operation/finance/OperationGammaPartThreeLinearTra
 basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.cpp
 
 algorithm/classification/DMSystemMatrix.cpp
-algorithm/finance/BlackScholesTimestepMatrix.cpp
-algorithm/finance/HeatEquationTimestepMatrix.cpp
+algorithm/pde/BlackScholesTimestepMatrix.cpp
+algorithm/pde/HeatEquationTimestepMatrix.cpp
 
-application/finance/BlackScholesSolver.cpp
+application/pde/BlackScholesSolver.cpp
 
 solver/sle/ConjugateGradients.cpp
 solver/sle/BiCGStab.cpp
