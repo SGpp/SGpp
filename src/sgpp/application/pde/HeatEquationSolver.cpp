@@ -243,4 +243,58 @@ size_t HeatEquationSolver:: getNumberGridPoints()
 	}
 }
 
+void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double variance)
+{
+	double tmp;
+	//double tmp2;
+
+	if (bGridConstructed)
+	{
+		if (dim == 1)
+		{
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
+
+				alpha[i] = (1.0/(variance*2.0*3.145))*exp((-0.5)*((tmp-0.5)/variance)*((tmp-0.5)/variance));
+			}
+
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			myHierarchisation->doHierarchisation(alpha);
+			delete myHierarchisation;
+		}
+		else
+		{
+
+		}
+	}
+}
+
+void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double constHeat)
+{
+	double tmp;
+	//double tmp2;
+
+	if (bGridConstructed)
+	{
+		if (dim == 1)
+		{
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
+
+				alpha[i] = constHeat;
+			}
+
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			myHierarchisation->doHierarchisation(alpha);
+			delete myHierarchisation;
+		}
+		else
+		{
+
+		}
+	}
+}
+
 }

@@ -147,6 +147,23 @@ public:
 	 * @param heat the value of the heat in the middle of the domain
 	 */
 	void initGridWithSingleHeat(DataVector& alpha, double heat);
+
+	/**
+	 * Inits the grid in the middle the domain with an smooth heat distribution that the
+	 * normal distribution formula
+	 *
+	 * @param alpha reference to the coefficients vector
+	 * @param variance the variance of the normal distribution, mu is fix 0.5
+	 */
+	void initGridWithSmoothHeat(DataVector& alpha, double variance);
+
+	/**
+	 * Inits the grid with a constant heat
+	 *
+	 * @param alpha reference to the coefficients vector
+	 * @param constHeat the temperature of the constant heat
+	 */
+	void initGridWithConstantHeat(DataVector& alpha, double constHeat);
 };
 
 }
