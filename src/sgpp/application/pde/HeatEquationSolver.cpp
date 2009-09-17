@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
-#include "application/pde/BlackScholesSolver.hpp"
+#include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
+#include "application/pde/HeatEquationSolver.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
@@ -31,27 +31,20 @@
 namespace sg
 {
 
-BlackScholesSolver::BlackScholesSolver()
+HeatEquationSolver::HeatEquationSolver()
 {
-	bStochasticDataAlloc = false;
 	bGridConstructed = false;
 }
 
-BlackScholesSolver::~BlackScholesSolver()
+HeatEquationSolver::~HeatEquationSolver()
 {
-	if (bStochasticDataAlloc)
-	{
-		delete mus;
-		delete sigmas;
-		delete rhos;
-	}
 	if (bGridConstructed)
 	{
 		delete myGrid;
 	}
 }
 
-void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
+void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 {
 	dim = BoundingBox.getDimensions();
 	levels = level;
@@ -69,31 +62,16 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	bGridConstructed = true;
 }
 
-void BlackScholesSolver::constructGrid(std::string tfilename)
+void HeatEquationSolver::solveEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha)
 {
-	// @todo (heinecke) implement this
-}
-
-void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r)
-{
-	this->mus = new DataVector(mus);
-	this->sigmas = new DataVector(sigmas);
-	this->rhos = new DataVector(rhos);
-	this->r = r;
-
-	bStochasticDataAlloc = true;
-}
-
-void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha)
-{
-	if (bGridConstructed && bStochasticDataAlloc)
+	if (bGridConstructed)
 	{
 		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, numTimesteps, false);
+		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, numTimesteps, false);
 
-		myEuler->solve(*myBSMatrix, alpha, false);
+		myEuler->solve(*myHEMatrix, alpha, false);
 
-		delete myBSMatrix;
+		delete myHEMatrix;
 		delete myEuler;
 	}
 	else
@@ -102,16 +80,16 @@ void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, Da
 	}
 }
 
-void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha)
+void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha)
 {
-	if (bGridConstructed && bStochasticDataAlloc)
+	if (bGridConstructed)
 	{
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, true);
+		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, numTimesteps, true);
 
-		myCN->solve(*myBSMatrix, alpha, true);
+		myCN->solve(*myHEMatrix, alpha, true);
 
-		delete myBSMatrix;
+		delete myHEMatrix;
 		delete myCN;
 	}
 	else
@@ -120,7 +98,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
-void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::string tfilename)
+void HeatEquationSolver::printGrid(DataVector& alpha, double resolution, std::string tfilename)
 {
 	DimensionBoundary dimOne;
 	DimensionBoundary dimTwo;
@@ -182,7 +160,7 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::st
 	}
 }
 
-void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
+void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
 {
 	double tmp;
 	double tmp2;
@@ -194,7 +172,15 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
 			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
 			{
 				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
-				alpha[i] = get1DPayoffValue(tmp, strike[0]);
+
+				if (tmp == 0.5)
+				{
+					alpha[i] = heat;
+				}
+				else
+				{
+					alpha[i] = 0.0;
+				}
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
@@ -211,11 +197,26 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
 					coordsStream >> tmp;
 					coordsStream >> tmp2;
 
-					alpha[i] = max(get1DPayoffValue(tmp, strike[0]),get1DPayoffValue(tmp2, strike[1]));
+					if (tmp == 0.5 && tmp2 == 0.5)
+					{
+						alpha[i] = heat;
+					}
+					else
+					{
+						alpha[i] = 0.0;
+					}
 			}
+
+			//std::cout << alpha.toString() << std::endl;
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
+
+			//std::cout << alpha.toString() << std::endl;
+
+			//myHierarchisation->doDehierarchisation(alpha);
+
+			//std::cout << alpha.toString() << std::endl;
 			delete myHierarchisation;
 		}
 		else
@@ -229,7 +230,7 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
 	}
 }
 
-size_t BlackScholesSolver:: getNumberGridPoints()
+size_t HeatEquationSolver:: getNumberGridPoints()
 {
 	if (bGridConstructed)
 	{
@@ -240,56 +241,6 @@ size_t BlackScholesSolver:: getNumberGridPoints()
 		// @todo (heinecke) throw an application exception
 		return 0;
 	}
-}
-
-double BlackScholesSolver::get1DPayoffValue(double assetValue, double strike)
-{
-	if (assetValue <= strike)
-	{
-		return 0.0;
-	}
-	else
-	{
-		return assetValue - strike;
-	}
-}
-
-void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t)
-{
-	if (bStochasticDataAlloc)
-	{
-		double stock = 0.0;
-		double vola = this->sigmas->get(0);
-		StdNormalDistribution* myStdNDis = new StdNormalDistribution();
-
-		for (stock = 0.0; stock <= maxStock; stock += StockInc)
-		{
-			double dOne = (log((stock/strike)) + ((this->r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
-			double dTwo = dOne - (vola*sqrt(t));
-			double prem = (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*this->r*t)));
-
-			premiums.push_back(std::make_pair(stock, prem));
-		}
-
-		delete myStdNDis;
-	}
-	else
-	{
-		// @todo (heinecke) throw an application exception
-	}
-}
-
-void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename)
-{
-	typedef std::vector< std::pair<double, double> > printVector;
-	std::ofstream fileout;
-
-	fileout.open(tfilename.c_str());
-	for(printVector::iterator iter = premiums.begin(); iter != premiums.end(); iter++)
-	{
-		fileout << iter->first << " " << iter->second << " " << std::endl;
-	}
-	fileout.close();
 }
 
 }
