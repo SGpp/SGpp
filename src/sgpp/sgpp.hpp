@@ -32,10 +32,13 @@
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 #include "algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/common/GetAffectedBasisFunctionsBBBoundaries.hpp"
+
 #include "algorithm/classification/test_dataset.hpp"
 #include "algorithm/classification/test_dataset_boundary.hpp"
 #include "algorithm/classification/DMSystemMatrix.hpp"
+
 #include "algorithm/finance/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/finance/HeatEquationTimestepMatrix.hpp"
 
 #include "application/finance/BlackScholesSolver.hpp"
 

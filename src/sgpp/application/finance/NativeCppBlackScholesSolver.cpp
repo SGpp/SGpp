@@ -160,7 +160,58 @@ void testTwoUnderlyings()
 	delete alpha;
 }
 
+void testHeatEquation()
+{
+	size_t dim = 1;
+	size_t level = 6;
+
+	size_t timesteps = 1000000;
+	double stepsize = 0.0000001;
+	size_t CGiterations = 8000;
+	double CGepsilon = 0.00000001;
+
+	double a = 0.00;
+
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+
+	// set the bounding box
+	for (size_t i = 0; i < dim; i++)
+	{
+		myBoundaries[i].leftBoundary = 0.0;
+		myBoundaries[i].rightBoundary = 1.0;
+		myBoundaries[i].bDirichletLeft = true;
+		myBoundaries[i].bDirichletRight = true;
+	}
+
+	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	delete[] myBoundaries;
+
+	// Construct a grid
+	myBSSolver->constructGrid(*myBoundingBox, level);
+
+	// init the basis functions' coefficient vector
+	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+
+	myBSSolver->initGridWithHeat(*alpha, 100.0);
+
+	// Print the payoff function into a gnuplot file
+	myBSSolver->printGrid(*alpha, 0.001, "heatStart.gnuplot");
+
+	// Start solving the Black Scholes Equation
+	myBSSolver->solveHeatEquation(timesteps, stepsize, *alpha);
+	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+
+	// Print the solved Black Scholes Equation into a gnuplot file
+	myBSSolver->printGrid(*alpha, 0.001, "solvedHeat.gnuplot");
+
+	delete myBSSolver;
+	delete myBoundingBox;
+	delete alpha;
+}
+
+
 int main(int argc, char *argv[])
 {
-	testOneUnderlying();
+	testHeatEquation();
 }
