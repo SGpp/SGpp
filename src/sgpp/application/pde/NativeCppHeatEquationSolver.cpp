@@ -25,10 +25,10 @@
 void testHeatEquation()
 {
 	size_t dim = 1;
-	size_t level = 9;
+	size_t level = 14;
 
-	size_t timesteps = 100;
-	double stepsize = 0.001;
+	size_t timesteps = 10000;
+	double stepsize = 0.00001;
 	size_t CGiterations = 8000;
 	double CGepsilon = 0.00000001;
 
@@ -60,14 +60,14 @@ void testHeatEquation()
 	//myHESolver->initGridWithConstantHeat(*alpha, 4.0);
 
 	// Print the payoff function into a gnuplot file
-	myHESolver->printGrid(*alpha, 0.001, "heatStart.gnuplot");
+	myHESolver->printGrid(*alpha, 0.01, "heatStart.gnuplot");
 
 	// Start solving the Black Scholes Equation
 	myHESolver->solveEuler(timesteps, stepsize, a, *alpha);
 	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myHESolver->printGrid(*alpha, 0.001, "solvedHeat.gnuplot");
+	myHESolver->printGrid(*alpha, 0.01, "solvedHeat.gnuplot");
 
 	delete myHESolver;
 	delete myBoundingBox;

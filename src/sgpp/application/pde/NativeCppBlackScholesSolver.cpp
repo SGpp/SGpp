@@ -25,12 +25,12 @@
 void testOneUnderlying()
 {
 	size_t dim = 1;
-	size_t level = 4;
+	size_t level = 8;
 	double* strike = new double[dim];
 	strike[0] = 65.0;
 
-	size_t timesteps = 1000;
-	double stepsize = 0.001;
+	size_t timesteps = 100;
+	double stepsize = 0.0001;
 	size_t CGiterations = 8000;
 	double CGepsilon = 0.00000001;
 
