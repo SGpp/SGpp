@@ -246,7 +246,7 @@ size_t HeatEquationSolver:: getNumberGridPoints()
 void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double variance)
 {
 	double tmp;
-	//double tmp2;
+	double tmp2;
 
 	if (bGridConstructed)
 	{
@@ -257,6 +257,23 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double varian
 				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
 
 				alpha[i] = (1.0/(variance*2.0*3.145))*exp((-0.5)*((tmp-0.5)/variance)*((tmp-0.5)/variance));
+			}
+
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			myHierarchisation->doHierarchisation(alpha);
+			delete myHierarchisation;
+		}
+		else if (dim == 2)
+		{
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+				std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+				std::stringstream coordsStream(coords);
+
+				coordsStream >> tmp;
+				coordsStream >> tmp2;
+
+				alpha[i] = (1.0/(variance*2.0*3.145))*exp((-0.5)*((tmp-0.5)/variance)*((tmp-0.5)/variance)) * (1.0/(variance*2.0*3.145))*exp((-0.5)*((tmp2-0.5)/variance)*((tmp2-0.5)/variance));
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
