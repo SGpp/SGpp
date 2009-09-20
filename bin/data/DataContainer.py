@@ -23,7 +23,7 @@
 ## @package DataContainer
 # @ingroup bin.data
 # @brief Container for points and corresponding function values 
-# @version $CURR$
+# @version $HEAD$
 
 from DataSpecification import DataSpecification
 from bin.pysgpp import DataVector
