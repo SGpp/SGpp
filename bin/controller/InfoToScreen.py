@@ -23,7 +23,7 @@
 ## @package InfoToScreen
 # @ingroup bin.controller
 # @brief Class for handling events from Learner and Solver and printing informations on screen
-# @version $CURR$
+# @version $HEAD$
 
 from bin.controller.ProgressInfoPresentor import ProgressInfoPresentor
 from bin.learner.LinearSolver import LinearSolverEvents
@@ -59,7 +59,7 @@ class InfoToScreen(ProgressInfoPresentor):
     def handleLearningEvent(self, subject, status):
         if status == LearnerEvents.LEARNING_STARTED:
             print "Dimension is:", subject.dataContainer.getDim()
-            print "Number of datasets is:", subject.dataContainer.getSize()
+            print "Number of data entries is:", subject.dataContainer.getSize()
             
         elif status == LearnerEvents.LEARNING_COMPLETE:
             print "Learning complete"
@@ -79,7 +79,7 @@ class InfoToScreen(ProgressInfoPresentor):
             
         elif status == LearnerEvents.LEARNING_WITH_TESTING_STARTED:
             print "Dimension is:", subject.dataContainer.getDim()
-            print "Number of datasets is:", subject.dataContainer.getSize()
+            print "Number of data entries is:", subject.dataContainer.getSize()
         
         elif status == LearnerEvents.LEARNING_WITH_TESTING_COMPLETE:
             print "Learning complete"
