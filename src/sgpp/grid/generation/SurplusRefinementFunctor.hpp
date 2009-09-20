@@ -83,7 +83,7 @@ protected:
 	/// number of grid points to refine
 	int refinements_num;
 	
-	/// treshold, only the points with greater ot equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
+	/// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
 	double threshold;
 };
 
