@@ -186,10 +186,8 @@ public:
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 * @param resolution the distance between evalution points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
-	 *
-	 * @todo (heinecke) move this into a class that is located in the folder tool, e.g. GridPrinter
 	 */
-	void printGrid(DataVector& alpha, double resolution, std::string tfilename);
+	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename);
 
 	/**
 	 * Inits the alpha vector with a payoff function

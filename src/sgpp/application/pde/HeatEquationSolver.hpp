@@ -102,8 +102,9 @@ public:
 	 * @param timestepsize the size of the interval one timestep moves forward
 	 * @param a the heat coefficient of the analyzed material
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
 	 */
-	void solveEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha);
+	void solveEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation);
 
 	/**
 	 * Call this routine to use the Crank Nicolson algorithm to solve the multi dimensional
@@ -125,12 +126,10 @@ public:
 	 * Is only implemented for 1D and 2D grids!
 	 *
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
-	 * @param resolution the distance between evalution points
+	 * @param PointesPerDimension number of points that should be evaluated in one dimension
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
-	 *
-	 * @todo (heinecke) move this into a class that is located in the folder tool, e.g. GridPrinter
 	 */
-	void printGrid(DataVector& alpha, double resolution, std::string tfilename);
+	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename);
 
 	/**
 	 * use this to determine the number of grid points, used to solve
@@ -153,9 +152,9 @@ public:
 	 * normal distribution formula
 	 *
 	 * @param alpha reference to the coefficients vector
-	 * @param variance the variance of the normal distribution, mu is fix 0.5
+	 * @param sigma the sigma of the normal distribution, mu is fix 0.5
 	 */
-	void initGridWithSmoothHeat(DataVector& alpha, double variance);
+	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma);
 
 	/**
 	 * Inits the grid with a constant heat

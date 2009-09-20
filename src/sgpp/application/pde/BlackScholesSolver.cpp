@@ -119,66 +119,10 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
-void BlackScholesSolver::printGrid(DataVector& alpha, double resolution, std::string tfilename)
+void BlackScholesSolver::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename)
 {
-	DimensionBoundary dimOne;
-	DimensionBoundary dimTwo;
-	std::ofstream fileout;
-
-	if (bGridConstructed)
-	{
-		if (dim > 2)
-		{
-			// @todo (heinecke) thrown an application exception
-		}
-		else
-		{
-			// Open filehandle
-			fileout.open(tfilename.c_str());
-			OperationEval* myEval = myGrid->createOperationEval();
-
-			if (dim == 1)
-			{
-				dimOne = myGrid->getBoundingBox()->getBoundary(0);
-
-				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=resolution)
-				{
-					std::vector<double> point;
-					point.push_back(i);
-					fileout << i << " " << myEval->eval(alpha,point) << std::endl;
-				}
-			}
-			else if (dim == 2)
-			{
-				dimOne = myGrid->getBoundingBox()->getBoundary(0);
-				dimTwo = myGrid->getBoundingBox()->getBoundary(1);
-
-				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=resolution)
-				{
-					for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary; j+=resolution)
-					{
-						std::vector<double> point;
-						point.push_back(i);
-						point.push_back(j);
-						fileout << i << " " << j << " " << myEval->eval(alpha,point) << std::endl;
-					}
-					fileout << std::endl;
-				}
-			}
-			else
-			{
-				// @todo (heinecke) thrown an application exception
-			}
-
-			delete myEval;
-			// close filehandle
-			fileout.close();
-		}
-	}
-	else
-	{
-		// @todo (heinecke) thrown an application exception
-	}
+	GridPrinter myPrinter(*this->myGrid);
+	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
 void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
