@@ -23,86 +23,101 @@
 ## @package CheckpointController
 # @ingroup bin.controller
 # @brief Class for handling events for storing and restoring of checkpoints
-# @version $CURR$
+# @version $HEAD$
 
 from bin.learner.Learner import LearnerEvents
 from bin.controller.LearnerEventController import LearnerEventController
+from bin.learner.GridFileAdapter import GridFileAdapter
+from bin.data.ARFFAdapter import ARFFAdapter
 
 
+## Responsible for storing of checkpoints during learning process and restoring of learning from some checkpoint
 class CheckpointController(LearnerEventController):
-    """ generated source for CheckpointController
 
-    """
-    name = ""
+    title = ""
+    path = ""
     grid = None
     knowledge = None
     lastIteration = None
     myLearnedKnowledge = None
-
-    def saveAll(self, iteration):
-        pass
-
-    def setGrid(self, grid):
-        pass
-
-    def setLearnedKnowledge(self, knowledge):
-        pass
-
-    def loadGrid(self, iteration):
-        return
-
-    def loadLearnedKnowledge(self, iteration):
-        return
-
-    def saveGrid(self, iteration):
-        pass
-
-    def saveLearnedKnowledge(self, iteration):
-        pass
+    gridAdapter = None
+    knowledgeAdapter = None
+    interval = None
     
-    def handleLearningEvent(self, subject, status):
-        if status == LearnerEvents.LEARNING_STARTED:
-            print "Dimension is:", subject.dataContainer.getDim()
-            print "Number of datasets is:", subject.dataContainer.getSize()
+    ##Constructor
+    #@param title: string title for checkpoints
+    #@param path: string absolute path to the checkpoint files
+    #@param interval: integer defines the number of iteration between saved checkpoints
+    def __init__(self, title, path = "./", interval = 1):
+        self.title = title
+        self.path = path
+        self.interval = interval
+        self.gridAdapter = GridFileAdapter()
             
-        elif status == LearnerEvents.LEARNING_COMPLETE:
-            print "Learning complete"
-        
-        elif status == LearnerEvents.LEARNING_WITH_FOLDING_STARTED:
-            pass
-        
-        elif status == LearnerEvents.LEARNING_WITH_FOLDING_COMPLETE:
-            print "Learning complete"
-        
-        elif status == LearnerEvents.LEARNING_STEP_STARTED:
-            print "Adaptive Step: ", subject.iteration
-            
-        elif status == LearnerEvents.LEARNING_STEP_COMPLETE:
-            print "Number of points: ", subject.numberPoints[-1]
-            print "Correct classified on training data: ",subject.trainAccuracy[-1]
-            
-        elif status == LearnerEvents.LEARNING_WITH_TESTING_STARTED:
-            print "Dimension is:", subject.dataContainer.getDim()
-            print "Number of datasets is:", subject.dataContainer.getSize()
-        
-        elif status == LearnerEvents.LEARNING_WITH_TESTING_COMPLETE:
-            print "Learning complete"
-        
-        elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_STARTED:
-            print "Adaptive Step:", subject.iteration
-            
-        elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
-            print "Number of points: ", subject.numberPoints[-1]
-            print "Correct classified on training data: ",subject.trainAccuracy[-1]
-            print "Correct classified on testing data:  ",subject.testAccuracy[-1]
-            
-        elif status == LearnerEvents.APPLICATION_STARTED:
-            pass
-        
-        elif status == LearnerEvents.APPLICATION_COMPLETE:
-            pass
-        
-        elif status == LearnerEvents.REFINING_GRID:
-            print "Refining Grid"
+    
+    ## Composes checkpoint file name from path title and iteration number
+    #@param iteration: integer iteration number
+    #@return string composed name
+    def composeName(self, iteration):
+        return self.path + "/" + self.title + "." + str(iteration)
+    
+    
+    ## Save all grid and learned knowledge
+    def saveAll(self, iteration):
+        self.saveGrid(iteration)
+        self.saveLearnedKnowledge(iteration)
+
+    
+    ## Setter for grid attribute
+    def setGrid(self, grid):
+        self.grid = grid
+
+
+    ## Setter for knowledge attribute
+    #@param knowledge: @link bin.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    def setLearnedKnowledge(self, knowledge):
+        self.knowledge = knowledge
+
+
+    ## Loads sg.Grid from the checkpoint  of given iteration
+    #@param iteration: integer iteration number
+    #@return @link sg.Grid Grid @endlink object
+    def loadGrid(self, iteration):
+        gridFile = self.composeName(iteration) + ".grid.gz"
+        grid = self.gridAdapter.load(gridFile)
+        return grid
+
+
+    ## Loads knowledge from the checkpoint of given iteration
+    #@param iteration: integer iteration number
+    #@return @link bin.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    def loadLearnedKnowledge(self, iteration):
+        knowledgeFile = self.composeName(iteration) + ".arff.gz"
+        adapter = ARFFAdapter(knowledgeFile)
+        knowledge = adapter.loadData()
+        return knowledge
+
+
+    ## Save Grid to the checkpoint with given iteration
+    #@param iteration: integer iteration number
+    def saveGrid(self, iteration):
+        gridFilename = self.composeName(iteration) + ".grid.gz"
+        self.gridAdapter.save(self.grid, gridFilename)
+
+
+    ## Save knowledge to the checkpoint with given iteration
+    #@param iteration: integer iteration number
+    def saveLearnedKnowledge(self, iteration):
+        knowledgeFile = self.composeName(iteration) + ".arff.gz"
+        self.knowledgeAdapter = ARFFAdapter(knowledgeFile)
+        self.knowledgeAdapter.save(self.knowledge.getAlphas())
+    
+    
+    ## Learning event @link LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
+    def handleLearningEvent(self, subject, status):  
+        if status == LearnerEvents.LEARNING_STEP_COMPLETE or status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
+            if subject.iteration % self.interval == 0:
+                self.saveAll(subject.iteration)
+           
 
 
