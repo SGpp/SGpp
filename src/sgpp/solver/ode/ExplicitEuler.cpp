@@ -53,7 +53,7 @@ void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 		//std::cout << alpha.toString() << std::endl;
 		alpha.axpy(this->myEpsilon, temp);
 		//std::cout << alpha.toString() << std::endl;
-		if (this->bAnimation == true && (i%15) == 0)
+		if (this->bAnimation == true && (i%(this->nMaxIterations/1500)) == 0)
 		{
 			// Build filename
 			std::string tFilename = "00000000000000000000000000000000";
