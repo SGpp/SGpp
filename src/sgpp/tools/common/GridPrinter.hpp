@@ -20,43 +20,51 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef EXPLICITEULER_HPP
-#define EXPLICITEULER_HPP
+#ifndef GRIDPRINTER_HPP
+#define GRIDPRINTER_HPP
 
-#include "operation/common/OperationMatrix.hpp"
-#include "solver/ODESolver.hpp"
+#include "grid/Grid.hpp"
+
+#include "data/DataVector.hpp"
+
+#include <string>
 
 namespace sg
 {
 
 /**
- * This class implements the explicit Euler method
- * for solving ordinary partial equations
+ * This class implements a utility that allows you to print a grid
+ * to file. These files can be plotted with gnuplot.
  */
-class ExplicitEuler : public ODESolver
+class GridPrinter
 {
 private:
-	/// specifies if a grid evaluation should be execute in every time step
-	bool bAnimation;
+	/// Pointer to the grid Object, which should be printed
+	Grid* myGrid;
 
 public:
 	/**
-	 * Std-Constructer
+	 * Std-Constructor
 	 *
-	 * @param imax number of maximum executed iterations
-	 * @param timestepSize the size of one timestep
-	 * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
+	 * @param SparseGrid Reference to a Spare Grid, that should be printed
 	 */
-	ExplicitEuler(size_t imax, double timestepSize, bool generateAnimation = false);
+	GridPrinter(Grid& SparseGrid);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~ExplicitEuler();
+	~GridPrinter();
 
-	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+	/**
+	 * Print the grid with its function to a file
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tFilename absoulte path to the file the grid is writte into
+	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
+	 */
+	void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
 };
 
 }
 
-#endif /* EXPLICITEULER_HPP */
+#endif /* GRIDPRINTER */

@@ -72,6 +72,7 @@
 #include "solver/ode/CrankNicolson.hpp"
 
 #include "tools/finance/IOToolBonnSG.hpp"
+#include "tools/common/GridPrinter.hpp"
 
 namespace sg
 {

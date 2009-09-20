@@ -81,6 +81,7 @@ solver/ode/ExplicitEuler.cpp
 solver/ode/CrankNicolson.cpp
 
 tools/common/StdNormalDistribution.cpp
+tools/common/GridPrinter.cpp
 tools/finance/IOToolBonnSG.cpp
 
 """)

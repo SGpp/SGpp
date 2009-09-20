@@ -62,11 +62,11 @@ void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	bGridConstructed = true;
 }
 
-void HeatEquationSolver::solveEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha)
+void HeatEquationSolver::solveEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation)
 {
 	if (bGridConstructed)
 	{
-		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize);
+		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, generateAnimation);
 		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, numTimesteps, false);
 
 		myEuler->solve(*myHEMatrix, alpha, false);
@@ -98,66 +98,10 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
-void HeatEquationSolver::printGrid(DataVector& alpha, double resolution, std::string tfilename)
+void HeatEquationSolver::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename)
 {
-	DimensionBoundary dimOne;
-	DimensionBoundary dimTwo;
-	std::ofstream fileout;
-
-	if (bGridConstructed)
-	{
-		if (dim > 2)
-		{
-			// @todo (heinecke) thrown an application exception
-		}
-		else
-		{
-			// Open filehandle
-			fileout.open(tfilename.c_str());
-			OperationEval* myEval = myGrid->createOperationEval();
-
-			if (dim == 1)
-			{
-				dimOne = myGrid->getBoundingBox()->getBoundary(0);
-
-				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=resolution)
-				{
-					std::vector<double> point;
-					point.push_back(i);
-					fileout << i << " " << myEval->eval(alpha,point) << std::endl;
-				}
-			}
-			else if (dim == 2)
-			{
-				dimOne = myGrid->getBoundingBox()->getBoundary(0);
-				dimTwo = myGrid->getBoundingBox()->getBoundary(1);
-
-				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=resolution)
-				{
-					for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary; j+=resolution)
-					{
-						std::vector<double> point;
-						point.push_back(i);
-						point.push_back(j);
-						fileout << i << " " << j << " " << myEval->eval(alpha,point) << std::endl;
-					}
-					fileout << std::endl;
-				}
-			}
-			else
-			{
-				// @todo (heinecke) thrown an application exception
-			}
-
-			delete myEval;
-			// close filehandle
-			fileout.close();
-		}
-	}
-	else
-	{
-		// @todo (heinecke) thrown an application exception
-	}
+	GridPrinter myPrinter(*this->myGrid);
+	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
 void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
@@ -243,7 +187,7 @@ size_t HeatEquationSolver:: getNumberGridPoints()
 	}
 }
 
-void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double variance)
+void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma)
 {
 	double tmp;
 	double tmp2;
@@ -256,7 +200,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double varian
 			{
 				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
 
-				alpha[i] = (1.0/(variance*2.0*3.145))*exp((-0.5)*((tmp-0.5)/variance)*((tmp-0.5)/variance));
+				alpha[i] = (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma));
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
@@ -273,7 +217,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double varian
 				coordsStream >> tmp;
 				coordsStream >> tmp2;
 
-				alpha[i] = (1.0/(variance*2.0*3.145))*exp((-0.5)*((tmp-0.5)/variance)*((tmp-0.5)/variance)) * (1.0/(variance*2.0*3.145))*exp((-0.5)*((tmp2-0.5)/variance)*((tmp2-0.5)/variance));
+				alpha[i] = (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma)) * (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp2-mu)/sigma)*((tmp2-mu)/sigma));
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();

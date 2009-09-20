@@ -68,7 +68,7 @@ void testOneUnderlying()
 	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.1, "payoff.gnuplot");
+	myBSSolver->printGrid(*alpha, 100, "payoff.gnuplot");
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -78,7 +78,7 @@ void testOneUnderlying()
 	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 0.1, "solvedBS.gnuplot");
+	myBSSolver->printGrid(*alpha, 100, "solvedBS.gnuplot");
 
 	// Do analytic test
 	std::vector< std::pair<double, double> >premium;

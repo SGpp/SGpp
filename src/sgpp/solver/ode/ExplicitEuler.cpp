@@ -21,13 +21,17 @@
 /*****************************************************************************/
 
 #include "solver/ode/ExplicitEuler.hpp"
+#include "operation/common/OperationEval.hpp"
+#include "tools/common/GridPrinter.hpp"
 
 #include <iostream>
+#include <string>
+#include <sstream>
 
 namespace sg
 {
 
-ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize) : ODESolver(imax, timestepSize)
+ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize, bool generateAnimation) : ODESolver(imax, timestepSize), bAnimation(generateAnimation)
 {
 	this->residuum = 0.0;
 }
@@ -49,6 +53,20 @@ void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 		//std::cout << alpha.toString() << std::endl;
 		alpha.axpy(this->myEpsilon, temp);
 		//std::cout << alpha.toString() << std::endl;
+		if (this->bAnimation == true && (i%15) == 0)
+		{
+			// Build filename
+			std::string tFilename = "00000000000000000000000000000000";
+			std::stringstream number;
+			number << i;
+			tFilename.append(number.str());
+			tFilename = tFilename.substr(tFilename.length()-14,14);
+			tFilename.append(".gnuplot");
+
+			// Print grid to file
+			GridPrinter myPrinter(*SystemMatrix.getGrid());
+			myPrinter.printGrid(alpha, tFilename, 100);
+		}
 	}
 }
 
