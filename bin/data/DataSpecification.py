@@ -23,11 +23,11 @@
 ## @package DataSpecification
 # @ingroup bin.data
 # @brief Specification of information in data container or its entry 
-# @version $CURR$
+# @version $HEAD$
 
 #from DataContainer import DataContainer
 
-#TODO: implement the class
+#@todo (khakhutv) implement the class
 class DataSpecification(object):
     """ generated source for DataSpecification
 

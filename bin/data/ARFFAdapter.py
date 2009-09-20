@@ -6,6 +6,7 @@
 # Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
 # Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
+# Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
 # it under the terms of the GNU General Public License as published by      #
@@ -26,7 +27,7 @@
 ## @package ARFFAdapter
 # @ingroup bin.data
 # @brief Adapter to save and load data of DataContainer in file in ARFF format
-# @version $CURR$
+# @version $HEAD$
 
 import re
 import gzip
@@ -66,7 +67,7 @@ class ARFFAdapter(DataAdapter):
         if values != None:
             hasclass = True
         
-        #TODO: get attributes from specification
+        #@todo (khakhutv) get attributes from specification
         if attributes == None:
             for i in xrange(dim):
                 fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)

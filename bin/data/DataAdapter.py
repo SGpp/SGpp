@@ -23,7 +23,7 @@
 ## @package DataAdapter
 # @ingroup data
 # @brief Abstract class - Container for points and corresponding function values 
-# @version $CURR$
+# @version $HEAD$
 
 
 class DataAdapter(object):
