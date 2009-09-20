@@ -23,9 +23,10 @@
 ## @package Learner
 # @ingroup bin.learner
 # @brief Classifications
-# @version $CURR$
+# @version $HEAD$
 
 from Learner import Learner, LearnerEvents
+from bin.pysgpp import SurplusRefinementFunctor
 
 
 class Classifier(Learner):
@@ -69,10 +70,10 @@ class Classifier(Learner):
     ##Refines grid with the number of points as specified in corresponding TrainingSpecification object
     def refineGrid(self):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
-        self.grid.refine(self.alpha, 
-                             self.specification.getNumOfPointsToRefine(
-                                          self.grid.createGridGenerator().getNumberOfRefinablePoints()
-                                                                      )
-                             )
+        pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
+        
+        # @todo (khakhutv) develop a way to simplify interfaces and use different functors
+        self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.alpha, pointsNum, self.specification.getAdaptThreshold()) )
+                            
 
 

@@ -23,7 +23,7 @@
 ## @package TrainingStopPolicy
 # @ingroup bin.learner
 # @brief Rules to stop learning iterations to prevent overfitting
-# @version $CURR$
+# @version $HEAD$
 
 class TrainingStopPolicy(object):
     __adaptiveIterationLimit = None     #Maximal number of refinement iterations
@@ -46,7 +46,7 @@ class TrainingStopPolicy(object):
     # @param learner: Learner object 
     # @return: boolean value, true if learning has to stop, false otherwise
     def isTrainingComplete(self, learner):
-        #TODO: Make it more advanced
+        # @todo (khakhutv) Make it more advanced
         if self.__adaptiveIterationLimit != None and self.__adaptiveIterationLimit < learner.getCurrentIterationNumber():
             return True
         return False

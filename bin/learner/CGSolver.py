@@ -34,7 +34,7 @@ from bin.learner.LinearSolver import LinearSolver
 
 class CGSolver(ConjugateGradients, LinearSolver):
 
-    accuracy = 0.0001   #the relationaship of the norm of end residual to the normal of initial residual
+    accuracy = 0.0001   #the relationship of the norm of end residual to the normal of initial residual
     imax = 400          #maximal number of iterations used in CG
     delta_0 = 0         #norm of initial residual
     delta_new = 0       #norm of current residual
