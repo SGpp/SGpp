@@ -1,0 +1,3 @@
+set terminal jpeg
+set output 'temp.jpg'
+plot 'solution.gnuplot','start.plot'
