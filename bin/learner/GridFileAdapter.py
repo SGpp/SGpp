@@ -26,7 +26,7 @@
 ## @package GridFileAdapter
 # @ingroup bin.learner
 # @brief Grid File Adapter
-# @version $CURR$
+# @version $HEAD$
 
 import re, gzip
 from bin.pysgpp import *
@@ -53,7 +53,7 @@ class GridFileAdapter(GridAdapter):
     #@param text: String with serialized grid information
     #@return: Grid object
     def __restoreGrid(self, text):
-        #TODO: is there any control of correctness of text? (khakhutv)
+        # @todo: (khakhutv) is there any control of correctness of text? 
         return Grid.unserialize(text)
 
 

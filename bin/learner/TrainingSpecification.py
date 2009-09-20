@@ -23,15 +23,35 @@
 ## @package TrainingSpecification
 # @ingroup bin.learner
 # @brief Stores different parameters of the learning process
-# @version $CURR$
+# @version $HEAD$
 
 class TrainingSpecification(object):
+
+
+
     __adaptPoints = 0       #Number of points to refine in one refinement iteration
     __l = None              #Regularization parameter
     __adaptRate = 0         #Rate of points to refine in one refinement iteration, between 0 and 1
+    __adaptThreshold = 0.0   #threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
     __cOperator = None      #C operator
     __bOperator = None      #B operator
 
+    
+    ## Getter for refinement threshold
+    # only the points with greater to equal absolute values of 
+    # the refinement criterion (e.g. alpha or error) will be refined
+    #
+    # @return float threshold
+    def getAdaptThreshold(self):
+        return self.__adaptThreshold
+
+    ## Setter for refinement threshold
+    # only the points with greater to equal absolute values of 
+    # the refinement criterion (e.g. alpha or error) will be refined
+    #
+    # @param value: float threshold
+    def setAdaptThreshold(self, value):
+        self.__adaptThreshold = value
     
     ## Setter for Number of points to refine
     #
@@ -115,6 +135,7 @@ class TrainingSpecification(object):
             return self.__adaptPoints
         else: 
             return min(ratePoints, self.__adaptPoints)
+
 
 
 

@@ -22,11 +22,11 @@
 
 ## @package Learner
 # @ingroup bin.learner
-# @brief Classifications
-# @version $CURR$
+# @brief Regression
+# @version $HEAD$
 
 from Learner import Learner, LearnerEvents
-from bin.pysgpp import DataVector
+from bin.pysgpp import DataVector, SurplusRefinementFunctor
 
 class Regressor(Learner):
     
@@ -81,8 +81,9 @@ class Regressor(Learner):
     ##Refines grid with the number of points as specified in corresponding TrainingSpecification object
     def refineGrid(self):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
-        self.grid.refine(self.errors, 
-                             self.specification.getNumOfPointsToRefine(
-                                          self.grid.createGridGenerator().getNumberOfRefinablePoints()
-                                                                      )
-                             )
+        
+        pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
+        
+        # @todo (khakhutv) develop a way to simplify interfaces and use different functors
+        self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.errors, pointsNum, self.specification.getAdaptThreshold()) )
+        
