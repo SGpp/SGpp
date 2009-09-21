@@ -20,89 +20,47 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
+#ifndef IMPLICITEULER_HPP
+#define IMPLICITEULER_HPP
+
+#include "operation/common/OperationMatrix.hpp"
+#include "solver/ODESolver.hpp"
 
 namespace sg
 {
 
-HeatEquationTimestepMatrix::HeatEquationTimestepMatrix(Grid& SparseGrid, double a, double TimestepSize, std::string OperationMode)
+/**
+ * This class implements the implict Euler method
+ * for solving ordinary partial equations
+ */
+class ImplicitEuler : public ODESolver
 {
-	this->OpLaplace = SparseGrid.createOperationLaplace();
-	this->a = a;
-	this->tOperationMode = OperationMode;
-	this->TimestepSize = TimestepSize;
-	this->myGrid = &SparseGrid;
-}
+private:
+	/// the number of CG maximum CG iterations
+	size_t maxCGIterations;
+	/// the CG's epsilon
+	double epsilonCG;
+	/// specifies if a grid evaluation should be execute in every time step
+	bool bAnimation;
 
-HeatEquationTimestepMatrix::~HeatEquationTimestepMatrix()
-{
-	delete this->OpLaplace;
-}
+public:
+	/**
+	 * Std-Constructer
+	 *
+	 * @param imax number of maximum executed iterations
+	 * @param timestepSize the size of one timestep
+	 * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
+	 */
+	ImplicitEuler(size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false);
 
-void HeatEquationTimestepMatrix::mult(DataVector& alpha, DataVector& result)
-{
-	if (this->tOperationMode == "ExEul")
-	{
-		applyL(alpha, result);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		result.setAll(0.0);
+	/**
+	 * Std-Destructor
+	 */
+	virtual ~ImplicitEuler();
 
-		applyL(alpha, result);
-		result.mult((-1.0)*this->TimestepSize);
-		result.add(alpha);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		result.setAll(0.0);
-
-		applyL(alpha, result);
-		result.mult((-0.5)*this->TimestepSize);
-		result.add(alpha);
-	}
-	else
-	{
-		// @todo (heinecke) throw some exception here
-	}
-}
-
-void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
-{
-	if (this->tOperationMode == "ExEul")
-	{
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		rhs = data;
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		rhs.setAll(0.0);
-
-		applyL(data, rhs);
-
-		rhs.mult(0.5*this->TimestepSize);
-		rhs.add(data);
-	}
-	else
-	{
-		// @todo (heinecke) throw some exception here
-	}
-}
-
-void HeatEquationTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
-{
-	DataVector temp(alpha.getSize());
-
-	// Apply the riskfree rate
-	this->OpLaplace->mult(alpha, temp);
-	result.axpy((-1.0)*this->a, temp);
-}
-
-Grid* HeatEquationTimestepMatrix::getGrid()
-{
-	return myGrid;
-}
+	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+};
 
 }
+
+#endif /* IMPLICITEULER_HPP */

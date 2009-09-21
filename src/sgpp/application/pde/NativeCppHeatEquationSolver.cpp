@@ -27,9 +27,9 @@ void testHeatEquation()
 	size_t dim = 1;
 	size_t level = 8;
 
-	size_t timesteps = 1000000;
-	double stepsize = 0.000001;
-	size_t CGiterations = 8000;
+	size_t timesteps = 10000;
+	double stepsize = 0.0001;
+	size_t CGiterations = 200;
 	double CGepsilon = 0.00000001;
 
 	double a = 0.5;
@@ -56,14 +56,15 @@ void testHeatEquation()
 	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
 
 	//myHESolver->initGridWithSingleHeat(*alpha, 100.0);
-	//myHESolver->initGridWithSmoothHeat(*alpha, 0.5, 0.08);
-	myHESolver->initGridWithConstantHeat(*alpha, 4.0);
+	myHESolver->initGridWithSmoothHeat(*alpha, 0.5, 0.08);
+	//myHESolver->initGridWithConstantHeat(*alpha, 4.0);
 
 	// Print the payoff function into a gnuplot file
 	myHESolver->printGrid(*alpha, 1000, "heatStart.gnuplot");
 
 	// Start solving the Black Scholes Equation
-	myHESolver->solveEuler(timesteps, stepsize, a, *alpha, true);
+	myHESolver->solveExplicitEuler(timesteps, stepsize, a, *alpha, true);
+	//myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true);
 	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file

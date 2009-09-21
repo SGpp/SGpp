@@ -20,24 +20,29 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/ode/CrankNicolson.hpp"
+#include "solver/ode/ImplicitEuler.hpp"
+#include "operation/common/OperationEval.hpp"
+#include "tools/common/GridPrinter.hpp"
 #include "solver/sle/BiCGStab.hpp"
-
 #include "grid/common/DirichletUpdateVector.hpp"
+
+#include <iostream>
+#include <string>
+#include <sstream>
 
 namespace sg
 {
 
-CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG) : ODESolver(nTimesteps, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG)
+ImplicitEuler::ImplicitEuler(size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation) : ODESolver(imax, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), bAnimation(generateAnimation)
 {
 	this->residuum = 0.0;
 }
 
-CrankNicolson::~CrankNicolson()
+ImplicitEuler::~ImplicitEuler()
 {
 }
 
-void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+void ImplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
 	DataVector rhs(alpha.getSize());
 	DataVector saveAlpha(alpha.getSize());
@@ -60,8 +65,22 @@ void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 	    {
 	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
 	    }
-
 	    myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
+
+		if (this->bAnimation == true && (i%(this->nMaxIterations/1500)) == 0)
+		{
+			// Build filename
+			std::string tFilename = "00000000000000000000000000000000";
+			std::stringstream number;
+			number << i;
+			tFilename.append(number.str());
+			tFilename = tFilename.substr(tFilename.length()-14,14);
+			tFilename.append(".gnuplot");
+
+			// Print grid to file
+			GridPrinter myPrinter(*SystemMatrix.getGrid());
+			myPrinter.printGrid(alpha, tFilename, 1000);
+		}
 	}
 }
 

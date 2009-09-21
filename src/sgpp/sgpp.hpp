@@ -70,6 +70,7 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+#include "solver/ode/ImplicitEuler.hpp"
 
 #include "tools/finance/IOToolBonnSG.hpp"
 #include "tools/common/GridPrinter.hpp"

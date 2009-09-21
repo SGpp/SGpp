@@ -104,7 +104,21 @@ public:
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
 	 */
-	void solveEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation);
+
+	/**
+	 * Call this routine to use an implicit Euler algorithm to solve the multi dimensional
+	 * Heat Equation.
+	 *
+	 * @param numTimestpes the number of timesteps that should be executed
+	 * @param timestepsize the size of the interval one timestep moves forward
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the CG
+	 * @param a the heat coefficient of the analyzed material
+	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+	 */
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation);
 
 	/**
 	 * Call this routine to use the Crank Nicolson algorithm to solve the multi dimensional
