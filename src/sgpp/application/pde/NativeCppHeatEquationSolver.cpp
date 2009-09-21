@@ -25,10 +25,10 @@
 void testHeatEquation()
 {
 	size_t dim = 1;
-	size_t level = 12;
+	size_t level = 8;
 
-	size_t timesteps = 10000000;
-	double stepsize = 0.0000001;
+	size_t timesteps = 1000000;
+	double stepsize = 0.000001;
 	size_t CGiterations = 8000;
 	double CGepsilon = 0.00000001;
 
@@ -56,8 +56,8 @@ void testHeatEquation()
 	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
 
 	//myHESolver->initGridWithSingleHeat(*alpha, 100.0);
-	myHESolver->initGridWithSmoothHeat(*alpha, 0.5, 0.08);
-	//myHESolver->initGridWithConstantHeat(*alpha, 4.0);
+	//myHESolver->initGridWithSmoothHeat(*alpha, 0.5, 0.08);
+	myHESolver->initGridWithConstantHeat(*alpha, 4.0);
 
 	// Print the payoff function into a gnuplot file
 	myHESolver->printGrid(*alpha, 1000, "heatStart.gnuplot");
