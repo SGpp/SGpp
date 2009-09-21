@@ -27,7 +27,7 @@ namespace sg
 
 BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, bool bCrankNicolsonMatrix)
 {
-	this->OpDelta = SparseGrid.createOperationLaplace();
+	this->OpDelta = SparseGrid.createOperationDelta(mu);
 	this->OpGammaOne = SparseGrid.createOperationGammaPartOne(sigma, rho);
 	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo(sigma, rho);
 	this->OpGammaThree = SparseGrid.createOperationGammaPartThree(sigma, rho);
@@ -88,8 +88,11 @@ void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
 	DataVector temp(alpha.getSize());
 
 	// Apply the riskfree rate
-	this->OpRiskfree->mult(alpha, temp);
-	result.axpy((-1.0)*this->r, temp);
+	if (this->r != 0.0)
+	{
+		this->OpRiskfree->mult(alpha, temp);
+		result.axpy((-1.0)*this->r, temp);
+	}
 
 	// Apply the delta method
 	this->OpDelta->mult(alpha, temp);

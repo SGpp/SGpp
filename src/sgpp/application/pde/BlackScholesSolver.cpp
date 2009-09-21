@@ -83,11 +83,11 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	bStochasticDataAlloc = true;
 }
 
-void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha)
+void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha, bool generateAnimation)
 {
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
-		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize);
+		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, generateAnimation);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, numTimesteps, false);
 
 		myEuler->solve(*myBSMatrix, alpha, false);
