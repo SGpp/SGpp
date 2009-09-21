@@ -27,10 +27,10 @@ void testOneUnderlying()
 	size_t dim = 1;
 	size_t level = 8;
 	double* strike = new double[dim];
-	strike[0] = 65.0;
+	strike[0] = 0.5;
 
-	size_t timesteps = 100;
-	double stepsize = 0.0001;
+	size_t timesteps = 1000000;
+	double stepsize = 0.000001;
 	size_t CGiterations = 8000;
 	double CGepsilon = 0.00000001;
 
@@ -49,7 +49,7 @@ void testOneUnderlying()
 	for (size_t i = 0; i < dim; i++)
 	{
 		myBoundaries[i].leftBoundary = 0.0;
-		myBoundaries[i].rightBoundary = 100.0;
+		myBoundaries[i].rightBoundary = 1.0;
 		myBoundaries[i].bDirichletLeft = true;
 		myBoundaries[i].bDirichletRight = true;
 	}
@@ -68,22 +68,22 @@ void testOneUnderlying()
 	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 100, "payoff.gnuplot");
+	myBSSolver->printGrid(*alpha, 1000, "payoff.gnuplot");
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	myBSSolver->solveEuler(timesteps, stepsize, *alpha);
+	myBSSolver->solveEuler(timesteps, stepsize, *alpha, true);
 	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 100, "solvedBS.gnuplot");
+	myBSSolver->printGrid(*alpha, 1000, "solvedBS.gnuplot");
 
 	// Do analytic test
 	std::vector< std::pair<double, double> >premium;
 	double t = (((double)timesteps)*stepsize);
-	myBSSolver->solve1DAnalytic(premium, 100.0, 0.1, strike[0], t);
+	myBSSolver->solve1DAnalytic(premium, 1.0, 0.01, strike[0], t);
 	myBSSolver->print1DAnalytic(premium, "analyticBS.gnuplot");
 
 	delete myBSSolver;
@@ -143,17 +143,17 @@ void testTwoUnderlyings()
 	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 2, "payoff.gnuplot");
+	myBSSolver->printGrid(*alpha, 1000, "payoff.gnuplot");
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	myBSSolver->solveEuler(timesteps, stepsize, *alpha);
+	myBSSolver->solveEuler(timesteps, stepsize, *alpha, true);
 	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 2, "solvedBS.gnuplot");
+	myBSSolver->printGrid(*alpha, 1000, "solvedBS.gnuplot");
 
 	delete myBSSolver;
 	delete myBoundingBox;

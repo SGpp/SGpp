@@ -139,8 +139,9 @@ public:
 	 * @param numTimestpes the number of timesteps that should be executed
 	 * @param timestepsize the size of the interval one timestep moves forward
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
 	 */
-	void solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha);
+	void solveEuler(size_t numTimesteps, double timestepsize, DataVector& alpha, bool generateAnimation);
 
 	/**
 	 * Call this routine to use the Crank Nicolson algorithm to solve the multi dimensional

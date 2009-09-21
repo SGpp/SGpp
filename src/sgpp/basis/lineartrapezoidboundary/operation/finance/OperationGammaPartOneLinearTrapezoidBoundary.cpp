@@ -193,7 +193,8 @@ void OperationGammaPartOneLinearTrapezoidBoundary::SurfaceIntegralSquared(DataVe
 	else
 	{
 		// Terminates dimension recursion
-		calcSurfaceIntegralSquared(alpha, result, dim);
+		//calcSurfaceIntegralSquared(alpha, result, dim);
+		result.setAll(0.0);
 	}
 
 }
@@ -237,19 +238,19 @@ void OperationGammaPartOneLinearTrapezoidBoundary::downGradient(DataVector& alph
 void OperationGammaPartOneLinearTrapezoidBoundary::calcSurfaceIntegral(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Surface Integral
-	detail::XSurfaceIntegralBBLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::XSurfaceIntegralBBLinearTrapezoidBoundary> s(func, this->storage);
+	//detail::XSurfaceIntegralBBLinearTrapezoidBoundary func(this->storage);
+	//sweep<detail::XSurfaceIntegralBBLinearTrapezoidBoundary> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	//s.sweep1D_Boundary(alpha, result, dim);
 }
 
 void OperationGammaPartOneLinearTrapezoidBoundary::calcSurfaceIntegralSquared(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Surface Integral
-	detail::SqXSurfaceIntegralBBLinearTrapezoidBoundary func(this->storage);
-	sweep<detail::SqXSurfaceIntegralBBLinearTrapezoidBoundary> s(func, this->storage);
+	//detail::SqXSurfaceIntegralBBLinearTrapezoidBoundary func(this->storage);
+	//sweep<detail::SqXSurfaceIntegralBBLinearTrapezoidBoundary> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	//s.sweep1D_Boundary(alpha, result, dim);
 }
 
 }
