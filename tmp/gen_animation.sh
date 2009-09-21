@@ -11,3 +11,4 @@ do
 	rm temp.jpg
 done
 # now build an mpeg movie form the jpeg files
+ls *.jpg | jpeg2yuv -f 25 -I p | mpeg2enc -o animation.mpg
