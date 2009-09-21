@@ -60,7 +60,7 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 
 	if (verbose == true)
 	{
-		std::cout << "All temp variables used in CG have been intialized" << std::endl;
+		std::cout << "All temp variables used in CG have been initialized" << std::endl;
 	}
 
 	if (reuse == true)
