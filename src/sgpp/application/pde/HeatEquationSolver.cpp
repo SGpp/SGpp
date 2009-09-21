@@ -23,6 +23,7 @@
 #include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 #include "solver/ode/ExplicitEuler.hpp"
+#include "solver/ode/ImplicitEuler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
 #include "stdlib.h"
@@ -62,12 +63,30 @@ void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	bGridConstructed = true;
 }
 
-void HeatEquationSolver::solveEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation)
+void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation)
 {
 	if (bGridConstructed)
 	{
 		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, generateAnimation);
-		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, numTimesteps, false);
+		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ExEul");
+
+		myEuler->solve(*myHEMatrix, alpha, false);
+
+		delete myHEMatrix;
+		delete myEuler;
+	}
+	else
+	{
+		// @todo (heinecke) through an application exception here
+	}
+}
+
+void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation)
+{
+	if (bGridConstructed)
+	{
+		ImplicitEuler* myEuler = new ImplicitEuler(numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ImEul");
 
 		myEuler->solve(*myHEMatrix, alpha, false);
 
@@ -85,9 +104,9 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	if (bGridConstructed)
 	{
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
-		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, numTimesteps, true);
+		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "CrNic");
 
-		myCN->solve(*myHEMatrix, alpha, true);
+		myCN->solve(*myHEMatrix, alpha, false);
 
 		delete myHEMatrix;
 		delete myCN;

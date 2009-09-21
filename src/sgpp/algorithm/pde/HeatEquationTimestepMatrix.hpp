@@ -27,6 +27,8 @@
 #include "grid/Grid.hpp"
 #include "operation/common/OperationSolverMatrix.hpp"
 
+#include <string>
+
 namespace sg
 {
 
@@ -40,9 +42,13 @@ private:
 	double a;
 	/// the delta Operation
 	OperationMatrix* OpLaplace;
-	/// specifies if the matrix is used within Crank Nicolson solver
-	bool bIsCrankNicolsonMatrix;
-	// @todo (heinecke) try to do some refactoring here with the timestep size
+	/**
+	 *  specifies in which solver this matrix is used, valid values are:
+	 *  ExEul for explicit Euler
+	 *  ImEul for implicit Euler
+	 *  CrNic for Crank Nicolson solver
+	 */
+	std::string tOperationMode;
 	/// the size of one timestep used in the ODE Solver
 	double TimestepSize;
 	/// Pointer to the grid object
@@ -63,9 +69,10 @@ public:
 	 * @param SparseGrid reference to the sparse grid
 	 * @param a the heat coefficient
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
-	 * @param bCrankNicolsonMatrix specifies whether this class is used by Euler or Crank Nicoloson
+	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
+	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	HeatEquationTimestepMatrix(Grid& SparseGrid, double a, double TimestepSize, bool bCrankNicolsonMatrix = false);
+	HeatEquationTimestepMatrix(Grid& SparseGrid, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor
