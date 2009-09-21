@@ -65,7 +65,7 @@ void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 
 			// Print grid to file
 			GridPrinter myPrinter(*SystemMatrix.getGrid());
-			myPrinter.printGrid(alpha, tFilename, 100);
+			myPrinter.printGrid(alpha, tFilename, 1000);
 		}
 	}
 }
