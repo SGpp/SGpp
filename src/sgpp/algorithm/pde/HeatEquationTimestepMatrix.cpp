@@ -28,6 +28,7 @@ namespace sg
 HeatEquationTimestepMatrix::HeatEquationTimestepMatrix(Grid& SparseGrid, double a, double TimestepSize, std::string OperationMode)
 {
 	this->OpLaplace = SparseGrid.createOperationLaplace();
+	this->OpMass = SparseGrid.createOperationLTwoDotProduct();
 	this->a = a;
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
@@ -37,29 +38,32 @@ HeatEquationTimestepMatrix::HeatEquationTimestepMatrix(Grid& SparseGrid, double 
 HeatEquationTimestepMatrix::~HeatEquationTimestepMatrix()
 {
 	delete this->OpLaplace;
+	delete this->OpMass;
 }
 
 void HeatEquationTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
-		applyL(alpha, result);
+		result.setAll(0.0);
+
+		applyMassMatrix(alpha, result);
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		result.setAll(0.0);
+		/*result.setAll(0.0);
 
 		applyL(alpha, result);
 		result.mult((-1.0)*this->TimestepSize);
-		result.add(alpha);
+		result.add(alpha);*/
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		result.setAll(0.0);
+		/*result.setAll(0.0);
 
 		applyL(alpha, result);
 		result.mult((-0.5)*this->TimestepSize);
-		result.add(alpha);
+		result.add(alpha);*/
 	}
 	else
 	{
@@ -71,19 +75,28 @@ void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 {
 	if (this->tOperationMode == "ExEul")
 	{
+		DataVector temp(data.getSize());
+		temp.setAll(0.0);
+
+		applyMassMatrix(data, temp);
+		rhs.add(temp);
+
+		temp.setAll(0.0);
+		applyStiffMatrix(data, temp);
+		rhs.axpy(this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		rhs = data;
+		//rhs = data;
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		rhs.setAll(0.0);
+		/*rhs.setAll(0.0);
 
 		applyL(data, rhs);
 
 		rhs.mult(0.5*this->TimestepSize);
-		rhs.add(data);
+		rhs.add(data);*/
 	}
 	else
 	{
@@ -91,13 +104,23 @@ void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 }
 
-void HeatEquationTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
+void HeatEquationTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)
+{
+	DataVector temp(alpha.getSize());
+
+	// Apply the riskfree rate
+	this->OpMass->mult(alpha, temp);
+
+	result.add(temp);
+}
+
+void HeatEquationTimestepMatrix::applyStiffMatrix(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
 	// Apply the riskfree rate
 	this->OpLaplace->mult(alpha, temp);
-	result.axpy((-1.0)*this->a, temp);
+	result.axpy((-1.0)*this->a,temp);
 }
 
 Grid* HeatEquationTimestepMatrix::getGrid()

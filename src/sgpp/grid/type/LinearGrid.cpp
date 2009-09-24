@@ -31,6 +31,7 @@
 #include "basis/linear/operation/common/OperationEvalLinear.hpp"
 #include "basis/linear/operation/common/OperationHierarchisationLinear.hpp"
 #include "basis/linear/operation/classification/OperationLaplaceLinear.hpp"
+#include "basis/linear/operation/pde/OperationLTwoDotProductLinear.hpp"
 
 #include "sgpp.hpp"
 
@@ -90,6 +91,11 @@ OperationEval* LinearGrid::createOperationEval()
 OperationHierarchisation* LinearGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationLinear(this->storage);
+}
+
+OperationMatrix* LinearGrid::createOperationLTwoDotProduct()
+{
+	return new OperationLTwoDotProductLinear(this->storage);
 }
 
 // @todo (heinecke) removed this when done

@@ -40,8 +40,10 @@ class HeatEquationTimestepMatrix : public OperationSolverMatrix
 private:
 	/// the heat coefficient
 	double a;
-	/// the delta Operation
+	/// the Laplace Operation (Stiffness Matrix)
 	OperationMatrix* OpLaplace;
+	/// the LTwoDotProduct Operation (Mass Matrix)
+	OperationMatrix* OpMass;
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
 	 *  ExEul for explicit Euler
@@ -55,12 +57,20 @@ private:
 	Grid* myGrid;
 
 	/**
-	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix
+	 * @todo (heinecke) add description
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
 	 */
-	void applyL(DataVector& alpha, DataVector& result);
+	void applyMassMatrix(DataVector& alpha, DataVector& result);
+
+	/**
+	 * @todo (heinecke) add description
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
+	 * @param return reference to the DataVector into which the result is written
+	 */
+	void applyStiffMatrix(DataVector& alpha, DataVector& result);
 
 public:
 	/**

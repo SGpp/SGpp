@@ -104,7 +104,7 @@ public:
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
 	 */
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation);
 
 	/**
 	 * Call this routine to use an implicit Euler algorithm to solve the multi dimensional

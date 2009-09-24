@@ -74,7 +74,7 @@ void testOneUnderlying()
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	myBSSolver->solveEuler(timesteps, stepsize, *alpha, true);
+	myBSSolver->solveEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true);
 	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file

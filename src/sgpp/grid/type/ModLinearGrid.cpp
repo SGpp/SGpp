@@ -91,6 +91,11 @@ OperationHierarchisation* ModLinearGrid::createOperationHierarchisation()
 	return new OperationHierarchisationModLinear(this->storage);
 }
 
+OperationMatrix* ModLinearGrid::createOperationLTwoDotProduct()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 // @todo (heinecke) removed this when done
 OperationMatrix* ModLinearGrid::createOperationUpDownTest()
 {

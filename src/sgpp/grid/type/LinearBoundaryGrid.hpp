@@ -58,6 +58,7 @@ public:
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
 	virtual OperationHierarchisation* createOperationHierarchisation();
+	virtual OperationMatrix* createOperationLTwoDotProduct();
 
 	// @todo (heinecke) remove this when done
 	virtual OperationMatrix* createOperationUpDownTest();

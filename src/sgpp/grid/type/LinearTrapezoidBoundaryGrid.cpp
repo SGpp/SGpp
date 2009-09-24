@@ -113,6 +113,11 @@ OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchis
 	return new OperationHierarchisationLinearTrapezoidBoundary(this->storage);
 }
 
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 // @todo (heinecke) removed this when done
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
 {
