@@ -97,6 +97,11 @@ OperationHierarchisation* PolyGrid::createOperationHierarchisation()
 	return new OperationHierarchisationPoly(this->storage, this->degree);
 }
 
+OperationMatrix* PolyGrid::createOperationLTwoDotProduct()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 // @todo (heinecke) removed this when done
 OperationMatrix* PolyGrid::createOperationUpDownTest()
 {

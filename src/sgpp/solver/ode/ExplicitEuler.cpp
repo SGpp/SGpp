@@ -23,6 +23,9 @@
 #include "solver/ode/ExplicitEuler.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "tools/common/GridPrinter.hpp"
+#include "solver/sle/BiCGStab.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
+#include "grid/common/DirichletUpdateVector.hpp"
 
 #include <iostream>
 #include <string>
@@ -31,7 +34,7 @@
 namespace sg
 {
 
-ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize, bool generateAnimation) : ODESolver(imax, timestepSize), bAnimation(generateAnimation)
+ExplicitEuler::ExplicitEuler(size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation) : ODESolver(imax, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), bAnimation(generateAnimation)
 {
 	this->residuum = 0.0;
 }
@@ -42,17 +45,29 @@ ExplicitEuler::~ExplicitEuler()
 
 void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
-	DataVector temp(alpha.getSize());
+	DataVector rhs(alpha.getSize());
+	DataVector saveAlpha(alpha.getSize());
+    BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
+    DirichletUpdateVector myDirichletUpdate(SystemMatrix.getGrid()->getStorage());
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
-		temp.setAll(0.0);
+		rhs.setAll(0.0);
 
-		SystemMatrix.mult(alpha, temp);
+		//saveAlpha = alpha;
 
-		//std::cout << alpha.toString() << std::endl;
-		alpha.axpy(this->myEpsilon, temp);
-		//std::cout << alpha.toString() << std::endl;
+		SystemMatrix.generateRHS(alpha, rhs);
+
+		//myDirichletUpdate.setBoundariesToZero(alpha);
+		//myDirichletUpdate.setBoundariesToZero(rhs);
+
+	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
+	    if (verbose)
+	    {
+	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
+	    }
+	    //myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
+
 		if (this->bAnimation == true && (i%(this->nMaxIterations/1500)) == 0)
 		{
 			// Build filename

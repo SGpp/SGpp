@@ -91,6 +91,11 @@ OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
 	return new OperationHierarchisationLinearBoundary(this->storage);
 }
 
+OperationMatrix* LinearBoundaryGrid::createOperationLTwoDotProduct()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 // @todo (heinecke) removed this when done
 OperationMatrix* LinearBoundaryGrid::createOperationUpDownTest()
 {

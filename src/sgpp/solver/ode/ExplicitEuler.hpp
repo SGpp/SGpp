@@ -36,6 +36,10 @@ namespace sg
 class ExplicitEuler : public ODESolver
 {
 private:
+	/// the number of CG maximum CG iterations
+	size_t maxCGIterations;
+	/// the CG's epsilon
+	double epsilonCG;
 	/// specifies if a grid evaluation should be execute in every time step
 	bool bAnimation;
 
@@ -47,7 +51,7 @@ public:
 	 * @param timestepSize the size of one timestep
 	 * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
 	 */
-	ExplicitEuler(size_t imax, double timestepSize, bool generateAnimation = false);
+	ExplicitEuler(size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false);
 
 	/**
 	 * Std-Destructor

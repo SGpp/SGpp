@@ -179,6 +179,13 @@ public:
 	virtual OperationMatrix* createOperationLaplace() = 0;
 
 	/**
+	 * gets a pointer to OperationLTwoDotProduct (OperationMatrix) object
+	 *
+	 * @return pointer to OperationLTwoDotProduct object
+	 */
+	virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
+
+	/**
 	 * (heinecke) temporal function
 	 *
 	 * @todo remove this when done
@@ -296,7 +303,7 @@ private:
 	 * @return a map with all available grid types for serialization
 	 */
 	static factoryMap& typeMap();
-	
+
 	//pointer to the Operation Eval used in Grid.eval()
 	static OperationEval* evalOp;
 };

@@ -46,6 +46,7 @@ grid/generation/TrapezoidBoundaryGridGenerator.cpp
 basis/linear/operation/classification/OperationBLinear.cpp
 basis/linear/operation/common/OperationEvalLinear.cpp
 basis/linear/operation/common/OperationHierarchisationLinear.cpp
+basis/linear/operation/pde/OperationLTwoDotProductLinear.cpp
 basis/modlinear/operation/classification/OperationBModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp

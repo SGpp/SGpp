@@ -63,14 +63,14 @@ void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	bGridConstructed = true;
 }
 
-void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, double a, DataVector& alpha, bool generateAnimation)
+void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation)
 {
 	if (bGridConstructed)
 	{
-		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, generateAnimation);
+		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
 		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ExEul");
 
-		myEuler->solve(*myHEMatrix, alpha, false);
+		myEuler->solve(*myHEMatrix, alpha, true);
 
 		delete myHEMatrix;
 		delete myEuler;
