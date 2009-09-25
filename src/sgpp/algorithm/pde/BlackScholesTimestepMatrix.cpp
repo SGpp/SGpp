@@ -25,18 +25,19 @@
 namespace sg
 {
 
-BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, bool bCrankNicolsonMatrix)
+BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode)
 {
 	this->OpDelta = SparseGrid.createOperationDelta(mu);
 	this->OpGammaOne = SparseGrid.createOperationGammaPartOne(sigma, rho);
 	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo(sigma, rho);
 	this->OpGammaThree = SparseGrid.createOperationGammaPartThree(sigma, rho);
 	this->OpRiskfree = SparseGrid.createOperationRiskfreeRate();
+	this->OpMass = SparseGrid.createOperationLTwoDotProduct();
 	this->r = r;
 	this->mus = &mu;
 	this->sigmas = &sigma;
 	this->rhos = &rho;
-	this->bIsCrankNicolsonMatrix = bCrankNicolsonMatrix;
+	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
 	this->myGrid = &SparseGrid;
 }
@@ -48,42 +49,79 @@ BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 	delete this->OpGammaTwo;
 	delete this->OpGammaThree;
 	delete this->OpRiskfree;
+	delete this->OpMass;
 }
 
 void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 {
-	if (this->bIsCrankNicolsonMatrix == false)
-	{
-		applyL(alpha, result);
-	}
-	else
+	if (this->tOperationMode == "ExEul")
 	{
 		result.setAll(0.0);
 
+		applyMassMatrix(alpha, result);
+	}
+	else if (this->tOperationMode == "ImEul")
+	{
+		result.setAll(0.0);
+
+		DataVector temp(alpha.getSize());
+		temp.setAll(0.0);
+
+		applyMassMatrix(alpha, temp);
+		result.add(temp);
+
+		temp.setAll(0.0);
+		applyLOperator(alpha, temp);
+		result.axpy((-1.0)*this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "CrNic")
+	{
+		/*result.setAll(0.0);
+
 		applyL(alpha, result);
 		result.mult((-0.5)*this->TimestepSize);
-		result.add(alpha);
+		result.add(alpha);*/
+	}
+	else
+	{
+		// @todo (heinecke) throw some exception here
 	}
 }
 
 void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 {
-	if (this->bIsCrankNicolsonMatrix == false)
+	if (this->tOperationMode == "ExEul")
 	{
-		// @todo (heinecke) throw some exception here
+		DataVector temp(data.getSize());
+		temp.setAll(0.0);
+
+		applyMassMatrix(data, temp);
+		rhs.add(temp);
+
+		temp.setAll(0.0);
+		applyLOperator(data, temp);
+		rhs.axpy(this->TimestepSize, temp);
 	}
-	else
+	else if (this->tOperationMode == "ImEul")
 	{
-		rhs.setAll(0.0);
+		applyMassMatrix(data, rhs);
+	}
+	else if (this->tOperationMode == "CrNic")
+	{
+		/*rhs.setAll(0.0);
 
 		applyL(data, rhs);
 
 		rhs.mult(0.5*this->TimestepSize);
-		rhs.add(data);
+		rhs.add(data);*/
+	}
+	else
+	{
+		// @todo (heinecke) throw some exception here
 	}
 }
 
-void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
+void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -107,7 +145,17 @@ void BlackScholesTimestepMatrix::applyL(DataVector& alpha, DataVector& result)
 	result.sub(temp);
 
 	// Apply the gamma method, part 1
-	this->OpGammaOne->mult(alpha, temp);
+	//this->OpGammaOne->mult(alpha, temp);
+	//result.add(temp);
+}
+
+void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)
+{
+	DataVector temp(alpha.getSize());
+
+	// Apply the mass matrix
+	this->OpMass->mult(alpha, temp);
+
 	result.add(temp);
 }
 

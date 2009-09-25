@@ -25,14 +25,14 @@
 void testOneUnderlying()
 {
 	size_t dim = 1;
-	size_t level = 8;
+	size_t level = 6;
 	double* strike = new double[dim];
-	strike[0] = 0.5;
+	strike[0] = 0.25;
 
-	size_t timesteps = 1000000;
+	size_t timesteps = 20000;
 	double stepsize = 0.000001;
 	size_t CGiterations = 8000;
-	double CGepsilon = 0.00000001;
+	double CGepsilon = 0.0000001;
 
 	DataVector mu(1);
 	DataVector sigma(1);
@@ -74,7 +74,7 @@ void testOneUnderlying()
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	myBSSolver->solveEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true);
+	myBSSolver->solveEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
@@ -149,7 +149,7 @@ void testTwoUnderlyings()
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	myBSSolver->solveEuler(timesteps, stepsize, *alpha, true);
+	myBSSolver->solveEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true);
 	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file

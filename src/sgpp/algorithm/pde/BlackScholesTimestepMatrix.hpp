@@ -54,8 +54,15 @@ private:
 	DataVector* sigmas;
 	/// Pointer to the rhos;
 	DataVector* rhos;
-	/// specifies if the matrix is used within Crank Nicolson solver
-	bool bIsCrankNicolsonMatrix;
+	/// the LTwoDotProduct Operation (Mass Matrix)
+	OperationMatrix* OpMass;
+	/**
+	 *  specifies in which solver this matrix is used, valid values are:
+	 *  ExEul for explicit Euler
+	 *  ImEul for implicit Euler
+	 *  CrNic for Crank Nicolson solver
+	 */
+	std::string tOperationMode;
 	// @todo (heinecke) try to do some refactoring here with the timestep size
 	/// the size of one timestep used in the ODE Solver
 	double TimestepSize;
@@ -68,7 +75,15 @@ private:
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
 	 */
-	void applyL(DataVector& alpha, DataVector& result);
+	void applyLOperator(DataVector& alpha, DataVector& result);
+
+	/**
+	 * Do Matrix mutlitplication with left hand side mass matrix
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
+	 * @param return reference to the DataVector into which the result is written
+	 */
+	void applyMassMatrix(DataVector& alpha, DataVector& result);
 
 public:
 	/**
@@ -80,9 +95,10 @@ public:
 	 * @param rho reference to the rhos
 	 * @param r the riskfree interest rate
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
-	 * @param bCrankNicolsonMatrix specifies whether this class is used by Euler or Crank Nicoloson
+	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
+	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, bool bCrankNicolsonMatrix = false);
+	BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor
