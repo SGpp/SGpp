@@ -88,9 +88,9 @@ void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, si
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
 		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, numTimesteps, false);
+		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ImEul");
 
-		myEuler->solve(*myBSMatrix, alpha, false);
+		myEuler->solve(*myBSMatrix, alpha, true);
 
 		delete myBSMatrix;
 		delete myEuler;
@@ -106,7 +106,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, true);
+		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "CrNic");
 
 		myCN->solve(*myBSMatrix, alpha, true);
 

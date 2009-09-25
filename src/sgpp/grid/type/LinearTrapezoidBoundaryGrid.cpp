@@ -32,6 +32,8 @@
 #include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearTrapezoidBoundary.hpp"
 
+#include "basis/lineartrapezoidboundary/operation/finance/OperationLTwoDotProductLinearTrapezoidBoundary.hpp"
+
 // @todo (heinecke) removed this when done
 #include "basis/lineartrapezoidboundary/operation/common/OperationUpDownTestLinearTrapezoidBoundary.hpp"
 
@@ -115,7 +117,7 @@ OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchis
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationLTwoDotProductLinearTrapezoidBoundary(this->storage);
 }
 
 // @todo (heinecke) removed this when done

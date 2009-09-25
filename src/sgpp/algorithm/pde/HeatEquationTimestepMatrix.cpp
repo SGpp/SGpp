@@ -108,7 +108,7 @@ void HeatEquationTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& 
 {
 	DataVector temp(alpha.getSize());
 
-	// Apply the riskfree rate
+	// Apply the mass matrix
 	this->OpMass->mult(alpha, temp);
 
 	result.add(temp);
@@ -118,7 +118,7 @@ void HeatEquationTimestepMatrix::applyStiffMatrix(DataVector& alpha, DataVector&
 {
 	DataVector temp(alpha.getSize());
 
-	// Apply the riskfree rate
+	// Apply the laplace Operator rate
 	this->OpLaplace->mult(alpha, temp);
 	result.axpy((-1.0)*this->a,temp);
 }
