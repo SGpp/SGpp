@@ -58,8 +58,8 @@ void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 
 		SystemMatrix.generateRHS(alpha, rhs);
 
-		myDirichletUpdate.setBoundariesToZero(alpha);
-		myDirichletUpdate.setBoundariesToZero(rhs);
+		//myDirichletUpdate.setBoundariesToZero(alpha);
+		//myDirichletUpdate.setBoundariesToZero(rhs);
 
 	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
 	    if (verbose)
@@ -67,6 +67,8 @@ void ExplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
 	    }
 	    myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
+
+	    //std::cout << "New alpha: " << alpha.toString() << std::endl;
 
 		if (this->bAnimation == true && (i%(this->nMaxIterations/1500)) == 0)
 		{

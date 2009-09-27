@@ -32,8 +32,8 @@
 #include <string>
 #include <fstream>
 
-//#define PRINTMATRIX
-#define PRINTDIFF
+#define PRINTMATRIX
+//#define PRINTDIFF
 
 int main(int argc, char *argv[])
 {
@@ -165,8 +165,12 @@ int main(int argc, char *argv[])
 	std::cout << "Do a Test multiplication:" << std::endl << std::endl;
 
 	alpha.setAll(0.0);
-	alpha.set(0, 0.5);
-	alpha.set(alpha.getSize()-1, 0.5);
+	alpha.set(1, 35.0);
+	alpha.set(2, -17.5);
+	alpha.set(4, -7.5);
+	alpha.set(7, -5);
+	alpha.set(14, -1.25);
+
 	result.setAll(0.0);
 
 	myUpDown->mult(alpha, result);
@@ -175,7 +179,7 @@ int main(int argc, char *argv[])
 
 	std::cout << std::endl;
 
-	sg::IOToolBonnSG* myImporter = new sg::IOToolBonnSG();
+	/*sg::IOToolBonnSG* myImporter = new sg::IOToolBonnSG();
 
 	DataVector serAlpha(0);
 	std::string serGrid;
@@ -185,7 +189,7 @@ int main(int argc, char *argv[])
 
 	myImporter->writeFile("sgpp_bonn.grid", *myGrid, alpha, true);
 
-	delete myImporter;
+	delete myImporter;*/
 	delete myUpDown;
 	delete myGrid;
 
