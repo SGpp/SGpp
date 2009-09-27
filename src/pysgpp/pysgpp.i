@@ -110,7 +110,7 @@ namespace std {
 %feature("director") ConjugateGradients;
 %include "src/sgpp/solver/sle/ConjugateGradients.hpp"
 %include "src/sgpp/solver/sle/BiCGStab.hpp"
-%include "src/sgpp/solver/ode/ExplicitEuler.hpp"
+%include "src/sgpp/solver/ode/Euler.hpp"
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
 
 %apply std::string *INPUT { std::string& istr };

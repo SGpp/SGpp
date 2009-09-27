@@ -20,20 +20,21 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef IMPLICITEULER_HPP
-#define IMPLICITEULER_HPP
+#ifndef EULER_HPP
+#define EULER_HPP
 
 #include "operation/common/OperationMatrix.hpp"
 #include "solver/ODESolver.hpp"
+#include <string>
 
 namespace sg
 {
 
 /**
- * This class implements the implict Euler method
+ * This class implements the explicit Euler method
  * for solving ordinary partial equations
  */
-class ImplicitEuler : public ODESolver
+class Euler : public ODESolver
 {
 private:
 	/// the number of CG maximum CG iterations
@@ -42,25 +43,30 @@ private:
 	double epsilonCG;
 	/// specifies if a grid evaluation should be execute in every time step
 	bool bAnimation;
+	/// specifies the type of euler that should be executed
+	std::string ExMode;
 
 public:
 	/**
 	 * Std-Constructer
 	 *
+	 * @param Mode the mode of the euler that should be executed, must be ExEul or ImEul
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
+	 * @param iMaxCG maximum number of CG steps
+	 * @param epsilonCG the epsilon used in CG
 	 * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
 	 */
-	ImplicitEuler(size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false);
+	Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~ImplicitEuler();
+	virtual ~Euler();
 
 	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
 };
 
 }
 
-#endif /* IMPLICITEULER_HPP */
+#endif /* EULER_HPP */

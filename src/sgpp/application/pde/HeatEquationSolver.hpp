@@ -29,8 +29,6 @@
 #include "grid/type/LinearGrid.hpp"
 #include "grid/common/BoundingBox.hpp"
 
-#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
-
 #include "tools/common/StdNormalDistribution.hpp"
 
 #include <iostream>
@@ -100,6 +98,8 @@ public:
 	 *
 	 * @param numTimestpes the number of timesteps that should be executed
 	 * @param timestepsize the size of the interval one timestep moves forward
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the CG
 	 * @param a the heat coefficient of the analyzed material
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep

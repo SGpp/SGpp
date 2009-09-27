@@ -22,7 +22,7 @@
 
 #include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
-#include "solver/ode/ExplicitEuler.hpp"
+#include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
 #include "stdlib.h"
@@ -83,11 +83,29 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	bStochasticDataAlloc = true;
 }
 
-void BlackScholesSolver::solveEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation)
+void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation)
 {
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
-		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ExEul");
+
+		myEuler->solve(*myBSMatrix, alpha, true);
+
+		delete myBSMatrix;
+		delete myEuler;
+	}
+	else
+	{
+		// @todo (heinecke) through an application exception here
+	}
+}
+
+void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation)
+{
+	if (bGridConstructed && bStochasticDataAlloc)
+	{
+		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ImEul");
 
 		myEuler->solve(*myBSMatrix, alpha, true);
