@@ -39,7 +39,7 @@ CrankNicolson::~CrankNicolson()
 
 void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
-	DataVector rhs(alpha.getSize());
+	/*DataVector rhs(alpha.getSize());
 	DataVector saveAlpha(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
     DirichletUpdateVector myDirichletUpdate(SystemMatrix.getGrid()->getStorage());
@@ -62,7 +62,8 @@ void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 	    }
 
 	    myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
-	}
+	}*/
+	std::cout << "not implemented, yet" << std::endl;
 }
 
 }

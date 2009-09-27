@@ -22,8 +22,7 @@
 
 #include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
-#include "solver/ode/ExplicitEuler.hpp"
-#include "solver/ode/ImplicitEuler.hpp"
+#include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
 #include "stdlib.h"
@@ -67,7 +66,7 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 {
 	if (bGridConstructed)
 	{
-		ExplicitEuler* myEuler = new ExplicitEuler(numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
 		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ExEul");
 
 		myEuler->solve(*myHEMatrix, alpha, true);
@@ -85,7 +84,7 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 {
 	if (bGridConstructed)
 	{
-		ImplicitEuler* myEuler = new ImplicitEuler(numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
 		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ImEul");
 
 		myEuler->solve(*myHEMatrix, alpha, false);

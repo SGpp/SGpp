@@ -29,8 +29,6 @@
 #include "grid/type/LinearGrid.hpp"
 #include "grid/common/BoundingBox.hpp"
 
-#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
-
 #include "tools/common/StdNormalDistribution.hpp"
 
 #include <iostream>
@@ -138,10 +136,25 @@ public:
 	 *
 	 * @param numTimestpes the number of timesteps that should be executed
 	 * @param timestepsize the size of the interval one timestep moves forward
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the CG
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
 	 */
-	void solveEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation);
+
+	/**
+	 * Call this routine to use an explicit Euler algorithm to solve the multi dimensional
+	 * Black Scholes Equation.
+	 *
+	 * @param numTimestpes the number of timesteps that should be executed
+	 * @param timestepsize the size of the interval one timestep moves forward
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the CG
+	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+	 */
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation);
 
 	/**
 	 * Call this routine to use the Crank Nicolson algorithm to solve the multi dimensional

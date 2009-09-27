@@ -79,9 +79,8 @@ application/pde/HeatEquationSolver.cpp
 
 solver/sle/ConjugateGradients.cpp
 solver/sle/BiCGStab.cpp
-solver/ode/ExplicitEuler.cpp
+solver/ode/Euler.cpp
 solver/ode/CrankNicolson.cpp
-solver/ode/ImplicitEuler.cpp
 
 tools/common/StdNormalDistribution.cpp
 tools/common/GridPrinter.cpp

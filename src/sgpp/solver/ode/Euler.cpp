@@ -20,10 +20,11 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/ode/ImplicitEuler.hpp"
+#include "solver/ode/Euler.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "tools/common/GridPrinter.hpp"
 #include "solver/sle/BiCGStab.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 
 #include <iostream>
@@ -33,16 +34,21 @@
 namespace sg
 {
 
-ImplicitEuler::ImplicitEuler(size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation) : ODESolver(imax, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), bAnimation(generateAnimation)
+Euler::Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation) : ODESolver(imax, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), bAnimation(generateAnimation), ExMode(Mode)
 {
 	this->residuum = 0.0;
+
+	if (Mode != "ExEul" || Mode != "ImEul")
+	{
+		// @todo (heinecke) throw solver exception
+	}
 }
 
-ImplicitEuler::~ImplicitEuler()
+Euler::~Euler()
 {
 }
 
-void ImplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
 	DataVector rhs(alpha.getSize());
 	DataVector saveAlpha(alpha.getSize());
@@ -57,15 +63,17 @@ void ImplicitEuler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha
 
 		SystemMatrix.generateRHS(alpha, rhs);
 
-		myDirichletUpdate.setBoundariesToZero(alpha);
-		myDirichletUpdate.setBoundariesToZero(rhs);
+		//myDirichletUpdate.setBoundariesToZero(alpha);
+		//myDirichletUpdate.setBoundariesToZero(rhs);
 
 	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
 	    if (verbose)
 	    {
 	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
 	    }
-	    myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
+
+	    //myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
+	    //std::cout << "New alpha: " << alpha.toString() << std::endl;
 
 		if (this->bAnimation == true && (i%(this->nMaxIterations/1500)) == 0)
 		{
