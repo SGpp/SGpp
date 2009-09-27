@@ -135,7 +135,8 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& m
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartOne(DataVector& sigma, DataVector& rho)
 {
-	return new OperationGammaPartOneLinearTrapezoidBoundary(this->storage, sigma, rho);
+	//return new OperationGammaPartOneLinearTrapezoidBoundary(this->storage, sigma, rho);
+	throw factory_exception("Unsupported operation");
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartTwo(DataVector& sigma, DataVector& rho)

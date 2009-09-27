@@ -40,8 +40,6 @@ private:
 	double r;
 	/// the delta Operation
 	OperationMatrix* OpDelta;
-	/// First part of the Gamma Operation
-	OperationMatrix* OpGammaOne;
 	/// Second part of the Gamma Operation
 	OperationMatrix* OpGammaTwo;
 	/// Third part of the Gamma Operation
