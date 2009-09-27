@@ -28,7 +28,6 @@ namespace sg
 BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode)
 {
 	this->OpDelta = SparseGrid.createOperationDelta(mu);
-	this->OpGammaOne = SparseGrid.createOperationGammaPartOne(sigma, rho);
 	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo(sigma, rho);
 	this->OpGammaThree = SparseGrid.createOperationGammaPartThree(sigma, rho);
 	this->OpRiskfree = SparseGrid.createOperationRiskfreeRate();
@@ -45,7 +44,6 @@ BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVec
 BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 {
 	delete this->OpDelta;
-	delete this->OpGammaOne;
 	delete this->OpGammaTwo;
 	delete this->OpGammaThree;
 	delete this->OpRiskfree;
