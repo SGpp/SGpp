@@ -86,6 +86,13 @@ public:
 		q = boundingBox->getIntervalWidth(dim);
 		t = boundingBox->getIntervalOffset(dim);
 
+		bool useBB = false;
+
+		if (q != 1.0 || t != 0.0)
+		{
+			useBB = true;
+		}
+
 		// get boundary values
 		double left_boundary;
 		double right_boundary;
@@ -107,46 +114,86 @@ public:
 		seq_right = index.seq();
 		right_boundary = source[seq_right];
 
-		// check boundary conditions
-		if (boundingBox->hasDirichletBoundaryLeft(dim))
+		if (useBB)
 		{
-			result[seq_left] = 0.0; //left_boundary
-		}
-		else
-		{
-			result[seq_left] = (1.0/3.0)*left_boundary*q;
-		}
-		if (boundingBox->hasDirichletBoundaryRight(dim))
-		{
-			result[seq_right] = 0.0; //right_boundary;
-		}
-		else
-		{
-			result[seq_right] = (1.0/3.0)*right_boundary*q;
-
-			// down
-			//////////////////////////////////////
-			result[seq_right] += (1.0/6.0)*left_boundary*q;
-		}
-
-		// move to root
-		if (!index.hint())
-		{
-			index.top(dim);
-
-			if(!storage->end(index.seq()))
+			// check boundary conditions
+			if (boundingBox->hasDirichletBoundaryLeft(dim))
 			{
-				rec(source, result, index, dim, left_boundary, right_boundary);
+				result[seq_left] = 0.0; //left_boundary
+			}
+			else
+			{
+				result[seq_left] = (1.0/3.0)*left_boundary*q;
+			}
+			if (boundingBox->hasDirichletBoundaryRight(dim))
+			{
+				result[seq_right] = 0.0; //right_boundary;
+			}
+			else
+			{
+				result[seq_right] = (1.0/3.0)*right_boundary*q;
+
+				// down
+				//////////////////////////////////////
+				result[seq_right] += (1.0/6.0)*left_boundary*q;
 			}
 
-			index.left_levelzero(dim);
+			// move to root
+			if (!index.hint())
+			{
+				index.top(dim);
+
+				if(!storage->end(index.seq()))
+				{
+					recBB(source, result, index, dim, left_boundary, right_boundary);
+				}
+
+				index.left_levelzero(dim);
+			}
+		}
+		else
+		{
+			// check boundary conditions
+			if (boundingBox->hasDirichletBoundaryLeft(dim))
+			{
+				result[seq_left] = 0.0; //left_boundary
+			}
+			else
+			{
+				result[seq_left] = (1.0/3.0)*left_boundary;
+			}
+			if (boundingBox->hasDirichletBoundaryRight(dim))
+			{
+				result[seq_right] = 0.0; //right_boundary;
+			}
+			else
+			{
+				result[seq_right] = (1.0/3.0)*right_boundary;
+
+				// down
+				//////////////////////////////////////
+				result[seq_right] += (1.0/6.0)*left_boundary;
+			}
+
+			// move to root
+			if (!index.hint())
+			{
+				index.top(dim);
+
+				if(!storage->end(index.seq()))
+				{
+					rec(source, result, index, dim, left_boundary, right_boundary);
+				}
+
+				index.left_levelzero(dim);
+			}
 		}
 	}
 
 protected:
 
 	/**
-	 * recursive function for the calculation of Down
+	 * recursive function for the calculation of Down without Bounding Box
 	 *
 	 * @param source DataVector that contains the coefficients of the ansatzfunction
 	 * @param result DataVector in which the result of the operation is stored
@@ -169,8 +216,8 @@ protected:
 		double h = 1/pow(2.0, static_cast<int>(l));
 
 		// integration
-		result[seq] = (  h * ((fl+fr)/2.0) * q
-							  + (2.0/3.0) * h * alpha_value * q);    // diagonal entry
+		result[seq] = (  h * ((fl+fr)/2.0)
+							  + (2.0/3.0) * h * alpha_value);    // diagonal entry
 
 		// dehierarchisation
 		double fm = (fl+fr)/2.0 + alpha_value;
@@ -187,6 +234,54 @@ protected:
 			if(!storage->end(index.seq()))
 			{
 				rec(source, result, index, dim, fm, fr);
+			}
+
+			index.up(dim);
+		}
+	}
+
+	/**
+	 * recursive function for the calculation of Down with Bouding Box
+	 *
+	 * @param source DataVector that contains the coefficients of the ansatzfunction
+	 * @param result DataVector in which the result of the operation is stored
+	 * @param index reference to a griditerator object that is used navigate through the grid
+	 * @param dim the dimension in which the operation is executed
+	 * @param fl function value on the left boundary
+	 * @param fr function value on the right boundary
+	 */
+	void recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+	{
+		size_t seq = index.seq();
+
+		double alpha_value = source[seq];
+
+		GridStorage::index_type::level_type l;
+		GridStorage::index_type::index_type i;
+
+		index.get(dim, l, i);
+
+		double h = 1/pow(2.0, static_cast<int>(l));
+
+		// integration
+		result[seq] = (  (h * ((fl+fr)/2.0) * q)
+							  + ((2.0/3.0) * h * alpha_value * q));    // diagonal entry
+
+		// dehierarchisation
+		double fm = (fl+fr)/2.0 + alpha_value;
+
+		if(!index.hint())
+		{
+			index.left_child(dim);
+			if(!storage->end(index.seq()))
+			{
+				recBB(source, result, index, dim, fl, fm);
+			}
+
+			index.step_right(dim);
+			if(!storage->end(index.seq()))
+			{
+				recBB(source, result, index, dim, fm, fr);
 			}
 
 			index.up(dim);

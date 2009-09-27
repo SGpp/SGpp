@@ -70,9 +70,15 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 		applyMassMatrix(alpha, temp);
 		result.add(temp);
 
+		//std::cout << alpha.toString() << std::endl;
+		//std::cout << result.toString() << std::endl;
+
 		temp.setAll(0.0);
 		applyLOperator(alpha, temp);
 		result.axpy((-1.0)*this->TimestepSize, temp);
+
+		//std::cout << result.toString() << std::endl;
+		//std::cout << std::endl << std::endl;
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
@@ -93,8 +99,8 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	if (this->tOperationMode == "ExEul")
 	{
 		DataVector temp(data.getSize());
-		temp.setAll(0.0);
 
+		temp.setAll(0.0);
 		applyMassMatrix(data, temp);
 		rhs.add(temp);
 
@@ -104,7 +110,13 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
+		rhs.setAll(0.0);
+
 		applyMassMatrix(data, rhs);
+
+		//std::cout << data.toString() << std::endl;
+		//std::cout << rhs.toString() <<  std::endl;
+		//std::cout << std::endl;
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
@@ -125,6 +137,8 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 {
 	DataVector temp(alpha.getSize());
 
+	result.setAll(0.0);
+
 	// Apply the riskfree rate
 	if (this->r != 0.0)
 	{
@@ -143,10 +157,6 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	// Apply the gamma method, part 2
 	this->OpGammaTwo->mult(alpha, temp);
 	result.sub(temp);
-
-	// Apply the gamma method, part 1
-	//this->OpGammaOne->mult(alpha, temp);
-	//result.add(temp);
 }
 
 void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)

@@ -41,9 +41,12 @@ OperationLTwoDotProductLinearTrapezoidBoundary::~OperationLTwoDotProductLinearTr
 
 void OperationLTwoDotProductLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
+	DataVector beta(result.getSize());
 	result.setAll(0.0);
 
-	this->updown(alpha, result, storage->dim()-1);
+	this->updown(alpha, beta, storage->dim() - 1);
+
+	result.add(beta);
 }
 
 /**

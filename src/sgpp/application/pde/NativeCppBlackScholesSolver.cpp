@@ -25,12 +25,12 @@
 void testOneUnderlying()
 {
 	size_t dim = 1;
-	size_t level = 6;
+	size_t level = 5;
 	double* strike = new double[dim];
-	strike[0] = 0.25;
+	strike[0] = 65;
 
-	size_t timesteps = 20000;
-	double stepsize = 0.000001;
+	size_t timesteps = 10;
+	double stepsize = 0.1;
 	size_t CGiterations = 8000;
 	double CGepsilon = 0.0000001;
 
@@ -49,7 +49,7 @@ void testOneUnderlying()
 	for (size_t i = 0; i < dim; i++)
 	{
 		myBoundaries[i].leftBoundary = 0.0;
-		myBoundaries[i].rightBoundary = 1.0;
+		myBoundaries[i].rightBoundary = 100.0;
 		myBoundaries[i].bDirichletLeft = true;
 		myBoundaries[i].bDirichletRight = true;
 	}
@@ -83,7 +83,7 @@ void testOneUnderlying()
 	// Do analytic test
 	std::vector< std::pair<double, double> >premium;
 	double t = (((double)timesteps)*stepsize);
-	myBSSolver->solve1DAnalytic(premium, 1.0, 0.01, strike[0], t);
+	myBSSolver->solve1DAnalytic(premium, 100.0, 0.01, strike[0], t);
 	myBSSolver->print1DAnalytic(premium, "analyticBS.gnuplot");
 
 	delete myBSSolver;
@@ -96,13 +96,13 @@ void testTwoUnderlyings()
 	size_t dim = 2;
 	size_t level = 5;
 	double* strike = new double[dim];
-	strike[0] = 65.0;
-	strike[1] = 55.0;
+	strike[0] = 0.65;
+	strike[1] = 0.55;
 
-	size_t timesteps = 50000;
-	double stepsize = 0.00001;
-	size_t CGiterations = 150;
-	double CGepsilon = 0.001;
+	size_t timesteps = 10;
+	double stepsize = 0.1;
+	size_t CGiterations = 8000;
+	double CGepsilon = 0.00000001;
 
 	DataVector mu(2);
 	DataVector sigma(2);
@@ -111,7 +111,7 @@ void testTwoUnderlyings()
 	double r = 0.00;
 	mu.set(0, 0.00);
 	mu.set(1, 0.00);
-	sigma.set(0, 0.60);
+	sigma.set(0, 0.40);
 	sigma.set(1, 0.60);
 	rho.set(0, 1.0);
 	rho.set(1, 0.1);
@@ -124,7 +124,7 @@ void testTwoUnderlyings()
 	for (size_t i = 0; i < dim; i++)
 	{
 		myBoundaries[i].leftBoundary = 0.0;
-		myBoundaries[i].rightBoundary = 100.0;
+		myBoundaries[i].rightBoundary = 1.0;
 		myBoundaries[i].bDirichletLeft = true;
 		myBoundaries[i].bDirichletRight = true;
 	}
@@ -143,17 +143,17 @@ void testTwoUnderlyings()
 	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 1000, "payoff.gnuplot");
+	myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	myBSSolver->solveEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true);
+	myBSSolver->solveEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 1000, "solvedBS.gnuplot");
+	myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
 
 	delete myBSSolver;
 	delete myBoundingBox;
