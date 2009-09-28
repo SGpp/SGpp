@@ -27,6 +27,8 @@
 // Optimizations currently useless
 //#define SGPP_OPTIMIZE
 
+#include "application/common/ScreenOutput.hpp"
+
 #include "algorithm/classification/AlgorithmDGEMV.hpp"
 #include "algorithm/classification/AlgorithmDGEMVBoundaries.hpp"
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"

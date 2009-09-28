@@ -35,6 +35,7 @@ BlackScholesSolver::BlackScholesSolver()
 {
 	bStochasticDataAlloc = false;
 	bGridConstructed = false;
+	myScreen = NULL;
 }
 
 BlackScholesSolver::~BlackScholesSolver()
@@ -48,6 +49,10 @@ BlackScholesSolver::~BlackScholesSolver()
 	if (bGridConstructed)
 	{
 		delete myGrid;
+	}
+	if (myScreen != NULL)
+	{
+		delete myScreen;
 	}
 }
 
@@ -83,14 +88,14 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	bStochasticDataAlloc = true;
 }
 
-void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation)
+void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
-		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ExEul");
 
-		myEuler->solve(*myBSMatrix, alpha, true);
+		myEuler->solve(*myBSMatrix, alpha, verbose);
 
 		delete myBSMatrix;
 		delete myEuler;
@@ -101,14 +106,14 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	}
 }
 
-void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation)
+void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
-		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ImEul");
 
-		myEuler->solve(*myBSMatrix, alpha, true);
+		myEuler->solve(*myBSMatrix, alpha, verbose);
 
 		delete myBSMatrix;
 		delete myEuler;
@@ -251,6 +256,13 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 		fileout << iter->first << " " << iter->second << " " << std::endl;
 	}
 	fileout.close();
+}
+
+void BlackScholesSolver::initScreen()
+{
+	myScreen = new ScreenOutput();
+	myScreen->writeTitle("SGpp - Black Scholes Solver", "Alexander Heinecke, (C) 2009");
+	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
 }

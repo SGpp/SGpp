@@ -70,7 +70,7 @@ private:
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
 	 */
-	void applyStiffMatrix(DataVector& alpha, DataVector& result);
+	void applyLOperator(DataVector& alpha, DataVector& result);
 
 public:
 	/**

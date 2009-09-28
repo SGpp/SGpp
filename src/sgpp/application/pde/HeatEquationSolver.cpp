@@ -34,6 +34,7 @@ namespace sg
 HeatEquationSolver::HeatEquationSolver()
 {
 	bGridConstructed = false;
+	myScreen = NULL;
 }
 
 HeatEquationSolver::~HeatEquationSolver()
@@ -42,15 +43,25 @@ HeatEquationSolver::~HeatEquationSolver()
 	{
 		delete myGrid;
 	}
+	if (myScreen != NULL)
+	{
+		delete myScreen;
+	}
 }
 
-void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
+void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level, bool useBoundary)
 {
 	dim = BoundingBox.getDimensions();
 	levels = level;
 
-	//myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
-	myGrid = new LinearGrid(dim);
+	if (useBoundary)
+	{
+		myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
+	}
+	else
+	{
+		myGrid = new LinearGrid(dim);
+	}
 
 	GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(levels);
@@ -62,14 +73,15 @@ void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	bGridConstructed = true;
 }
 
-void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation)
+void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	if (bGridConstructed)
 	{
-		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
 		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ExEul");
 
-		myEuler->solve(*myHEMatrix, alpha, true);
+		myEuler->solve(*myHEMatrix, alpha, verbose);
 
 		delete myHEMatrix;
 		delete myEuler;
@@ -80,14 +92,15 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	}
 }
 
-void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation)
+void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	if (bGridConstructed)
 	{
-		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation);
+		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
 		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ImEul");
 
-		myEuler->solve(*myHEMatrix, alpha, false);
+		myEuler->solve(*myHEMatrix, alpha, verbose);
 
 		delete myHEMatrix;
 		delete myEuler;
@@ -205,7 +218,7 @@ size_t HeatEquationSolver:: getNumberGridPoints()
 	}
 }
 
-void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma)
+void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor)
 {
 	double tmp;
 	double tmp2;
@@ -218,7 +231,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 			{
 				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
 
-				alpha[i] = (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma));
+				alpha[i] = factor*(1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma));
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
@@ -235,7 +248,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 				coordsStream >> tmp;
 				coordsStream >> tmp2;
 
-				alpha[i] = (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma)) * (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp2-mu)/sigma)*((tmp2-mu)/sigma));
+				alpha[i] = factor*factor*(1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma)) * (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp2-mu)/sigma)*((tmp2-mu)/sigma));
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
@@ -274,6 +287,12 @@ void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double cons
 
 		}
 	}
+}
+
+void HeatEquationSolver::initScreen()
+{
+	myScreen = new ScreenOutput();
+	myScreen->writeTitle("SGpp - Heat Equation Solver", "Alexander Heinecke, (C) 2009");
 }
 
 }

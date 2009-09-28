@@ -31,6 +31,8 @@
 
 #include "tools/common/StdNormalDistribution.hpp"
 
+#include "application/common/ScreenOutput.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -80,6 +82,8 @@ private:
 	BoundingBox* myBoundingBox;
 	/// Stores Pointer to the Girs's Storage
 	GridStorage* myGridStorage;
+	/// screen object used in this solver
+	ScreenOutput* myScreen;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -139,9 +143,11 @@ public:
 	 * @param maxCGIterations the maximum of interation in the CG solver
 	 * @param epsilonCG the epsilon used in the CG
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param verbose enables verbose output during solving
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
 	 */
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
 	/**
 	 * Call this routine to use an explicit Euler algorithm to solve the multi dimensional
@@ -152,9 +158,11 @@ public:
 	 * @param maxCGIterations the maximum of interation in the CG solver
 	 * @param epsilonCG the epsilon used in the CG
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param verbose enables verbose output during solving
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
 	 */
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool generateAnimation);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
 	/**
 	 * Call this routine to use the Crank Nicolson algorithm to solve the multi dimensional
@@ -217,6 +225,11 @@ public:
 	 * @return the number of grid points
 	 */
 	size_t getNumberGridPoints();
+
+	/**
+	 * Inits the screen object
+	 */
+	void initScreen();
 };
 
 }

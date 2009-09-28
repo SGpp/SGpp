@@ -23,6 +23,7 @@
 #ifndef EULER_HPP
 #define EULER_HPP
 
+#include "application/common/ScreenOutput.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "solver/ODESolver.hpp"
 #include <string>
@@ -33,6 +34,8 @@ namespace sg
 /**
  * This class implements the explicit Euler method
  * for solving ordinary partial equations
+ *
+ * @version $HEAD$
  */
 class Euler : public ODESolver
 {
@@ -43,8 +46,12 @@ private:
 	double epsilonCG;
 	/// specifies if a grid evaluation should be execute in every time step
 	bool bAnimation;
+	/// specifies the evaluation per dimension when a animation is created
+	size_t evalsAnimation;
 	/// specifies the type of euler that should be executed
 	std::string ExMode;
+	/// Pointer to ScreenOutput object
+	ScreenOutput* myScreen;
 
 public:
 	/**
@@ -56,8 +63,10 @@ public:
 	 * @param iMaxCG maximum number of CG steps
 	 * @param epsilonCG the epsilon used in CG
 	 * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
+	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
+	 * @parma screen possible pointer to a ScreenOutput object
 	 */
-	Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false);
+	Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false, size_t numEvalsAnimation = 20, ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
