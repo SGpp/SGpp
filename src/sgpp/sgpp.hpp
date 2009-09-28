@@ -47,7 +47,7 @@
 
 #include "basis/linear/operation/classification/OperationLaplaceLinear.hpp"
 #include "basis/linearboundary/operation/classification/OperationLaplaceLinearBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/OperationLaplaceLinearTrapezoidBoundary.hpp"
 #include "basis/modlinear/operation/classification/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.hpp"
