@@ -212,6 +212,12 @@ public:
 	void sqr();
 
 	/**
+	 * Sets all elements to their absolute value.
+	 *
+	 */
+	void abs();
+
+	/**
 	 * sums all elements up
 	 *
 	 * @return the sum of all elements
@@ -313,6 +319,13 @@ public:
 	double min(int d);
 
 	/**
+	 * Returns the minimum over all entries.
+	 *
+	 * @return global minimum
+	 */
+	double min();
+
+	/**
 	 * Returns the maximum.
 	 *
 	 * @param d the dimension in which the maximum should be determined
@@ -320,6 +333,13 @@ public:
 	 * @return the maximum
 	 */
 	double max(int d);
+
+	/**
+	 * Returns the maximum over all entries.
+	 *
+	 * @return global maximum
+	 */
+	double max();
 
 	/**
 	 * gets the minimum and the maximum.

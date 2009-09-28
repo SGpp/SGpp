@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include <sstream>
+#include <cmath>
 
 #ifdef USEOMP
 #include <omp.h>
@@ -405,6 +406,23 @@ void DataVector::sqr()
 //#endif
 }
 
+void DataVector::abs()
+{
+	int n = size*dim;
+/*#ifdef USEOMP
+	#pragma omp parallel for schedule(static)
+	for(int i = 0; i < n; i++)
+	{
+		data[i] = std::abs(data[i]);
+	}
+#else*/
+	for(int i = 0; i < n; i++)
+	{
+	  data[i] = std::abs(data[i]);
+	}
+//#endif
+}
+
 double DataVector::sum()
 {
 	int n = size*dim;
@@ -521,11 +539,39 @@ double DataVector::min(int d)
 	return min;
 }
 
+double DataVector::min()
+{
+	int n = size*dim;
+	double min = data[0];
+	for(int i = 1; i < n; i += 1)
+	{
+		if(min > data[i])
+		{
+			min = data[i];
+		}
+	}
+	return min;
+}
+
 double DataVector::max(int d)
 {
 	int n = size*dim;
 	double max = data[d];
 	for(int i = d; i < n; i += dim)
+	{
+		if(max < data[i])
+		{
+			max = data[i];
+		}
+	}
+	return max;
+}
+
+double DataVector::max()
+{
+	int n = size*dim;
+	double max = data[0];
+	for(int i = 1; i < n; i += 1)
 	{
 		if(max < data[i])
 		{
