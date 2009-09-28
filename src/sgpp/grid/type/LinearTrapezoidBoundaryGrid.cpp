@@ -30,18 +30,16 @@
 #include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/classification/OperationLaplaceLinearTrapezoidBoundary.hpp"
-
-#include "basis/lineartrapezoidboundary/operation/finance/OperationLTwoDotProductLinearTrapezoidBoundary.hpp"
-
 // @todo (heinecke) removed this when done
 #include "basis/lineartrapezoidboundary/operation/common/OperationUpDownTestLinearTrapezoidBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartTwoLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/OperationLaplaceLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/OperationLTwoDotProductLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaPartTwoLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
 
 #include "sgpp.hpp"
 

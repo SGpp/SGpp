@@ -155,6 +155,11 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	// Apply the gamma method, part 2
 	this->OpGammaTwo->mult(alpha, temp);
 	result.sub(temp);
+
+	// Apply the gamma mehtod, part 1
+	temp.setAll(0.0);
+	//temp.set(1, (0.08*3500.0));
+	result.add(temp);
 }
 
 void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)
