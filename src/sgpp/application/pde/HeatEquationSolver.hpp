@@ -31,6 +31,8 @@
 
 #include "tools/common/StdNormalDistribution.hpp"
 
+#include "application/common/ScreenOutput.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -72,6 +74,8 @@ private:
 	BoundingBox* myBoundingBox;
 	/// Stores Pointer to the Girs's Storage
 	GridStorage* myGridStorage;
+	/// screen object used in this solver
+	ScreenOutput* myScreen;
 
 public:
 	/**
@@ -89,8 +93,9 @@ public:
 	 *
 	 * @param myBoundingBox reference to a bounding box that describes the grid
 	 * @param level number of the regular's grid levels
+	 * @param useBoundary use a grid with explicit boundary conditions
 	 */
-	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(BoundingBox& myBoundingBox, size_t level, bool useBoundary);
 
 	/**
 	 * Call this routine to use an explicit Euler algorithm to solve the multi dimensional
@@ -102,9 +107,11 @@ public:
 	 * @param epsilonCG the epsilon used in the CG
 	 * @param a the heat coefficient of the analyzed material
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param verbose enables verbose output during solving
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
 	 */
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
 	/**
 	 * Call this routine to use an implicit Euler algorithm to solve the multi dimensional
@@ -116,9 +123,11 @@ public:
 	 * @param epsilonCG the epsilon used in the CG
 	 * @param a the heat coefficient of the analyzed material
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param verbose enables verbose output during solving
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
+	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
 	 */
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool generateAnimation);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
 	/**
 	 * Call this routine to use the Crank Nicolson algorithm to solve the multi dimensional
@@ -166,9 +175,11 @@ public:
 	 * normal distribution formula
 	 *
 	 * @param alpha reference to the coefficients vector
-	 * @param sigma the sigma of the normal distribution, mu is fix 0.5
+	 * @param mu the exspected value of the normal distribution
+	 * @param sigma the sigma of the normal distribution
+	 * @param factor a factor that is used to stretch the function values
 	 */
-	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma);
+	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
 	 * Inits the grid with a constant heat
@@ -177,6 +188,11 @@ public:
 	 * @param constHeat the temperature of the constant heat
 	 */
 	void initGridWithConstantHeat(DataVector& alpha, double constHeat);
+
+	/**
+	 * Inits the screen object
+	 */
+	void initScreen();
 };
 
 }

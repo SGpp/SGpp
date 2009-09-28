@@ -27,12 +27,12 @@ void testHeatEquation()
 	size_t dim = 1;
 	size_t level = 6;
 
-	size_t timesteps = 1000000;
-	double stepsize = 0.000001;
-	size_t CGiterations = 800;
+	size_t timesteps = 100;
+	double stepsize = 0.1;
+	size_t CGiterations = 8000;
 	double CGepsilon = 0.00000001;
 
-	double a = 0.5;
+	double a = 1.0;
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
 
@@ -40,7 +40,7 @@ void testHeatEquation()
 	for (size_t i = 0; i < dim; i++)
 	{
 		myBoundaries[i].leftBoundary = 0.0;
-		myBoundaries[i].rightBoundary = 1.0;
+		myBoundaries[i].rightBoundary = 3.0;
 		myBoundaries[i].bDirichletLeft = true;
 		myBoundaries[i].bDirichletRight = true;
 	}
@@ -49,26 +49,29 @@ void testHeatEquation()
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
+	// init Screen Object
+	myHESolver->initScreen();
+
 	// Construct a grid
-	myHESolver->constructGrid(*myBoundingBox, level);
+	myHESolver->constructGrid(*myBoundingBox, level, true);
 
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
 
 	//myHESolver->initGridWithSingleHeat(*alpha, 100.0);
-	myHESolver->initGridWithSmoothHeat(*alpha, 0.5, 0.08);
+	myHESolver->initGridWithSmoothHeat(*alpha, 3.0, 0.90, 10);
 	//myHESolver->initGridWithConstantHeat(*alpha, 4.0);
 
-	// Print the payoff function into a gnuplot file
-	myHESolver->printGrid(*alpha, 1000, "heatStart.gnuplot");
+	// Print the initial heat function into a gnuplot file
+	myHESolver->printGrid(*alpha, 50, "heatStart.gnuplot");
 
-	// Start solving the Black Scholes Equation
-	myHESolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true);
-	//myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true);
+	// Start solving the Heat Equation
+	//myHESolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true, true, 50);
+	myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true, true, 50);
 	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha);
 
-	// Print the solved Black Scholes Equation into a gnuplot file
-	myHESolver->printGrid(*alpha, 1000, "solvedHeat.gnuplot");
+	// Print the solved Heat Equation into a gnuplot file
+	myHESolver->printGrid(*alpha, 50, "solvedHeat.gnuplot");
 
 	delete myHESolver;
 	delete myBoundingBox;

@@ -58,6 +58,9 @@ void testOneUnderlying()
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
+	// init Screen Object
+	myBSSolver->initScreen();
+
 	// Construct a grid
 	myBSSolver->constructGrid(*myBoundingBox, level);
 
@@ -133,6 +136,9 @@ void testTwoUnderlyings()
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
+
+	// init Screen Object
+	myBSSolver->initScreen();
 
 	// Construct a grid
 	myBSSolver->constructGrid(*myBoundingBox, level);

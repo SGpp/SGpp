@@ -34,7 +34,7 @@
 namespace sg
 {
 
-Euler::Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation) : ODESolver(imax, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), bAnimation(generateAnimation), ExMode(Mode)
+Euler::Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation, size_t numEvalsAnimation, ScreenOutput* screen) : ODESolver(imax, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), ExMode(Mode), myScreen(screen)
 {
 	this->residuum = 0.0;
 
@@ -54,6 +54,11 @@ void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool v
 	DataVector saveAlpha(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
     DirichletUpdateVector myDirichletUpdate(SystemMatrix.getGrid()->getStorage());
+    size_t animationStep = this->nMaxIterations/1500;
+    if (animationStep == 0)
+    {
+    	animationStep = 1;
+    }
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
@@ -67,15 +72,32 @@ void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool v
 		//myDirichletUpdate.setBoundariesToZero(rhs);
 
 	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
-	    if (verbose)
+	    if (verbose == true)
 	    {
-	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
+	    	if (myScreen == NULL)
+	    	{
+	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
+	    	}
 	    }
+	    if (myScreen != NULL)
+    	{
+    		std::stringstream soutput;
+    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations";
+
+    		if (i < this->nMaxIterations-1)
+    		{
+    			myScreen->update((size_t)(((double)i*100.0)/((double)this->nMaxIterations)), soutput.str());
+    		}
+    		else
+    		{
+    			myScreen->update(100, soutput.str());
+    		}
+    	}
 
 	    //myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
 	    //std::cout << "New alpha: " << alpha.toString() << std::endl;
 
-		if (this->bAnimation == true && (i%(this->nMaxIterations/1500)) == 0)
+	    if ((this->bAnimation == true) && (i%animationStep == 0))
 		{
 			// Build filename
 			std::string tFilename = "00000000000000000000000000000000";
@@ -87,8 +109,12 @@ void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool v
 
 			// Print grid to file
 			GridPrinter myPrinter(*SystemMatrix.getGrid());
-			myPrinter.printGrid(alpha, tFilename, 1000);
+			myPrinter.printGrid(alpha, tFilename, this->evalsAnimation);
 		}
+	}
+    if (myScreen != NULL)
+	{
+    	myScreen->writeEmptyLines(2);
 	}
 }
 

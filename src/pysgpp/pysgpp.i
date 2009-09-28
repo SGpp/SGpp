@@ -96,6 +96,8 @@ namespace std {
 %include "src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationTimestepMatrix.hpp"
 
+%include "src/sgpp/application/common/ScreenOutput.hpp"
+
 %include "src/sgpp/basis/linear/linear_base.hpp"
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"
 %include "src/sgpp/basis/lineartrapezoidboundary/lineartrapezoidboundaryBase.hpp"

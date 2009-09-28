@@ -75,6 +75,7 @@ algorithm/classification/DMSystemMatrix.cpp
 algorithm/pde/BlackScholesTimestepMatrix.cpp
 algorithm/pde/HeatEquationTimestepMatrix.cpp
 
+application/common/ScreenOutput.cpp
 application/pde/BlackScholesSolver.cpp
 application/pde/HeatEquationSolver.cpp
 
