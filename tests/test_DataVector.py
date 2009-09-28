@@ -2,6 +2,7 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2007-2009 Dirk Pflueger (pflueged@in.tum.de)                #
 # Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -23,7 +24,44 @@
 
 import unittest
 
+##
+# Class with unittests for DataVector
+#
+# @ingroup tests
+#
+# @test Unittests for DataVector
+# @todo (pflueged) Test cases for remaining functionality of DataVector
 class TestDataVector(unittest.TestCase):
+
+    ## 
+    # Set up, create random DataVector and corresponding Python data structures.
+    # @test DataVector::get()
+    # @test DataVector::set()
+    def setUp(self):
+        from pysgpp import DataVector
+        import random
+
+        self.nrows = 5
+        self.ncols = 4
+        self.N = self.nrows*self.ncols
+        # random list
+        self.l_rand = [[2*(random.random()-0.5) for j in xrange(self.ncols)] for i in xrange(self.nrows)]
+        self.l_rand_total = []
+        for li in self.l_rand:
+            self.l_rand_total.extend(li)
+        # Data Vector
+        self.d_rand = DataVector(self.nrows,self.ncols)
+        for i in xrange(self.N):
+            self.d_rand[i] = self.l_rand_total[i]
+
+        for i in xrange(self.N):
+            self.assertEqual(self.d_rand[i], self.l_rand_total[i])
+
+    ##
+    # Constructors.
+    # @test DataVector::DataVector(size_t size)
+    # @test DataVector::DataVector(size_t size, size_t dim)
+    # @todo (pflueged) DataVector::DataVector(double *input, size_t size, size_t dim), DataVector::DataVector(DataVectorDefinition &DataVectorDef)
     def testConstructor(self):
         from pysgpp import DataVector
         
@@ -35,29 +73,54 @@ class TestDataVector(unittest.TestCase):
         self.assertEqual(d.getDim(), 2)
         self.assertEqual(len(d), 4)
 
+    ##
+    # Min, Max operations.
+    # @test DataVector::min(int d)
+    # @test DataVector::max(int d)
+    # @test DataVector::minmax(int d, double *min, double *max)
+    # @test DataVector::min()
+    # @test DataVector::max()
     def testMinMax(self):
+
+        # test dimension-dependent min, max
+        for j in xrange(self.ncols):
+            minj = min([self.l_rand[i][j] for i in xrange(self.nrows)])
+            maxj = max([self.l_rand[i][j] for i in xrange(self.nrows)])
+            self.assertEqual(self.d_rand.min(j), minj)
+            self.assertEqual(self.d_rand.max(j), maxj)
+            mi, ma = self.d_rand.minmax(j)
+            self.assertEqual(mi, minj)
+            self.assertEqual(ma, maxj)
+
+        # test global min, max
+        self.assertEqual(self.d_rand.min(), min(self.l_rand_total))
+        self.assertEqual(self.d_rand.max(), max(self.l_rand_total))
+   
+
+    ##
+    # Operations on DataVectors.
+    # @test DataVector::sum()
+    # @test DataVector::sqr()
+    def testOps(self):
         from pysgpp import DataVector
-        
-        d = DataVector(3)
-        for i in xrange(len(d)):
-            d[i] = i
-            
-        self.assertEqual(d.min(0), 0)
-        self.assertEqual(d.max(0), 2)
-        
-        mi, ma = d.minmax(0)
-        self.assertEqual(mi, 0)
-        self.assertEqual(ma, 2)        
+        # sum
+        self.assertAlmostEqual(self.d_rand.sum(), sum(self.l_rand_total))
 
-    def testSum(self):
-        from pysgpp import DataVector
-        
-        d = DataVector(3)
-        for i in xrange(len(d)):
-            d[i] = i
+        # sqr
+        d = DataVector(self.d_rand)
+        d.sqr()
+        for i in xrange(self.N):
+            self.assertEqual(self.d_rand[i]**2, d[i])
 
-        self.assertEqual(d.sum(), 3)
+        # abs
+        d = DataVector(self.d_rand)
+        d.abs()
+        for i in xrange(self.N):
+            self.assertEqual(abs(self.d_rand[i]), d[i])
 
+    ##
+    # Vector-Operations
+    # @test DataVector::dotProduct(DataVector &vec)
     def testDotProduct(self):
         from pysgpp import DataVector
         

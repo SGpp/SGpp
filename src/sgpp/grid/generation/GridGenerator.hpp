@@ -54,9 +54,9 @@ public:
 	virtual void regular(size_t level) = 0;
 
 	/**
-	 * Refines a regular grid
+	 * Refines a regular grid according to the settings of the RefinementFunctor func.
 	 *
-	 * @param func pointer to refinement function
+	 * @param func pointer to refinement functor
 	 */
 	virtual void refine(RefinementFunctor* func) = 0;
 
