@@ -292,7 +292,7 @@ void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double cons
 void HeatEquationSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Heat Equation Solver", "Alexander Heinecke, (C) 2009");
+	myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0 alpha", "Alexander Heinecke, (C) 2009");
 }
 
 }
