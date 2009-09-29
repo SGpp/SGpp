@@ -48,16 +48,22 @@ OperationGammaPartTwoLinearTrapezoidBoundary::~OperationGammaPartTwoLinearTrapez
 
 void OperationGammaPartTwoLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
-	DataVector beta(result.getSize());
 	result.setAll(0.0);
+#ifdef USEOMP
+#ifdef USEOMPTHREE
+	DataVector beta(result.getSize());
 
 	for(size_t i = 0; i < storage->dim(); i++)
 	{
-		this->updown(alpha, beta, storage->dim() - 1, i);
+		#pragma omp parallel
+		{
+			#pragma omp single nowait
+			{
+				this->updown_parallel(alpha, beta, storage->dim() - 1, i);
+			}
+		}
 		for(size_t j = 0; j < storage->dim(); j++)
 		{
-			//std::cout << beta.toString() << std::endl;
-			//std::cout << sigmas->get(i) << " " << sigmas->get(j) << " " << rhos->get((storage->dim()*i)+j) << std::endl;
 			if (i == j)
 			{
 				result.axpy(sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
@@ -66,11 +72,57 @@ void OperationGammaPartTwoLinearTrapezoidBoundary::mult(DataVector& alpha, DataV
 			{
 				result.axpy((0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
 			}
-			//std::cout << result.toString() << std::endl;
 		}
 	}
+#endif
+#ifndef USEOMPTHREE
+	#pragma omp parallel shared(result)
+	{
+		#pragma omp for schedule(static)
+		for(size_t i = 0; i < storage->dim(); i++)
+		{
+			DataVector beta(result.getSize());
+			this->updown(alpha, beta, storage->dim() - 1, i);
+
+			for(size_t j = 0; j < storage->dim(); j++)
+			{
+				if (i == j)
+				{
+					#pragma omp critical
+					result.axpy(sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+				}
+				else
+				{
+					#pragma omp critical
+					result.axpy((0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+				}
+			}
+		}
+	}
+#endif
+#endif
+#ifndef USEOMP
+	DataVector beta(result.getSize());
+
+	for(size_t i = 0; i < storage->dim(); i++)
+	{
+		this->updown(alpha, beta, storage->dim() - 1, i);
+		for(size_t j = 0; j < storage->dim(); j++)
+		{
+			if (i == j)
+			{
+				result.axpy(sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+			}
+			else
+			{
+				result.axpy((0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+			}
+		}
+	}
+#endif
 }
 
+#ifndef USEOMPTHREE
 void OperationGammaPartTwoLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 {
 	if(dim == gradient_dim)
@@ -137,6 +189,104 @@ void OperationGammaPartTwoLinearTrapezoidBoundary::gradient(DataVector& alpha, D
 		result.add(temp);
 	}
 }
+#endif
+
+#ifdef USEOMPTHREE
+void OperationGammaPartTwoLinearTrapezoidBoundary::updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+{
+	if(dim == gradient_dim)
+	{
+		gradient_parallel(alpha, result, dim, gradient_dim);
+	}
+	else
+	{
+		//Unidirectional scheme
+		if(dim > 0)
+		{
+			// Reordering ups and downs
+			DataVector temp(alpha.getSize());
+			DataVector result_temp(alpha.getSize());
+			DataVector temp_two(alpha.getSize());
+
+			#pragma omp task shared(alpha, temp, result)
+			{
+				up(alpha, temp, dim);
+				updown_parallel(temp, result, dim-1, gradient_dim);
+			}
+
+			// Same from the other direction:
+			#pragma omp task shared(alpha, temp_two, result_temp)
+			{
+				updown_parallel(alpha, temp_two, dim-1, gradient_dim);
+				down(temp_two, result_temp, dim);
+			}
+
+			#pragma omp taskwait
+
+			result.add(result_temp);
+		}
+		else
+		{
+			// Terminates dimension recursion
+			DataVector temp(alpha.getSize());
+
+			#pragma omp task shared(alpha, result)
+			up(alpha, result, dim);
+
+			#pragma omp task shared(alpha, temp)
+			down(alpha, temp, dim);
+
+			#pragma omp taskwait
+
+			result.add(temp);
+		}
+	}
+}
+
+void OperationGammaPartTwoLinearTrapezoidBoundary::gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+{
+	//Unidirectional scheme
+	if(dim > 0)
+	{
+		// Reordering ups and downs
+		DataVector temp(alpha.getSize());
+		DataVector result_temp(alpha.getSize());
+		DataVector temp_two(alpha.getSize());
+
+		#pragma omp task shared(alpha, temp, result)
+		{
+			upGradient(alpha, temp, dim);
+			updown_parallel(temp, result, dim-1, gradient_dim);
+		}
+
+		// Same from the other direction:
+		#pragma omp task shared(alpha, temp_two, result_temp)
+		{
+			updown_parallel(alpha, temp_two, dim-1, gradient_dim);
+			downGradient(temp_two, result_temp, dim);
+		}
+
+		#pragma omp taskwait
+
+		result.add(result_temp);
+	}
+	else
+	{
+		// Terminates dimension recursion
+		DataVector temp(alpha.getSize());
+
+		#pragma omp task shared(alpha, result)
+		upGradient(alpha, result, dim);
+
+		#pragma omp task shared(alpha, temp)
+		downGradient(alpha, temp, dim);
+
+		#pragma omp taskwait
+
+		result.add(temp);
+	}
+}
+#endif
 
 void OperationGammaPartTwoLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
