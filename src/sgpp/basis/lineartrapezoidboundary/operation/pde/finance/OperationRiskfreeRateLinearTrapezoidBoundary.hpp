@@ -32,7 +32,11 @@ namespace sg
 {
 
 /**
+ * NOT NEEDED ANYMORE
+ *
  * @todo heinecke add description
+ *
+ * @version $HEAD$
  */
 class OperationRiskfreeRateLinearTrapezoidBoundary: public OperationMatrix
 {

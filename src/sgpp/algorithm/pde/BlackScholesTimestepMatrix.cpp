@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
+#include <cmath>
 
 namespace sg
 {
@@ -30,8 +31,7 @@ BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVec
 	this->OpDelta = SparseGrid.createOperationDelta(mu);
 	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo(sigma, rho);
 	this->OpGammaThree = SparseGrid.createOperationGammaPartThree(sigma, rho);
-	this->OpRiskfree = SparseGrid.createOperationRiskfreeRate();
-	this->OpMass = SparseGrid.createOperationLTwoDotProduct();
+	this->OpLTwo = SparseGrid.createOperationLTwoDotProduct();
 	this->r = r;
 	this->mus = &mu;
 	this->sigmas = &sigma;
@@ -39,6 +39,7 @@ BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVec
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
 	this->myGrid = &SparseGrid;
+	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
 }
 
 BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
@@ -46,8 +47,8 @@ BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 	delete this->OpDelta;
 	delete this->OpGammaTwo;
 	delete this->OpGammaThree;
-	delete this->OpRiskfree;
-	delete this->OpMass;
+	delete this->OpLTwo;
+	delete this->BoundaryUpdate;
 }
 
 void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
@@ -140,7 +141,7 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	// Apply the riskfree rate
 	if (this->r != 0.0)
 	{
-		this->OpRiskfree->mult(alpha, temp);
+		this->OpLTwo->mult(alpha, temp);
 		result.axpy((-1.0)*this->r, temp);
 	}
 
@@ -155,11 +156,6 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	// Apply the gamma method, part 2
 	this->OpGammaTwo->mult(alpha, temp);
 	result.sub(temp);
-
-	// Apply the gamma mehtod, part 1
-	temp.setAll(0.0);
-	//temp.set(1, (0.08*3500.0));
-	result.add(temp);
 }
 
 void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)
@@ -167,9 +163,27 @@ void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& 
 	DataVector temp(alpha.getSize());
 
 	// Apply the mass matrix
-	this->OpMass->mult(alpha, temp);
+	this->OpLTwo->mult(alpha, temp);
 
 	result.add(temp);
+}
+
+void BlackScholesTimestepMatrix::finishTimestep(DataVector& alpha)
+{
+	// Adjust the boundaries with the riskfree rate
+	if (this->r != 0.0)
+	{
+		this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
+	}
+}
+
+void BlackScholesTimestepMatrix::startTimestep(DataVector& alpha)
+{
+	// Adjust the boundaries with the riskfree rate
+	if (this->r != 0.0)
+	{
+		this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
+	}
 }
 
 Grid* BlackScholesTimestepMatrix::getGrid()

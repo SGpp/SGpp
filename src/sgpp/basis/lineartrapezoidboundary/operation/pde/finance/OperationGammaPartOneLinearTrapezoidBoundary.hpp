@@ -32,9 +32,11 @@ namespace sg
 {
 
 /**
- * NOT NEEDED
+ * NOT NEEDED ANYMORE
  *
  * @todo heinecke add description
+ *
+ * @version $HEAD$
  */
 class OperationGammaPartOneLinearTrapezoidBoundary: public OperationMatrix
 {

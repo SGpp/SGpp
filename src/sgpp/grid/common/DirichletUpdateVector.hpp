@@ -80,6 +80,14 @@ public:
 	 * @param updateVector the vector that should be updated
 	 */
 	void setBoundariesToZero(DataVector& updateVector);
+
+	/**
+	 * Multiplies the values on the boundary with a constant value
+	 *
+	 * @param updateVector the vector that should be updated
+	 * @param value the value that is multiplied with the value on the boundaries
+	 */
+	void multiplyBoundary(DataVector& updateVector, double value);
 };
 
 }

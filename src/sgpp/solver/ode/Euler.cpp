@@ -48,12 +48,12 @@ Euler::~Euler()
 {
 }
 
-void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
 	DataVector rhs(alpha.getSize());
-	DataVector saveAlpha(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
-    DirichletUpdateVector myDirichletUpdate(SystemMatrix.getGrid()->getStorage());
+
+    // Do some animation creation exception handling
     size_t animationStep = this->nMaxIterations/1500;
     if (animationStep == 0)
     {
@@ -64,13 +64,19 @@ void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool v
 	{
 		rhs.setAll(0.0);
 
-		saveAlpha = alpha;
 
+		// generate right hand side
 		SystemMatrix.generateRHS(alpha, rhs);
 
-		//myDirichletUpdate.setBoundariesToZero(alpha);
-		//myDirichletUpdate.setBoundariesToZero(rhs);
 
+	    // Do some adjustments on the boundaries if needed
+		if (this->ExMode == "ImEul")
+		{
+		    SystemMatrix.startTimestep(alpha);
+		}
+
+
+		// solve the system of the current timestep
 	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
 	    if (verbose == true)
 	    {
@@ -94,9 +100,15 @@ void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool v
     		}
     	}
 
-	    //myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
-	    //std::cout << "New alpha: " << alpha.toString() << std::endl;
 
+	    // Do some adjustments on the boundaries if needed
+		if (this->ExMode == "ExEul")
+		{
+			SystemMatrix.finishTimestep(alpha);
+		}
+
+
+		// Create pictures of the animation, if specified
 	    if ((this->bAnimation == true) && (i%animationStep == 0))
 		{
 			// Build filename
@@ -112,6 +124,8 @@ void Euler::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool v
 			myPrinter.printGrid(alpha, tFilename, this->evalsAnimation);
 		}
 	}
+
+	// write some empty lines to console
     if (myScreen != NULL)
 	{
     	myScreen->writeEmptyLines(2);

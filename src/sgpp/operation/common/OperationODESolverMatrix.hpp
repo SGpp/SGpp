@@ -21,8 +21,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONSOLVERMATRIX_HPP
-#define OPERATIONSOLVERMATRIX_HPP
+#ifndef OPERATIONODESOLVERMATRIX_HPP
+#define OPERATIONODESOLVERMATRIX_HPP
 
 #include "operation/common/OperationMatrix.hpp"
 #include "grid/Grid.hpp"
@@ -32,20 +32,26 @@ namespace sg
 {
 
 /**
- * Defines a Systemmatrix for the CG method
+ * Defines a Systemmatrix that is used to solve parabolic partial
+ * differential equations. So an instance of this class has to pass to
+ * any ODE Solver used in SGpp.
+ *
+ * This class defines an elliptic problem in every timestep which is solved
+ * using an iterative SLE solver, that solving step is integrated in the
+ * ODE Solver.
  */
-class OperationSolverMatrix : public OperationMatrix
+class OperationODESolverMatrix : public OperationMatrix
 {
 public:
 	/**
 	 * Constructor
 	 */
-	OperationSolverMatrix() {}
+	OperationODESolverMatrix() {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationSolverMatrix() {}
+	virtual ~OperationODESolverMatrix() {}
 
 	/**
 	 * Multiplicates a vector with the matrix
@@ -58,10 +64,26 @@ public:
 	/**
 	 * generates the right hand side of the system
 	 *
-	 * @param data data that is needed to generate the RHS of the system of linear equations
+	 * @param alpha data that is needed to generate the RHS of the system of linear equations
 	 * @param rhs DataVector the contains the RHS
 	 */
-	virtual void generateRHS(DataVector& data, DataVector& rhs) = 0;
+	virtual void generateRHS(DataVector& alpha, DataVector& rhs) = 0;
+
+	/**
+	 * performs some action that might be needed after a timestep has be finished in the ODE
+	 * Solver, e.g. some boundary adjustments.
+	 *
+	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
+	 */
+	virtual void finishTimestep(DataVector& alpha) = 0;
+
+	/**
+	 * performs some action that might be needed before a timestep is executed in the ODE
+	 * Solver, e.g. some boundary adjustments.
+	 *
+	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
+	 */
+	virtual void startTimestep(DataVector& alpha) = 0;
 
 	/**
 	 * get the pointer to the underlying grid object
@@ -73,4 +95,4 @@ public:
 
 }
 
-#endif /* OperationSolverMatrix */
+#endif /* OPERATIONODESOLVERMATRIX_HPP */
