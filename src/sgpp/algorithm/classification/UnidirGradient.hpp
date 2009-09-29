@@ -264,7 +264,7 @@ protected:
 				DataVector temp_two(alpha.getSize());
 				DataVector result_temp(alpha.getSize());
 
-				#pragma omp task
+				#pragma omp task shared(alpha, temp, result)
 				{
 					up(alpha, temp, dim);
 					updown_parallel(temp, result, dim-1, gradient_dim);
@@ -273,7 +273,7 @@ protected:
 				// Same from the other direction:
 				// *D -> *UD and *DD
 
-				#pragma omp task
+				#pragma omp task shared(alpha, temp_two, result_temp)
 				{
 					updown_parallel(alpha, temp_two, dim-1, gradient_dim);
 					down(temp_two, result_temp, dim);
@@ -290,10 +290,10 @@ protected:
 
 				// Terminates dimension recursion
 
-				#pragma omp task
+				#pragma omp task shared(alpha, result)
 				up(alpha, result, dim);
 
-				#pragma omp task
+				#pragma omp task shared(alpha, temp)
 				down(alpha, temp, dim);
 
 				#pragma omp taskwait
@@ -330,7 +330,7 @@ protected:
 			DataVector temp_two(alpha.getSize());
 			DataVector result_temp(alpha.getSize());
 
-			#pragma omp task
+			#pragma omp task shared(alpha, temp, result)
 			{
 				upGradient(alpha, temp, dim);
 				updown_parallel(temp, result, dim-1, gradient_dim);
@@ -339,7 +339,7 @@ protected:
 			// Same from the other direction:
 			// *D -> *UD and *DD
 
-			#pragma omp task
+			#pragma omp task shared(alpha, temp_two, result_temp)
 			{
 				updown_parallel(alpha, temp_two, dim-1, gradient_dim);
 				downGradient(temp_two, result_temp, dim);
@@ -356,10 +356,10 @@ protected:
 			DataVector temp(alpha.getSize());
 			// Terminates dimension recursion
 
-			#pragma omp task
+			#pragma omp task shared(alpha, result)
 			upGradient(alpha, result, dim);
 
-			#pragma omp task
+			#pragma omp task shared(alpha, temp)
 			downGradient(alpha, temp, dim);
 
 			#pragma omp taskwait

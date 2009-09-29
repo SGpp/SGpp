@@ -45,8 +45,48 @@ OperationDeltaLinearTrapezoidBoundary::~OperationDeltaLinearTrapezoidBoundary()
 
 void OperationDeltaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
-	DataVector beta(result.getSize());
 	result.setAll(0.0);
+
+#ifdef USEOMP
+#ifdef USEOMPTHREE
+	DataVector beta(result.getSize());
+
+	for(size_t i = 0; i < storage->dim(); i++)
+	{
+		if (mus->get(i) != 0.0)
+		{
+			#pragma omp parallel
+			{
+				#pragma omp single nowait
+				{
+					this->updown_parallel(alpha, beta, storage->dim() - 1, i);
+				}
+			}
+			result.axpy(mus->get(i),beta);
+		}
+	}
+#endif
+#ifndef USEOMPTHREE
+	#pragma omp parallel shared(result)
+	{
+		#pragma omp for schedule(static)
+		for(size_t i = 0; i < storage->dim(); i++)
+		{
+			DataVector beta(result.getSize());
+
+			if (mus->get(i) != 0.0)
+			{
+				this->updown(alpha, beta, storage->dim() - 1, i);
+
+				#pragma omp critical
+				result.axpy(mus->get(i),beta);
+			}
+		}
+	}
+#endif
+#endif
+#ifndef USEOMP
+	DataVector beta(result.getSize());
 
 	for(size_t i = 0; i < storage->dim(); i++)
 	{
@@ -56,8 +96,10 @@ void OperationDeltaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 			result.axpy(mus->get(i),beta);
 		}
 	}
+#endif
 }
 
+#ifndef USEOMPTHREE
 void OperationDeltaLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 {
 	if(dim == gradient_dim)
@@ -70,23 +112,15 @@ void OperationDeltaLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector
 		if(dim > 0)
 		{
 			// Reordering ups and downs
-			// Use previously calculated ups for all future calculations
-			// U* -> UU* and UD*
-
 			DataVector temp(alpha.getSize());
 			up(alpha, temp, dim);
 			updown(temp, result, dim-1, gradient_dim);
 
 
 			// Same from the other direction:
-			// *D -> *UD and *DD
-
 			DataVector result_temp(alpha.getSize());
 			updown(alpha, temp, dim-1, gradient_dim);
 			down(temp, result_temp, dim);
-
-
-			//Overall memory use: 2*|alpha|*(d-1)
 
 			result.add(result_temp);
 		}
@@ -133,6 +167,105 @@ void OperationDeltaLinearTrapezoidBoundary::gradient(DataVector& alpha, DataVect
 		result.add(temp);
 	}
 }
+#endif
+
+#ifdef USEOMPTHREE
+void OperationDeltaLinearTrapezoidBoundary::updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+{
+	if(dim == gradient_dim)
+	{
+		gradient_parallel(alpha, result, dim, gradient_dim);
+	}
+	else
+	{
+		//Unidirectional scheme
+		if(dim > 0)
+		{
+			// Reordering ups and downs
+			DataVector temp(alpha.getSize());
+			DataVector result_temp(alpha.getSize());
+			DataVector temp_two(alpha.getSize());
+
+			#pragma omp task shared(alpha, temp, result)
+			{
+				up(alpha, temp, dim);
+				updown_parallel(temp, result, dim-1, gradient_dim);
+			}
+
+			// Same from the other direction:
+			#pragma omp task shared(alpha, temp_two, result_temp)
+			{
+				updown_parallel(alpha, temp_two, dim-1, gradient_dim);
+				down(temp_two, result_temp, dim);
+			}
+
+			#pragma omp taskwait
+
+			result.add(result_temp);
+		}
+		else
+		{
+			// Terminates dimension recursion
+			DataVector temp(alpha.getSize());
+
+			#pragma omp task shared(alpha, result)
+			up(alpha, result, dim);
+
+			#pragma omp task shared(alpha, temp)
+			down(alpha, temp, dim);
+
+			#pragma omp taskwait
+
+			result.add(temp);
+		}
+
+	}
+}
+
+void OperationDeltaLinearTrapezoidBoundary::gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+{
+	//Unidirectional scheme
+	if(dim > 0)
+	{
+		// Reordering ups and downs
+		DataVector temp(alpha.getSize());
+		DataVector result_temp(alpha.getSize());
+		DataVector temp_two(alpha.getSize());
+
+		#pragma omp task shared(alpha, temp, result)
+		{
+			upGradient(alpha, temp, dim);
+			updown_parallel(temp, result, dim-1, gradient_dim);
+		}
+
+		// Same from the other direction:
+		#pragma omp task shared(alpha, temp_two, result_temp)
+		{
+			updown_parallel(alpha, temp_two, dim-1, gradient_dim);
+			downGradient(temp_two, result_temp, dim);
+		}
+
+		#pragma omp taskwait
+
+		result.add(result_temp);
+	}
+	else
+	{
+		// Terminates dimension recursion
+		DataVector temp(alpha.getSize());
+
+		#pragma omp task shared(alpha, result)
+		upGradient(alpha, result, dim);
+
+		#pragma omp task shared(alpha, temp)
+		downGradient(alpha, temp, dim);
+
+		#pragma omp taskwait
+
+		result.add(temp);
+	}
+}
+#endif
 
 void OperationDeltaLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {

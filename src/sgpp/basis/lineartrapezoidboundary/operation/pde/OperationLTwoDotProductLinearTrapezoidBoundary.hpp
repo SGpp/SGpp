@@ -28,6 +28,10 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
+#ifdef USEOMPTHREE
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -58,6 +62,7 @@ private:
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
 
+#ifndef USEOMPTHREE
 	/**
 	 * Recursive procedure for updown
 	 *
@@ -66,6 +71,18 @@ private:
 	 * @param result vector to store the results in
 	 */
 	void updown(DataVector& alpha, DataVector& result, size_t dim);
+#endif
+
+#ifdef USEOMPTHREE
+	/**
+	 * Recursive procedure for updown, parallel version using OpenMP 3
+	 *
+	 * @param dim the current dimension
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim);
+#endif
 
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.

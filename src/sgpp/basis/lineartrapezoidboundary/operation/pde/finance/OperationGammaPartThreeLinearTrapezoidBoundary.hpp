@@ -29,6 +29,10 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -65,10 +69,9 @@ protected:
 	/// Pointer to the DataVector of the rhos
 	DataVector* rhos;
 
+#ifndef USEOMPTHREE
 	/**
-	 * Recursive procedure for updown().
-	 *
-	 * @todo (heinecke) add description
+	 * Recursive procedure for updown
 	 *
 	 * @param dim the current dimension
 	 * @param gradient_dim_one the dimension in which to use the first gradient
@@ -81,8 +84,6 @@ protected:
 	/**
 	 * All calculations for gradient
 	 *
-	 * @todo (heinecke) add description
-	 *
 	 * @param alpha the coefficients of the grid points
 	 * @param result the result of the operations
 	 * @param dim the current dimension in the recursion
@@ -92,9 +93,6 @@ protected:
 	void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
 
 	/**
-	 * All calculations for the combined gradient
-	 *
-	 * @todo (heinecke) add description
 	 *
 	 * @param alpha the coefficients of the grid points
 	 * @param result the result of the operations
@@ -103,6 +101,41 @@ protected:
 	 * @param gradient_dim_two the dimension in which to use the second gradient
 	 */
 	void gradientSquared(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+#endif
+#ifdef USEOMPTHREE
+	/**
+	 * Recursive procedure for updown, parallel version using OpenMP 3
+	 *
+	 * @param dim the current dimension
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 */
+	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+
+	/**
+	 * All calculations for gradient, parallel version using OpenMP 3
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 */
+	void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+
+	/**
+	 * All calculations for squared gradient, parallel version using OpenMP 3
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 */
+	void gradientSquared_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+#endif
 
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -130,8 +163,6 @@ protected:
 	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
 	 * in one dimension
 	 *
-	 * @todo (heinecke, nice) complete mathematical description
-	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
@@ -141,8 +172,6 @@ protected:
 	/**
 	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
 	 * in one dimension
-	 *
-	 * @todo (heinecke, nice) complete mathematical description
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
@@ -154,8 +183,6 @@ protected:
 	 * down-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
 	 * in one dimension
 	 *
-	 * @todo (heinecke, nice) complete mathematical description
-	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
@@ -165,8 +192,6 @@ protected:
 	/**
 	 * up-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
 	 * in one dimension
-	 *
-	 * @todo (heinecke, nice) complete mathematical description
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation

@@ -27,10 +27,6 @@
 
 #include "algorithm/common/sweep.hpp"
 
-#ifdef USEOMPTHREE
-#include <omp.h>
-#endif
-
 namespace sg
 {
 
@@ -47,7 +43,7 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::mult(DataVector& alpha, Dat
 {
 	DataVector beta(result.getSize());
 	result.setAll(0.0);
-
+#ifdef USEOMP
 #ifdef USEOMPTHREE
 	#pragma omp parallel
 	{
@@ -56,21 +52,22 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::mult(DataVector& alpha, Dat
 			this->updown_parallel(alpha, beta, storage->dim() - 1);
 		}
 	}
+	result.add(beta);
 #endif
-
+#ifndef USEOMPTHREE
 	this->updown(alpha, beta, storage->dim() - 1);
 
 	result.add(beta);
+#endif
+#endif
+#ifndef USEOMP
+	this->updown(alpha, beta, storage->dim() - 1);
+
+	result.add(beta);
+#endif
 }
 
 #ifndef USEOMPTHREE
-/**
- * Recursive procedure for updown
- *
- * @param dim the current dimension
- * @param alpha vector of coefficients
- * @param result vector to store the results in
- */
 void OperationLTwoDotProductLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector& result, size_t dim)
 {
 	//Unidirectional scheme
@@ -101,13 +98,6 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::updown(DataVector& alpha, D
 #endif
 
 #ifdef USEOMPTHREE
-/**
- * Recursive procedure for updown, parallel version using OpenMP 3
- *
- * @param dim the current dimension
- * @param alpha vector of coefficients
- * @param result vector to store the results in
- */
 void OperationLTwoDotProductLinearTrapezoidBoundary::updown_parallel(DataVector& alpha, DataVector& result, size_t dim)
 {
 	//Unidirectional scheme
@@ -118,14 +108,14 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::updown_parallel(DataVector&
 		DataVector result_temp(alpha.getSize());
 		DataVector temp_two(alpha.getSize());
 
-		#pragma omp task
+		#pragma omp task shared(alpha, temp, result)
 		{
 			up(alpha, temp, dim);
 			updown_parallel(temp, result, dim-1);
 		}
 
 
-		#pragma omp task
+		#pragma omp task shared(alpha, temp_two, result_temp)
 		{
 			updown_parallel(alpha, temp_two, dim-1);
 			down(temp_two, result_temp, dim);
@@ -140,10 +130,10 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::updown_parallel(DataVector&
 		// Terminates dimension recursion
 		DataVector temp(alpha.getSize());
 
-		#pragma omp task
+		#pragma omp task shared(alpha, result)
 		up(alpha, result, dim);
 
-		#pragma omp task
+		#pragma omp task shared(alpha, temp)
 		down(alpha, temp, dim);
 
 		#pragma omp taskwait
