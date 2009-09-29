@@ -23,7 +23,6 @@
 #ifndef CRANKNICOLSON_HPP
 #define CRANKNICOLSON_HPP
 
-#include "operation/common/OperationSolverMatrix.hpp"
 #include "solver/ODESolver.hpp"
 
 namespace sg
@@ -60,7 +59,7 @@ public:
 	 */
 	virtual ~CrankNicolson();
 
-	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+	virtual void solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
 };
 
 }

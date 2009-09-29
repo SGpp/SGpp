@@ -37,7 +37,7 @@ CrankNicolson::~CrankNicolson()
 {
 }
 
-void CrankNicolson::solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+void CrankNicolson::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
 	/*DataVector rhs(alpha.getSize());
 	DataVector saveAlpha(alpha.getSize());

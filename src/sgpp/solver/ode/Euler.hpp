@@ -24,7 +24,6 @@
 #define EULER_HPP
 
 #include "application/common/ScreenOutput.hpp"
-#include "operation/common/OperationMatrix.hpp"
 #include "solver/ODESolver.hpp"
 #include <string>
 
@@ -73,7 +72,7 @@ public:
 	 */
 	virtual ~Euler();
 
-	virtual void solve(OperationSolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+	virtual void solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
 };
 
 }

@@ -27,7 +27,7 @@ void testHeatEquation()
 	size_t dim = 1;
 	size_t level = 6;
 
-	size_t timesteps = 100;
+	size_t timesteps = 1000;
 	double stepsize = 0.1;
 	size_t CGiterations = 8000;
 	double CGepsilon = 0.00000001;
@@ -59,7 +59,7 @@ void testHeatEquation()
 	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
 
 	//myHESolver->initGridWithSingleHeat(*alpha, 100.0);
-	myHESolver->initGridWithSmoothHeat(*alpha, 3.0, 0.90, 10);
+	myHESolver->initGridWithSmoothHeat(*alpha, 3.0, 0.60, 5.0);
 	//myHESolver->initGridWithConstantHeat(*alpha, 4.0);
 
 	// Print the initial heat function into a gnuplot file
@@ -67,7 +67,7 @@ void testHeatEquation()
 
 	// Start solving the Heat Equation
 	//myHESolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true, true, 50);
-	myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true, true, 50);
+	myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true, false, 50);
 	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha);
 
 	// Print the solved Heat Equation into a gnuplot file

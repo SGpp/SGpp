@@ -25,7 +25,7 @@
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/common/OperationSolverMatrix.hpp"
+#include "operation/common/OperationODESolverMatrix.hpp"
 
 #include <string>
 
@@ -35,7 +35,7 @@ namespace sg
 /**
  * @todo (heinecke) add description here
  */
-class HeatEquationTimestepMatrix : public OperationSolverMatrix
+class HeatEquationTimestepMatrix : public OperationODESolverMatrix
 {
 private:
 	/// the heat coefficient
@@ -92,6 +92,10 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result);
 
 	virtual void generateRHS(DataVector& data, DataVector& rhs);
+
+	virtual void finishTimestep(DataVector& alpha);
+
+	virtual void startTimestep(DataVector& alpha);
 
 	virtual Grid* getGrid();
 };

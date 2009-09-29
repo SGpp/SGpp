@@ -25,7 +25,8 @@
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/common/OperationSolverMatrix.hpp"
+#include "operation/common/OperationODESolverMatrix.hpp"
+#include "grid/common/DirichletUpdateVector.hpp"
 
 namespace sg
 {
@@ -33,7 +34,7 @@ namespace sg
 /**
  * @todo (heinecke) add description here
  */
-class BlackScholesTimestepMatrix : public OperationSolverMatrix
+class BlackScholesTimestepMatrix : public OperationODESolverMatrix
 {
 private:
 	/// the riskfree interest rate
@@ -53,7 +54,9 @@ private:
 	/// Pointer to the rhos;
 	DataVector* rhos;
 	/// the LTwoDotProduct Operation (Mass Matrix)
-	OperationMatrix* OpMass;
+	OperationMatrix* OpLTwo;
+	/// Routine to modify the boundaries of the grid
+	DirichletUpdateVector* BoundaryUpdate;
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
 	 *  ExEul for explicit Euler
@@ -106,6 +109,10 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result);
 
 	virtual void generateRHS(DataVector& data, DataVector& rhs);
+
+	virtual void finishTimestep(DataVector& alpha);
+
+	virtual void startTimestep(DataVector& alpha);
 
 	virtual Grid* getGrid();
 };

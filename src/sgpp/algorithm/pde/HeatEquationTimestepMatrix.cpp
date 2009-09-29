@@ -131,6 +131,14 @@ void HeatEquationTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	result.axpy((-1.0)*this->a,temp);
 }
 
+void HeatEquationTimestepMatrix::finishTimestep(DataVector& alpha)
+{
+}
+
+void HeatEquationTimestepMatrix::startTimestep(DataVector& alpha)
+{
+}
+
 Grid* HeatEquationTimestepMatrix::getGrid()
 {
 	return myGrid;

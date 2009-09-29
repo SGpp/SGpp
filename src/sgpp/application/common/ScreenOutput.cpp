@@ -50,11 +50,11 @@ void ScreenOutput::update(int progress, std::string status)
 
 	std::cout << "[";
 
-	for(i=0; i<(progress/2); i++)
+	for(i=0; i<((int)(((double)progress)*0.64)); i++)
 	{
 		std::cout << '\xdb';
 	}
-	for(; i<50; i++)
+	for(; i<64; i++)
 	{
 		std::cout << " ";
 	}
@@ -85,11 +85,11 @@ void ScreenOutput::update(size_t progress, std::string status)
 
 	std::cout << "[";
 
-	for(i=0; i<(progress/2); i++)
+	for(i=0; i<((int)(((double)progress)*0.64)); i++)
 	{
 		std::cout << "=";
 	}
-	for(; i<50; i++)
+	for(; i<64; i++)
 	{
 		std::cout << " ";
 	}

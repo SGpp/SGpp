@@ -27,6 +27,10 @@
 
 #include "algorithm/common/sweep.hpp"
 
+#ifdef USEOMPTHREE
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -44,11 +48,22 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::mult(DataVector& alpha, Dat
 	DataVector beta(result.getSize());
 	result.setAll(0.0);
 
+#ifdef USEOMPTHREE
+	#pragma omp parallel
+	{
+		#pragma omp single nowait
+		{
+			this->updown_parallel(alpha, beta, storage->dim() - 1);
+		}
+	}
+#endif
+
 	this->updown(alpha, beta, storage->dim() - 1);
 
 	result.add(beta);
 }
 
+#ifndef USEOMPTHREE
 /**
  * Recursive procedure for updown
  *
@@ -70,7 +85,6 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::updown(DataVector& alpha, D
 		updown(alpha, temp, dim-1);
 		down(temp, result_temp, dim);
 
-		//Overall memory use: 2*|alpha|*(d-1)
 		result.add(result_temp);
 	}
 	else
@@ -84,6 +98,60 @@ void OperationLTwoDotProductLinearTrapezoidBoundary::updown(DataVector& alpha, D
 		result.add(temp);
 	}
 }
+#endif
+
+#ifdef USEOMPTHREE
+/**
+ * Recursive procedure for updown, parallel version using OpenMP 3
+ *
+ * @param dim the current dimension
+ * @param alpha vector of coefficients
+ * @param result vector to store the results in
+ */
+void OperationLTwoDotProductLinearTrapezoidBoundary::updown_parallel(DataVector& alpha, DataVector& result, size_t dim)
+{
+	//Unidirectional scheme
+	if(dim > 0)
+	{
+		// Reordering ups and downs
+		DataVector temp(alpha.getSize());
+		DataVector result_temp(alpha.getSize());
+		DataVector temp_two(alpha.getSize());
+
+		#pragma omp task
+		{
+			up(alpha, temp, dim);
+			updown_parallel(temp, result, dim-1);
+		}
+
+
+		#pragma omp task
+		{
+			updown_parallel(alpha, temp_two, dim-1);
+			down(temp_two, result_temp, dim);
+		}
+
+		#pragma omp taskwait
+
+		result.add(result_temp);
+	}
+	else
+	{
+		// Terminates dimension recursion
+		DataVector temp(alpha.getSize());
+
+		#pragma omp task
+		up(alpha, result, dim);
+
+		#pragma omp task
+		down(alpha, temp, dim);
+
+		#pragma omp taskwait
+
+		result.add(temp);
+	}
+}
+#endif
 
 void OperationLTwoDotProductLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
