@@ -265,4 +265,68 @@ void BlackScholesSolver::initScreen()
 	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
+void BlackScholesSolver::writeHelp()
+{
+	std::stringstream mySStream;
+
+	if (myScreen != NULL)
+	{
+		mySStream << "Some instructions for the use of Black Scholes Solver:" << std::endl;
+		mySStream << "------------------------------------------------------" << std::endl << std::endl;
+		mySStream << "Available execution modes are:" << std::endl;
+		mySStream << "	test1D		Solves a simple 1D example" << std::endl;
+		mySStream << "	test2D		Solves a 2D example" << std::endl;
+		mySStream << "	solveBonn	Solves an option delivered in Bonn's format" << std::endl << std::endl;
+
+		mySStream << "test1D" << std::endl << "------" << std::endl;
+		mySStream << "the following options must be specified:" << std::endl;
+		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+		mySStream << "	strike: the strike of the call option" << std::endl;
+		mySStream << "	r: the riskfree rate" << std::endl;
+		mySStream << "	T: time to maturity" << std::endl;
+		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
+		mySStream << std::endl;
+		mySStream << "Example:" << std::endl;
+		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 " << "400 " << "0.000001 " << "noanimation" << std::endl;
+		mySStream << std::endl;
+		mySStream << "Remark: This test generates following output files:" << std::endl;
+		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+		mySStream << "	analyticBS.gnuplot: the analytical solution" << std::endl;
+		mySStream << std::endl << std::endl;
+
+		mySStream << "test2D" << std::endl << "------" << std::endl;
+		mySStream << "the following options must be specified:" << std::endl;
+		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+		mySStream << "	strike1: the strike 1 of the call option" << std::endl;
+		mySStream << "	strike2: the strike 1 of the call option" << std::endl;
+		mySStream << "	r: the riskfree rate" << std::endl;
+		mySStream << "	T: time to maturity" << std::endl;
+		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
+		mySStream << std::endl;
+		mySStream << "Example:" << std::endl;
+		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 " << "400 " << "0.000001 " << "noanimation" << std::endl;
+		mySStream << std::endl;
+		mySStream << "Remark: This test generates following output files:" << std::endl;
+		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+		mySStream << std::endl << std::endl;
+
+		mySStream << "solveBonn" << std::endl << "---------" << std::endl;
+
+		mySStream << std::endl << std::endl;
+		myScreen->writeHelp(mySStream.str());
+	}
+}
+
 }
