@@ -45,15 +45,19 @@ class TestDataVector(unittest.TestCase):
         from pysgpp import DataVector
         import random
 
+        ## number of rows
         self.nrows = 5
+        ## number of columns
         self.ncols = 4
+        ## number of entries
         self.N = self.nrows*self.ncols
-        # random list
+        ## random list of lists
         self.l_rand = [[2*(random.random()-0.5) for j in xrange(self.ncols)] for i in xrange(self.nrows)]
+        ## same as l_rand, but flattened
         self.l_rand_total = []
         for li in self.l_rand:
             self.l_rand_total.extend(li)
-        # Data Vector
+        ## Data Vector, corresponding to l_rand
         self.d_rand = DataVector(self.nrows,self.ncols)
         for i in xrange(self.N):
             self.d_rand[i] = self.l_rand_total[i]
