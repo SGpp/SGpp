@@ -24,7 +24,86 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include <fstream>
 
+/**
+ * reads the values of mu, sigma and rho of all assets from
+ * a file and stores them into three separated DataVectors
+ *
+ * @param tFile the file that contains the stochastic data
+ * @param numAssests the of Assets stored in the file
+ * @param mu DataVector for the exspected values
+ * @param sigma DataVector for standard deviation
+ * @param rho DataVector for the correlations
+ */
+void readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigma, DataVector& rho)
+{
+	std::fstream file;
+	double cur_mu;
+	double cur_sigma;
+	double cur_rho;
+
+	file.open(tFile.c_str());
+
+	for (size_t i = 0; i < numAssests; i++)
+	{
+		file >> cur_mu;
+		file >> cur_sigma;
+		mu.set(i, cur_mu);
+		sigma.set(i, cur_sigma);
+		for (size_t j = 0; j < numAssests; j++)
+		{
+			file >> cur_rho;
+			rho.set((i*numAssests)+j, cur_rho);
+		}
+	}
+
+	file.close();
+}
+
+/**
+ * reads the values of the Bounding Box
+ *
+ * @param tFile the file that contains the stochastic data
+ * @param numAssests the of Assets stored in the file
+ * @param BoundaryArray Pointer to the Bounding Box array
+ */
+void readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
+{
+	std::fstream file;
+	double cur_right;
+	double cur_left;
+
+	file.open(tFile.c_str());
+
+	for (size_t i = 0; i < numAssests; i++)
+	{
+		file >> cur_left;
+		file >> cur_right;
+
+		BoundaryArray[i].leftBoundary = cur_left;
+		BoundaryArray[i].rightBoundary = cur_right;
+		BoundaryArray[i].bDirichletLeft = true;
+		BoundaryArray[i].bDirichletRight = true;
+	}
+
+	file.close();
+}
+
+/**
+ * Do a Black Scholes solver test with one asset (1D Sparse Grid) call option
+ *
+ * @param l the number of levels used in the Sparse Grid
+ * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
+ * @param fileBound filename of the file that contains the grid's bounding box
+ * @param strike1 the strike of the call option
+ * @param riskfree the riskfree rate of the marketmodel
+ * @param timeSt the number of timesteps that are executed during the solving process
+ * @param dt the size of delta t in the ODE solver
+ * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
+ * @param CGeps the epsilon used in the CG/BiCGStab
+ * @param animation set this to true if you want to create several pictures during solving in order to create an animation
+ */
 void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, double strike1, double riskfree, size_t timeSt,
 						double dt, size_t CGIt, double CGeps, bool animation)
 {
@@ -38,26 +117,16 @@ void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, d
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 
-	DataVector mu(1);
-	DataVector sigma(1);
-	DataVector rho(1);
+	DataVector mu(dim);
+	DataVector sigma(dim);
+	DataVector rho(dim);
 
 	double r = riskfree;
 
-	mu.set(0, 0.00);
-	sigma.set(0, 0.40);
-	rho.set(0, 1.0);
+	readStochasticData(fileStoch, dim, mu, sigma, rho);
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-
-	// set the bounding box
-	for (size_t i = 0; i < dim; i++)
-	{
-		myBoundaries[i].leftBoundary = 0.0;
-		myBoundaries[i].rightBoundary = 100.0;
-		myBoundaries[i].bDirichletLeft = true;
-		myBoundaries[i].bDirichletRight = true;
-	}
+	readBoudingBoxData(fileBound, dim, myBoundaries);
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
@@ -100,6 +169,21 @@ void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, d
 	delete alpha;
 }
 
+/**
+ * Do a Black Scholes solver test with one asset (1D Sparse Grid) call option
+ *
+ * @param l the number of levels used in the Sparse Grid
+ * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
+ * @param fileBound filename of the file that contains the grid's bounding box
+ * @param strike1 the strike of the call option, first asset
+ * @param strike2 the strike of the call option, second asset
+ * @param riskfree the riskfree rate of the marketmodel
+ * @param timeSt the number of timesteps that are executed during the solving process
+ * @param dt the size of delta t in the ODE solver
+ * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
+ * @param CGeps the epsilon used in the CG/BiCGStab
+ * @param animation set this to true if you want to create several pictures during solving in order to create an animation
+ */
 void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, double strike1, double strike2, double riskfree, size_t timeSt,
 		double dt, size_t CGIt, double CGeps, bool animation)
 {
@@ -114,31 +198,16 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 
-	DataVector mu(2);
-	DataVector sigma(2);
-	DataVector rho(2,2);
+	DataVector mu(dim);
+	DataVector sigma(dim);
+	DataVector rho(dim,dim);
 
 	double r = riskfree;
 
-	mu.set(0, 0.00);
-	mu.set(1, 0.00);
-	sigma.set(0, 0.40);
-	sigma.set(1, 0.60);
-	rho.set(0, 1.0);
-	rho.set(1, 0.1);
-	rho.set(2, 0.1);
-	rho.set(3, 1.0);
+	readStochasticData(fileStoch, dim, mu, sigma, rho);
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-
-	// set the bounding box
-	for (size_t i = 0; i < dim; i++)
-	{
-		myBoundaries[i].leftBoundary = 0.0;
-		myBoundaries[i].rightBoundary = 1.0;
-		myBoundaries[i].bDirichletLeft = true;
-		myBoundaries[i].bDirichletRight = true;
-	}
+	readBoudingBoxData(fileBound, dim, myBoundaries);
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
@@ -175,6 +244,10 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 	delete alpha;
 }
 
+/**
+ * Calls the writeHelp method in the BlackScholesSolver Object
+ * after creating a screen.
+ */
 void writeHelp()
 {
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
@@ -188,6 +261,13 @@ void writeHelp()
 	delete myBSSolver;
 }
 
+/**
+ * main routine of the application, do some first cli
+ * correction test and branches to right solver configuration
+ *
+ * @param argc contains the number of cli arguments
+ * @param argv contains the cli arguments as C-Strings
+ */
 int main(int argc, char *argv[])
 {
 	std::string option;
