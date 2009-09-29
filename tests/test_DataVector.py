@@ -26,7 +26,7 @@ import unittest
 
 ##
 # @package tests.test_DataVector
-# Class test_DataVector::TestDataVector with unittests for DataVector
+# Contains class test_DataVector::TestDataVector with unittests for DataVector
 
 ##
 # Class with unittests for DataVector
