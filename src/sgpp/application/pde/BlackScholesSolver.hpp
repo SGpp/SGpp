@@ -152,7 +152,7 @@ public:
 	 * Call this routine to use an explicit Euler algorithm to solve the multi dimensional
 	 * Black Scholes Equation.
 	 *
-	 * @param numTimestpes the number of timesteps that should be executed
+	 * @param numTimesteps the number of timesteps that should be executed
 	 * @param timestepsize the size of the interval one timestep moves forward
 	 * @param maxCGIterations the maximum of interation in the CG solver
 	 * @param epsilonCG the epsilon used in the CG
@@ -167,7 +167,7 @@ public:
 	 * Call this routine to use an explicit Euler algorithm to solve the multi dimensional
 	 * Black Scholes Equation.
 	 *
-	 * @param numTimestpes the number of timesteps that should be executed
+	 * @param numTimesteps the number of timesteps that should be executed
 	 * @param timestepsize the size of the interval one timestep moves forward
 	 * @param maxCGIterations the maximum of interation in the CG solver
 	 * @param epsilonCG the epsilon used in the CG
@@ -182,7 +182,7 @@ public:
 	 * Call this routine to use the Crank Nicolson algorithm to solve the multi dimensional
 	 * Black Scholes Equation.
 	 *
-	 * @param numTimestpes the number of timesteps that should be executed
+	 * @param numTimesteps the number of timesteps that should be executed
 	 * @param timestepsize the size of the interval one timestep moves forward
 	 * @param maxCGIterations the maximum of interation in the CG solver
 	 * @param epsilonCG the epsilon used in the CG
@@ -198,7 +198,7 @@ public:
 	 * be determined and compared.
 	 *
 	 * @param premiums the result vector, here the combinations of stock price and premium are stored
-	 * @parma maxStock the maximum stock regarded in these calculations
+	 * @param maxStock the maximum stock regarded in these calculations
 	 * @param StockInc the increase of the stockprice in one step
 	 * @param strike the strike price of the Option
 	 * @param t time to maturity
@@ -220,7 +220,7 @@ public:
 	 * Is only implemented for 1D and 2D grids!
 	 *
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
-	 * @param resolution the distance between evalution points
+	 * @param PointesPerDimension the distance between evalution points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
 	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename);

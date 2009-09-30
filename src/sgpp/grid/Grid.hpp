@@ -279,10 +279,10 @@ public:
 	/**
 	 * Insert one point to the grid
 	 *
-	 * @param dim size_t dimension of the grid
-	 * @param unsigned_int[] levels array with levels of the point
-	 * @param unsigned_int[] indices array with indices of the point
-	 * @param bool isLeaf indicator whether the point is a leaf
+	 * @param dim dimension of the grid
+	 * @param levels array with levels of the point
+	 * @param indices array with indices of the point
+	 * @param isLeaf indicator whether the point is a leaf
 	 */
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
 

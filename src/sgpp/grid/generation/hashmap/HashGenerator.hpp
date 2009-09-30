@@ -92,7 +92,7 @@ public:
 	 *
 	 * @param storage Hashmap, that stores the grid points
 	 * @param level maximum level of the sparse grid
-	 * @param TrapezoidBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
+	 * @param bTrapezoidBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
 	 */
 	void regularWithBoundaries(GridStorage* storage, int level, bool bTrapezoidBoundaries)
 	{

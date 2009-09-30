@@ -42,9 +42,10 @@ def testHierarchisationResults(node1, node2):
 
 #-------------------------------------------------------------------------------
 ## Hierarchise and dechierarchise a regular sparse grid for a given function and test.
-# @param 
-# @param 
-# @return 
+# @param obj reference to unittest
+# @param grid the grid object
+# @param level the number of levels used in the grid
+# @param function string of function which to use for test
 def testHierarchisationDehierarchisation(obj, grid, level, function):
     node_values = None
     node_values_back = None

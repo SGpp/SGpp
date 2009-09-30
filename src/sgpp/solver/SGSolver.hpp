@@ -90,7 +90,7 @@ public:
 	/**
 	 * resets the number of maximum iterations
 	 *
-	 * @param iterations the new number of maximum iterations
+	 * @param nIterations the new number of maximum iterations
 	 */
 	void setMaxIterations(size_t nIterations)
 	{
