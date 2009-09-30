@@ -88,7 +88,7 @@ public:
 	 *
 	 * initializes the boundingBox with a reference to another boundingbox
 	 *
-	 * @param dim the dimension of the sparse grid
+	 * @param creationBoundingBox reference to bounding box object that describes the grid boundaries
 	 */
 	HashGridStorage(BoundingBox& creationBoundingBox) : DIM(), list(), map()
 	{
@@ -113,7 +113,6 @@ public:
 	 * Constructor that reads the data from an input stream
 	 *
 	 * @param istream the inputstream that contains the data
-	 * @param bfixDirechletBoundaries boolean to specify that the boundary values are fixed during the computation on the grid (direchlet boundaries)
 	 */
 	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
 	{

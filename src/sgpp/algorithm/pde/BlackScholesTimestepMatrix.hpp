@@ -91,7 +91,7 @@ public:
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
-	 * @param sigma reference to the mus
+	 * @param mu reference to the mus
 	 * @param sigma reference to the sigmas
 	 * @param rho reference to the rhos
 	 * @param r the riskfree interest rate

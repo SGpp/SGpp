@@ -63,7 +63,7 @@ public:
 	 * @param epsilonCG the epsilon used in CG
 	 * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
 	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
-	 * @parma screen possible pointer to a ScreenOutput object
+	 * @param screen possible pointer to a ScreenOutput object
 	 */
 	Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false, size_t numEvalsAnimation = 20, ScreenOutput* screen = NULL);
 

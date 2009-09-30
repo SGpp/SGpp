@@ -32,26 +32,13 @@
 
 namespace sg
 {
-/**
- * Implements the hierarchisation on a sprase grid with mod wavelets base functions
- *
- * @param node_values the functions values in the node base
- *
- * @todo (heinecke, nice) Implement the hierarchisation on the sparse grid with mod wavelets base functions
- */
-void OperationhierarchisationModWavelet::doHierarchisation(DataVector& node_values)
+
+void OperationHierarchisationModWavelet::doHierarchisation(DataVector& node_values)
 {
 	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
-/**
- * Implements the dehierarchisation on a sprase grid with mod wavelets base functions
- *
- * @param alpha the coefficients of the sparse grid's base functions
- *
- * @todo (heinecke, nice) Implement the dehierarchisation on the sparse grid with mod wavelets base functions
- */
-void OperationhierarchisationModWavelet::doDehierarchisation(DataVector& alpha)
+void OperationHierarchisationModWavelet::doDehierarchisation(DataVector& alpha)
 {
 	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
