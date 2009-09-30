@@ -115,12 +115,26 @@ public:
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
 	/**
+	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
+	 *
 	 * Use this routine if you want to solve a problem stored in the format provided by the solving system
 	 * released by the University of Bonn, Germany
 	 *
 	 * @param tfilename absolute path of the file
+	 * @param emptyAlpha reference to a DataVector object that contains no elements
+	 * @param ishierarchized is set to true if alpha contains surplus after reading the file, otherwise false
 	 */
-	void constructGrid(std::string tfilename);
+	void constructGrid(std::string tfilename, DataVector& emptyAlpha, bool& ishierarchized);
+
+	/**
+	 * Use this routine if you wnat to store a grid in the format provided by the solving system
+	 * released by the University of Bonn, Germany
+	 *
+	 * @param tfilename absolute path of the file
+	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
+	 * @param ishierarchized set to true, the export is done on the nodal basis
+	 */
+	void storeGrid(std::string tfilename, DataVector& alpha, bool ishierarchized);
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
@@ -212,9 +226,10 @@ public:
 	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename);
 
 	/**
-	 * Inits the alpha vector with a payoff function
+	 * Inits the alpha vector with a payoff function of a call option
 	 *
-	 * @todo (heinecke) move this into a class that provide such tools
+	 * @param alpha the coefficient vector of the grid's ansatzfunctions
+	 * @param strike pointer to an array the contains all call options strikes
 	 */
 	void initGridWithPayoff(DataVector& alpha, double* strike);
 
@@ -225,6 +240,14 @@ public:
 	 * @return the number of grid points
 	 */
 	size_t getNumberGridPoints();
+
+	/**
+	 * use this the determine the number of dimensions that are currently used
+	 * in the solver.
+	 *
+	 * @return returns the number of the grid's dimensions, if the grid isn't constructed, yet it returns 0
+	 */
+	size_t getNumberDimensions();
 
 	/**
 	 * Inits the screen object

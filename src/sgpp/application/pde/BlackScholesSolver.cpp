@@ -70,12 +70,77 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	myBoundingBox = myGrid->getBoundingBox();
 	myGridStorage = myGrid->getStorage();
 
+	//std::string serGrid;
+	//myGrid->serialize(serGrid);
+	//std::cout << serGrid << std::endl;
+
 	bGridConstructed = true;
 }
 
-void BlackScholesSolver::constructGrid(std::string tfilename)
+void BlackScholesSolver::constructGrid(std::string tfilename, DataVector& emptyAlpha, bool& ishierarchized)
 {
-	// @todo (heinecke) implement this
+	IOToolBonnSG* myImporter = new IOToolBonnSG();
+	std::string serGrid;
+
+	// test if emptyAlpha is really empty
+	if (emptyAlpha.getSize() != 0)
+	{
+		// @todo (heinecke) thrown an application exception
+		return;
+	}
+
+	myImporter->readFile(tfilename, serGrid, emptyAlpha, ishierarchized);
+
+	myGrid = Grid::unserialize(serGrid);
+
+	myBoundingBox = myGrid->getBoundingBox();
+	myGridStorage = myGrid->getStorage();
+
+	// Set every boundary to dirichlet boundaries
+	for (size_t i = 0; i < myGridStorage->dim(); i++)
+	{
+		DimensionBoundary myDimBound = myBoundingBox->getBoundary(i);
+
+		myDimBound.bDirichletLeft = true;
+		myDimBound.bDirichletRight = true;
+
+		myBoundingBox->setBoundary(i, myDimBound);
+	}
+
+	if (ishierarchized == false)
+	{
+		OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(emptyAlpha);
+		delete myHierarchisation;
+	}
+
+	bGridConstructed = true;
+
+	delete myImporter;
+}
+
+void BlackScholesSolver::storeGrid(std::string tfilename, DataVector& alpha, bool ishierarchized)
+{
+	IOToolBonnSG* myExporter = new IOToolBonnSG();
+	DataVector copyAlpha(alpha);
+
+	if (bGridConstructed)
+	{
+		if (ishierarchized == false)
+		{
+			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			myHierarchisation->doDehierarchisation(copyAlpha);
+			delete myHierarchisation;
+		}
+
+		myExporter->writeFile(tfilename, *myGrid, copyAlpha, ishierarchized);
+	}
+	else
+	{
+		// @todo (heinecke) through an application exception here
+	}
+
+	delete myExporter;
 }
 
 void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r)
@@ -208,6 +273,19 @@ size_t BlackScholesSolver:: getNumberGridPoints()
 	}
 }
 
+size_t BlackScholesSolver:: getNumberDimensions()
+{
+	if (bGridConstructed)
+	{
+		return myGridStorage->dim();
+	}
+	else
+	{
+		// @todo (heinecke) throw an application exception
+		return 0;
+	}
+}
+
 double BlackScholesSolver::get1DPayoffValue(double assetValue, double strike)
 {
 	if (assetValue <= strike)
@@ -323,6 +401,18 @@ void BlackScholesSolver::writeHelp()
 		mySStream << std::endl << std::endl;
 
 		mySStream << "solveBonn" << std::endl << "---------" << std::endl;
+		mySStream << "the following options must be specified:" << std::endl;
+		mySStream << "	file_grid_in: file the specifies the unsolved grid" << std::endl;
+		mySStream << "	file_grid_out: file that contains the solved grid when finished" << std::endl;
+		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+		mySStream << "	r: the riskfree rate" << std::endl;
+		mySStream << "	T: time to maturity" << std::endl;
+		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+		mySStream << std::endl;
+		mySStream << "Example:" << std::endl;
+		mySStream << "grid.in grid.out " << "stoch.data " << "0.05 " << "1.0 " << "0.1 " << "400 " << "0.000001 " << std::endl;
 
 		mySStream << std::endl << std::endl;
 		myScreen->writeHelp(mySStream.str());

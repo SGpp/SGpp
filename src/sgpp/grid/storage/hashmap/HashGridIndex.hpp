@@ -113,7 +113,7 @@ public:
         {
 			istream >> level[d];
 			istream >> index[d];
-        }
+        };
 
         if (version >= 2 && version != 4)
         {
