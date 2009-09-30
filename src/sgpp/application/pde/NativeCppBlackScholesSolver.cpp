@@ -103,9 +103,10 @@ void readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBound
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param animation set this to true if you want to create several pictures during solving in order to create an animation
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
 void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, double strike1, double riskfree, size_t timeSt,
-						double dt, size_t CGIt, double CGeps, bool animation)
+						double dt, size_t CGIt, double CGeps, bool animation, std::string Solver)
 {
 	size_t dim = 1;
 	size_t level = l;
@@ -150,18 +151,34 @@ void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, d
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	//myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 50);
-	myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 50);
-	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	if (Solver == "ExEul")
+	{
+		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
+	}
+	else if (Solver == "ImEul")
+	{
+		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
+	}
+	else if (Solver == "CrNic")
+	{
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	}
+	else
+	{
+		std::cout << "!!!! Use have chosen an unsupoorted solver type !!!!" << std::endl;
+	}
 
-	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
+	if (Solver == "ImEul" || Solver == "ExEul" || Solver == "CrNic")
+	{
+		// Print the solved Black Scholes Equation into a gnuplot file
+		myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
 
-	// Do analytic test
-	std::vector< std::pair<double, double> >premium;
-	double t = (((double)timesteps)*stepsize);
-	myBSSolver->solve1DAnalytic(premium, myBoundaries[0].rightBoundary, myBoundaries[0].rightBoundary/50.0, strike[0], t);
-	myBSSolver->print1DAnalytic(premium, "analyticBS.gnuplot");
+		// Do analytic test
+		std::vector< std::pair<double, double> >premium;
+		double t = (((double)timesteps)*stepsize);
+		myBSSolver->solve1DAnalytic(premium, myBoundaries[0].rightBoundary, myBoundaries[0].rightBoundary/50.0, strike[0], t);
+		myBSSolver->print1DAnalytic(premium, "analyticBS.gnuplot");
+	}
 
 	delete[] myBoundaries;
 	delete myBSSolver;
@@ -183,9 +200,10 @@ void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, d
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param animation set this to true if you want to create several pictures during solving in order to create an animation
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
 void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, double strike1, double strike2, double riskfree, size_t timeSt,
-		double dt, size_t CGIt, double CGeps, bool animation)
+		double dt, size_t CGIt, double CGeps, bool animation, std::string Solver)
 {
 	size_t dim = 2;
 	size_t level = l;
@@ -232,12 +250,28 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	//myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
-	myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
-	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	if (Solver == "ExEul")
+	{
+		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
+	}
+	else if (Solver == "ImEul")
+	{
+		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
+	}
+	else if (Solver == "CrNic")
+	{
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	}
+	else
+	{
+		std::cout << "!!!! Use have chosen an unsupoorted solver type !!!!" << std::endl;
+	}
 
-	// Print the solved Black Scholes Equation into a gnuplot file
-	myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+	{
+		// Print the solved Black Scholes Equation into a gnuplot file
+		myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+	}
 
 	delete myBSSolver;
 	delete myBoundingBox;
@@ -255,9 +289,10 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
 void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, double riskfree, size_t timeSt,
-		double dt, size_t CGIt, double CGeps)
+		double dt, size_t CGIt, double CGeps, std::string Solver)
 {
 	size_t dim;
 	bool hier;
@@ -292,15 +327,31 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
-	//myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	if (Solver == "ExEul")
+	{
+		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "ImEul")
+	{
+		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "CrNic")
+	{
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	}
+	else
+	{
+		std::cout << "!!!! Use have chosen an unsupoorted solver type !!!!" << std::endl;
+	}
 
-	// Print the solved Black Scholes Equation into a gnuplot file
-	//myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+	{
+		// Print the solved Black Scholes Equation into a gnuplot file
+		//myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
 
-	// export the grid, store it to Bonn's format
-	myBSSolver->storeGrid(fileOut, *alpha, hier);
+		// export the grid, store it to Bonn's format
+		myBSSolver->storeGrid(fileOut, *alpha, hier);
+	}
 
 	delete myBSSolver;
 	delete alpha;
@@ -345,33 +396,6 @@ int main(int argc, char *argv[])
 
 	if (option == "test1D")
 	{
-		if (argc != 12)
-		{
-			writeHelp();
-		}
-		else
-		{
-			std::string fileStoch;
-			std::string fileBound;
-			std::string ani;
-			bool animation;
-
-			fileStoch.assign(argv[4]);
-			fileBound.assign(argv[3]);
-			ani.assign(argv[11]);
-			if (ani == "animation")
-			{
-				animation = true;
-			}
-			else
-			{
-				animation = false;
-			}
-			testOneUnderlying(atoi(argv[2]), fileStoch, fileBound, atof(argv[5]), atof(argv[6]), (size_t)(atof(argv[7])/atof(argv[8])), atof(argv[8]), atoi(argv[9]), atof(argv[10]), animation);
-		}
-	}
-	else if (option == "test2D")
-	{
 		if (argc != 13)
 		{
 			writeHelp();
@@ -381,10 +405,12 @@ int main(int argc, char *argv[])
 			std::string fileStoch;
 			std::string fileBound;
 			std::string ani;
+			std::string solver;
 			bool animation;
 
 			fileStoch.assign(argv[4]);
 			fileBound.assign(argv[3]);
+			solver.assign(argv[9]);
 			ani.assign(argv[12]);
 			if (ani == "animation")
 			{
@@ -394,12 +420,41 @@ int main(int argc, char *argv[])
 			{
 				animation = false;
 			}
-			testTwoUnderlyings(atoi(argv[2]), fileStoch, fileBound, atof(argv[5]), atof(argv[6]), atof(argv[7]), (size_t)(atof(argv[8])/atof(argv[9])), atof(argv[9]), atoi(argv[10]), atof(argv[11]), animation);
+			testOneUnderlying(atoi(argv[2]), fileStoch, fileBound, atof(argv[5]), atof(argv[6]), (size_t)(atof(argv[7])/atof(argv[8])), atof(argv[8]), atoi(argv[10]), atof(argv[11]), animation, solver);
+		}
+	}
+	else if (option == "test2D")
+	{
+		if (argc != 14)
+		{
+			writeHelp();
+		}
+		else
+		{
+			std::string fileStoch;
+			std::string fileBound;
+			std::string ani;
+			std::string solver;
+			bool animation;
+
+			fileStoch.assign(argv[4]);
+			fileBound.assign(argv[3]);
+			solver.assign(argv[10]);
+			ani.assign(argv[13]);
+			if (ani == "animation")
+			{
+				animation = true;
+			}
+			else
+			{
+				animation = false;
+			}
+			testTwoUnderlyings(atoi(argv[2]), fileStoch, fileBound, atof(argv[5]), atof(argv[6]), atof(argv[7]), (size_t)(atof(argv[8])/atof(argv[9])), atof(argv[9]), atoi(argv[11]), atof(argv[12]), animation, solver);
 		}
 	}
 	else if (option == "solveBonn")
 	{
-		if (argc != 10)
+		if (argc != 11)
 		{
 			writeHelp();
 		}
@@ -408,12 +463,14 @@ int main(int argc, char *argv[])
 			std::string fileStoch;
 			std::string fileIn;
 			std::string fileOut;
+			std::string solver;
 
 			fileIn.assign(argv[2]);
 			fileOut.assign(argv[3]);
 			fileStoch.assign(argv[4]);
+			solver.assign(argv[8]);
 
-			solveBonn(fileIn, fileOut, fileStoch, atof(argv[5]), (size_t)(atof(argv[6])/atof(argv[7])), atof(argv[7]), atoi(argv[8]), atof(argv[9]));
+			solveBonn(fileIn, fileOut, fileStoch, atof(argv[5]), (size_t)(atof(argv[6])/atof(argv[7])), atof(argv[7]), atoi(argv[9]), atof(argv[10]), solver);
 		}
 	}
 	else
