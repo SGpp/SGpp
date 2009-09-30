@@ -365,12 +365,13 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "	r: the riskfree rate" << std::endl;
 		mySStream << "	T: time to maturity" << std::endl;
 		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
 		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 " << "400 " << "0.000001 " << "noanimation" << std::endl;
+		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 ImEul" << "400 " << "0.000001 " << "noanimation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Remark: This test generates following output files:" << std::endl;
 		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -388,12 +389,13 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "	r: the riskfree rate" << std::endl;
 		mySStream << "	T: time to maturity" << std::endl;
 		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
 		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 " << "400 " << "0.000001 " << "noanimation" << std::endl;
+		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Remark: This test generates following output files:" << std::endl;
 		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -408,11 +410,12 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "	r: the riskfree rate" << std::endl;
 		mySStream << "	T: time to maturity" << std::endl;
 		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
 		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "grid.in grid.out " << "stoch.data " << "0.05 " << "1.0 " << "0.1 " << "400 " << "0.000001 " << std::endl;
+		mySStream << "grid.in grid.out " << "stoch.data " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << std::endl;
 
 		mySStream << std::endl << std::endl;
 		myScreen->writeHelp(mySStream.str());
