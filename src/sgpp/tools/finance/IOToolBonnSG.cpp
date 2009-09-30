@@ -50,7 +50,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	char* token;
 
 	std::ifstream file;
-	char line[4096];
+	char line[8192];
 
 	file.open(tFilename.c_str());
 	if(!file.is_open())
@@ -123,7 +123,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	for (size_t i = 0; i < gridpoints; i++)
 	{
 		// read next line from file
-		file.getline(line,4096);
+		file.getline(line,8192);
 
 		curLine.assign(line);
 
@@ -191,9 +191,6 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 			streamSGPoint << levels[j] << " " << indeces[j] << " ";
 		}
 
-		streamSGPoint << std::endl;
-		streamSGPoint << "0";
-
 		delete[] levels;
 		delete[] indeces;
 
@@ -241,8 +238,8 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	sgppSerialization.append(streamBoudingBox.str());
 	sgppSerialization.append(GridPointSerialization);
 
-	std::cout << sgppSerialization << std::endl;
-	std::cout << alpha.toString() << std::endl;
+	//std::cout << sgppSerialization << std::endl;
+	//std::cout << alpha.toString() << std::endl;
 }
 
 void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha, bool ishierarchized)

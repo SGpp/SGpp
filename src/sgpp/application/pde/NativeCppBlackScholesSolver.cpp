@@ -245,6 +245,68 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 }
 
 /**
+ * solves a predefined, in the format of University Bonn, grid.
+ *
+ * @param fileIn the file the contains the grid that should be solved
+ * @param fileOut the file the contains the solution grid, written when finished
+ * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
+ * @param riskfree the riskfree rate of the marketmodel
+ * @param timeSt the number of timesteps that are executed during the solving process
+ * @param dt the size of delta t in the ODE solver
+ * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
+ * @param CGeps the epsilon used in the CG/BiCGStab
+ */
+void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, double riskfree, size_t timeSt,
+		double dt, size_t CGIt, double CGeps)
+{
+	size_t dim;
+	bool hier;
+
+	size_t timesteps = timeSt;
+	double stepsize = dt;
+	size_t CGiterations = CGIt;
+	double CGepsilon = CGeps;
+
+	double r = riskfree;
+
+	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	DataVector* alpha = new DataVector(0);
+
+	// init Screen Object
+	myBSSolver->initScreen();
+
+	// Construct a grid, read it from Bonn's format
+	myBSSolver->constructGrid(fileIn, *alpha, hier);
+	dim = myBSSolver->getNumberDimensions();
+
+	// read stochastic data
+	DataVector mu(dim);
+	DataVector sigma(dim);
+	DataVector rho(dim, dim);
+	readStochasticData(fileStoch, dim, mu, sigma, rho);
+
+	// Print the payoff function into a gnuplot file
+	//myBSSolver->printGrid(*alpha, 50, "payoff.gnuplot");
+
+	// Set stochastic data
+	myBSSolver->setStochasticData(mu, sigma, rho, r);
+
+	// Start solving the Black Scholes Equation
+	//myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	//myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+
+	// Print the solved Black Scholes Equation into a gnuplot file
+	//myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
+
+	// export the grid, store it to Bonn's format
+	myBSSolver->storeGrid(fileOut, *alpha, hier);
+
+	delete myBSSolver;
+	delete alpha;
+}
+
+/**
  * Calls the writeHelp method in the BlackScholesSolver Object
  * after creating a screen.
  */
@@ -337,7 +399,22 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "solveBonn")
 	{
+		if (argc != 10)
+		{
+			writeHelp();
+		}
+		else
+		{
+			std::string fileStoch;
+			std::string fileIn;
+			std::string fileOut;
 
+			fileIn.assign(argv[2]);
+			fileOut.assign(argv[3]);
+			fileStoch.assign(argv[4]);
+
+			solveBonn(fileIn, fileOut, fileStoch, atof(argv[5]), (size_t)(atof(argv[6])/atof(argv[7])), atof(argv[7]), atoi(argv[8]), atof(argv[9]));
+		}
 	}
 	else
 	{
