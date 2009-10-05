@@ -34,6 +34,8 @@ namespace sg
 
 /**
  * Implementation of Laplace for linear functions with boundaries pentagon cut through subspace scheme
+ *
+ * @version $HEAD$
  */
 class OperationLaplaceLinearTrapezoidBoundary: public OperationMatrix, public UnidirGradient
 {

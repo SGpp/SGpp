@@ -37,6 +37,8 @@ namespace sg
 
 /**
  * @todo heinecke add description
+ *
+ * @version $HEAD$
  */
 class OperationLTwoDotProductLinearTrapezoidBoundary: public OperationMatrix
 {
