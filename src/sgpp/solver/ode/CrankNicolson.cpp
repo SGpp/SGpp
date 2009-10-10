@@ -28,7 +28,7 @@
 namespace sg
 {
 
-CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG) : ODESolver(nTimesteps, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG)
+CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG, ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), myScreen(screen)
 {
 	this->residuum = 0.0;
 }
@@ -39,31 +39,52 @@ CrankNicolson::~CrankNicolson()
 
 void CrankNicolson::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
-	/*DataVector rhs(alpha.getSize());
-	DataVector saveAlpha(alpha.getSize());
+	DataVector rhs(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
-    DirichletUpdateVector myDirichletUpdate(SystemMatrix.getGrid()->getStorage());
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
 		rhs.setAll(0.0);
 
-		saveAlpha = alpha;
-
+		// generate right hand side
 		SystemMatrix.generateRHS(alpha, rhs);
 
-		myDirichletUpdate.setBoundariesToZero(alpha);
-		myDirichletUpdate.setBoundariesToZero(rhs);
+	    // Do some adjustments on the boundaries if needed
+		SystemMatrix.startTimestep(alpha);
 
+		// solve the system of the current timestep
 	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
-	    if (verbose)
+	    if (verbose == true)
 	    {
-	    	std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
+	    	if (myScreen == NULL)
+	    	{
+	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
+	    	}
 	    }
+	    if (myScreen != NULL)
+    	{
+    		std::stringstream soutput;
+    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations";
 
-	    myDirichletUpdate.applyDirichletConditions(alpha, saveAlpha);
-	}*/
-	std::cout << "not implemented, yet" << std::endl;
+    		if (i < this->nMaxIterations-1)
+    		{
+    			myScreen->update((size_t)(((double)i*100.0)/((double)this->nMaxIterations)), soutput.str());
+    		}
+    		else
+    		{
+    			myScreen->update(100, soutput.str());
+    		}
+    	}
+
+	    // Do some adjustments on the boundaries if needed
+		SystemMatrix.finishTimestep(alpha);
+	}
+
+	// write some empty lines to console
+    if (myScreen != NULL)
+	{
+    	myScreen->writeEmptyLines(2);
+	}
 }
 
 }

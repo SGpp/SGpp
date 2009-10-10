@@ -64,28 +64,28 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 		result.setAll(0.0);
 
 		DataVector temp(alpha.getSize());
-		temp.setAll(0.0);
 
+		temp.setAll(0.0);
 		applyMassMatrix(alpha, temp);
 		result.add(temp);
-
-		//std::cout << alpha.toString() << std::endl;
-		//std::cout << result.toString() << std::endl;
 
 		temp.setAll(0.0);
 		applyLOperator(alpha, temp);
 		result.axpy((-1.0)*this->TimestepSize, temp);
-
-		//std::cout << result.toString() << std::endl;
-		//std::cout << std::endl << std::endl;
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		/*result.setAll(0.0);
+		result.setAll(0.0);
 
-		applyL(alpha, result);
-		result.mult((-0.5)*this->TimestepSize);
-		result.add(alpha);*/
+		DataVector temp(alpha.getSize());
+
+		temp.setAll(0.0);
+		applyMassMatrix(alpha, temp);
+		result.add(temp);
+
+		temp.setAll(0.0);
+		applyLOperator(alpha, temp);
+		result.axpy((-0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -112,19 +112,20 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 		rhs.setAll(0.0);
 
 		applyMassMatrix(data, rhs);
-
-		//std::cout << data.toString() << std::endl;
-		//std::cout << rhs.toString() <<  std::endl;
-		//std::cout << std::endl;
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		/*rhs.setAll(0.0);
+		rhs.setAll(0.0);
 
-		applyL(data, rhs);
+		DataVector temp(data.getSize());
 
-		rhs.mult(0.5*this->TimestepSize);
-		rhs.add(data);*/
+		temp.setAll(0.0);
+		applyMassMatrix(data, temp);
+		rhs.add(temp);
+
+		temp.setAll(0.0);
+		applyLOperator(data, temp);
+		rhs.axpy((0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -173,7 +174,14 @@ void BlackScholesTimestepMatrix::finishTimestep(DataVector& alpha)
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
 	{
-		this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
+		if (this->tOperationMode == "CrNic")
+		{
+			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*((0.5)*this->TimestepSize)))));
+		}
+		else
+		{
+			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
+		}
 	}
 }
 
@@ -182,7 +190,14 @@ void BlackScholesTimestepMatrix::startTimestep(DataVector& alpha)
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
 	{
-		this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
+		if (this->tOperationMode == "CrNic")
+		{
+			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*((0.5)*this->TimestepSize)))));
+		}
+		else
+		{
+			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
+		}
 	}
 }
 

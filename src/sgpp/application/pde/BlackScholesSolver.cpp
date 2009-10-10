@@ -193,7 +193,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 {
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
-		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
+		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG, myScreen);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "CrNic");
 
 		myCN->solve(*myBSMatrix, alpha, true);
@@ -371,7 +371,7 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 ImEul" << "400 " << "0.000001 " << "noanimation" << std::endl;
+		mySStream << "5 " << "bound.data stoch.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Remark: This test generates following output files:" << std::endl;
 		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -395,7 +395,7 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "5 " << "stoch.data " << "bound.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
+		mySStream << "5 " << "bound.data stoch.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Remark: This test generates following output files:" << std::endl;
 		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
