@@ -54,22 +54,28 @@ void HeatEquationTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 		result.setAll(0.0);
 
 		DataVector temp(alpha.getSize());
-		temp.setAll(0.0);
 
+		temp.setAll(0.0);
 		applyMassMatrix(alpha, temp);
 		result.add(temp);
 
 		temp.setAll(0.0);
 		applyLOperator(alpha, temp);
-		result.axpy((-1.0)*this->TimestepSize, temp);;
+		result.axpy((-1.0)*this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		/*result.setAll(0.0);
+		result.setAll(0.0);
 
-		applyL(alpha, result);
-		result.mult((-0.5)*this->TimestepSize);
-		result.add(alpha);*/
+		DataVector temp(alpha.getSize());
+
+		temp.setAll(0.0);
+		applyMassMatrix(alpha, temp);
+		result.add(temp);
+
+		temp.setAll(0.0);
+		applyLOperator(alpha, temp);
+		result.axpy((-0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -99,12 +105,17 @@ void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		/*rhs.setAll(0.0);
+		rhs.setAll(0.0);
 
-		applyL(data, rhs);
+		DataVector temp(data.getSize());
 
-		rhs.mult(0.5*this->TimestepSize);
-		rhs.add(data);*/
+		temp.setAll(0.0);
+		applyMassMatrix(data, temp);
+		rhs.add(temp);
+
+		temp.setAll(0.0);
+		applyLOperator(data, temp);
+		rhs.axpy((0.5)*this->TimestepSize, temp);
 	}
 	else
 	{

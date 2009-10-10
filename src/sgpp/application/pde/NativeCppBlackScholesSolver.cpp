@@ -35,8 +35,10 @@
  * @param mu DataVector for the exspected values
  * @param sigma DataVector for standard deviation
  * @param rho DataVector for the correlations
+ *
+ * @return returns 0 if the file was successfully read, otherwise -1
  */
-void readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigma, DataVector& rho)
+int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigma, DataVector& rho)
 {
 	std::fstream file;
 	double cur_mu;
@@ -44,6 +46,12 @@ void readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, Da
 	double cur_rho;
 
 	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
 
 	for (size_t i = 0; i < numAssests; i++)
 	{
@@ -59,6 +67,8 @@ void readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, Da
 	}
 
 	file.close();
+
+	return 0;
 }
 
 /**
@@ -67,14 +77,22 @@ void readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, Da
  * @param tFile the file that contains the stochastic data
  * @param numAssests the of Assets stored in the file
  * @param BoundaryArray Pointer to the Bounding Box array
+ *
+ * @return returns 0 if the file was successfully read, otherwise -1
  */
-void readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
+int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
 {
 	std::fstream file;
 	double cur_right;
 	double cur_left;
 
 	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
 
 	for (size_t i = 0; i < numAssests; i++)
 	{
@@ -88,6 +106,8 @@ void readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBound
 	}
 
 	file.close();
+
+	return 0;
 }
 
 /**
@@ -124,10 +144,16 @@ void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, d
 
 	double r = riskfree;
 
-	readStochasticData(fileStoch, dim, mu, sigma, rho);
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
+	{
+		return;
+	}
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-	readBoudingBoxData(fileBound, dim, myBoundaries);
+	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+	{
+		return;
+	}
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
@@ -222,10 +248,16 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 
 	double r = riskfree;
 
-	readStochasticData(fileStoch, dim, mu, sigma, rho);
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != -1)
+	{
+		return;
+	}
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-	readBoudingBoxData(fileBound, dim, myBoundaries);
+	if (readBoudingBoxData(fileBound, dim, myBoundaries) != -1)
+	{
+		return;
+	}
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
@@ -318,7 +350,10 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	DataVector mu(dim);
 	DataVector sigma(dim);
 	DataVector rho(dim, dim);
-	readStochasticData(fileStoch, dim, mu, sigma, rho);
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != -1)
+	{
+		return;
+	}
 
 	// Print the payoff function into a gnuplot file
 	//myBSSolver->printGrid(*alpha, 50, "payoff.gnuplot");

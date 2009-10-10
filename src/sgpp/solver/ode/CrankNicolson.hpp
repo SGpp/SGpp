@@ -23,6 +23,7 @@
 #ifndef CRANKNICOLSON_HPP
 #define CRANKNICOLSON_HPP
 
+#include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
 
 namespace sg
@@ -34,6 +35,8 @@ namespace sg
  *
  * For solving the system of linear equations the
  * already implemented CG-method is used
+ *
+ * @version $HEAD$
  */
 class CrankNicolson : public ODESolver
 {
@@ -42,6 +45,8 @@ private:
 	size_t maxCGIterations;
 	/// the CG's epsilon
 	double epsilonCG;
+	/// Pointer to ScreenOutput object
+	ScreenOutput* myScreen;
 
 public:
 	/**
@@ -51,8 +56,9 @@ public:
 	 * @param timestepSize the size of one timestep
 	 * @param iMaxCG maximum number of CG steps
 	 * @param epsilonCG the epsilon used in CG
+	 * @param screen possible pointer to a ScreenOutput object
 	 */
-	CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG);
+	CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG, ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
