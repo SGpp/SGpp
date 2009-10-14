@@ -135,7 +135,7 @@ public:
 				result[seq_right] = right_boundary * (((1.0/3.0)*q) + (0.5*t));
 				// down
 				//////////////////////////////////////
-				result[seq_right] += left_boundary * (((1.0/6.0)*q) + (0.5*t));
+				result[seq_right] += left_boundary * (((-1.0/3.0)*q) - (0.5*t));
 			}
 
 			// move to root
@@ -213,12 +213,11 @@ protected:
 
 		index.get(dim, l, i);
 
-		double bhelp = (1/pow(2.0, static_cast<int>(l+1)));
-		double i_dbl = static_cast<double>(i);
+		double helper = (1.0/pow(2.0, static_cast<int>(l+1))) * (static_cast<double>(i));
 
 		// integration
-		result[seq] = (  ( ((bhelp*i_dbl - bhelp) * fl) - ((bhelp*i_dbl + bhelp) * fr) )
-							  - ((1.0/3.0) * (1/pow(2.0, static_cast<int>(l))) * alpha_value) );    // diagonal entry
+		result[seq] = (  ( (fr-fl) * (helper) )
+							  - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l)))) * alpha_value)) );    // diagonal entry
 
 		// dehierarchisation
 		double fm = (fl+fr)/2.0 + alpha_value;
@@ -262,12 +261,11 @@ protected:
 
 		index.get(dim, l, i);
 
-		double bhelp = (1/pow(2.0, static_cast<int>(l+1)));
-		double i_dbl = static_cast<double>(i);
+		double helper = (1.0/pow(2.0, static_cast<int>(l+1))) * (q * static_cast<double>(i));
 
 		// integration
-		result[seq] = (  ( ((q*(bhelp*i_dbl - bhelp) + 0.5*t) * fl) - ((q*(bhelp*i_dbl + bhelp) + 0.5*t) * fr) )
-							  - ((1.0/3.0) * (1/pow(2.0, static_cast<int>(l))) * q * alpha_value) );    // diagonal entry
+		result[seq] = (  ( (fr-fl) * (helper + (0.5*t)) )
+							  - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l))) * q) * alpha_value)) );    // diagonal entry
 
 		// dehierarchisation
 		double fm = (fl+fr)/2.0 + alpha_value;
