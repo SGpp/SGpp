@@ -134,8 +134,8 @@ protected:
 	void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// phi * phi
-		detail::PhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
-		sweep<detail::PhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
+		//detail::PhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::PhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x^2 * dphi * dphi
 		//detail::SqXdPhidPhiUpBBLinearTrapezoidBoundary func(this->storage);
@@ -146,8 +146,8 @@ protected:
 		//sweep<detail::XPhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x * dphi * phi
-		//detail::XdPhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
-		//sweep<detail::XdPhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
+		detail::XdPhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::XdPhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
@@ -155,8 +155,8 @@ protected:
 	void down(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// phi * phi
-		detail::PhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
-		sweep<detail::PhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
+		//detail::PhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
+		//sweep<detail::PhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x^2 * dphi * dphi
 		//detail::SqXdPhidPhiDownBBLinearTrapezoidBoundary func(this->storage);
@@ -167,8 +167,8 @@ protected:
 		//sweep<detail::XPhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 		// x * dphi * phi
-		//detail::XdPhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
-		//sweep<detail::XdPhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
+		detail::XdPhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
+		sweep<detail::XdPhiPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
