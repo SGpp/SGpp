@@ -193,40 +193,24 @@ public:
 	virtual OperationMatrix* createOperationUpDownTest() = 0;
 
 	/**
-	 * @todo (heinecke) add description
+	 * this operation allows you to calculate the following bilinear form
+	 * needed to solve the multidimensional Black Scholes Equation
 	 *
-	 * @param mu vector that contains the underlyings' expected values
+	 * \f$ \int_{\Omega} S_i \frac{\partial u(\vec{s}}{\partial S_i} v(\vec{s}) d \vec{s}\f$
+	 *
+	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationDelta(DataVector& mu) = 0;
+	virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
 
 	/**
-	 * @todo (heinecke) add description
+	 * this operation allows you to calculate the following bilinear form
+	 * needed to solve the multidimensional Black Scholes Equation
 	 *
-	 * @param sigma vector that contains the underlyings' standard derivation
-	 * @param rho matrix that contains the correlations between the underlyings
-	 */
-	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho) = 0;
-
-	/**
-	 * @todo (heinecke) add description
+	 * \f$ \int_{\Omega} S_i S_j \frac{\partial u(\vec{s}}{\partial S_i} \frac{\partial v(\vec{s}}{\partial S_j} d \vec{s}\f$
 	 *
-	 * @param sigma vector that contains the underlyings' standard derivation
-	 * @param rho matrix that contains the correlations between the underlyings
+	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho) = 0;
-
-	/**
-	 * @todo (heinecke) add description
-	 *
-	 * @param sigma vector that contains the underlyings' standard derivation
-	 * @param rho matrix that contains the correlations between the underlyings
-	 */
-	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho) = 0;
-
-	/**
-	 * @todo (heinecke) add description
-	 */
-	virtual OperationMatrix* createOperationRiskfreeRate() = 0;
+	virtual OperationMatrix* createOperationGamma(DataVector& coef) = 0;
 
 	/**
 	 * gets a pointer to OperationIdentity (OperationMatrix) object

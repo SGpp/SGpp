@@ -33,10 +33,10 @@
 namespace sg
 {
 
-OperationDeltaLinearTrapezoidBoundary::OperationDeltaLinearTrapezoidBoundary(GridStorage* storage, DataVector& mu)
+OperationDeltaLinearTrapezoidBoundary::OperationDeltaLinearTrapezoidBoundary(GridStorage* storage, DataVector& coef)
 {
 	this->storage = storage;
-	this->mus = &mu;
+	this->coefs = &coef;
 }
 
 OperationDeltaLinearTrapezoidBoundary::~OperationDeltaLinearTrapezoidBoundary()
@@ -53,17 +53,14 @@ void OperationDeltaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 
 	for(size_t i = 0; i < storage->dim(); i++)
 	{
-		if (mus->get(i) != 0.0)
+		#pragma omp parallel
 		{
-			#pragma omp parallel
+			#pragma omp single nowait
 			{
-				#pragma omp single nowait
-				{
-					this->updown_parallel(alpha, beta, storage->dim() - 1, i);
-				}
+				this->updown_parallel(alpha, beta, storage->dim() - 1, i);
 			}
-			result.axpy(mus->get(i),beta);
 		}
+		result.axpy(this->coefs->get(i),beta);
 	}
 #endif
 #ifndef USEOMPTHREE
@@ -74,13 +71,10 @@ void OperationDeltaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 		{
 			DataVector beta(result.getSize());
 
-			if (mus->get(i) != 0.0)
-			{
-				this->updown(alpha, beta, storage->dim() - 1, i);
+			this->updown(alpha, beta, storage->dim() - 1, i);
 
-				#pragma omp critical
-				result.axpy(mus->get(i),beta);
-			}
+			#pragma omp critical
+			result.axpy(this->coefs->get(i),beta);
 		}
 	}
 #endif
@@ -90,11 +84,8 @@ void OperationDeltaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 
 	for(size_t i = 0; i < storage->dim(); i++)
 	{
-		if (mus->get(i) != 0.0)
-		{
-			this->updown(alpha, beta, storage->dim() - 1, i);
-			result.axpy(mus->get(i),beta);
-		}
+		this->updown(alpha, beta, storage->dim() - 1, i);
+		result.axpy(this->coefs->get(i),beta);
 	}
 #endif
 }

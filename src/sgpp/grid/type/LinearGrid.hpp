@@ -65,11 +65,8 @@ public:
 	virtual OperationMatrix* createOperationUpDownTest();
 
 	// finance operations
-	virtual OperationMatrix* createOperationDelta(DataVector& mu);
-	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho);
-	virtual OperationMatrix* createOperationRiskfreeRate();
+	virtual OperationMatrix* createOperationDelta(DataVector& coef);
+	virtual OperationMatrix* createOperationGamma(DataVector& coef);
 
 	static Grid* unserialize(std::istream& istr);
 };

@@ -45,9 +45,9 @@ public:
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
-	 * @param mu vector that contains the underlyings' weight
+	 * @param coef reference to a DataVector object that contains the bilinear form's constant coefficients
 	 */
-	OperationDeltaLinearTrapezoidBoundary(GridStorage* storage, DataVector& mu);
+	OperationDeltaLinearTrapezoidBoundary(GridStorage* storage, DataVector& coef);
 
 	/**
 	 * Destructor
@@ -62,8 +62,8 @@ private:
 
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
-	/// Pointer to the DataVector of the mus
-	DataVector* mus;
+	/// Pointer to the DataVector of the coefs
+	DataVector* coefs;
 
 #ifndef USEOMPTHREE
 	/**

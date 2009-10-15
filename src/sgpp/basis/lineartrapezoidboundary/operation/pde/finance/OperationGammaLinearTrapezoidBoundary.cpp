@@ -20,7 +20,7 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaLinearTrapezoidBoundary.hpp"
 
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownBBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpBBLinearTrapezoidBoundary.hpp"
@@ -38,18 +38,17 @@
 namespace sg
 {
 
-OperationGammaPartThreeLinearTrapezoidBoundary::OperationGammaPartThreeLinearTrapezoidBoundary(GridStorage* storage, DataVector& sigma, DataVector& rho)
+OperationGammaLinearTrapezoidBoundary::OperationGammaLinearTrapezoidBoundary(GridStorage* storage, DataVector& coef)
 {
 	this->storage = storage;
-	this->sigmas = &sigma;
-	this->rhos = &rho;
+	this->coefs = &coef;
 }
 
-OperationGammaPartThreeLinearTrapezoidBoundary::~OperationGammaPartThreeLinearTrapezoidBoundary()
+OperationGammaLinearTrapezoidBoundary::~OperationGammaLinearTrapezoidBoundary()
 {
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
+void OperationGammaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 #ifdef USEOMP
@@ -60,22 +59,26 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::mult(DataVector& alpha, Dat
 	{
 		for(size_t j = 0; j < storage->dim(); j++)
 		{
-			#pragma omp parallel
+			// use the operator's symmetry
+			if ( j <= i)
 			{
-				#pragma omp single nowait
+				#pragma omp parallel
 				{
-					this->updown_parallel(alpha, beta, storage->dim() - 1, i, j);
+					#pragma omp single nowait
+					{
+						this->updown_parallel(alpha, beta, storage->dim() - 1, i, j);
+					}
 				}
 			}
 			// Calculate the "diagonal" of the operation
 			if (j == i)
 			{
-				result.axpy((0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+				result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
 			}
 			// Use the symmetry of the operation (i,j)+(j,i) = 2*(i,j)
 			if (j < i)
 			{
-				result.axpy((1.0)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+				result.axpy(this->coefs->->get((storage->dim()*i)+j),beta);
 			}
 		}
 	}
@@ -90,19 +93,23 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::mult(DataVector& alpha, Dat
 			{
 				DataVector beta(result.getSize());
 
-				this->updown(alpha, beta, storage->dim() - 1, i, j);
+				// use the operator's symmetry
+				if ( j <= i)
+				{
+					this->updown(alpha, beta, storage->dim() - 1, i, j);
+				}
 
 				// Calculate the "diagonal" of the operation
 				if (j == i)
 				{
 					#pragma omp critical
-					result.axpy((0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+					result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
 				}
 				// Use the symmetry of the operation (i,j)+(j,i) = 2*(i,j)
 				if (j < i)
 				{
 					#pragma omp critical
-					result.axpy((1.0)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+					result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
 				}
 			}
 		}
@@ -116,16 +123,20 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::mult(DataVector& alpha, Dat
 	{
 		for(size_t j = 0; j < storage->dim(); j++)
 		{
-			this->updown(alpha, beta, storage->dim() - 1, i, j);
+			// use the operator's symmetry
+			if ( j <= i)
+			{
+				this->updown(alpha, beta, storage->dim() - 1, i, j);
+			}
 			// Calculate the "diagonal" of the operation
 			if (j == i)
 			{
-				result.axpy((0.5)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+				result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
 			}
 			// Use the symmetry of the operation (i,j)+(j,i) = 2*(i,j)
 			if (j < i)
 			{
-				result.axpy((1.0)*sigmas->get(i)*sigmas->get(j)*rhos->get((storage->dim()*i)+j),beta);
+				result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
 			}
 		}
 	}
@@ -133,7 +144,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::mult(DataVector& alpha, Dat
 }
 
 #ifndef USEOMPTHREE
-void OperationGammaPartThreeLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+void OperationGammaLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
 {
 	if((dim == gradient_dim_one) && (dim == gradient_dim_two))
 	{
@@ -174,7 +185,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::updown(DataVector& alpha, D
 	}
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+void OperationGammaLinearTrapezoidBoundary::gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
 {
 	//Unidirectional scheme
 	if(dim > 0)
@@ -204,7 +215,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::gradient(DataVector& alpha,
 	}
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::gradientSquared(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+void OperationGammaLinearTrapezoidBoundary::gradientSquared(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
 {
 	//Unidirectional scheme
 	if(dim > 0)
@@ -236,7 +247,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::gradientSquared(DataVector&
 #endif
 
 #ifdef USEOMPTHREE
-void OperationGammaPartThreeLinearTrapezoidBoundary::updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+void OperationGammaLinearTrapezoidBoundary::updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
 {
 	if((dim == gradient_dim_one) && (dim == gradient_dim_two))
 	{
@@ -291,7 +302,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::updown_parallel(DataVector&
 	}
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+void OperationGammaLinearTrapezoidBoundary::gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
 {
 	//Unidirectional scheme
 	if(dim > 0)
@@ -335,7 +346,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::gradient_parallel(DataVecto
 	}
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::gradientSquared_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+void OperationGammaLinearTrapezoidBoundary::gradientSquared_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
 {
 	//Unidirectional scheme
 	if(dim > 0)
@@ -380,7 +391,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::gradientSquared_parallel(Da
 }
 #endif
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearTrapezoidBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
 	detail::PhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
@@ -389,7 +400,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::up(DataVector& alpha, DataV
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
 	detail::PhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
@@ -398,7 +409,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::down(DataVector& alpha, Dat
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
 	detail::XdPhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
@@ -407,7 +418,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::upGradient(DataVector& alph
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
 	detail::XdPhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
@@ -416,7 +427,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::downGradient(DataVector& al
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::upGradientSquared(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearTrapezoidBoundary::upGradientSquared(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x^2 * dphi * dphi
 	detail::SqXdPhidPhiUpBBLinearTrapezoidBoundary func(this->storage);
@@ -425,7 +436,7 @@ void OperationGammaPartThreeLinearTrapezoidBoundary::upGradientSquared(DataVecto
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaPartThreeLinearTrapezoidBoundary::downGradientSquared(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearTrapezoidBoundary::downGradientSquared(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x^2 * dphi * dphi
 	detail::SqXdPhidPhiDownBBLinearTrapezoidBoundary func(this->storage);
