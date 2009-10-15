@@ -203,7 +203,6 @@ protected:
 			{
 				// up
 				//////////////////////////////////////
-				// @todo (heinecke) fix neumann boundaries
 				result[seq_left] = fl;
 
 				result[seq_left] += source[seq_right] * (-1.0/3.0);
@@ -215,7 +214,6 @@ protected:
 			}
 			else
 			{
-				// @todo (heinecke) fix neumann boundaries
 				result[seq_right] = fr;
 			}
 
@@ -320,7 +318,6 @@ protected:
 			{
 				// up
 				//////////////////////////////////////
-				// @todo (heinecke) fix neumann boundaries
 				result[seq_left] = fl;
 
 				result[seq_left] += source[seq_right] * (((1.0/6.0)*q) + (0.5*t));
@@ -332,7 +329,6 @@ protected:
 			}
 			else
 			{
-				// @todo (heinecke) fix neumann boundaries
 				result[seq_right] = fr;
 			}
 
