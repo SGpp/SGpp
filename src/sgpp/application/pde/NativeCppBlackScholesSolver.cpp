@@ -248,13 +248,13 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 
 	double r = riskfree;
 
-	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != -1)
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
 	{
 		return;
 	}
 
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-	if (readBoudingBoxData(fileBound, dim, myBoundaries) != -1)
+	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 	{
 		return;
 	}
@@ -350,7 +350,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	DataVector mu(dim);
 	DataVector sigma(dim);
 	DataVector rho(dim, dim);
-	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != -1)
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
 	{
 		return;
 	}
