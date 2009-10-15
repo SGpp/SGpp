@@ -169,19 +169,18 @@ protected:
 
 		if (current_level > 0)
 		{
-			double hhalf = 1.0/pow(4.0, static_cast<int>(current_level));
-			double i_dbl = static_cast<double>(current_index);
-			double first = ((0.5)*i_dbl)*hhalf;
-			double second = (1.0/6.0)*hhalf;
+			double fm = fml + fmr;
 
-			double tmpl = (first - second);
-			double tmpr = (first + second);
+			double alpha_value = source[seq];
+
+			double hhalf = 1.0/pow(2.0,static_cast<int>(current_level+1));
+			double i_dbl = static_cast<double>(current_index);
 
 			// transposed operations:
-			result[seq] = source[seq] * ((fml*tmpl) + (fmr*tmpr));
+			result[seq] = fm;
 
-			fl = source[seq] * pow(2.0, static_cast<int>(current_level));
-			fr = source[seq] * ((-1.0)*(pow(2.0, static_cast<int>(current_level))));
+			fl = fm/2.0 + (alpha_value*((hhalf * i_dbl) - hhalf) + fl);
+			fr = fm/2.0 + (alpha_value*(((-1.0)*(hhalf * i_dbl)) - hhalf) + fr);
 		}
 		else
 		{
@@ -205,7 +204,7 @@ protected:
 				// up
 				//////////////////////////////////////
 				// @todo (heinecke) fix neumann boundaries
-				result[seq_left] = (-1.0)*fl;
+				result[seq_left] = fl;
 
 				result[seq_left] += source[seq_right] * (-1.0/3.0);
 			}
@@ -217,7 +216,7 @@ protected:
 			else
 			{
 				// @todo (heinecke) fix neumann boundaries
-				result[seq_right] = (1.0)*fr;
+				result[seq_right] = fr;
 			}
 
 			index.left_levelzero(dim);
@@ -287,23 +286,18 @@ protected:
 
 		if (current_level > 0)
 		{
-			double hhalf = (1.0/pow(4.0, static_cast<int>(current_level)))*q;
+			double fm = fml + fmr;
+
+			double alpha_value = source[seq];
+
+			double hhalf = 1.0/pow(2.0,static_cast<int>(current_level+1));
 			double i_dbl = static_cast<double>(current_index);
-			double first = ((3.0)*i_dbl)*hhalf;
-			double third = (1.0/6.0)*q;
-			double fourth = (3.0*t)*(1.0/pow(2.0, static_cast<int>(current_level)));
-
-			double tmpl = third * ((first - hhalf) + fourth);
-			double tmpr = third * ((first + hhalf) + fourth);
 
 			// transposed operations:
-			result[seq] = ((fml*tmpl) + (fmr*tmpr));
+			result[seq] = fm;
 
-			// transposed operations:
-			//result[seq] = (1.0/q)*pow(2.0, static_cast<int>(current_level))*(fml - fmr);
-
-			fl = source[seq] * ((1.0/q)*(pow(2.0, static_cast<int>(current_level))));
-			fr = source[seq] * ((-1.0/q)*(pow(2.0, static_cast<int>(current_level))));
+			fl = fm/2.0 + (alpha_value*((q*((hhalf * i_dbl) - hhalf))+(0.5*t)) + fl);
+			fr = fm/2.0 + (alpha_value*((q*(((-1.0)*(hhalf * i_dbl)) - hhalf))-(0.5*t)) + fr);
 		}
 		else
 		{
@@ -327,7 +321,7 @@ protected:
 				// up
 				//////////////////////////////////////
 				// @todo (heinecke) fix neumann boundaries
-				result[seq_left] = (-1.0/q)*fl;
+				result[seq_left] = fl;
 
 				result[seq_left] += source[seq_right] * (((1.0/6.0)*q) + (0.5*t));
 			}
@@ -339,7 +333,7 @@ protected:
 			else
 			{
 				// @todo (heinecke) fix neumann boundaries
-				result[seq_right] = (1.0/q)*fr;
+				result[seq_right] = fr;
 			}
 
 			index.left_levelzero(dim);
