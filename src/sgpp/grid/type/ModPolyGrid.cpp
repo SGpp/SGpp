@@ -112,27 +112,12 @@ OperationMatrix* ModPolyGrid::createOperationUpDownTest()
 
 // finance operations
 /////////////////////
-OperationMatrix* ModPolyGrid::createOperationDelta(DataVector& mu)
+OperationMatrix* ModPolyGrid::createOperationDelta(DataVector& coef)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* ModPolyGrid::createOperationGammaPartOne(DataVector& sigma, DataVector& rho)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* ModPolyGrid::createOperationGammaPartTwo(DataVector& sigma, DataVector& rho)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* ModPolyGrid::createOperationGammaPartThree(DataVector& sigma, DataVector& rho)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* ModPolyGrid::createOperationRiskfreeRate()
+OperationMatrix* ModPolyGrid::createOperationGamma(DataVector& coef)
 {
 	throw factory_exception("Unsupported operation");
 }

@@ -28,26 +28,34 @@ namespace sg
 
 BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode)
 {
-	this->OpDelta = SparseGrid.createOperationDelta(mu);
-	this->OpGammaTwo = SparseGrid.createOperationGammaPartTwo(sigma, rho);
-	this->OpGammaThree = SparseGrid.createOperationGammaPartThree(sigma, rho);
-	this->OpLTwo = SparseGrid.createOperationLTwoDotProduct();
+	this->myGrid = &SparseGrid;
+	this->tOperationMode = OperationMode;
+	this->TimestepSize = TimestepSize;
+	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
 	this->r = r;
 	this->mus = &mu;
 	this->sigmas = &sigma;
 	this->rhos = &rho;
-	this->tOperationMode = OperationMode;
-	this->TimestepSize = TimestepSize;
-	this->myGrid = &SparseGrid;
-	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
+
+	// build the coefficient vectors for the operations
+	this->gammaCoef = new DataVector(SparseGrid.getStorage()->dim(), SparseGrid.getStorage()->dim());
+	this->deltaCoef = new DataVector(SparseGrid.getStorage()->dim());
+	buildDeltaCoefficients();
+	buildGammaCoefficients();
+
+	// Create needed operations
+	this->OpDelta = SparseGrid.createOperationDelta(*this->deltaCoef);
+	this->OpGamma = SparseGrid.createOperationGamma(*this->gammaCoef);
+	this->OpLTwo = SparseGrid.createOperationLTwoDotProduct();
 }
 
 BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 {
 	delete this->OpDelta;
-	delete this->OpGammaTwo;
-	delete this->OpGammaThree;
+	delete this->OpGamma;
 	delete this->OpLTwo;
+	delete this->gammaCoef;
+	delete this->deltaCoef;
 	delete this->BoundaryUpdate;
 }
 
@@ -150,12 +158,8 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	this->OpDelta->mult(alpha, temp);
 	result.add(temp);
 
-	// Apply the gamma method, part 3
-	this->OpGammaThree->mult(alpha, temp);
-	result.sub(temp);
-
-	// Apply the gamma method, part 2
-	this->OpGammaTwo->mult(alpha, temp);
+	// Apply the gamma method
+	this->OpGamma->mult(alpha, temp);
 	result.sub(temp);
 }
 
@@ -204,6 +208,51 @@ void BlackScholesTimestepMatrix::startTimestep(DataVector& alpha)
 Grid* BlackScholesTimestepMatrix::getGrid()
 {
 	return myGrid;
+}
+
+void BlackScholesTimestepMatrix::buildGammaCoefficients()
+{
+	size_t dim = this->myGrid->getStorage()->dim();
+
+	for (size_t i = 0; i < dim; i++)
+	{
+		for (size_t j = 0; j < dim; j++)
+		{
+			// handle diagonal
+			if (i == j)
+			{
+				this->gammaCoef->set((dim*i)+j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+			else
+			{
+				this->gammaCoef->set((dim*i)+j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+		}
+	}
+}
+
+void BlackScholesTimestepMatrix::buildDeltaCoefficients()
+{
+	size_t dim = this->myGrid->getStorage()->dim();
+	double covar_sum = 0.0;
+
+	for (size_t i = 0; i < dim; i++)
+	{
+		covar_sum = 0.0;
+		for (size_t j = 0; j < dim; j++)
+		{
+			// handle diagonal
+			if (i == j)
+			{
+				covar_sum += ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j));
+			}
+			else
+			{
+				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+		}
+		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
+	}
 }
 
 }

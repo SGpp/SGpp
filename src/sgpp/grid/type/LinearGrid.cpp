@@ -106,27 +106,12 @@ OperationMatrix* LinearGrid::createOperationUpDownTest()
 
 // finance operations
 /////////////////////
-OperationMatrix* LinearGrid::createOperationDelta(DataVector& mu)
+OperationMatrix* LinearGrid::createOperationDelta(DataVector& coef)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearGrid::createOperationGammaPartOne(DataVector& sigma, DataVector& rho)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearGrid::createOperationGammaPartTwo(DataVector& sigma, DataVector& rho)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearGrid::createOperationGammaPartThree(DataVector& sigma, DataVector& rho)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearGrid::createOperationRiskfreeRate()
+OperationMatrix* LinearGrid::createOperationGamma(DataVector& coef)
 {
 	throw factory_exception("Unsupported operation");
 }

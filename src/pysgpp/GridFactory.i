@@ -77,11 +77,8 @@ public:
 	// @todo remove this when done
 	virtual OperationMatrix* createOperationUpDownTest() = 0;
 	
-	virtual OperationMatrix* createOperationDelta(DataVector& mu) = 0;
-	virtual OperationMatrix* createOperationGammaPartOne(DataVector& sigma, DataVector& rho) = 0;
-	virtual OperationMatrix* createOperationGammaPartTwo(DataVector& sigma, DataVector& rho) = 0;
-	virtual OperationMatrix* createOperationGammaPartThree(DataVector& sigma, DataVector& rho) = 0;
-	virtual OperationMatrix* createOperationRiskfreeRate() = 0;
+	virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
+	virtual OperationMatrix* createOperationGamma(DataVector& coef) = 0;
 	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();

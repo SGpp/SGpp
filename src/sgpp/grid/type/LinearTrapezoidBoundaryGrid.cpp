@@ -36,10 +36,7 @@
 #include "basis/lineartrapezoidboundary/operation/pde/OperationLaplaceLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/pde/OperationLTwoDotProductLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/pde/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaPartOneLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaPartTwoLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaPartThreeLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationRiskfreeRateLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaLinearTrapezoidBoundary.hpp"
 
 #include "sgpp.hpp"
 
@@ -126,30 +123,14 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
 
 // finance operations
 /////////////////////
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& mu)
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& coef)
 {
-	return new OperationDeltaLinearTrapezoidBoundary(this->storage, mu);
+	return new OperationDeltaLinearTrapezoidBoundary(this->storage, coef);
 }
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartOne(DataVector& sigma, DataVector& rho)
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataVector& coef)
 {
-	//return new OperationGammaPartOneLinearTrapezoidBoundary(this->storage, sigma, rho);
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartTwo(DataVector& sigma, DataVector& rho)
-{
-	return new OperationGammaPartTwoLinearTrapezoidBoundary(this->storage, sigma, rho);
-}
-
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaPartThree(DataVector& sigma, DataVector& rho)
-{
-	return new OperationGammaPartThreeLinearTrapezoidBoundary(this->storage, sigma, rho);
-}
-
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationRiskfreeRate()
-{
-	return new OperationRiskfreeRateLinearTrapezoidBoundary(this->storage);
+	return new OperationGammaLinearTrapezoidBoundary(this->storage, coef);
 }
 
 }

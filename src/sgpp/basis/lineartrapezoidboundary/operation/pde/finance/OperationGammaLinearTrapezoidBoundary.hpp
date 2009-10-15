@@ -21,8 +21,8 @@
 /*****************************************************************************/
 
 
-#ifndef OPERATIONGAMMAPARTTHREELINEARTRAPEZOIDBOUNDARY_HPP
-#define OPERATIONGAMMAPARTTHREELINEARTRAPEZOIDBOUNDARY_HPP
+#ifndef OPERATIONGAMMALINEARTRAPEZOIDBOUNDARY_HPP
+#define OPERATIONGAMMALINEARTRAPEZOIDBOUNDARY_HPP
 
 #include "operation/common/OperationMatrix.hpp"
 
@@ -39,22 +39,21 @@ namespace sg
 /**
  * @todo heinecke add description
  */
-class OperationGammaPartThreeLinearTrapezoidBoundary: public OperationMatrix
+class OperationGammaLinearTrapezoidBoundary: public OperationMatrix
 {
 public:
 	/**
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
-	 * @param sigma vector that contains the underlyings' standard derivation
-	 * @param rho matrix that contains the correlations between the underlyings
+	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	OperationGammaPartThreeLinearTrapezoidBoundary(GridStorage* storage, DataVector& sigma, DataVector& rho);
+	OperationGammaLinearTrapezoidBoundary(GridStorage* storage, DataVector& coef);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationGammaPartThreeLinearTrapezoidBoundary();
+	virtual ~OperationGammaLinearTrapezoidBoundary();
 
 
 	virtual void mult(DataVector& alpha, DataVector& result);
@@ -64,10 +63,8 @@ protected:
 
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
-	/// Pointer to the DataVector of the sigmas
-	DataVector* sigmas;
-	/// Pointer to the DataVector of the rhos
-	DataVector* rhos;
+	/// Pointer to the coefficients of this bilinear form
+	DataVector* coefs;
 
 #ifndef USEOMPTHREE
 	/**
@@ -202,4 +199,4 @@ protected:
 
 }
 
-#endif /* OPERATIONGAMMAPARTTHREELINEARTRAPEZOIDBOUNDARY_HPP */
+#endif /* OPERATIONGAMMALINEARTRAPEZOIDBOUNDARY_HPP */

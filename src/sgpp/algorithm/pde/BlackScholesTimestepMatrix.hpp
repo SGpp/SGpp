@@ -41,18 +41,18 @@ private:
 	double r;
 	/// the delta Operation
 	OperationMatrix* OpDelta;
-	/// Second part of the Gamma Operation
-	OperationMatrix* OpGammaTwo;
-	/// Third part of the Gamma Operation
-	OperationMatrix* OpGammaThree;
-	/// applying the riskfree rate
-	OperationMatrix* OpRiskfree;
+	/// the Gamma Operation
+	OperationMatrix* OpGamma;
 	/// Pointer to the mus
 	DataVector* mus;
 	/// Pointer to the sigmas
 	DataVector* sigmas;
 	/// Pointer to the rhos;
 	DataVector* rhos;
+	/// Pointer to the coefficients of operation Delta
+	DataVector* deltaCoef;
+	/// Pointer to the coefficients ot operation Gamma
+	DataVector* gammaCoef;
 	/// the LTwoDotProduct Operation (Mass Matrix)
 	OperationMatrix* OpLTwo;
 	/// Routine to modify the boundaries of the grid
@@ -85,6 +85,20 @@ private:
 	 * @param return reference to the DataVector into which the result is written
 	 */
 	void applyMassMatrix(DataVector& alpha, DataVector& result);
+
+	/**
+	 * Build the coefficients for the Gamma Operation, which
+	 * are the assets' covariance matrix multiplied by 0.5
+	 *
+	 * this routine handles also the symmtrie of the
+	 * gamma operation
+	 */
+	void buildGammaCoefficients();
+
+	/**
+	 * Build the coefficients for the combined Delta Operation
+	 */
+	void buildDeltaCoefficients();
 
 public:
 	/**
