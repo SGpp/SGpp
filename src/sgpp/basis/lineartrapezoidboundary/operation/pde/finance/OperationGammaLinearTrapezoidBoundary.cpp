@@ -73,12 +73,12 @@ void OperationGammaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 			// Calculate the "diagonal" of the operation
 			if (j == i)
 			{
-				result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
+				result.axpy_parallel(this->coefs->get((storage->dim()*i)+j),beta);
 			}
 			// Use the symmetry of the operation (i,j)+(j,i) = 2*(i,j)
 			if (j < i)
 			{
-				result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
+				result.axpy_parallel(this->coefs->get((storage->dim()*i)+j),beta);
 			}
 		}
 	}

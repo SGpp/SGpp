@@ -60,7 +60,7 @@ void OperationDeltaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 				this->updown_parallel(alpha, beta, storage->dim() - 1, i);
 			}
 		}
-		result.axpy(this->coefs->get(i),beta);
+		result.axpy_parallel(this->coefs->get(i),beta);
 	}
 #endif
 #ifndef USEOMPTHREE

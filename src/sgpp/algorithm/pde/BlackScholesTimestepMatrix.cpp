@@ -73,13 +73,11 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 
 		DataVector temp(alpha.getSize());
 
-		temp.setAll(0.0);
 		applyMassMatrix(alpha, temp);
-		result.add(temp);
+		result.add_parallel(temp);
 
-		temp.setAll(0.0);
 		applyLOperator(alpha, temp);
-		result.axpy((-1.0)*this->TimestepSize, temp);
+		result.axpy_parallel((-1.0)*this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
@@ -87,13 +85,11 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 
 		DataVector temp(alpha.getSize());
 
-		temp.setAll(0.0);
 		applyMassMatrix(alpha, temp);
-		result.add(temp);
+		result.add_parallel(temp);
 
-		temp.setAll(0.0);
 		applyLOperator(alpha, temp);
-		result.axpy((-0.5)*this->TimestepSize, temp);
+		result.axpy_parallel((-0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -107,13 +103,11 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	{
 		DataVector temp(data.getSize());
 
-		temp.setAll(0.0);
 		applyMassMatrix(data, temp);
-		rhs.add(temp);
+		rhs.add_parallel(temp);
 
-		temp.setAll(0.0);
 		applyLOperator(data, temp);
-		rhs.axpy(this->TimestepSize, temp);
+		rhs.axpy_parallel(this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
@@ -127,13 +121,11 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 
 		DataVector temp(data.getSize());
 
-		temp.setAll(0.0);
 		applyMassMatrix(data, temp);
-		rhs.add(temp);
+		rhs.add_parallel(temp);
 
-		temp.setAll(0.0);
 		applyLOperator(data, temp);
-		rhs.axpy((0.5)*this->TimestepSize, temp);
+		rhs.axpy_parallel((0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -151,26 +143,28 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	if (this->r != 0.0)
 	{
 		this->OpLTwo->mult(alpha, temp);
-		result.axpy((-1.0)*this->r, temp);
+		result.axpy_parallel((-1.0)*this->r, temp);
 	}
 
 	// Apply the delta method
 	this->OpDelta->mult(alpha, temp);
-	result.add(temp);
+	result.add_parallel(temp);
 
 	// Apply the gamma method
 	this->OpGamma->mult(alpha, temp);
-	result.sub(temp);
+	result.sub_parallel(temp);
 }
 
 void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
+	result.setAll(0.0);
+
 	// Apply the mass matrix
 	this->OpLTwo->mult(alpha, temp);
 
-	result.add(temp);
+	result.add_parallel(temp);
 }
 
 void BlackScholesTimestepMatrix::finishTimestep(DataVector& alpha)
