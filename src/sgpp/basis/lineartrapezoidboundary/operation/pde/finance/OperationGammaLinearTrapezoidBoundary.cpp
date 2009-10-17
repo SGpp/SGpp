@@ -78,7 +78,7 @@ void OperationGammaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 			// Use the symmetry of the operation (i,j)+(j,i) = 2*(i,j)
 			if (j < i)
 			{
-				result.axpy(this->coefs->->get((storage->dim()*i)+j),beta);
+				result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
 			}
 		}
 	}
