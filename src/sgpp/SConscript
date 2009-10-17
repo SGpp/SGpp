@@ -83,6 +83,7 @@ solver/ode/CrankNicolson.cpp
 
 tools/common/StdNormalDistribution.cpp
 tools/common/GridPrinter.cpp
+tools/common/SGppStopwatch.cpp
 tools/finance/IOToolBonnSG.cpp
 
 """)

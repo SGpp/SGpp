@@ -276,7 +276,7 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 	myBSSolver->initGridWithPayoff(*alpha, strike);
 
 	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+	//myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -302,7 +302,7 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+		//myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
 	}
 
 	delete myBSSolver;

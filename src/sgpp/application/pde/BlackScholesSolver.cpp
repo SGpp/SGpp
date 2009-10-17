@@ -159,8 +159,18 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ExEul");
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		double execTime;
 
+		myStopwatch->start();
 		myEuler->solve(*myBSMatrix, alpha, verbose);
+		execTime = myStopwatch->stop();
+
+		if (myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			myScreen->writeEmptyLines(2);
+		}
 
 		delete myBSMatrix;
 		delete myEuler;
@@ -177,8 +187,18 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ImEul");
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		double execTime;
 
+		myStopwatch->start();
 		myEuler->solve(*myBSMatrix, alpha, verbose);
+		execTime = myStopwatch->stop();
+
+		if (myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			myScreen->writeEmptyLines(2);
+		}
 
 		delete myBSMatrix;
 		delete myEuler;
@@ -195,8 +215,18 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	{
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG, myScreen);
 		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "CrNic");
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		double execTime;
 
-		myCN->solve(*myBSMatrix, alpha, true);
+		myStopwatch->start();
+		myCN->solve(*myBSMatrix, alpha, false);
+		execTime = myStopwatch->stop();
+
+		if (myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			myScreen->writeEmptyLines(2);
+		}
 
 		delete myBSMatrix;
 		delete myCN;

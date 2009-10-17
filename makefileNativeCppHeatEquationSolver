@@ -133,9 +133,6 @@ CrankNicolson.o : src/sgpp/solver/ode/CrankNicolson.cpp
 
 HeatEquationSolver.o : src/sgpp/application/pde/HeatEquationSolver.cpp
 	$(CC) $(CFLAGS) src/sgpp/application/pde/HeatEquationSolver.cpp
-
-SGppStopwatch.o : src/sgpp/common/SGppStopwatch.cpp
-	$(CC) $(CFLAGS) src/sgpp/common/SGppStopwatch.cpp
 	
 BoundingBox.o : src/sgpp/grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/common/BoundingBox.cpp
@@ -154,6 +151,9 @@ StdNormalDistribution.o : src/sgpp/tools/common/StdNormalDistribution.cpp
 	
 ScreenOutput.o : src/sgpp/application/common/ScreenOutput.cpp
 	$(CC) $(CFLAGS) src/sgpp/application/common/ScreenOutput.cpp
+	
+SGppStopwatch.o : src/sgpp/tools/common/SGppStopwatch.cpp
+	$(CC) $(CFLAGS) src/sgpp/tools/common/SGppStopwatch.cpp	
 	
 NativeCppHeatEquationSolver.o : src/sgpp/application/pde/NativeCppHeatEquationSolver.cpp
 	$(CC) $(CFLAGS) src/sgpp/application/pde/NativeCppHeatEquationSolver.cpp

@@ -75,6 +75,7 @@
 
 #include "tools/finance/IOToolBonnSG.hpp"
 #include "tools/common/GridPrinter.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 namespace sg
 {
