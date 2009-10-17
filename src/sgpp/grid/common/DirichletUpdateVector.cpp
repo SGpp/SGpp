@@ -22,6 +22,10 @@
 
 #include "grid/common/DirichletUpdateVector.hpp"
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -35,6 +39,9 @@ DirichletUpdateVector::~DirichletUpdateVector()
 
 void DirichletUpdateVector::applyDirichletConditions(DataVector& updateVector, DataVector& sourceVector)
 {
+#ifdef USEOMP
+	#pragma omp parallel for shared(updateVector) schedule(static)
+#endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
 		GridStorage::index_type::level_type level;
@@ -63,6 +70,9 @@ void DirichletUpdateVector::applyDirichletConditions(DataVector& updateVector, D
 
 void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
 {
+#ifdef USEOMP
+	#pragma omp parallel for shared(updateVector) schedule(static)
+#endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
 		GridStorage::index_type::level_type level;
@@ -91,6 +101,9 @@ void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
 
 void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double value)
 {
+#ifdef USEOMP
+	#pragma omp parallel for shared(updateVector) schedule(static)
+#endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
 		GridStorage::index_type::level_type level;

@@ -313,6 +313,50 @@ void DataVector::sub(DataVector &vec)
 //#endif
 }
 
+void DataVector::add_parallel(DataVector &vec)
+{
+	if(size != vec.size || dim != vec.dim)
+	{
+		return;
+	}
+	int n = size*dim;
+
+#ifdef USEOMP
+	#pragma omp parallel for shared(vec) schedule(static)
+	for(int i = 0; i < n; i++)
+	{
+		data[i] += vec.data[i];
+	}
+#else
+	for(int i = 0; i < n; i++)
+	{
+		data[i] += vec.data[i];
+	}
+#endif
+}
+
+void DataVector::sub_parallel(DataVector &vec)
+{
+	if(size != vec.size || dim != vec.dim)
+	{
+		return;
+	}
+	int n = size*dim;
+
+#ifdef USEOMP
+	#pragma omp parallel for shared(vec) schedule(static)
+	for(int i = 0; i < n; i++)
+	{
+		data[i] -= vec.data[i];
+	}
+#else
+	for(int i = 0; i < n; i++)
+	{
+		data[i] -= vec.data[i];
+	}
+#endif
+}
+
 void DataVector::getLine(int row, DataVector& vec)
 {
 /*#ifdef USEOMP
@@ -465,6 +509,29 @@ void DataVector::axpy(double alpha, DataVector& x)
 	}
 //#endif
 
+}
+
+void DataVector::axpy_parallel(double alpha, DataVector& x)
+{
+	if(size != x.size || dim != x.dim)
+	{
+		return;
+	}
+	int n = size*dim;
+	double* p_x = x.data;
+	double* p_d = data;
+#ifdef USEOMP
+	#pragma omp parallel for shared(p_d, p_x) schedule(static)
+	for(int i = 0; i < n; i++)
+	{
+		p_d[i] += alpha*p_x[i];
+	}
+#else
+	for(int i = 0; i < n; i++)
+	{
+		p_d[i] += alpha*p_x[i];
+	}
+#endif
 }
 
 void DataVector::normalizeDimension(int d)
