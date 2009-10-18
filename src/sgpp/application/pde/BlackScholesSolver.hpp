@@ -93,7 +93,7 @@ private:
 	 *
 	 * @return the call premium
 	 */
-	double get1DPayoffValue(double assetValue, double strike);
+	double get1DEuroCallPayoffValue(double assetValue, double strike);
 
 public:
 	/**
@@ -226,12 +226,13 @@ public:
 	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename);
 
 	/**
-	 * Inits the alpha vector with a payoff function of a call option
+	 * Inits the alpha vector with a payoff function of an European call option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
 	 * @param strike pointer to an array the contains all call options strikes
+	 * @param payoffType specifies the type of the combined payoff function; max or avg are available
 	 */
-	void initGridWithPayoff(DataVector& alpha, double* strike);
+	void initGridWithEuroCallPayoff(DataVector& alpha, double* strike, std::string payoffType);
 
 	/**
 	 * use this to determine the number of grid points, used to solve

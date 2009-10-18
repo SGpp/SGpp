@@ -243,46 +243,56 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double PointesPerDimension
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double* strike)
+void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* strike, std::string payoffType)
 {
 	double tmp;
-	double tmp2;
 
 	if (bGridConstructed)
 	{
-		if (dim == 1)
+		for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
 		{
-			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+			std::stringstream coordsStream(coords);
+			double* dblFuncValues = new double[dim];
+
+			for (size_t j = 0; j < dim; j++)
 			{
-				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
-				alpha[i] = get1DPayoffValue(tmp, strike[0]);
+				coordsStream >> tmp;
+				dblFuncValues[j] = get1DEuroCallPayoffValue(tmp, strike[j]);
 			}
 
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
-			myHierarchisation->doHierarchisation(alpha);
-			delete myHierarchisation;
-		}
-		else if (dim == 2)
-		{
-			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			if (payoffType == "max")
 			{
-					std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
-					std::stringstream coordsStream(coords);
-
-					coordsStream >> tmp;
-					coordsStream >> tmp2;
-
-					alpha[i] = max(get1DPayoffValue(tmp, strike[0]),get1DPayoffValue(tmp2, strike[1]));
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					if (dblFuncValues[j] > tmp)
+					{
+						tmp = dblFuncValues[j];
+					}
+				}
+				alpha[i] = tmp;
+			}
+			else if (payoffType == "avg")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += dblFuncValues[j];
+				}
+				alpha[i] = tmp/static_cast<double>(dim);
+			}
+			else
+			{
+				// @todo (heinecke) throw an application exception
 			}
 
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
-			myHierarchisation->doHierarchisation(alpha);
-			delete myHierarchisation;
+			delete[] dblFuncValues;
 		}
-		else
-		{
-			// @todo (heinecke) thrown an application exception
-		}
+
+		OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
 	}
 	else
 	{
@@ -316,7 +326,7 @@ size_t BlackScholesSolver:: getNumberDimensions()
 	}
 }
 
-double BlackScholesSolver::get1DPayoffValue(double assetValue, double strike)
+double BlackScholesSolver::get1DEuroCallPayoffValue(double assetValue, double strike)
 {
 	if (assetValue <= strike)
 	{
@@ -369,7 +379,7 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 alpha", "Alexander Heinecke, (C) 2009");
+	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 RC1", "Alexander Heinecke, (C) 2009");
 	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
@@ -384,6 +394,7 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "Available execution modes are:" << std::endl;
 		mySStream << "	test1D		Solves a simple 1D example" << std::endl;
 		mySStream << "	test2D		Solves a 2D example" << std::endl;
+		mySStream << "	solveND		Solves a ND example" << std::endl;
 		mySStream << "	solveBonn	Solves an option delivered in Bonn's format" << std::endl << std::endl;
 
 		mySStream << "test1D" << std::endl << "------" << std::endl;
@@ -430,6 +441,32 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "Remark: This test generates following output files:" << std::endl;
 		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
 		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+		mySStream << std::endl << std::endl;
+
+		mySStream << "solveND" << std::endl << "------" << std::endl;
+		mySStream << "the following options must be specified:" << std::endl;
+		mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+		mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
+		mySStream << "	payoff_func: function for n-d payoff: max or avg" << std::endl;
+		mySStream << "	r: the riskfree rate" << std::endl;
+		mySStream << "	T: time to maturity" << std::endl;
+		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+		mySStream << std::endl;
+		mySStream << "Example:" << std::endl;
+		mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 " << std::endl;
+		mySStream << std::endl;
+		mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+		mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
+		mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
+		mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
 		mySStream << std::endl << std::endl;
 
 		mySStream << "solveBonn" << std::endl << "---------" << std::endl;
