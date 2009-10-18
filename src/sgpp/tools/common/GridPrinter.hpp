@@ -56,7 +56,7 @@ public:
 	~GridPrinter();
 
 	/**
-	 * Print the grid with its function to a file
+	 * Print the grid with its function to a file; front end
 	 *
 	 * @param alpha the coefficients of the grid's ansatzfunctions
 	 * @param tFilename absoulte path to the file the grid is writte into
