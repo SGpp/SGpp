@@ -454,6 +454,18 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		}
 	}
 
+	// Test call @ the money
+	if (payoffType == "avgM")
+	{
+		std::vector<double> point;
+		for (size_t i = 0; i < d; i++)
+		{
+			point.push_back(1.0);
+		}
+		//double tmp = myBSSolver->getOptionPrice(point, *alpha);
+		std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
+	}
+
 	delete myBSSolver;
 	delete myBoundingBox;
 	delete alpha;
