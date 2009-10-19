@@ -258,7 +258,14 @@ void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* s
 			for (size_t j = 0; j < dim; j++)
 			{
 				coordsStream >> tmp;
-				dblFuncValues[j] = get1DEuroCallPayoffValue(tmp, strike[j]);
+				if ((payoffType == "max") || (payoffType == "avg"))
+				{
+					dblFuncValues[j] = get1DEuroCallPayoffValue(tmp, strike[j]);
+				}
+				if (payoffType == "avgM")
+				{
+					dblFuncValues[j] = tmp;
+				}
 			}
 
 			if (payoffType == "max")
@@ -282,6 +289,18 @@ void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* s
 				}
 				alpha[i] = tmp/static_cast<double>(dim);
 			}
+			else if (payoffType == "avgM")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					//std::cout << dblFuncValues[j] << " ";
+					tmp += dblFuncValues[j];
+				}
+				alpha[i] = max(((tmp/static_cast<double>(dim))-1.0), 0.0);
+				//std::cout << " | " << tmp << " " << alpha[i] << std::endl;
+				//std::cout << alpha[i] << std::endl;
+			}
 			else
 			{
 				// @todo (heinecke) throw an application exception
@@ -298,6 +317,46 @@ void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* s
 	{
 		// @todo (heinecke) throw an application exception
 	}
+}
+
+double BlackScholesSolver::getOptionPrice(std::vector<double>& evalPoint, DataVector& alpha)
+{
+	double result = 0.0;
+
+	if (bGridConstructed)
+	{
+		OperationEval* myEval = myGrid->createOperationEval();
+		result = myEval->eval(alpha, evalPoint);
+		delete myEval;
+
+		/*OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+		myHierarchisation->doDehierarchisation(alpha);
+		delete myHierarchisation;
+
+		double tmp = 0.0;
+
+		for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+		{
+
+			std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+			std::stringstream coordsStream(coords);
+
+			for (size_t j = 0; j < dim; j++)
+			{
+				coordsStream >> tmp;
+				std::cout << tmp << " ";
+			}
+
+			std::cout << alpha[i] << std::endl;
+		}*/
+	}
+	else
+	{
+		result = 0.0;
+		// @todo (heinecke) throw an application exception
+	}
+
+	return result;
 }
 
 size_t BlackScholesSolver:: getNumberGridPoints()
@@ -450,7 +509,7 @@ void BlackScholesSolver::writeHelp()
 		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
 		mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
-		mySStream << "	payoff_func: function for n-d payoff: max or avg" << std::endl;
+		mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
 		mySStream << "	r: the riskfree rate" << std::endl;
 		mySStream << "	T: time to maturity" << std::endl;
 		mySStream << "	dT: timestep size" << std::endl;

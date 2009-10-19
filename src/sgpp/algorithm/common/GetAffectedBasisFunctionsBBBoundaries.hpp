@@ -193,7 +193,7 @@ protected:
 			}
 			else
 			{
-				if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
+				if (point[current_dim] == (BB->getIntervalOffset(current_dim)) || point[current_dim] == ((BB->getIntervalWidth(current_dim))+BB->getIntervalOffset(current_dim)))
 					break;
 
 				working.top(current_dim);

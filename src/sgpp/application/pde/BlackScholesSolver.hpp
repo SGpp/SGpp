@@ -191,6 +191,16 @@ public:
 	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha);
 
 	/**
+	 * Determines the price of an option in the d-dimensional space
+	 *
+	 * @param evalPoint coordinates of the point at which the option price should be determined
+	 * @param alpha the ansatzfunctions' coefficients
+	 *
+	 * @return price of option for given point
+	 */
+	double getOptionPrice(std::vector<double>& evalPoint, DataVector& alpha);
+
+	/**
 	 * Solves the closed form of the Black Scholes equation, the Black Scholes
 	 * formular. It evaluates the Black Scholes formular in a Stock Price Range
 	 * from 0.0 to maxStock, by increasing the stock price in every step by
