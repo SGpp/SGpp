@@ -411,9 +411,11 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
 
 	// Print the payoff function into a gnuplot file
-	if (dim <= 2)
+	if (dim <= 3)
 	{
 		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
 	}
 	else
 	{
@@ -443,10 +445,12 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 
 	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
 	{
-		if (dim <= 2)
+		if (dim <= 3)
 		{
 			// Print the solved Black Scholes Equation into a gnuplot file
 			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
 		}
 		else
 		{

@@ -59,10 +59,20 @@ public:
 	 * Print the grid with its function to a file; front end
 	 *
 	 * @param alpha the coefficients of the grid's ansatzfunctions
-	 * @param tFilename absoulte path to the file the grid is writte into
+	 * @param tFilename absoulte path to the file the grid is written into
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
 	void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
+
+	/**
+	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * or their hierarchical surplus
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tFilename absoulte path to the file the grid is written into
+	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
+	 */
+	void printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus);
 };
 
 }

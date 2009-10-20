@@ -243,6 +243,12 @@ void BlackScholesSolver::printGrid(DataVector& alpha, double PointesPerDimension
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
+void BlackScholesSolver::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus)
+{
+	GridPrinter myPrinter(*this->myGrid);
+	myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
+}
+
 void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* strike, std::string payoffType)
 {
 	double tmp;
@@ -294,12 +300,9 @@ void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* s
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
 				{
-					//std::cout << dblFuncValues[j] << " ";
 					tmp += dblFuncValues[j];
 				}
 				alpha[i] = max(((tmp/static_cast<double>(dim))-1.0), 0.0);
-				//std::cout << " | " << tmp << " " << alpha[i] << std::endl;
-				//std::cout << alpha[i] << std::endl;
 			}
 			else
 			{
@@ -328,27 +331,6 @@ double BlackScholesSolver::getOptionPrice(std::vector<double>& evalPoint, DataVe
 		OperationEval* myEval = myGrid->createOperationEval();
 		result = myEval->eval(alpha, evalPoint);
 		delete myEval;
-
-		/*OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
-		myHierarchisation->doDehierarchisation(alpha);
-		delete myHierarchisation;
-
-		double tmp = 0.0;
-
-		for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
-		{
-
-			std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
-			std::stringstream coordsStream(coords);
-
-			for (size_t j = 0; j < dim; j++)
-			{
-				coordsStream >> tmp;
-				std::cout << tmp << " ";
-			}
-
-			std::cout << alpha[i] << std::endl;
-		}*/
 	}
 	else
 	{
@@ -438,7 +420,7 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 RC2", "Alexander Heinecke, (C) 2009");
+	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 RC3", "Alexander Heinecke, (C) 2009");
 	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
