@@ -466,7 +466,6 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		{
 			point.push_back(1.0);
 		}
-		//double tmp = myBSSolver->getOptionPrice(point, *alpha);
 		std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
 	}
 
