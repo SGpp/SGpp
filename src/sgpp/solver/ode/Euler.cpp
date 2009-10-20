@@ -92,7 +92,7 @@ void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, boo
 
     		if (i < this->nMaxIterations-1)
     		{
-    			myScreen->update((size_t)(((double)i*100.0)/((double)this->nMaxIterations)), soutput.str());
+    			myScreen->update((size_t)(((double)(i+1)*100.0)/((double)this->nMaxIterations)), soutput.str());
     		}
     		else
     		{

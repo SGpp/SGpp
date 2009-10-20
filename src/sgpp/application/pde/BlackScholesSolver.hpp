@@ -236,6 +236,18 @@ public:
 	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename);
 
 	/**
+	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * or their hierarchical surplus
+	 *
+	 * This function is available for all dimensions
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tfilename absoulte path to the file the grid is written into
+	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
+	 */
+	void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus);
+
+	/**
 	 * Inits the alpha vector with a payoff function of an European call option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions

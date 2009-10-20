@@ -25,6 +25,8 @@
 
 #include <fstream>
 #include <vector>
+#include <sstream>
+#include <string>
 
 namespace sg
 {
@@ -97,6 +99,39 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 	{
 		// @todo (heinecke) thrown a tool exception
 	}
+}
+
+void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus)
+{
+	DataVector temp(alpha);
+	double tmp = 0.0;
+	size_t dim = myGrid->getStorage()->dim();
+	std::ofstream fileout;
+
+	// Do Dehierarchisation, is specified
+	if (bSurplus == false)
+	{
+		OperationHierarchisation* myHier = myGrid->createOperationHierarchisation();
+		myHier->doDehierarchisation(temp);
+		delete myHier;
+	}
+
+	// Open filehandle
+	fileout.open(tFilename.c_str());
+	for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+	{
+		std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringBB(*myGrid->getBoundingBox());
+		std::stringstream coordsStream(coords);
+
+		for (size_t j = 0; j < dim; j++)
+		{
+			coordsStream >> tmp;
+			fileout << tmp << " ";
+		}
+
+		fileout << temp[i] << std::endl;
+	}
+	fileout.close();
 }
 
 }

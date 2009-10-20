@@ -68,7 +68,7 @@ void CrankNicolson::solve(OperationODESolverMatrix& SystemMatrix, DataVector& al
 
     		if (i < this->nMaxIterations-1)
     		{
-    			myScreen->update((size_t)(((double)i*100.0)/((double)this->nMaxIterations)), soutput.str());
+    			myScreen->update((size_t)(((double)(i+1)*100.0)/((double)this->nMaxIterations)), soutput.str());
     		}
     		else
     		{
