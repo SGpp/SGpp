@@ -34,22 +34,24 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.LearnedKnowledgeFileAdapter import LearnedKnowledgeFileAdapter
+from bin.learner.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
 from bin.learner.LearnedKnowledge import LearnedKnowledge
 from bin.pysgpp import DataVector
 
+# @todo (khakhutv) rename the file
+
 class TestLearnedKnowledgeFileAdapter(unittest.TestCase):
     
-    adapter = None
+    formatter = None
     filename_load = pathlocal + "/datasets/load.alpha.arff"
     filename_save = pathlocal + "/datasets/save.alpha.arff"
     
     def setUp(self,):
-        self.adapter = LearnedKnowledgeFileAdapter()
+        self.formatter = LearnedKnowledgeFormatter()
 
     
     def testLoad(self,):
-        knowledge = self.adapter.load(self.filename_load)
+        knowledge = self.formatter.deserializeFromFile(self.filename_load)
         alphas = knowledge.getAlphas()
         self.assertEqual(alphas.getSize(), 10)
         self.assertEqual(alphas.getDim(), 1)
@@ -66,11 +68,11 @@ class TestLearnedKnowledgeFileAdapter(unittest.TestCase):
         for i in xrange(10):
             alphas[i] = a
             a = a + 0.1
-        knowledge = LearnedKnowledge(self.adapter)
+        knowledge = LearnedKnowledge(self.formatter)
         knowledge.update(alphas)
-        self.adapter.save(knowledge, self.filename_save)
+        self.formatter.serializeToFile(knowledge, self.filename_save)
         
-        knowledge = self.adapter.load(self.filename_save)
+        knowledge = self.formatter.deserializeFromFile(self.filename_save)
         alphas = knowledge.getAlphas()
         self.assertEqual(alphas.getSize(), 10)
         self.assertEqual(alphas.getDim(), 1)

@@ -23,15 +23,19 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package CGSolver
-# @ingroup bin.learner
-# @brief Abstract class for solving of linear equations
-# @version $CURR$
 
 from LinearSolver import LinearSolver, LinearSolverEvents
 from bin.pysgpp import *
 from bin.learner.LinearSolver import LinearSolver
+import types
 
+## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for 
+# @link sg::solver::sle::ConjugateGradients ConjugateGradients@endlink class.
+# The ConjugateGradients solver is enhanced with methods of concrete subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer design pattern</a>
+# described in @link bin.learner.LinearSolver.LinearSolver LinearSolver@endlink and function for serialization
+# end deserialization.
+#@todo: (khakhutv) rename set/getAccuracy and set/getImax for consistency with ConjugateGradients (low)
+#@todo (khakhutv) currently there is always two parameters for delta/residuum accuracy/myEpsilon imax/nMaxIterations
 class CGSolver(ConjugateGradients, LinearSolver):
 
     accuracy = 0.0001   #the relationship of the norm of end residual to the normal of initial residual
@@ -84,3 +88,48 @@ class CGSolver(ConjugateGradients, LinearSolver):
     
     def complete(self, ):
         LinearSolver.notifyEventControllers(self, LinearSolverEvents.COMPLETE)
+        
+        
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object. 
+    def toString(self):
+        serializationString = "'module' : '" + self.__module__ + "',\n"
+        for attrName in dir(self):
+            attrValue = self.__getattribute__(attrName)
+            
+            #lists, integers, floats, dictionaries can serialized with str()
+            if type(attrValue) in [types.ListType, types.IntType, 
+                             types.FloatType, types.DictType] and attrName.find("__") != 0: 
+                serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
+            # serialize strings with quotes    
+            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+                
+        serializationString = "{" + serializationString.rstrip(",\n") + "}\n"
+        return serializationString    
+    
+    
+    # Restores the CGSolver object from the json object with attributes.
+    #
+    # @param jsonObject A json object.
+    # @return The restored SGSolver object.
+    @classmethod
+    def fromJson(cls, jsonObject):
+        cg = CGSolver()
+        if jsonObject.has_key('accuracy'):
+            cg.setAccuracy( jsonObject['accuracy'] )
+        if jsonObject.has_key('imax'):
+            cg.setImax( jsonObject['imax'] )
+        if jsonObject.has_key('delta_0'):
+            cg.delta_0 = jsonObject['delta_0']
+        if jsonObject.has_key('delta_new'):
+            cg.delta_new = jsonObject['delta_new']
+        if jsonObject.has_key('nIterations'):
+            cg.nIterations = jsonObject['nIterations']
+        if jsonObject.has_key('nMaxIterations'):
+            cg.nMaxIterations = jsonObject['nMaxIterations']
+        if jsonObject.has_key('residuum'):
+            cg.residuum = float(jsonObject['residuum'])
+        return cg
+         

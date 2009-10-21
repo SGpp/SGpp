@@ -20,10 +20,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package RandomFoldingPolicy
-# @ingroup bin.learner
-# @brief Folding rule
-# @version $CURR$
+
 
 import time
 import random
@@ -31,7 +28,8 @@ import math
 
 from FoldingPolicy import FoldingPolicy
 
-
+## Provides functionality for accomplishment of learning with cross-validation
+# by generating a set of training data/validation data pairs randomly
 class RandomFoldingPolicy(FoldingPolicy):
     
     
@@ -40,7 +38,7 @@ class RandomFoldingPolicy(FoldingPolicy):
     
     ##Constructor
     #
-    #@param dataset: DataContainer with data set
+    #@param dataContainer: DataContainer with data set
     #@param level: Integer folding level, default value: 1
     #@param seed: Integer seed, default None so it is set to the timestamp
     def __init__(self,  dataContainer, level=1, seed = None):

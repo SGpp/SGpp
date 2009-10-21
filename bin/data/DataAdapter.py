@@ -20,11 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package DataAdapter
-# @ingroup data
-# @brief Abstract class - Container for points and corresponding function values 
-# @version $HEAD$
-
 
 class DataAdapter(object):
 

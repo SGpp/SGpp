@@ -20,41 +20,27 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package LearnedKnowledge
-# @ingroup bin.learner
-# @brief Represents learned knowledge 
-# @version $CURR$
 
-
+## Class keeps all information, which was learned during the learning process.
+# Currently, only the alpha vector is stored, by in the future more information may come.
 class LearnedKnowledge(object):
 
     
     __alphas = None         #DataVector with learned alpha
-    __dataSource = None     #KnowledgeAdapter, which handles loading and restoring
-    
-    
-    ##Constructor
-    #
-    #@param adapter: KnowledgeAdapter, default value is None
-    def __init__(self, adapter=None):
-        self.__dataSource = adapter
 
-
-    ##Save object to the destination
+    ##Restores the state which is saved in the given memento
     #
-    #@param destination: Destination, i.e. filename
-    def save(self, destintation):
-        return self.__dataSource.save(self, destintation)
+    #@param memento the memento object
+    def setMemento(self, memento):
+        self.update(memento)
     
     
-    ##Load LearnedKnowledge from the source
+    ##Creates a new memento to hold the current state
     #
-    #@param source: KnowledgeAdapter object
-    #@return: Restored LearnedKnowledge object
-    @classmethod
-    def load(cls, source):
-        knowledge = source.load()
-        return knowledge
+    #@return a new memento
+    def createMemento(self):
+        # @todo (khakhutv) maybe a better Memento as just DataVector object required?
+        return self.__alphas
 
 
     ##Returns current alpha vector
@@ -66,10 +52,12 @@ class LearnedKnowledge(object):
 
     ##Alters the current alpha vector
     #
-    #@param alphas: new alpha vector
+    #@param alpha: new alpha vector
     #@return: LearnedKnowledge itself
     def update(self, alpha):
         self.__alphas = alpha
         return self
+
+
 
 

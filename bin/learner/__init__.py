@@ -23,11 +23,10 @@
 from CGSolver import CGSolver
 from Classifier import Classifier
 from FoldingPolicy import FoldingPolicy
-from GridAdapter import GridAdapter
-from GridFileAdapter import GridFileAdapter
-from KnowledgeAdapter import KnowledgeAdapter
+from GridFormatter import GridFormatter
 from LearnedKnowledge import LearnedKnowledge
-from LearnedKnowledgeFileAdapter import LearnedKnowledgeFileAdapter
+from LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
+from LearnerFormatter import LearnerFormatter
 from Learner import Learner, LearnerEvents
 from LearnerBuilder import LearnerBuilder
 from LinearSolver import LinearSolver, LinearSolverEvents

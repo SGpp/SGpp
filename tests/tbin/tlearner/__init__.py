@@ -1,0 +1,11 @@
+import test_CGSolver
+import test_Classifier
+import test_FilesFoldingPolicy
+import test_GridFileAdapter
+import test_LearnedKnowledge
+import test_LearnedKnowledgeFileAdapter
+import test_LearnerBuilder
+import test_LinearSystem
+import test_RandomFoldingPolicy
+import test_SequentialFoldingPolicy
+import test_TrainingSpecification

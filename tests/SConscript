@@ -33,13 +33,5 @@ tests = env.Test('test_pysgpp.py')
 Requires(tests, cpy)
 AlwaysBuild(tests)
 
-data_tests = env.Test('tbin/tdata/testsuite.py')
-Requires(data_tests, cpy)
-AlwaysBuild(data_tests)
-
-learner_test = env.Test('tbin/tlearner/testsuite.py')
-Requires(learner_test, cpy)
-AlwaysBuild(learner_test)
-
 env.Alias('test', tests)
 

@@ -20,10 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package LearnerBuilder
-# @ingroup bin.learner
-# @brief Realization of Builder Pattern for Learner Subclasses
-# @version $HEAD$
 
 from bin.learner.LearnedKnowledge import LearnedKnowledge
 from bin.learner.Classifier import Classifier
@@ -31,7 +27,7 @@ from bin.learner.TrainingStopPolicy import TrainingStopPolicy
 
 from bin.learner.TrainingSpecification import TrainingSpecification
 from bin.learner.CGSolver import CGSolver
-from bin.learner.GridFileAdapter import GridFileAdapter
+from bin.learner.GridFormatter import GridFormatter
 from bin.learner import Types
 
 from bin.pysgpp import *
@@ -39,50 +35,55 @@ from bin.data.ARFFAdapter import ARFFAdapter
 from bin.data.DataContainer import DataContainer
 from bin.learner.Regressor import Regressor
 
+import bin.utils.json as json
+
 ## Implement mechanisms to create customized learning system
 #
 # @section Examples Usage examples
 #
 # To create a learning system first define if it should be for classification
 # @code
-# builder = builder.buildClassifier()
+#import bin.learner.LearnerBuilder as LearnerBuilder
+#builder = LearnerBuilder()
+#builder = builder.buildClassifier()
 # @endcode  
 # or regression
 # @code
-# builder = builder.buildRegressor()
+#builder = builder.buildRegressor()
 # @endcode
 #
-# Now LearnerBuilder operates as an automata, it means it switches in some state
+# LearnerBuilder is implementing <a href="http://en.wikipedia.org/wiki/Fluent_interface" target="parent">Fluent Interface design pattern</a>
+# it means it operates as an automata, switching in some state
 # where you can set all parameters associated with some category. For example to 
 # define the grid parameters you switch the builder into GridDescriptor set with
 # @code
-# builder = builder.withGrid()...
+#builder = builder.withGrid()...
 # @endcode
 # and then defines corresponding parameters:
 # @code
-# builder = builder.withGrid().withLevel(5).withBorder(Types.BorderTypes.TRAPEZOIDBOUNDARY)
+#builder = builder.withGrid().withLevel(5).withBorder(Types.BorderTypes.TRAPEZOIDBOUNDARY)
 # @endcode
 # Builder can automatically switches to the next state
 # @code
-# builder.withGrid()...withCGSolver().withAccuracy(0.00000001)...
+#builder.withGrid()...withCGSolver().withAccuracy(0.00000001)...
 # @endcode
 # After all parameters are set you can return the constructed learning system
 # with
 # @code
-# builder.andGerResult()
+#builder.andGetResult()
 # @endcode
 # 
 # The complete construction could look like following:
 # @code
-# classifier = self.builder.buildClassifier()
-#                  .withTrainingDataFromARFFFile("./datasets/classifier.train.arff")\
-#                  .withTestingDataFromARFFFile("./datasets/classifier.test.arff")\
-#                  .withGrid().withLevel(2)\
-#                  .withSpecification().withLambda(0.00001).withAdaptPoints(2)\
-#                  .withStopPolicy().withAdaptiveItarationLimit(1)\
-#                  .withCGSolver().withImax(500)\
-#                  .withProgressPresentor(InfoToFile("./presentor.test"))\
-#                  .andGetResult()
+#classifier = builder.buildClassifier()\
+#                     .withTrainingDataFromARFFFile("./datasets/classifier.train.arff")\
+#                     .withTestingDataFromARFFFile("./datasets/classifier.test.arff")\
+#                     .withGrid().withLevel(2)\
+#                     .withSpecification().withLambda(0.00001).withAdaptPoints(2)\
+#                     .withStopPolicy().withAdaptiveItarationLimit(1)\
+#                     .withCGSolver().withImax(500)\
+#                     .withProgressPresentor(InfoToFile("./presentor.test"))\
+#                     .andGetResult()
 # @endcode
 #
 # @section Parameters Parameters and where I can set them?
@@ -91,8 +92,8 @@ from bin.learner.Regressor import Regressor
 # @li <code>adaptive</code>: <i>Using an adaptive Grid with NUM of refines</i> - @link StopPolicyDescriptor.withAdaptiveItarationLimit() <code>.withStopPolicy().withAdaptiveItarationLimit(10)</code> @endlink
 # @li <code>adapt_points</code>: <i>Number of points in one refinement iteration</i> - @link SpecificationDescriptor.withAdaptPoints() <code>.withSpecification().withAdaptPoints(100)</code> @endlink
 # @li <code>adapt_rate</code>: <i>Percentage of points from all refinable points in one refinement iteration</i> - @link SpecificationDescriptor.withAdaptRate() <code>.withSpecification().withAdaptRate(0.05)</code> @endlink
-# @li <code>adapt_start</code>: <i>The index of adapt step to begin with</i> - Not implemented yet @todo (khakhutv) implement it
-# @li <code>adapt_threshold</code>: @link bin.learner.TrainingSpecification.setAdaptThreshold() <i>refinement threshold</i> @endlink - @link SpecificationDescriptor.withAdaptThreshold() .withSpecification().withAdaptThreshold(0.003) @endlink
+# @li <code>adapt_start</code>: <i>The index of adapt step to begin with</i> - Not implemented yet @todo (khakhutv) implement adapt_start
+# @li <code>adapt_threshold</code>: @link bin.learner.TrainingSpecification.TrainingSpecification.setAdaptThreshold() <i>refinement threshold</i> @endlink - @link SpecificationDescriptor.withAdaptThreshold() .withSpecification().withAdaptThreshold(0.003) @endlink
 # @li <code>mode</code>: <i>Specifies the action to do</i> - Call corresponding method, i.e. @link Learner.Learner.applyData() applyData@endlink, @link Learner.Learner.learnData() learnData@endlink, @link Learner.Learner.learnDataWithTest() learnDataWithTest@endlink, @link  Learner.Learner.learnDataWithFolding() learnDataWithFolding@endlink  
 # @li <code>zeh</code>: <i>Specifies the action to do</i> - @link SpecificationDescriptor.withIdentityOperator() .withSpecification().withIdentityOperator()@endlink or @link SpecificationDescriptor.withLaplaceOperator() .withSpecification().withLaplaceOperator()@endlink 
 # @li <code>foldlevel</code>: <i>specifies the number of sets generated</i> - Not implemented @todo (khakhutv) check the implementation
@@ -103,7 +104,7 @@ from bin.learner.Regressor import Regressor
 # @li <code>max_accuracy</code>: <i>If the norm of the residuum falls below ACCURACY, stop the CG iterations</i> - Not used in this implementation @todo (khakhutv) check if it isn't required 
 # @li <code>%data</code>: <i>Filename for the Datafile.</i> - @link LearnerBuilder.withTrainingDataFromARFFFile() .withTestingDataFromARFFFile("./datasets/classifier.test.arff")@endlink
 # @li <code>test</code>: <i>File containing the testdata</i> - @link LearnerBuilder.withTestingDataFromARFFFile() .withTestingDataFromARFFFile("./datasets/classifier.test.arff")@endlink
-# @li <code>alpha</code>: <i>Filename for a file containing an alpha-Vector</i> -  <code>%learner = builder.andGetResult()<br>learner.knowledge = LearnedKnowledgeFileAdapter().load("./alphas.arff")</code>
+# @li <code>alpha</code>: <i>Filename for a file containing an alpha-Vector</i> -  <code>%learner = builder.andGetResult()\n learner.knowledge = LearnedKnowledgeFileAdapter().load("./alphas.arff")</code>
 # @li <code>outfile</code>: <i>Filename where the calculated alphas are stored</i> - <code>@link LearnerBuilder.withProgressPresentor() .withProgressPresentor@endlink(@link bin.controller.InfoToFile.InfoToFile InfoToFile@endlink("./presentor.test"))</code>
 # @li <code>gnuplot</code>: <i>In 2D case, the generated can be stored in a gnuplot readable format</i> - Not implemented yet @todo (khakhutv) implement InfoToGraph
 # @li <code>resolution</code>: <i>Specifies the resolution of the gnuplotfile</i> - Not used, as <code>gnuplot</code> is not yet implemented
@@ -117,7 +118,7 @@ from bin.learner.Regressor import Regressor
 # @li <code>reuse</code>: <i>Reuse alpha-values for CG</i> - Not implemented yet @todo (khakhutv) implement reuse
 # @li <code>seed</code>: <i>Random seed used for initializing</i> Not implemented yet @todo (khakhutv) implement creation folding with random seed in builder
 # @li <code>regression</code>: <i>Use regression approach</i> - <code>@link buildRegressor() builder.buildRegressor()@endlink</code>
-# @li <code>checkpoint</code>: <i>Filename for checkpointing</i> - <code> %controller = @link bin.controller.CheckpointController.CheckpointController.__init__ CheckpointController("classification_job")<br/>@link withCheckpointController() builder.withCheckpointController(controller)@endlink</code>
+# @li <code>checkpoint</code>: <i>Filename for checkpointing</i> - <code> %controller = @link bin.controller.CheckpointController.CheckpointController.__init__ CheckpointController("classification_job")@endlink @link withCheckpointController() builder.withCheckpointController(controller)@endlink</code>
 # @li <code>grid</code>: <i>Filename for Grid-resume</i> - <code>@link GridDescriptor.fromFile() .withGrid.fromFile("gridfile.gz")@endlink</code>
 # @li <code>epochs_limit</code>: <i>Number of refinement iterations (epochs), MSE of test %data have to increase, before refinement will stop</i> - <code>@link StopPolicyDescriptor.withEpochsLimit() .withStopPolicy().withEpochsLimit(20)@endlink</code>
 # @li <code>mse_limit</code> <i>If MSE of test %data fall below this limit, refinement will stop</i> - <code>@link StopPolicyDescriptor.withMSELimit() .withStopPolicy().withMSELimit(0.0003)@endlink</code>, also <code>@link StopPolicyDescriptor.withAccuracyLimit() ..withStopPolicy().withAccuracyLimit(0.95)@endlink</code> for classification accuracy @todo (khakhutv) check if it's really implemented
@@ -128,7 +129,7 @@ class LearnerBuilder(object):
     ##created @link bin.learner.Learner.Learner Learner @endlink object
     __learner = None                  
     
-    ##@link bin.constroller.CheckpointController.CheckpointController 
+    ##@link bin.controller.CheckpointController.CheckpointController 
     # CheckpointController @endlink if any used
     __checkpointController = None     
     __gridDescriptor = None 
@@ -278,7 +279,7 @@ class LearnerBuilder(object):
     ##
     # Attaches progress presentor to the learner
     #
-    # @param controller: progress presentor which implements LearnerEventController
+    # @param presentor: progress presentor which implements LearnerEventController
     # @return: LearnerBuilder
     def withProgressPresentor(self, presentor):
         self.__learner.attachEventController(presentor)
@@ -322,8 +323,8 @@ class LearnerBuilder(object):
         def __getattr__(self, attr):
             grid = None
             if self.__file != None:
-                adapter = GridFileAdapter()
-                grid = adapter.load(self.__file)
+                gridFormatter = GridFormatter()
+                grid = gridFormatter.deserializeFromFile(self.__file)
                 self.__builder.getLearner().setGrid(grid)
             else:
                 if self.__dim == None or self.__level == None:
@@ -563,7 +564,6 @@ class LearnerBuilder(object):
         
         ## Specifies to use laplace operator
         #
-        # @param value: float for rate 
         # @return: SpecificationDescriptor itself
         ##
         def withLaplaceOperator(self, ):
@@ -573,7 +573,6 @@ class LearnerBuilder(object):
         
         ## Specifies to use identity operator
         #
-        # @param value: float for rate 
         # @return: SpecificationDescriptor itself
         ##
         def withIdentityOperator(self, ):
@@ -629,12 +628,27 @@ class LearnerBuilder(object):
         ##
         # Defines the accuracy for test data, which have to be arrived
         #
-        # @param limit: integer for maximal number of iteration in CG
+        # @param imax: integer for maximal number of iteration in CG
         # @return: CGSolverDescriptor itself
         ##    
         def withImax(self, imax):
             self.__solver.setImax(imax)
             return self
+    
+    # @todo (khakhutv) move it to CheckpointController
+    @classmethod
+    def fromString(cls, string):
+        reader = json.JsonReader()
+        jsonObject = reader.read(string)
+        learnerType = jsonObject['module']
+        if "bin.learner.Classifier" in learnerType:
+            learner = Classifier.fromJson( jsonObject )
+        elif "bin.learner.Regressor" in learnerType:
+            learner = Regressor.fromJson( jsonObject )
+        else:
+            raise Exception("module name unknown")
+        learner.fromJson( jsonObject )
+        return learner
 
     #learner = property(getLearner, None, None, None)
 

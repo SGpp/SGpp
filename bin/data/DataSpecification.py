@@ -20,23 +20,65 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package DataSpecification
-# @ingroup bin.data
-# @brief Specification of information in data container or its entry 
-# @version $HEAD$
 
 #from DataContainer import DataContainer
 
-#@todo (khakhutv) implement the class
+from time import time
+
 class DataSpecification(object):
     """ generated source for DataSpecification
 
     """
-    name = None
+
+    def isSaved(self):
+        return self.__isSaved
+
+
+    def setSaved(self):
+        self.__isSaved = True
+
+    filename = ''
+    attributes = {}
+    __isSaved = False
     
-    def getName(self):
-        return self.name
+    def setFilename(self, filename):
+        self.filename = filename
     
-    def __init__(self):
-        self.name = ''
+    def getFilename(self):
+        #if filename is not set, it means the data subset was generated dynamically
+        #so create new name, don't forget to save the data into the corresponding file!
+        if self.filename == '':
+            self.setFilename(self.generateFilename())
+        return self.filename
+    
+    def generateFilename(self):
+        return 'data.' + str(time()) + '.arff'
+    
+    def addAttribute(self, attributeName, attributeValue):
+        self.attributes[attributeName] = attributeValue
+        
+    def getAttributes(self):
+        return self.attributes
+    
+    def cleanAttributes(self):
+        self.attributes = {}
+        
+    def createNumericAttributes(self, dim):
+        self.cleanAttributes()
+        for i in xrange(0,dim):
+            self.addAttribute('x'+str(i), 'NUMERIC')
+        self.addAttribute('class', 'NUMERIC')
+    
+    
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object.
+    # @todo (khakhutv) implement   
+    def toString(self):
+        serializationString = "'module' : '" + self.__module__ + "',\n"
+        serializationString += '"filename":"' + self.getFilename() + '"\n'
+        for key, value in self.getAttributes().items():
+            serializationString = serializationString + ',"' + key + '" : "' + value + '"'
+        return '{' + serializationString + '}'
+
 

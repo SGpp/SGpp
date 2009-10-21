@@ -20,18 +20,21 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package bin.Learner
-# @ingroup learner
-# @brief Abstract class for learning
-# @version $HEAD$
+
 
 from bin.pysgpp import *
 from CGSolver import CGSolver
 from bin.learner.FoldingPolicy import FoldingPolicy
+import bin.utils.json as json
+from bin.learner.TrainingStopPolicy import TrainingStopPolicy
+from bin.learner.TrainingSpecification import TrainingSpecification
+from bin.data.DataContainer import DataContainer
+import types
+
 
 class Learner(object):
     
-    eventControllers = None   #list of object listening to the learning events
+    eventControllers = None  #list of object listening to the learning events
     dataContainer = None    #DataContainer object with training (and maybe test) data
     stopPolicy = None       #TrainingStopPolicy object associated with this Learner
     specification = None    #TrainingSpecification object associated with this Learner
@@ -47,6 +50,9 @@ class Learner(object):
     trainingOverall = []    #Average training accuracy over all refinement iterations
     testingOverall = []     #Average training accuracy over all refinement iterations
     numberPoints = []       #Number of point on grid for different refinement iterations
+    __SERIALIZABLE_ATTRIBUTES = ['eventControllers', 'dataContainer', 
+                                 'stopPolicy', 'specification', 'grid', 
+                                 'knowledge','foldingPolicy', 'solver']
     
     
     ## Constructor
@@ -186,7 +192,7 @@ class Learner(object):
 
     ## Evaluate  accuracy 
     # this method is not implemented!
-    # @param data: DataContainer dataset
+    # @param dataContainer: DataContainer data set
     # @param alpha: DataVector alpha-vector
     def evalError(self, dataContainer, alpha):
         raise NotImplementedError
@@ -282,6 +288,89 @@ class Learner(object):
     def setFoldingPolicy(self, policy):
         self.foldingPolicy = policy
         return self
+    
+    def listOfFloatsToString(self, list):
+        result = '['
+        for item in list[0:-1]:
+            result += "%e"%item + ","
+        result += "%e"%list[-1] + ']'
+        return result
+            
+    
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object. 
+    # @todo:  (khakhutv) think what to do with folding policy (medium)
+    def toString(self):
+        serializationString = "'module' : '" + self.__module__ + "',\n"
+        for attrName in dir(self):
+            attrValue = self.__getattribute__(attrName)
+            
+            #integers, dictionaries can serialized with str()
+            if type(attrValue) in [types.IntType, types.DictType] and attrName.find("__") != 0: 
+                serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
+            
+            #store floats in exponential format
+            elif type(attrValue) == types.FloatType:
+                serializationString += "'" + attrName + "'" + " : " + "%e"%attrValue + ",\n"
+            
+            #store list of floats in exponential format
+            elif type(attrValue) == types.ListType:
+                if len(attrValue)>0 and type(attrValue[0]) == types.FloatType:
+                    serializationString += "'" + attrName + "'" + " : " + self.listOfFloatsToString(attrValue) + ",\n"
+                else:
+                    serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
+            
+            # serialize strings with quotes    
+            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+                
+            #serialize knowledge
+            elif attrName in self.__SERIALIZABLE_ATTRIBUTES :
+                # grid and knowledge are stored by checkpoint controller itself
+                if attrName not in ['grid', 'knowledge'] and attrName != 'foldingPolicy':
+#                    try: 
+                    serializationString += "'" + attrName + "'" + " : " + attrValue.toString() + ",\n" 
+#                    except Exception as detail:
+#                        print "**********atrname**********:",attrName
+
+        return "{" + serializationString.rstrip(",\n").replace("'",'"') + "}"
+    
+    # Restores the attributes of a subclass of Learner from the json object with attributes.
+    #
+    # @param jsonObject A json object.
+    # @return The restored subclass object of Learner.
+    def fromJson(self, jsonObject):
+       #print jsonObject
+        self.trainAccuracy = jsonObject['trainAccuracy']
+        self.trainingOverall = jsonObject['trainingOverall']
+        self.testAccuracy = jsonObject['testingOverall']
+        self.numberPoints = jsonObject['numberPoints']
+        self.iteration = jsonObject['iteration']
+        self.dataContainer = DataContainer.fromJson(jsonObject['dataContainer'])
+        self.stopPolicy = TrainingStopPolicy.fromJson(jsonObject['stopPolicy'])
+        self.specification = TrainingSpecification.fromJson(jsonObject['specification'])
+        self.solver = CGSolver.fromJson(jsonObject['solver'])
+        return self
+    
+    
+    ##Restores the state which is saved in the given memento
+    #
+    #@param memento the memento object
+    def setMemento(self, memento):
+        self.fromJson(memento)
+        
+    
+    ##Creates a new memento to hold the current state
+    #
+    #@return a new memento
+    def createMemento(self):
+        # ok, it's weird now since I've wrote the toString() method before 
+        # createMemento(). Correct would be to create an Json Object and then 
+        # convert it to the string
+        jsonString = self.toString()
+        jsonObject = json.JsonReader().read(jsonString)
+        return jsonObject
 
 
 ## Constants of different learning events

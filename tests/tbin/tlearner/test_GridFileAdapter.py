@@ -22,6 +22,8 @@
 
 import unittest
 
+# @tod (khakhutv) rename the file
+
 #correct the syspath, so python looks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
@@ -30,19 +32,19 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.GridFileAdapter import GridFileAdapter
+from bin.learner.GridFormatter import GridFormatter
 from bin.pysgpp import Grid
 
 class TestGridFileAdapter(unittest.TestCase):
     
-    adapter = None
+    __gridFormatter = None
     filename = pathlocal + "/datasets/grid.gz"
     savefile = pathlocal + "/datasets/savetest.grid.gz"
     correct_str = ""
     grid = None
     
     def setUp(self,):
-        self.adapter = GridFileAdapter()
+        self.__gridFormatter = GridFormatter()
         dim = 3
         self.grid = Grid.createLinearGrid(dim)
         self.grid.createGridGenerator().regular(3)
@@ -50,13 +52,13 @@ class TestGridFileAdapter(unittest.TestCase):
 
     
     def testLoad(self,):
-        grid = self.adapter.load(self.filename)
+        grid = self.__gridFormatter.deserializeFromFile(self.filename)
         test_str = grid.serialize()
         self.assertEqual(test_str, self.correct_str)
         
     def testSave(self,):
-        self.adapter.save(self.grid, self.savefile)
-        grid = self.adapter.load(self.savefile)
+        self.__gridFormatter.serializeToFile(self.grid, self.savefile)
+        grid = self.__gridFormatter.deserializeFromFile(self.savefile)
         test_str = grid.serialize()
         self.assertEqual(test_str, self.correct_str)
         

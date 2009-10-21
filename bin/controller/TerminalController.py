@@ -20,10 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package TerminalController
-# @ingroup controller
-# @brief User interface with shell console
-# @version $HEAD$
 
 import ConfigParser, os
 from optparse import OptionParser
@@ -38,7 +34,7 @@ class TerminalController:
     """ generated source for TerminalController
 
     """
-
+    @classmethod
     def run(cls):
         # Initialize OptionParser, set Options
         parser = OptionParser()
@@ -91,11 +87,11 @@ class TerminalController:
         else:
             TerminalController.constructObjectsFromOptions(options)
         
-    run = classmethod(run)
     
     ## Construct all objects from the information, defined in the job file
     #
     # @param filename: string path to the file with job settings
+    @classmethod
     def constructObjectsFromFile(cls, filename):
         configuration = ConfigParser.ConfigParser()
         configuration.readfp(open(filename, 'r'))
@@ -208,7 +204,6 @@ class TerminalController:
                 learner.applyData( ARFFAdapter(points_file).loadData().getPoints() )
             else: raise Exception('To evaluate value of points define file path "points_file" in the section "data"')
         else: raise Exception('Incorrect action in job configuration file')
-    constructObjectsFromFile = classmethod(constructObjectsFromFile)
     
     
     
@@ -216,11 +211,11 @@ class TerminalController:
     ## Construct all objects form the information, defined with arguments
     #
     # @param options: OptionParser result object with options
+    @classmethod
     def constructObjectsFromOptions(cls, options):
         #@todo (khakhutv) implement terminal initialization from command line parameters
         return 
     
-    constructObjectsFromOptions = classmethod(constructObjectsFromOptions)
     
     
     
@@ -229,6 +224,7 @@ class TerminalController:
     #
     # @param items: list of items
     # @return: dictionary
+    @classmethod
     def itemsToDict(cls, items):
         result = {}
         for item in items:
@@ -236,7 +232,6 @@ class TerminalController:
             
         return result
     
-    itemsToDict = classmethod(itemsToDict)
     
 
 if __name__=='__main__':

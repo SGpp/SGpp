@@ -20,11 +20,12 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package TrainingSpecification
-# @ingroup bin.learner
-# @brief Stores different parameters of the learning process
-# @version $HEAD$
 
+
+import types
+
+## Collection of parameters, which specify the learning process.
+# An object of the class is aggregated by the Learner object.
 class TrainingSpecification(object):
 
 
@@ -135,6 +136,47 @@ class TrainingSpecification(object):
             return self.__adaptPoints
         else: 
             return min(ratePoints, self.__adaptPoints)
+        
+        
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object.   
+    def toString(self):
+        serializationString = "'module' : '" + self.__module__ + "',\n"
+        for attrName in dir(self):
+            attrValue = self.__getattribute__(attrName)
+            
+            #lists, integers, floats, dictionaries can serialized with str()
+            if type(attrValue) in [types.ListType, types.IntType, 
+                             types.FloatType] and attrName.find("__") != 0: 
+                serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
+            # serialize strings with quotes    
+            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+
+        serializationString = "{" + serializationString.rstrip(",\n") + "}"
+        return serializationString
+    
+    
+    # Restores the TrainingSpecification object from the json object with attributes.
+    #
+    # @param jsonObject A json object.
+    # @return The restored TrainingSpecification object.
+    # @todo: (khakhutv) recreate C and B operators without actually storing them
+    @classmethod
+    def fromJson(cls, jsonObject):
+        specification = TrainingSpecification()
+        if jsonObject.has_key('_TrainingSpecification__adaptPoints'):
+            specification.__adaptPoints = jsonObject['_TrainingSpecification__adaptPoints']
+        if jsonObject.has_key('_TrainingSpecification__l'):
+            specification.__l = jsonObject['_TrainingSpecification__l']
+        if jsonObject.has_key('_TrainingSpecification__adaptRate'):
+            specification.__adaptRate = jsonObject['_TrainingSpecification__adaptRate']
+        if jsonObject.has_key('_TrainingSpecification__adaptThreshold'):
+            specification.__adaptThreshold = jsonObject['_TrainingSpecification__adaptThreshold']
+        specification.__cOperator = None
+        specification.__bOperator = None
+        return specification
 
 
 

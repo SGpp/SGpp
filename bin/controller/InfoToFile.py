@@ -20,11 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package InfoToFile
-# @ingroup bin.controller
-# @brief Class for handling events from Learner and Solver and printing informations to the file
-# @version $CURR$
-
 from bin.controller.InfoToScreen import InfoToScreen
 import sys
 
@@ -68,3 +63,12 @@ class InfoToFile(InfoToScreen):
         InfoToScreen.handleSolvingEvent(self, subject, status)
         sys.stdout = tmpout
         file.close()
+        
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object.  
+    def toString(self):
+        serializationString = InfoToScreen.toString(self).rstrip().lstrip("{").rstrip("}")
+        serializationString += ", 'filename' : '" + self.filename + "'"
+        serializationString = "{" + serializationString + "}\n"
+        return serializationString
