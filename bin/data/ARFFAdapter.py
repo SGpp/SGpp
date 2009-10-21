@@ -23,11 +23,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
+from bin.data.DataSpecification import DataSpecification
 
-## @package ARFFAdapter
-# @ingroup bin.data
-# @brief Adapter to save and load data of DataContainer in file in ARFF format
-# @version $HEAD$
 
 import re
 import gzip
@@ -147,26 +144,30 @@ class ARFFAdapter(DataAdapter):
             dataVector.setRow(rowIndex, tempVector)
             valuesVector[rowIndex] = classes[rowIndex]
             
-        return DataContainer(dataVector, valuesVector, name)
+        return DataContainer(dataVector, valuesVector, name, self.filename)
 
 
     ## Loads attribute specification from file
     #
     # @return dictionary with attribute specification
     def loadSpecification(self):
-        spec = {}
+        spec = DataSpecification()
+        spec.setFilename(self.filename)
         fin = self.__gzOpen(self.filename, "r")
         for line in fin:
             sline = line.strip().lower()
+            # comments:
             if sline.startswith("%") or len(sline) == 0:
                 continue
-    
-            if sline.startswith("@data"):
-                break
             
-            if sline.startswith("@attribute"):
+            # attributes:
+            elif sline.startswith("@attribute"):
                 attrLine = line.strip().split()
-                spec[attrLine[1]] = attrLine[2]
+                spec.addAttribute(attrLine[1], attrLine[2])
+            
+            # data block therefore no attributes will come
+            elif sline.startswith("@data"):
+                break
             
         return spec
     

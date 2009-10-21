@@ -20,13 +20,12 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package FoldingPolicy
-# @ingroup bin.learner
-# @brief Abstract class for folding rules
-# @version $CURR$
 
 import math
 
+## Abstract class for providing functionality for accomplishment of learning with cross-validation
+# by generating a set of training data/validation data pairs
+# @todo (khakhutv) why is it class abstract?
 class FoldingPolicy(object):
 
 

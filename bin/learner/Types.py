@@ -20,10 +20,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package Types
-# @ingroup bin.learner
-# @brief Different enumerable types used in the group
-# @version $CURR$
+
 
 
 ## Constants for types of grid borders

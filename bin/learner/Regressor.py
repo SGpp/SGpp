@@ -20,14 +20,13 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package Learner
-# @ingroup bin.learner
-# @brief Regression
-# @version $HEAD$
+
 
 from Learner import Learner, LearnerEvents
 from bin.pysgpp import DataVector, SurplusRefinementFunctor
 
+## Subclass of Learner, responsible for regression.
+# The methods specific for regression are implemented here.
 class Regressor(Learner):
     
     errors = None # Errors per basis function
@@ -86,4 +85,10 @@ class Regressor(Learner):
         
         # @todo (khakhutv) develop a way to simplify interfaces and use different functors
         self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.errors, pointsNum, self.specification.getAdaptThreshold()) )
-        
+
+
+    ## Creates Regressor object without any parameter set
+    # @return: Rgressor object without any parameter set
+    @classmethod
+    def fromJson(cls, jsonObject):
+        return Regressor()

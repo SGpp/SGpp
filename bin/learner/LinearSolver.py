@@ -20,21 +20,41 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package LinearSolver
-# @ingroup bin.learner
-# @brief Abstract class for solving of linear equations
-# @version $HEAD$ 
 
-
+## Abstract class for solution of system of linear equations. 
+#
+# The class defines the methods that have to be implemented in class of with 
+# routines for solution of linear equations in order to be used with SGPP.
+# 
+# The class also implements the subject of <a href="Observer_pattern" target="new">the observer
+# design pattern</a>.
+#
+# @section Observer design pattern 
+# To customize the processing of progress information in SGPP the observer pattern 
+# is used. The classes that want to be informed about events should implement SolverEvenController
+# and subscribe with <code>attachEventController()</code>. After some event of LinearSolverEvents
+# arise, LinearSolver object calls method <code>handleSolvingEvent()</code> by 
+# all subscribers. As subscribers get a reference to the LinearSolver object, 
+# they can retrieve the attributes of the solver and process the information.
+#
+# <i>Roles</i>
+# - Subject: LinearSolver
+# - Concrete subject: e.g. CGSolver
+# - Observer: SolverEventController
+# - Concerete Observer: e.g. InfoToScreen
+#
+# Observer can also want to retrieve the process information from Learner. See documentation of
+# @link bin.learner.Learner.Learner Learner@endlink for more information.
 class LinearSolver(object):
     eventControllers = None   #list of object listening to the solver events
     
+    ##Constructor
     def __init__(self):
         self.eventControllers = []
 
     
     ## Solver linear system
-    # this method is not implemented
+    # this method has to be implemented in concrete class
     #
     # @param linearSystem: DMSystemMatrix object of Linear System to solve
     def solve(self, linearSystem):
@@ -61,6 +81,9 @@ class LinearSolver(object):
     def notifyEventControllers(self, event):
         for controller in self.eventControllers:
             controller.handleSolvingEvent(self, event)
+
+
+
 
 class LinearSolverEvents(object):
     STARTING = 100

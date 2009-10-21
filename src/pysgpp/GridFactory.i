@@ -44,6 +44,10 @@
 %apply std::string *INPUT { std::string& istr };
 
 
+
+//void getMemento();
+
+
 namespace sg
 {
 
@@ -88,7 +92,23 @@ public:
 	void refine(DataVector* vector, int num);
 	double eval(DataVector& alpha, DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
-
+	//void getMemento();
+	
 };
 
+
+
 }
+
+//these are just two new interfaces for consistency with Memento design pattern
+%extend sg::Grid{
+	Grid* createMemento(){
+		return $self;
+	}
+	
+	static sg::Grid* setMemento(std::string& istr){
+		return sg::Grid::unserialize(istr);
+	}
+};
+
+	

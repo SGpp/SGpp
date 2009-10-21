@@ -20,10 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package InfoToScreen
-# @ingroup bin.controller
-# @brief Class for handling events from Learner and Solver and printing informations on screen
-# @version $HEAD$
 
 from bin.controller.ProgressInfoPresentor import ProgressInfoPresentor
 from bin.learner.LinearSolver import LinearSolverEvents

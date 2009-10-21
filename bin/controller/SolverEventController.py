@@ -20,29 +20,28 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package Knowledge Adapter
-# @ingroup learner
-# @brief Abstract class for adapters of learned knowledge
-# @version $CURR$
 
 
-class KnowledgeAdapter(object):
+class SolverEventController(object):
 
-    
-    ## Load knowledge data from the source
-    # as it is an abstract class, this function is not implemented!
+    ##
+    #Handles events from LinearSolver 
     #
-    # @param source: Source
-    def load(self, source):
-        raise NotImplementedError
-
+    #@param subject: LinearSolver object
+    #@param event: Event Status of type LinearSolverEvents
+    ##  
+    def handleSolvingEvent(self, subject, event):
+        raise NotImplementedError()
     
-    ## Save knowledge data to the destination
-    # as it is an abstract class, this function is not implemented!
-    # 
-    # @param knowledge: LearnedKnowledge object
-    # @param dest: Destination
-    def save(self, knowledge, dest):
-        raise NotImplementedError
-
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object.
+    def toString(self):
+        return "{'module' : '" + self.__module__ + "'}\n"
+    
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object.
+    def __repr__(self):
+        return '{' + self.toString().lstrip("{").rstrip("}\n") + '}'
 

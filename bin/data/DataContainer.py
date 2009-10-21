@@ -20,15 +20,12 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package DataContainer
-# @ingroup bin.data
-# @brief Container for points and corresponding function values 
-# @version $HEAD$
 
 from DataSpecification import DataSpecification
 from bin.pysgpp import DataVector
 from DataAdapter import DataAdapter
 from DataEntry import DataEntry
+import ARFFAdapter
 
 
 
@@ -40,7 +37,7 @@ class DataContainer(object):
     
     points = {}             #Dictionary for points from different categories of data sets
     values = {}             #Dictionary for values from different categories of data sets
-    specification = None    #Specification of attributes of default data set
+    specifications = {}     #Specification of attributes of default data set
     dim = None              #Dimension of the default data set
     size = None             #Size of the default data set
     tempPoint = None        #Used for manipulations with points DataVector
@@ -89,8 +86,8 @@ class DataContainer(object):
     # @param indices: list of indices
     # @param name: String for category name of data set, default: "train"
     # @return: DataContainer with entries from the given list
-    def getDataSubsetByIndexList(self, indeces, name="train"):
-        size = len(indeces)
+    def getDataSubsetByIndexList(self, indices, name="train"):
+        size = len(indices)
         subset_points = DataVector(size, self.dim)
         subset_values = DataVector(size)
         row = DataVector(self.dim)
@@ -98,7 +95,7 @@ class DataContainer(object):
         values = self.getValues()
         
         i = 0
-        for index in indeces:
+        for index in indices:
             points.getRow(index, row)
             subset_points.setRow(i, row)
             subset_values[i] = values[index]
@@ -134,8 +131,8 @@ class DataContainer(object):
     ## Constructor
     # possible parameter combinations:
     # DataContainer(adapter)
-    # DataContainer(size, dim, [name])
-    # DataContianer(points, values, [name]
+    # DataContainer(size, dim, [name="train", filename=None])
+    # DataContianer(points, values, [name="train", filename=None])
     #
     # @param adapter: Object implementing DataContainer
     # @param size: Integer size of data set
@@ -146,10 +143,13 @@ class DataContainer(object):
     def __init__(self, *args):
         self.points={}
         self.values={}
+        # @todo: (khakhutv) add inserting of specifications into the specification dictionary
+        self.specifications = {} 
         if isinstance(args[0], DataAdapter): #takes (adapter: DataAdapter)
             pass
+            # @todo (khakhutv) implement the case where data container is created from adapter
         elif type(args[0]) == type(0): #takes (size: int, dim: int, name="train")
-            #FIXME: here IndexError is possible
+            #@todo (khakhutv) here IndexError is possible
             try:
                 if args[2] is None:
                     self.name = self.TRAIN_CATEGORY
@@ -163,9 +163,11 @@ class DataContainer(object):
             self.points[self.name] = DataVector(self.size, self.dim)
 
             self.values[self.name] = DataVector(self.size)
+            specification = DataSpecification()
+            specification.createNumericAttributes(self.dim)
+            self.specifications[self.name] = specification
             
-            self.specification = DataSpecification()
-        elif isinstance(args[0], DataVector): #takes (points: DataVector, values: DataVector, name="train")
+        elif isinstance(args[0], DataVector): #takes (points: DataVector, values: DataVector, name="train", filename=None)
             try:
                 if args[2] is None:
                     self.name = self.TRAIN_CATEGORY
@@ -173,12 +175,27 @@ class DataContainer(object):
                     self.name = args[2]
             except IndexError:
                 self.name = self.TRAIN_CATEGORY
+            
+                    
 
             self.points[self.name] = args[0]
             self.values[self.name] = args[1]
             self.size = self.points[self.name].getSize()
             self.dim = self.points[self.name].getDim()
             
+            specification = DataSpecification()
+            specification.createNumericAttributes(self.dim)
+            
+            # if data comes from a file, note it in the specification
+            try:
+                if not args[3] is None:
+                    specification.setFilename(args[3])
+                    specification.setSaved()
+            except IndexError:
+                pass
+            
+            self.specifications[self.name] = specification
+  
         self.tempPoint = DataVector(1,self.dim)
         self.tempValue = DataVector(1,1)
        
@@ -189,7 +206,7 @@ class DataContainer(object):
     # @return: new DataContainer with several data sets
     def combine(self, container):
         newContainer = DataContainer(self.getPoints(), self.getValues(), self.name)
-        return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getName())
+        return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getSpecifiction(), container.getName())
         
     
     ##Adds points and values into dictionaries
@@ -198,9 +215,10 @@ class DataContainer(object):
     # @param values: DataVector new values
     # @param name: String category name under which points and values should be stored
     # @return: DataContainer itself
-    def __setSubContainer(self, points, values, name):
+    def __setSubContainer(self, points, values, specification, name):
         self.points[name] = points
         self.values[name] = values
+        self.specifications[name] = specification
         return self
     
 
@@ -227,6 +245,9 @@ class DataContainer(object):
     # @return: DataVector of values
     def getValues(self):
         return self.values[self.name]
+    
+    def getSpecifiction(self):
+        return self.specifications[self.name]
     
     
     ## Return the default name of data set
@@ -259,5 +280,40 @@ class DataContainer(object):
     # @return: tuple (DataVector points, DataVector values)
     def getPointsValues(self):
         return (self.getPoints(), self.getValues())
+    
+    
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object. 
+    def toString(self):
+        # save the data as a file, if it's not saved yet
+        for category, specification in self.specifications.items():
+            if not self.specifications[category].isSaved():
+                ARFFAdapter.save(self.getPoints(category), self.getValues(category), 
+                                 specification.getAttributes())
+                specification.setSaved()
+                
+        serializedString = "'module' : '" + self.__module__ + "',\n"
+        for category in self.specifications.keys():
+            serializedString += "'" + category + "' : " + self.specifications[category].toString() + ",\n"
+        return "{" + serializedString.rstrip(",\n") + "}\n"
+    
+    
+    # Restores the DataContainer object from the json object with attributes.
+    #
+    # @param jsonObject A json object.
+    # @return The restored DataContainer object.
+    @classmethod
+    def fromJson(cls, jsonObject):
+        # initiate with train data, because they are always there
+        specification = jsonObject['train']
+        resultContainer = ARFFAdapter.ARFFAdapter(specification['filename']).loadData('train')
+        
+        # load data for other categories
+        for category, specification in jsonObject.items():
+            if not ( category == 'module' or category == 'train') :
+                container = ARFFAdapter.ARFFAdapter(specification['filename']).loadData(category)
+                resultContainer = resultContainer.combine(container)
 
+        return resultContainer
 

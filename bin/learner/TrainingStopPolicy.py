@@ -20,11 +20,15 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package TrainingStopPolicy
-# @ingroup bin.learner
-# @brief Rules to stop learning iterations to prevent overfitting
-# @version $HEAD$
 
+
+import types
+
+## The class implements heuristics for testing if the learn process should be finished before learner is overfitted.
+#  
+# The test is made by calling method <code>
+# @linkisTrainingComplete() isTrainingComplete(learner)@endlink</code> of the class, which 
+# returns True if training process should be finished.
 class TrainingStopPolicy(object):
     __adaptiveIterationLimit = None     #Maximal number of refinement iterations
     __epochsLimit = None                #Maximal number of iterations, during which accuracy can decreases
@@ -46,7 +50,7 @@ class TrainingStopPolicy(object):
     # @param learner: Learner object 
     # @return: boolean value, true if learning has to stop, false otherwise
     def isTrainingComplete(self, learner):
-        # @todo (khakhutv) Make it more advanced
+        # @todo (khakhutv) Make it more advanced (low)
         if self.__adaptiveIterationLimit != None and self.__adaptiveIterationLimit < learner.getCurrentIterationNumber():
             return True
         return False
@@ -80,6 +84,47 @@ class TrainingStopPolicy(object):
     # @param limit: integer maximal grid size  
     def setGridSizeLimit(self, limit):
         self.__gridSize = limit
+        
+        
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object. )
+    def toString(self):
+        serializationString = "'module' : '" + self.__module__ + "',\n"
+        for attrName in dir(self):
+            attrValue = self.__getattribute__(attrName)
+            
+            #lists, integers, floats, dictionaries can serialized with str()
+            if type(attrValue) in [types.ListType, types.IntType, 
+                             types.FloatType, types.DictType] and attrName.find("__") != 0: 
+                serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
+            # serialize strings with quotes    
+            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+                
+        serializationString = "{" + serializationString.rstrip(",\n") + "}"
+        return serializationString
+    
+    
+    # Restores the TrainingStopPolicy object from the json object with attributes.
+    #
+    # @param jsonObject A json object.
+    # @return The restored TrainingStopPolicy object.
+    @classmethod
+    def fromJson(cls, jsonObject):
+        policy = TrainingStopPolicy()
+        if jsonObject.has_key('_TrainingStopPolicy__adaptiveIterationLimit'):
+            policy.setAdaptiveIterationLimit(jsonObject['_TrainingStopPolicy__adaptiveIterationLimit'])
+        if jsonObject.has_key('_TrainingStopPolicy__epochsLimit'):
+            policy.setEpochsLimit(jsonObject['_TrainingStopPolicy__epochsLimit'])
+        if jsonObject.has_key('_TrainingStopPolicy__MSELimit'):
+            policy.setMSELimit(jsonObject['_TrainingStopPolicy__MSELimit'])
+        if jsonObject.has_key('_TrainingStopPolicy__accuracyLimit'):
+            policy.setAccuracyLimit(jsonObject['_TrainingStopPolicy__accuracyLimit'])
+        if jsonObject.has_key('_TrainingStopPolicy__gridSize'):
+            policy.setGridSizeLimit(jsonObject['_TrainingStopPolicy__gridSize'])
+        return policy
+            
         
 
 

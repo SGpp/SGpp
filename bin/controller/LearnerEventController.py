@@ -20,10 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package LearnerEventController
-# @ingroup bin.controller
-# @brief Abstract class for handling of events from Learner
-# @version $CURR$
 
 
 class LearnerEventController(object):
@@ -32,9 +28,20 @@ class LearnerEventController(object):
     #Handles events from Learner 
     #
     #@param subject: Learner object
-    #@param status: Event Status of type LearnerEvents
+    #@param event: Event Status of type LearnerEvents
     ##  
     def handleLearningEvent(self, subject, event):
         raise NotImplementedError()
-
+    
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object.
+    def toString(self):
+        return "{'module' : '" + self.__module__ + "'}\n"
+    
+    ##Returns a string that represents the object.
+    #
+    # @return A string that represents the object.
+    def __repr__(self):
+        return '{' + self.toString().lstrip("{").rstrip("}\n") + '}'
 

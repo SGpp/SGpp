@@ -20,10 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package Learner
-# @ingroup bin.learner
-# @brief Classifications
-# @version $HEAD$
 
 from Learner import Learner, LearnerEvents
 from bin.pysgpp import SurplusRefinementFunctor
@@ -74,6 +70,7 @@ class Classifier(Learner):
         
         # @todo (khakhutv) develop a way to simplify interfaces and use different functors
         self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.alpha, pointsNum, self.specification.getAdaptThreshold()) )
+        
                             
 
 

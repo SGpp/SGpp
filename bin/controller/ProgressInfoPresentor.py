@@ -20,10 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package ProgressInfoPresentor
-# @ingroup bin.controller
-# @brief Abstract class for handling events from Learner and Solver
-# @version $CURR$
 
 from bin.controller.LearnerEventController import LearnerEventController
 

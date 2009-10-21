@@ -124,9 +124,10 @@ class TestARFFAdapter(unittest.TestCase):
         filename = pathlocal + '/datasets/liver-disorders_normalized.arff.gz'
         adapter = ARFFAdapter(filename)        
         spec = adapter.loadSpecification()
-        self.assertEqual(len(spec), len(attributes))
-        for key in spec.keys():
-            self.assertEqual(spec[key],attributes[key])
+        testAttributes = spec.getAttributes()
+        self.assertEqual(len(testAttributes), len(attributes))
+        for key in testAttributes.keys():
+            self.assertEqual(testAttributes[key],attributes[key])
         
 if __name__=="__main__":
     unittest.main() 

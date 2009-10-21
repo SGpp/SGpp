@@ -20,10 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-## @package DataEntry
-# @ingroup bin.data
-# @brief Container for the tuple of point as DataVector and corresponding function value as float 
-# @version $HEAD$
 
 from bin.pysgpp import DataVector
 from DataSpecification import DataSpecification
