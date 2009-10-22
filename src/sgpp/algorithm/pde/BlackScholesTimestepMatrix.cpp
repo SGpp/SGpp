@@ -172,11 +172,7 @@ void BlackScholesTimestepMatrix::finishTimestep(DataVector& alpha)
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
 	{
-		if (this->tOperationMode == "CrNic")
-		{
-			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*((0.5)*this->TimestepSize)))));
-		}
-		else
+		if (this->tOperationMode == "ExEul")
 		{
 			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
@@ -188,11 +184,7 @@ void BlackScholesTimestepMatrix::startTimestep(DataVector& alpha)
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
 	{
-		if (this->tOperationMode == "CrNic")
-		{
-			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*((0.5)*this->TimestepSize)))));
-		}
-		else
+		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
 			this->BoundaryUpdate->multiplyBoundary(alpha, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
