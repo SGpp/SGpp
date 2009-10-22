@@ -77,7 +77,7 @@ void CrankNicolson::solve(OperationODESolverMatrix& SystemMatrix, DataVector& al
     	}
 
 	    // Do some adjustments on the boundaries if needed
-		SystemMatrix.finishTimestep(alpha);
+		//SystemMatrix.finishTimestep(alpha);
 	}
 
 	// write some empty lines to console
