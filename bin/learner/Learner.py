@@ -32,24 +32,80 @@ from bin.data.DataContainer import DataContainer
 import types
 
 
+## The class implements the routines common for classifier and regressor.
+# However, since some methods are defined and note implemented, this class is
+# abstract and cannot be instantiated.
+#
+# The class also implements the subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer
+# design pattern</a>.
+#
+# @section Observer design pattern 
+# To customize the processing of progress information in SGPP the observer pattern 
+# is used. The classes that want to be informed about events should implement LearnerEvenController
+# and subscribe by the instance of Learner subclass
+# with <code>attachEventController()</code>. After some event of LearnerEvents
+# arise, the Learner subclass object calls method <code>handleLearningEvent()</code> by 
+# all subscribers. As subscribers get a reference to the Learner object, 
+# they can retrieve the attributes of the learner and process the information.
+#
+# <i>Roles</i>
+# - Subject: Learner
+# - Concrete subject: e.g. Classifier or Regressor
+# - Observer: LernerEventController
+# - Concrete Observer: e.g. InfoToScreen
+#
+# Observer can also want to retrieve the process information from LinearSolver. 
+# See documentation of@link bin.learner.LinearSolver.LinearSolver LinearSolver@endlink for more information.
 class Learner(object):
     
-    eventControllers = None  #list of object listening to the learning events
-    dataContainer = None    #DataContainer object with training (and maybe test) data
-    stopPolicy = None       #TrainingStopPolicy object associated with this Learner
-    specification = None    #TrainingSpecification object associated with this Learner
-    grid = None             #Grid of the Learner
-    knowledge = None        #LearnedKnowledge where alpha is stored
-    foldingPolicy = None    #Implementation of folding policy if training with folding is used
-    solver = None           #LinearSolver object associated with this Learner
-    linearSystem = None     #DMSystemMatrix object associated with this Learner
-    iteration = 0           #Number of current iterations
-    trainAccuracy = []      #list of train accuracy values measured in refinement iteration
-    testAccuracy = []       #list of test accuracy values measured in refinement iteration
-    alpha = None            #DataVector with current alpha vector
-    trainingOverall = []    #Average training accuracy over all refinement iterations
-    testingOverall = []     #Average training accuracy over all refinement iterations
-    numberPoints = []       #Number of point on grid for different refinement iterations
+    ##list of object listening to the learning events
+    eventControllers = None 
+    
+    ##DataContainer object with training (and maybe test) data
+    dataContainer = None    
+    
+    ##TrainingStopPolicy object associated with this Learner
+    stopPolicy = None       
+    
+    ##TrainingSpecification object associated with this Learner
+    specification = None    
+    
+    ##Grid of the Learner
+    grid = None             
+    
+    ##LearnedKnowledge where alpha is stored
+    knowledge = None        
+    
+    ##Implementation of folding policy if training with folding is used
+    foldingPolicy = None    
+    
+    ##LinearSolver object associated with this Learner
+    solver = None           
+    
+    ##DMSystemMatrix object associated with this Learner
+    linearSystem = None     
+    
+    ##Number of current iterations
+    iteration = None      
+    
+    ##list of train accuracy values measured in refinement iteration
+    trainAccuracy = None   
+    
+    ##list of test accuracy values measured in refinement iteration
+    testAccuracy = None       
+    
+    ##DataVector with current alpha vector
+    alpha = None            
+    
+    ##List of average training accuracy data over all refinement iterations
+    trainingOverall = None    
+    
+    ##List of average training accuracy data over all refinement iterations
+    testingOverall = None    
+    
+    ##List of numbers of point on grid for different refinement iterations
+    numberPoints = None       
+    
     __SERIALIZABLE_ATTRIBUTES = ['eventControllers', 'dataContainer', 
                                  'stopPolicy', 'specification', 'grid', 
                                  'knowledge','foldingPolicy', 'solver']
@@ -63,6 +119,8 @@ class Learner(object):
         self.testAccuracy = []
         self.testingOverall = []
         self.numberPoints = []
+        self.iteration = 0
+        self.eventControllers = []
 
 
     ## Learn data from training data set and use validation data set to prevent overfitting
@@ -237,7 +295,7 @@ class Learner(object):
     
     
     ## Setter for data container
-    #
+    # @param container: the data container object
     # @return: leaner itself
     def setDataContainer(self, container):
         self.dataContainer = container
@@ -245,7 +303,7 @@ class Learner(object):
 
     
     ## Setter for grid
-    #
+    # @param grid: the grid obejct
     # @return: leaner itself
     def setGrid(self, grid):
         self.grid = grid
@@ -253,7 +311,7 @@ class Learner(object):
 
     
     ## Setter for training specification
-    #
+    # @param specification: the training specification object
     # @return: leaner itself
     def setSpecification(self, specification):
         self.specification = specification
@@ -261,7 +319,7 @@ class Learner(object):
 
     
     ## Setter for training stop policy
-    #
+    # @param policy: the training stop policy object
     # @return: leaner itself
     def setStopPolicy(self, policy):
         self.stopPolicy = policy
@@ -269,27 +327,32 @@ class Learner(object):
     
     
     ## Setter for linear solver
-    #
+    # @param solver: the linear solver object
     # @return: leaner itself
     def setSolver(self, solver):
         self.solver = solver
         return self
 
     ## Setter for learned knowledge
-    #
+    # @param knowledge: the learned knowledge object
     # @return: leaner itself
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
         return self
     
     ## Setter for folding policy
-    #
+    # @param policy: the folding policy object
     # @return: leaner itself
     def setFoldingPolicy(self, policy):
         self.foldingPolicy = policy
         return self
     
-    def listOfFloatsToString(self, list):
+    
+    ## Converts list of float values to string, where floats are written in exponential fromat
+    #
+    # @param list list of floats
+    # @return the string representation of the list 
+    def __listOfFloatsToString(self, list):
         result = '['
         for item in list[0:-1]:
             result += "%e"%item + ","
@@ -317,7 +380,7 @@ class Learner(object):
             #store list of floats in exponential format
             elif type(attrValue) == types.ListType:
                 if len(attrValue)>0 and type(attrValue[0]) == types.FloatType:
-                    serializationString += "'" + attrName + "'" + " : " + self.listOfFloatsToString(attrValue) + ",\n"
+                    serializationString += "'" + attrName + "'" + " : " + self.__listOfFloatsToString(attrValue) + ",\n"
                 else:
                     serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
             
@@ -336,12 +399,12 @@ class Learner(object):
 
         return "{" + serializationString.rstrip(",\n").replace("'",'"') + "}"
     
-    # Restores the attributes of a subclass of Learner from the json object with attributes.
+    
+    ## Restores the attributes of a subclass of Learner from the json object with attributes.
     #
     # @param jsonObject A json object.
     # @return The restored subclass object of Learner.
     def fromJson(self, jsonObject):
-       #print jsonObject
         self.trainAccuracy = jsonObject['trainAccuracy']
         self.trainingOverall = jsonObject['trainingOverall']
         self.testAccuracy = jsonObject['testingOverall']
@@ -375,16 +438,41 @@ class Learner(object):
 
 ## Constants of different learning events
 class LearnerEvents:
-    LEARNING_STARTED = 100
-    LEARNING_COMPLETE = 200
-    LEARNING_WITH_FOLDING_STARTED = 300
-    LEARNING_WITH_FOLDING_COMPLETE = 400
-    LEARNING_STEP_STARTED = 500
-    LEARNING_STEP_COMPLETE = 600
-    LEARNING_WITH_TESTING_STARTED = 700
-    LEARNING_WITH_TESTING_COMPLETE = 800
-    LEARNING_WITH_TESTING_STEP_STARTED = 900
-    LEARNING_WITH_TESTING_STEP_COMPLETE = 1000
-    APPLICATION_STARTED = 1100
-    APPLICATION_COMPLETE = 1200
-    REFINING_GRID = 1300
+    ## Learning process is started
+    LEARNING_STARTED = 100          
+    
+    ## Learning process is complete            
+    LEARNING_COMPLETE = 200            
+    
+    ## Learning with k-fold cross-validation is started         
+    LEARNING_WITH_FOLDING_STARTED = 300         
+    
+    ## Learning with k-fold cross-validation is complete
+    LEARNING_WITH_FOLDING_COMPLETE = 400      
+    
+    ## Learning / refinement step is started  
+    LEARNING_STEP_STARTED = 500                 
+    
+    ## Learning / refinement step is complete
+    LEARNING_STEP_COMPLETE = 600                
+    
+    ## Learning with testing (validation) is started
+    LEARNING_WITH_TESTING_STARTED = 700         
+    
+    ## Learning with testing (validation) is complete
+    LEARNING_WITH_TESTING_COMPLETE = 800        
+    
+    ## Initial / refinement step of learning with testing (validation) is started
+    LEARNING_WITH_TESTING_STEP_STARTED = 900    
+    
+    ## Initial / refinement step of learning with testing (validation) is complete
+    LEARNING_WITH_TESTING_STEP_COMPLETE = 1000  
+    
+    ## Applying of grid on data is started
+    APPLICATION_STARTED = 1100                  
+    
+    ## Applying of grid on data is complete
+    APPLICATION_COMPLETE = 1200                 
+    
+    ## Refining of the grid
+    REFINING_GRID = 1300                        

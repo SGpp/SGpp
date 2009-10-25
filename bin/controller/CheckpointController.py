@@ -68,12 +68,25 @@ import gzip
 # 
 class CheckpointController(LearnerEventController):
 
-    title = ""
-    path = ""
+    ## Checkpoint title
+    title = None
+    
+    ## Path to the checkpoint files
+    path = None
+    
+    ## Reference to the Grid object
     grid = None
+    
+    ## Reference to the LearnedKnowledge object
     knowledge = None
+    
+    ## Number of the last iteration
     lastIteration = None
+    
+    ## Interval, which determines how often checkpoints should be set
     interval = None
+    
+    ## Reference to the Learner object
     learner = None
     
     ##Constructor
@@ -184,9 +197,9 @@ class CheckpointController(LearnerEventController):
         # reconstruct the object
         learnerType = learnerMemento['module']
         if "bin.learner.Classifier" in learnerType:
-            learner = Classifier().fromJson( learnerMemento )
+            learner = Classifier()
         elif "bin.learner.Regressor" in learnerType:
-            learner = Regressor().fromJson( learnerMemento )
+            learner = Regressor()
         else:
             raise Exception("module name unknown")
         learner.setMemento(learnerMemento)

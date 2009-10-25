@@ -28,21 +28,44 @@ from DataEntry import DataEntry
 import ARFFAdapter
 
 
-
+## A collection of data
+# It can contain data sets for different categories, like "train"
+# and "test" data. Implements some common operation on sets, like combining of two
+# containers to one, as well as access to data levels, e.g. subset, points, values.
+#
+# The objects of DataContainer are iterable, so user can iterate through the points and
+# values of the subset of default category defined in the attribute @link DataContainer.name name@endlink.
 class DataContainer(object):
     
-    #Constants category names
+    ##Constants category names - training data
     TRAIN_CATEGORY = 'train'
+    
+    ##Constants category names - validation data
     TEST_CATEGORY = 'test'
     
-    points = {}             #Dictionary for points from different categories of data sets
-    values = {}             #Dictionary for values from different categories of data sets
-    specifications = {}     #Specification of attributes of default data set
-    dim = None              #Dimension of the default data set
-    size = None             #Size of the default data set
-    tempPoint = None        #Used for manipulations with points DataVector
-    tempValue = None        #Used for manipulations with values DataVector
-    name = None             #Category name of the default data set
+    ## Dictionary for points from different categories of data sets
+    points = None             
+    
+    ##Dictionary for values from different categories of data sets
+    values = None             
+    
+    ## Specification of attributes of default data set
+    specifications = None  
+    
+    ## Dimension of the default data set
+    dim = None        
+    
+    ##Size of the default data set      
+    size = None             
+    
+    ##Used for manipulations with points DataVector
+    tempPoint = None        
+    
+    ##Used for manipulations with values DataVector
+    tempValue = None        
+    
+    ##Category name of the default data set
+    name = None             
         
 
     ##Implementation of iterator method next()
@@ -117,14 +140,6 @@ class DataContainer(object):
         return self.getDataSubsetByCategory(self.TEST_CATEGORY)
     
 
-    def load(self):
-        return
-    
-
-    def normalize(self):
-        return
-    
-
 #    def __init__(self, adapter):
 #    def __init__(self, size, dim, name = "train"):
 
@@ -143,7 +158,6 @@ class DataContainer(object):
     def __init__(self, *args):
         self.points={}
         self.values={}
-        # @todo: (khakhutv) add inserting of specifications into the specification dictionary
         self.specifications = {} 
         if isinstance(args[0], DataAdapter): #takes (adapter: DataAdapter)
             pass
@@ -246,6 +260,8 @@ class DataContainer(object):
     def getValues(self):
         return self.values[self.name]
     
+    ## Return the data specification of the default category
+    # @return: the DataSpecification object
     def getSpecifiction(self):
         return self.specifications[self.name]
     
@@ -299,7 +315,7 @@ class DataContainer(object):
         return "{" + serializedString.rstrip(",\n") + "}\n"
     
     
-    # Restores the DataContainer object from the json object with attributes.
+    ## Restores the DataContainer object from the json object with attributes.
     #
     # @param jsonObject A json object.
     # @return The restored DataContainer object.
@@ -308,7 +324,6 @@ class DataContainer(object):
         # initiate with train data, because they are always there
         specification = jsonObject['train']
         resultContainer = ARFFAdapter.ARFFAdapter(specification['filename']).loadData('train')
-        
         # load data for other categories
         for category, specification in jsonObject.items():
             if not ( category == 'module' or category == 'train') :

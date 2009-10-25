@@ -27,7 +27,7 @@ import types
 ## The class implements heuristics for testing if the learn process should be finished before learner is overfitted.
 #  
 # The test is made by calling method <code>
-# @linkisTrainingComplete() isTrainingComplete(learner)@endlink</code> of the class, which 
+# @link isTrainingComplete() isTrainingComplete(learner)@endlink</code> of the class, which 
 # returns True if training process should be finished.
 class TrainingStopPolicy(object):
     __adaptiveIterationLimit = None     #Maximal number of refinement iterations
@@ -106,7 +106,7 @@ class TrainingStopPolicy(object):
         return serializationString
     
     
-    # Restores the TrainingStopPolicy object from the json object with attributes.
+    ## Restores the TrainingStopPolicy object from the json object with attributes.
     #
     # @param jsonObject A json object.
     # @return The restored TrainingStopPolicy object.

@@ -25,5 +25,5 @@ from InfoToFile import InfoToFile
 #from InfoToGraph import InfoToGraph
 from InfoToScreen import InfoToScreen
 from LearnerEventController import LearnerEventController
-from ProgressInfoPresentor import ProgressInfoPresentor
+from SolverEventController import SolverEventController
 from TerminalController import TerminalController

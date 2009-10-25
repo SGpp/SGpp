@@ -25,10 +25,14 @@ from bin.pysgpp import DataVector
 from DataSpecification import DataSpecification
 
 
+## A container for tuple of a point and its corresponding value
 class DataEntry(object):
 
-    value = None        #DataVector for value
-    point = None        #DataVector for point
+    ## DataVector for value
+    value = None        
+    
+    ## DataVector for point
+    point = None        
     
     
     ##Constructor

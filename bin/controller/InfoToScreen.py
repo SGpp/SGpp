@@ -21,11 +21,15 @@
 #############################################################################
 
 
-from bin.controller.ProgressInfoPresentor import ProgressInfoPresentor
 from bin.learner.LinearSolver import LinearSolverEvents
 from bin.learner.Learner import LearnerEvents
+from bin.controller.LearnerEventController import LearnerEventController
+from bin.controller.SolverEventController import SolverEventController
 
-class InfoToScreen(ProgressInfoPresentor):
+
+## The class processes the progress information from Learner and LinearSolver and
+# shows it on the terminal screen.
+class InfoToScreen(LearnerEventController, SolverEventController):
     
     ##
     #Handles events from Linear Solver 

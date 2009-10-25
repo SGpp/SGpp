@@ -24,16 +24,36 @@
 import ConfigParser, os
 from optparse import OptionParser
 
+#correct the syspath, so python looks for packages in the root directory of SGpp
+import sys, os
+pathname = os.path.dirname(__file__)
+pathsgpp = os.path.abspath(pathname) + '/../..'
+if pathsgpp not in sys.path: sys.path.append(pathsgpp)
+
 from bin.controller import InfoToScreen, InfoToFile, CheckpointController
 from bin.learner.LearnerBuilder import LearnerBuilder
 from bin.data.ARFFAdapter import ARFFAdapter
 
 
-
+## The class provides the functionality for launching of learning jobs from
+# terminal using console parameters or a configuration file.
+#
+# See file <i>tests/tbin/tcontroller/testsettings.job</i> for an example of configuration file.
+# The command is then looks like:
+# @code
+# python TerminalController.py --jobfile path/to/file.job
+# @endcode
+# 
+# In the same time there is an option to use command line for definition of
+# all parameters of the job. Execute 
+# @code
+# python TerminalController.py --help
+# @endcode
+# for help to the console parameters.
+#
 class TerminalController:
-    """ generated source for TerminalController
-
-    """
+ 
+    ## Initial processing of input parameters
     @classmethod
     def run(cls):
         # Initialize OptionParser, set Options
