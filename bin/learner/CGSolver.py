@@ -30,19 +30,36 @@ from bin.learner.LinearSolver import LinearSolver
 import types
 
 ## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for 
-# @link sg::solver::sle::ConjugateGradients ConjugateGradients@endlink class.
+# @link sg::ConjugateGradients ConjugateGradients@endlink class.
 # The ConjugateGradients solver is enhanced with methods of concrete subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer design pattern</a>
 # described in @link bin.learner.LinearSolver.LinearSolver LinearSolver@endlink and function for serialization
 # end deserialization.
+#
+# In order to combine high performance of C++ code and flexibility of Subscription pattern
+# the <a href="http://en.wikipedia.org/wiki/Template_pattern" target="new">Template design pattern</a>
+# was used in this class. So the CG algorithm itself is implemented in C++ class
+# ConjugateGradients, where template methods starting(), calcStarting(),
+# iterationComplete(), and complete() are defined and called in different phases
+# of the CG algorithm. This methods are overridden by CGSolver to rise the corresponding events by
+# event subscribers.
 #@todo: (khakhutv) rename set/getAccuracy and set/getImax for consistency with ConjugateGradients (low)
 #@todo (khakhutv) currently there is always two parameters for delta/residuum accuracy/myEpsilon imax/nMaxIterations
 class CGSolver(ConjugateGradients, LinearSolver):
-
-    accuracy = 0.0001   #the relationship of the norm of end residual to the normal of initial residual
-    imax = 400          #maximal number of iterations used in CG
-    delta_0 = 0         #norm of initial residual
-    delta_new = 0       #norm of current residual
-    alpha = None        #result vector
+    
+    ##the relationship of the norm of end residual to the normal of initial residual
+    accuracy = 0.0001  
+    
+    ##maximal number of iterations used in CG
+    imax = 400          
+    
+    ##norm of initial residual
+    delta_0 = 0         
+    
+    ##norm of current residual
+    delta_new = 0    
+    
+    ##result vector   
+    alpha = None        
     
     def __init__(self,):
         ConjugateGradients.__init__(self, self.imax, self.accuracy)
@@ -57,7 +74,8 @@ class CGSolver(ConjugateGradients, LinearSolver):
         ConjugateGradients.setEpsilon(self, accuracy)
         return self
     
-    
+    ## Return the accuracy for CG divergence criterion
+    # @return the accuracy for CG divergence criterion
     def getAccuracy(self):
         return self.myEpsilon
     
@@ -69,23 +87,24 @@ class CGSolver(ConjugateGradients, LinearSolver):
         ConjugateGradients.setMaxIterations(self, imax)
         return self
     
-    
+    ## Return the maximal number of CG iterations.
+    # @return the maximal number of CG iterations.
     def getImax(self):
         return self.nMaxIterations
         
-        
+    ## Rises LinearSolverEvents.STARTING event
     def starting(self):
         LinearSolver.notifyEventControllers(self, LinearSolverEvents.STARTING)
     
-    
+    ## Rises LinearSolverEvents.CALC_STARTING event
     def calcStarting(self, ):
         LinearSolver.notifyEventControllers(self, LinearSolverEvents.CALC_STARTING)
     
-    
+    ## Rises LinearSolverEvents.ITERATION_COMPLETE event
     def iterationComplete(self, ):
         LinearSolver.notifyEventControllers(self, LinearSolverEvents.ITERATION_COMPLETE)
     
-    
+    ## Rises LinearSolverEvents.COMPLETE event
     def complete(self, ):
         LinearSolver.notifyEventControllers(self, LinearSolverEvents.COMPLETE)
         
@@ -110,7 +129,7 @@ class CGSolver(ConjugateGradients, LinearSolver):
         return serializationString    
     
     
-    # Restores the CGSolver object from the json object with attributes.
+    ## Restores the CGSolver object from the json object with attributes.
     #
     # @param jsonObject A json object.
     # @return The restored SGSolver object.
@@ -132,4 +151,4 @@ class CGSolver(ConjugateGradients, LinearSolver):
         if jsonObject.has_key('residuum'):
             cg.residuum = float(jsonObject['residuum'])
         return cg
-         
+

@@ -32,7 +32,8 @@
 # @section Observer design pattern 
 # To customize the processing of progress information in SGPP the observer pattern 
 # is used. The classes that want to be informed about events should implement SolverEvenController
-# and subscribe with <code>attachEventController()</code>. After some event of LinearSolverEvents
+# and subscribe by the instance of LinearSolver subclass with 
+# <code>attachEventController()</code>. After some event of LinearSolverEvents
 # arise, LinearSolver object calls method <code>handleSolvingEvent()</code> by 
 # all subscribers. As subscribers get a reference to the LinearSolver object, 
 # they can retrieve the attributes of the solver and process the information.
@@ -41,12 +42,14 @@
 # - Subject: LinearSolver
 # - Concrete subject: e.g. CGSolver
 # - Observer: SolverEventController
-# - Concerete Observer: e.g. InfoToScreen
+# - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from Learner. See documentation of
 # @link bin.learner.Learner.Learner Learner@endlink for more information.
 class LinearSolver(object):
-    eventControllers = None   #list of object listening to the solver events
+    
+    ##list of object listening to the solver events
+    eventControllers = None 
     
     ##Constructor
     def __init__(self):
@@ -84,9 +87,17 @@ class LinearSolver(object):
 
 
 
-
+## Constants of different solving events
 class LinearSolverEvents(object):
+    
+    ## Solving is started
     STARTING = 100
+    
+    ## Solving is complete
     COMPLETE = 200
+    
+    ## An iteration of the iterative solver is complete
     ITERATION_COMPLETE = 300
+    
+    ## Calculation is started
     CALC_STARTING = 400

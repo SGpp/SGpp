@@ -29,7 +29,8 @@ from bin.pysgpp import DataVector, SurplusRefinementFunctor
 # The methods specific for regression are implemented here.
 class Regressor(Learner):
     
-    errors = None # Errors per basis function
+    ## Errors per basis function
+    errors = None 
     
     ## Evaluate regression MSE
     #
@@ -88,7 +89,8 @@ class Regressor(Learner):
 
 
     ## Creates Regressor object without any parameter set
-    # @return: Rgressor object without any parameter set
-    @classmethod
-    def fromJson(cls, jsonObject):
-        return Regressor()
+    # @param jsonObject: A json object.
+    # @return: Regressor object without any parameter set
+#    @classmethod
+#    def fromJson(cls, jsonObject):
+#        return Regressor()

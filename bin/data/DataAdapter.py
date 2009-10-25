@@ -21,6 +21,7 @@
 #############################################################################
 
 
+## Abstract class defines the interface for storing and loading of input data.
 class DataAdapter(object):
 
 

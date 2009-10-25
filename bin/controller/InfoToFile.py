@@ -23,9 +23,13 @@
 from bin.controller.InfoToScreen import InfoToScreen
 import sys
 
-class InfoToFile(InfoToScreen):
 
-    filename = None #Filename, where output should be written
+## The class processes the progress information from Learner and LinearSolver and
+# stores it into the file.
+class InfoToFile(InfoToScreen):
+    
+    ## Filename, where output should be written
+    filename = None 
     
     ##
     #Constructor

@@ -108,12 +108,12 @@ import bin.utils.json as json
 # @li <code>outfile</code>: <i>Filename where the calculated alphas are stored</i> - <code>@link LearnerBuilder.withProgressPresentor() .withProgressPresentor@endlink(@link bin.controller.InfoToFile.InfoToFile InfoToFile@endlink("./presentor.test"))</code>
 # @li <code>gnuplot</code>: <i>In 2D case, the generated can be stored in a gnuplot readable format</i> - Not implemented yet @todo (khakhutv) implement InfoToGraph
 # @li <code>resolution</code>: <i>Specifies the resolution of the gnuplotfile</i> - Not used, as <code>gnuplot</code> is not yet implemented
-# @li <code>stats</code>: <i>In this file the statistics from the test are stored</i> - Can be implemented as subclass from @link bin.controller.ProgressInfoPresentor.ProgressInfoPresentor ProgressInfoPresentor@endlink
+# @li <code>stats</code>: <i>In this file the statistics from the test are stored</i> - Can be implemented as subclass from @link bin.controller.LearnerEventController.LearnerEventController LearnerEventController@endlink
 # @li <code>polynom</code>: <i>Sets the maximum degree for basis functions</i> - @link GridDescriptor.withPolynomialBase() .withGrid().withPolynomialBase(2)@endlink
 # @li <code>border</code> <i>Enables special border base functions</i> - @link GridDescriptor.withBorder() .withGrid().withBorder(Types.BorderTypes.TRAPEZOIDBOUNDARY)@endlink
 # @li <code>trapezoid-boundary</code> <i>Enables boundary functions that have a point on the boundary for every inner point (Trapezoid)</i> - @link GridDescriptor.withBorder() .withGrid().withBorder(Types.BorderTypes.TRAPEZOIDBOUNDARY)@endlink
 # @li <code>complete-boundary</code> <i>Enables boundary functions that have more points on the boundary than inner points</i> - @link GridDescriptor.withBorder() .withGrid().withBorder(Types.BorderTypes.COMPLETEBOUNDARY)@endlink
-# @li <code>verbose</code>: <i>Provides extra output</i> - Set the suitable @link bin.controller.ProgressInfoPresentor.ProgressInfoPresentor ProgressInfoPresentor@endlink implementation, i.e. <code>.withProgressPresentor(InfoToScreen())</code>
+# @li <code>verbose</code>: <i>Provides extra output</i> - Set the suitable @link bin.controller.LearnerEventController.LearnerEventController LearnerEventController@endlink implementation, i.e. <code>.withProgressPresentor(InfoToScreen())</code>
 # @li <code>normfile</code>: <i>For all modes that read %data via stdin. Normalizes %data according to boundaries in FILE</i> - Can be implemented as subclass of <code>@link bin.data.ARFFAdapter.ARFFAdapter ARFFAdapter@endlink</code>
 # @li <code>reuse</code>: <i>Reuse alpha-values for CG</i> - Not implemented yet @todo (khakhutv) implement reuse
 # @li <code>seed</code>: <i>Random seed used for initializing</i> Not implemented yet @todo (khakhutv) implement creation folding with random seed in builder
@@ -146,11 +146,16 @@ class LearnerBuilder(object):
         self.__gridDescriptor = None 
         self.__specificationDescriptor = None
         self.__stopPolicyDescriptor = None
-
+    
+    
+    ## Returns the object of learner subclass, that is currently beeing constructed
+    # @return the object of learner subclass, that is currently beeing constructed
     def getLearner(self):
         return self.__learner
 
-
+    
+    ## Returns the checkpoint controller
+    # @return the checkpoint controller
     def getCheckpointController(self):
         return self.__checkpointController
 
@@ -635,20 +640,6 @@ class LearnerBuilder(object):
             self.__solver.setImax(imax)
             return self
     
-    # @todo (khakhutv) move it to CheckpointController
-    @classmethod
-    def fromString(cls, string):
-        reader = json.JsonReader()
-        jsonObject = reader.read(string)
-        learnerType = jsonObject['module']
-        if "bin.learner.Classifier" in learnerType:
-            learner = Classifier.fromJson( jsonObject )
-        elif "bin.learner.Regressor" in learnerType:
-            learner = Regressor.fromJson( jsonObject )
-        else:
-            raise Exception("module name unknown")
-        learner.fromJson( jsonObject )
-        return learner
 
     #learner = property(getLearner, None, None, None)
 

@@ -33,16 +33,19 @@ from bin.pysgpp import DataVector
 from DataContainer import DataContainer
 
 
+## Class implements the interface of DataAdapter for storing and restoring of input
+# data into / from files in <a href="http://www.cs.waikato.ac.nz/~ml/weka/arff.html" 
+# target="new">ARFF-format</a>.
 class ARFFAdapter(DataAdapter):
 
-
-    filename = "" #Filename associated with data
+    ## Filename associated with data
+    filename = None
 
 
     ## Constructor
     #
     # @param filename: Filename as String
-    def __init__(self, filename):
+    def __init__(self, filename=""):
         self.filename = filename
     
     

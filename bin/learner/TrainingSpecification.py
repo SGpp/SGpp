@@ -158,7 +158,7 @@ class TrainingSpecification(object):
         return serializationString
     
     
-    # Restores the TrainingSpecification object from the json object with attributes.
+    ## Restores the TrainingSpecification object from the json object with attributes.
     #
     # @param jsonObject A json object.
     # @return The restored TrainingSpecification object.

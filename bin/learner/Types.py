@@ -24,12 +24,21 @@
 
 
 ## Constants for types of grid borders
+# @todo here may be a good place for detailed description of different boundary types
 class BorderTypes(object):
+    
+    ## None border
     NONE = 100
+    
+    ## Trapezoid boundary
     TRAPEZOIDBOUNDARY = 200
+    
+    ## Complete boundary
     COMPLETEBOUNDARY = 300
     
     
 ## Constants for types of linear solvers    
 class SolverTypes(object):
+    
+    ## Conjugate gradients (CG) solver
     CG = 100
