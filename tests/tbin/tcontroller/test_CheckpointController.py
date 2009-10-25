@@ -19,7 +19,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
-from tbin.tdata.test_ARFFAdapter import pathlocal
 
 import unittest
 
@@ -61,6 +60,7 @@ class TestCheckpointController(unittest.TestCase):
         self.assertEqual(grid.serialize(), sampleString)
 
         
+        
     def testLoadGrid(self):
         dim = 2
         level = 2
@@ -77,6 +77,8 @@ class TestCheckpointController(unittest.TestCase):
         
         # if string representations are equal, then grids are equal
         self.assertEqual(grid.serialize(), sampleGrid.serialize())
+        
+        
         
     def testSaveLearnedKnowledge(self):
         testValues = [-0.0310651210442,
@@ -104,6 +106,7 @@ class TestCheckpointController(unittest.TestCase):
         self.assertEqual(testValues, [float(i) for i in sampleLines])
         
         
+        
     def testLoadLearnedKnowledge(self):
         controller = CheckpointController("sample", pathlocal)
         learnedKnowledge = controller.loadLearnedKnowledge(0)
@@ -120,6 +123,8 @@ class TestCheckpointController(unittest.TestCase):
         for i in xrange(len(testValues)):
             self.assertAlmostEqual(testValues[i], learnedKnowledge.getAlphas()[i])
             
+            
+            
     def testSaveAllLoadAll(self):
         # test of two method is put together since it should test the capability 
         # to store and restore data accurately
@@ -135,9 +140,6 @@ class TestCheckpointController(unittest.TestCase):
                      .andGetResult()
         classifier.learnData()
         
-        string1 = classifier.toString()
-        #print "string1:  ",string1
-        
         controller = CheckpointController("saveload", pathlocal)
 
         controller.setLearner(classifier)
@@ -150,13 +152,6 @@ class TestCheckpointController(unittest.TestCase):
         
         # quick and dirty way to compare to objects - with their string representation, would work only
         # if toString() method works properly
-
-        string2 = newClassifier.toString()
-        
-        import difflib
-        for line in difflib.context_diff(string1.split("\n"), string2.split("\n")):
-            print line
-        #print "string2:  ",string2
         self.assertEqual(classifier.toString(), newClassifier.toString())
 
 
