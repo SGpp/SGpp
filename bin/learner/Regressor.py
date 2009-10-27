@@ -74,8 +74,7 @@ class Regressor(Learner):
             
         self.trainingOverall.append(sum(self.trainAccuracy)/i)
 
-        # @todo (khakhutv) grid.getSize() change Grid interface
-        self.numberPoints.append(self.grid.getStorage().size())
+        self.numberPoints.append(self.grid.getSize())
     
     
     ##Refines grid with the number of points as specified in corresponding TrainingSpecification object

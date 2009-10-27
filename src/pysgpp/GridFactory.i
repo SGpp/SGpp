@@ -92,7 +92,7 @@ public:
 	void refine(DataVector* vector, int num);
 	double eval(DataVector& alpha, DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
-	//void getMemento();
+	int getSize();
 	
 };
 
