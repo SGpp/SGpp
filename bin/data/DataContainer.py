@@ -305,7 +305,7 @@ class DataContainer(object):
         # save the data as a file, if it's not saved yet
         for category, specification in self.specifications.items():
             if not self.specifications[category].isSaved():
-                ARFFAdapter.save(self.getPoints(category), self.getValues(category), 
+                ARFFAdapter().save(self.getPoints(category), self.getValues(category), 
                                  specification.getAttributes())
                 specification.setSaved()
                 

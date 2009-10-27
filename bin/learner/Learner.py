@@ -243,8 +243,7 @@ class Learner(object):
         self.linearSystem.generateb(set.getValues(), b)
         reuse = False
         #calculates alphas
-        # @todo (khakhutv) one has to pass correct value as max_treshold and reuse 
-        self.solver.solve(self.linearSystem, alpha, b, reuse, False, 10**(-20))
+        self.solver.solve(self.linearSystem, alpha, b, reuse, False, self.solver.getThreshold())
         return alpha
 
 

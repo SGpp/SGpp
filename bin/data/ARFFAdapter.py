@@ -67,7 +67,6 @@ class ARFFAdapter(DataAdapter):
         if values != None:
             hasclass = True
         
-        #@todo (khakhutv) get attributes from specification
         if attributes == None:
             for i in xrange(dim):
                 fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
