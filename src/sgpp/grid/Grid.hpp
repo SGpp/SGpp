@@ -269,6 +269,12 @@ public:
 	 * @param isLeaf indicator whether the point is a leaf
 	 */
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
+	
+	/**
+	 * Returns the number of points on the grid
+	 * @return the number of points on the grid
+	 */
+	int getSize();
 
 
 protected:
