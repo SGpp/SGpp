@@ -101,7 +101,7 @@ import bin.utils.json as json
 # @li <code>lambda</code>: <i>Lambda</i> - @link SpecificationDescriptor.withLambda() .withSpecification().withLambda(0.00001)@endlink
 # @li <code>imax</code>: <i>Max number of iterations</i> - @link CGSolverDescriptor.withImax() .withCGSolver().withImax(500)@endlink
 # @li <code>accuracy</code>: <i>Specifies the accuracy of the CG-Iteration</i> - @link CGSolverDescriptor.withAccuracy() .withCGSolver().withAccuracy(0.0001)@endlink
-# @li <code>max_accuracy</code>: <i>If the norm of the residuum falls below ACCURACY, stop the CG iterations</i> - Not used in this implementation @todo (khakhutv) check if it isn't required 
+# @li <code>max_accuracy</code>: <i>If the norm of the residuum falls below ACCURACY, stop the CG iterations</i> - @link CGSolverDescriptor.withThreshold() .withCGSolver().withThreshold(0.0000000001)@endlink
 # @li <code>%data</code>: <i>Filename for the Datafile.</i> - @link LearnerBuilder.withTrainingDataFromARFFFile() .withTestingDataFromARFFFile("./datasets/classifier.test.arff")@endlink
 # @li <code>test</code>: <i>File containing the testdata</i> - @link LearnerBuilder.withTestingDataFromARFFFile() .withTestingDataFromARFFFile("./datasets/classifier.test.arff")@endlink
 # @li <code>alpha</code>: <i>Filename for a file containing an alpha-Vector</i> -  <code>%learner = builder.andGetResult()\n learner.knowledge = LearnedKnowledgeFileAdapter().load("./alphas.arff")</code>
@@ -631,7 +631,7 @@ class LearnerBuilder(object):
             
         
         ##
-        # Defines the accuracy for test data, which have to be arrived
+        # Defines the maxinmal number of iterations in CG algotihms
         #
         # @param imax: integer for maximal number of iteration in CG
         # @return: CGSolverDescriptor itself
@@ -639,9 +639,17 @@ class LearnerBuilder(object):
         def withImax(self, imax):
             self.__solver.setImax(imax)
             return self
-    
+        
+        
+        ##
+        # Defines the maximal accuracy.
+        # If the norm of the residuum falls below this threshold, stop the CG iterations
+        #
+        # @param threshold: maximal accuracy
+        # @return: CGSolverDescriptor itself
+        ##
+        def withThreshold(self, threshold):
+            self.__solver.setThreshold(threshold)
+            return self
 
-    #learner = property(getLearner, None, None, None)
-
-    #checkpointController = property(getCheckpointController, None, None, None)
 

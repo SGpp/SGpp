@@ -59,12 +59,28 @@ class CGSolver(ConjugateGradients, LinearSolver):
     delta_new = 0    
     
     ##result vector   
-    alpha = None        
+    alpha = None  
+    
+    ##Maximal accuracy. If the norm of the residuum falls below max_threshold, stop the CG iterations
+    max_threshold = 10**(-20)      
     
     def __init__(self,):
         ConjugateGradients.__init__(self, self.imax, self.accuracy)
         LinearSolver.__init__(self)
-
+    
+    
+    ## Returns the @link max_threshold threshold@enlink parameter
+    # @return the @link max_threshold threshold@enlink parameter 
+    def getThreshold(self):
+        return self.max_threshold
+    
+    
+    ##Sets the @link max_threshold threshold@enlink parameter
+    #
+    # @param threshold: float value of @link max_threshold threshold@enlink parameter
+    # @return: CG Solver itself
+    def setThreshold(self, threshold):
+        self.max_threshold = threshold
 
     ##Sets the accuracy parameter
     #

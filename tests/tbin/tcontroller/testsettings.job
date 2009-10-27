@@ -68,6 +68,11 @@ accuracy = 0.0001
 # default: 400
 imax = 400
 
+# Maximal accuracy.
+# If the norm of the residuum falls below this threshold, stop the CG iterations
+# default: 10e-20
+# max_threshold = 10e-20
+
 
 
 
