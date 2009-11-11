@@ -104,6 +104,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	else
 	{
 		// @todo (heinecke) throw exception
+		std::cout << "Unsupported BASIS in file" << std::endl << std::endl;
 	}
 
 	sgppSerialization = "";
