@@ -142,9 +142,11 @@ if not env.GetOption('clean'):
         Exit(1)
         
     # check if the Python headers are available
-    if not config.CheckCHeader('Python.h'):
-        print "Error: Python.h not found. Check path to Python include files."
-        Exit(1)
+    # @todo (heinecke) some old things that not work, should be fixed
+#    if not config.CheckCHeader('Python.h'):
+#        print "Error: Python.h not found. Check path to Python include files."
+#        print distutils.sysconfig.get_python_inc()
+#        Exit(1)
 
     env = config.Finish()
 
