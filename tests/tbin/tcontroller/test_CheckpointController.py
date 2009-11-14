@@ -47,7 +47,7 @@ class TestCheckpointController(unittest.TestCase):
         generator = grid.createGridGenerator()
         generator.regular(level)
         
-        controller = CheckpointController("savegrid")
+        controller = CheckpointController("savegrid", pathlocal)
         controller.setGrid(grid)
         controller.saveGrid(0)
         
