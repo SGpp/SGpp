@@ -131,8 +131,8 @@ ConjugateGradients.o : src/sgpp/solver/sle/ConjugateGradients.cpp
 Classifier.o : src/sgpp/application/classification/Classifier.cpp
 	$(CC) $(CFLAGS) src/sgpp/application/classification/Classifier.cpp
 
-SGppStopwatch.o : src/sgpp/common/SGppStopwatch.cpp
-	$(CC) $(CFLAGS) src/sgpp/common/SGppStopwatch.cpp
+SGppStopwatch.o : src/sgpp/tools/common/SGppStopwatch.cpp
+	$(CC) $(CFLAGS) src/sgpp/tools/common/SGppStopwatch.cpp
 	
 BoundingBox.o : src/sgpp/grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) src/sgpp/grid/common/BoundingBox.cpp
