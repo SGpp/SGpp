@@ -216,8 +216,7 @@ protected:
 		double helper = (1.0/pow(2.0, static_cast<int>(l+1))) * (static_cast<double>(i));
 
 		// integration
-		result[seq] = (  ( (fr-fl) * (helper) )
-							  - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l)))) * alpha_value)) );    // diagonal entry
+		result[seq] = (  ( (fr-fl) * (helper) ) - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l)))) * alpha_value)) );    // diagonal entry
 
 		// dehierarchisation
 		double fm = ((fl+fr)/2.0) + alpha_value;
