@@ -82,7 +82,8 @@ public:
 			index.push(d, 1, 1, false);
 		}
 
-		this->regular_rec(storage, index, storage->dim() - 1, storage->dim(), level + storage->dim() - 1);
+		size_t mydim = storage->dim();
+		this->regular_rec(storage, index, ((storage->dim()) - 1), mydim, ((level + (storage->dim())) - 1));
 	}
 
 	/**
