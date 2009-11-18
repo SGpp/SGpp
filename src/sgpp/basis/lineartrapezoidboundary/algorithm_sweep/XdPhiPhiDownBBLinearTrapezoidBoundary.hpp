@@ -220,7 +220,7 @@ protected:
 							  - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l)))) * alpha_value)) );    // diagonal entry
 
 		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		double fm = ((fl+fr)/2.0) + alpha_value;
 
 		if(!index.hint())
 		{
@@ -268,7 +268,7 @@ protected:
 							  - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l))) * q) * alpha_value)) );    // diagonal entry
 
 		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		double fm = ((fl+fr)/2.0) + alpha_value;
 
 		if(!index.hint())
 		{
