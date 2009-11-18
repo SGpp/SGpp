@@ -37,8 +37,8 @@
 
 int main(int argc, char *argv[])
 {
-	size_t levels = 4;
-	size_t dim = 1;
+	size_t levels = 6;
+	size_t dim = 2;
 	size_t numGridPoints;
 
 	sg::Grid* myGrid;
@@ -113,14 +113,22 @@ int main(int argc, char *argv[])
 
 #ifdef PRINTMATRIX
 	std::cout << "The operator's matrix is:" << std::endl << std::endl;
+	std::ofstream outfile;
+
+	outfile.open("updown.test");
+
 	for (size_t i = 0; i < numGridPoints; i++)
 	{
 		for (size_t j = 0; j < numGridPoints; j++)
 		{
-			std::cout << std::scientific << UpDownMatrix.get((i*numGridPoints) + j) << " ";
+			//std::cout << std::scientific << UpDownMatrix.get((i*numGridPoints) + j) << " ";
+			outfile << std::scientific << UpDownMatrix.get((i*numGridPoints) + j) << " ";
 		}
-		std::cout << std::endl;
+		//std::cout << std::endl;
+		outfile << std::endl;
 	}
+
+	outfile.close();
 #endif
 
 #ifdef PRINTDIFF
