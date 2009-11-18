@@ -221,8 +221,7 @@ protected:
 		double diagonal = ((1.0/3.0) + (i_dbl*i_dbl))*pow(2.0, 1-l_int);
 
 		// integration
-		result[seq] = (  (((1/pow(2.0, l_int))* i_dbl) * (fl-fr))
-							  + (diagonal * alpha_value) );    // diagonal entry
+		result[seq] = (  (((1.0/pow(2.0, l_int))* i_dbl) * (fl-fr)) + (diagonal * alpha_value) );
 
 		// dehierarchisation
 		double fm = ((fl+fr)/2.0) + alpha_value;
@@ -272,8 +271,7 @@ protected:
 		double diagonal = (1.0/3.0) * ((((pow(2.0, (1-l_int)))*q*q)*(3.0*(i_dbl*i_dbl) + 1)) + (12.0*t*q*i_dbl) + (3.0*(pow(2.0, (1+l_int)))*t*t))/(q);
 
 		// integration
-		result[seq] = (  (((1/pow(2.0, l_int))* i_dbl*q + t) * (fl-fr))
-							  + (diagonal * alpha_value) );    // diagonal entry
+		result[seq] = (  (((1.0/pow(2.0, l_int))* i_dbl*q + t) * (fl-fr)) + (diagonal * alpha_value) );
 
 		// dehierarchisation
 		double fm = ((fl+fr)/2.0) + alpha_value;
