@@ -173,7 +173,7 @@ protected:
 
 			double alpha_value = source[seq];
 
-			double c = ((1/pow(2.0, static_cast<int>(current_level))) * static_cast<double>(current_index));
+			double c = ((1.0/pow(2.0, static_cast<int>(current_level))) * static_cast<double>(current_index));
 
 			// transposed operations:
 			result[seq] = fm;
@@ -204,7 +204,7 @@ protected:
 			{
 				result[seq_left] = fl;
 
-				result[seq_left] -= 1.0/3.0*source[seq_right];
+				result[seq_left] -= (1.0/3.0)*source[seq_right];
 			}
 
 			if (boundingBox->hasDirichletBoundaryRight(dim))
@@ -286,7 +286,7 @@ protected:
 
 			double alpha_value = source[seq];
 
-			double c = ((1/pow(2.0, static_cast<int>(current_level))) * static_cast<double>(current_index) * q) + t;
+			double c = ((1.0/pow(2.0, static_cast<int>(current_level))) * static_cast<double>(current_index) * q) + t;
 
 			// transposed operations:
 			result[seq] = fm;
@@ -317,7 +317,7 @@ protected:
 			{
 				result[seq_left] = fl;
 				double bbFactor = ((q*q) + (3.0*q*t) + (3.0*t*t))/(q);
-				result[seq_left] -= 1.0/3.0*source[seq_right]*bbFactor;
+				result[seq_left] -= (1.0/3.0)*source[seq_right]*bbFactor;
 			}
 
 			if (boundingBox->hasDirichletBoundaryRight(dim))

@@ -179,8 +179,8 @@ protected:
 			// transposed operations:
 			result[seq] = fm;
 
-			fl = fm/2.0 + (alpha_value*((hhalf * i_dbl) - hhalf) + fl);
-			fr = fm/2.0 + (alpha_value*(((-1.0)*(hhalf * i_dbl)) - hhalf) + fr);
+			fl = (fm/2.0) + ((alpha_value*((hhalf * i_dbl) - hhalf)) + fl);
+			fr = (fm/2.0) + ((alpha_value*(((-1.0)*(hhalf * i_dbl)) - hhalf)) + fr);
 		}
 		else
 		{
@@ -294,8 +294,8 @@ protected:
 			// transposed operations:
 			result[seq] = fm;
 
-			fl = fm/2.0 + (alpha_value*((q*((hhalf * i_dbl) - hhalf))+(0.5*t)) + fl);
-			fr = fm/2.0 + (alpha_value*((q*(((-1.0)*(hhalf * i_dbl)) - hhalf))-(0.5*t)) + fr);
+			fl = (fm/2.0) + ((alpha_value*((q*((hhalf * i_dbl) - hhalf))+(0.5*t))) + fl);
+			fr = (fm/2.0) + ((alpha_value*((q*(((-1.0)*(hhalf * i_dbl)) - hhalf))-(0.5*t))) + fr);
 		}
 		else
 		{

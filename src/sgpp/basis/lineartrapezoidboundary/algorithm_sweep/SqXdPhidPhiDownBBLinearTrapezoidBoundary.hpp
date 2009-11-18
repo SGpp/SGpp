@@ -225,7 +225,7 @@ protected:
 							  + (diagonal * alpha_value) );    // diagonal entry
 
 		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		double fm = ((fl+fr)/2.0) + alpha_value;
 
 		if(!index.hint())
 		{
@@ -276,7 +276,7 @@ protected:
 							  + (diagonal * alpha_value) );    // diagonal entry
 
 		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		double fm = ((fl+fr)/2.0) + alpha_value;
 
 		if(!index.hint())
 		{
