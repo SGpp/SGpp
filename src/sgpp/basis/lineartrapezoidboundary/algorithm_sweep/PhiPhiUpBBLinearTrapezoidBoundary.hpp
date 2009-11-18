@@ -173,13 +173,13 @@ protected:
 			double fm = fml + fmr;
 
 			double alpha_value = source[seq];
-			double h = 1/pow(2.0,static_cast<int>(current_level));
+			double h = (1.0/(pow(2.0,static_cast<int>(current_level))));
 
 			// transposed operations:
 			result[seq] = fm;
 
-			fl = fm/2.0 + alpha_value*(h/2.0) + fl;
-			fr = fm/2.0 + alpha_value*(h/2.0) + fr;
+			fl = ((fm/2.0) + (alpha_value*(h/2.0))) + fl;
+			fr = ((fm/2.0) + (alpha_value*(h/2.0))) + fr;
 		}
 		else
 		{
@@ -203,7 +203,7 @@ protected:
 			else
 			{
 				result[seq_left] = fl;
-				result[seq_left] += 1.0/6.0*source[seq_right];
+				result[seq_left] += ((1.0/6.0)*source[seq_right]);
 			}
 			// Right
 			if (boundingBox->hasDirichletBoundaryRight(dim))
@@ -284,13 +284,13 @@ protected:
 			double fm = fml + fmr;
 
 			double alpha_value = source[seq];
-			double h = 1/pow(2.0,static_cast<int>(current_level));
+			double h = 1.0/(pow(2.0,static_cast<int>(current_level)));
 
 			// transposed operations:
 			result[seq] = fm;
 
-			fl = fm/2.0 + alpha_value*(h/2.0)*q + fl;
-			fr = fm/2.0 + alpha_value*(h/2.0)*q + fr;
+			fl = ((fm/2.0) + ((alpha_value*(h/2.0))*q)) + fl;
+			fr = ((fm/2.0) + ((alpha_value*(h/2.0))*q)) + fr;
 		}
 		else
 		{
@@ -314,7 +314,7 @@ protected:
 			else
 			{
 				result[seq_left] = fl;
-				result[seq_left] += 1.0/6.0*source[seq_right]*q;
+				result[seq_left] += (((1.0/6.0)*source[seq_right])*q);
 			}
 			// Right
 			if (boundingBox->hasDirichletBoundaryRight(dim))

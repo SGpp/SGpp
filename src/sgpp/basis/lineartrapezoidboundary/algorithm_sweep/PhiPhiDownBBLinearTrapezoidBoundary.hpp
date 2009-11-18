@@ -123,7 +123,7 @@ public:
 			}
 			else
 			{
-				result[seq_left] = (1.0/3.0)*left_boundary*q;
+				result[seq_left] = ((1.0/3.0)*left_boundary)*q;
 			}
 			if (boundingBox->hasDirichletBoundaryRight(dim))
 			{
@@ -131,11 +131,11 @@ public:
 			}
 			else
 			{
-				result[seq_right] = (1.0/3.0)*right_boundary*q;
+				result[seq_right] = ((1.0/3.0)*right_boundary)*q;
 
 				// down
 				//////////////////////////////////////
-				result[seq_right] += (1.0/6.0)*left_boundary*q;
+				result[seq_right] += ((1.0/6.0)*left_boundary)*q;
 			}
 
 			// move to root
@@ -213,14 +213,13 @@ protected:
 
 		index.get(dim, l, i);
 
-		double h = 1/pow(2.0, static_cast<int>(l));
+		double h = (1.0/(pow(2.0, static_cast<int>(l))));
 
 		// integration
-		result[seq] = (  h * ((fl+fr)/2.0)
-							  + (2.0/3.0) * h * alpha_value);    // diagonal entry
+		result[seq] = (h * ((fl+fr)/2.0)) + (((2.0/3.0) * h) * alpha_value);
 
 		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		double fm = ((fl+fr)/2.0) + alpha_value;
 
 		if(!index.hint())
 		{
@@ -261,14 +260,13 @@ protected:
 
 		index.get(dim, l, i);
 
-		double h = 1/pow(2.0, static_cast<int>(l));
+		double h = (1.0/(pow(2.0, static_cast<int>(l))));
 
 		// integration
-		result[seq] = (  (h * ((fl+fr)/2.0) * q)
-							  + ((2.0/3.0) * h * alpha_value * q));    // diagonal entry
+		result[seq] = ((h * ((fl+fr)/2.0)) * q) + ((((2.0/3.0) * h) * alpha_value) * q);    // diagonal entry
 
 		// dehierarchisation
-		double fm = (fl+fr)/2.0 + alpha_value;
+		double fm = ((fl+fr)/2.0) + alpha_value;
 
 		if(!index.hint())
 		{
