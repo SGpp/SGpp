@@ -104,7 +104,7 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 
 		//std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
 
-		omega = v.dotProduct(w) / v.dotProduct(v);
+		omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
 		// x = x - a*p - omega*w
 		alpha.axpy((-1.0)*a, p);
@@ -130,7 +130,7 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 			break;
 		}
 
-		beta = rho_new/rho * a/omega;
+		beta = (rho_new/rho) * (a/omega);
 		rho = rho_new;
 
 		// p = r + beta*(p - omega*s)
