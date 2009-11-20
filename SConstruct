@@ -75,7 +75,7 @@ if env['TARGETCPU'] == 'default':
     #     ensure you also compile with -fno-strict-aliasing"
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
                          '-fno-strict-aliasing', '-fopenmp', '-O3', '-g',
-                         '-funroll-loops', '-pthread'])
+                         '-funroll-loops', '-pthread', '-ffloat-store'])
     if env['OMP']:
     	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
