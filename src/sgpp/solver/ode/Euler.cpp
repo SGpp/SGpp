@@ -84,13 +84,13 @@ void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, boo
 	    {
 	    	if (myScreen == NULL)
 	    	{
-	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Sum Iterations: " << allIter << ")" << std::endl;
+	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
 	    	}
 	    }
 	    if (myScreen != NULL)
     	{
     		std::stringstream soutput;
-    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Sum Iterations: " << allIter << ")";
+    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
     		if (i < this->nMaxIterations-1)
     		{
