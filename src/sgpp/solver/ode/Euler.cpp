@@ -50,6 +50,7 @@ Euler::~Euler()
 
 void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
 {
+	size_t allIter = 0;
 	DataVector rhs(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
 
@@ -78,17 +79,18 @@ void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, boo
 
 		// solve the system of the current timestep
 	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
+	    allIter += myCG.getNumberIterations();
 	    if (verbose == true)
 	    {
 	    	if (myScreen == NULL)
 	    	{
-	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations" << std::endl;
+	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Sum Iterations: " << allIter << ")" << std::endl;
 	    	}
 	    }
 	    if (myScreen != NULL)
     	{
     		std::stringstream soutput;
-    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations";
+    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Sum Iterations: " << allIter << ")";
 
     		if (i < this->nMaxIterations-1)
     		{
