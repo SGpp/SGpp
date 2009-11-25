@@ -25,6 +25,9 @@
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownBBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XPhidPhiDownBBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/algorithm_sweep/XPhidPhiUpBBLinearTrapezoidBoundary.hpp"
+
 #include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiDownBBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/XdPhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
@@ -152,7 +155,14 @@ void OperationGammaLinearTrapezoidBoundary::updown(DataVector& alpha, DataVector
 	}
 	else if ((dim == gradient_dim_one || dim == gradient_dim_two) && (gradient_dim_one != gradient_dim_two))
 	{
-		gradient(alpha, result, dim, gradient_dim_one, gradient_dim_two);
+		if (dim == gradient_dim_one)
+		{
+			gradient(alpha, result, dim, gradient_dim_one, gradient_dim_two);
+		}
+		if (dim == gradient_dim_two)
+		{
+			gradientTestFct(alpha, result, dim, gradient_dim_one, gradient_dim_two);
+		}
 	}
 	else
 	{
@@ -210,6 +220,36 @@ void OperationGammaLinearTrapezoidBoundary::gradient(DataVector& alpha, DataVect
 
 		DataVector temp(alpha.getSize());
 		downGradient(alpha, temp, dim);
+
+		result.add(temp);
+	}
+}
+
+void OperationGammaLinearTrapezoidBoundary::gradientTestFct(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+{
+	//Unidirectional scheme
+	if(dim > 0)
+	{
+		// Reordering ups and downs
+		DataVector temp(alpha.getSize());
+		upGradientTestFct(alpha, temp, dim);
+		updown(temp, result, dim-1, gradient_dim_one, gradient_dim_two);
+
+
+		// Same from the other direction:
+		DataVector result_temp(alpha.getSize());
+		updown(alpha, temp, dim-1, gradient_dim_one, gradient_dim_two);
+		downGradientTestFct(temp, result_temp, dim);
+
+		result.add(result_temp);
+	}
+	else
+	{
+		// Terminates dimension recursion
+		upGradientTestFct(alpha, result, dim);
+
+		DataVector temp(alpha.getSize());
+		downGradientTestFct(alpha, temp, dim);
 
 		result.add(temp);
 	}
@@ -346,6 +386,50 @@ void OperationGammaLinearTrapezoidBoundary::gradient_parallel(DataVector& alpha,
 	}
 }
 
+void OperationGammaLinearTrapezoidBoundary::gradientTestFct_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
+{
+	//Unidirectional scheme
+	if(dim > 0)
+	{
+		// Reordering ups and downs
+		DataVector temp(alpha.getSize());
+		DataVector result_temp(alpha.getSize());
+		DataVector temp_two(alpha.getSize());
+
+		#pragma omp task shared(alpha, temp, result)
+		{
+			upGradientTestFct(alpha, temp, dim);
+			updown_parallel(temp, result, dim-1, gradient_dim_one, gradient_dim_two);
+		}
+
+		// Same from the other direction:
+		#pragma omp task shared(alpha, temp_two, result_temp)
+		{
+			updown_parallel(alpha, temp_two, dim-1, gradient_dim_one, gradient_dim_two);
+			downGradientTestFct(temp_two, result_temp, dim);
+		}
+
+		#pragma omp taskwait
+
+		result.add(result_temp);
+	}
+	else
+	{
+		// Terminates dimension recursion
+		DataVector temp(alpha.getSize());
+
+		#pragma omp task shared(alpha, result)
+		upGradientTestFct(alpha, result, dim);
+
+		#pragma omp task shared(alpha, temp)
+		downGradientTestFct(alpha, temp, dim);
+
+		#pragma omp taskwait
+
+		result.add(temp);
+	}
+}
+
 void OperationGammaLinearTrapezoidBoundary::gradientSquared_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two)
 {
 	//Unidirectional scheme
@@ -411,6 +495,24 @@ void OperationGammaLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& 
 
 void OperationGammaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
+	// x * phi * dphi
+	detail::XPhidPhiUpBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XPhidPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
+}
+
+void OperationGammaLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+{
+	// x * phi * dphi
+	detail::XPhidPhiDownBBLinearTrapezoidBoundary func(this->storage);
+	sweep<detail::XPhidPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
+
+	s.sweep1D_Boundary(alpha, result, dim);
+}
+
+void OperationGammaLinearTrapezoidBoundary::upGradientTestFct(DataVector& alpha, DataVector& result, size_t dim)
+{
 	// x * dphi * phi
 	detail::XdPhiPhiUpBBLinearTrapezoidBoundary func(this->storage);
 	sweep<detail::XdPhiPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
@@ -418,7 +520,7 @@ void OperationGammaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVe
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearTrapezoidBoundary::downGradientTestFct(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
 	detail::XdPhiPhiDownBBLinearTrapezoidBoundary func(this->storage);
