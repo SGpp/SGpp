@@ -69,17 +69,15 @@ void OperationGammaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 				{
 					#pragma omp single nowait
 					{
-						this->updown_parallel(alpha, beta, storage->dim() - 1, i, j);
+						if (this->coefs->get((storage->dim()*i)+j) != 0.0)
+						{
+							this->updown_parallel(alpha, beta, storage->dim() - 1, i, j);
+						}
 					}
 				}
 			}
 			// Calculate the "diagonal" of the operation
-			if (j == i)
-			{
-				result.axpy_parallel(this->coefs->get((storage->dim()*i)+j),beta);
-			}
-			// Use the symmetry of the operation (i,j)+(j,i) = 2*(i,j)
-			if (j < i)
+			if (j <= i)
 			{
 				result.axpy_parallel(this->coefs->get((storage->dim()*i)+j),beta);
 			}
@@ -99,17 +97,14 @@ void OperationGammaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 				// use the operator's symmetry
 				if ( j <= i)
 				{
-					this->updown(alpha, beta, storage->dim() - 1, i, j);
+					if (this->coefs->get((storage->dim()*i)+j) != 0.0)
+					{
+						this->updown(alpha, beta, storage->dim() - 1, i, j);
+					}
 				}
 
 				// Calculate the "diagonal" of the operation
-				if (j == i)
-				{
-					#pragma omp critical
-					result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
-				}
-				// Use the symmetry of the operation (i,j)+(j,i) = 2*(i,j)
-				if (j < i)
+				if (j <= i)
 				{
 					#pragma omp critical
 					result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
@@ -295,7 +290,14 @@ void OperationGammaLinearTrapezoidBoundary::updown_parallel(DataVector& alpha, D
 	}
 	else if ((dim == gradient_dim_one || dim == gradient_dim_two) && (gradient_dim_one != gradient_dim_two))
 	{
-		gradient_parallel(alpha, result, dim, gradient_dim_one, gradient_dim_two);
+		if (dim == gradient_dim_one)
+		{
+			gradient_parallel(alpha, result, dim, gradient_dim_one, gradient_dim_two);
+		}
+		if (dim == gradient_dim_two)
+		{
+			gradientTestFct_parallel(alpha, result, dim, gradient_dim_one, gradient_dim_two);
+		}
 	}
 	else
 	{

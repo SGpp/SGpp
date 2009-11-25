@@ -278,7 +278,7 @@ void OperationDeltaLinearTrapezoidBoundary::down(DataVector& alpha, DataVector& 
 
 void OperationDeltaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// x * dphi * phi
+	// x * phi * dphi
 	detail::XPhidPhiUpBBLinearTrapezoidBoundary func(this->storage);
 	sweep<detail::XPhidPhiUpBBLinearTrapezoidBoundary> s(func, this->storage);
 
@@ -287,7 +287,7 @@ void OperationDeltaLinearTrapezoidBoundary::upGradient(DataVector& alpha, DataVe
 
 void OperationDeltaLinearTrapezoidBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// x * dphi * phi
+	// x * phi * dphi
 	detail::XPhidPhiDownBBLinearTrapezoidBoundary func(this->storage);
 	sweep<detail::XPhidPhiDownBBLinearTrapezoidBoundary> s(func, this->storage);
 
