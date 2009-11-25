@@ -420,7 +420,7 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 RC4", "Alexander Heinecke, (C) 2009");
+	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 RC5", "Alexander Heinecke, (C) 2009");
 	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
