@@ -90,6 +90,17 @@ protected:
 	void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
 
 	/**
+	 * All calculations for gradient, Part 2
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 */
+	void gradientTestFct(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+
+	/**
 	 *
 	 * @param alpha the coefficients of the grid points
 	 * @param result the result of the operations
@@ -121,6 +132,17 @@ protected:
 	 * @param gradient_dim_two the dimension in which to use the second gradient
 	 */
 	void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
+
+	/**
+	 * All calculations for gradient, Part 2, parallel version using OpenMP 3
+	 *
+	 * @param alpha the coefficients of the grid points
+	 * @param result the result of the operations
+	 * @param dim the current dimension in the recursion
+	 * @param gradient_dim_one the dimension in which to use the first gradient
+	 * @param gradient_dim_two the dimension in which to use the second gradient
+	 */
+	void gradientTestFct_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
 
 	/**
 	 * All calculations for squared gradient, parallel version using OpenMP 3
@@ -157,7 +179,7 @@ protected:
 	void down(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
-	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * down-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
 	 * in one dimension
 	 *
 	 * @param alpha the coefficients of the gridpoints
@@ -167,7 +189,7 @@ protected:
 	void downGradient(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
-	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * up-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
 	 * in one dimension
 	 *
 	 * @param alpha the coefficients of the gridpoints
@@ -175,6 +197,26 @@ protected:
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
 	void upGradient(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * in one dimension
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that down-Gradient is applied
+	 */
+	void downGradientTestFct(DataVector& alpha, DataVector& result, size_t dim);
+
+	/**
+	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
+	 * in one dimension
+	 *
+	 * @param alpha the coefficients of the gridpoints
+	 * @param result vector with the result of this operation
+	 * @param dim the dimension in that up-Gradient is applied
+	 */
+	void upGradientTestFct(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
