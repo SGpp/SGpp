@@ -23,8 +23,8 @@
 #ifndef BLACKSCHOLESTIMESTEPMATRIX_HPP
 #define BLACKSCHOLESTIMESTEPMATRIX_HPP
 
-#include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
+#include "data/DataVector.hpp"
 #include "operation/common/OperationODESolverMatrix.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 

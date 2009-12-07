@@ -21,12 +21,12 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "sgpp.hpp"
+
 #include "basis/basis.hpp"
 #include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
 #include "basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
 #include "basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
-
-#include "sgpp.hpp"
 
 #include "exception/operation_exception.hpp"
 

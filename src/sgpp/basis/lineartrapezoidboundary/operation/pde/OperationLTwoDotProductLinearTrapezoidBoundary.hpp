@@ -23,9 +23,10 @@
 #ifndef OPERATIONLTWODOTPRODUCTLINEARTRAPEZOIDBOUNDARY_HPP
 #define OPERATIONLTWODOTPRODUCTLINEARTRAPEZOIDBOUNDARY_HPP
 
+#include "grid/GridStorage.hpp"
+
 #include "operation/common/OperationMatrix.hpp"
 
-#include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
 #ifdef USEOMPTHREE

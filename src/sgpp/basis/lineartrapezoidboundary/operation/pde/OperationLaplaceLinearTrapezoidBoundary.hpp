@@ -23,10 +23,11 @@
 #ifndef OPERATIONLAPLACELINEARTRAPEZOIDBOUNDARY_HPP
 #define OPERATIONLAPLACELINEARTRAPEZOIDBOUNDARY_HPP
 
+#include "grid/GridStorage.hpp"
+
 #include "operation/common/OperationMatrix.hpp"
 #include "algorithm/classification/UnidirGradient.hpp"
 
-#include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg

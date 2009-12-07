@@ -23,9 +23,10 @@
 #ifndef OPERATIONDELTALINEARTRAPEZOIDBOUNDARY_HPP
 #define OPERATIONDELTALINEARTRAPEZOIDBOUNDARY_HPP
 
+#include "grid/GridStorage.hpp"
+
 #include "operation/common/OperationMatrix.hpp"
 
-#include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
 #ifdef USEOMP

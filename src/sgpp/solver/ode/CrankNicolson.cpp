@@ -20,10 +20,9 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "solver/sle/BiCGStab.hpp"
-
-#include "grid/common/DirichletUpdateVector.hpp"
 
 namespace sg
 {

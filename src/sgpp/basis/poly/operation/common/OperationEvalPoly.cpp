@@ -21,10 +21,10 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "sgpp.hpp"
+
 #include "basis/basis.hpp"
 #include "basis/poly/operation/common/OperationEvalPoly.hpp"
-
-#include "sgpp.hpp"
 
 #include "data/DataVector.hpp"
 

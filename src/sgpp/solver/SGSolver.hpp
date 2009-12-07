@@ -23,8 +23,8 @@
 #ifndef SGSOLVER_HPP
 #define SGSOLVER_HPP
 
-#include "operation/common/OperationMatrix.hpp"
 #include "operation/common/OperationODESolverMatrix.hpp"
+#include "operation/common/OperationMatrix.hpp"
 #include "solver/SGSolverInfo.hpp"
 #include "solver/SGSolverResult.hpp"
 

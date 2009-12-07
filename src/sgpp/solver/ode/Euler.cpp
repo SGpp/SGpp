@@ -20,12 +20,12 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "solver/sle/ConjugateGradients.hpp"
+#include "grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/Euler.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "tools/common/GridPrinter.hpp"
 #include "solver/sle/BiCGStab.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-#include "grid/common/DirichletUpdateVector.hpp"
 
 #include <iostream>
 #include <string>
