@@ -24,13 +24,13 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include "grid/GridStorage.hpp"
+
 #include "operation/classification/OperationB.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "operation/common/OperationHierarchisation.hpp"
 #include "operation/common/OperationMatrix.hpp"
 
-
-#include "grid/GridStorage.hpp"
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/common/BoundingBox.hpp"
 
