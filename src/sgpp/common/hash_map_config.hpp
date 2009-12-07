@@ -36,7 +36,7 @@ namespace sg {
 // backward compatible: able to use the  standard gnu hashmap of linux (SGI/STLPort)
 #ifndef LARRABEENATIVE
 #ifndef USETRONE
-#include <ext/hash_map>
+#include <hash_map>
 namespace std {
 
     using namespace __gnu_cxx;
