@@ -20,11 +20,11 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "sgpp.hpp"
+
 #include "basis/basis.hpp"
 
 #include "basis/linearboundary/operation/common/OperationEvalLinearBoundary.hpp"
-
-#include "sgpp.hpp"
 
 #include "data/DataVector.hpp"
 

@@ -23,8 +23,8 @@
 #ifndef BICGSTAB_HPP
 #define BICGSTAB_HPP
 
-#include "operation/common/OperationMatrix.hpp"
 #include "solver/SLESolver.hpp"
+#include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
 
 #include <iostream>

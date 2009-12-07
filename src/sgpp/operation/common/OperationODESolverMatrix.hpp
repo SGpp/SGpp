@@ -24,8 +24,8 @@
 #ifndef OPERATIONODESOLVERMATRIX_HPP
 #define OPERATIONODESOLVERMATRIX_HPP
 
-#include "operation/common/OperationMatrix.hpp"
 #include "grid/Grid.hpp"
+#include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg

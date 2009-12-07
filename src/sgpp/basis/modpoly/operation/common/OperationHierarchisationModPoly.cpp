@@ -21,10 +21,10 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "sgpp.hpp"
+
 #include "basis/basis.hpp"
 #include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
-
-#include "sgpp.hpp"
 
 #include "exception/operation_exception.hpp"
 

@@ -20,11 +20,11 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "sgpp.hpp"
+
 #include "basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 #include "basis/linearboundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"
 #include "basis/linearboundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp"
-
-#include "sgpp.hpp"
 
 #include "basis/basis.hpp"
 #include "data/DataVector.hpp"

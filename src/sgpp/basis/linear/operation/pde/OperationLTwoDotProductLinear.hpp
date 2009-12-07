@@ -23,9 +23,10 @@
 #ifndef OPERATIONLTWODOTPRODUCTLINEAR_HPP
 #define OPERATIONLTWODOTPRODUCTLINEAR_HPP
 
+#include "grid/GridStorage.hpp"
+
 #include "operation/common/OperationMatrix.hpp"
 
-#include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
