@@ -73,7 +73,6 @@ namespace std {
 
 // forward declaration of hash function and hash comparison function
 #ifndef LARRABEENATIVE
-#ifndef AIX_XLC
 namespace sg {
 	template<class key>
 	struct hash { };
@@ -81,7 +80,6 @@ namespace sg {
 	template<class key>
 	struct eqIndex { };
 }
-#endif
 #endif
 
 #endif /* HASH_MAP_CONFIG */
