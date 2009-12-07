@@ -20,11 +20,11 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#include "sgpp.hpp"
+
 #include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/HierarchisationLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/DehierarchisationLinearTrapezoidBoundary.hpp"
-
-#include "sgpp.hpp"
 
 #include "basis/basis.hpp"
 #include "data/DataVector.hpp"
