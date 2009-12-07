@@ -23,6 +23,9 @@
 #ifndef OPERATIONUPDOWNTESTLINEARTRAPEZOIDBOUNDARY_HPP
 #define OPERATIONUPDOWNTESTLINEARTRAPEZOIDBOUNDARY_HPP
 
+#include "grid/GridStorage.hpp"
+#include "data/DataVector.hpp"
+
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiDownBBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/algorithm_sweep/PhiPhiUpBBLinearTrapezoidBoundary.hpp"
 
@@ -39,9 +42,6 @@
 
 #include "algorithm/classification/UnidirGradient.hpp"
 #include "algorithm/common/sweep.hpp"
-
-#include "grid/GridStorage.hpp"
-#include "data/DataVector.hpp"
 
 namespace sg
 {

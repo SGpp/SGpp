@@ -26,6 +26,7 @@
 
 // Optimizations currently useless
 //#define SGPP_OPTIMIZE
+#include "grid/GridStorage.hpp"
 
 #include "application/common/ScreenOutput.hpp"
 
@@ -55,7 +56,6 @@
 #include "data/DataVector.hpp"
 
 #include "grid/Grid.hpp"
-#include "grid/GridStorage.hpp"
 #include "grid/common/BoundingBox.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
