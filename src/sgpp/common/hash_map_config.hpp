@@ -36,7 +36,7 @@ namespace sg {
 // backward compatible: able to use the  standard gnu hashmap of linux (SGI/STLPort)
 #ifndef LARRABEENATIVE
 #ifndef USETRONE
-#include <hash_map>
+#include <ext/hash_map>
 namespace std {
 
     using namespace __gnu_cxx;
@@ -52,16 +52,27 @@ namespace std {
 // See:
 // http://software.intel.com/en-us/forums/intel-c-compiler/topic/65041/
 #ifndef WINDOWS
+#ifndef AIX_XLC
 #define __aligned__   ignored
 #include <tr1/unordered_map>
 #undef __aligned__
 #endif
+#endif
+
 #ifdef WINDOWS
 #define __aligned__   ignored
 #include <unordered_map>
 #undef __aligned__
 #endif
+
+#ifdef AIX_XLC
+#define __IBMCPP_TR1__ 1
+#define __aligned__   ignored
+#include <unordered_map>
+#undef __aligned__
 #endif
+#endif
+
 
 // forward declaration of hash function and hash comparison function
 #ifndef LARRABEENATIVE
