@@ -38,15 +38,14 @@ namespace sg {
 #ifndef USETRONE
 #include <ext/hash_map>
 namespace std {
-
     using namespace __gnu_cxx;
-
 }
 #endif
 #endif
 
 // if available you can use the upcoming standard: unorded_map
 #ifdef USETRONE
+
 // do some defines for icc, avoiding
 // errors:
 // See:
@@ -67,12 +66,10 @@ namespace std {
 
 #ifdef AIX_XLC
 #define __IBMCPP_TR1__ 1
-#define __aligned__   ignored
 #include <unordered_map>
-#undef __aligned__
-#endif
 #endif
 
+#endif
 
 // forward declaration of hash function and hash comparison function
 #ifndef LARRABEENATIVE
