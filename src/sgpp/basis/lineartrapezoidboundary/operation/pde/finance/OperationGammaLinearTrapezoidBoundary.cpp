@@ -67,7 +67,12 @@ void OperationGammaLinearTrapezoidBoundary::mult(DataVector& alpha, DataVector& 
 			{
 				#pragma omp parallel
 				{
+#ifndef AIX_XLC
 					#pragma omp single nowait
+#endif
+#ifdef AIX_XLC
+					#pragma omp single
+#endif
 					{
 						if (this->coefs->get((storage->dim()*i)+j) != 0.0)
 						{

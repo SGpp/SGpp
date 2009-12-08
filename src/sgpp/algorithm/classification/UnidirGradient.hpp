@@ -95,7 +95,12 @@ public:
 		{
 			#pragma omp parallel
 			{
+#ifndef AIX_XLC
 				#pragma omp single nowait
+#endif
+#ifdef AIX_XLC
+				#pragma omp single
+#endif
 				{
 					this->updown_parallel(alpha, beta, storage->dim() - 1, i);
 				}
