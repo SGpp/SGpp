@@ -12,13 +12,13 @@ export OMP_NUM_THREADS
 module unload ccomp
 module load ccomp/intel/11.1
 cd $HOME/SGpp/bin/
-./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+./NativeCppBlackScholesSolver solveND 4 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 2000 0.0001
 export OMP_NUM_THREADS=2
-./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+./NativeCppBlackScholesSolver solveND 4 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 2000 0.0001
 export OMP_NUM_THREADS=4
-./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+./NativeCppBlackScholesSolver solveND 4 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 2000 0.0001
 export OMP_NUM_THREADS=8
-./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+./NativeCppBlackScholesSolver solveND 4 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 2000 0.0001
 export OMP_NUM_THREADS=16
-./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+./NativeCppBlackScholesSolver solveND 4 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 2000 0.0001
 jobperf -j $JOB_ID 
