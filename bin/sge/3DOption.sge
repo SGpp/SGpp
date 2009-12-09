@@ -13,10 +13,10 @@ module unload ccomp
 module load ccomp/intel/11.1
 cd $HOME/SGpp/bin/
 ./NativeCppBlackScholesSolver solveND 2 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
-OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=2
 ./NativeCppBlackScholesSolver solveND 2 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
-OMP_NUM_THREADS=4
+export OMP_NUM_THREADS=4
 ./NativeCppBlackScholesSolver solveND 2 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
-OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=8
 ./NativeCppBlackScholesSolver solveND 2 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
 jobperf -j $JOB_ID 

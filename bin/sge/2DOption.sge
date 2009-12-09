@@ -7,16 +7,13 @@
 #$-M Alex.Heinecke@web.de 
 . /etc/profile 
 hostname 
-OMP_NUM_THREADS=1
-export OMP_NUM_THREADS
+export OMP_NUM_THREADS=1
 module unload ccomp
 module load ccomp/intel/11.1
 cd $HOME/SGpp/bin/
 ./NativeCppBlackScholesSolver solveND 2 10 BStest2DMC.bound BStest2DMC.stoch BStest2DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
-OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=2 
 ./NativeCppBlackScholesSolver solveND 2 10 BStest2DMC.bound BStest2DMC.stoch BStest2DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
-OMP_NUM_THREADS=4
-./NativeCppBlackScholesSolver solveND 2 10 BStest2DMC.bound BStest2DMC.stoch BStest2DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
-OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=4
 ./NativeCppBlackScholesSolver solveND 2 10 BStest2DMC.bound BStest2DMC.stoch BStest2DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.00001
 jobperf -j $JOB_ID 
