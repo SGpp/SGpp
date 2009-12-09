@@ -1,0 +1,24 @@
+#!/bin/bash 
+#$-o $HOME/4DOption.$JOB_ID.out -j y 
+#$-N sgpp_4DOption_16_CPU 
+#$-l h_rt=72:00:00 
+#$-S /bin/bash 
+#$-pe numa_2 16 
+#$-M Alex.Heinecke@web.de 
+. /etc/profile 
+hostname 
+OMP_NUM_THREADS=1
+export OMP_NUM_THREADS
+module unload ccomp
+module load ccomp/intel/11.1
+cd $HOME/SGpp/bin/sge/
+./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+OMP_NUM_THREADS=2
+./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+OMP_NUM_THREADS=4
+./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+OMP_NUM_THREADS=8
+./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+OMP_NUM_THREADS=16
+./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
+jobperf -j $JOB_ID 
