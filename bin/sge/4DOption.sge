@@ -11,7 +11,7 @@ OMP_NUM_THREADS=1
 export OMP_NUM_THREADS
 module unload ccomp
 module load ccomp/intel/11.1
-cd $HOME/SGpp/bin/sge/
+cd $HOME/SGpp/bin/
 ./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
 OMP_NUM_THREADS=2
 ./NativeCppBlackScholesSolver solveND 2 7 BStest4DMC.bound BStest4DMC.stoch BStest4DMC.strike avgM 0.00 1.0 0.05 CrNic 400 0.0001
