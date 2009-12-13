@@ -322,11 +322,18 @@ void DataVector::add_parallel(DataVector &vec)
 	int n = size*dim;
 
 #ifdef USEOMP
+#ifdef PARALLELDATAVECTOR
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] += vec.data[i];
 	}
+#else
+	for(int i = 0; i < n; i++)
+	{
+		data[i] += vec.data[i];
+	}
+#endif
 #else
 	for(int i = 0; i < n; i++)
 	{
@@ -344,11 +351,18 @@ void DataVector::sub_parallel(DataVector &vec)
 	int n = size*dim;
 
 #ifdef USEOMP
+#ifdef PARALLELDATAVECTOR
 	#pragma omp parallel for shared(vec) schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		data[i] -= vec.data[i];
 	}
+#else
+	for(int i = 0; i < n; i++)
+	{
+		data[i] -= vec.data[i];
+	}
+#endif
 #else
 	for(int i = 0; i < n; i++)
 	{
@@ -521,11 +535,18 @@ void DataVector::axpy_parallel(double alpha, DataVector& x)
 	double* p_x = x.data;
 	double* p_d = data;
 #ifdef USEOMP
+#ifdef PARALLELDATAVECTOR
 	#pragma omp parallel for shared(p_d, p_x) schedule(static)
 	for(int i = 0; i < n; i++)
 	{
 		p_d[i] += alpha*p_x[i];
 	}
+#else
+	for(int i = 0; i < n; i++)
+	{
+		p_d[i] += alpha*p_x[i];
+	}
+#endif
 #else
 	for(int i = 0; i < n; i++)
 	{
