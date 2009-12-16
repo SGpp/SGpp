@@ -20,6 +20,8 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
+from bin.pysgpp import DataVector
+
 
 ## Class keeps all information, which was learned during the learning process.
 # Currently, only the alpha vector is stored, by in the future more information may come.
@@ -27,6 +29,12 @@ class LearnedKnowledge(object):
 
     
     __alphas = None         #DataVector with learned alpha
+    
+    
+    ## Constructor
+    def __init__(self):
+        self.__alphas = DataVector(1) #a dummy DataVector object
+        
 
     ##Restores the state which is saved in the given memento
     #

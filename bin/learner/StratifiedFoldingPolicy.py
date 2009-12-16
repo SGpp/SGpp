@@ -20,49 +20,33 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-import unittest
+from FoldingPolicy import FoldingPolicy
+import math
 
-# @tod (khakhutv) rename the file
-
-#correct the syspath, so python looks for packages in the root directory of SGpp
-import sys, os
-pathname = os.path.dirname(__file__)
-pathlocal = os.path.abspath(pathname)
-if pathlocal not in sys.path: sys.path.append(pathlocal)
-pathsgpp = os.path.abspath(pathname) + '/../../..'
-if pathsgpp not in sys.path: sys.path.append(pathsgpp)
-
-from bin.learner.GridFormatter import GridFormatter
-from bin.pysgpp import Grid
-
-class TestGridFileAdapter(unittest.TestCase):
+## Provides functionality for accomplishment of learning with cross-validation
+# by generating a set of training data/validation data pairs with equal distribution
+# of points from two different classes between folds.
+class StratifiedFoldingPolicy(FoldingPolicy):
     
-    __gridFormatter = None
-    filename = pathlocal + "/datasets/grid.gz"
-    savefile = pathlocal + "/datasets/savetest.grid.gz"
-    correct_str = ""
-    grid = None
     
-    def setUp(self,):
-        self.__gridFormatter = GridFormatter()
-        dim = 3
-        self.grid = Grid.createLinearGrid(dim)
-        self.grid.createGridGenerator().regular(3)
-        self.correct_str = self.grid.serialize()
-
-    
-    def testLoad(self,):
-        grid = self.__gridFormatter.deserializeFromFile(self.filename)
-        test_str = grid.serialize()
-        self.assertEqual(test_str, self.correct_str)
-        
-    def testSave(self,):
-        self.__gridFormatter.serializeToFile(self.grid, self.savefile)
-        grid = self.__gridFormatter.deserializeFromFile(self.savefile)
-        test_str = grid.serialize()
-        self.assertEqual(test_str, self.correct_str)
-        
-        
-        
-if __name__=="__main__":
-    unittest.main() 
+    ##Constructor
+    #
+    #@param dataContainer: DataContainer with data set
+    #@param level: Integer folding level, default value: 1
+    def __init__(self, dataContainer, level=1):
+        FoldingPolicy.__init__(self,  dataContainer, level)
+        values = dataContainer.getValues()
+        self.seq = range(self.size)
+        indecesOfPositives = []
+        indecesOfNegatives = []
+        for i in xrange(self.size):
+            if values[i] < 0: indecesOfNegatives.append(i)
+            else: indecesOfPositives.append(i)
+        windowPos = int(math.floor(len(indecesOfPositives) / self.level))
+        windowNeg = int(math.floor(len(indecesOfNegatives) / self.level))
+        for step in xrange(self.level):
+            validationIndeces = indecesOfPositives[ step * windowPos : ((step+1) * windowPos if (step+1) < self.level else len(indecesOfPositives))] + \
+                                indecesOfNegatives[ step * windowNeg : ((step+1) * windowNeg if (step+1) < self.level else len(indecesOfNegatives))]
+            self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))
+            
+            

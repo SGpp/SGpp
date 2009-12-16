@@ -155,7 +155,6 @@ class Learner(object):
             if(self.stopPolicy.isTrainingComplete(self)): break
             
             #refine grid
-            #@todo (khakhutv) here comes some average alpha
             self.refineGrid()
        
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_COMPLETE)
@@ -173,6 +172,9 @@ class Learner(object):
     # @return: DataVector values 
     def applyData(self, points):
         self.notifyEventControllers(LearnerEvents.APPLICATION_STARTED)
+        # if learner is restored from checkpoint, you need to create new B Operator
+        if self.specification.getBOperator() == None:
+            self.specification.setBOperator(self.grid.createOperationB())
         size = points.getSize()
         dim = points.getDim()
         values = DataVector(size)
@@ -195,8 +197,7 @@ class Learner(object):
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_STARTED)
             #learning step
             self.alpha = self.doLearningIteration(self.dataContainer)
-            #eval Error for training data and append it to other in this iteration
-            self.trainAccuracy.append(self.evalError(self.dataContainer, self.alpha))
+            
             #calculate avg. error for training and test data and avg. for refine alpha
             self.updateResults(self.alpha, self.dataContainer)
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
@@ -210,7 +211,6 @@ class Learner(object):
 
 
     ## Learn data with cross-fold validation
-    #  @todo (khakhutv) make it possible to run jobs concurrently 
     #
     # @return: list of DataVector alpha in different folds
     def learnDataWithFolding(self,):
@@ -218,7 +218,6 @@ class Learner(object):
         self.specification.setBOperator(self.grid.createOperationB())
      
         alphas = []
-        #  @todo (khakhutv) can be called concurrently 
         for dataset in self.foldingPolicy:
             alphas.append(self.learnDataWithTest(dataset))
             
@@ -237,13 +236,19 @@ class Learner(object):
                                            self.specification.getCOperator(),
                                            self.specification.getL())
         size =  self.grid.getStorage().size() 
-        alpha = DataVector(size)
-        alpha.setAll( 0.0 )
+        # Reuse data from old alpha vector increasing its dimension
+        if self.solver.getReuse() and self.alpha != None:
+            alpha = DataVector(self.alpha)
+            alpha.resize(size)
+        # Use new alpha vector
+        else:
+            alpha = DataVector(size)
+            alpha.setAll( 0.0 )
         b = DataVector(size)
         self.linearSystem.generateb(set.getValues(), b)
-        reuse = False
         #calculates alphas
-        self.solver.solve(self.linearSystem, alpha, b, reuse, False, self.solver.getThreshold())
+        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(), 
+                          False, self.solver.getThreshold())
         return alpha
 
 
@@ -362,7 +367,6 @@ class Learner(object):
     ##Returns a string that represents the object.
     #
     # @return A string that represents the object. 
-    # @todo:  (khakhutv) think what to do with folding policy (medium)
     def toString(self):
         serializationString = "'module' : '" + self.__module__ + "',\n"
         for attrName in dir(self):
@@ -385,7 +389,7 @@ class Learner(object):
             
             # serialize strings with quotes    
             elif type(attrValue) == types.StringType and attrName.find("__") != 0:
-                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+                serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
                 
             #serialize knowledge
             elif attrName in self.__SERIALIZABLE_ATTRIBUTES :

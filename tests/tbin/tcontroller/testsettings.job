@@ -1,15 +1,15 @@
-# @todo (khakhutv) check default values, add if some missing
+# @todo (khakhutv) check default values, add if something is missing
 
 [learner]
 # Do you want to make classification or regression
-# type = regressoin
+# type = regression
 type = classification
 
 # What action should be performed?
 # Possible options: learn, apply
 action = learn
 
-# Should the lerning with testing be performed?
+# Should the learning with testing be performed?
 # default: no  
 with_testing = yes 
 
@@ -126,6 +126,10 @@ level = 2
 # Name of the job. Used in the filename of a checkpoint
 name = classification_job
 
+# Restore from the following iteration, if nothing is set, the new learner will be
+# created
+# restore_iteration = 0
+
 # Make a checkpoints every "interval" iterations
 # e.g. for interval = 2: iterations 0, 2, 4, 6 ... will be saved
 # Default value: 1
@@ -150,3 +154,23 @@ path = .
 
 # For InfoToFile type give the filename
 # filename = 
+
+
+
+
+[folding]
+# This section contains the parameters required for N-Fold-Crossvalidation
+#
+# Denines the type of data folding. Possible values:
+# fold - learn a dataset with a random n-fold
+# folds - learn a dataset with a sequential n-fold
+# foldr - learn a dataset with a stratified n-fold
+# foldf - learn a dataset with a n-fold from a set of files
+# foldstratified - learn a dataset with a stratified n-fold
+# type = fold
+# 
+# Defines the number of Folds:
+# level = 10
+# 
+# Defines the seed for random n-fold, Default the current timestamp is taken
+# seed = 

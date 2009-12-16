@@ -24,6 +24,7 @@
 #from DataContainer import DataContainer
 
 from time import time
+import random
 
 
 ## The class encapsulates the description of the data set, like names of dimensions
@@ -76,7 +77,8 @@ class DataSpecification(object):
     ## Generates a new random file name
     # @return: new random file name
     def generateFilename(self):
-        return 'data.' + str(time()) + '.arff'
+        rnd = str(int(random.random()*1000)) #random post-fix
+        return 'data.' + str(time()) + rnd + '.arff'
     
     ## Adds an attribute to the attribute collection
     # @param attributeName: attribute name

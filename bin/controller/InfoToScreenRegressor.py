@@ -20,11 +20,38 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-from CheckpointController import CheckpointController
-from InfoToFile import InfoToFile
-from InfoToGraph import InfoToGraph
-from InfoToScreen import InfoToScreen
-from InfoToScreenRegressor import InfoToScreenRegressor
-from LearnerEventController import LearnerEventController
-from SolverEventController import SolverEventController
-from TerminalController import TerminalController
+
+
+from bin.controller.InfoToScreen import InfoToScreen
+from bin.learner.Learner import LearnerEvents
+
+
+## Prints some regression specific information together with information 
+# processed by @link bin.controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
+class InfoToScreenRegressor(InfoToScreen):
+    
+   
+            
+    ##
+    #Handles events from Learner 
+    #
+    #@param subject: Learner object
+    #@param status: Event Status of type LearnerEvents
+    ##        
+    def handleLearningEvent(self, subject, status):
+        if status == LearnerEvents.LEARNING_STEP_COMPLETE:
+            print "Number of points: ", subject.numberPoints[-1]
+            print "MSE on training data: ",subject.trainAccuracy[-1]
+            print "L2-norm of error: ", subject.getL2NormError()
+            print "Min error: ", subject.getMinError()
+            print "Max error: ", subject.getMaxError()
+            
+        elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
+            print "Number of points: ", subject.numberPoints[-1]
+            print "MSE on training data: ",subject.trainAccuracy[-1]
+            print "MSE on testing data:  ",subject.testAccuracy[-1]
+            print "L2-norm of error on training data: : ", subject.getL2NormError()
+            print "Min error on training data: : ", subject.getMinError()
+            print "Max error on training data: : ", subject.getMaxError()
+        else:
+            super(self.__class__, self).handleLearningEvent(subject, status)

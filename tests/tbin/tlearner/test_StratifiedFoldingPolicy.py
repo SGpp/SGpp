@@ -2,6 +2,10 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
+# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
+# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
+# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -25,54 +29,48 @@ import unittest
 #correct the syspath, so python looks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
-pathlocal = os.path.abspath(pathname)
-if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.LearnerBuilder import LearnerBuilder
-from bin.controller import InfoToScreen
-from bin.controller import InfoToFile
+from bin.learner.StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from bin.data.DataContainer import DataContainer
+from bin.pysgpp import DataVector
 
-
-class TestLearnerBuilder(unittest.TestCase):
-    
-    builder = None
-    classifier = None
+class TestStratifiedFoldingPolicy(unittest.TestCase):
+    policy = None
+    size = 9
+    level = 4
     
     def setUp(self):
-        self.builder = LearnerBuilder()
-        self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\
-                    .withTestingDataFromARFFFile(pathlocal + "/datasets/classifier.test.arff").withGrid().withLevel(2).withSpecification().withLambda(0.00001).withAdaptPoints(2)\
-                    .withStopPolicy()\
-                    .withAdaptiveItarationLimit(1).withCGSolver().withProgressPresenter(InfoToFile(pathlocal + "/presentor.test"))\
-                    .andGetResult()
-#        level = 2
-#        dim = 2
-#        l = 0.00001
-#        self.classifier = Classifier()
-#        dataContainer = ARFFAdapter(pathlocal + "/datasets/classifier.train.arff").loadData()
-#        self.classifier.setDataContainer(dataContainer)
-#        foldingPolicy = FoldingPolicy(dataContainer)
-#        self.classifier.setFoldingPolicy(foldingPolicy)
-#        grid = Grid.createLinearGrid(dim)
-#        storage = grid.createGridGenerator()
-#        storage.regular(level)
-#        self.classifier.setGrid(grid)
-#        self.classifier.setLearnedKnowledge(LearnedKnowledge(None))
-#        spec = TrainingSpecification()
-#        spec.setL(l)
-#        self.classifier.setSpecification(spec)
-#        stopPolicy = TrainingStopPolicy()
-#        stopPolicy.setAdaptiveIterationLimit(0)
-#        self.classifier.setStopPolicy(stopPolicy)
-#        self.classifier.setSolver(CGSolver())
-
-    
-    def testScreenEventPresentor(self,):
-        self.classifier.learnDataWithTest()
-
-
+        points = DataVector(self.size, 1)
+        values = DataVector(self.size, 1)
+        for i in xrange(self.size):
+            points[i] = i
+            values[i] = -1 if i < self.size/2 else 1
+        self.dataContainer = DataContainer(points, values)
+        self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
+        
+    def testNext(self):
+        validationCorrectData = [[4,0],[5,1], [6,2], [7,8,3]]
+        self.assertEqual(self.level, len(self.policy.dataFold))
+        i = 0
+        for l in self.policy:
+            trainPoints = l.getTrainDataset().getPoints()
+            validationPoints = l.getTestDataset().getPoints()
+            validCorrectD = set(validationCorrectData[i])
+            trainCorrectD = set(range(self.size)) - validCorrectD
+            
+            self.assertEqual(trainPoints.getSize(), len(trainCorrectD))
+            self.assertEqual(validationPoints.getSize(), len(validCorrectD))
+            for k in xrange(trainPoints.getSize()):
+                self.assertTrue(trainPoints[k] in trainCorrectD)
+            for k in xrange(validationPoints.getSize()):
+                self.assertTrue(validationPoints[k] in validCorrectD)
+                
+            i += 1
+           
+        
+        
         
 if __name__=="__main__":
     unittest.main() 

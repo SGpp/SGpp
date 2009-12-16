@@ -64,7 +64,7 @@ class InfoToFile(InfoToScreen):
         file = open(self.filename, "a")
         tmpout = sys.stdout
         sys.stdout = file
-        InfoToScreen.handleSolvingEvent(self, subject, status)
+        InfoToScreen.handleLearningEvent(self, subject, status)
         sys.stdout = tmpout
         file.close()
         

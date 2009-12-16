@@ -24,7 +24,7 @@
 
 
 ## Constants for types of grid borders
-# @todo here may be a good place for detailed description of different boundary types
+# @todo (khakhutv) here may be a good place for detailed description of different boundary types
 class BorderTypes(object):
     
     ## None border

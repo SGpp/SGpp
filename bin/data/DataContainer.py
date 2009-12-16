@@ -26,6 +26,7 @@ from bin.pysgpp import DataVector
 from DataAdapter import DataAdapter
 from DataEntry import DataEntry
 import ARFFAdapter
+import types
 
 
 ## A collection of data
@@ -159,60 +160,69 @@ class DataContainer(object):
         self.points={}
         self.values={}
         self.specifications = {} 
-        if isinstance(args[0], DataAdapter): #takes (adapter: DataAdapter)
-            pass
-            # @todo (khakhutv) implement the case where data container is created from adapter
-        elif type(args[0]) == type(0): #takes (size: int, dim: int, name="train")
-            #@todo (khakhutv) here IndexError is possible
-            try:
-                if args[2] is None:
-                    self.name = self.TRAIN_CATEGORY
-                else:
-                    self.name = args[2]
-            except IndexError:
-                self.name = self.TRAIN_CATEGORY
-                
-            self.size = args[0]
-            self.dim = args[1]
-            self.points[self.name] = DataVector(self.size, self.dim)
-
-            self.values[self.name] = DataVector(self.size)
-            specification = DataSpecification()
-            specification.createNumericAttributes(self.dim)
-            self.specifications[self.name] = specification
-            
-        elif isinstance(args[0], DataVector): #takes (points: DataVector, values: DataVector, name="train", filename=None)
-            try:
-                if args[2] is None:
-                    self.name = self.TRAIN_CATEGORY
-                else:
-                    self.name = args[2]
-            except IndexError:
-                self.name = self.TRAIN_CATEGORY
-            
+        try:
+            if isinstance(args[0], DataAdapter): #takes (adapter: DataAdapter)
+                adapter = args[0]
+                container = adapter.loadData()
+                self.points = container.points
+                self.values = container.values
+                self.dim = container.dim
+                self.size = container.size
+                self.specifications = container.specifications
+                self.name = container.name
+            else:
+                if type(args[0]) == types.IntType: #takes (size: int, dim: int, name="train")
+                    try:
+                        if args[2] is None:
+                            self.name = self.TRAIN_CATEGORY
+                        else:
+                            self.name = args[2]
+                    except IndexError:
+                        self.name = self.TRAIN_CATEGORY
+                        
+                    self.size = args[0]
+                    self.dim = args[1]
+                    self.points[self.name] = DataVector(self.size, self.dim)
+        
+                    self.values[self.name] = DataVector(self.size)
+                    specification = DataSpecification()
+                    specification.createNumericAttributes(self.dim)
+                    self.specifications[self.name] = specification
                     
-
-            self.points[self.name] = args[0]
-            self.values[self.name] = args[1]
-            self.size = self.points[self.name].getSize()
-            self.dim = self.points[self.name].getDim()
+                elif isinstance(args[0], DataVector): #takes (points: DataVector, values: DataVector, name="train", filename=None)
+                    try:
+                        if args[2] is None:
+                            self.name = self.TRAIN_CATEGORY
+                        else:
+                            self.name = args[2]
+                    except IndexError:
+                        self.name = self.TRAIN_CATEGORY
+                    
+                    self.points[self.name] = args[0]
+                    self.values[self.name] = args[1]
+                    self.size = self.points[self.name].getSize()
+                    self.dim = self.points[self.name].getDim()
+                    
+                    specification = DataSpecification()
+                    specification.createNumericAttributes(self.dim)
+                    
+                    # if data comes from a file, note it in the specification
+                    try:
+                        if not args[3] is None:
+                            specification.setFilename(args[3])
+                            specification.setSaved()
+                    except IndexError:
+                        pass
+                    
+                    self.specifications[self.name] = specification
+          
+                self.tempPoint = DataVector(1,self.dim)
+                self.tempValue = DataVector(1,1)
             
-            specification = DataSpecification()
-            specification.createNumericAttributes(self.dim)
-            
-            # if data comes from a file, note it in the specification
-            try:
-                if not args[3] is None:
-                    specification.setFilename(args[3])
-                    specification.setSaved()
-            except IndexError:
-                pass
-            
-            self.specifications[self.name] = specification
-  
-        self.tempPoint = DataVector(1,self.dim)
-        self.tempValue = DataVector(1,1)
+        except IndexError:
+            raise Exception('Wrong or no attributes in constructor')
        
+
 
     ##Merge to Data container into one, so it stores several data sets with different categories
     #
@@ -250,15 +260,19 @@ class DataContainer(object):
     ## Returns points stored in the data set with default name
     #
     # @return: DataVector of points
-    def getPoints(self):
-        return self.points[self.name]
+    def getPoints(self, category = None):
+        if category == None:
+            category = self.name
+        return self.points[category]
     
     
     ## Returns values stored in the data set with default name
     #
     # @return: DataVector of values
-    def getValues(self):
-        return self.values[self.name]
+    def getValues(self, category = None):
+        if category == None:
+            category = self.name
+        return self.values[category]
     
     ## Return the data specification of the default category
     # @return: the DataSpecification object
@@ -305,8 +319,9 @@ class DataContainer(object):
         # save the data as a file, if it's not saved yet
         for category, specification in self.specifications.items():
             if not self.specifications[category].isSaved():
-                ARFFAdapter().save(self.getPoints(category), self.getValues(category), 
-                                 specification.getAttributes())
+                ARFFAdapter.ARFFAdapter(self.specifications[category].getFilename())\
+                        .save(self.getPoints(category), self.getValues(category), 
+                        specification.getAttributes())
                 specification.setSaved()
                 
         serializedString = "'module' : '" + self.__module__ + "',\n"

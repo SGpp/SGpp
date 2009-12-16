@@ -69,7 +69,7 @@ class Classifier(Learner):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
         pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
         
-        # @todo (khakhutv) develop a way to simplify interfaces and use different functors
+        # @todo (khakhutv) (low) develop a way to simplify interfaces and use different functors
         self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.alpha, pointsNum, self.specification.getAdaptThreshold()) )
         
     ## Creates Classifier object without any parameter set

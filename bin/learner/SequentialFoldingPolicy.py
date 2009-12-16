@@ -30,7 +30,6 @@ from bin.data.ARFFAdapter import ARFFAdapter
 
 ## Provides functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs sequentially
-# @todo (khakhutv) this implementation is different from the RandomFoldingPolicy, since there no dataFold in the last one, check which on is correct
 class SequentialFoldingPolicy(FoldingPolicy):
     
     

@@ -30,9 +30,10 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.controller import InfoToScreen, InfoToFile, CheckpointController
+from bin.controller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
 from bin.learner.LearnerBuilder import LearnerBuilder
 from bin.data.ARFFAdapter import ARFFAdapter
+from bin.learner.Types import BorderTypes
 
 
 ## The class provides the functionality for launching of learning jobs from
@@ -119,9 +120,9 @@ class TerminalController:
         #Create builder for specified learner
         builder = LearnerBuilder()
         learner_type = configuration.get('learner', 'type')
-        if(learner_type == 'classification'):
+        if learner_type == 'classification':
             builder.buildClassifier()
-        elif(learner_type == 'regression'):
+        elif learner_type == 'regression':
             builder.buildRegressor()
         else:
             raise Exception('Wrong learner type in job configuration file')
@@ -187,34 +188,57 @@ class TerminalController:
         
         if options.has_key('accuracy'): builder.withAccuracy( float(options['accuracy']) )
         if options.has_key('imax'): builder.withImax( int(options['imax']) )
+        if options.has_key('max_threshold'): builder.withThreshold(float(options['max_threshold']))
         
         #presentor
         options = TerminalController.itemsToDict(configuration.items('output'))
         if options.has_key('type'):
             types = options['type'].split(',')
             for type in types:
-                if type.strip() == 'InfoToScreen': builder.withProgressPresentor(InfoToScreen())
-                if type.strip() == 'InfoToFile':
-                    if options.has_key('filename'): builder.withProgressPresentor(InfoToFile(options['filename']))
+                if type.strip() == 'InfoToScreen': builder.withProgressPresenter(InfoToScreen())
+                if type.strip() == 'InfoToScreenRegressor': builder.withProgressPresenter(InfoToScreenRegressor())
+                elif type.strip() == 'InfoToFile':
+                    if options.has_key('filename'): builder.withProgressPresenter(InfoToFile(options['filename']))
                     else: raise Exception('Define filename in order to use InfoToFile output')
                     
         #checkpoint
         options = TerminalController.itemsToDict(configuration.items('checkpoints'))
         
         if options.has_key('name'):
-            checkpointController = CheckpointController(options['name'], options['path'], int(options['interval']) )
+            path = options['path'] if options.has_key('path') else None
+            interval = options['interval'] if options.has_key('inte    rval') else None
+            checkpointController = CheckpointController(options['name'], path, interval)
+            if options.has_key('restore_iteration'):
+                learner = checkpointController.loadAll(options['restore_iteration'])
                                                                                                       
             builder.withCheckpointController(checkpointController)
             
-        # @todo (khakhutv) develop an intelligent way to restore from checkpoints
             
         #Get Results and perform wanted action
-        learner = builder.andGetResult()
+        # if learner was not created by checkpoint controller, create it with learner builder
+        try:
+            if learner not in dir():
+                learner = builder.andGetResult()
+        except: learner = builder.andGetResult()
+        
+        # Folding
+        options = TerminalController.itemsToDict(configuration.items('folding'))
+        if options.type in ['fold', 'folds'] :
+            if options.type == 'fold':
+                builder.withRandomFoldingPolicy()
+                
+            elif options.type == 'folds':
+                builder.withSequentialFoldingPolicy()
+            if options.seed: builder.withSeed(options.seed)
+            if options.level: builder.withLevel(options.level)
+        elif options.type in ['foldstratified', 'foldr', 'foldf']:
+            # @todo (khakhutv) implementd this fency folding strategies
+            raise Exception('The requested folding strategy is not implemented yet')
+            
         
         options = TerminalController.itemsToDict(configuration.items('learner'))
-        
         if options['action'] == 'learn':
-            if not options['with_testing'] or options['with_testing'].lower() == 'no':
+            if (not options.has_key('with_testing')) or options['with_testing'].lower() == 'no':
                 learner.learnData()
             elif options['with_testing'].lower() == 'yes': learner.learnDataWithTest()
             else: raise Exception('with_testion can only be set to "yes" or "no"')
@@ -223,6 +247,8 @@ class TerminalController:
             if points_file != None:
                 learner.applyData( ARFFAdapter(points_file).loadData().getPoints() )
             else: raise Exception('To evaluate value of points define file path "points_file" in the section "data"')
+        elif options['action'] == 'fold':
+            builder.getCheckpointController().generateFoldValidationJob('PUT_YOUR_EMAIL_HERE')
         else: raise Exception('Incorrect action in job configuration file')
     
     
@@ -232,9 +258,114 @@ class TerminalController:
     #
     # @param options: OptionParser result object with options
     @classmethod
-    def constructObjectsFromOptions(cls, options):
-        #@todo (khakhutv) implement terminal initialization from command line parameters
-        return 
+    def constructObjectsFromOptions(cls, options):       
+        #Create builder for specified learner
+        builder = LearnerBuilder()
+        if  options.regression:
+            builder.buildRegressor()
+
+        else:
+            builder.buildClassifier()
+        
+        
+        #dataset options
+        if len(options.data) > 0:
+            #@todo (khakhutv) here implement the option to load from a number of files
+            #@todo (khakhutv) it may make sense for crossfold validation to separate data set into chunks and then use the same chunks for different instance
+            builder.withTrainingDataFromARFFFile(options.data[0])
+        else: 
+            raise Exception('Define the path to the training data set')
+            
+        if options.test: builder.withTestingDataFromARFFFile(options.test)
+       
+        
+        #grid options
+        builder = builder.withGrid()
+        if options.grid:
+            builder.fromFile(options.grid)
+        else:
+            try:
+                if options.level: builder.withLevel(options.level)
+                if options.polynom: builder.withPolynomialBase(options.polynom)
+                if options.trapezoidboundary: builder.withBorder(BorderTypes.TRAPEZOIDBOUNDARY)
+                elif options.completeboundary: builder.withBorder(BorderTypes.COMPLETEBOUNDARY)
+                # @fixme (khakhutv)the name "NONE" for the border type should be changed to something more meaningful
+                elif options.border: builder.withBorder(BorderTypes.NONE)
+            except: raise Exception('Grid configuration arguments incorrect')
+            
+        #training specification
+        builder = builder.withSpecification()
+        if options.adapt_rate: builder.withAdaptRate(options.adapt_rate)
+        elif options.adapt_points: builder.withAdaptPoints(options.adapt_points)
+                
+        if options.regparam: builder.withLambda(options.regparam)
+        if options.zeh:
+            if options.zeh == 'laplace': builder.withLaplaceOperator()
+            elif options.zeh == 'identity': builder.withIdentityOperator()
+            else: raise Exception('Incorrect regulariation operator type')
+        
+        if options.adapt_threshold: builder.withAdaptThreshold(options.adapt_threshold)
+        
+        
+        #stop policy
+        builder = builder.withStopPolicy()
+        if options.adaptive: builder.withAdaptiveItarationLimit(options.adaptive)
+        if options.grid_limit: builder.withGridSizeLimit(options.grid_limit)
+        if options.mse_limit: builder.withMSELimit(options.mse_limi)
+        if options.grid_limit: builder.withEpochsLimit(options.grid_limit)
+        
+        # linear solver
+        builder = builder.withCGSolver()        
+        if options.r: builder.withAccuracy(options.r)
+        if options.max_r: builder.withThreshold(options.max_r)
+        if options.imax: builder.withImax(options.imax)
+        
+        #presentor
+        if options.verbose: # print to the screen
+            if options.regression:
+                builder.withProgressPresenter(InfoToScreenRegressor())
+            else:
+                builder.withProgressPresenter(InfoToScreen())
+        if options.stats:
+            # @todo (khakhutv) implement info presenter to output information in the format of old statistic files
+            builder.withProgressPresenter(InfoToFile(options.stats))
+            
+                    
+        #checkpoint
+        if options.checkpoint:
+            checkpointController = CheckpointController(options.checkpoint)
+                                                                                                      
+            builder.withCheckpointController(checkpointController)
+            
+        # Folding
+        # @todo (khakhutv) implement folding for configuration from file
+        if options.mode in ['fold', 'folds'] :
+            if options.mode == 'fold':
+                builder.withRandomFoldingPolicy()
+            elif options.mode == 'folds':
+                builder.withSequentialFoldingPolicy()
+            if options.seed: builder.withSeed(options.seed)
+            if options.level: builder.withLevel(options.level)
+            
+            
+        #Get Results and perform wanted action
+        learner = builder.andGetResult()
+        options.mode = options.mode.lower()
+        if options.mode == 'normal':
+            learner.learnData()
+        elif options.mode == 'test':
+            learner.learnDataWithTest()
+        elif options.mode == 'apply':
+            learner.applyData( ARFFAdapter(options.data).loadData().getPoints() )
+        elif options.mode in ['fold', 'folds']:
+            builder.getCheckpointController().generateFoldValidationJob('PUT_YOUR_EMAIL_HERE')
+        elif options.mode in ['foldstratified', 'foldr', 'foldf']:
+            # @todo (khakhutv) implementd this fency folding strategies
+            raise Exception('The requested folding strategy is not implemented yet')
+        elif options.mode in ['eval', 'evalstdin']:
+            # @todo (khakhutv) does it have to be implemented?
+            raise Exception('This action is not implemented yet')
+        else: raise Exception('Incorrect action configuration')
     
     
     

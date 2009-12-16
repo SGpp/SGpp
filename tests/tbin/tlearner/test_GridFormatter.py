@@ -2,10 +2,6 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -26,6 +22,8 @@
 
 import unittest
 
+# @tod (khakhutv) rename the file
+
 #correct the syspath, so python looks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
@@ -34,54 +32,35 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
-from bin.learner.LearnedKnowledge import LearnedKnowledge
-from bin.pysgpp import DataVector
+from bin.learner.GridFormatter import GridFormatter
+from bin.pysgpp import Grid
 
-# @todo (khakhutv) rename the file
-
-class TestLearnedKnowledgeFileAdapter(unittest.TestCase):
+class TestGridFormatter(unittest.TestCase):
     
-    formatter = None
-    filename_load = pathlocal + "/datasets/load.alpha.arff"
-    filename_save = pathlocal + "/datasets/save.alpha.arff"
+    __gridFormatter = None
+    filename = pathlocal + "/datasets/grid.gz"
+    savefile = pathlocal + "/datasets/savetest.grid.gz"
+    correct_str = ""
+    grid = None
     
     def setUp(self,):
-        self.formatter = LearnedKnowledgeFormatter()
+        self.__gridFormatter = GridFormatter()
+        dim = 3
+        self.grid = Grid.createLinearGrid(dim)
+        self.grid.createGridGenerator().regular(3)
+        self.correct_str = self.grid.serialize()
 
     
     def testLoad(self,):
-        knowledge = self.formatter.deserializeFromFile(self.filename_load)
-        alphas = knowledge.getAlphas()
-        self.assertEqual(alphas.getSize(), 10)
-        self.assertEqual(alphas.getDim(), 1)
-        a = 0.1
-        row = DataVector(1)
-        for i in xrange(10):
-            alphas.getRow(i, row)
-            self.assertAlmostEqual(row[0], a)
-            a = a + 0.1
+        grid = self.__gridFormatter.deserializeFromFile(self.filename)
+        test_str = grid.serialize()
+        self.assertEqual(test_str, self.correct_str)
         
     def testSave(self,):
-        alphas = DataVector(10)
-        a = 0.1
-        for i in xrange(10):
-            alphas[i] = a
-            a = a + 0.1
-        knowledge = LearnedKnowledge(self.formatter)
-        knowledge.update(alphas)
-        self.formatter.serializeToFile(knowledge, self.filename_save)
-        
-        knowledge = self.formatter.deserializeFromFile(self.filename_save)
-        alphas = knowledge.getAlphas()
-        self.assertEqual(alphas.getSize(), 10)
-        self.assertEqual(alphas.getDim(), 1)
-        a = 0.1
-        row = DataVector(1)
-        for i in xrange(10):
-            alphas.getRow(i, row)
-            self.assertAlmostEqual(row[0], a)
-            a = a + 0.1
+        self.__gridFormatter.serializeToFile(self.grid, self.savefile)
+        grid = self.__gridFormatter.deserializeFromFile(self.savefile)
+        test_str = grid.serialize()
+        self.assertEqual(test_str, self.correct_str)
         
         
         

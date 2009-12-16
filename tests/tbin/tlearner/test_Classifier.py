@@ -64,6 +64,7 @@ class TestClassifier(unittest.TestCase):
         solver = CGSolver()
         #solver.attachEventController(InfoToScreen())
         solver.setImax(500)
+        solver.setReuse(True)
         self.classifier.setSolver(solver)
 
     
