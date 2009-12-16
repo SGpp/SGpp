@@ -28,14 +28,23 @@ import types
 # An object of the class is aggregated by the Learner object.
 class TrainingSpecification(object):
 
-
-
     __adaptPoints = 0       #Number of points to refine in one refinement iteration
     __l = None              #Regularization parameter
     __adaptRate = 0         #Rate of points to refine in one refinement iteration, between 0 and 1
     __adaptThreshold = 0.0   #threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
     __cOperator = None      #C operator
     __bOperator = None      #B operator
+    __cOperatorType = None  #Type of the c operator as a string
+    
+    ## Returns the type of the C operator
+    # @return: the type of the C operator as a string
+    def getCOperatorType(self):
+        return self.__cOperatorType
+
+    ## Sets the type of the C operator
+    # @param value string type of the C operator
+    def setCOperatorType(self, value):
+        self.__cOperatorType = value
 
     
     ## Getter for refinement threshold
@@ -150,9 +159,10 @@ class TrainingSpecification(object):
             if type(attrValue) in [types.ListType, types.IntType, 
                              types.FloatType] and attrName.find("__") != 0: 
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
+                
             # serialize strings with quotes    
             elif type(attrValue) == types.StringType and attrName.find("__") != 0:
-                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+                serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
 
         serializationString = "{" + serializationString.rstrip(",\n") + "}"
         return serializationString
@@ -162,7 +172,6 @@ class TrainingSpecification(object):
     #
     # @param jsonObject A json object.
     # @return The restored TrainingSpecification object.
-    # @todo: (khakhutv) recreate C and B operators without actually storing them
     @classmethod
     def fromJson(cls, jsonObject):
         specification = TrainingSpecification()

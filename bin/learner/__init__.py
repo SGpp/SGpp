@@ -33,6 +33,7 @@ from LinearSolver import LinearSolver, LinearSolverEvents
 from RandomFoldingPolicy import RandomFoldingPolicy
 from Regressor import Regressor
 from SequentialFoldingPolicy import SequentialFoldingPolicy
+from StratifiedFoldingPolicy import StratifiedFoldingPolicy
 from TrainingSpecification import TrainingSpecification
 from TrainingStopPolicy import TrainingStopPolicy
 from Types import BorderTypes, SolverTypes

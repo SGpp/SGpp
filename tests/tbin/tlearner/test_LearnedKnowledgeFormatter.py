@@ -2,6 +2,10 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
+# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
+# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
+# Copyright (C) 2008 Dirk Plueger (pflueged@in.tum.de)                      #
+# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
 # Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
 #                                                                           #
 # pysgpp is free software; you can redistribute it and/or modify            #
@@ -30,49 +34,53 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.LearnerBuilder import LearnerBuilder
-from bin.controller import InfoToScreen
-from bin.controller import InfoToFile
+from bin.learner.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
+from bin.learner.LearnedKnowledge import LearnedKnowledge
+from bin.pysgpp import DataVector
 
 
-class TestLearnerBuilder(unittest.TestCase):
+class TestLearnedKnowledgeFormatter(unittest.TestCase):
     
-    builder = None
-    classifier = None
+    formatter = None
+    filename_load = pathlocal + "/datasets/load.alpha.arff"
+    filename_save = pathlocal + "/datasets/save.alpha.arff"
     
-    def setUp(self):
-        self.builder = LearnerBuilder()
-        self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\
-                    .withTestingDataFromARFFFile(pathlocal + "/datasets/classifier.test.arff").withGrid().withLevel(2).withSpecification().withLambda(0.00001).withAdaptPoints(2)\
-                    .withStopPolicy()\
-                    .withAdaptiveItarationLimit(1).withCGSolver().withProgressPresenter(InfoToFile(pathlocal + "/presentor.test"))\
-                    .andGetResult()
-#        level = 2
-#        dim = 2
-#        l = 0.00001
-#        self.classifier = Classifier()
-#        dataContainer = ARFFAdapter(pathlocal + "/datasets/classifier.train.arff").loadData()
-#        self.classifier.setDataContainer(dataContainer)
-#        foldingPolicy = FoldingPolicy(dataContainer)
-#        self.classifier.setFoldingPolicy(foldingPolicy)
-#        grid = Grid.createLinearGrid(dim)
-#        storage = grid.createGridGenerator()
-#        storage.regular(level)
-#        self.classifier.setGrid(grid)
-#        self.classifier.setLearnedKnowledge(LearnedKnowledge(None))
-#        spec = TrainingSpecification()
-#        spec.setL(l)
-#        self.classifier.setSpecification(spec)
-#        stopPolicy = TrainingStopPolicy()
-#        stopPolicy.setAdaptiveIterationLimit(0)
-#        self.classifier.setStopPolicy(stopPolicy)
-#        self.classifier.setSolver(CGSolver())
+    def setUp(self,):
+        self.formatter = LearnedKnowledgeFormatter()
 
     
-    def testScreenEventPresentor(self,):
-        self.classifier.learnDataWithTest()
-
-
+    def testLoad(self,):
+        alphas = self.formatter.deserializeFromFile(self.filename_load)
+        self.assertEqual(alphas.getSize(), 10)
+        self.assertEqual(alphas.getDim(), 1)
+        a = 0.1
+        row = DataVector(1)
+        for i in xrange(10):
+            alphas.getRow(i, row)
+            self.assertAlmostEqual(row[0], a)
+            a = a + 0.1
+        
+    def testSave(self,):
+        alphas = DataVector(10)
+        a = 0.1
+        for i in xrange(10):
+            alphas[i] = a
+            a = a + 0.1
+        knowledge = LearnedKnowledge()
+        knowledge.update(alphas)
+        self.formatter.serializeToFile(knowledge.createMemento(), self.filename_save)
+        
+        alphas = self.formatter.deserializeFromFile(self.filename_save)
+        self.assertEqual(alphas.getSize(), 10)
+        self.assertEqual(alphas.getDim(), 1)
+        a = 0.1
+        row = DataVector(1)
+        for i in xrange(10):
+            alphas.getRow(i, row)
+            self.assertAlmostEqual(row[0], a)
+            a = a + 0.1
+        
+        
         
 if __name__=="__main__":
     unittest.main() 

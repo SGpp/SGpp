@@ -37,7 +37,7 @@ from bin.utils.GzipSerializer import GzipSerializer
 # However strict separation of grid object and its representation is not 
 # implemented,as Formatter becomes from Grid object not a GridMemento object, 
 # but a string serialization of Grid itself. So Grid plays the role of 
-# GridMemoneto. The complete decoupling is a subject for future work.
+# GridMemento. The complete decoupling is a subject for future work.
 #
 # @todo Bring serialization and deserialization of the Grid object in GridMemento object
 class GridFormatter(GzipSerializer):
@@ -79,6 +79,7 @@ class GridFormatter(GzipSerializer):
     #
     #@param memento: the Grid memento object
     #@param filename The name of file where the Grid object should be serialized to.
+    #@todo (khakhutv) make the same variable names across similar functions
     def serializeToFile(self, memento, filename):
         fstream = self.gzOpen(filename, "w")
         try:

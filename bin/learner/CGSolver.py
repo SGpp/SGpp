@@ -42,31 +42,45 @@ import types
 # iterationComplete(), and complete() are defined and called in different phases
 # of the CG algorithm. This methods are overridden by CGSolver to rise the corresponding events by
 # event subscribers.
-#@todo: (khakhutv) rename set/getAccuracy and set/getImax for consistency with ConjugateGradients (low)
-#@todo (khakhutv) currently there is always two parameters for delta/residuum accuracy/myEpsilon imax/nMaxIterations
 class CGSolver(ConjugateGradients, LinearSolver):
     
     ##the relationship of the norm of end residual to the normal of initial residual
-    accuracy = 0.0001  
+    DEFAULT_ACCURACY = 0.0001  
     
     ##maximal number of iterations used in CG
-    imax = 400          
+    DEFAULT_IMAX = 400          
     
     ##norm of initial residual
-    delta_0 = 0         
+    #(khakhutv) I'm not sure if I should delete the start residuum, as it's not used anywhere
+#    delta_0 = 0         
     
     ##norm of current residual
-    delta_new = 0    
+    #(khakhutv) I'm not sure if I should delete the start residuum, as there is ConjugateGradients.getResiduum() 
+#    delta_new = 0    
     
     ##result vector   
     alpha = None  
     
-    ##Maximal accuracy. If the norm of the residuum falls below max_threshold, stop the CG iterations
-    max_threshold = 10**(-20)      
+    ##Maximal accuracy. If the norm of the residuum falls below max_threshold, stop the CG iterations. Default value: -1
+    max_threshold = -1    
+    
+    ##whether the old alpha vector should be reused
+    __reuse = False  
     
     def __init__(self,):
-        ConjugateGradients.__init__(self, self.imax, self.accuracy)
+        ConjugateGradients.__init__(self, self.DEFAULT_IMAX, self.DEFAULT_ACCURACY)
         LinearSolver.__init__(self)
+
+    ## Returns the value of @link reuse reuse@enlink parameter
+    # @return the value of @link reuse reuse@enlink parameter 
+    def getReuse(self):
+        return self.__reuse
+
+    ## Sets the value of @link reuse reuse@enlink parameter
+    # @param value the new value of @link reuse reuse@enlink parameter 
+    def setReuse(self, value):
+        self.__reuse = value
+
     
     
     ## Returns the @link max_threshold threshold@enlink parameter
@@ -84,15 +98,15 @@ class CGSolver(ConjugateGradients, LinearSolver):
 
     ##Sets the accuracy parameter
     #
-    # @param accuracy: float value of accuracy parameter
+    # @param accuracy: float value of DEFAULT_ACCURACY parameter
     # @return: CG Solver itself
-    def setAccuracy(self, accuracy):
+    def setEpsilon(self, accuracy):
         ConjugateGradients.setEpsilon(self, accuracy)
         return self
     
     ## Return the accuracy for CG divergence criterion
     # @return the accuracy for CG divergence criterion
-    def getAccuracy(self):
+    def getEpsilon(self):
         return self.myEpsilon
     
     ##Sets the maximal number of iterations
@@ -139,7 +153,7 @@ class CGSolver(ConjugateGradients, LinearSolver):
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
             # serialize strings with quotes    
             elif type(attrValue) == types.StringType and attrName.find("__") != 0:
-                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+                serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
                 
         serializationString = "{" + serializationString.rstrip(",\n") + "}\n"
         return serializationString    
@@ -152,10 +166,10 @@ class CGSolver(ConjugateGradients, LinearSolver):
     @classmethod
     def fromJson(cls, jsonObject):
         cg = CGSolver()
-        if jsonObject.has_key('accuracy'):
-            cg.setAccuracy( jsonObject['accuracy'] )
-        if jsonObject.has_key('imax'):
-            cg.setImax( jsonObject['imax'] )
+#        if jsonObject.has_key('accuracy'):
+#            cg.setEpsilon( jsonObject['accuracy'] )
+#        if jsonObject.has_key('imax'):
+#            cg.setImax( jsonObject['imax'] )
         if jsonObject.has_key('delta_0'):
             cg.delta_0 = jsonObject['delta_0']
         if jsonObject.has_key('delta_new'):
@@ -164,7 +178,10 @@ class CGSolver(ConjugateGradients, LinearSolver):
             cg.nIterations = jsonObject['nIterations']
         if jsonObject.has_key('nMaxIterations'):
             cg.nMaxIterations = jsonObject['nMaxIterations']
+        if jsonObject.has_key('myEpsilon'):
+            cg.setEpsilon( jsonObject['myEpsilon'] )
         if jsonObject.has_key('residuum'):
             cg.residuum = float(jsonObject['residuum'])
         return cg
+
 

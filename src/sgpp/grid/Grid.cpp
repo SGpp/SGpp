@@ -194,7 +194,7 @@ void Grid::serialize(std::ostream& ostr)
 
 void Grid::refine(DataVector* vector, int numOfPoints)
 {
-	// @todo (khakhutv) different refinemente Functors
+	// @todo (khakhutv) (low) different refinemente Functors
 	this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
 }
 

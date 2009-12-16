@@ -25,7 +25,6 @@ import math
 
 ## Abstract class for providing functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs
-# @todo (khakhutv) why is it class abstract?
 class FoldingPolicy(object):
 
 
@@ -56,6 +55,7 @@ class FoldingPolicy(object):
         for step in xrange(self.level):
             yield self.dataFold[step]
         return
+    
     
     ## Create fold new data set
     # Brings points given by validationIndeces together as test subset and the rest of points

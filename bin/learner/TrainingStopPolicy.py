@@ -44,6 +44,26 @@ class TrainingStopPolicy(object):
         self.__MSELimit = None
         self.__accuracyLimit = None
         self.__gridSize = None
+
+    def getAdaptiveIterationLimit(self):
+        return self.__adaptiveIterationLimit
+
+
+    def getEpochsLimit(self):
+        return self.__epochsLimit
+
+
+    def getMSELimit(self):
+        return self.__MSELimit
+
+
+    def getAccuracyLimit(self):
+        return self.__accuracyLimit
+
+
+    def getGridSize(self):
+        return self.__gridSize
+
     
     
     ## Checks if learning process have to be stopped
@@ -100,7 +120,7 @@ class TrainingStopPolicy(object):
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
             # serialize strings with quotes    
             elif type(attrValue) == types.StringType and attrName.find("__") != 0:
-                serializationString += "'" + attrName + "'" + " ': " + attrValue + "',\n"
+                serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
                 
         serializationString = "{" + serializationString.rstrip(",\n") + "}"
         return serializationString
@@ -124,6 +144,7 @@ class TrainingStopPolicy(object):
         if jsonObject.has_key('_TrainingStopPolicy__gridSize'):
             policy.setGridSizeLimit(jsonObject['_TrainingStopPolicy__gridSize'])
         return policy
+
             
         
 

@@ -129,6 +129,8 @@ class TestCheckpointController(unittest.TestCase):
         # test of two method is put together since it should test the capability 
         # to store and restore data accurately
         builder = LearnerBuilder()
+        
+        controller = CheckpointController("saveload", pathlocal)
 
         # as storing of grid and knowledge is covered with other tests, only the test of learner is relevant and combination is
         classifier = builder.buildClassifier()\
@@ -137,10 +139,11 @@ class TestCheckpointController(unittest.TestCase):
                      .withSpecification().withLambda(0.00001).withAdaptPoints(2)\
                      .withStopPolicy().withAdaptiveItarationLimit(1)\
                      .withCGSolver().withImax(500)\
+                     .withCheckpointController(controller)\
                      .andGetResult()
         classifier.learnData()
         
-        controller = CheckpointController("saveload", pathlocal)
+        
 
         controller.setLearner(classifier)
         controller.saveAll(0)

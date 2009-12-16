@@ -25,12 +25,42 @@
 from Learner import Learner, LearnerEvents
 from bin.pysgpp import DataVector, SurplusRefinementFunctor
 
+from  math import sqrt
+
 ## Subclass of Learner, responsible for regression.
 # The methods specific for regression are implemented here.
 class Regressor(Learner):
     
     ## Errors per basis function
     errors = None 
+    
+    ## Error vector
+    error = None
+    
+    
+    
+    ##constructor
+    def __init__(self):
+        super(self.__class__,self).__init__()
+       
+        
+    ##calculate L2-norm of error
+    # @return: last L2-norm of error
+    def getL2NormError(self):
+        return sqrt(self.error.sum())
+    
+    
+    ## calculate max error
+    # @return: max error
+    def getMaxError(self):
+        return sqrt(self.error.max(1))
+    
+    
+    ## calculate min error
+    # @return: min error
+    def getMinError(self):
+        return sqrt(self.error.min(1))
+    
     
     ## Evaluate regression MSE
     #
@@ -41,16 +71,16 @@ class Regressor(Learner):
         size = data.getPoints().getSize()
         if size == 0: return 0
         
-        error = DataVector(size)
-        self.specification.getBOperator().multTranspose(alpha, data.getPoints(), error)
-        error.sub(data.getValues()) # error vector
-        error.sqr() # entries squared
-        mse = error.sum() / size # MSE
+        self.error = DataVector(size)
+        self.specification.getBOperator().multTranspose(alpha, data.getPoints(), self.error)
+        self.error.sub(data.getValues()) # error vector
+        self.error.sqr() # entries squared
+        errorsum = self.error.sum()
+        mse = errorsum / size # MSE
         
         # calculate error per basis function
-        if self.errors == None:
-            self.errors = DataVector(size)
-        self.specification.getBOperator().mult(error, data.getPoints(), self.errors)
+        self.errors = DataVector(alpha.getSize())
+        self.specification.getBOperator().mult(self.error, data.getPoints(), self.errors)
         
         return mse
     
@@ -61,7 +91,6 @@ class Regressor(Learner):
     # @param testSubset: DataContainer with validation data, default value: None
     def updateResults(self, alpha, trainSubset, testSubset = None):
         self.knowledge.update(alpha)
-        # @todo (khakhutv) Add L2-norm of error as well as min/max errors
         #eval Error for training data and append it to other in this iteration
         self.trainAccuracy.append(self.evalError(trainSubset, alpha))
         
@@ -82,8 +111,7 @@ class Regressor(Learner):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
         
         pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
-        
-        # @todo (khakhutv) develop a way to simplify interfaces and use different functors
+        # @todo (khakhutv) (low) develop a way to simplify interfaces and use different functors
         self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.errors, pointsNum, self.specification.getAdaptThreshold()) )
 
 

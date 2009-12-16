@@ -61,7 +61,9 @@ public:
 	virtual void refine(RefinementFunctor* func) = 0;
 
 	/**
-	 * @todo add comment
+	 * Returns the number of points on the grid that can be refined in the next iteration
+	 * 
+	 * @return the number of points on the grid that can be refined
 	 */
 	virtual int getNumberOfRefinablePoints() = 0;
 };
