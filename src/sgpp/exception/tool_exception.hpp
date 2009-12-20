@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef FILE_EXCEPTION_HPP
-#define FILE_EXCEPTION_HPP
+#ifndef TOOL_EXCEPTION_HPP
+#define TOOL_EXCEPTION_HPP
 
 #include <exception>
 
@@ -29,11 +29,11 @@ namespace sg
 {
 
 /**
- * Exception that is thrown in case of a file failure
+ * Exception that is thrown in case of a tool operation failure
  *
  * @version $HEAD$
  */
-class file_exception : public std::exception
+class tool_exception : public std::exception
 {
 public:
 	/**
@@ -41,19 +41,19 @@ public:
 	 *
 	 * @param msg the exception message
 	 */
-	file_exception(const char* msg) throw() : msg(msg)
+	tool_exception(const char* msg) throw() : msg(msg)
 	{
 	}
 
 	/**
 	 * Standard Constructor
 	 */
-	file_exception() throw() : msg(NULL) { }
+	tool_exception() throw() : msg(NULL) { }
 
 	/**
 	 * Destructor
 	 */
-    virtual ~file_exception() throw() { }
+    virtual ~tool_exception() throw() { }
 
     /**
      * throw method that have to be implemented
@@ -68,15 +68,16 @@ public:
 		}
 		else
 		{
-			return "file_exception: general failure";
+			return "tool_exception: general failure";
 		}
 	}
 
 protected:
 	/// the exception message
 	const char* msg;
+
 };
 
 }
 
-#endif /* FILE_EXCEPTION_HPP */
+#endif /* TOOL_EXCEPTION_HPP */

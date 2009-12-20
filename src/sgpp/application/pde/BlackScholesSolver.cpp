@@ -25,6 +25,7 @@
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
+#include "exception/application_exception.hpp"
 #include "stdlib.h"
 #include <sstream>
 
@@ -85,8 +86,7 @@ void BlackScholesSolver::constructGrid(std::string tfilename, DataVector& emptyA
 	// test if emptyAlpha is really empty
 	if (emptyAlpha.getSize() != 0)
 	{
-		// @todo (heinecke) thrown an application exception
-		return;
+		throw new application_exception("BlackScholesSolver::constructGrid : A non-empty coefficients' vector was used in gird construction from file!");
 	}
 
 	myImporter->readFile(tfilename, serGrid, emptyAlpha, ishierarchized);
@@ -137,7 +137,7 @@ void BlackScholesSolver::storeGrid(std::string tfilename, DataVector& alpha, boo
 	}
 	else
 	{
-		// @todo (heinecke) through an application exception here
+		throw new application_exception("BlackScholesSolver::storeGrid : A grid wasn't constructed before!");
 	}
 
 	delete myExporter;
@@ -177,7 +177,7 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	}
 	else
 	{
-		// @todo (heinecke) through an application exception here
+		throw new application_exception("BlackScholesSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}
 }
 
@@ -205,7 +205,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	}
 	else
 	{
-		// @todo (heinecke) through an application exception here
+		throw new application_exception("BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}
 }
 
@@ -233,7 +233,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 	else
 	{
-		// @todo (heinecke) through an application exception here
+		throw new application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}
 }
 
@@ -306,7 +306,7 @@ void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* s
 			}
 			else
 			{
-				// @todo (heinecke) throw an application exception
+				throw new application_exception("BlackScholesSolver::initGridWithEuroCallPayoff : An unknown payoff-type was specified!");
 			}
 
 			delete[] dblFuncValues;
@@ -318,7 +318,7 @@ void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* s
 	}
 	else
 	{
-		// @todo (heinecke) throw an application exception
+		throw new application_exception("BlackScholesSolver::initGridWithEuroCallPayoff : A grid wasn't constructed before!");
 	}
 }
 
@@ -334,8 +334,7 @@ double BlackScholesSolver::getOptionPrice(std::vector<double>& evalPoint, DataVe
 	}
 	else
 	{
-		result = 0.0;
-		// @todo (heinecke) throw an application exception
+		throw new application_exception("BlackScholesSolver::getOptionPrice : A grid wasn't constructed before!");
 	}
 
 	return result;
@@ -349,8 +348,7 @@ size_t BlackScholesSolver:: getNumberGridPoints()
 	}
 	else
 	{
-		// @todo (heinecke) throw an application exception
-		return 0;
+		throw new application_exception("BlackScholesSolver::getNumberGridPoints : A grid wasn't constructed before!");
 	}
 }
 
@@ -362,8 +360,7 @@ size_t BlackScholesSolver:: getNumberDimensions()
 	}
 	else
 	{
-		// @todo (heinecke) throw an application exception
-		return 0;
+		throw new application_exception("BlackScholesSolver::getNumberDimensions : A grid wasn't constructed before!");
 	}
 }
 
@@ -400,7 +397,7 @@ void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> 
 	}
 	else
 	{
-		// @todo (heinecke) throw an application exception
+		throw new application_exception("BlackScholesSolver::solve1DAnalytic : Stochastic parameters weren't set!");
 	}
 }
 
@@ -420,7 +417,7 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 RC7", "Alexander Heinecke, (C) 2009-2010");
+	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0 RC8", "Alexander Heinecke, (C) 2009-2010");
 	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 

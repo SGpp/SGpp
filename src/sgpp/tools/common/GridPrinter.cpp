@@ -22,6 +22,7 @@
 
 #include "tools/common/GridPrinter.hpp"
 #include "operation/common/OperationEval.hpp"
+#include "exception/tool_exception.hpp"
 
 #include <fstream>
 #include <vector>
@@ -49,7 +50,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 	{
 		if (myGrid->getStorage()->dim() > 2)
 		{
-			// @todo (heinecke) thrown a tool exception
+			throw new tool_exception("GridPrinter::printGrid : The grid has more than two dimensions. Thus it cannot be printed!");
 		}
 		else
 		{
@@ -85,10 +86,6 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 					fileout << std::endl;
 				}
 			}
-			else
-			{
-				// @todo (heinecke) thrown a tool exception
-			}
 
 			delete myEval;
 			// close filehandle
@@ -97,7 +94,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 	}
 	else
 	{
-		// @todo (heinecke) thrown a tool exception
+		throw new tool_exception("GridPrinter::printGrid : The grid has no dimensions. Thus it cannot be printed!");
 	}
 }
 

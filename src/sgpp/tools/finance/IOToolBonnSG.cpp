@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "tools/finance/IOToolBonnSG.hpp"
+#include "exception/tool_exception.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -55,9 +56,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	file.open(tFilename.c_str());
 	if(!file.is_open())
 	{
-		// @todo (heinecke) throw some file exception
-		std::cout << "Error while reading file: " << tFilename << std::endl;
-		return;
+		throw new tool_exception("IOToolBonnSG::readFile : The specified grid file doesn't exists!");
 	}
 
 	// parse the global grid information
@@ -103,8 +102,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	}
 	else
 	{
-		// @todo (heinecke) throw exception
-		std::cout << "Unsupported BASIS in file" << std::endl << std::endl;
+		throw new tool_exception("IOToolBonnSG::readFile : The specified grid file contains an unknown basis!");
 	}
 
 	sgppSerialization = "";
@@ -250,9 +248,7 @@ void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector
 	fout.open(tFilename.c_str());
 	if(!fout.is_open())
 	{
-		// @todo (heinecke) throw some file exception
-		std::cout << "Error while writing file: " << tFilename << std::endl;
-		return;
+		throw new tool_exception("IOToolBonnSG::writeFile : The specified grid file could not be open for writing!");
 	}
 
 	// Write global gird information

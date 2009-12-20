@@ -405,7 +405,7 @@ public:
 
 	/**
 	 * This is just wrapper for operator= until I cant get swig to wrap it
-	 * @todo who is "I"??????
+	 * @todo who is "I"?????? --> (heinecke) I guess Joerg Blank ;-)
 	 *
 	 * @param rhs a reference to a HashGridIndex that contains the values that should be copied
 	 *

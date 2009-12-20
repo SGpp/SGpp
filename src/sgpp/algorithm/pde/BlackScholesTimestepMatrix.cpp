@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
+#include "exception/algorithm_exception.hpp"
 #include <cmath>
 
 namespace sg
@@ -93,7 +94,7 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 	}
 	else
 	{
-		// @todo (heinecke) throw some exception here
+		throw new algorithm_exception("BlackScholesTimestepMatrix::mult : An unknown operation mode was specified!");
 	}
 }
 
@@ -129,7 +130,7 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 	else
 	{
-		// @todo (heinecke) throw some exception here
+		throw new algorithm_exception("BlackScholesTimestepMatrix::generateRHS : An unknown operation mode was specified!");
 	}
 }
 
