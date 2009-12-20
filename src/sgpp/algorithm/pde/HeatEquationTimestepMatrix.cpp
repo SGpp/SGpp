@@ -21,6 +21,7 @@
 /*****************************************************************************/
 
 #include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
+#include "exception/algorithm_exception.hpp"
 
 namespace sg
 {
@@ -79,7 +80,7 @@ void HeatEquationTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 	}
 	else
 	{
-		// @todo (heinecke) throw some exception here
+		throw new algorithm_exception(" HeatEquationTimestepMatrix::mult : An unknown operation mode was specified!");
 	}
 }
 
@@ -119,7 +120,7 @@ void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 	else
 	{
-		// @todo (heinecke) throw some exception here
+		throw new algorithm_exception(" HeatEquationTimestepMatrix::generateRHS : An unknown operation mode was specified!");
 	}
 }
 

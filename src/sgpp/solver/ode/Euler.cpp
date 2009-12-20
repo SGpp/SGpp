@@ -26,6 +26,7 @@
 #include "operation/common/OperationEval.hpp"
 #include "tools/common/GridPrinter.hpp"
 #include "solver/sle/BiCGStab.hpp"
+#include "exception/solver_exception.hpp"
 
 #include <iostream>
 #include <string>
@@ -40,7 +41,7 @@ Euler::Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, 
 
 	if (Mode != "ExEul" || Mode != "ImEul")
 	{
-		// @todo (heinecke) throw solver exception
+		throw new solver_exception("Euler::Euler : An unknown Euler-Mode was specified!");
 	}
 }
 

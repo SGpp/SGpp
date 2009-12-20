@@ -25,6 +25,7 @@
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
+#include "exception/application_exception.hpp"
 #include "stdlib.h"
 #include <sstream>
 
@@ -88,7 +89,7 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	}
 	else
 	{
-		// @todo (heinecke) through an application exception here
+		throw new application_exception("HeatEquationSolver::solveExplicitEuler : A grid wasn't constructed before!");
 	}
 }
 
@@ -107,7 +108,7 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	}
 	else
 	{
-		// @todo (heinecke) through an application exception here
+		throw new application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
 	}
 }
 
@@ -125,7 +126,7 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 	else
 	{
-		// @todo (heinecke) through an application exception here
+		throw new application_exception("HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
 	}
 }
 
@@ -196,12 +197,12 @@ void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
 		}
 		else
 		{
-			// @todo (heinecke) thrown an application exception
+			throw new application_exception("HeatEquationSolver::initGridWithSingleHeat : The constructed grid has more than two dimensions!");
 		}
 	}
 	else
 	{
-		// @todo (heinecke) throw an application exception
+		throw new application_exception("HeatEquationSolver::initGridWithSingleHeat : A grid wasn't constructed before!");
 	}
 }
 
@@ -213,8 +214,7 @@ size_t HeatEquationSolver:: getNumberGridPoints()
 	}
 	else
 	{
-		// @todo (heinecke) throw an application exception
-		return 0;
+		throw new application_exception("HeatEquationSolver::getNumberGridPoints : A grid wasn't constructed before!");
 	}
 }
 
@@ -257,8 +257,12 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 		}
 		else
 		{
-
+			throw new application_exception("HeatEquationSolver::initGridWithSmoothHeat : The constructed grid has more than two dimensions!");
 		}
+	}
+	else
+	{
+		throw new application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
 	}
 }
 
@@ -284,15 +288,19 @@ void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double cons
 		}
 		else
 		{
-
+			throw new application_exception("HeatEquationSolver::initGridWithConstantHeat : The constructed grid has more than one dimension!");
 		}
+	}
+	else
+	{
+		throw new application_exception("HeatEquationSolver::initGridWithConstantHeat : A grid wasn't constructed before!");
 	}
 }
 
 void HeatEquationSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0 alpha", "Alexander Heinecke, (C) 2009");
+	myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0 RC1", "Alexander Heinecke, (C) 2009-2010");
 }
 
 }

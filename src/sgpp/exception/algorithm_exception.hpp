@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef FILE_EXCEPTION_HPP
-#define FILE_EXCEPTION_HPP
+#ifndef ALGORITHM_EXCEPTION_HPP
+#define ALGORITHM_EXCEPTION_HPP
 
 #include <exception>
 
@@ -29,11 +29,11 @@ namespace sg
 {
 
 /**
- * Exception that is thrown in case of a file failure
+ * Exception that is thrown in case of an application failure
  *
  * @version $HEAD$
  */
-class file_exception : public std::exception
+class algorithm_exception : public std::exception
 {
 public:
 	/**
@@ -41,19 +41,19 @@ public:
 	 *
 	 * @param msg the exception message
 	 */
-	file_exception(const char* msg) throw() : msg(msg)
+	algorithm_exception(const char* msg) throw() : msg(msg)
 	{
 	}
 
 	/**
 	 * Standard Constructor
 	 */
-	file_exception() throw() : msg(NULL) { }
+	algorithm_exception() throw() : msg(NULL) { }
 
 	/**
 	 * Destructor
 	 */
-    virtual ~file_exception() throw() { }
+    virtual ~algorithm_exception() throw() { }
 
     /**
      * throw method that have to be implemented
@@ -68,15 +68,16 @@ public:
 		}
 		else
 		{
-			return "file_exception: general failure";
+			return "algorithm_exception: general failure";
 		}
 	}
 
 protected:
 	/// the exception message
 	const char* msg;
+
 };
 
 }
 
-#endif /* FILE_EXCEPTION_HPP */
+#endif /* ALGORITHM_EXCEPTION_HPP */
