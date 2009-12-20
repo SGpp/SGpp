@@ -22,7 +22,11 @@
 
 from CheckpointController import CheckpointController
 from InfoToFile import InfoToFile
-from InfoToGraph import InfoToGraph
+
+try:
+    from InfoToGraph import InfoToGraph
+except ImportError: pass #scipy or matplotlib isn't installed
+
 from InfoToScreen import InfoToScreen
 from InfoToScreenRegressor import InfoToScreenRegressor
 from LearnerEventController import LearnerEventController
