@@ -25,6 +25,8 @@ from bin.learner.LinearSolver import LinearSolverEvents
 from bin.learner.Learner import LearnerEvents
 from bin.controller.LearnerEventController import LearnerEventController
 from bin.controller.SolverEventController import SolverEventController
+import matplotlib
+matplotlib.use('Agg') #to prevent the bug with matplot unable to open display
 from matplotlib import pyplot
 from matplotlib.lines import Line2D
 
