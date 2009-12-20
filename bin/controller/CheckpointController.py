@@ -31,7 +31,9 @@ from bin.learner import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatt
 from bin.controller.InfoToScreenRegressor import InfoToScreenRegressor
 from bin.controller.InfoToScreen import InfoToScreen
 from bin.controller.InfoToFile import InfoToFile
-from bin.controller.InfoToGraph import InfoToGraph
+try:
+    from bin.controller.InfoToGraph import InfoToGraph
+except ImportError: pass
 import gzip, copy
 
 
