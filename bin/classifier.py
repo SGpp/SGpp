@@ -1025,6 +1025,8 @@ def testVector(grid,alpha,test,classes):
 # @param classes DataVector of correct class values
 # @return classification accuracy
 def testVectorFast(grid, alpha, test, classes):
+    evalValues = []
+    testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues)
     return grid.createOperationEval().test(alpha, test, classes)/float(test.getSize())
 
 #-------------------------------------------------------------------------------
@@ -1040,6 +1042,43 @@ def testVectorValues(grid,alpha,test,classes,evalValues):
             correct = correct + 1
             
     return float(correct)/test.getSize()
+
+#-------------------------------------------------------------------------------
+## Tests the classifier with some test data
+#
+# Tests on the classes {+1,-1}, during this tests the charateristic numbers of the classifier are computed
+# : TP TN FP FN
+# @param grid the sparse grid
+# @param alpha DataVector of surplusses
+# @param test a DataVector containing a dataset of points to test on
+# @param classes DataVector of correct class values
+# @param evalValues reference to an array into which the function's evaluations are stroed
+def testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues):
+    p = DataVector(1,test.getDim())
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
+    for i in xrange(test.getSize()):
+        test.getRow(i,p)
+        val = grid.createOperationEval().eval(alpha, p)
+        evalValues.append(val)
+        if (val > 0 and classes[i] > 0 ):
+            TP = TP + 1
+            
+        if (val < 0 and classes[i] < 0 ):
+            TN = TN + 1
+            
+        if (val > 0 and classes[i] < 0 ):
+            FP = FP + 1
+        
+        if (val < 0 and classes[i] > 0 ):
+            FN = FN + 1       
+            
+    print "TP: " + str(TP)
+    print "TN: " + str(TN)
+    print "FP: " + str(FP)
+    print "FN: " + str(FN) + " \n"
 
 #-------------------------------------------------------------------------------
 ## builds a vector that contains the class information
