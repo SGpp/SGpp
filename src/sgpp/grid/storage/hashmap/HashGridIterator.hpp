@@ -4,6 +4,7 @@
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -182,6 +183,21 @@ public:
 		index.set(d, l - 1, i);
 		this->seq_ = storage->seq(&index);
 	}
+
+    /**
+     * step left in direction dim
+     *
+     * @param d the moving direction
+     */
+     void step_left(size_t d)
+     {
+        typename index_type::level_type l;
+        typename index_type::index_type i;
+        index.get(d, l, i);
+        index.set(d, l, i - 2);
+        this->seq_ = storage->seq(&index);
+
+     }
 
 	/**
 	 * step right in direction dim

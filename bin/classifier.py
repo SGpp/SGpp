@@ -44,7 +44,7 @@ from array import array
 try:
     import psyco
     psyco.full()
-    print "Using psyco"
+    print "#Using psyco"
 except:
     pass
 

@@ -4,7 +4,7 @@
 /*                                                                           */
 /* Copyright (C) 2007 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
-/*               2007-2009 Dirk Pflueger (Dirk.Pflueger@in.tum.de)           */
+/*               2007-2010 Dirk Pflueger (Dirk.Pflueger@in.tum.de)           */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU General Public License as published by      */
@@ -37,14 +37,15 @@ class DataVector
 {
 public:
 	/**
-	 * Constructor
+	 * Constructor: one-dimensional DataVector with <it>size</it> rows.
 	 *
 	 * @param size number of elements
 	 */
 	DataVector(size_t size);
 
 	/**
-	 * Constructor
+	 * Constructor: multi-dimensional DataVector with <it>size</it> rows and
+	 * <it>dim</it> columns.
 	 *
 	 * @param size number of elements per dimension
 	 * @param dim dimension of Vector
@@ -52,14 +53,15 @@ public:
 	DataVector(size_t size, size_t dim);
 
 	/**
-	 * Copy Constructor
+	 * Copy Constructor.
 	 *
 	 * @param vec reference to another instance of DataVector
 	 */
 	DataVector(DataVector& vec);
 
 	/**
-	 * Constructor that construct a DataVector from a double array
+	 * Constructor that construct a DataVector from a double array.
+	 * The double array contains the entries rowwise: x00,x01,...,x0dim-1,x10,x11,...
 	 *
 	 * @param input double array that contains the data
 	 * @param size number of elements per dimension
@@ -108,14 +110,22 @@ public:
 	void setAll(double value);
 
 	/**
-	 * copies the data from another DataVector
+	 * Copies the data from another DataVector vec.
+	 * Afterwards, the current vector is an exact copy of vec.
+	 * If the current DataVector has not the sime dimensions
+	 * (size, dim) than vec, it has the same effect than the copy
+	 * constructor: The old memory is discarded, new memory
+	 * allocated, and the data copied.
 	 *
 	 * @param vec the DataVector containing the data
 	 */
 	void copyFrom(const DataVector& vec);
 
 	/**
-	 * copies the data from another DataVector
+	 * Copies the data from another, smaller DataVector vec.
+	 * Has no effect, if vec has more elements than the current
+	 * vector. If it has the same or smaller size, the first
+	 * vec.size() elements of the current vector are overwritten.
 	 *
 	 * @param vec the DataVector containing the data
 	 */
@@ -212,6 +222,31 @@ public:
  	 * @param vec the DataVector which Data is subtracted
  	 */
 	void sub_parallel(DataVector& vec);
+
+    /**
+     * Multiplies the current DataVector component-wise with another DataVector.
+     * Performs
+     * @code
+     * for i from 1 to this.getTotalSize()
+     *   this[i] *= vec[i]
+     * @endcode
+     *
+     * @param vec the DataVector which is multiplied to current DataVector
+     */
+    void componentwise_mult(DataVector& vec);
+
+    /**
+     * Divides the current DataVector component-wise by another DataVector.
+     * Performs
+     * @code
+     * for i from 1 to this.getTotalSize()
+     *   this[i] /= vec[i]
+     * @endcode
+     * Note: <b>No check for division by zero!</b>
+     *
+     * @param vec the DataVector which the current DataVector is divided by
+     */
+    void componentwise_div(DataVector& vec);
 
 	/**
 	 * multiplies all elements by a constant factor

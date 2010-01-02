@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008-2009 Dirk Pflueger (pflueged@in.tum.de)                */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
@@ -50,7 +51,7 @@ public:
 
 	/**
 	 * This should be returning a refinement value for every grid point.
-	 * The point with the highest value will be refined.
+	 * The point with the highest value will be refined first.
 	 *
 	 * @param storage pointer to the grids storage object
 	 * @param seq sequence number in the coefficients array

@@ -4,6 +4,7 @@
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -93,6 +94,13 @@ public:
 	 */
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 
+    /**
+     * creates a mod wavelet grid
+     *
+     * @param dim the grid's dimension
+     */
+    static Grid* createModWaveletGrid(size_t dim);
+
 	/**
 	 * reads a grid out of a string
 	 *
@@ -102,7 +110,7 @@ public:
 
 	/**
 	 * reads a grid out of a stream
-	 *
+	 * @todo check for empty istream - error message is not very meaningful
 	 * @param istr inputstream that contains the grid information
 	 */
 	static Grid* unserialize(std::istream& istr);
@@ -269,7 +277,7 @@ public:
 	 * @param isLeaf indicator whether the point is a leaf
 	 */
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
-	
+
 	/**
 	 * Returns the number of points on the grid
 	 * @return the number of points on the grid

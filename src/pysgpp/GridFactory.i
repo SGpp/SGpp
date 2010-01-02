@@ -4,6 +4,7 @@
 /*                                                                           */
 /* Copyright (C) 2008 Joerg Blank (blankj@in.tum.de)                         */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* pysgpp is free software; you can redistribute it and/or modify            */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -28,6 +29,7 @@
 %newobject sg::Grid::createModLinearGrid(size_t dim);
 %newobject sg::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sg::Grid::createModPolyGrid(size_t dim, size_t degree);
+%newobject sg::Grid::createModWaveletGrid(size_t dim);
 
 %newobject sg::Grid::unserialize(std::string& istr);
 
@@ -60,6 +62,7 @@ public:
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
+	static Grid* createModWaveletGrid(size_t dim);
 	
 	static Grid* unserialize(std::string& istr);
 	

@@ -55,6 +55,8 @@ public:
 
 	void add(DataVector& vec);
 	void sub(DataVector& vec);
+	void componentwise_mult(DataVector& vec);
+	void componentwise_div(DataVector& vec);
 	void mult(double scalar);
 	
 	void sqr();

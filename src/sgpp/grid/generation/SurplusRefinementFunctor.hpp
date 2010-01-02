@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008-2009 Dirk Pflueger (pflueged@in.tum.de)                */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
@@ -32,18 +33,18 @@ namespace sg
 {
 
 /**
- * This abstracts the refinement criteria out of the refinement algorithm
+ * A refinement functor, refining according to the maximal absolute values in a DataVector provided.
  * @version $HEAD$ 
  */
 class SurplusRefinementFunctor : public RefinementFunctor
 {
 public:
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
-	 * @param alpha DataVector that is basis for refinement decisions
-	 * @param refinements_num number of grid points which should be refined
-	 * @param threshold
+	 * @param alpha DataVector that is basis for refinement decisions. The i-th entry corresponds to the i-th grid point.
+	 * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points)
+	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold
 	 */
 	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1, double threshold = 0.0) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
 	{
