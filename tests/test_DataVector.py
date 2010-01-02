@@ -66,20 +66,33 @@ class TestDataVector(unittest.TestCase):
             self.assertEqual(self.d_rand[i], self.l_rand_total[i])
 
     ##
-    # Constructors.
+    # Constructors4.
     # @test DataVector::DataVector(size_t size)
     # @test DataVector::DataVector(size_t size, size_t dim)
-    # @todo (pflueged) DataVector::DataVector(double *input, size_t size, size_t dim), DataVector::DataVector(DataVectorDefinition &DataVectorDef)
+    # @text DataVector::DataVector(DataVectorDefinition &DataVectorDef)
+    # @todo (pflueged) DataVector::DataVector(double *input, size_t size, size_t dim)
+    # @test DataVector::getSize()
+    # @test DataVector::getDim()
+    # @test DataVector::getTotalSize()
     def testConstructor(self):
         from pysgpp import DataVector
         
         d = DataVector(2)
         self.assertEqual(d.getSize(), 2)
         
-        d = DataVector(2,2)
+        d = DataVector(2,3)
         self.assertEqual(d.getSize(), 2)
-        self.assertEqual(d.getDim(), 2)
-        self.assertEqual(len(d), 4)
+        self.assertEqual(d.getDim(), 3)
+        self.assertEqual(len(d), 2*3) # getTotalSize()
+
+        d2 = DataVector(self.d_rand)
+        for i in xrange(self.N):
+            self.assertEqual(d2[i], self.d_rand[i])
+        self.assertEqual(d2.getSize(), self.nrows)
+        self.assertEqual(d2.getDim(), self.ncols)
+        self.assertEqual(len(d2), self.N)
+        d2[self.ncols] = -4.0
+        self.assertNotEqual(d2[self.ncols], self.d_rand[self.ncols])
 
     ##
     # Min, Max operations.
@@ -109,6 +122,9 @@ class TestDataVector(unittest.TestCase):
     # Operations on DataVectors.
     # @test DataVector::sum()
     # @test DataVector::sqr()
+    # @test DataVector::abs()
+    # @test DataVector::componentwise_mult()
+    # @test DataVector::componentwise_div()
     def testOps(self):
         from pysgpp import DataVector
         # sum
@@ -125,6 +141,23 @@ class TestDataVector(unittest.TestCase):
         d.abs()
         for i in xrange(self.N):
             self.assertEqual(abs(self.d_rand[i]), d[i])
+
+        # componentwise_mult
+        d = DataVector(self.d_rand)
+	d2 = DataVector(self.nrows,self.ncols)
+        for i in xrange(self.N):
+            d2[i] = i
+	d.componentwise_mult(d2)
+        for i in xrange(self.N):
+            self.assertEqual(self.d_rand[i]*i, d[i])
+
+        # componentwise_div
+        d = DataVector(self.d_rand)
+        for i in xrange(self.N):
+            d2[i] = i+1
+	d.componentwise_div(d2)
+        for i in xrange(self.N):
+            self.assertEqual(self.d_rand[i]/(i+1), d[i])
 
     ##
     # Vector-Operations

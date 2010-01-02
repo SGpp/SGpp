@@ -86,6 +86,7 @@ typedef linear_base<unsigned int, unsigned int> SLinearBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
 typedef poly_base<unsigned int, unsigned int> SPolyBase;
 typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
+typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
 
 typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
 typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;

@@ -2,8 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Dirk Pflueger (pflueged@mytum.de)                 */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -38,8 +37,8 @@ double OperationEvalModWavelet::eval(DataVector& alpha, std::vector<double>& poi
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	mod_Wavelet_base<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<mod_Wavelet_base<unsigned int, unsigned int> > ga(storage);
+	modified_wavelet_base<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<modified_wavelet_base<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 
@@ -55,8 +54,8 @@ double OperationEvalModWavelet::eval(DataVector& alpha, std::vector<double>& poi
 
 double OperationEvalModWavelet::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	mod_Wavelet_base<unsigned int, unsigned int> base;
+	modified_wavelet_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-};
+}

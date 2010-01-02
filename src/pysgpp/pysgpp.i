@@ -128,6 +128,7 @@ namespace std {
 %template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
 %template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
+%template(SModWaveletBase) sg::modified_wavelet_base<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 

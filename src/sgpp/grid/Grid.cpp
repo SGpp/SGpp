@@ -26,8 +26,9 @@
 #include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
-#include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
+#include "grid/type/ModPolyGrid.hpp"
+#include "grid/type/ModWaveletGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "operation/common/OperationIdentity.hpp"
@@ -63,6 +64,11 @@ Grid* Grid::createModLinearGrid(size_t dim)
 Grid* Grid::createPolyGrid(size_t dim, size_t degree)
 {
 	return new PolyGrid(dim, degree);
+}
+
+Grid* Grid::createModWaveletGrid(size_t dim)
+{
+    return new ModWaveletGrid(dim);
 }
 
 OperationMatrix* Grid::createOperationIdentity()
@@ -118,6 +124,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
+        tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
 	}
 
 	return *tMap;
@@ -152,7 +159,7 @@ Grid::~Grid()
 	{
 		delete storage;
 	}
-	
+
 	if(evalOp != NULL)
 	{
 		delete evalOp;
