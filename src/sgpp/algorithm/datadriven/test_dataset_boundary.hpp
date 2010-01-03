@@ -125,21 +125,18 @@ double test_dataset_boundary( GridStorage* storage, BASIS& basis, DataVector& al
  * @param alpha the coefficients of the grid points
  * @param data the data the should be tested
  * @param classes the classes computed by the sparse grid's classification algorithm
- * @param tp the number of true positives
- * @param tn the number of true negatives
- * @param fp the number of false positives
- * @param fn the number of false negatives
+ * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
  */
 template<class BASIS>
-double test_dataset_boundaryWithCharacteristicNumber( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn)
+double test_dataset_boundaryWithCharacteristicNumber( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	double correct = 0;
-	tp = 0;
-	tn = 0;
-	fp = 0;
-	fn = 0;
+	double tp = 0;
+	double tn = 0;
+	double fp = 0;
+	double fn = 0;
 
 #ifdef USEOMP
 	#pragma omp parallel shared(correct, tp, tn, fp, fn)
@@ -238,6 +235,16 @@ double test_dataset_boundaryWithCharacteristicNumber( GridStorage* storage, BASI
 		}
 	}
 #endif
+
+	if (charaNumbers.getSize() < 4)
+	{
+		charaNumbers.resize(4);
+	}
+
+	charaNumbers.set(0, tp);
+	charaNumbers.set(1, tn);
+	charaNumbers.set(2, fp);
+	charaNumbers.set(3, fn);
 
 	return correct;
 }

@@ -30,7 +30,7 @@ namespace sg
 {
 
 /**
- * This class implements OperationTest for a grids with mod wavelet basis ansatzfunctions with
+ * This class implements OperationTest for a grids with mod wavelet basis ansatzfunctions
  *
  * @version $HEAD$
  */
@@ -50,7 +50,7 @@ public:
 	virtual ~OperationTestModWavelet() {}
 
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn);
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers);
 
 protected:
 	/// Pointer to GridStorage object

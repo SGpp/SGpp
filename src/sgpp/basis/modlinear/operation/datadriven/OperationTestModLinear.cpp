@@ -38,10 +38,10 @@ double OperationTestModLinear::test(DataVector& alpha, DataVector& data, DataVec
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestModLinear::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn)
+double OperationTestModLinear::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
 {
 	modified_linear_base<unsigned int, unsigned int> base;
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, tp, tn, fp, fn);
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
 }

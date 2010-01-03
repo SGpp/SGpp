@@ -37,10 +37,10 @@ double OperationTestLinearBoundary::test(DataVector& alpha, DataVector& data, Da
 	return test_dataset_boundary(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestLinearBoundary::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn)
+double OperationTestLinearBoundary::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
-	return test_dataset_boundaryWithCharacteristicNumber(this->storage, base, alpha, data, classes, tp, tn, fp, fn);
+	return test_dataset_boundaryWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
 }
