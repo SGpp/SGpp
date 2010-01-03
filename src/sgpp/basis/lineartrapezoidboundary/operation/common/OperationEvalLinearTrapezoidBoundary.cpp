@@ -2,7 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -49,12 +49,6 @@ double OperationEvalLinearTrapezoidBoundary::eval(DataVector& alpha, std::vector
 	}
 
 	return result;
-}
-
-double OperationEvalLinearTrapezoidBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
-{
-	lineartrapezoidboundaryBase<unsigned int, unsigned int> base;
-	return test_dataset_boundary(this->storage, base, alpha, data, classes);
 }
 
 }

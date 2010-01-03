@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -27,10 +27,11 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod linear grid
-#include "basis/modlinear/operation/classification/OperationBModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationBModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationTestModLinear.hpp"
 #include "basis/modlinear/operation/common/OperationEvalModLinear.hpp"
 #include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
-#include "basis/modlinear/operation/classification/OperationLaplaceModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationLaplaceModLinear.hpp"
 
 #include "sgpp.hpp"
 
@@ -84,6 +85,11 @@ OperationMatrix* ModLinearGrid::createOperationLaplace()
 OperationEval* ModLinearGrid::createOperationEval()
 {
 	return new OperationEvalModLinear(this->storage);
+}
+
+OperationTest* ModLinearGrid::createOperationTest()
+{
+	return new OperationTestModLinear(this->storage);
 }
 
 OperationHierarchisation* ModLinearGrid::createOperationHierarchisation()

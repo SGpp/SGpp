@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -51,12 +51,6 @@ double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& poin
 	}
 
 	return result;
-}
-
-double OperationEvalModLinear::test(DataVector& alpha, DataVector& data, DataVector& classes)
-{
-	modified_linear_base<unsigned int, unsigned int> base;
-	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
 }

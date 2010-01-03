@@ -83,16 +83,16 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
-%include "src/sgpp/algorithm/classification/AlgorithmDGEMV.hpp"
-%include "src/sgpp/algorithm/classification/AlgorithmDGEMVBoundaries.hpp"
-%include "src/sgpp/algorithm/classification/test_dataset.hpp"
-%include "src/sgpp/algorithm/classification/test_dataset_boundary.hpp"
+%include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
+%include "src/sgpp/algorithm/datadriven/AlgorithmDGEMVBoundaries.hpp"
+%include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
+%include "src/sgpp/algorithm/datadriven/test_dataset_boundary.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBBBoundaries.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
-%include "src/sgpp/algorithm/classification/UnidirGradient.hpp"
-%include "src/sgpp/algorithm/classification/DMSystemMatrix.hpp"
+%include "src/sgpp/algorithm/datadriven/UnidirGradient.hpp"
+%include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationTimestepMatrix.hpp"
 
@@ -136,8 +136,3 @@ namespace std {
 %template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryBase>;
 %template(SGetAffectedBasisFunctionsTrapezoidBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearTrapezoidBoundaryBase>;
 %template(SGetAffectedBasisFunctionsBBTrapezoidBoundaries) sg::GetAffectedBasisFunctionsBBBoundaries<sg::SLinearTrapezoidBoundaryBase>;
-
-%template(test_dataset_linear) sg::test_dataset<sg::SLinearBase>;
-%template(test_dataset_linearboundary) sg::test_dataset_boundary<sg::SLinearBoundaryBase>;
-%template(test_dataset_lineartrapezoidboundary) sg::test_dataset_boundary<sg::SLinearTrapezoidBoundaryBase>;
-%template(test_dataset_modlin) sg::test_dataset<sg::SModLinearBase>;

@@ -41,8 +41,8 @@ class EvalProvider:
 class ClassesEvalProvider(EvalProvider):
     
     def testVector(self, gridDecorator, alpha, data, classes):
-        eval = gridDecorator.grid.createOperationEval()
-        return eval.test(alpha, data, classes) / float(data.getSize())
+        testOP = gridDecorator.grid.createOperationTest()
+        return testOP.test(alpha, data, classes) / float(data.getSize())
         
     def training(self, alpha, data):
         """Called to evaluate training data once per fold. Used later for statistics."""

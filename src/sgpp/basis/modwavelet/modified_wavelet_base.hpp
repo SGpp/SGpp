@@ -2,6 +2,8 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /* Copyright (C) 2009-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */

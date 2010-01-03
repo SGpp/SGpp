@@ -4,7 +4,7 @@
 /*                                                                           */
 /* Copyright (C) 2008-2009 Dirk Pflueger (dirk.pflueger@in.tum.de)           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -32,6 +32,8 @@ namespace sg
 
 /**
  * modified linear base functions.
+ *
+ * @version $HEAD$
  */
  template<class LT, class IT>
 class modified_linear_base

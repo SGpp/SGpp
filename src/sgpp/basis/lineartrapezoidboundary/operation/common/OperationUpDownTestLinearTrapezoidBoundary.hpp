@@ -2,7 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -40,7 +40,7 @@
 
 #include "operation/common/OperationMatrix.hpp"
 
-#include "algorithm/classification/UnidirGradient.hpp"
+#include "algorithm/datadriven/UnidirGradient.hpp"
 #include "algorithm/common/sweep.hpp"
 
 namespace sg
@@ -48,6 +48,8 @@ namespace sg
 
 /**
  * Temporal Test class for Up/Down Algorithm
+ *
+ * @version $HEAD$
  */
 class OperationUpDownTestLinearTrapezoidBoundary: public OperationMatrix
 {

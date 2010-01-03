@@ -44,17 +44,21 @@ grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
 grid/generation/TrapezoidBoundaryGridGenerator.cpp
 
-basis/linear/operation/classification/OperationBLinear.cpp
+basis/linear/operation/datadriven/OperationBLinear.cpp
+basis/linear/operation/datadriven/OperationTestLinear.cpp
 basis/linear/operation/common/OperationEvalLinear.cpp
 basis/linear/operation/common/OperationHierarchisationLinear.cpp
 basis/linear/operation/pde/OperationLTwoDotProductLinear.cpp
-basis/modlinear/operation/classification/OperationBModLinear.cpp
+basis/modlinear/operation/datadriven/OperationBModLinear.cpp
+basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-basis/modpoly/operation/classification/OperationBModPoly.cpp
+basis/modpoly/operation/datadriven/OperationBModPoly.cpp
+basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
 basis/modpoly/operation/common/OperationEvalModPoly.cpp
 basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
-basis/poly/operation/classification/OperationBPoly.cpp
+basis/poly/operation/datadriven/OperationBPoly.cpp
+basis/poly/operation/datadriven/OperationTestPoly.cpp
 basis/poly/operation/common/OperationEvalPoly.cpp
 basis/poly/operation/common/OperationHierarchisationPoly.cpp
 basis/modwavelet/operation/classification/OperationBModWavelet.cpp
@@ -62,17 +66,19 @@ basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
-basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
+basis/linearboundary/operation/datadriven/OperationBLinearBoundary.cpp
+basis/linearboundary/operation/datadriven/OperationTestLinearBoundary.cpp
 basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.cpp
-basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.cpp
+basis/lineartrapezoidboundary/operation/datadriven/OperationBLinearTrapezoidBoundary.cpp
+basis/lineartrapezoidboundary/operation/datadriven/OperationTestLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/pde/finance/OperationDeltaLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/pde/OperationLTwoDotProductLinearTrapezoidBoundary.cpp
 basis/lineartrapezoidboundary/operation/pde/OperationLaplaceLinearTrapezoidBoundary.cpp
 
-algorithm/classification/DMSystemMatrix.cpp
+algorithm/datadriven/DMSystemMatrix.cpp
 algorithm/pde/BlackScholesTimestepMatrix.cpp
 algorithm/pde/HeatEquationTimestepMatrix.cpp
 

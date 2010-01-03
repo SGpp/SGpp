@@ -24,7 +24,7 @@
 #ifndef OPERATIONBMODWAVELET_HPP
 #define OPERATIONBMODWAVELET_HPP
 
-#include "operation/classification/OperationB.hpp"
+#include "operation/datadriven/OperationB.hpp"
 #include "grid/GridStorage.hpp"
 
 namespace sg

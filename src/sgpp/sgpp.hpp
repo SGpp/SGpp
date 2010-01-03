@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -30,15 +30,15 @@
 
 #include "application/common/ScreenOutput.hpp"
 
-#include "algorithm/classification/AlgorithmDGEMV.hpp"
-#include "algorithm/classification/AlgorithmDGEMVBoundaries.hpp"
+#include "algorithm/datadriven/AlgorithmDGEMV.hpp"
+#include "algorithm/datadriven/AlgorithmDGEMVBoundaries.hpp"
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 #include "algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
 #include "algorithm/common/GetAffectedBasisFunctionsBBBoundaries.hpp"
 
-#include "algorithm/classification/test_dataset.hpp"
-#include "algorithm/classification/test_dataset_boundary.hpp"
-#include "algorithm/classification/DMSystemMatrix.hpp"
+#include "algorithm/datadriven/test_dataset.hpp"
+#include "algorithm/datadriven/test_dataset_boundary.hpp"
+#include "algorithm/datadriven/DMSystemMatrix.hpp"
 
 #include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
 #include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
@@ -48,10 +48,10 @@
 
 #include "basis/basis.hpp"
 
-#include "basis/linear/operation/classification/OperationLaplaceLinear.hpp"
-#include "basis/linearboundary/operation/classification/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linear/operation/datadriven/OperationLaplaceLinear.hpp"
+#include "basis/linearboundary/operation/datadriven/OperationLaplaceLinearBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/pde/OperationLaplaceLinearTrapezoidBoundary.hpp"
-#include "basis/modlinear/operation/classification/OperationLaplaceModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.hpp"
 
