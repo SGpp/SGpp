@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -27,7 +27,8 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod poly grid
-#include "basis/modpoly/operation/classification/OperationBModPoly.hpp"
+#include "basis/modpoly/operation/datadriven/OperationBModPoly.hpp"
+#include "basis/modpoly/operation/datadriven/OperationTestModPoly.hpp"
 #include "basis/modpoly/operation/common/OperationEvalModPoly.hpp"
 #include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
 
@@ -92,6 +93,11 @@ OperationMatrix* ModPolyGrid::createOperationLaplace()
 OperationEval* ModPolyGrid::createOperationEval()
 {
 	return new OperationEvalModPoly(this->storage, this->degree);
+}
+
+OperationTest* ModPolyGrid::createOperationTest()
+{
+	return new OperationTestModPoly(this->storage, this->degree);
 }
 
 OperationHierarchisation* ModPolyGrid::createOperationHierarchisation()

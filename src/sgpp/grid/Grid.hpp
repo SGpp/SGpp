@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -27,7 +27,8 @@
 
 #include "grid/GridStorage.hpp"
 
-#include "operation/classification/OperationB.hpp"
+#include "operation/datadriven/OperationB.hpp"
+#include "operation/datadriven/OperationTest.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "operation/common/OperationHierarchisation.hpp"
 #include "operation/common/OperationMatrix.hpp"
@@ -171,6 +172,13 @@ public:
 	 * @return pointer to the OperationEval object
 	 */
 	virtual OperationEval* createOperationEval() = 0;
+
+	/**
+	 * gets a pointer to OperationTest object
+	 *
+	 * @return pointer to the OperationTest object
+	 */
+	virtual OperationTest* createOperationTest() = 0;
 
 	/**
 	 * gets a pointer to OperationHierarchisation object

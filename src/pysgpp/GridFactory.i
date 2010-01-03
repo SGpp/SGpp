@@ -37,6 +37,7 @@
 %newobject sg::Grid::createGridGenerator();
 %newobject sg::Grid::createOperationLaplace();
 %newobject sg::Grid::createOperationEval();
+%newobject sg::Grid::createOperationTest();
 %newobject sg::Grid::createOperationHierarchisation();
 
 %include "stl.i"
@@ -77,6 +78,7 @@ public:
 	virtual GridGenerator* createGridGenerator() = 0;
 	virtual OperationB* createOperationB() = 0;
 	virtual OperationEval* createOperationEval() = 0;
+	virtual OperationTest* createOperationTest() = 0;
 	virtual OperationMatrix* createOperationLaplace() = 0;
 	virtual OperationMatrix* createOperationIdentity() = 0;
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;

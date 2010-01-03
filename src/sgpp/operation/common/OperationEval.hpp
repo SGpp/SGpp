@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -72,19 +72,6 @@ public:
 		}
 		return eval(alpha, p);
 	}
-
-	/**
-	 * Computes the classification accuracy on some test data.
-	 *
-	 * The function is evaluated at the given points. Tests on the classes {+1, -1}, cut-off at 0.
-	 *
-	 * @todo (heinecke) build own operation for the test routine, so it can be clearly count as classification operation
-	 *
-	 * @param alpha the coefficients of the sparse grid's base functions
-	 * @param data the coordinates of the evaluation points
-	 * @param classes DataVector the holds the class information
-	 */
-	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
 };
 
 }

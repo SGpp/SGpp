@@ -534,7 +534,7 @@ class TestLinearGrid(unittest.TestCase):
         opb.multTranspose(alpha, p, beta)
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
-    def testOperationEval_test(self):
+    def testOperationTest_test(self):
         from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearGrid(1)
@@ -548,14 +548,14 @@ class TestLinearGrid(unittest.TestCase):
         classes = DataVector(1,1)
         classes.setAll(1.0)
 
-        eval = factory.createOperationEval()
+        testOP = factory.createOperationTest()
 
         alpha.setAll(1.0)
-        c = eval.test(alpha, data, classes)
+        c = testOP.test(alpha, data, classes)
         self.failUnless(c > 0.0)
         
         alpha.setAll(-1.0)
-        c = eval.test(alpha, data, classes)
+        c = testOP.test(alpha, data, classes)
         self.failUnless(c == 0.0)
         
     def testOperationEval_eval(self):
@@ -668,7 +668,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         opb.multTranspose(alpha, p, beta)
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
-    def testOperationEval_test(self):
+    def testOperationTest_test(self):
         from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearTrapezoidBoundaryGrid(1)
@@ -682,19 +682,19 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         classes = DataVector(1,1)
         classes.setAll(1.0)
 
-        eval = factory.createOperationEval()
+        testOP = factory.createOperationTest()
 
         alpha[0] = 0.0
         alpha[1] = 0.0
         alpha[2] = 1.0
         
-        c = eval.test(alpha, data, classes)
+        c = testOP.test(alpha, data, classes)
         self.failUnless(c > 0.0)
         
         alpha[0] = 0.0
         alpha[1] = 0.0
         alpha[2] = -1.0
-        c = eval.test(alpha, data, classes)
+        c = testOP.test(alpha, data, classes)
         self.failUnless(c == 0.0)
         
     def testOperationEval_eval(self):
@@ -961,7 +961,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         opb.multTranspose(alpha, p, beta)
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
-    def testOperationEval_test(self):
+    def testOperationTest_test(self):
         from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearBoundaryGrid(1)
@@ -975,19 +975,19 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         classes = DataVector(1,1)
         classes.setAll(1.0)
 
-        eval = factory.createOperationEval()
+        testOP = factory.createOperationTest()
 
         alpha[0] = 0.0
         alpha[1] = 0.0
         alpha[2] = 1.0
         
-        c = eval.test(alpha, data, classes)
+        c = testOP.test(alpha, data, classes)
         self.failUnless(c > 0.0)
         
         alpha[0] = 0.0
         alpha[1] = 0.0
         alpha[2] = -1.0
-        c = eval.test(alpha, data, classes)
+        c = testOP.test(alpha, data, classes)
         self.failUnless(c == 0.0)
         
     def testOperationEval_eval(self):

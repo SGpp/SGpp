@@ -2,7 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -26,7 +26,8 @@
 #include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/datadriven/OperationBLinearTrapezoidBoundary.hpp"
+#include "basis/lineartrapezoidboundary/operation/datadriven/OperationTestLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.hpp"
 #include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
@@ -103,6 +104,11 @@ OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 	{
 		return new OperationEvalBBLinearTrapezoidBoundary(this->storage);
 	}
+}
+
+OperationTest* LinearTrapezoidBoundaryGrid::createOperationTest()
+{
+	return new OperationTestLinearTrapezoidBoundary(this->storage);
 }
 
 OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchisation()

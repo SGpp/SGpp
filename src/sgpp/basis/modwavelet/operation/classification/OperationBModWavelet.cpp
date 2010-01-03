@@ -22,7 +22,7 @@
 /*****************************************************************************/
 
 #include "basis/basis.hpp"
-#include "basis/modwavelet/operation/classification/OperationBModWavelet.hpp"
+#include "basis/modwavelet/operation/datadriven/OperationBModWavelet.hpp"
 
 #include "sgpp.hpp"
 

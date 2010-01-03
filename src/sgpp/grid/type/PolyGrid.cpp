@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -27,7 +27,8 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the poly grid
-#include "basis/poly/operation/classification/OperationBPoly.hpp"
+#include "basis/poly/operation/datadriven/OperationBPoly.hpp"
+#include "basis/poly/operation/datadriven/OperationTestPoly.hpp"
 #include "basis/poly/operation/common/OperationEvalPoly.hpp"
 #include "basis/poly/operation/common/OperationHierarchisationPoly.hpp"
 
@@ -90,6 +91,11 @@ OperationMatrix* PolyGrid::createOperationLaplace()
 OperationEval* PolyGrid::createOperationEval()
 {
 	return new OperationEvalPoly(this->storage, this->degree);
+}
+
+OperationTest* PolyGrid::createOperationTest()
+{
+	return new OperationTestPoly(this->storage, this->degree);
 }
 
 OperationHierarchisation* PolyGrid::createOperationHierarchisation()

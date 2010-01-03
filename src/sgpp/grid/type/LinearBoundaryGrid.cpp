@@ -2,7 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
+/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -26,10 +26,11 @@
 #include "grid/generation/BoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linearboundary/operation/classification/OperationBLinearBoundary.hpp"
+#include "basis/linearboundary/operation/datadriven/OperationBLinearBoundary.hpp"
+#include "basis/linearboundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 #include "basis/linearboundary/operation/common/OperationEvalLinearBoundary.hpp"
 #include "basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
-#include "basis/linearboundary/operation/classification/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linearboundary/operation/datadriven/OperationLaplaceLinearBoundary.hpp"
 
 #include "sgpp.hpp"
 
@@ -84,6 +85,11 @@ OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
 OperationEval* LinearBoundaryGrid::createOperationEval()
 {
 	return new OperationEvalLinearBoundary(this->storage);
+}
+
+OperationTest* LinearBoundaryGrid::createOperationTest()
+{
+	return new OperationTestLinearBoundary(this->storage);
 }
 
 OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()

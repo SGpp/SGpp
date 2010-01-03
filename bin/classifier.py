@@ -525,8 +525,11 @@ def doTest():
         print "Conjugate Gradient output:"
         print res
 
-        tr = testVectorFast(grid, alpha, training, y)
-        te = testVectorFast(grid, alpha, test_data, test_classes)
+        print "\n"
+        print "Training results:"
+        tr = testVectorFastWithCharacteristicNumbers(grid, alpha, training, y)
+        print "Test results:"
+        te = testVectorFastWithCharacteristicNumbers(grid, alpha, test_data, test_classes)
         num_refine.append(grid.getStorage().size())
         
         if options.regression:
@@ -1025,9 +1028,31 @@ def testVector(grid,alpha,test,classes):
 # @param classes DataVector of correct class values
 # @return classification accuracy
 def testVectorFast(grid, alpha, test, classes):
-    evalValues = []
-    testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues)
-    return grid.createOperationEval().test(alpha, test, classes)/float(test.getSize())
+    return grid.createOperationTest().test(alpha, test, classes)/float(test.getSize())
+
+
+#-------------------------------------------------------------------------------
+## Computes the classification accuracy on some test data. 
+#
+# Tests on the classes {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
+# and displays TP TN FP FN
+# @param grid the sparse grid
+# @param alpha DataVector of surplusses
+# @param test a DataVector containing a dataset of points to test on
+# @param classes DataVector of correct class values
+# @return classification accuracy
+def testVectorFastWithCharacteristicNumbers(grid, alpha, test, classes):
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
+    acc = 0.0
+    acc = grid.createOperationTest().test(alpha, test, classes, TP, TN, FP, FN)
+    print "TP: " + str(TP)
+    print "TN: " + str(TN)
+    print "FP: " + str(FP)
+    print "FN: " + str(FN) + " \n"
+    return acc/float(test.getSize())
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

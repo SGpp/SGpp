@@ -66,7 +66,13 @@ class OperationEval
 {
 public:
 	virtual double eval(DataVector& alpha, DataVector& point) = 0;
+};
+
+class OperationTest
+{
+public:
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn) = 0;
 };
 
 class OperationHierarchisation
