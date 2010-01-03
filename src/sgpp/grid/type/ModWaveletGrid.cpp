@@ -26,7 +26,8 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod wavelet grid
-#include "basis/modwavelet/operation/classification/OperationBModWavelet.hpp"
+#include "basis/modwavelet/operation/datadriven/OperationBModWavelet.hpp"
+#include "basis/modwavelet/operation/datadriven/OperationTestModWavelet.hpp"
 #include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
 #include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
 
@@ -83,6 +84,11 @@ OperationMatrix* ModWaveletGrid::createOperationLaplace()
 OperationEval* ModWaveletGrid::createOperationEval()
 {
 	return new OperationEvalModWavelet(this->storage);
+}
+
+OperationTest* ModWaveletGrid::createOperationTest()
+{
+	return new OperationTestModWavelet(this->storage);
 }
 
 OperationHierarchisation* ModWaveletGrid::createOperationHierarchisation()
