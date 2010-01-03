@@ -37,9 +37,9 @@ double OperationTestModPoly::test(DataVector& alpha, DataVector& data, DataVecto
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestModPoly::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn)
+double OperationTestModPoly::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
 {
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, tp, tn, fp, fn);
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
 }

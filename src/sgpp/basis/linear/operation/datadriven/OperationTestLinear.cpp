@@ -37,10 +37,10 @@ double OperationTestLinear::test(DataVector& alpha, DataVector& data, DataVector
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestLinear::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn)
+double OperationTestLinear::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
 {
 	linear_base<unsigned int, unsigned int> base;
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, tp, tn, fp, fn);
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
 }

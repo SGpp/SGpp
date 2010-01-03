@@ -71,12 +71,9 @@ public:
 	 * @param alpha the coefficients of the sparse grid's base functions
 	 * @param data the coordinates of the evaluation points
 	 * @param classes DataVector the holds the class information
-	 * @param tp the number of true positives
-	 * @param tn the number of true negatives
-	 * @param fp the number of false positives
-	 * @param fn the number of false negatives
+	 * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
 	 */
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn) = 0;
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers) = 0;
 };
 
 }

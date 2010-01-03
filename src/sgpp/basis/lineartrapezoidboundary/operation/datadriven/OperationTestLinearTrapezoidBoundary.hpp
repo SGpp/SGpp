@@ -51,7 +51,7 @@ public:
 	virtual ~OperationTestLinearTrapezoidBoundary() {}
 
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn);
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers);
 
 protected:
 	/// Pointer to GridStorage object

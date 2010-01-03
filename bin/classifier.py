@@ -1042,16 +1042,13 @@ def testVectorFast(grid, alpha, test, classes):
 # @param classes DataVector of correct class values
 # @return classification accuracy
 def testVectorFastWithCharacteristicNumbers(grid, alpha, test, classes):
-    TP = 0
-    TN = 0
-    FP = 0
-    FN = 0
+    charaNum = DataVector(4)
     acc = 0.0
-    acc = grid.createOperationTest().test(alpha, test, classes, TP, TN, FP, FN)
-    print "TP: " + str(TP)
-    print "TN: " + str(TN)
-    print "FP: " + str(FP)
-    print "FN: " + str(FN) + " \n"
+    acc = grid.createOperationTest().testWithCharacteristicNumber(alpha, test, classes, charaNum)
+    print "TP: " + str(charaNum[0])
+    print "TN: " + str(charaNum[1])
+    print "FP: " + str(charaNum[2])
+    print "FN: " + str(charaNum[3]) + " \n"
     return acc/float(test.getSize())
 
 #-------------------------------------------------------------------------------
