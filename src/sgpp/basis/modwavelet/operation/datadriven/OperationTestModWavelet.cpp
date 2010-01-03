@@ -34,13 +34,13 @@ namespace sg
 
 double OperationTestModWavelet::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-	mod_Wavelet_base<unsigned int, unsigned int> base;
+	modified_wavelet_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
 double OperationTestModWavelet::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, size_t& tp, size_t& tn, size_t& fp, size_t& fn)
 {
-	mod_Wavelet_base<unsigned int, unsigned int> base;
+	modified_wavelet_base<unsigned int, unsigned int> base;
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, tp, tn, fp, fn);
 }
 

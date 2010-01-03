@@ -61,7 +61,8 @@ basis/poly/operation/datadriven/OperationBPoly.cpp
 basis/poly/operation/datadriven/OperationTestPoly.cpp
 basis/poly/operation/common/OperationEvalPoly.cpp
 basis/poly/operation/common/OperationHierarchisationPoly.cpp
-basis/modwavelet/operation/classification/OperationBModWavelet.cpp
+basis/modwavelet/operation/datadriven/OperationBModWavelet.cpp
+basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
 basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
