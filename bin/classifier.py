@@ -490,6 +490,7 @@ def evaluateError(classes, alpha, m):
     # calculate error per basis function
     errors = DataVector(alpha.getSize())
     m.B.mult(error, m.x, errors)
+    errors.componentwise_mult(alpha)
     
     return (mse, errors)
 
