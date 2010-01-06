@@ -498,11 +498,15 @@ def evaluateError(classes, alpha, m):
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a test dataset.
 def doTest():
+    if options.verbose:
+        print "doTest here"
+        print "data: %s\ntest: %s" % (options.data[0],options.test)
     data = openFile(options.data[0])
     test = openFile(options.test)
 
     training = buildTrainingVector(data)
     y = buildYVector(data)
+    print y
 
     test_data = buildTrainingVector(test)
     test_classes = buildYVector(test)
@@ -526,11 +530,6 @@ def doTest():
         print "Conjugate Gradient output:"
         print res
 
-        print "\n"
-        print "Training results:"
-        tr = testVectorFastWithCharacteristicNumbers(grid, alpha, training, y)
-        print "Test results:"
-        te = testVectorFastWithCharacteristicNumbers(grid, alpha, test_data, test_classes)
         num_refine.append(grid.getStorage().size())
         
         if options.regression:
@@ -542,6 +541,10 @@ def doTest():
             mse = evaluateError(test_classes, alpha, m_test)[0]
             te_refine.append(mse)
         else:     
+            print "Training results:"
+            tr = testVectorFastWithCharacteristicNumbers(grid, alpha, training, y)
+            print "Test results:"
+            te = testVectorFastWithCharacteristicNumbers(grid, alpha, test_data, test_classes)
             tr_refine.append(tr)
             te_refine.append(te)
         
