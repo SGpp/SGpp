@@ -764,7 +764,8 @@ def split_DataVectors_by_proportion_stratified(data,
 ## An array containing all modes and descriptions
 zeh_modes = {
     "laplace" : "Classical Laplacian. See OpLaplaceAdaptive",
-    "identity" : "Identity matrix, most efficient. See OpPseudo",
+    "identity" : "Identity matrix, most efficient.",
+    "identity_no_level1" : "Identity matrix, most efficient. But do not penalize Level 1",
     "ratio" : "Preferres quadratical supports. See OpPseudo",
     "levelsum" : "Sum of the levels, scaled by the gridlevel (usually 2 for adaptive SGs). See OpPseudo",
     "energy" : "Energy-norm-like SGs. See OpPseudo",
@@ -796,6 +797,8 @@ class Matrix:
             self.C = grid.createOperationLaplace()
         elif self.CMode == "identity":
             pass
+        elif self.CMode == "identity_no_level1":
+            pass
         elif self.CMode == "ratio":
             self.C = OpPseudo(grid)
             self.C.initRatio()
@@ -825,9 +828,9 @@ class Matrix:
         self.B.multTranspose(alpha, self.x, temp)
         self.B.mult(temp, self.x, result)
         
-        temp = DataVector(alpha.getSize())
 
         if self.CMode == "laplace":
+            temp = DataVector(alpha.getSize())
             # @todo: implement
             self.C.mult(alpha, temp)
             result.axpy(M*self.l, temp)
@@ -835,30 +838,50 @@ class Matrix:
         elif self.CMode == "identity":
             result.axpy(M*self.l, alpha)
             
+        elif self.CMode == "identity_no_level1":
+            result.axpy(M*self.l, alpha)
+            # now correct for level 1 again
+            gridStorage = grid.getStorage()
+            gi = GridIndex(gridStorage.dim())
+            for d in range(gridStorage.dim()):
+                gi.set(d, 1, 1)
+            i = gridStorage.seq(gi)
+            result[i] = result[i] - M*self.l*alpha[i]
+            
         elif self.CMode == "ratio":
+            temp = DataVector(alpha.getSize())
             # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
             
         elif self.CMode == "levelsum":
+            temp = DataVector(alpha.getSize())
             # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "energy":
+            temp = DataVector(alpha.getSize())
             # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "copy":
+            temp = DataVector(alpha.getSize())
             # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
         
         elif self.CMode == "pseudounit":
+            temp = DataVector(alpha.getSize())
             # @todo: implement
             self.C.applyRatio(alpha,temp)
             result.axpy(M*self.l,temp)
+
+        else:
+            sys.stderr.write("Error! Mode %s not existant!\n" % (self.CMode))
+            sys.exit(1)
+
 
 #-------------------------------------------------------------------------------
 # saves/restores grid from file
@@ -936,3 +959,13 @@ def readCheckpoint(filename):
     
     return grid, alpha
 
+
+## Creates directory (recursively) if not existant
+def makedir(s, output=False):
+    if not os.path.isdir(s):
+        os.makedirs(s)
+        if output:
+            print "Created directory %s." %(s)
+    else:
+        if output:
+            print "Nothing done. Directory %s already existing." %(s)
