@@ -32,7 +32,7 @@ namespace sg
 
 /**
  * Modified Wavelet basis functions.
- * @todo (pflueged) Betrifft alle anderen Basisfunktionen auch: Wieso static_cast in int und nicht in unsigned_int???
+ * @todo (pflueged) Concernc also most other basis functions: Why static cast in int and not in unsigned int?? If index is unsigned int (which is the case) then for level 32, indices get lost/corrupted.
  */
 template<class LT, class IT>
 class modified_wavelet_base
