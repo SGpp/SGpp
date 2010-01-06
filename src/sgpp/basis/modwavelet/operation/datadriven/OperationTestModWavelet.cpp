@@ -44,4 +44,4 @@ double OperationTestModWavelet::testWithCharacteristicNumber(DataVector& alpha, 
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
-};
+}

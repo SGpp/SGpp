@@ -49,4 +49,4 @@ void OperationBModWavelet::multTranspose(DataVector& alpha, DataVector& data, Da
 	op.mult_transpose(storage, base, alpha, data, result);
 }
 
-};
+}

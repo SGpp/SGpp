@@ -3,7 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
+/* Copyright (C) 2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /* Copyright (C) 2009-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -32,7 +32,7 @@ namespace sg
 
 /**
  * Modified Wavelet basis functions.
- *
+ * @todo (pflueged) Betrifft alle anderen Basisfunktionen auch: Wieso static_cast in int und nicht in unsigned_int???
  */
 template<class LT, class IT>
 class modified_wavelet_base
@@ -47,7 +47,7 @@ class modified_wavelet_base
             }
             double sup= 1<<level;
             sup=1/sup;
-            if (index==((1<<level)-1) && p > (1-1.5602*sup) )
+            if (static_cast<int>(index)==static_cast<int>((1<<level)-1) && p > (1-1.5602*sup) )
             {   //std::cout<<0.5014+1.3803*(0.5602+p/sup-index)<<std::endl;
                 return 0.5014+1.3803*(0.5602+p/sup-index);
             }
