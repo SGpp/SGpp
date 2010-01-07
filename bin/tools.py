@@ -841,7 +841,7 @@ class Matrix:
         elif self.CMode == "identity_no_level1":
             result.axpy(M*self.l, alpha)
             # now correct for level 1 again
-            gridStorage = grid.getStorage()
+            gridStorage = self.grid.getStorage()
             gi = GridIndex(gridStorage.dim())
             for d in range(gridStorage.dim()):
                 gi.set(d, 1, 1)

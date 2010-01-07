@@ -2,7 +2,7 @@
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
 #                                                                           #
-# Copyright (C) 2007-2009 Dirk Plueger (Dirk.Pflueger@in.tum.de)            #
+# Copyright (C) 2007-2010 Dirk Plueger (Dirk.Pflueger@in.tum.de)            #
 # Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
 # Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
 # Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
@@ -506,7 +506,6 @@ def doTest():
 
     training = buildTrainingVector(data)
     y = buildYVector(data)
-    print y
 
     test_data = buildTrainingVector(test)
     test_classes = buildYVector(test)
