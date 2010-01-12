@@ -15,7 +15,7 @@ NativeCppBlackScholesSolver.o : $(SRCDIR)application/pde/NativeCppBlackScholesSo
 	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppBlackScholesSolver.o $(SRCDIR)application/pde/NativeCppBlackScholesSolver.cpp
 	
 libsgpp.a :
-	make -f makefileSGppLIB	
+	make -f makefileSGppLIB
 		
 clean:
 	\rm tmp/build_native/*.o
