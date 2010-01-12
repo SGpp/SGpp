@@ -248,7 +248,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 				coordsStream >> tmp;
 				coordsStream >> tmp2;
 
-				alpha[i] = factor*factor*(1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma)) * (1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp2-mu)/sigma)*((tmp2-mu)/sigma));
+				alpha[i] = factor*factor*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma))) * ((1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp2-mu)/sigma)*((tmp2-mu)/sigma)));
 			}
 
 			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
@@ -300,7 +300,7 @@ void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double cons
 void HeatEquationSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0 RC1", "Alexander Heinecke, (C) 2009-2010");
+	myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2010");
 }
 
 }

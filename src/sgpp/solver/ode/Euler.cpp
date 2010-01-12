@@ -39,7 +39,7 @@ Euler::Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, 
 {
 	this->residuum = 0.0;
 
-	if (Mode != "ExEul" || Mode != "ImEul")
+	if (Mode != "ExEul" && Mode != "ImEul")
 	{
 		throw new solver_exception("Euler::Euler : An unknown Euler-Mode was specified!");
 	}
