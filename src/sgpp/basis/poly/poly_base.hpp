@@ -26,6 +26,7 @@
 
 #include <cmath>
 #include <vector>
+#include "exception/factory_exception.hpp"
 
 namespace sg
 {
