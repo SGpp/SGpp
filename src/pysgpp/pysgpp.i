@@ -3,6 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Joerg Blank (blankj@in.tum.de)                         */
+/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
 /*                                                                           */
 /* pysgpp is free software; you can redistribute it and/or modify            */
@@ -102,9 +103,10 @@ namespace std {
 %include "src/sgpp/basis/linearboundary/linearboundaryBase.hpp"
 %include "src/sgpp/basis/lineartrapezoidboundary/lineartrapezoidboundaryBase.hpp"
 %include "src/sgpp/basis/modlinear/modified_linear_base.hpp"
-%include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
 %include "src/sgpp/basis/poly/poly_base.hpp"
+%include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
 %include "src/sgpp/basis/modwavelet/modified_wavelet_base.hpp"
+%include "src/sgpp/basis/modbspline/modified_bspline_base.hpp"
 
 %include "src/sgpp/solver/SGSolver.hpp"
 %include "src/sgpp/solver/SLESolver.hpp"
@@ -129,6 +131,7 @@ namespace std {
 %template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
 %template(SModWaveletBase) sg::modified_wavelet_base<unsigned int, unsigned int>;
+%template(SModBsplineBase) sg::modified_bspline_base<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 

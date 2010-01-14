@@ -102,6 +102,13 @@ public:
      */
     static Grid* createModWaveletGrid(size_t dim);
 
+    /**
+     * creates a mod-Bspline grid
+     *
+     * @param dim the grid's dimension
+     */
+    static Grid* createModBsplineGrid(size_t dim, size_t degree);
+
 	/**
 	 * reads a grid out of a string
 	 *

@@ -3,6 +3,7 @@
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
+/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -87,6 +88,7 @@ typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
 typedef poly_base<unsigned int, unsigned int> SPolyBase;
 typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
 typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
+typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
 
 typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
 typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;

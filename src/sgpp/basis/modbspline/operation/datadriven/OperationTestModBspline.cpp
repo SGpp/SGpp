@@ -2,8 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2010 Dirk Pflueger (pflueged@in.tum.de                      */
+/* Copyright (C) 2010 Dirk Pflueger (pflueged@in.tum.de)                     */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -21,43 +20,26 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONTESTMODWAVELET_HPP
-#define OPERATIONTESTMODWAVELET_HPP
+#include "sgpp.hpp"
 
-#include "operation/datadriven/OperationTest.hpp"
-#include "grid/GridStorage.hpp"
+#include "basis/basis.hpp"
+#include "basis/modpoly/operation/datadriven/OperationTestModBspline.hpp"
+
+#include "exception/operation_exception.hpp"
+
+#include "data/DataVector.hpp"
 
 namespace sg
 {
 
-/**
- * This class implements OperationTest for a grid with mod wavelet basis ansatzfunctions
- *
- * @version $HEAD$
- */
-class OperationTestModWavelet : public OperationTest
+double OperationTestModBspline::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 */
-	OperationTestModWavelet(GridStorage* storage) : storage(storage) {}
-
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationTestModWavelet() {}
-
-	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers);
-
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-};
-
+	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-#endif /* OPERATIONTESTMODWAVELET_HPP */
+double OperationTestModBspline::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
+{
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+}
+
+}

@@ -29,6 +29,7 @@
 #include "grid/type/PolyGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/ModWaveletGrid.hpp"
+#include "grid/type/ModBsplineGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "operation/common/OperationIdentity.hpp"
@@ -69,6 +70,11 @@ Grid* Grid::createPolyGrid(size_t dim, size_t degree)
 Grid* Grid::createModWaveletGrid(size_t dim)
 {
     return new ModWaveletGrid(dim);
+}
+
+Grid* Grid::createModBsplineGrid(size_t dim, size_t degree)
+{
+    return new ModBsplineGrid(dim, degree);
 }
 
 OperationMatrix* Grid::createOperationIdentity()
@@ -125,6 +131,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
         tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
+        tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
 	}
 
 	return *tMap;
