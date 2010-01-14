@@ -4,7 +4,7 @@ SRCDIR = src/sgpp/
 OUTDIR = tmp/build_native/
 CFLAGS = -Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -ffloat-store -Isrc/sgpp/
 LFLAGS = -Wall -pedantic -ansi -O3 -pthread
-OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearTrapezoidBoundary.o OperationEvalLinearTrapezoidBoundary.o OperationBLinearTrapezoidBoundary.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesTimestepMatrix.o BlackScholesSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearTrapezoidBoundary.o OperationGammaLinearTrapezoidBoundary.o OperationEvalBBLinearTrapezoidBoundary.o Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o IOToolBonnSG.o OperationLTwoDotProductLinearTrapezoidBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o OperationLaplaceLinearTrapezoidBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o OperationTestModWavelet.o OperationBModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o OperationTestModPoly.o OperationTestPoly.o OperationTestLinearTrapezoidBoundary.o OperationTestLinearBoundary.o HeatEquationSolver.o HeatEquationTimestepMatrix.o
+OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearTrapezoidBoundary.o OperationEvalLinearTrapezoidBoundary.o OperationBLinearTrapezoidBoundary.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesTimestepMatrix.o BlackScholesSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearTrapezoidBoundary.o OperationGammaLinearTrapezoidBoundary.o OperationEvalBBLinearTrapezoidBoundary.o Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o IOToolBonnSG.o OperationLTwoDotProductLinearTrapezoidBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o OperationLaplaceLinearTrapezoidBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o OperationTestModWavelet.o OperationBModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o OperationTestModPoly.o OperationTestPoly.o OperationTestLinearTrapezoidBoundary.o OperationTestLinearBoundary.o HeatEquationSolver.o HeatEquationTimestepMatrix.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o OperationHierarchisationModBspline.o ModBsplineGrid.o
 
 default : $(OBJS)
 	mkdir -p ./../../lib/sgpp/
@@ -31,6 +31,9 @@ ModLinearGrid.o : $(SRCDIR)grid/type/ModLinearGrid.cpp
 	
 ModWaveletGrid.o : $(SRCDIR)grid/type/ModWaveletGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModWaveletGrid.o $(SRCDIR)grid/type/ModWaveletGrid.cpp
+	
+ModBsplineGrid.o : $(SRCDIR)grid/type/ModBsplineGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModBsplineGrid.o $(SRCDIR)grid/type/ModBsplineGrid.cpp
 
 ModPolyGrid.o : $(SRCDIR)grid/type/ModPolyGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModPolyGrid.o $(SRCDIR)grid/type/ModPolyGrid.cpp
@@ -58,6 +61,18 @@ OperationBModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/Operatio
 
 OperationHierarchisationModWavelet.o : $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModWavelet.o $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
+
+OperationTestModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
+
+OperationEvalModBspline.o : $(SRCDIR)basis/modbspline/operation/common/OperationEvalModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModBspline.o $(SRCDIR)basis/modbspline/operation/common/OperationEvalModBspline.cpp
+
+OperationBModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationBModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationBModBspline.cpp
+
+OperationHierarchisationModBspline.o : $(SRCDIR)basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModBspline.o $(SRCDIR)basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 
 OperationBLinear.o : $(SRCDIR)basis/linear/operation/datadriven/OperationBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBLinear.o $(SRCDIR)basis/linear/operation/datadriven/OperationBLinear.cpp
@@ -196,3 +211,4 @@ SGppStopwatch.o : $(SRCDIR)tools/common/SGppStopwatch.cpp
 	
 clean:
 	\rm tmp/build_native/*.o
+	\rm lib/sgpp/*.a
