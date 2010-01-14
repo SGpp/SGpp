@@ -75,4 +75,4 @@ public:
 
 }
 
-#endif /* MODPOLYGRID_HPP */
+#endif /* MODWAVELETGRID_HPP */

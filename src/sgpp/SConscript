@@ -24,6 +24,7 @@
 
 Import("env")
 
+
 srcs = Split("""
 data/DataVector.cpp
 
@@ -36,9 +37,10 @@ grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp
 grid/type/LinearGrid.cpp
 grid/type/ModLinearGrid.cpp
-grid/type/ModPolyGrid.cpp
 grid/type/PolyGrid.cpp
+grid/type/ModPolyGrid.cpp
 grid/type/ModWaveletGrid.cpp
+grid/type/ModBsplineGrid.cpp
 
 grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
@@ -53,18 +55,22 @@ basis/modlinear/operation/datadriven/OperationBModLinear.cpp
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-basis/modpoly/operation/datadriven/OperationBModPoly.cpp
-basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
-basis/modpoly/operation/common/OperationEvalModPoly.cpp
-basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 basis/poly/operation/datadriven/OperationBPoly.cpp
 basis/poly/operation/datadriven/OperationTestPoly.cpp
 basis/poly/operation/common/OperationEvalPoly.cpp
 basis/poly/operation/common/OperationHierarchisationPoly.cpp
+basis/modpoly/operation/datadriven/OperationBModPoly.cpp
+basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
+basis/modpoly/operation/common/OperationEvalModPoly.cpp
+basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 basis/modwavelet/operation/datadriven/OperationBModWavelet.cpp
 basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
 basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
+basis/modbspline/operation/datadriven/OperationBModBspline.cpp
+basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
+basis/modbspline/operation/common/OperationEvalModBspline.cpp
+basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
 basis/linearboundary/operation/datadriven/OperationBLinearBoundary.cpp

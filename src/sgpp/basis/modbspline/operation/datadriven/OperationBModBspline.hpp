@@ -2,8 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2010 Dirk Pflueger (pflueged@in.tum.de                      */
+/* Copyright (C) 2010 Dirk Pflueger (pflueged@in.tum.de)                     */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -21,43 +20,48 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONTESTMODWAVELET_HPP
-#define OPERATIONTESTMODWAVELET_HPP
+#ifndef OPERATIONBMODBSPLINE_HPP
+#define OPERATIONBMODBSPLINE_HPP
 
-#include "operation/datadriven/OperationTest.hpp"
+#include "operation/datadriven/OperationB.hpp"
 #include "grid/GridStorage.hpp"
+
+#include "sgpp.hpp"
 
 namespace sg
 {
 
 /**
- * This class implements OperationTest for a grid with mod wavelet basis ansatzfunctions
+ * This class implements OperationB for a grid with modified Bspline basis functions
  *
  * @version $HEAD$
  */
-class OperationTestModWavelet : public OperationTest
+class OperationBModBspline : public OperationB
 {
 public:
 	/**
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
+	 * @param degree the Bspline's degree
 	 */
-	OperationTestModWavelet(GridStorage* storage) : storage(storage) {}
+	OperationBModBspline(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationTestModWavelet() {}
+	virtual ~OperationBModBspline() {}
 
-	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers);
+	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
+	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
 
 protected:
 	/// Pointer to GridStorage object
 	GridStorage* storage;
+	/// Mod Bspline Basis object
+	SModBsplineBase base;
 };
 
 }
 
-#endif /* OPERATIONTESTMODWAVELET_HPP */
+#endif /* OPERATIONBMODBSPLINE_HPP */

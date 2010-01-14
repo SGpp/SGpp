@@ -2,8 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2010 Dirk Pflueger (pflueged@in.tum.de                      */
+/* Copyright (C) 2010 Dirk Pflueger (pflueged@in.tum.de)                     */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -21,43 +20,63 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONTESTMODWAVELET_HPP
-#define OPERATIONTESTMODWAVELET_HPP
+#ifndef MODBSPLINEGRID_HPP
+#define MODBSPLINEGRID_HPP
 
-#include "operation/datadriven/OperationTest.hpp"
-#include "grid/GridStorage.hpp"
+#include "grid/Grid.hpp"
+
+#include <iostream>
 
 namespace sg
 {
 
 /**
- * This class implements OperationTest for a grid with mod wavelet basis ansatzfunctions
- *
- * @version $HEAD$
+ * Grid with modified Bspline basis functions
  */
-class OperationTestModWavelet : public OperationTest
+class ModBsplineGrid : public Grid
 {
+protected:
+	ModBsplineGrid(std::istream& istr);
+
 public:
 	/**
-	 * Constructor
+	 * Constructor of grid with modified bspline basis functions
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param dim the dimension of the grid
+     * @param degree the bspline's degree
 	 */
-	OperationTestModWavelet(GridStorage* storage) : storage(storage) {}
+	ModBsplineGrid(size_t dim, size_t degree);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationTestModWavelet() {}
+	virtual ~ModBsplineGrid();
 
-	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers);
+	virtual const char* getType();
+
+	virtual OperationB* createOperationB();
+	virtual GridGenerator* createGridGenerator();
+	virtual OperationMatrix* createOperationLaplace();
+	virtual OperationEval* createOperationEval();
+	virtual OperationTest* createOperationTest();
+	virtual OperationHierarchisation* createOperationHierarchisation();
+	virtual OperationMatrix* createOperationLTwoDotProduct();
+
+	// @todo (heinecke) remove this when done
+	virtual OperationMatrix* createOperationUpDownTest();
+
+	// finance operations
+	virtual OperationMatrix* createOperationDelta(DataVector& coef);
+	virtual OperationMatrix* createOperationGamma(DataVector& coef);
+
+	static Grid* unserialize(std::istream& istr);
 
 protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
+    // degree of Bspline
+    size_t degree;
+
 };
 
 }
 
-#endif /* OPERATIONTESTMODWAVELET_HPP */
+#endif /* MODBSPLINEGRID_HPP */

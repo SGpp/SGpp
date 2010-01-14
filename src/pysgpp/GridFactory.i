@@ -30,6 +30,7 @@
 %newobject sg::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sg::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject sg::Grid::createModWaveletGrid(size_t dim);
+%newobject sg::Grid::createModBsplineGrid(size_t dim, size_t degree);
 
 %newobject sg::Grid::unserialize(std::string& istr);
 
@@ -64,6 +65,7 @@ public:
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 	static Grid* createModWaveletGrid(size_t dim);
+	static Grid* createModBsplineGrid(size_t dim, size_t degree);
 	
 	static Grid* unserialize(std::string& istr);
 	
