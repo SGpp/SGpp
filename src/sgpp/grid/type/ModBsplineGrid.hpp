@@ -71,6 +71,8 @@ public:
 
 	static Grid* unserialize(std::istream& istr);
 
+	virtual void serialize(std::ostream& ostr);
+
 protected:
     // degree of Bspline
     size_t degree;

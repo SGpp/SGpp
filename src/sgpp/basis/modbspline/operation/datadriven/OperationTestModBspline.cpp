@@ -23,7 +23,7 @@
 #include "sgpp.hpp"
 
 #include "basis/basis.hpp"
-#include "basis/modpoly/operation/datadriven/OperationTestModBspline.hpp"
+#include "basis/modbspline/operation/datadriven/OperationTestModBspline.hpp"
 
 #include "exception/operation_exception.hpp"
 

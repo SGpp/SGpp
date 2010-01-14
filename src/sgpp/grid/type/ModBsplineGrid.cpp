@@ -38,13 +38,13 @@
 namespace sg
 {
 
-ModBSplineGrid::ModBSplineGrid(std::istream& istr) : Grid(istr), degree(-1)
+ModBsplineGrid::ModBsplineGrid(std::istream& istr) : Grid(istr), degree(-1)
 {
     istr >> degree;
 }
 
 
-ModBSplineGrid::ModBSplineGrid(size_t dim, size_t degree) : degree(degree)
+ModBsplineGrid::ModBsplineGrid(size_t dim, size_t degree) : degree(degree)
 {
     this->storage = new GridStorage(dim);
 }
@@ -80,7 +80,7 @@ GridGenerator* ModBsplineGrid::createGridGenerator()
 
 OperationB* ModBsplineGrid::createOperationB()
 {
-	return new OperationBModBspline(this->storage);
+	return new OperationBModBspline(this->storage, this->degree);
 }
 
 OperationMatrix* ModBsplineGrid::createOperationLaplace()
@@ -90,7 +90,7 @@ OperationMatrix* ModBsplineGrid::createOperationLaplace()
 
 OperationEval* ModBsplineGrid::createOperationEval()
 {
-	return new OperationEvalModBspline(this->storage);
+	return new OperationEvalModBspline(this->storage, this->degree);
 }
 
 OperationTest* ModBsplineGrid::createOperationTest()
@@ -100,7 +100,7 @@ OperationTest* ModBsplineGrid::createOperationTest()
 
 OperationHierarchisation* ModBsplineGrid::createOperationHierarchisation()
 {
-	return new OperationHierarchisationModBspline(this->storage);
+	return new OperationHierarchisationModBspline(this->storage, this->degree);
 }
 
 OperationMatrix* ModBsplineGrid::createOperationLTwoDotProduct()
