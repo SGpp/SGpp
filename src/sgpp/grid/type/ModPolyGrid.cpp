@@ -32,6 +32,8 @@
 #include "basis/modpoly/operation/common/OperationEvalModPoly.hpp"
 #include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
 
+#include "exception/factory_exception.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>

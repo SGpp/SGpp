@@ -32,6 +32,8 @@
 #include "basis/poly/operation/common/OperationEvalPoly.hpp"
 #include "basis/poly/operation/common/OperationHierarchisationPoly.hpp"
 
+#include "exception/factory_exception.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>

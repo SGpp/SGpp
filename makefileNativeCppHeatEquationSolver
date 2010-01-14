@@ -17,6 +17,5 @@ NativeCppHeatEquationSolver.o : $(SRCDIR)application/pde/NativeCppHeatEquationSo
 libsgpp.a :
 	make -f makefileSGppLIB
 		
-clean:
-	\rm tmp/build_native/*.o
+clean :
 	make -f makefileSGppLIB clean

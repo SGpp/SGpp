@@ -33,6 +33,8 @@
 #include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationLaplaceModLinear.hpp"
 
+#include "exception/factory_exception.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>

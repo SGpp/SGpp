@@ -34,6 +34,8 @@
 #include "basis/linear/operation/datadriven/OperationLaplaceLinear.hpp"
 #include "basis/linear/operation/pde/OperationLTwoDotProductLinear.hpp"
 
+#include "exception/factory_exception.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>
