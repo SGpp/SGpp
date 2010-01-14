@@ -19,3 +19,4 @@ libsgpp.a :
 		
 clean:
 	\rm tmp/build_native/*.o
+	make -f makefileSGppLIB clean
