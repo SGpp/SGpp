@@ -32,6 +32,8 @@
 #include "basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 #include "basis/linearboundary/operation/datadriven/OperationLaplaceLinearBoundary.hpp"
 
+#include "exception/factory_exception.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>

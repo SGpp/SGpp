@@ -31,6 +31,8 @@
 #include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
 #include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
 
+#include "exception/factory_exception.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>

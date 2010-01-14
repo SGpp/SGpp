@@ -31,6 +31,8 @@
 #include "basis/modbspline/operation/common/OperationEvalModBspline.hpp"
 #include "basis/modbspline/operation/common/OperationHierarchisationModBspline.hpp"
 
+#include "exception/factory_exception.hpp"
+
 #include "sgpp.hpp"
 
 #include <iostream>
