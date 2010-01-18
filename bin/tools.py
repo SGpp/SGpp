@@ -732,8 +732,10 @@ def split_DataVectors_by_proportion_stratified(data,
     index_neg = [i for i in range(size) if classes[i]<0]
     index_pos_splitpoint = int(min(size-1, round(len(index_pos)*proportion)))
     index_neg_splitpoint = int(min(size-1, round(len(index_neg)*proportion)))
+    
     if (index_pos_splitpoint+index_neg_splitpoint > splitpoint):
         proportion_pos = len(index_pos)*proportion
+        proportion_neg = len(index_neg)*proportion
         if proportion_pos-math.floor(proportion_pos) > proportion_neg-math.floor(proportion_neg):
             index_neg_splitpoint -= 1
         else:
@@ -750,7 +752,7 @@ def split_DataVectors_by_proportion_stratified(data,
         i += 1
     i = 0
     for j in indices2:
-        data.getRow(i+splitpoint, row)
+        data.getRow(j+splitpoint, row)
         dv2.setRow(i, row)
         cv2[i] = classes[j]
         i += 1
@@ -803,14 +805,16 @@ class Matrix:
             self.C = OpPseudo(grid)
             self.C.initRatio()
         elif self.CMode == "levelsum":
-            self.C = OpPseudo(grid)
-            self.C.initLevelSum()
+            pass
+#            self.C = OpPseudo(grid)
+#            self.C.initLevelSum()
         elif self.CMode == "energy":
             self.C = OpPseudo(grid)
             self.C.initEnergy()
         elif self.CMode == "copy":
-            self.C = OpPseudo(grid)
-            self.C.initCopyFrom()
+#            self.C = OpPseudo(grid)
+#            self.C.initCopyFrom()
+            self.C = grid.createOperationLaplace()
         elif self.CMode == "pseudounit":
             self.C = OpPseudo(grid)
             self.C.initPseudoUnit()
@@ -831,7 +835,6 @@ class Matrix:
 
         if self.CMode == "laplace":
             temp = DataVector(alpha.getSize())
-            # @todo: implement
             self.C.mult(alpha, temp)
             result.axpy(M*self.l, temp)
 
@@ -856,8 +859,11 @@ class Matrix:
             
         elif self.CMode == "levelsum":
             temp = DataVector(alpha.getSize())
-            # @todo: implement
-            self.C.applyRatio(alpha, temp)
+            # fill temp vector with levelsums
+            gridStorage = self.grid.getStorage()
+            for i in range(gridStorage.size()):
+                gp = gridStorage.get(i)
+                temp[i] = gp.getLevelSum()*alpha[i]
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "energy":
@@ -867,9 +873,13 @@ class Matrix:
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "copy":
+            # completely inefficient, but sufficient for test purposes
             temp = DataVector(alpha.getSize())
-            # @todo: implement
-            self.C.applyRatio(alpha, temp)
+            ones = DataVector(alpha.getSize())
+            ones.setAll(1)
+            self.C.mult(ones, temp)
+            for i in range(alpha.getSize()):
+                temp[i] = temp[i]*alpha[i]
             result.axpy(M*self.l, temp)
         
         elif self.CMode == "pseudounit":
