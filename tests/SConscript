@@ -22,7 +22,7 @@
 
 Import('env')
 
-cpy = Command("#tests/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
+cpy = Command("#tests/_pysgpp.dylib", "#/tmp/build_pysgpp/_pysgpp.dylib", Copy("$TARGET", "$SOURCE"))
 cpy += Command("#tests/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
 cpy += Command("#tests/tools.py", "#/bin/tools.py", Copy("$TARGET", "$SOURCE"))
 
