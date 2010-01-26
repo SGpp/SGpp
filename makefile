@@ -1,132 +1,265 @@
-CC = g++
-DEBUG = 
-SRCDIR = src/sgpp/
-CFLAGS = -Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -fopenmp -O3 -funroll-loops -pthread -DUSEOMP -Isrc/sgpp/
-LFLAGS = -Wall -pedantic -ansi -fopenmp -O3 -pthread
-OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearTrapezoidBoundary.o OperationEvalLinearTrapezoidBoundary.o OperationBLinearTrapezoidBoundary.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o ARFFTools.o DMSystemMatrix.o Classifier.o NativeCppClassifier.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearTrapezoidBoundary.o OperationGammaLinearTrapezoidBoundary.o OperationEvalBBLinearTrapezoidBoundary.o
-OBJSSRC = tmp/build_native/DataVector.o tmp/build_native/Grid.o tmp/build_native/LinearBoundaryGrid.o tmp/build_native/LinearTrapezoidBoundaryGrid.o tmp/build_native/LinearGrid.o tmp/build_native/ModLinearGrid.o tmp/build_native/ModPolyGrid.o tmp/build_native/PolyGrid.o tmp/build_native/StandardGridGenerator.o tmp/build_native/BoundaryGridGenerator.o tmp/build_native/TrapezoidBoundaryGridGenerator.o tmp/build_native/OperationBLinear.o tmp/build_native/OperationEvalLinear.o tmp/build_native/OperationHierarchisationLinear.o tmp/build_native/OperationBModLinear.o tmp/build_native/OperationEvalModLinear.o tmp/build_native/OperationHierarchisationModLinear.o tmp/build_native/OperationBModPoly.o tmp/build_native/OperationEvalModPoly.o tmp/build_native/OperationHierarchisationModPoly.o tmp/build_native/OperationBPoly.o tmp/build_native/OperationEvalPoly.o tmp/build_native/OperationHierarchisationPoly.o tmp/build_native/OperationHierarchisationLinearTrapezoidBoundary.o tmp/build_native/OperationEvalLinearTrapezoidBoundary.o tmp/build_native/OperationBLinearTrapezoidBoundary.o tmp/build_native/OperationHierarchisationLinearBoundary.o tmp/build_native/OperationEvalLinearBoundary.o tmp/build_native/OperationBLinearBoundary.o tmp/build_native/ARFFTools.o tmp/build_native/DMSystemMatrix.o tmp/build_native/Classifier.o tmp/build_native/NativeCppClassifier.o tmp/build_native/ConjugateGradients.o tmp/build_native/SGppStopwatch.o tmp/build_native/BoundingBox.o tmp/build_native/OperationDeltaLinearTrapezoidBoundary.o tmp/build_native/OperationGammaLinearTrapezoidBoundary.o tmp/build_native/OperationEvalBBLinearTrapezoidBoundary.o
+#############################################################################
+# This file is part of sgpp, a program package making use of spatially      #
+# adaptive sparse grids to solve numerical problems                         #
+#                                                                           #
+# Copyright (C) 2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
+#                                                                           #
+# pysgpp is free software; you can redistribute it and/or modify            #
+# it under the terms of the GNU Lesser General Public License as published  #
+# by the Free Software Foundation; either version 3 of the License, or      #
+# (at your option) any later version.                                       #
+#                                                                           #
+# pysgpp is distributed in the hope that it will be useful,                 #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU Lesser General Public License for more details.                       #
+#                                                                           #
+# You should have received a copy of the GNU Lesser General Public License  #
+# along with pysgpp; if not, write to the Free Software                     #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
+# or see <http://www.gnu.org/licenses/>.                                    #
+#############################################################################
 
-NativeCppClassifier : $(OBJS)
-	mkdir -p tmp/build_native
-	\mv *.o tmp/build_native/
-	$(CC) $(LFLAGS) $(OBJSSRC) -o bin/NativeCppClassifier
+SRCDIR=./../../../src/sgpp
+###################################################################
+# Default Variables, overwirtten by CLI
+###################################################################	
+# use OpenMP Version 3
+OMP=0
+# use the TR1 Implementations for Hashmaps
+TR1=0
+# default compiler: g++; possible values: icpc (Intel Compiler) or xlc++_r (IBM Compiler)
+CC=g++
 
-DataVector.o : src/sgpp/data/DataVector.cpp
-	$(CC) $(CFLAGS) src/sgpp/data/DataVector.cpp
+###################################################################
+# Compiler Flags
+###################################################################	
+CFLAGS_GCC=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -ffloat-store -I$(SRCDIR)
+LFLAGS_GCC=-Wall -pedantic -ansi -O3 -pthread
+CFLAGS_GCC_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -ffloat-store -I$(SRCDIR) -DUSETRONE -std=c++0x
+LFLAGS_GCC_TRONE=-Wall -pedantic -ansi -O3 -pthread
 
-Grid.o : src/sgpp/grid/Grid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/Grid.cpp
+CFLAGS_GCC_OMP=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -ffloat-store -I$(SRCDIR) -fopenmp -DUSEOMP -DUSEOMPTHREE
+LFLAGS_GCC_OMP=-Wall -pedantic -ansi -O3 -pthread -fopenmp
+CFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -ffloat-store -I$(SRCDIR) -fopenmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -Isrc/sgpp/
+LFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -O3 -pthread -fopenmp
 
-LinearBoundaryGrid.o : src/sgpp/grid/type/LinearBoundaryGrid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/type/LinearBoundaryGrid.cpp
+CFLAGS_ICC=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -pthread -I$(SRCDIR)
+LFLAGS_ICC=-Wall -ansi -pthread -O3 -static -static-intel
+CFLAGS_ICC_TRONE=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -pthread -I$(SRCDIR) -DUSETRONE -std=c++0x
+LFLAGS_ICC_TRONE=-Wall -ansi -pthread -O3 -static -static-intel
 
-LinearTrapezoidBoundaryGrid.o : src/sgpp/grid/type/LinearTrapezoidBoundaryGrid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/type/LinearTrapezoidBoundaryGrid.cpp
-	
-LinearGrid.o : src/sgpp/grid/type/LinearGrid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/type/LinearGrid.cpp
-	
-ModLinearGrid.o : src/sgpp/grid/type/ModLinearGrid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/type/ModLinearGrid.cpp
+CFLAGS_ICC_OMP=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -pthread -I$(SRCDIR) -openmp -pthread -DUSEOMP -DUSEOMPTHREE
+LFLAGS_ICC_OMP=-Wall -ansi -pthread -O3 -static -static-intel -openmp -openmp-link static
+CFLAGS_ICC_OMP_TRONE=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -pthread -I$(SRCDIR) -openmp -pthread -DUSEOMP -DUSEOMPTHREE -DUSETRONE -std=c++0x
+LFLAGS_ICC_OMP_TRONE=-Wall -ansi -pthread -O3 -static -static-intel -openmp -openmp-link static
 
-ModPolyGrid.o : src/sgpp/grid/type/ModPolyGrid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/type/ModPolyGrid.cpp
+CFLAGS_XLC=-O3 -qstrict -qtune=auto -qarch=auto -qansialias -c -I$(SRCDIR) -DAIX_XLC -DUSETRONE
+LFLAGS_XLC=
 
-PolyGrid.o : src/sgpp/grid/type/PolyGrid.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/type/PolyGrid.cpp
-	
-StandardGridGenerator.o : src/sgpp/grid/generation/StandardGridGenerator.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/generation/StandardGridGenerator.cpp
-	
-BoundaryGridGenerator.o : src/sgpp/grid/generation/BoundaryGridGenerator.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/generation/BoundaryGridGenerator.cpp
+CFLAGS_XLC_OMP=-O3 -qstrict -qtune=auto -qarch=auto -qansialias -c -I$(SRCDIR) -DAIX_XLC -DUSETRONE -DUSEOMP -DUSEOMPTHREE -qsmp=omp
+LFLAGS_XLC_OMP=-qsmp=omp
 
-TrapezoidBoundaryGridGenerator.o : src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.cpp
+###################################################################
+# Builds a lib containing all SG Algorithms
+###################################################################	
+default:
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/sgpplib_gcc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+else
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+else
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+endif
+endif
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/sgpplib_icc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+else
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+else	
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+endif	
+endif
+endif
+ifeq ($(CC),xlc++_r)
+	mkdir -p tmp/build_native/sgpplib_xlc
+ifeq ($(OMP),0)
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+else
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+endif
+endif
 
-OperationBLinear.o : src/sgpp/basis/linear/operation/classification/OperationBLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/classification/OperationBLinear.cpp
+###################################################################
+# Builds a Balck Scholes Solver
+###################################################################	
+BSSolver: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/BSSolver_gcc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+else
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+else
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+endif
+endif
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/BSSolver_icc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+else
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+else	
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+endif	
+endif
+endif
+ifeq ($(CC),xlc++_r)
+	mkdir -p tmp/build_native/BSSolver_xlc
+ifeq ($(OMP),0)
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+else
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+endif
+endif
 
-OperationEvalLinear.o : src/sgpp/basis/linear/operation/common/OperationEvalLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/common/OperationEvalLinear.cpp
+###################################################################
+# Builds a simple Heat Equation Solver
+###################################################################	
+HESolver: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/HESolver_gcc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+else
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+else
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+endif
+endif
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/HESolver_icc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+else
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+else	BSSolver
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+endif	
+endif
+endif
+ifeq ($(CC),xlc++_r)
+	mkdir -p tmp/build_native/HESolver_xlc
+ifeq ($(OMP),0)
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+else
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+endif
+endif
 
-OperationHierarchisationLinear.o : src/sgpp/basis/linear/operation/common/OperationHierarchisationLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linear/operation/common/OperationHierarchisationLinear.cpp
+###################################################################
+# Builds a (very) simple Classifier
+###################################################################
+Classifier: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/Classifier_gcc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+else
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+else
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+endif
+endif
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/Classifier_icc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+else
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+else	
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+endif	
+endif
+endif
+ifeq ($(CC),xlc++_r)
+	mkdir -p tmp/build_native/Classifier_xlc
+ifeq ($(OMP),0)
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+else
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+endif
+endif
 
-OperationBModLinear.o : src/sgpp/basis/modlinear/operation/classification/OperationBModLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/classification/OperationBModLinear.cpp
-
-OperationEvalModLinear.o : src/sgpp/basis/modlinear/operation/common/OperationEvalModLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/common/OperationEvalModLinear.cpp
-
-OperationHierarchisationModLinear.o : src/sgpp/basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-
-OperationBModPoly.o : src/sgpp/basis/modpoly/operation/classification/OperationBModPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/classification/OperationBModPoly.cpp
-
-OperationEvalModPoly.o : src/sgpp/basis/modpoly/operation/common/OperationEvalModPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/common/OperationEvalModPoly.cpp
-
-OperationHierarchisationModPoly.o : src/sgpp/basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
-
-OperationBPoly.o : src/sgpp/basis/poly/operation/classification/OperationBPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/classification/OperationBPoly.cpp
-
-OperationEvalPoly.o : src/sgpp/basis/poly/operation/common/OperationEvalPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/common/OperationEvalPoly.cpp
-
-OperationHierarchisationPoly.o : src/sgpp/basis/poly/operation/common/OperationHierarchisationPoly.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/poly/operation/common/OperationHierarchisationPoly.cpp
-
-OperationHierarchisationLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.cpp
-
-OperationEvalLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.cpp
-	
-OperationEvalBBLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.cpp
-
-OperationBLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/classification/OperationBLinearTrapezoidBoundary.cpp
-
-OperationDeltaLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationDeltaLinearTrapezoidBoundary.cpp
-
-OperationGammaLinearTrapezoidBoundary.o : src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaLinearTrapezoidBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/lineartrapezoidboundary/operation/finance/OperationGammaLinearTrapezoidBoundary.cpp
+###################################################################
+# Builds a Up/Down Test Application
+###################################################################	
+UpDownTest: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/UpDownTest_gcc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+else
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+else
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+endif
+endif
+endif
 		
-OperationHierarchisationLinearBoundary.o : src/sgpp/basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/common/OperationHierarchisationLinearBoundary.cpp
-
-OperationEvalLinearBoundary.o : src/sgpp/basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/common/OperationEvalLinearBoundary.cpp
-
-OperationBLinearBoundary.o : src/sgpp/basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
-	$(CC) $(CFLAGS) src/sgpp/basis/linearboundary/operation/classification/OperationBLinearBoundary.cpp
-	
-ARFFTools.o : src/sgpp/tools/classification/ARFFTools.cpp
-	$(CC) $(CFLAGS) src/sgpp/tools/classification/ARFFTools.cpp
-	
-DMSystemMatrix.o : src/sgpp/algorithm/classification/DMSystemMatrix.cpp
-	$(CC) $(CFLAGS) src/sgpp/algorithm/classification/DMSystemMatrix.cpp
-	
-ConjugateGradients.o : src/sgpp/solver/sle/ConjugateGradients.cpp
-	$(CC) $(CFLAGS) src/sgpp/solver/sle/ConjugateGradients.cpp
-
-Classifier.o : src/sgpp/application/classification/Classifier.cpp
-	$(CC) $(CFLAGS) src/sgpp/application/classification/Classifier.cpp
-
-SGppStopwatch.o : src/sgpp/common/SGppStopwatch.cpp
-	$(CC) $(CFLAGS) src/sgpp/common/SGppStopwatch.cpp
-	
-BoundingBox.o : src/sgpp/grid/common/BoundingBox.cpp
-	$(CC) $(CFLAGS) src/sgpp/grid/common/BoundingBox.cpp
-	
-NativeCppClassifier.o : src/sgpp/application/classification/NativeCppClassifier.cpp
-	$(CC) $(CFLAGS) src/sgpp/application/classification/NativeCppClassifier.cpp
-	
 clean:
-	\rm tmp/build_native/*.o *.o
+	rm -rdfv tmp/build_native
