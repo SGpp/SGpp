@@ -181,7 +181,7 @@ endif
 else
 ifeq ($(TR1),0)
 	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
-else	BSSolver
+else
 	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
 endif	
 endif
