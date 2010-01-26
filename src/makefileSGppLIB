@@ -1,15 +1,47 @@
-CC = g++
-DEBUG = 
-SRCDIR = src/sgpp/
-OUTDIR = tmp/build_native/
-CFLAGS = -Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -pthread -ffloat-store -Isrc/sgpp/
-LFLAGS = -Wall -pedantic -ansi -O3 -pthread
+#############################################################################
+# This file is part of sgpp, a program package making use of spatially      #
+# adaptive sparse grids to solve numerical problems                         #
+#                                                                           #
+# Copyright (C) 2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
+#                                                                           #
+# pysgpp is free software; you can redistribute it and/or modify            #
+# it under the terms of the GNU Lesser General Public License as published  #
+# by the Free Software Foundation; either version 3 of the License, or      #
+# (at your option) any later version.                                       #
+#                                                                           #
+# pysgpp is distributed in the hope that it will be useful,                 #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU Lesser General Public License for more details.                       #
+#                                                                           #
+# You should have received a copy of the GNU Lesser General Public License  #
+# along with pysgpp; if not, write to the Free Software                     #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
+# or see <http://www.gnu.org/licenses/>.                                    #
+#############################################################################
+
+SRCDIR = ./../../../src/sgpp/
+OUTDIR = ./
+BINDIR = ./../../../lib/sgpp/
 OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearTrapezoidBoundary.o OperationEvalLinearTrapezoidBoundary.o OperationBLinearTrapezoidBoundary.o OperationHierarchisationLinearBoundary.o OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesTimestepMatrix.o BlackScholesSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearTrapezoidBoundary.o OperationGammaLinearTrapezoidBoundary.o OperationEvalBBLinearTrapezoidBoundary.o Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o IOToolBonnSG.o OperationLTwoDotProductLinearTrapezoidBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o OperationLaplaceLinearTrapezoidBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o OperationTestModWavelet.o OperationBModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o OperationTestModPoly.o OperationTestPoly.o OperationTestLinearTrapezoidBoundary.o OperationTestLinearBoundary.o HeatEquationSolver.o HeatEquationTimestepMatrix.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o OperationHierarchisationModBspline.o ModBsplineGrid.o
 
 default : $(OBJS)
-	mkdir -p ./../../lib/sgpp/
-	cd tmp/build_native/ && ar rc ./../../lib/sgpp/libsgpp.a $(OBJS)
-	ranlib lib/sgpp/libsgpp.a
+	mkdir -p $(BINDIR)
+ifeq ($(CC),g++)
+	rm -f $(BINDIR)libsgpp_gcc.a
+	ar rc $(BINDIR)libsgpp_gcc.a $(OBJS)
+	ranlib $(BINDIR)libsgpp_gcc.a
+endif
+ifeq ($(CC),icpc)
+	rm -f $(BINDIR)libsgpp_icc.a
+	ar rc $(BINDIR)libsgpp_icc.a $(OBJS)
+	ranlib $(BINDIR)libsgpp_icc.a
+endif
+ifeq ($(CC),xlc++_r)
+	rm -f $(BINDIR)libsgpp_xlc.a
+	ar rc $(BINDIR)libsgpp_xlc.a $(OBJS)
+	ranlib $(BINDIR)libsgpp_xlc.a
+endif
 
 DataVector.o : $(SRCDIR)data/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)data/DataVector.cpp
@@ -210,5 +242,4 @@ SGppStopwatch.o : $(SRCDIR)tools/common/SGppStopwatch.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)SGppStopwatch.o $(SRCDIR)tools/common/SGppStopwatch.cpp
 	
 clean:
-	\rm tmp/build_native/*.o
-	\rm lib/sgpp/*.a
+	rm *
