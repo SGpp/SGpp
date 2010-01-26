@@ -27,21 +27,9 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
-ifeq ($(CC),g++)
-	rm -f $(BINDIR)libsgpp_gcc.a
-	ar rc $(BINDIR)libsgpp_gcc.a $(OBJS)
-	ranlib $(BINDIR)libsgpp_gcc.a
-endif
-ifeq ($(CC),icpc)
-	rm -f $(BINDIR)libsgpp_icc.a
-	ar rc $(BINDIR)libsgpp_icc.a $(OBJS)
-	ranlib $(BINDIR)libsgpp_icc.a
-endif
-ifeq ($(CC),xlc++_r)
-	rm -f $(BINDIR)libsgpp_xlc.a
-	ar rc $(BINDIR)libsgpp_xlc.a $(OBJS)
-	ranlib $(BINDIR)libsgpp_xlc.a
-endif
+	rm -f $(BINDIR)$(LIBNAME)
+	ar rc $(BINDIR)$(LIBNAME) $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME)
 
 DataVector.o : $(SRCDIR)data/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)data/DataVector.cpp

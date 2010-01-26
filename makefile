@@ -68,15 +68,15 @@ ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/sgpplib_gcc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a"
 else
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a"
 else
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a"
 endif
 endif
 endif
@@ -84,24 +84,24 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/sgpplib_icc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a"
 else
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)" "LIBNAME=libsgpp_icc.a"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)" "LIBNAME=libsgpp_icc.a"
 else	
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a"
 endif	
 endif
 endif
 ifeq ($(CC),xlc++_r)
 	mkdir -p tmp/build_native/sgpplib_xlc
 ifeq ($(OMP),0)
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a"
 else
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xls.a"
 endif
 endif
 
@@ -113,15 +113,15 @@ ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/BSSolver_gcc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolver_GCC"
 else
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolver_GCC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolver_GCC"
 else
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolver_GCC"
 endif
 endif
 endif
@@ -129,24 +129,24 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/BSSolver_icc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC"
 else
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC"
 else	
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC"
 endif	
 endif
 endif
 ifeq ($(CC),xlc++_r)
 	mkdir -p tmp/build_native/BSSolver_xlc
 ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSSolver_XLC"
 else
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSSolver_XLC"
 endif
 endif
 
@@ -158,15 +158,15 @@ ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/HESolver_gcc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolver_GCC"
 else
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolver_GCC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolver_GCC"
 else
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolver_GCC"
 endif
 endif
 endif
@@ -174,24 +174,24 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/HESolver_icc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC"
 else
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC"
 else
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC"
 endif	
 endif
 endif
 ifeq ($(CC),xlc++_r)
 	mkdir -p tmp/build_native/HESolver_xlc
 ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=HESolver_XLC"
 else
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=HESolver_XLC"
 endif
 endif
 
@@ -203,15 +203,15 @@ ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/Classifier_gcc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=Classifier_GCC"
 else
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=Classifier_GCC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=Classifier_GCC"
 else
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=Classifier_GCC"
 endif
 endif
 endif
@@ -219,24 +219,24 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/Classifier_icc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=Classifier_ICC"
 else
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=Classifier_ICC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)" "LIBNAME=libsgpp_icc.a" "BINNAME=Classifier_ICC"
 else	
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=Classifier_ICC"
 endif	
 endif
 endif
 ifeq ($(CC),xlc++_r)
 	mkdir -p tmp/build_native/Classifier_xlc
 ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=Classifier_XLC"
 else
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)"
+	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=Classifier_XLC"
 endif
 endif
 
@@ -248,15 +248,15 @@ ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/UpDownTest_gcc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)"
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC"
 else
-	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)"
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)"
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC"
 else
-	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)"
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC"
 endif
 endif
 endif
