@@ -32,7 +32,6 @@ py_env = env.Clone()
 
 py_env.Append(SWIGFLAGS=['-c++','-python'])
 py_env.Append(CPPPATH=['#/src/sgpp'])
-py_env.Append(LINKFLAGS=['-framework','Python'])
 
 pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
 
