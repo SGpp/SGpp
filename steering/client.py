@@ -1,70 +1,109 @@
 import socket
 import sys
+from xml.dom.minidom import parseString, getDOMImplementation
+from storage import Storage
 
 
 class SocketClient:
   
+  storage = None
+
   HOST = 'atsccs24'    # The remote host
   PORT = 9000         # The same port as used by the server
   
   sendSocket = None
   receiveSocket = None
   
+  MESS_SCOPE_QUERY  = "scopeQuery"
+  MESS_SCOPE_ANSWER = "scopeAnswer"
+  MESS_DATA_QUERY   = "dataQuery"
+  MESS_DATA_ANSWER  = "dataAnswer"
+ 
   EOF = "EOF"
 
-  header = """
-  <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-  <!DOCTYPE boost_serialization>
-  <boost_serialization signature="serialization::archive" version="5">
-  <cell class_id="0" tracking_level="0" version="0">
-     <type>12</type>
-     <data class_id="9" tracking_level="1" version="0" object_id="_0">
-       <parent class_id="10" tracking_level="1" version="0" object_id="_1"></parent>
-       <re>2</re>
-       <time>0.10000000000000001</time> 
-        <velocities> """
-
-  footer = """
-     </velocities>
-    </data>
-   </cell>
-   EOF
-   """
-
-  termination = """
-  <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-  <!DOCTYPE boost_serialization>
-  <boost_serialization signature="serialization::archive" version="5">
-  <cell class_id="0" tracking_level="0" version="0">
-  <type>9</type>
-  <data class_id="1" tracking_level="1" version="0" object_id="_0">
-      <parent class_id="9" tracking_level="1" version="0" object_id="_1"></parent>
-  </data>
-  </cell>
-  EOF
-  """  
   
-  def __init__(self):
-    self.connect()
+  def __init__(self, storage):
+    #self.connect()
+    self.storage = storage
 
-  def sendCurrentGrid(self, values):
-    serializedData = self.header + "\n<count>" + str(len(values)) + "</count>\n"
-    serializedData = serializedData + "<item_version>0</item_version>\n"
- 
-    for i in xrange(len(values)):
-      serializedData = serializedData + "<item>" + str(values[i]) + "</item>\n"
-  
-    serializedData = serializedData + self.footer 
-    self.send(serializedData)
 
-  def sendTerminationMessage(self):
-    self.send(self.termination)
+  def doCommunication(self):
+    #message = recv_end()
+    message = getDOMImplementation().createDocument(None, self.MESS_DATA_QUERY , None).toxml() 
+    xml = parseString(message)    
+      
+    if xml.documentElement.tagName == self.MESS_SCOPE_QUERY:
+      self.respondToScopeQuery()
+    elif xml.documentElement.tagName == self.MESS_DATA_QUERY:
+      self.respondToDataQuery(xml)
+    else:
+      print "ERROR: Unrecognized Message Tag."
+
     return
+
+
+  def respondToScopeQuery(self):
+    answer = getDOMImplementation().createDocument(None, self.MESS_SCOPE_ANSWER, None)
+    
+    scopeID = answer.createElement("scopeID")
+    scopeID.setAttribute("value", "0")   
+
+    dimension = answer.createElement("dimension")
+    dimension.setAttribute("value", "0")   
+
+    bottomRefPoint = answer.createElement("bottomReferencePoint")
+    bottomRefPoint.setAttribute("x1", "0")   
+
+    boundingBox = answer.createElement("boundingBox")
+    boundingBox.setAttribute("h1", "0")   
+
+    answer.documentElement.appendChild(scopeID)
+    answer.documentElement.appendChild(dimension)
+    answer.documentElement.appendChild(bottomRefPoint)
+    answer.documentElement.appendChild(boundingBox)
+    
+    print answer.toprettyxml()   
+    #self.send(answer.toxml())    
+
+ 
+  def respondToDataQuery(self, dataQuery):
+    
+    answer = getDOMImplementation().createDocument(None, self.MESS_DATA_ANSWER, None)
+	
+    scopeID = answer.createElement("scopeID")
+    scopeID.setAttribute("value", "0")   
+
+    dimension = answer.createElement("dimension")
+    dimension.setAttribute("value", "0")   
+
+    bottomRefPoint = answer.createElement("bottomReferencePoint")
+    bottomRefPoint.setAttribute("x1", "0")   
+
+    boundingBox = answer.createElement("boundingBox")
+    boundingBox.setAttribute("h1", "0")   
+
+    data = answer.createElement("data")
+    
+    values = self.storage.extractGrid(100, [0.5,0.5])   
+
+    for i in range(len(values)):
+      subdata = answer.createElement("subdata")
+      subdata.setAttribute("value", str(values[i]))
+      data.appendChild(subdata)
+    
+    answer.documentElement.appendChild(scopeID)
+    answer.documentElement.appendChild(dimension)
+    answer.documentElement.appendChild(bottomRefPoint)
+    answer.documentElement.appendChild(boundingBox)
+    answer.documentElement.appendChild(data)
+
+    print answer.toprettyxml()   
+    #self.send(answer.toxml())    
+
 
   def send(self, dataString):
     totalsent = 0
     while totalsent < len(dataString):
-      print "sending"
       sent = self.sendSocket.send(dataString[totalsent:])
       if sent == 0:
         raise RuntimeError, "socket connection broken"
@@ -72,6 +111,7 @@ class SocketClient:
 
   def receiveParametersMessage(self):
     xmlString = self.recv_end() 
+
  
   def recv_end(self):
     End = self.EOF
@@ -97,18 +137,17 @@ class SocketClient:
           break
     return ''.join(total_data)
 
+
   def connect(self):
     self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.receiveSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     self.sendSocket.connect((self.HOST, self.PORT))
     self.receiveSocket.connect((self.HOST, self.PORT + 1))
+
   
   def disconnect(self):
     if self.sendSocket is None:
       return
     else: 
       self.sendSocket.close()
-
- 
-
