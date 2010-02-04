@@ -66,9 +66,8 @@ class Storage:
         p[3] = parameters[1]
         vx = self.grid.createOperationEval().eval(self.alpha_vx, p)
         vy = self.grid.createOperationEval().eval(self.alpha_vy, p)
-        values.append(-1*vy)
         values.append(vx)
-        values.append(0)
+        values.append(vy)
 
     return values
  
