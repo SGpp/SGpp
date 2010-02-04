@@ -320,6 +320,7 @@ class GridGenerator(_object):
     def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def regular(*args): return _pysgpp.GridGenerator_regular(*args)
+    def regularWithDifferentLevels(*args): return _pysgpp.GridGenerator_regularWithDifferentLevels(*args)
     def refine(*args): return _pysgpp.GridGenerator_refine(*args)
     def getNumberOfRefinablePoints(*args): return _pysgpp.GridGenerator_getNumberOfRefinablePoints(*args)
     __swig_destroy__ = _pysgpp.delete_GridGenerator
@@ -407,6 +408,7 @@ class HashGenerator(_object):
     __repr__ = _swig_repr
     def regular(*args): return _pysgpp.HashGenerator_regular(*args)
     def regularWithBoundaries(*args): return _pysgpp.HashGenerator_regularWithBoundaries(*args)
+    def regularWithBoundariesDifferentLevels(*args): return _pysgpp.HashGenerator_regularWithBoundariesDifferentLevels(*args)
     def __init__(self, *args): 
         this = _pysgpp.new_HashGenerator(*args)
         try: self.this.append(this)
@@ -465,6 +467,7 @@ class StandardGridGenerator(GridGenerator):
     __swig_destroy__ = _pysgpp.delete_StandardGridGenerator
     __del__ = lambda self : None;
     def regular(*args): return _pysgpp.StandardGridGenerator_regular(*args)
+    def regularWithDifferentLevels(*args): return _pysgpp.StandardGridGenerator_regularWithDifferentLevels(*args)
     def refine(*args): return _pysgpp.StandardGridGenerator_refine(*args)
     def getNumberOfRefinablePoints(*args): return _pysgpp.StandardGridGenerator_getNumberOfRefinablePoints(*args)
 StandardGridGenerator_swigregister = _pysgpp.StandardGridGenerator_swigregister
@@ -485,6 +488,7 @@ class BoundaryGridGenerator(GridGenerator):
     __swig_destroy__ = _pysgpp.delete_BoundaryGridGenerator
     __del__ = lambda self : None;
     def regular(*args): return _pysgpp.BoundaryGridGenerator_regular(*args)
+    def regularWithDifferentLevels(*args): return _pysgpp.BoundaryGridGenerator_regularWithDifferentLevels(*args)
     def refine(*args): return _pysgpp.BoundaryGridGenerator_refine(*args)
     def getNumberOfRefinablePoints(*args): return _pysgpp.BoundaryGridGenerator_getNumberOfRefinablePoints(*args)
 BoundaryGridGenerator_swigregister = _pysgpp.BoundaryGridGenerator_swigregister

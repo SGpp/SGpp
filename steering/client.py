@@ -8,28 +8,29 @@ class SocketClient:
   
   storage = None
 
-  HOST = 'atsccs24'    # The remote host
-  PORT = 9000         # The same port as used by the server
-  
-  sendSocket = None
-  receiveSocket = None
+  HOST = 'atsccs24.informatik.tu-muenchen.de'  # The remote host
+  SERVER_PORT = 9000         # The same port as used by the server
+  GUI_PORT = 14007 
+ 
+  serverSocket = None
+  guiSocket = None
   
   MESS_SCOPE_QUERY  = "scopeQuery"
   MESS_SCOPE_ANSWER = "scopeAnswer"
   MESS_DATA_QUERY   = "dataQuery"
   MESS_DATA_ANSWER  = "dataAnswer"
  
-  EOF = "EOF"
+  EOF = "eof"
 
   
   def __init__(self, storage):
-    #self.connect()
+    self.connect()
     self.storage = storage
 
-
   def doCommunication(self):
-    #message = recv_end()
-    message = getDOMImplementation().createDocument(None, self.MESS_DATA_QUERY , None).toxml() 
+    message = self.recv_end()
+    #message = getDOMImplementation().createDocument(None, self.MESS_SCOPE_QUERY , None).toxml() 
+    print "Received: " + message
     xml = parseString(message)    
       
     if xml.documentElement.tagName == self.MESS_SCOPE_QUERY:
@@ -49,22 +50,23 @@ class SocketClient:
     scopeID.setAttribute("value", "0")   
 
     dimension = answer.createElement("dimension")
-    dimension.setAttribute("value", "0")   
+    dimension.setAttribute("value", "2")   
 
     bottomRefPoint = answer.createElement("bottomReferencePoint")
+    bottomRefPoint.setAttribute("x0", "0")   
     bottomRefPoint.setAttribute("x1", "0")   
-
+    
     boundingBox = answer.createElement("boundingBox")
-    boundingBox.setAttribute("h1", "0")   
-
+    boundingBox.setAttribute("h0", "100")   
+    boundingBox.setAttribute("h1", "100")   
+    
     answer.documentElement.appendChild(scopeID)
     answer.documentElement.appendChild(dimension)
     answer.documentElement.appendChild(bottomRefPoint)
     answer.documentElement.appendChild(boundingBox)
     
-    print answer.toprettyxml()   
-    #self.send(answer.toxml())    
-
+    self.sendServer(answer.documentElement.toprettyxml() + "\n eof")    
+    self.sendGUI(answer.documentElement.toprettyxml() + "\n eof")    
  
   def respondToDataQuery(self, dataQuery):
     
@@ -73,44 +75,60 @@ class SocketClient:
     scopeID = answer.createElement("scopeID")
     scopeID.setAttribute("value", "0")   
 
-    dimension = answer.createElement("dimension")
-    dimension.setAttribute("value", "0")   
-
+    dimension = answer.createElement("meshDimensions")
+    dimension.setAttribute("h0", "64")   
+    dimension.setAttribute("h1", "64")   
+    
     bottomRefPoint = answer.createElement("bottomReferencePoint")
+    bottomRefPoint.setAttribute("x0", "0")   
     bottomRefPoint.setAttribute("x1", "0")   
-
+   
     boundingBox = answer.createElement("boundingBox")
-    boundingBox.setAttribute("h1", "0")   
+    boundingBox.setAttribute("h0", "1")   
+    boundingBox.setAttribute("h1", "1") 
 
     data = answer.createElement("data")
     
-    values = self.storage.extractGrid(100, [0.5,0.5])   
+    values = self.storage.extractGrid(64, [0.0,0.5])   
+
+    myfile = open("myfile", "w")
+ 
+    #for i in range(len(values)):
+    #  myfile.write(str(values[i]) + " " + str(values[i+1]) + " 0\n" )
+    #  i +=2     
 
     for i in range(len(values)):
       subdata = answer.createElement("subdata")
       subdata.setAttribute("value", str(values[i]))
       data.appendChild(subdata)
     
+    myfile.close()
+
     answer.documentElement.appendChild(scopeID)
     answer.documentElement.appendChild(dimension)
     answer.documentElement.appendChild(bottomRefPoint)
     answer.documentElement.appendChild(boundingBox)
     answer.documentElement.appendChild(data)
 
-    print answer.toprettyxml()   
-    #self.send(answer.toxml())    
+    self.sendServer(answer.documentElement.toprettyxml() + "\n eof")    
 
 
-  def send(self, dataString):
+  def sendServer(self, dataString):
     totalsent = 0
     while totalsent < len(dataString):
-      sent = self.sendSocket.send(dataString[totalsent:])
+      sent = self.serverSocket.send(dataString[totalsent:])
       if sent == 0:
         raise RuntimeError, "socket connection broken"
       totalsent = totalsent + sent
 
-  def receiveParametersMessage(self):
-    xmlString = self.recv_end() 
+
+  def sendGUI(self, dataString):
+    totalsent = 0
+    while totalsent < len(dataString):
+      sent = self.guiSocket.send(dataString[totalsent:])
+      if sent == 0:
+        raise RuntimeError, "socket connection broken"
+      totalsent = totalsent + sent
 
  
   def recv_end(self):
@@ -119,7 +137,7 @@ class SocketClient:
     data=''
     got_end=False
     while True:
-      data=self.receiveSocket.recv(1024)
+      data=self.serverSocket.recv(1024)
       if not data: break
       if End in data:
         total_data.append(data[:data.find(End)])
@@ -139,15 +157,14 @@ class SocketClient:
 
 
   def connect(self):
-    self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    self.receiveSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    self.guiSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
-    self.sendSocket.connect((self.HOST, self.PORT))
-    self.receiveSocket.connect((self.HOST, self.PORT + 1))
-
+    self.serverSocket.connect((self.HOST, self.SERVER_PORT))
+    self.guiSocket.connect((self.HOST, self.GUI_PORT))
   
-  def disconnect(self):
-    if self.sendSocket is None:
-      return
-    else: 
-      self.sendSocket.close()
+#  def disconnect(self):
+ #   if self.sendSocket is None:
+  #    return
+   # else: 
+    #  self.sendSocket.close()
