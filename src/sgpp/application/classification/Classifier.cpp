@@ -22,9 +22,9 @@
 
 #include "application/classification/Classifier.hpp"
 #include "exception/operation_exception.hpp"
-#include "algorithm/classification/DMSystemMatrix.hpp"
+#include "algorithm/datadriven/DMSystemMatrix.hpp"
 #include "solver/sle/ConjugateGradients.hpp"
-#include "tools/classification/ARFFTools.hpp"
+#include "tools/datadriven/ARFFTools.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
@@ -184,9 +184,9 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
 
     std::cout << "start evaluating the test instances" << std::endl;
 
-    OperationEval* myEval = myGrid->createOperationEval();
-    correct = myEval->test(alpha, test, testclasses);
-    delete myEval;
+    OperationTest* myTest = myGrid->createOperationTest();
+    correct = myTest->test(alpha, test, testclasses);
+    delete myTest;
 
     std::cout << "finishes evaluating the test instances" << std::endl;
 

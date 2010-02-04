@@ -28,6 +28,7 @@ OBJS = UpDownTest.o
 
 default: $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)UpDownTest.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
+	cp $(BINDIR)$(BINNAME) $(BINDIR)UpDown
 		
 UpDownTest.o : $(SRCDIR)application/common/UpDownTest.cpp
 	$(CC) $(CFLAGS) -o $(BUILDDIR)UpDownTest.o $(SRCDIR)application/common/UpDownTest.cpp

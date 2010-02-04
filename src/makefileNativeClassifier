@@ -28,6 +28,7 @@ OBJS = NativeCppClassifier.o Classifier.o
 
 default: $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifier.o $(BUILDDIR)Classifier.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
+	cp $(BINDIR)$(BINNAME) $(BINDIR)Classifier
 
 Classifier.o : $(SRCDIR)application/classification/Classifier.cpp
 	$(CC) $(CFLAGS) -o $(BUILDDIR)Classifier.o $(SRCDIR)application/classification/Classifier.cpp
