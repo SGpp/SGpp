@@ -1,99 +1,127 @@
 import vtk
-import numpy
-from vtk.util.colors import tomato, banana
+from Tkinter import *
 from storage import Storage
 
-
-math = vtk.vtkMath()
-storage = Storage()
-
-nr =  2
-
-points = vtk.vtkPoints()
-points.Allocate(nr,nr)
-
-vectors = vtk.vtkFloatArray()
-vectors.SetNumberOfComponents(3)
-
-#values = storage.extractGrid(100, [0.0,0.5])
-
-#for i in range(1, len(values), 2):
- #   points.InsertNextPoint((i-1)%nr, (i-1) - (i-1)%nr * nr , 0)
-  #  vectors.InsertNextTuple3(values[i-1], values[i],0) 
+from vtk import *
+from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
 
 
-points.InsertNextPoint(0, 0, 0)
-points.InsertNextPoint(1, 0, 0)
-points.InsertNextPoint(0, 1, 0)
-points.InsertNextPoint(1, 1, 0)
-vectors.InsertNextTuple3(5, 5,0) 
-vectors.InsertNextTuple3(5, -5,0) 
-vectors.InsertNextTuple3(-5, 5,0) 
-vectors.InsertNextTuple3(-4, -7,0) 
+class SampleViewer:
 
-print vectors
+  storage = None
+  TK = None
+  currParam = None
+  renderWidget = None
+  dimensionSize = None
+  grid = None 
+  ren = None
+  renWin = None
+  once = None
+  values = None
 
-#grid  = vtk.vtkUniformGrid()
-grid = vtk.vtkStructuredGrid()
-grid.SetDimensions([nr, nr, 0])
-grid.SetPoints(points)
-#grid.SetOrigin(0,0,0)
-#grid.SetSpacing(0.01,0.01,0.0)
-#grid.SetExtent(0,99,0,99,0,0)
-grid.GetPointData().SetVectors(vectors)
+  def __init__ ( self ):
+    self.storage = Storage()
+    self.currParam = [0.5, 0.5]
+    self.dimensionSize = 100
+    self.once = 0 
+    self.grid = vtk.vtkStructuredGrid()
+    self.createGUI()
 
-print grid
+  
+  def createGUI(self): 
+    # Make a root window
+    self.TK = Tk() 
 
-append = vtk.vtkAppendFilter()
-append.AddInput(grid)
+    # Add a vtkTkRenderWidget
+    self.renderWidget = vtkTkRenderWidget(self.TK,width=800,height=800)
+    self.renderWidget.grid(row=0, column=2)
 
-# Use sphere as glyph source.
-balls = vtk.vtkArrowSource()
-balls.SetTipLength(0.0035)
-balls.SetTipRadius(0.05)
-balls.SetTipResolution(6)
-balls.SetShaftResolution(6)
-balls.SetShaftRadius(0.0003)
+    # Get the render window from the widget
+    scale = Scale ( self.TK, label='T', orient='vertical', from_=1, to=100, command=self.changeTime)
+    scale.grid(row=0,column=0, sticky=N+S)
+    scale = Scale ( self.TK, label='Re', orient='vertical', from_=1, to=100, command=self.changeRe)
+    scale.grid(row=0,column=1, sticky=N+S)
 
-glyph = vtk.vtkGlyph3D()
-glyph.SetInputConnection(append.GetOutputPort())
-glyph.SetSourceConnection(balls.GetOutputPort())
-glyph.SetVectorModeToUseVector()
-glyph.OrientOn()
-glyph.SetScaleModeToScaleByVector()
-glyph.SetScaleFactor(3)
+    self.renWin = self.renderWidget.GetRenderWindow()
 
-glyphMapper = vtk.vtkPolyDataMapper()
-glyphMapper.SetInputConnection(glyph.GetOutputPort())
+    # Next, do the VTK stuff
+    ren = vtkRenderer()
+    ren.SetBackground(.8, .8, .8)
+    self.renWin.AddRenderer(ren)
 
-glyph = vtk.vtkActor()
-glyph.SetMapper(glyphMapper)
-#glyph.GetProperty().SetDiffuseColor(tomato)
-#glyph.GetProperty().SetSpecular(.3)
-#glyph.GetProperty().SetSpecularPower(30)
+    self.loadGrid()  
+  
+    append = vtk.vtkAppendFilter()
+    append.AddInput(self.grid)
 
-# bounding box
-#outline = vtk.vtkOutlineFilter()
-#outline.SetInput( grid2.GetOutput() )
-#outlineMapper = vtk.vtkPolyDataMapper()
-#outlineMapper.SetInput( outline.GetOutput() )
-#outlineActor = vtk.vtkActor()
-#outlineActor.SetMapper( outlineMapper )
-#outlineActor.GetProperty().SetColor(0.0,0.0,1.0)
+    balls = vtk.vtkArrowSource()
 
-ren = vtk.vtkRenderer()
-ren.SetBackground(.8, .8, .8)
-renWin = vtk.vtkRenderWindow()
-renWin.SetSize(800, 800)
-renWin.AddRenderer( ren )
+    glyph = vtk.vtkGlyph3D()
+    glyph.SetInputConnection(append.GetOutputPort())
+    glyph.SetSourceConnection(balls.GetOutputPort())
+    glyph.SetVectorModeToUseVector()
+    glyph.SetScaleModeToScaleByVector()
+    glyph.SetScaleFactor(50)
 
-iren = vtk.vtkRenderWindowInteractor()
-iren.SetRenderWindow(renWin)
+    glyphMapper = vtk.vtkPolyDataMapper()
+    glyphMapper.SetInputConnection(glyph.GetOutputPort())
 
-#ren.AddActor(outlineActor)
-ren.AddActor(glyph)
+    glyph = vtk.vtkActor()
+    glyph.SetMapper(glyphMapper)
 
-renWin.Render()
+    # bounding box
+    outline = vtk.vtkOutlineFilter()
+    outline.SetInputConnection( append.GetOutputPort() )
+    outlineMapper = vtk.vtkPolyDataMapper()
+    outlineMapper.SetInput( outline.GetOutput() )
+    outlineActor = vtk.vtkActor()
+    outlineActor.SetMapper( outlineMapper )
+    outlineActor.GetProperty().SetColor(0.0,0.0,1.0)
 
-iren.Initialize()
-iren.Start()
+    ren.AddActor(outlineActor)
+    ren.AddActor(glyph)
+
+    #button = Button(text="Quit",command=quit)
+    #button.pack(expand='true',fill='x')
+ 
+    # start up the event loop
+    self.TK.mainloop()
+
+  def constructActors(self):
+    return 
+   
+  def loadGrid(self):
+    nr = self.dimensionSize
+
+    points = vtk.vtkPoints()
+    points.Allocate(nr,nr)
+
+    vectors = vtk.vtkFloatArray()
+    vectors.SetNumberOfComponents(3)
+
+    values = self.storage.extractGrid(100, self.currParam)
+
+    print len(values)
+
+    for i in range(0, len(values), 2):
+      points.InsertNextPoint( i / (2 * nr) , (i/2) % nr, 0)
+      vectors.InsertNextTuple3(-1 * values[i], values[i+1],0) 
+
+    self.grid.SetPoints(points)
+    self.grid.GetPointData().SetVectors(vectors)
+
+    return
+
+  def changeTime(self, value):
+    self.currParam[0] = float(value)/100.0
+    self.loadGrid()
+    self.renWin.Render()
+  
+  def changeRe(self, value):
+    self.currParam[1] = float(value)/100.0
+    self.loadGrid()
+    self.renWin.Render()
+
+
+if __name__ == '__main__':
+    S = SampleViewer()
