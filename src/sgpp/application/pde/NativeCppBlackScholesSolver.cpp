@@ -407,6 +407,8 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
 
+	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl << std::endl << std::endl;
+
 	// Init the grid with on payoff function
 	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
 
