@@ -345,7 +345,7 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
 }
 
 /**
- * Do a Black Scholes solver test with one asset (ND Sparse Grid) European call option
+ * Do a Black Scholes solver test with n assets (ND Sparse Grid) European call option
  *
  * @param d the number of dimensions used in the Sparse Grid
  * @param l the number of levels used in the Sparse Grid
@@ -411,7 +411,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
 
 	// Print the payoff function into a gnuplot file
-	if (dim <= 3)
+	if (dim < 3)
 	{
 		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
 		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
@@ -445,7 +445,149 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 
 	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
 	{
-		if (dim <= 3)
+		if (dim < 3)
+		{
+			// Print the solved Black Scholes Equation into a gnuplot file
+			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+		}
+		else
+		{
+			myBSSolver->storeGrid("solvedBS_Nd.bonn", *alpha, true);
+		}
+	}
+
+	// Test call @ the money
+	if (payoffType == "avgM")
+	{
+		std::vector<double> point;
+		for (size_t i = 0; i < d; i++)
+		{
+			point.push_back(1.0);
+		}
+		std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
+	}
+
+	delete myBSSolver;
+	delete myBoundingBox;
+	delete alpha;
+}
+
+
+/**
+ * Do a Black Scholes solver test with n assets (ND Sparse Grid) European call option, with Intial
+ * Grid Refinement
+ *
+ * @param d the number of dimensions used in the Sparse Grid
+ * @param l the number of levels used in the Sparse Grid
+ * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
+ * @param fileBound filename of the file that contains the grid's bounding box
+ * @param fileStrike filename of the file that contains the assets' strikes
+ * @param payoffType method that is used to determine the multidimensional payoff function
+ * @param riskfree the riskfree rate of the marketmodel
+ * @param timeSt the number of timesteps that are executed during the solving process
+ * @param dt the size of delta t in the ODE solver
+ * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
+ * @param CGeps the epsilon used in the CG/BiCGStab
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
+ * @param dInitialAdpatDist initial distance from @the money. Is devided in every iteration by the number of the iteration
+ */
+void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, size_t nIterAdaptSteps, double dInitialAdpatDist)
+{
+	size_t dim = d;
+	size_t level = l;
+	double* strike = new double[dim];
+
+	size_t timesteps = timeSt;
+	double stepsize = dt;
+	size_t CGiterations = CGIt;
+	double CGepsilon = CGeps;
+
+	DataVector mu(dim);
+	DataVector sigma(dim);
+	DataVector rho(dim,dim);
+
+	double r = riskfree;
+
+	if (readStrikes(fileStrike, dim, strike) != 0)
+	{
+		return;
+	}
+
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
+	{
+		return;
+	}
+
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+	{
+		return;
+	}
+
+	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	delete[] myBoundaries;
+
+	// init Screen Object
+	myBSSolver->initScreen();
+
+	// Construct a grid
+	myBSSolver->constructGrid(*myBoundingBox, level);
+
+	// init the basis functions' coefficient vector
+	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+
+	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+
+	// refine the grid to approximate the singularity in the start solution better
+	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+	{
+		std::cout << "Refining Grid..." << std::endl;
+		myBSSolver->refineInitialGrid(*alpha, strike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
+		std::cout << "Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+	}
+	std::cout << std::endl << std::endl;
+
+	// Print the payoff function into a gnuplot file
+	if (dim < 3)
+	{
+		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+	}
+	else
+	{
+		myBSSolver->storeGrid("payoff_Nd.bonn", *alpha, true);
+	}
+
+	// Set stochastic data
+	myBSSolver->setStochasticData(mu, sigma, rho, r);
+
+	// Start solving the Black Scholes Equation
+	if (Solver == "ExEul")
+	{
+		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "ImEul")
+	{
+		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "CrNic")
+	{
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	}
+	else
+	{
+		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
+	}
+
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+	{
+		if (dim < 3)
 		{
 			// Print the solved Black Scholes Equation into a gnuplot file
 			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
@@ -673,6 +815,30 @@ int main(int argc, char *argv[])
 			solver.assign(argv[11]);
 
 			testNUnderlyings(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, fileStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver);
+		}
+	}
+	else if (option == "solveNDadapt")
+	{
+		if (argc != 16)
+		{
+			writeHelp();
+		}
+		else
+		{
+			std::string fileStoch;
+			std::string fileBound;
+			std::string fileStrike;
+			std::string ani;
+			std::string solver;
+			std::string payoff;
+
+			fileStoch.assign(argv[5]);
+			fileBound.assign(argv[4]);
+			fileStrike.assign(argv[6]);
+			payoff.assign(argv[7]);
+			solver.assign(argv[11]);
+
+			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, fileStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]));
 		}
 	}
 	else if (option == "solveBonn")
