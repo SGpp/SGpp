@@ -26,8 +26,9 @@
 #include "solver/ode/CrankNicolson.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
-#include "stdlib.h"
+#include <cstdlib>
 #include <sstream>
+#include <cmath>
 
 namespace sg
 {
@@ -76,6 +77,73 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	//std::cout << serGrid << std::endl;
 
 	bGridConstructed = true;
+}
+
+void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, std::string payoffType, double dStrikeDistance)
+{
+	size_t nRefinements = 0;
+
+	if (bGridConstructed)
+	{
+
+		DataVector refineVector(alpha.getSize());
+
+		if (payoffType == "avgM")
+		{
+			double tmp;
+			double* dblFuncValues = new double[dim];
+			double dDistance;
+
+			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			{
+				std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+				std::stringstream coordsStream(coords);
+
+				for (size_t j = 0; j < dim; j++)
+				{
+					coordsStream >> tmp;
+
+					dblFuncValues[j] = tmp;
+				}
+
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += dblFuncValues[j];
+				}
+				dDistance = fabs(((tmp/static_cast<double>(dim))-1.0));
+				if (dDistance <= dStrikeDistance)
+				{
+					refineVector[i] = dDistance;
+					nRefinements++;
+				}
+				else
+				{
+					refineVector[i] = 0.0;
+				}
+			}
+			delete[] dblFuncValues;
+
+			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+
+			myGrid->createGridGenerator()->refine(myRefineFunc);
+
+			delete myRefineFunc;
+
+			alpha.resize(myGridStorage->size());
+
+			// reinit the grid with the payoff function
+			initGridWithEuroCallPayoff(alpha, strike, payoffType);
+		}
+		else
+		{
+			throw new application_exception("BlackScholesSolver::refineGrid : An unsupported payoffType was specified!");
+		}
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::refineGrid : The grid wasn't initialized before!");
+	}
 }
 
 void BlackScholesSolver::constructGrid(std::string tfilename, DataVector& emptyAlpha, bool& ishierarchized)
@@ -417,7 +485,7 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2010");
+	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.1", "Alexander Heinecke, (C) 2009-2010");
 	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
@@ -498,6 +566,37 @@ void BlackScholesSolver::writeHelp()
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
 		mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 " << std::endl;
+		mySStream << std::endl;
+		mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+		mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
+		mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
+		mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
+		mySStream << std::endl << std::endl;
+
+		mySStream << "solveNDadapt" << std::endl << "------" << std::endl;
+		mySStream << "the following options must be specified:" << std::endl;
+		mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+		mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
+		mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+		mySStream << "	r: the riskfree rate" << std::endl;
+		mySStream << "	T: time to maturity" << std::endl;
+		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+		mySStream << "	Adapt-Initial-Refinement: Number of Initial" << std::endl;
+		mySStream << "			Refinements" << std::endl;
+		mySStream << "	Adapt-Initial-Distance: determines the distance" << std::endl;
+		mySStream << "			a grid point must have from @money to" << std::endl;
+		mySStream << "			by refined" << std::endl;
+		mySStream << std::endl;
+		mySStream << "Example:" << std::endl;
+		mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5" << std::endl;
 		mySStream << std::endl;
 		mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 		mySStream << "	payoff.gnuplot: the start condition" << std::endl;

@@ -168,6 +168,8 @@ public:
 	/**
 	 * Calculates the number of points, which can be refined
 	 *
+	 * @todo URGENT (heinecke) !!!! this doesn't for boundary grids!!!!!
+	 *
 	 * @param storage hashmap that stores the grid points
 	 */
 	int getNumberOfRefinablePoints(GridStorage* storage)

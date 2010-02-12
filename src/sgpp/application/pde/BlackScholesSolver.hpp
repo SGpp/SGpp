@@ -115,6 +115,20 @@ public:
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
 	/**
+	 * This function tries to refine the grid such that
+	 * the same meshwidth is used for the singularity as on the grid's boundary. So this grid
+	 * is able to approximate the start solution correctly
+	 *
+	 * After refining the grid the payoff function is applied to the grid.
+	 *
+	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
+	 * @param strike pointer to an array the contains all call options strikes
+	 * @param payoffType the type of payoff Function used ONLY supported: avgM
+	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
+	 */
+	void refineInitialGrid(DataVector& alpha, double* strike, std::string payoffType, double dStrikeDistance);
+
+	/**
 	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
 	 *
 	 * Use this routine if you want to solve a problem stored in the format provided by the solving system
