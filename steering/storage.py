@@ -51,12 +51,14 @@ class Storage:
     hierarchisation.doHierarchisation(self.alpha_vy)
 
     #hierarchisation.doDehierarchisation(alpha)    
-    #self.writeGnuplot("out.dat", self.grid, alpha_vx, alpha_vy, 128)
+    self.writeGnuplot("out.dat", self.grid, self.alpha_vx, self.alpha_vy, 100, [0.5,0.0])
     return
 
   def extractGrid(self, resolution, parameters):
     p = DataVector(1,4)
     values = []
+
+    evaluator = self.grid.createOperationEval()
     
     for x in xrange(resolution):
       for y in xrange(resolution):
@@ -64,29 +66,30 @@ class Storage:
         p[1] = float(y) / (resolution - 1)
         p[2] = parameters[0]
         p[3] = parameters[1]
-        vx = self.grid.createOperationEval().eval(self.alpha_vx, p)
-        vy = self.grid.createOperationEval().eval(self.alpha_vy, p)
+        vx = evaluator.eval(self.alpha_vx, p)
+        vy = evaluator.eval(self.alpha_vy, p)
         values.append(vx)
         values.append(vy)
 
     return values
  
  
-  def writeGnuplot(self, filename, grid, alpha_vx, alpha_vy, resolution):
+  def writeGnuplot(self, filename, grid, alpha_vx, alpha_vy, resolution, parameters):
     p = DataVector(1,4)
     fout = file(filename, "w")
 
-    for z in xrange(100):
+    for y in xrange(resolution):
       for x in xrange(resolution):
-        for y in xrange(resolution):
-            p[0] = float(x) / (resolution - 1)
-            p[1] = float(y) / (resolution - 1)
-            p[2] = float(y) / (resolution - 1)
-            p[2] = 0.01 * z
-            vx = grid.createOperationEval().eval(alpha_vx, p)
-            vy = grid.createOperationEval().eval(alpha_vy, p)
-            fout.write("%f %f %f %f\n" % (p[0], p[1], vx, vy))
+        p[0] = float(x) / (resolution)
+        p[1] = float(y) / (resolution)
+        p[2] = parameters[0]
+        p[3] = parameters[1]
+        vx = grid.createOperationEval().eval(alpha_vx, p)
+        vy = grid.createOperationEval().eval(alpha_vy, p)
+        fout.write("%f %f %f %f\n" % (p[0], p[1], vx, vy))
     fout.close()
     return
 
 # end Storage class
+
+s = Storage()
