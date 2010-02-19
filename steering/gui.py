@@ -18,6 +18,9 @@ class SampleViewer:
   renWin = None
   once = None
   values = None
+  seeds = None
+  stream = None
+  created = False
 
   def __init__ ( self ):
     self.storage = Storage()
@@ -49,7 +52,8 @@ class SampleViewer:
     ren.SetBackground(.8, .8, .8)
     self.renWin.AddRenderer(ren)
 
-    self.loadGrid()  
+    self.loadGrid()
+    self.created = True
   
     append = vtk.vtkAppendFilter()
     append.AddInput(self.grid)
@@ -61,15 +65,45 @@ class SampleViewer:
     glyph.SetSourceConnection(balls.GetOutputPort())
     glyph.SetVectorModeToUseVector()
     glyph.SetScaleModeToScaleByVector()
-    glyph.SetScaleFactor(50)
+    glyph.SetScaleFactor(10)
 
     glyphMapper = vtk.vtkPolyDataMapper()
     glyphMapper.SetInputConnection(glyph.GetOutputPort())
 
     glyph = vtk.vtkActor()
     glyph.SetMapper(glyphMapper)
+  
+    rake = vtk.vtkLineSource()
+    rake.SetPoint1(15, -5, 0)
+    rake.SetPoint2(15, 5, 0)
+    rake.SetResolution(5)
+    rakeMapper = vtk.vtkPolyDataMapper()
+    rakeMapper.SetInputConnection(rake.GetOutputPort())
+    rakeActor = vtk.vtkActor()
 
-    # bounding box
+    rk4 = vtk.vtkRungeKutta4()
+    streamer = vtk.vtkStreamTracer()
+    streamer.SetInputConnection(append.GetOutputPort())
+    #streamer.SetSource(rake)
+    streamer.SetStartPosition(50, 50, 0)
+    #streamer.SetMaximumPropagationTime(100)
+    #streamer.SetIntegrationStepLength(.2)
+    #streamer.SetStepLength(.001)
+    #streamer.SetNumberOfThreads(1)
+    #streamer.SetIntegrationDirectionToForward()
+    #streamer.VorticityOn()
+    streamer.SetIntegrator(rk4)
+    #rf = vtk.vtkRibbonFilter()
+    #rf.SetInputConnection(streamer.GetOutputPort())
+    #rf.SetWidth(0.1)
+    #rf.SetWidthFactor(5)
+    streamMapper = vtk.vtkPolyDataMapper()
+    streamMapper.SetInputConnection(streamer.GetOutputPort())
+    streamMapper.SetScalarRange(append.GetOutput().GetScalarRange())
+    streamline = vtk.vtkActor()
+    streamline.SetMapper(streamMapper)
+    streamline.VisibilityOn()
+
     outline = vtk.vtkOutlineFilter()
     outline.SetInputConnection( append.GetOutputPort() )
     outlineMapper = vtk.vtkPolyDataMapper()
@@ -80,7 +114,14 @@ class SampleViewer:
 
     ren.AddActor(outlineActor)
     ren.AddActor(glyph)
-
+    ren.AddActor(rakeActor)
+    ren.AddActor(streamline)
+ 
+    #lineWidget.SetInteractor(self.renWin.GetInteractor()) 
+    #lineWidget.AddObserver("StartInteractionEvent", self.generateStreamlines)
+    #lineWidget.AddObserver("InteractionEvent", self.generateStreamlines)
+    #lineWidget.AddObserver("EndInteractionEvent", self.generateStreamlines)
+ 
     #button = Button(text="Quit",command=quit)
     #button.pack(expand='true',fill='x')
  
@@ -93,24 +134,35 @@ class SampleViewer:
   def loadGrid(self):
     nr = self.dimensionSize
 
-    points = vtk.vtkPoints()
-    points.Allocate(nr,nr)
+    if not self.created:
+      points = vtk.vtkPoints()
+      points.Allocate(nr,nr)
 
     vectors = vtk.vtkFloatArray()
     vectors.SetNumberOfComponents(3)
 
-    values = self.storage.extractGrid(100, self.currParam)
+    values = self.storage.extractGrid(self.dimensionSize, self.currParam)
 
-    print len(values)
+    for i in range(0, 20000, 2):
+   
+      if not self.created:
+        points.InsertNextPoint( i / (2 * nr) , (i/2) % nr, 0)
+  
+      vectors.InsertNextTuple3(values[i], values[i+1],0) 
+      #vectors.InsertNextTuple3(i%3, 1, 0) 
+  
+    if not self.created:
+      self.grid.SetPoints(points)
 
-    for i in range(0, len(values), 2):
-      points.InsertNextPoint( i / (2 * nr) , (i/2) % nr, 0)
-      vectors.InsertNextTuple3(-1 * values[i], values[i+1],0) 
-
-    self.grid.SetPoints(points)
     self.grid.GetPointData().SetVectors(vectors)
 
     return
+
+  def generateStreamlines(obj, event):
+    print "bla bla"
+    obj.GetPolyData(seeds)
+    self.stream.VisibilityOn()
+    self.renWin.Render()
 
   def changeTime(self, value):
     self.currParam[0] = float(value)/100.0

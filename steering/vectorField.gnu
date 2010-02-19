@@ -1,8 +1,8 @@
 #set hidden3d
 
-dt=16384; ## step through lines by this much
+dt=10000; ## step through lines by this much
 T=100*dt; ## go until this line reached
-t=1*dt;   ## start at line zero
+t=0*dt;   ## start at line zero
 
 set xrange [0:1]
 set yrange [0:1]  
