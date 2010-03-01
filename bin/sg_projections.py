@@ -37,6 +37,9 @@ parser.add_option("--nolabel", dest="nolabel", action="store_true",
 parser.add_option("--monochrome", dest="monochrome", action="store_true", 
                   default=False, 
                   help="Don't use colors. Only for --eps")
+parser.add_option("--blackwhite", dest="blackwhite", action="store_true", 
+                  default=False, 
+                  help="Plot all grid points the same way")
 parser.add_option("--dotwidth", dest="dotwidth", action="store", type="int",
                   default=None, 
                   help="Width of dots (gnuplot lw)")
@@ -63,13 +66,16 @@ else:
 # prepare multiplot
 if True:
     if options.nolabel:
-        xoffset = 0
-        yoffset = 0
+        xoffset = 0.05
+        yoffset = 0.05
     else:
         xoffset = 1.0/12.0
         yoffset = 1.0/12.0
     dx = (1.0-xoffset)/dim
     dy = (1.0-yoffset)/dim
+    if options.nolabel:
+        xoffset = 0
+        yoffset = 0
 
     s = """
 # reading grid from %s
@@ -91,22 +97,30 @@ set multiplot
     for i in range(dim):
         for j in range(dim):
             s += "set lmargin 0\nset rmargin 0\nset tmargin 0\nset bmargin 0\n"
+            #s += "unset label\nset label \"*(x%d,x%d)*\" at graph 0.6,0.6\n" % (i,j)
+            #s += "set xlabel 'x%d'\nset ylabel 'x%d'\n" % (i,j)
             s += "set size %f,%f\n" % (1.4*dx, 1.4*dy)
-            s += "set origin %f,%f\n" % (j*dx+xoffset*2/3,1.0-(i+1)*dy-yoffset*1/3)
+            s += "set origin %f,%f\n" % (i*dx+xoffset*2/3,j*dy+yoffset*2/3)
             s += "set yrange[%g:%g]\n" % (0,1)
-            if j==0 and not options.nolabel:
+            if i==0 and not options.nolabel:
                 s += "set ytics (%g,%g,%g) format \"%%f\"\n" % (0,0.5,1)
             else:
                 s += "set noytic\n"
             s += "set xrange[%g:%g]\n" % (0,1)
-            if i == dim-1 and not options.nolabel:
+            if j == 0 and not options.nolabel:
                 s += "set xtics (%g,%g,%g) rotate by 90 format \"%%f\" offset 0,-2\n" % (0,0.5,1)
             else:
                 s += "set noxtic\n"
             if dim <= 3:
-                s += "splot '-' with points notitle palette%s\n" % (dotwidth)
+                if options.blackwhite:
+                    s += "splot '-' with points notitle lc rgbcolor \"black\"%s\n" % (dotwidth)
+                else:
+                    s += "splot '-' with points notitle palette%s\n" % (dotwidth)
             else:
-                s += "splot '-' with dots notitle palette%s\n" % (dotwidth)
+                if options.blackwhite:
+                    s += "splot '-' with dots notitle lc rgbcolor \"black\"%s\n" % (dotwidth)
+                else:
+                    s += "splot '-' with dots notitle palette%s\n" % (dotwidth)
 
             
             # project grid
@@ -143,6 +157,6 @@ set output '%sprojection.png'"""%(options.prefix) + s)
         cin.close()
         print couterr.read()
     else:
-        print "set terminal x11"
+        #print "set terminal x11"
         print s
 
