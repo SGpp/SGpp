@@ -4,7 +4,6 @@
 /*                                                                           */
 /* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -22,15 +21,55 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef BASIS_HPP
-#define BASIS_HPP
+#include "sgpp.hpp"
 
-#include "basis/linear/noboundary/linear_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
-#include "basis/linear/modlinear/modified_linear_base.hpp"
-#include "basis/poly/poly_base.hpp"
-#include "basis/modpoly/modified_poly_base.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
+#include "basis/basis.hpp"
+#include "basis/linear/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
+#include "basis/linear/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
+#include "basis/linear/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
 
-#endif /* BASIS_HPP */
+#include "exception/operation_exception.hpp"
+
+#include "data/DataVector.hpp"
+
+namespace sg
+{
+/**
+ * Implements the hierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param node_values the functions values in the node base
+ *
+ * @todo (heinecke, nice) Implement the hierarchisation on the sparse grid with mod linear base functions
+ */
+void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_values)
+{
+	detail::HierarchisationModLinear func(this->storage);
+	sweep<detail::HierarchisationModLinear> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(node_values, node_values, i);
+	}
+}
+
+/**
+ * Implements the dehierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ *
+ * @todo (heinecke, nice) Implement the dehierarchisation on the sparse grid with mod linear base functions
+ */
+void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha)
+{
+	detail::DehierarchisationModLinear func(this->storage);
+	sweep<detail::DehierarchisationModLinear> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(alpha, alpha, i);
+	}
+}
+
+}

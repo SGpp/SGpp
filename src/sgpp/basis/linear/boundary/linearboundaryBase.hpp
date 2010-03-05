@@ -2,9 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -22,15 +20,85 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef BASIS_HPP
-#define BASIS_HPP
+#ifndef LINEARBOUNDARYBASE_HPP
+#define LINEARBOUNDARYBASE_HPP
 
-#include "basis/linear/noboundary/linear_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
-#include "basis/linear/modlinear/modified_linear_base.hpp"
-#include "basis/poly/poly_base.hpp"
-#include "basis/modpoly/modified_poly_base.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
+#include <cmath>
 
-#endif /* BASIS_HPP */
+namespace sg
+{
+
+/**
+ * linear basis functions with boundaries
+ * And here we have another implicit dependence on tensor products
+ *
+ * @version $HEAD$
+ */
+template<class LT, class IT>
+class linearboundaryBase
+{
+public:
+	/**
+	 * Evaluate a basis function.
+	 * Has a dependence on the absolute position of grid point and support.
+	 *
+	 * @param level the level of the current basis function
+	 * @param index the index of the current basis function
+	 * @param p the absolute position of the evaluation point
+	 */
+	double eval(LT level, IT index, double p)
+	{
+		if (level == 0)
+		{
+			if (index == 0)
+			{
+				return 1.0 - p;
+			}
+			if (index == 1)
+			{
+				return p;
+			}
+		}
+		else
+		{
+			return 1.0 - fabs((1<<level) * p - index);
+		}
+		// should not happen
+		return 0.0;
+	}
+
+	/**
+	 * Evaluate a basis function with an offset and scaling factor
+	 * Has a dependence on the absolute position of grid point and support.
+	 *
+	 * @param level the level of the current basis function
+	 * @param index the index of the current basis function
+	 * @param p the absolute position of the evaluation point
+	 * @param q the scaling factor of the basis function
+	 * @param t the offset of the basis function
+	 */
+	double eval(LT level, IT index, double p, double q, double t)
+	{
+		if (level == 0)
+		{
+			if (index == 0)
+			{
+				return 1.0 - ((1.0/q)*(p-t));
+			}
+			if (index == 1)
+			{
+				return ((1.0/q)*(p-t));
+			}
+		}
+		else
+		{
+			return 1.0 - ((1.0/q)*(fabs(((1<<level)*(p-t))-(q*index))));
+		}
+		// should not happen
+		return 0.0;
+	}
+};
+
+}
+
+#endif /* LINEARBOUNDARYBASE_HPP */
