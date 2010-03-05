@@ -32,11 +32,11 @@
 #include "basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.hpp"
 
-#include "basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.hpp"
-#include "basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.hpp"
-
 #include "basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.hpp"
+
+#include "basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.hpp"
+#include "basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
 
@@ -143,13 +143,13 @@ protected:
 		//detail::SqXdPhidPhiUpBBLinearBoundary func(this->storage);
 		//sweep<detail::SqXdPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
-		// x * phi * phi
-		//detail::XPhiPhiUpBBLinearBoundary func(this->storage);
-		//sweep<detail::XPhiPhiUpBBLinearBoundary> s(func, this->storage);
-
 		// x * dphi * phi
 		detail::XdPhiPhiUpBBLinearBoundary func(this->storage);
 		sweep<detail::XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+
+		// x * phi * dphi
+		//detail::XPhidPhiUpBBLinearBoundary func(this->storage);
+		//sweep<detail::XPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}
@@ -164,13 +164,13 @@ protected:
 		//detail::SqXdPhidPhiDownBBLinearBoundary func(this->storage);
 		//sweep<detail::SqXdPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
-		// x * phi * phi
-		//detail::XPhiPhiDownBBLinearBoundary func(this->storage);
-		//sweep<detail::XPhiPhiDownBBLinearBoundary> s(func, this->storage);
-
 		// x * dphi * phi
 		detail::XdPhiPhiDownBBLinearBoundary func(this->storage);
 		sweep<detail::XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+
+		// x * phi * dphi
+		//detail::XPhidPhiDownBBLinearBoundary func(this->storage);
+		//sweep<detail::XPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 		s.sweep1D_Boundary(alpha, result, dim);
 	}

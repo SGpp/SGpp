@@ -33,12 +33,12 @@
 #include <fstream>
 
 #define PRINTMATRIX
-//#define PRINTDIFF
+#define PRINTDIFF
 
 int main(int argc, char *argv[])
 {
-	size_t levels = 6;
-	size_t dim = 2;
+	size_t levels = 4;
+	size_t dim = 1;
 	size_t numGridPoints;
 
 	sg::Grid* myGrid;
@@ -64,11 +64,11 @@ int main(int argc, char *argv[])
 	numGridPoints = myGrid->getStorage()->size();
 	std::cout << "the grid has " << numGridPoints << " gridpoints" << std::endl;
 	std::cout << "finished construction regular grid" << std::endl;
-	std::cout << "the grid is:" << std::endl;
+	//std::cout << "the grid is:" << std::endl;
 
 	std::string ser;
 	myGrid->serialize(ser);
-	std::cout << ser << std::endl;
+	//std::cout << ser << std::endl;
 
 	sg::BoundingBox* myBoundingBox;
 	myBoundingBox = myGrid->getBoundingBox();
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef PRINTDIFF
-	std::string file = "SqXdPhidPhi1D.txt";
+	std::string file = "XdPhiPhi1D.txt";
 	std::ifstream infile;
 
 	infile.open(file.c_str());

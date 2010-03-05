@@ -24,8 +24,8 @@
 #ifndef OPERATIONLAPLACELINEAR_HPP
 #define OPERATIONLAPLACELINEAR_HPP
 
-#include "basis/linear/noboundary/algorithm_sweep/LaplaceDownLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/LaplaceUpLinear.hpp"
+#include "basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
+#include "basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
 
@@ -112,15 +112,15 @@ protected:
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceUpLinear func(this->storage);
-		sweep<detail::LaplaceUpLinear> s(func, this->storage);
+		detail::PhiPhiUpBBLinear func(this->storage);
+		sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
 		s.sweep1D(alpha, result, dim);
 	}
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceDownLinear func(this->storage);
-		sweep<detail::LaplaceDownLinear> s(func, this->storage);
+		detail::PhiPhiDownBBLinear func(this->storage);
+		sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
 		s.sweep1D(alpha, result, dim);
 	}
 
