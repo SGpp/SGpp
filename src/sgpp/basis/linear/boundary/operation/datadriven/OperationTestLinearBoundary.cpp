@@ -2,9 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -22,15 +20,28 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef BASIS_HPP
-#define BASIS_HPP
+#include "sgpp.hpp"
 
-#include "basis/linear/noboundary/linear_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
-#include "basis/linear/modlinear/modified_linear_base.hpp"
-#include "basis/poly/poly_base.hpp"
-#include "basis/modpoly/modified_poly_base.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
+#include "basis/basis.hpp"
 
-#endif /* BASIS_HPP */
+#include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
+
+#include "data/DataVector.hpp"
+
+namespace sg
+{
+
+double OperationTestLinearBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
+{
+	linearboundaryBase<unsigned int, unsigned int> base;
+	return test_dataset_boundary(this->storage, base, alpha, data, classes);
+}
+
+double OperationTestLinearBoundary::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
+{
+	linearboundaryBase<unsigned int, unsigned int> base;
+	return test_dataset_boundaryWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+}
+
+}
+

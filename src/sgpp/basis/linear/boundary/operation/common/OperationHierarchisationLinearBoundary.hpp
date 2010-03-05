@@ -2,9 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -22,15 +20,43 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef BASIS_HPP
-#define BASIS_HPP
+#ifndef OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP
+#define OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP
 
-#include "basis/linear/noboundary/linear_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
-#include "basis/linear/modlinear/modified_linear_base.hpp"
-#include "basis/poly/poly_base.hpp"
-#include "basis/modpoly/modified_poly_base.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
+#include "operation/common/OperationHierarchisation.hpp"
+#include "grid/GridStorage.hpp"
 
-#endif /* BASIS_HPP */
+namespace sg
+{
+
+/**
+ * Hierarchisation on sparse grid, linear case with boundaries
+ *
+ * @version $HEAD$
+ */
+class OperationHierarchisationLinearBoundary : public OperationHierarchisation
+{
+public:
+	/**
+	 * Constructor
+	 *
+	 * @param storage the grid's GridStorage object
+	 */
+	OperationHierarchisationLinearBoundary(GridStorage* storage) : storage(storage) {}
+
+	/**
+	 * Destructor
+	 */
+	virtual ~OperationHierarchisationLinearBoundary() {}
+
+	virtual void doHierarchisation(DataVector& node_values);
+	virtual void doDehierarchisation(DataVector& alpha);
+
+protected:
+	/// Pointer to GridStorage object
+	GridStorage* storage;
+};
+
+}
+
+#endif /* OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP */

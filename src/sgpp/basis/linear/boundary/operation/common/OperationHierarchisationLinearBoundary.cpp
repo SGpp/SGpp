@@ -1,10 +1,8 @@
-/*****************************************************************************/
+ /*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/* Copyright (C) 2008-2010 Dirk Pflueger (pflueged@in.tum.de)                */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -22,15 +20,56 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef BASIS_HPP
-#define BASIS_HPP
+#include "sgpp.hpp"
 
-#include "basis/linear/noboundary/linear_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
-#include "basis/linear/modlinear/modified_linear_base.hpp"
-#include "basis/poly/poly_base.hpp"
-#include "basis/modpoly/modified_poly_base.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
+#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+#include "basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"
+#include "basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp"
 
-#endif /* BASIS_HPP */
+#include "basis/basis.hpp"
+#include "data/DataVector.hpp"
+
+namespace sg
+{
+
+void OperationHierarchisationLinearBoundary::doHierarchisation(DataVector& node_values)
+{
+	detail::HierarchisationLinearBoundary func(this->storage);
+	sweep<detail::HierarchisationLinearBoundary> s(func, this->storage);
+
+	// N D case
+	if (this->storage->dim() > 1)
+	{
+		for (size_t i = 0; i < this->storage->dim(); i++)
+		{
+			s.sweep1D_Boundary(node_values, node_values, i);
+		}
+	}
+	// 1 D case
+	else
+	{
+		s.sweep1D(node_values, node_values, 0);
+	}
+}
+
+void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alpha)
+{
+	detail::DehierarchisationLinearBoundary func(this->storage);
+	sweep<detail::DehierarchisationLinearBoundary> s(func, this->storage);
+
+	// N D case
+	if (this->storage->dim() > 1)
+	{
+		for (size_t i = 0; i < this->storage->dim(); i++)
+		{
+			s.sweep1D_Boundary(alpha, alpha, i);
+		}
+	}
+	// 1 D case
+	else
+	{
+		s.sweep1D(alpha, alpha, 0);
+	}
+}
+
+}

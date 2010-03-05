@@ -49,10 +49,10 @@
 
 #include "basis/basis.hpp"
 
-#include "basis/linear/operation/datadriven/OperationLaplaceLinear.hpp"
-#include "basis/linearboundary/operation/datadriven/OperationLaplaceLinearBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/OperationLaplaceLinearTrapezoidBoundary.hpp"
-#include "basis/modlinear/operation/datadriven/OperationLaplaceModLinear.hpp"
+// @todo (heinecke) check if this can be removed
+#include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linear/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.hpp"
 
@@ -81,7 +81,6 @@
 namespace sg
 {
 
-typedef lineartrapezoidboundaryBase<unsigned int, unsigned int> SLinearTrapezoidBoundaryBase;
 typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
 typedef linear_base<unsigned int, unsigned int> SLinearBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
@@ -92,7 +91,6 @@ typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
 
 typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
 typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;
-typedef AlgorithmDGEMV<SLinearTrapezoidBoundaryBase> SGridTrapezoidBoundaryOperationB;
 typedef AlgorithmDGEMV<SModLinearBase> SGridModOperationB;
 
 }

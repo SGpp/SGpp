@@ -48,28 +48,6 @@ class TestBase(unittest.TestCase):
 
         self.baseTest(b, points)
         
-    def testLinearTrapezoidBoundary(self):
-        from pysgpp import SLinearTrapezoidBoundaryBase
-        
-        b = SLinearTrapezoidBoundaryBase()
-        
-        points = [(0, 0, 0.0, 1.0),
-                  (0, 0, 1.0, 0.0),
-                  (0, 0, 0.25, 0.75),
-                  (0, 0, 0.75, 0.25),
-                  (0, 1, 0.0, 0.0),
-                  (0, 1, 1.0, 1.0),
-                  (0, 1, 0.75, 0.75),
-                  (0, 1, 0.25, 0.25),
-                  (1, 1, 0.5, 1.0),
-                  (1, 1, 0.25, 0.5),
-                  (2, 1, 0.25, 1.0),
-                  (2, 1, 0.125, 0.5),
-                  
-                  ]
-
-        self.baseTest(b, points)  
-        
     def testLinearBoundary(self):
         from pysgpp import SLinearBoundaryBase
         
@@ -235,33 +213,6 @@ class TestFunctions(unittest.TestCase):
         self.failUnlessEqual(x[0][0], 0)
         self.failUnlessEqual(x[0][1], 0.5)
         
-        
-    def testGetAffectedTrapezoidBoundaries(self):
-        from pysgpp import GridIndex, GridStorage, SLinearTrapezoidBoundaryBase
-        from pysgpp import SGetAffectedBasisFunctionsTrapezoidBoundaries
-        
-        i = GridIndex(1)
-        s = GridStorage(1)
-        
-        b = SLinearTrapezoidBoundaryBase()
-
-        i.set(0,0,0)
-        s.insert(i)
-        i.set(0,0,1)
-        s.insert(i)        
-        i.set(0,1,1)
-        s.insert(i)
-        
-        ga = SGetAffectedBasisFunctionsTrapezoidBoundaries(s)
-        
-        x = ga(b, [0.5])
-        
-        self.failUnlessEqual(x[0][0], 0)
-        self.failUnlessEqual(x[0][1], 0.5)
-        self.failUnlessEqual(x[1][0], 1)
-        self.failUnlessEqual(x[1][1], 0.5)
-        self.failUnlessEqual(x[2][0], 2)
-        self.failUnlessEqual(x[2][1], 1.0)
         
     def testGetAffectedBoundaries(self):
         from pysgpp import GridIndex, GridStorage, SLinearBoundaryBase
