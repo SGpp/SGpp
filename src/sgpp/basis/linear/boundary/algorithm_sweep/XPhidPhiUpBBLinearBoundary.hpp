@@ -26,6 +26,8 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
+#include "basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.hpp"
+
 namespace sg
 {
 
@@ -35,27 +37,15 @@ namespace detail
 /**
  * up-operation in dimension dim. for use with sweep
  */
-class XPhidPhiUpBBLinearBoundary
+class XPhidPhiUpBBLinearBoundary : public XPhidPhiUpBBLinear
 {
-protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-	/// Pointer to the bounding box Obejct
-	BoundingBox* boundingBox;
-	/// width of the interval in dimension
-	double q;
-	/// intervals offset in dimension
-	double t;
-
 public:
 	/**
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	XPhidPhiUpBBLinearBoundary(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()), q(1.0), t(0.0)
+	XPhidPhiUpBBLinearBoundary(GridStorage* storage) : XPhidPhiUpBBLinear(storage)
 	{
 	}
 
@@ -81,12 +71,12 @@ public:
 	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		q = boundingBox->getIntervalWidth(dim);
-		t = boundingBox->getIntervalOffset(dim);
+		this->q = this->boundingBox->getIntervalWidth(dim);
+		this->t = this->boundingBox->getIntervalOffset(dim);
 
 		bool useBB = false;
 
-		if (q != 1.0 || t != 0.0)
+		if (this->q != 1.0 || this->t != 0.0)
 		{
 			useBB = true;
 		}
@@ -97,93 +87,18 @@ public:
 
 		if(useBB)
 		{
-			recBB(source, result, index, dim, fl, fr);
-		}
-		else
-		{
-			rec(source, result, index, dim, fl, fr);
-		}
-	}
-
-protected:
-
-	/**
-	 * recursive function for the calculation of Up
-	 *
-	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
-	 *
-	 * @param source DataVector that contains the coefficients of the ansatzfunction
-	 * @param result DataVector in which the result of the operation is stored
-	 * @param index reference to a griditerator object that is used navigate through the grid
-	 * @param dim the dimension in which the operation is executed
-	 * @param fl function value on the left boundary, reference parameter
-	 * @param fr function value on the right boundary, reference parameter
-	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-	{
-		size_t seq = index.seq();
-
-		fl = fr = 0.0;
-		double fml = 0.0;
-		double fmr = 0.0;
-
-		GridStorage::index_type::level_type current_level;
-		GridStorage::index_type::index_type current_index;
-
-		index.get(dim, current_level, current_index);
-
-		if(current_level > 0)
-		{
-			if(!index.hint())
-			{
-				index.left_child(dim);
-				if(!storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fl, fml);
-				}
-
-				index.step_right(dim);
-				if(!storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fmr, fr);
-				}
-
-				index.up(dim);
-			}
-		}
-		else
-		{
 			if(!index.hint())
 			{
 				index.top(dim);
-				if(!storage->end(index.seq()))
+
+				if(!this->storage->end(index.seq()))
 				{
-					rec(source, result, index, dim, fl, fr);
+					recBB(source, result, index, dim, fl, fr);
 				}
 
 				index.left_levelzero(dim);
 			}
-		}
 
-		index.get(dim, current_level, current_index);
-
-		if (current_level > 0)
-		{
-			double fm = fml + fmr;
-
-			double alpha_value = source[seq];
-
-			double hhalf = 1.0/pow(2.0,static_cast<int>(current_level+1));
-			double i_dbl = static_cast<double>(current_index);
-
-			// transposed operations:
-			result[seq] = fm;
-
-			fl = (fm/2.0) + ((alpha_value*((hhalf * i_dbl) - hhalf)) + fl);
-			fr = (fm/2.0) + ((alpha_value*(((-1.0)*(hhalf * i_dbl)) - hhalf)) + fr);
-		}
-		else
-		{
 			size_t seq_left;
 			size_t seq_right;
 
@@ -195,7 +110,7 @@ protected:
 			seq_right = index.seq();
 
 			// check boundary conditions
-			if (boundingBox->hasDirichletBoundaryLeft(dim))
+			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
 			{
 				result[seq_left] = 0.0; // source[seq_left];
 			}
@@ -205,10 +120,10 @@ protected:
 				//////////////////////////////////////
 				result[seq_left] = fl;
 
-				result[seq_left] += source[seq_right] * (-1.0/3.0);
+				result[seq_left] += (source[seq_right] * (((1.0/6.0)*this->q) + (0.5*this->t)));
 			}
 
-			if (boundingBox->hasDirichletBoundaryRight(dim))
+			if (this->boundingBox->hasDirichletBoundaryRight(dim))
 			{
 				result[seq_right] = 0.0; //source[seq_right];
 			}
@@ -219,86 +134,20 @@ protected:
 
 			index.left_levelzero(dim);
 		}
-	}
-
-
-	/**
-	 * recursive function for the calculation of Up with Bounding Box support
-	 *
-	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
-	 *
-	 * @param source DataVector that contains the coefficients of the ansatzfunction
-	 * @param result DataVector in which the result of the operation is stored
-	 * @param index reference to a griditerator object that is used navigate through the grid
-	 * @param dim the dimension in which the operation is executed
-	 * @param fl function value on the left boundary, reference parameter
-	 * @param fr function value on the right boundary, reference parameter
-	 */
-	void recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-	{
-		size_t seq = index.seq();
-
-		fl = fr = 0.0;
-		double fml = 0.0;
-		double fmr = 0.0;
-
-		GridStorage::index_type::level_type current_level;
-		GridStorage::index_type::index_type current_index;
-
-		index.get(dim, current_level, current_index);
-
-		if(current_level > 0)
-		{
-			if(!index.hint())
-			{
-				index.left_child(dim);
-				if(!storage->end(index.seq()))
-				{
-					recBB(source, result, index, dim, fl, fml);
-				}
-
-				index.step_right(dim);
-				if(!storage->end(index.seq()))
-				{
-					recBB(source, result, index, dim, fmr, fr);
-				}
-
-				index.up(dim);
-			}
-		}
 		else
 		{
 			if(!index.hint())
 			{
 				index.top(dim);
+
 				if(!storage->end(index.seq()))
 				{
-					recBB(source, result, index, dim, fl, fr);
+					rec(source, result, index, dim, fl, fr);
 				}
 
 				index.left_levelzero(dim);
 			}
-		}
 
-		index.get(dim, current_level, current_index);
-
-		if (current_level > 0)
-		{
-			double fm = fml + fmr;
-
-			double alpha_value = source[seq];
-
-			double hhalf = 1.0/pow(2.0,static_cast<int>(current_level+1));
-			double i_dbl = static_cast<double>(current_index);
-
-			// transposed operations:
-			result[seq] = fm;
-
-			fl = (fm/2.0) + ((alpha_value*((q*((hhalf * i_dbl) - hhalf))+(0.5*t))) + fl);
-			fr = (fm/2.0) + ((alpha_value*((q*(((-1.0)*(hhalf * i_dbl)) - hhalf))-(0.5*t))) + fr);
-		}
-		else
-		{
 			size_t seq_left;
 			size_t seq_right;
 
@@ -310,7 +159,7 @@ protected:
 			seq_right = index.seq();
 
 			// check boundary conditions
-			if (boundingBox->hasDirichletBoundaryLeft(dim))
+			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
 			{
 				result[seq_left] = 0.0; // source[seq_left];
 			}
@@ -320,10 +169,10 @@ protected:
 				//////////////////////////////////////
 				result[seq_left] = fl;
 
-				result[seq_left] += source[seq_right] * (((1.0/6.0)*q) + (0.5*t));
+				result[seq_left] += (source[seq_right] * (1.0/6.0));
 			}
 
-			if (boundingBox->hasDirichletBoundaryRight(dim))
+			if (this->boundingBox->hasDirichletBoundaryRight(dim))
 			{
 				result[seq_right] = 0.0; //source[seq_right];
 			}

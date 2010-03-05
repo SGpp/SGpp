@@ -22,8 +22,8 @@
 
 #include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
 
-#include "basis/linear/noboundary/algorithm_sweep/LaplaceDownLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/LaplaceUpLinear.hpp"
+#include "basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
+#include "basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -85,8 +85,8 @@ void OperationLTwoDotProductLinear::updown(DataVector& alpha, DataVector& result
 void OperationLTwoDotProductLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::LaplaceUpLinear func(this->storage);
-	sweep<detail::LaplaceUpLinear> s(func, this->storage);
+	detail::PhiPhiUpBBLinear func(this->storage);
+	sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -94,8 +94,8 @@ void OperationLTwoDotProductLinear::up(DataVector& alpha, DataVector& result, si
 void OperationLTwoDotProductLinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::LaplaceDownLinear func(this->storage);
-	sweep<detail::LaplaceDownLinear> s(func, this->storage);
+	detail::PhiPhiDownBBLinear func(this->storage);
+	sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
