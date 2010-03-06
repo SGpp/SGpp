@@ -26,6 +26,8 @@
 #include "basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp"
 
+#include "algorithm/common/sweep.hpp"
+
 #include "basis/basis.hpp"
 #include "data/DataVector.hpp"
 

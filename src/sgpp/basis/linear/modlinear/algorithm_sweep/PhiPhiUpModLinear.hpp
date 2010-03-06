@@ -21,8 +21,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEUPMODLINEAR_HPP
-#define LAPLACEUPMODLINEAR_HPP
+#ifndef PHIPHIUPMODLINEAR_HPP
+#define PHIPHIUPMODLINEAR_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -36,7 +36,7 @@ namespace detail
 /**
  * Implements the up Method needed for the Laplace operator on mod linear grids
  */
-class LaplaceUpModLinear
+class PhiPhiUpModLinear
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -49,14 +49,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	LaplaceUpModLinear(GridStorage* storage) : storage(storage)
+	PhiPhiUpModLinear(GridStorage* storage) : storage(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~LaplaceUpModLinear()
+	~PhiPhiUpModLinear()
 	{
 	}
 
@@ -162,4 +162,4 @@ protected:
 
 }
 
-#endif /* LAPLACEUPMODLINEAR_HPP */
+#endif /* PHIPHIUPMODLINEAR_HPP */
