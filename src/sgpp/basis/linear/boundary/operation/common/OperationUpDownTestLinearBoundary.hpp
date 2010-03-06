@@ -40,14 +40,13 @@
 
 #include "operation/common/OperationMatrix.hpp"
 
-#include "algorithm/datadriven/UnidirGradient.hpp"
 #include "algorithm/common/sweep.hpp"
 
 namespace sg
 {
 
 /**
- * Temporal Test class for Up/Down Algorithm
+ * Test class for Up/Down Algorithms
  *
  * @version $HEAD$
  */
@@ -59,20 +58,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	OperationUpDownTestLinearBoundary(GridStorage* storage) : storage(storage)
-	{
-	}
+	OperationUpDownTestLinearBoundary(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationUpDownTestLinearBoundary() {}
+	virtual ~OperationUpDownTestLinearBoundary();
 
-
-	virtual void mult(DataVector& alpha, DataVector& result)
-	{
-		this->updown(alpha, result);
-	}
+	virtual void mult(DataVector& alpha, DataVector& result);
 
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -86,14 +79,7 @@ protected:
 	 * @param alpha contains the grid points coefficients
 	 * @param result contains the result of the laplace operator
 	 */
-	void updown(DataVector& alpha, DataVector& result)
-	{
-		DataVector beta(result.getSize());
-
-		this->updown(alpha, beta, storage->dim() - 1);
-
-		result.add(beta);
-	}
+	void updown(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
@@ -103,77 +89,11 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void updown(DataVector& alpha, DataVector& result, size_t dim)
-	{
-		//Unidirectional scheme
-		if(dim > 0)
-		{
-			// Reordering ups and downs
-			DataVector temp(alpha.getSize());
-			up(alpha, temp, dim);
-			updown(temp, result, dim-1);
+	void updown(DataVector& alpha, DataVector& result, size_t dim);
 
+	void up(DataVector& alpha, DataVector& result, size_t dim);
 
-			// Same from the other direction
-			DataVector result_temp(alpha.getSize());
-			updown(alpha, temp, dim-1);
-			down(temp, result_temp, dim);
-
-			result.add(result_temp);
-		}
-		else
-		{
-			// Terminates dimension recursion
-			up(alpha, result, dim);
-
-			DataVector temp(alpha.getSize());
-			down(alpha, temp, dim);
-
-			result.add(temp);
-		}
-	}
-
-	void up(DataVector& alpha, DataVector& result, size_t dim)
-	{
-		// phi * phi
-		//detail::PhiPhiUpBBLinearBoundary func(this->storage);
-		//sweep<detail::PhiPhiUpBBLinearBoundary> s(func, this->storage);
-
-		// x^2 * dphi * dphi
-		//detail::SqXdPhidPhiUpBBLinearBoundary func(this->storage);
-		//sweep<detail::SqXdPhidPhiUpBBLinearBoundary> s(func, this->storage);
-
-		// x * dphi * phi
-		detail::XdPhiPhiUpBBLinearBoundary func(this->storage);
-		sweep<detail::XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
-
-		// x * phi * dphi
-		//detail::XPhidPhiUpBBLinearBoundary func(this->storage);
-		//sweep<detail::XPhidPhiUpBBLinearBoundary> s(func, this->storage);
-
-		s.sweep1D_Boundary(alpha, result, dim);
-	}
-
-	void down(DataVector& alpha, DataVector& result, size_t dim)
-	{
-		// phi * phi
-		//detail::PhiPhiDownBBLinearBoundary func(this->storage);
-		//sweep<detail::PhiPhiDownBBLinearBoundary> s(func, this->storage);
-
-		// x^2 * dphi * dphi
-		//detail::SqXdPhidPhiDownBBLinearBoundary func(this->storage);
-		//sweep<detail::SqXdPhidPhiDownBBLinearBoundary> s(func, this->storage);
-
-		// x * dphi * phi
-		detail::XdPhiPhiDownBBLinearBoundary func(this->storage);
-		sweep<detail::XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
-
-		// x * phi * dphi
-		//detail::XPhidPhiDownBBLinearBoundary func(this->storage);
-		//sweep<detail::XPhidPhiDownBBLinearBoundary> s(func, this->storage);
-
-		s.sweep1D_Boundary(alpha, result, dim);
-	}
+	void down(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }

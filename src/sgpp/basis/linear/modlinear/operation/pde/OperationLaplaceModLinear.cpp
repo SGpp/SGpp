@@ -21,52 +21,62 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONLAPLACEMODLINEAR_HPP
-#define OPERATIONLAPLACEMODLINEAR_HPP
+#include "basis/linear/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
 
-#include "operation/common/OperationMatrix.hpp"
+#include "basis/linear/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp"
+#include "basis/linear/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp"
+#include "basis/linear/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
+#include "basis/linear/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
 
-#include "algorithm/datadriven/UnidirGradient.hpp"
-
-#include "grid/GridStorage.hpp"
-#include "data/DataVector.hpp"
+#include "algorithm/common/sweep.hpp"
 
 namespace sg
 {
 
-/**
- * Implementation of Laplace for mod linear functions
- *
- * @version $HEAD$
- */
-class OperationLaplaceModLinear : public UnidirGradient, public OperationMatrix
+OperationLaplaceModLinear::OperationLaplaceModLinear(GridStorage* storage) : UnidirGradient(storage)
 {
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 */
-	OperationLaplaceModLinear(GridStorage* storage);
+}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationLaplaceModLinear();
+OperationLaplaceModLinear::~OperationLaplaceModLinear()
+{
+}
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+void OperationLaplaceModLinear::mult(DataVector& alpha, DataVector& result)
+{
+	this->updown(alpha, result);
+}
 
-protected:
+void OperationLaplaceModLinear::up(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::PhiPhiUpModLinear func(this->storage);
+	sweep<detail::PhiPhiUpModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
 
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
+void OperationLaplaceModLinear::down(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::PhiPhiDownModLinear func(this->storage);
+	sweep<detail::PhiPhiDownModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
 
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
+void OperationLaplaceModLinear::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::dPhidPhiDownModLinear func(this->storage);
+	sweep<detail::dPhidPhiDownModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
 
-	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim);
-
-	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim);
-};
+void OperationLaplaceModLinear::upGradient(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::dPhidPhiUpModLinear func(this->storage);
+	sweep<detail::dPhidPhiUpModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
 
 }
 
-#endif /* OPERATIONLAPLACEMODLINEAR_HPP */

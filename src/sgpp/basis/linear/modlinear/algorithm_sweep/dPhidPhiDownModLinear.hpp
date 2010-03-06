@@ -21,8 +21,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LAPLACEDOWNGRADIENTMODLINEAR_HPP
-#define LAPLACEDOWNGRADIENTMODLINEAR_HPP
+#ifndef DPHIDPHIDOWNMODLINEAR_HPP
+#define DPHIDPHIDOWNMODLINEAR_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -36,7 +36,7 @@ namespace detail
 /**
  * Implements the downGradient Method needed for the Laplace operator on mod linear grids
  */
-class LaplaceDownGradientModLinear
+class dPhidPhiDownModLinear
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -49,14 +49,14 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	LaplaceDownGradientModLinear(GridStorage* storage) : storage(storage)
+	dPhidPhiDownModLinear(GridStorage* storage) : storage(storage)
 	{
 	}
 
 	/**
 	 * Destructor
 	 */
-	~LaplaceDownGradientModLinear()
+	~dPhidPhiDownModLinear()
 	{
 	}
 
@@ -145,4 +145,4 @@ protected:
 
 }
 
-#endif /* LAPLACEDOWNGRADIENTMODLINEAR_HPP */
+#endif /* DPHIDPHIDOWNMODLINEAR_HPP */

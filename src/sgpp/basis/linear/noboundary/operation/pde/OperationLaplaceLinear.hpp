@@ -24,13 +24,9 @@
 #ifndef OPERATIONLAPLACELINEAR_HPP
 #define OPERATIONLAPLACELINEAR_HPP
 
-#include "basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
-
 #include "operation/common/OperationMatrix.hpp"
 
 #include "algorithm/datadriven/UnidirGradient.hpp"
-#include "algorithm/common/sweep.hpp"
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -45,8 +41,6 @@ namespace sg
 /**
  * Implementation for linear functions of Laplace Operation, linear grids without boundaries
  *
- * @todo (heinecke) move into to pde folder and split into .cpp and .hpp
- *
  * @version $HEAD$
  */
 class OperationLaplaceLinear: public OperationMatrix, public UnidirGradient
@@ -57,88 +51,31 @@ public:
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
-	OperationLaplaceLinear(GridStorage* storage) : UnidirGradient(storage)
-	{
-	}
+	OperationLaplaceLinear(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationLaplaceLinear() {}
+	virtual ~OperationLaplaceLinear();
 
-	virtual void mult(DataVector& alpha, DataVector& result)
-	{
-		this->updown(alpha, result);
-	}
+	virtual void mult(DataVector& alpha, DataVector& result);
 
 protected:
 #ifndef USEOMPTHREE
-	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
-	{
-		// In direction gradient_dim we only calculate the norm of the gradient
-		// The up-part is empty, thus omitted
-		if(dim > 0)
-		{
-			DataVector temp(alpha.getSize());
-			updown(alpha, temp, dim-1, gradient_dim);
-			downGradient(temp, result, gradient_dim);
-		}
-		else
-		{
-			// Terminates dimension recursion
-			downGradient(alpha, result, gradient_dim);
-		}
-	}
+	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
 #endif
 
 #ifdef USEOMPTHREE
-	virtual void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
-	{
-		// In direction gradient_dim we only calculate the norm of the gradient
-		// The up-part is empty, thus omitted
-		if(dim > 0)
-		{
-			DataVector temp(alpha.getSize());
-			updown_parallel(alpha, temp, dim-1, gradient_dim);
-			downGradient(temp, result, gradient_dim);
-		}
-		else
-		{
-			// Terminates dimension recursion
-			downGradient(alpha, result, gradient_dim);
-		}
-	}
+	virtual void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
 #endif
 
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
-	{
-		detail::PhiPhiUpBBLinear func(this->storage);
-		sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
-		s.sweep1D(alpha, result, dim);
-	}
+	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim)
-	{
-		detail::PhiPhiDownBBLinear func(this->storage);
-		sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
-		s.sweep1D(alpha, result, dim);
-	}
+	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim)
-	{
-		// traverse all basis function by sequence number
-		for(size_t i = 0; i < storage->size(); i++)
-		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
-			(*storage)[i]->get(dim, level, index);
-			//only affects the diagonal of the stiffness matrix
-			result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
-		}
-	}
+	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim) {}
-
+	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }
