@@ -96,6 +96,8 @@ basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 algorithm/datadriven/DMSystemMatrix.cpp
 algorithm/pde/BlackScholesTimestepMatrix.cpp
 algorithm/pde/HeatEquationTimestepMatrix.cpp
+algorithm/pde/StdUpDown.cpp
+algorithm/pde/UpDownOneOpDim.cpp
 
 application/common/ScreenOutput.cpp
 application/pde/BlackScholesSolver.cpp
