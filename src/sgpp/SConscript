@@ -98,6 +98,7 @@ algorithm/pde/BlackScholesTimestepMatrix.cpp
 algorithm/pde/HeatEquationTimestepMatrix.cpp
 algorithm/pde/StdUpDown.cpp
 algorithm/pde/UpDownOneOpDim.cpp
+algorithm/pde/UpDownTwoOpDims.cpp
 
 application/common/ScreenOutput.cpp
 application/pde/BlackScholesSolver.cpp

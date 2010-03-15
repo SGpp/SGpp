@@ -24,12 +24,7 @@
 #ifndef OPERATIONLAPLACEMODLINEAR_HPP
 #define OPERATIONLAPLACEMODLINEAR_HPP
 
-#include "operation/common/OperationMatrix.hpp"
-
-#include "algorithm/datadriven/UnidirGradient.hpp"
-
-#include "grid/GridStorage.hpp"
-#include "data/DataVector.hpp"
+#include "algorithm/pde/UpDownOneOpDim.hpp"
 
 namespace sg
 {
@@ -39,7 +34,7 @@ namespace sg
  *
  * @version $HEAD$
  */
-class OperationLaplaceModLinear : public UnidirGradient, public OperationMatrix
+class OperationLaplaceModLinear : public UpDownOneOpDim
 {
 public:
 	/**
@@ -54,17 +49,14 @@ public:
 	 */
 	virtual ~OperationLaplaceModLinear();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-
 protected:
-
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }

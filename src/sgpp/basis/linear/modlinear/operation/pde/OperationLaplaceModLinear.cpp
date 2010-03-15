@@ -33,17 +33,12 @@
 namespace sg
 {
 
-OperationLaplaceModLinear::OperationLaplaceModLinear(GridStorage* storage) : UnidirGradient(storage)
+OperationLaplaceModLinear::OperationLaplaceModLinear(GridStorage* storage) : UpDownOneOpDim(storage)
 {
 }
 
 OperationLaplaceModLinear::~OperationLaplaceModLinear()
 {
-}
-
-void OperationLaplaceModLinear::mult(DataVector& alpha, DataVector& result)
-{
-	this->updown(alpha, result);
 }
 
 void OperationLaplaceModLinear::up(DataVector& alpha, DataVector& result, size_t dim)
@@ -62,7 +57,7 @@ void OperationLaplaceModLinear::down(DataVector& alpha, DataVector& result, size
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationLaplaceModLinear::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceModLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	result.setAll(0.0);
 	detail::dPhidPhiDownModLinear func(this->storage);
@@ -70,7 +65,7 @@ void OperationLaplaceModLinear::downGradient(DataVector& alpha, DataVector& resu
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationLaplaceModLinear::upGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceModLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	result.setAll(0.0);
 	detail::dPhidPhiUpModLinear func(this->storage);

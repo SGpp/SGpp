@@ -92,7 +92,7 @@ protected:
 	 * @param dim the current dimension in the recursion
 	 * @param op_dim the dimension in that a special operation is applied
 	 */
-	void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
+	virtual void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
 #endif
 
 #ifdef USEOMPTHREE
@@ -114,7 +114,7 @@ protected:
 	 * @param dim the current dimension in the recursion
 	 * @param op_dim the dimension in that a special operation is applied
 	 */
-	void specialOP_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
+	virtual void specialOP_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
 #endif
 
 	/**

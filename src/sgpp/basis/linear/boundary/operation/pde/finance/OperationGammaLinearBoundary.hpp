@@ -20,19 +20,10 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-
 #ifndef OPERATIONGAMMALINEARBOUNDARY_HPP
 #define OPERATIONGAMMALINEARBOUNDARY_HPP
 
-#include "grid/GridStorage.hpp"
-
-#include "operation/common/OperationMatrix.hpp"
-
-#include "data/DataVector.hpp"
-
-#ifdef USEOMP
-#include <omp.h>
-#endif
+#include "algorithm/pde/UpDownTwoOpDims.hpp"
 
 namespace sg
 {
@@ -40,7 +31,7 @@ namespace sg
 /**
  * @todo heinecke add description
  */
-class OperationGammaLinearBoundary: public OperationMatrix
+class OperationGammaLinearBoundary: public UpDownTwoOpDims
 {
 public:
 	/**
@@ -56,107 +47,7 @@ public:
 	 */
 	virtual ~OperationGammaLinearBoundary();
 
-
-	virtual void mult(DataVector& alpha, DataVector& result);
-
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-
-	/// Pointer to the grid's storage object
-	GridStorage* storage;
-	/// Pointer to the coefficients of this bilinear form
-	DataVector* coefs;
-
-#ifndef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown
-	 *
-	 * @param dim the current dimension
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-
-	/**
-	 * All calculations for gradient
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 */
-	void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-
-	/**
-	 * All calculations for gradient, Part 2
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 */
-	void gradientTestFct(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-
-	/**
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 */
-	void gradientSquared(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-#endif
-#ifdef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown, parallel version using OpenMP 3
-	 *
-	 * @param dim the current dimension
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-
-	/**
-	 * All calculations for gradient, parallel version using OpenMP 3
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 */
-	void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-
-	/**
-	 * All calculations for gradient, Part 2, parallel version using OpenMP 3
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 */
-	void gradientTestFct_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-
-	/**
-	 * All calculations for squared gradient, parallel version using OpenMP 3
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim_one the dimension in which to use the first gradient
-	 * @param gradient_dim_two the dimension in which to use the second gradient
-	 */
-	void gradientSquared_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim_one, size_t gradient_dim_two);
-#endif
-
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
 	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
@@ -166,7 +57,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -177,7 +68,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
@@ -187,7 +78,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	void downGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDimOne(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
@@ -197,7 +88,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	void upGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDimOne(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -207,7 +98,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	void downGradientTestFct(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -217,7 +108,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	void upGradientTestFct(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
@@ -227,7 +118,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	void downGradientSquared(DataVector& alpha, DataVector& result, size_t dim);
+	void downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
@@ -237,7 +128,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	void upGradientSquared(DataVector& alpha, DataVector& result, size_t dim);
+	void upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }
