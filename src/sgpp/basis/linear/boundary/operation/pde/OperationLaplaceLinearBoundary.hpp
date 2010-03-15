@@ -23,12 +23,7 @@
 #ifndef OPERATIONLAPLACELINEARBOUNDARY_HPP
 #define OPERATIONLAPLACELINEARBOUNDARY_HPP
 
-#include "grid/GridStorage.hpp"
-
-#include "operation/common/OperationMatrix.hpp"
-#include "algorithm/datadriven/UnidirGradient.hpp"
-
-#include "data/DataVector.hpp"
+#include "algorithm/pde/UpDownOneOpDim.hpp"
 
 namespace sg
 {
@@ -38,7 +33,7 @@ namespace sg
  *
  * @version $HEAD$
  */
-class OperationLaplaceLinearBoundary: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinearBoundary: public UpDownOneOpDim
 {
 public:
 	/**
@@ -54,16 +49,14 @@ public:
 	virtual ~OperationLaplaceLinearBoundary();
 
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-
 protected:
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }

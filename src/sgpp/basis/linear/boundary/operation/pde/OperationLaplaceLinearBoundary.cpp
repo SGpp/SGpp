@@ -32,17 +32,12 @@
 namespace sg
 {
 
-OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(GridStorage* storage) : UnidirGradient(storage)
+OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(GridStorage* storage) : UpDownOneOpDim(storage)
 {
 }
 
 OperationLaplaceLinearBoundary::~OperationLaplaceLinearBoundary()
 {
-}
-
-void OperationLaplaceLinearBoundary::mult(DataVector& alpha, DataVector& result)
-{
-	this->updown(alpha, result);
 }
 
 void OperationLaplaceLinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
@@ -59,7 +54,7 @@ void OperationLaplaceLinearBoundary::down(DataVector& alpha, DataVector& result,
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationLaplaceLinearBoundary::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinearBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Bounding Box handling
 	BoundingBox* boundingBox = this->storage->getBoundingBox();
@@ -161,7 +156,7 @@ void OperationLaplaceLinearBoundary::downGradient(DataVector& alpha, DataVector&
 	}
 }
 
-void OperationLaplaceLinearBoundary::upGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinearBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Bounding Box handling
 	BoundingBox* boundingBox = this->storage->getBoundingBox();

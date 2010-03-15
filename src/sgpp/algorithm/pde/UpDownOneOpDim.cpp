@@ -67,6 +67,10 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 		{
 			result.axpy_parallel(this->coefs->get(i),beta);
 		}
+		else
+		{
+			result.add(beta);
+		}
 	}
 #endif
 #ifndef USEOMPTHREE
@@ -85,6 +89,10 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 				{
 					result.axpy(this->coefs->get(i),beta);
 				}
+				else
+				{
+					result.add(beta);
+				}
 			}
 		}
 	}
@@ -99,6 +107,10 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 		if (this->coefs != NULL)
 		{
 			result.axpy(this->coefs->get(i),beta);
+		}
+		else
+		{
+			result.add(beta);
 		}
 	}
 #endif

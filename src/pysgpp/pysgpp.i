@@ -92,7 +92,6 @@ namespace std {
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBBBoundaries.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
-%include "src/sgpp/algorithm/datadriven/UnidirGradient.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationTimestepMatrix.hpp"

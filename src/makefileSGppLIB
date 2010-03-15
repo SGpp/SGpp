@@ -37,7 +37,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o\
 	HeatEquationTimestepMatrix.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o\
 	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
-	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o
+	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -251,6 +251,9 @@ StdUpDown.o : $(SRCDIR)algorithm/pde/StdUpDown.cpp
 	
 UpDownOneOpDim.o : $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDim.o $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
+
+UpDownTwoOpDims.o : $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownTwoOpDims.o $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
 	
 clean:
 	rm *

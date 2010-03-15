@@ -31,7 +31,7 @@
 namespace sg
 {
 
-OperationLaplaceLinear::OperationLaplaceLinear(GridStorage* storage) : UnidirGradient(storage)
+OperationLaplaceLinear::OperationLaplaceLinear(GridStorage* storage) : UpDownOneOpDim(storage)
 {
 }
 
@@ -39,13 +39,8 @@ OperationLaplaceLinear::~OperationLaplaceLinear()
 {
 }
 
-void OperationLaplaceLinear::mult(DataVector& alpha, DataVector& result)
-{
-	this->updown(alpha, result);
-}
-
 #ifndef USEOMPTHREE
-void OperationLaplaceLinear::gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+void OperationLaplaceLinear::specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 {
 	// In direction gradient_dim we only calculate the norm of the gradient
 	// The up-part is empty, thus omitted
@@ -53,18 +48,18 @@ void OperationLaplaceLinear::gradient(DataVector& alpha, DataVector& result, siz
 	{
 		DataVector temp(alpha.getSize());
 		updown(alpha, temp, dim-1, gradient_dim);
-		downGradient(temp, result, gradient_dim);
+		downOpDim(temp, result, gradient_dim);
 	}
 	else
 	{
 		// Terminates dimension recursion
-		downGradient(alpha, result, gradient_dim);
+		downOpDim(alpha, result, gradient_dim);
 	}
 }
 #endif
 
 #ifdef USEOMPTHREE
-void OperationLaplaceLinear::gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+void OperationLaplaceLinear::specialOP_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 {
 	// In direction gradient_dim we only calculate the norm of the gradient
 	// The up-part is empty, thus omitted
@@ -72,12 +67,12 @@ void OperationLaplaceLinear::gradient_parallel(DataVector& alpha, DataVector& re
 	{
 		DataVector temp(alpha.getSize());
 		updown_parallel(alpha, temp, dim-1, gradient_dim);
-		downGradient(temp, result, gradient_dim);
+		downOpDim(temp, result, gradient_dim);
 	}
 	else
 	{
 		// Terminates dimension recursion
-		downGradient(alpha, result, gradient_dim);
+		downOpDim(alpha, result, gradient_dim);
 	}
 }
 #endif
@@ -96,7 +91,7 @@ void OperationLaplaceLinear::down(DataVector& alpha, DataVector& result, size_t 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationLaplaceLinear::downGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// traverse all basis function by sequence number
 	for(size_t i = 0; i < storage->size(); i++)
@@ -109,7 +104,7 @@ void OperationLaplaceLinear::downGradient(DataVector& alpha, DataVector& result,
 	}
 }
 
-void OperationLaplaceLinear::upGradient(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 }
 

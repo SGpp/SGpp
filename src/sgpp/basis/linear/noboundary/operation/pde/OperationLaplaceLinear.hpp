@@ -24,16 +24,7 @@
 #ifndef OPERATIONLAPLACELINEAR_HPP
 #define OPERATIONLAPLACELINEAR_HPP
 
-#include "operation/common/OperationMatrix.hpp"
-
-#include "algorithm/datadriven/UnidirGradient.hpp"
-
-#include "grid/GridStorage.hpp"
-#include "data/DataVector.hpp"
-
-#ifdef USEOMP
-#include <omp.h>
-#endif
+#include "algorithm/pde/UpDownOneOpDim.hpp"
 
 namespace sg
 {
@@ -43,7 +34,7 @@ namespace sg
  *
  * @version $HEAD$
  */
-class OperationLaplaceLinear: public OperationMatrix, public UnidirGradient
+class OperationLaplaceLinear: public UpDownOneOpDim
 {
 public:
 	/**
@@ -58,24 +49,22 @@ public:
 	 */
 	virtual ~OperationLaplaceLinear();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-
 protected:
 #ifndef USEOMPTHREE
-	virtual void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
+	virtual void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
 #endif
 
 #ifdef USEOMPTHREE
-	virtual void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
+	virtual void specialOP_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
 #endif
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void downGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim);
 
-	virtual void upGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }
