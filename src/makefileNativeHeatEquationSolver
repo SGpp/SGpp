@@ -20,7 +20,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-SRCDIR = ./../../../src/sgpp/
+SRCDIR = ./../../../src/application_cpp/
 BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
@@ -30,8 +30,8 @@ default : $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppHeatEquationSolver.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)HESolver
 	
-NativeCppHeatEquationSolver.o : $(SRCDIR)application/pde/NativeCppHeatEquationSolver.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppHeatEquationSolver.o $(SRCDIR)application/pde/NativeCppHeatEquationSolver.cpp
+NativeCppHeatEquationSolver.o : $(SRCDIR)NativeCppHeatEquationSolver.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppHeatEquationSolver.o $(SRCDIR)NativeCppHeatEquationSolver.cpp
 		
 clean :
 	rm *
