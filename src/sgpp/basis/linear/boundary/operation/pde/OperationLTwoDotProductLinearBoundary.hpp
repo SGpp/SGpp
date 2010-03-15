@@ -23,25 +23,17 @@
 #ifndef OPERATIONLTWODOTPRODUCTLINEARBOUNDARY_HPP
 #define OPERATIONLTWODOTPRODUCTLINEARBOUNDARY_HPP
 
-#include "grid/GridStorage.hpp"
-
-#include "operation/common/OperationMatrix.hpp"
-
-#include "data/DataVector.hpp"
-
-#ifdef USEOMPTHREE
-#include <omp.h>
-#endif
+#include "algorithm/pde/StdUpDown.hpp"
 
 namespace sg
 {
 
 /**
- * @todo heinecke add description
+ * Implements the standard L 2 scalar product on linear boundary grids
  *
  * @version $HEAD$
  */
-class OperationLTwoDotProductLinearBoundary: public OperationMatrix
+class OperationLTwoDotProductLinearBoundary: public StdUpDown
 {
 public:
 	/**
@@ -56,37 +48,7 @@ public:
 	 */
 	virtual ~OperationLTwoDotProductLinearBoundary();
 
-
-	virtual void mult(DataVector& alpha, DataVector& result);
-
-private:
-	typedef GridStorage::grid_iterator grid_iterator;
-
-	/// Pointer to the grid's storage object
-	GridStorage* storage;
-
-#ifndef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown
-	 *
-	 * @param dim the current dimension
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown(DataVector& alpha, DataVector& result, size_t dim);
-#endif
-
-#ifdef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown, parallel version using OpenMP 3
-	 *
-	 * @param dim the current dimension
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim);
-#endif
-
+protected:
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
 	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
@@ -96,7 +58,7 @@ private:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -107,7 +69,7 @@ private:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }

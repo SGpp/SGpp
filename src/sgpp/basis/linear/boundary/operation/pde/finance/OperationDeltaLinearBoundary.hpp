@@ -23,15 +23,7 @@
 #ifndef OPERATIONDELTALINEARBOUNDARY_HPP
 #define OPERATIONDELTALINEARBOUNDARY_HPP
 
-#include "grid/GridStorage.hpp"
-
-#include "operation/common/OperationMatrix.hpp"
-
-#include "data/DataVector.hpp"
-
-#ifdef USEOMP
-#include <omp.h>
-#endif
+#include "algorithm/pde/UpDownOneOpDim.hpp"
 
 namespace sg
 {
@@ -39,7 +31,7 @@ namespace sg
 /**
  * @todo heinecke add description
  */
-class OperationDeltaLinearBoundary: public OperationMatrix
+class OperationDeltaLinearBoundary: public UpDownOneOpDim
 {
 public:
 	/**
@@ -55,61 +47,7 @@ public:
 	 */
 	virtual ~OperationDeltaLinearBoundary();
 
-
-	virtual void mult(DataVector& alpha, DataVector& result);
-
-private:
-	typedef GridStorage::grid_iterator grid_iterator;
-
-	/// Pointer to the grid's storage object
-	GridStorage* storage;
-	/// Pointer to the DataVector of the coefs
-	DataVector* coefs;
-
-#ifndef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown().
-	 *
-	 * @param dim the current dimension
-	 * @param gradient_dim the dimension in which to use the gradient
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
-
-	/**
-	 * All calculations for gradient_dim.
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim the dimension in that the gradient is applied
-	 */
-	void gradient(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
-#endif
-
-#ifdef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown(), parallel version using OpenMP 3
-	 *
-	 * @param dim the current dimension
-	 * @param gradient_dim the dimension in which to use the gradient
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
-
-	/**
-	 * All calculations for gradient_dim, parallel version using OpenMP 3
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param gradient_dim the dimension in that the gradient is applied
-	 */
-	void gradient_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
-#endif
-
+protected:
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
 	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
@@ -119,7 +57,7 @@ private:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -130,7 +68,7 @@ private:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -140,7 +78,7 @@ private:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	void downGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -150,10 +88,9 @@ private:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	void upGradient(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
 }
-
 
 #endif /* OPERATIONDELTALINEARBOUNDARY_HPP */

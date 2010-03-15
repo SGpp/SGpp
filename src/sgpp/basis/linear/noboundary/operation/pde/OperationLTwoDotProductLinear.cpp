@@ -30,56 +30,12 @@
 namespace sg
 {
 
-OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(GridStorage* storage)
+OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(GridStorage* storage) : StdUpDown(storage)
 {
-	this->storage = storage;
 }
 
 OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear()
 {
-}
-
-void OperationLTwoDotProductLinear::mult(DataVector& alpha, DataVector& result)
-{
-	result.setAll(0.0);
-
-	this->updown(alpha, result, storage->dim()-1);
-}
-
-/**
- * Recursive procedure for updown
- *
- * @param dim the current dimension
- * @param alpha vector of coefficients
- * @param result vector to store the results in
- */
-void OperationLTwoDotProductLinear::updown(DataVector& alpha, DataVector& result, size_t dim)
-{
-	//Unidirectional scheme
-	if(dim > 0)
-	{
-		// Reordering ups and downs
-		DataVector temp(alpha.getSize());
-		up(alpha, temp, dim);
-		updown(temp, result, dim-1);
-
-		DataVector result_temp(alpha.getSize());
-		updown(alpha, temp, dim-1);
-		down(temp, result_temp, dim);
-
-		//Overall memory use: 2*|alpha|*(d-1)
-		result.add(result_temp);
-	}
-	else
-	{
-		// Terminates dimension recursion
-		up(alpha, result, dim);
-
-		DataVector temp(alpha.getSize());
-		down(alpha, temp, dim);
-
-		result.add(temp);
-	}
 }
 
 void OperationLTwoDotProductLinear::up(DataVector& alpha, DataVector& result, size_t dim)
