@@ -168,7 +168,7 @@ public:
 	/**
 	 * Calculates the number of points, which can be refined
 	 *
-	 * @todo URGENT (heinecke) !!!! this doesn't for boundary grids!!!!!
+	 * @todo URGENT (heinecke) !!!! this doesn't work for boundary grids!!!!!
 	 *
 	 * @param storage hashmap that stores the grid points
 	 */

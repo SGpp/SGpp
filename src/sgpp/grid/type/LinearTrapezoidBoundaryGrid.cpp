@@ -29,7 +29,6 @@
 #include "basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/common/OperationEvalBBLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 // @todo (heinecke) removed this when done
 #include "basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.hpp"
@@ -98,14 +97,7 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
 
 OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 {
-	if (this->storage->getBoundingBox()->isTrivialCube())
-	{
-		return new OperationEvalLinearBoundary(this->storage);
-	}
-	else
-	{
-		return new OperationEvalBBLinearBoundary(this->storage);
-	}
+	return new OperationEvalLinearBoundary(this->storage);
 }
 
 OperationTest* LinearTrapezoidBoundaryGrid::createOperationTest()

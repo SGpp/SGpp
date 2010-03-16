@@ -37,7 +37,17 @@ namespace sg
 {
 
 /**
- * @todo heinecke add description
+ * Implements the Up/Down scheme with two dimensions with special operations: i,j
+ *
+ * Parallelization with OpenMP 2 / 3 is supported!
+ *
+ * Only symmetric operations are support --> only
+ * the "left lower triangular matrix", i <= j, is calculated, please
+ * keep that in mind when designing the coefficient vector:
+ * the non-diagonal elements must be multiplied by 2
+ * before executing this Up/down scheme!
+ *
+ * @version $HEAD$
  */
 class UpDownTwoOpDims: public OperationMatrix
 {

@@ -85,12 +85,8 @@ namespace std {
 %include "src/sgpp/sgpp.hpp"
 
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
-%include "src/sgpp/algorithm/datadriven/AlgorithmDGEMVBoundaries.hpp"
 %include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
-%include "src/sgpp/algorithm/datadriven/test_dataset_boundary.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
-%include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
-%include "src/sgpp/algorithm/common/GetAffectedBasisFunctionsBBBoundaries.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.hpp"
@@ -100,7 +96,7 @@ namespace std {
 
 %include "src/sgpp/basis/linear/noboundary/linear_base.hpp"
 %include "src/sgpp/basis/linear/boundary/linearboundaryBase.hpp"
-%include "src/sgpp/basis/linear/modlinear/modified_linear_base.hpp"
+%include "src/sgpp/basis/modlinear/modified_linear_base.hpp"
 %include "src/sgpp/basis/poly/poly_base.hpp"
 %include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
 %include "src/sgpp/basis/modwavelet/modified_wavelet_base.hpp"
@@ -133,4 +129,4 @@ namespace std {
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
-%template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctionsBoundaries<sg::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;

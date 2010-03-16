@@ -32,13 +32,9 @@
 #include "application/common/ScreenOutput.hpp"
 
 #include "algorithm/datadriven/AlgorithmDGEMV.hpp"
-#include "algorithm/datadriven/AlgorithmDGEMVBoundaries.hpp"
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
-#include "algorithm/common/GetAffectedBasisFunctionsBoundaries.hpp"
-#include "algorithm/common/GetAffectedBasisFunctionsBBBoundaries.hpp"
 
 #include "algorithm/datadriven/test_dataset.hpp"
-#include "algorithm/datadriven/test_dataset_boundary.hpp"
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 
 #include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
@@ -52,7 +48,7 @@
 // @todo (heinecke) check if this can be removed
 #include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
-#include "basis/linear/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
+#include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.hpp"
 

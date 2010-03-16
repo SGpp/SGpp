@@ -55,7 +55,6 @@ basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
 
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
-basis/linear/boundary/operation/common/OperationEvalBBLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
 basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.cpp
 basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
@@ -64,11 +63,11 @@ basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 
-basis/linear/modlinear/operation/datadriven/OperationBModLinear.cpp
-basis/linear/modlinear/operation/datadriven/OperationTestModLinear.cpp
-basis/linear/modlinear/operation/common/OperationEvalModLinear.cpp
-basis/linear/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-basis/linear/modlinear/operation/pde/OperationLaplaceModLinear.cpp
+basis/modlinear/operation/datadriven/OperationBModLinear.cpp
+basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
+basis/modlinear/operation/common/OperationEvalModLinear.cpp
+basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 
 
 basis/poly/operation/datadriven/OperationBPoly.cpp

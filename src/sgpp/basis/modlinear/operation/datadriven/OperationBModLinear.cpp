@@ -21,57 +21,32 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/linear/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
+#include "sgpp.hpp"
 
-#include "basis/linear/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp"
-#include "basis/linear/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp"
-#include "basis/linear/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
-#include "basis/linear/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
+#include "basis/basis.hpp"
+#include "basis/modlinear/operation/datadriven/OperationBModLinear.hpp"
 
-#include "algorithm/common/sweep.hpp"
+#include "exception/operation_exception.hpp"
+
+#include "data/DataVector.hpp"
 
 namespace sg
 {
 
-OperationLaplaceModLinear::OperationLaplaceModLinear(GridStorage* storage) : UpDownOneOpDim(storage)
+void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
+	AlgorithmDGEMV<SModLinearBase> op;
+	modified_linear_base<unsigned int, unsigned int> base;
+
+	op.mult(storage, base, alpha, data, result);
 }
 
-OperationLaplaceModLinear::~OperationLaplaceModLinear()
+void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-}
+	AlgorithmDGEMV<SModLinearBase> op;
+	modified_linear_base<unsigned int, unsigned int> base;
 
-void OperationLaplaceModLinear::up(DataVector& alpha, DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	detail::PhiPhiUpModLinear func(this->storage);
-	sweep<detail::PhiPhiUpModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
-
-void OperationLaplaceModLinear::down(DataVector& alpha, DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	detail::PhiPhiDownModLinear func(this->storage);
-	sweep<detail::PhiPhiDownModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
-
-void OperationLaplaceModLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	detail::dPhidPhiDownModLinear func(this->storage);
-	sweep<detail::dPhidPhiDownModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
-
-void OperationLaplaceModLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	detail::dPhidPhiUpModLinear func(this->storage);
-	sweep<detail::dPhidPhiUpModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
+	op.mult_transpose(storage, base, alpha, data, result);
 }
 
 }
-

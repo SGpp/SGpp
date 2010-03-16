@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -20,45 +21,57 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONEVALBBLINEARBOUNDARY_HPP
-#define OPERATIONEVALBBLINEARBOUNDARY_HPP
+#include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
 
-#include "operation/common/OperationEval.hpp"
-#include "grid/GridStorage.hpp"
+#include "basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp"
+#include "basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp"
+#include "basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
+#include "basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
+
+#include "algorithm/common/sweep.hpp"
 
 namespace sg
 {
 
-/**
- * This class implements OperationEval for a grids with linear basis ansatzfunctions with
- * boundaries
- *
- * This version has support for bounding box
- *
- * @version $HEAD$
- */
-class OperationEvalBBLinearBoundary : public OperationEval
+OperationLaplaceModLinear::OperationLaplaceModLinear(GridStorage* storage) : UpDownOneOpDim(storage)
 {
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 */
-	OperationEvalBBLinearBoundary(GridStorage* storage) : storage(storage) {}
+}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationEvalBBLinearBoundary() {}
+OperationLaplaceModLinear::~OperationLaplaceModLinear()
+{
+}
 
-	virtual double eval(DataVector& alpha, std::vector<double>& point);
+void OperationLaplaceModLinear::up(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::PhiPhiUpModLinear func(this->storage);
+	sweep<detail::PhiPhiUpModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-};
+void OperationLaplaceModLinear::down(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::PhiPhiDownModLinear func(this->storage);
+	sweep<detail::PhiPhiDownModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
+
+void OperationLaplaceModLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::dPhidPhiDownModLinear func(this->storage);
+	sweep<detail::dPhidPhiDownModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
+
+void OperationLaplaceModLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
+{
+	result.setAll(0.0);
+	detail::dPhidPhiUpModLinear func(this->storage);
+	sweep<detail::dPhidPhiUpModLinear> s(func, this->storage);
+	s.sweep1D(alpha, result, dim);
+}
 
 }
 
-#endif /* OPERATIONEVALBBLINEARBOUNDARY_HPP */

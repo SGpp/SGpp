@@ -30,7 +30,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
 	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesTimestepMatrix.o BlackScholesSolver.o\
 	ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
-	OperationEvalBBLinearBoundary.o Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
+	Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
 	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o\
 	OperationLaplaceLinearBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o\
 	OperationTestModWavelet.o OperationBModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
@@ -126,20 +126,20 @@ OperationLTwoDotProductLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde
 OperationLaplaceLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
 
-OperationLaplaceModLinear.o : $(SRCDIR)basis/linear/modlinear/operation/pde/OperationLaplaceModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/linear/modlinear/operation/pde/OperationLaplaceModLinear.cpp
+OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 
-OperationBModLinear.o : $(SRCDIR)basis/linear/modlinear/operation/datadriven/OperationBModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBModLinear.o $(SRCDIR)basis/linear/modlinear/operation/datadriven/OperationBModLinear.cpp
+OperationBModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationBModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationBModLinear.cpp
 
-OperationTestModLinear.o : $(SRCDIR)basis/linear/modlinear/operation/datadriven/OperationTestModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModLinear.o $(SRCDIR)basis/linear/modlinear/operation/datadriven/OperationTestModLinear.cpp
+OperationTestModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 
-OperationEvalModLinear.o : $(SRCDIR)basis/linear/modlinear/operation/common/OperationEvalModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModLinear.o $(SRCDIR)basis/linear/modlinear/operation/common/OperationEvalModLinear.cpp
+OperationEvalModLinear.o : $(SRCDIR)basis/modlinear/operation/common/OperationEvalModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModLinear.o $(SRCDIR)basis/modlinear/operation/common/OperationEvalModLinear.cpp
 
-OperationHierarchisationModLinear.o : $(SRCDIR)basis/linear/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModLinear.o $(SRCDIR)basis/linear/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+OperationHierarchisationModLinear.o : $(SRCDIR)basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModLinear.o $(SRCDIR)basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
 
 OperationBModPoly.o : $(SRCDIR)basis/modpoly/operation/datadriven/OperationBModPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBModPoly.o $(SRCDIR)basis/modpoly/operation/datadriven/OperationBModPoly.cpp
@@ -171,9 +171,6 @@ OperationHierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operat
 OperationEvalLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
 	
-OperationEvalBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationEvalBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationEvalBBLinearBoundary.cpp
-
 OperationUpDownTestLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
 
