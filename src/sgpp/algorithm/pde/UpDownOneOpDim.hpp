@@ -37,7 +37,11 @@ namespace sg
 {
 
 /**
- * @todo heinecke add description
+ * Implements the Up/Down scheme with one dimension with a special operation
+ *
+ * Parallelization with OpenMP 2 / 3 is supported!
+ *
+ * @version $HEAD$
  */
 class UpDownOneOpDim: public OperationMatrix
 {

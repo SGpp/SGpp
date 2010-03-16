@@ -37,7 +37,7 @@ double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>&
 
 	IndexValVector vec;
 	linearboundaryBase<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctionsBoundaries<linearboundaryBase<unsigned int, unsigned int> > ga(storage);
+	GetAffectedBasisFunctions<linearboundaryBase<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 

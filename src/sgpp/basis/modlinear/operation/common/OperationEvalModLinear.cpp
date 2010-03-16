@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -23,7 +24,7 @@
 #include "sgpp.hpp"
 
 #include "basis/basis.hpp"
-#include "basis/linear/modlinear/operation/datadriven/OperationTestModLinear.hpp"
+#include "basis/modlinear/operation/common/OperationEvalModLinear.hpp"
 
 #include "exception/operation_exception.hpp"
 
@@ -32,16 +33,24 @@
 namespace sg
 {
 
-double OperationTestModLinear::test(DataVector& alpha, DataVector& data, DataVector& classes)
+double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
-	modified_linear_base<unsigned int, unsigned int> base;
-	return test_dataset(this->storage, base, alpha, data, classes);
-}
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-double OperationTestModLinear::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
-{
+	IndexValVector vec;
 	modified_linear_base<unsigned int, unsigned int> base;
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+	GetAffectedBasisFunctions<modified_linear_base<unsigned int, unsigned int> > ga(storage);
+
+	ga(base, point, vec);
+
+	double result = 0.0;
+
+	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	{
+		result += iter->second * alpha[iter->first];
+	}
+
+	return result;
 }
 
 }

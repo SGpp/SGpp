@@ -2,6 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
+/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
@@ -23,33 +24,52 @@
 #include "sgpp.hpp"
 
 #include "basis/basis.hpp"
+#include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
+#include "basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
+#include "basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
 
-#include "basis/linear/boundary/operation/common/OperationEvalBBLinearBoundary.hpp"
+#include "algorithm/common/sweep.hpp"
 
 #include "data/DataVector.hpp"
 
 namespace sg
 {
-
-double OperationEvalBBLinearBoundary::eval(DataVector& alpha, std::vector<double>& point)
+/**
+ * Implements the hierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param node_values the functions values in the node base
+ *
+ * @todo (heinecke, nice) Implement the hierarchisation on the sparse grid with mod linear base functions
+ */
+void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_values)
 {
-	typedef std::vector< std::pair<size_t, double> > IndexValVector;
+	detail::HierarchisationModLinear func(this->storage);
+	sweep<detail::HierarchisationModLinear> s(func, this->storage);
 
-	IndexValVector vec;
-	linearboundaryBase<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctionsBBBoundaries<linearboundaryBase<unsigned int, unsigned int> > ga(storage);
-
-	ga(base, point, vec);
-
-	double result = 0.0;
-
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
 	{
-		result += iter->second * alpha[iter->first];
+		s.sweep1D(node_values, node_values, i);
 	}
+}
 
-	return result;
+/**
+ * Implements the dehierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ *
+ * @todo (heinecke, nice) Implement the dehierarchisation on the sparse grid with mod linear base functions
+ */
+void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha)
+{
+	detail::DehierarchisationModLinear func(this->storage);
+	sweep<detail::DehierarchisationModLinear> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(alpha, alpha, i);
+	}
 }
 
 }
-

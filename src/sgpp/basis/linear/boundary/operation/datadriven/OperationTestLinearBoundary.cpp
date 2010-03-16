@@ -34,13 +34,13 @@ namespace sg
 double OperationTestLinearBoundary::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
-	return test_dataset_boundary(this->storage, base, alpha, data, classes);
+	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
 double OperationTestLinearBoundary::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
-	return test_dataset_boundaryWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
 }

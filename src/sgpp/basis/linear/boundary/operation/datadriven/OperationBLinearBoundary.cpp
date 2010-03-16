@@ -33,7 +33,7 @@ namespace sg
 
 void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
+	AlgorithmDGEMV<SLinearBoundaryBase> op;
 	linearboundaryBase<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, data, result);
@@ -41,7 +41,7 @@ void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVec
 
 void OperationBLinearBoundary::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
 {
-	AlgorithmDGEMVBoundaries<SLinearBoundaryBase> op;
+	AlgorithmDGEMV<SLinearBoundaryBase> op;
 	linearboundaryBase<unsigned int, unsigned int> base;
 
 	op.mult_transpose(storage, base, alpha, data, result);

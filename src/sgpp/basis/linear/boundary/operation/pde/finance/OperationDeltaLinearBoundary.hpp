@@ -29,7 +29,11 @@ namespace sg
 {
 
 /**
- * @todo heinecke add description
+ * Implements the Delta-Operation, that is needed
+ * the solve the multidimensional Black Scholes
+ * equation
+ *
+ * @version $HEAD$
  */
 class OperationDeltaLinearBoundary: public UpDownOneOpDim
 {
