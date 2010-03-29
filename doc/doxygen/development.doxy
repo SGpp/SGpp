@@ -1,0 +1,39 @@
+/**
+@page development Developer How-Tos
+<div style="color:#FF0000;">All code has to be documented so that the functions,
+classes and all other entities appearing in the Documentation are
+commented so that some @e other person can understand what they are
+doing.</div>
+
+
+
+<!-- ############################################################# -->
+@section development__doxygen Doxygen
+
+The documentation has to be done in a Doxygen compatible way. Doygen
+tags are to be used in the Java-style way, i.e. starting with \@.
+
+During development, especially tags like \@todo should be used. They
+are then listed on the @link todo ToDo@endlink-page.
+
+Different scripts can be grouped together in so-called modules. The
+link to the page showing all modules can be found in the navigation
+bar of the documentation.
+
+Please correct any warnings or errors that appear when creating the
+documentation with doxygen!
+
+@sa Doxygen Manual http://www.stack.nl/~dimitri/doxygen/manual.html
+@sa - Documenting the code http://www.stack.nl/~dimitri/doxygen/docblocks.html
+@sa - Special Commands http://www.stack.nl/~dimitri/doxygen/commands.html
+
+
+
+<!-- ############################################################# -->
+@section development__overview Overview
+- @subpage svn
+- @subpage styleguide
+- @subpage grid
+
+
+*/

@@ -31,7 +31,7 @@
 #include "basis/modlinear/operation/datadriven/OperationTestModLinear.hpp"
 #include "basis/modlinear/operation/common/OperationEvalModLinear.hpp"
 #include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationLaplaceModLinear.hpp"
+#include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
 
 #include "exception/factory_exception.hpp"
 

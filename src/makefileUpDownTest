@@ -20,7 +20,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-SRCDIR = ./../../../src/sgpp/
+SRCDIR = ./../../../src/application_cpp/
 BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
@@ -30,8 +30,8 @@ default: $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)UpDownTest.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)UpDown
 		
-UpDownTest.o : $(SRCDIR)application/common/UpDownTest.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)UpDownTest.o $(SRCDIR)application/common/UpDownTest.cpp
+UpDownTest.o : $(SRCDIR)UpDownTest.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)UpDownTest.o $(SRCDIR)UpDownTest.cpp
 	
 clean:
 	rm *

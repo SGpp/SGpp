@@ -28,7 +28,7 @@
 #include "basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
 #include "basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
 
-#include "exception/operation_exception.hpp"
+#include "algorithm/common/sweep.hpp"
 
 #include "data/DataVector.hpp"
 

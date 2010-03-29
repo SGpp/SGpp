@@ -20,7 +20,8 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-SRCDIR = ./../../../src/sgpp/
+SRCDIR = ./../../../src/application_cpp/
+SRCDIRTWO = ./../../../src/sgpp/
 BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
@@ -30,11 +31,11 @@ default: $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifier.o $(BUILDDIR)Classifier.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)Classifier
 
-Classifier.o : $(SRCDIR)application/classification/Classifier.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)Classifier.o $(SRCDIR)application/classification/Classifier.cpp
+Classifier.o : $(SRCDIRTWO)application/classification/Classifier.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)Classifier.o $(SRCDIRTWO)application/classification/Classifier.cpp
 	
-NativeCppClassifier.o : $(SRCDIR)application/classification/NativeCppClassifier.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppClassifier.o $(SRCDIR)application/classification/NativeCppClassifier.cpp
+NativeCppClassifier.o : $(SRCDIR)NativeCppClassifier.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppClassifier.o $(SRCDIR)NativeCppClassifier.cpp
 			
 clean:
 	rm *

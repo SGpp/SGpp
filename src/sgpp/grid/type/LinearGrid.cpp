@@ -27,12 +27,12 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the linear grid
-#include "basis/linear/operation/datadriven/OperationBLinear.hpp"
-#include "basis/linear/operation/datadriven/OperationTestLinear.hpp"
-#include "basis/linear/operation/common/OperationEvalLinear.hpp"
-#include "basis/linear/operation/common/OperationHierarchisationLinear.hpp"
-#include "basis/linear/operation/datadriven/OperationLaplaceLinear.hpp"
-#include "basis/linear/operation/pde/OperationLTwoDotProductLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
+#include "basis/linear/noboundary/operation/common/OperationEvalLinear.hpp"
+#include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
 
 #include "exception/factory_exception.hpp"
 
