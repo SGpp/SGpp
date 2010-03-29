@@ -1,22 +1,11 @@
-# This file is part of sgpp, a program package making use of spatially adaptive sparse grids to solve numerical problems
-# 
-# Copyright (C) 2007  Joerg Blank (blankj@in.tum.de), Richard Roettger (roettger@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
-# 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-# 
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#!/usr/bin/python
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
 ## @package tools
 # @ingroup bin
+# @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief A collection of helper functions.
 # @version $CURR$
 
@@ -285,17 +274,26 @@ def readData(filename):
 #-------------------------------------------------------------------------------
 ## @brief Writes gnuplot data of function into file
 #
-def writeGnuplot(filename, grid, alpha, resolution):
-    p = DataVector(1,2)
-    fout = file(filename, "w")
+def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
+    p = DataVector(1,grid.getStorage().dim())
+    fout = gzOpen(filename, mode)
 
-    for x in xrange(resolution):
-        for y in xrange(resolution):
-            p[0] = float(x) / (resolution - 1)
-            p[1] = float(y) / (resolution - 1)
-            pc = grid.createOperationEval().eval(alpha, p)
-            fout.write("%f %f %f\n" % (p[0], p[1], pc))
-        fout.write("\n")
+    if grid.getStorage().dim() == 1:
+        for x in xrange(resolution):
+                p[0] = float(x) / (resolution - 1)
+                pc = grid.createOperationEval().eval(alpha, p)
+                fout.write("%f %f %f\n" % (p[0], p[1], pc))
+    elif grid.getStorage().dim() == 2:
+        for x in xrange(resolution):
+            for y in xrange(resolution):
+                p[0] = float(x) / (resolution - 1)
+                p[1] = float(y) / (resolution - 1)
+                pc = grid.createOperationEval().eval(alpha, p)
+                fout.write("%f %f %f\n" % (p[0], p[1], pc))
+            fout.write("\n")
+    else:
+        sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (grid.getStorage().dim()))
+    fout.write("e\n")
     fout.close()
     return
 
@@ -480,7 +478,8 @@ def readNormfile(filename):
 # @param filename Filename of normfile (optional)
 # @param minvals Array of normalization boundary min values (one per dimension) (optional)
 # @param maxvals Array of normalization boundary max values (one per dimension) (optional)
-def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None):
+# @param verbose Provide additional output
+def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbose=False):
     # check parameters
     if len(data) == 0:
         raise ValueError, "Wrong or no data."
@@ -505,13 +504,20 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None):
 
                 cmax = max(dataset["data"][dim])
                 lmax[dim] = max(cmax, lmax[dim])
+    # output
+    if verbose:
+        print "Dim:", len(lmin)
+        print "Boundary:", border
+        for d in range(len(lmin)):
+            print " [%f,%f]" % (lmin[d], lmax[d])
 
     # delta values
     ldelta = map(lambda x,y: ((y-x)/(1.0-2.0*border)), lmin, lmax)
 
     # write normalization data to file:
     if filename:
-        writeNormfile(filename, border, lmin, lmax, ldelta)
+        if verbose: print "Writing normalization information to", filename
+        writeNormfile(filename, border, lmin, lmax)
     
     for dataset in data:
         for dim in xrange(len(dataset["data"])):
@@ -529,8 +535,11 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None):
 #
 # @param data Dataset 
 # @param border Classes will be differentiated between greater and less then border 
-# @param minborder All classes under the minborder are processes as they are over border
-def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1):
+# @param minborder All classes under the minborder are processed as if they were over border
+# @param verbose Provide additional output
+def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1, verbose=False):
+    if verbose:
+        print "Cut-off at", border
     def separate(x):
         if x >= border or x < minborder:
             return 1

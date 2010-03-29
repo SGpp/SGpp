@@ -25,9 +25,8 @@
 #ifndef BASIS_HPP
 #define BASIS_HPP
 
-#include "basis/linear/linear_base.hpp"
-#include "basis/linearboundary/linearboundaryBase.hpp"
-#include "basis/lineartrapezoidboundary/lineartrapezoidboundaryBase.hpp"
+#include "basis/linear/noboundary/linear_base.hpp"
+#include "basis/linear/boundary/linearboundaryBase.hpp"
 #include "basis/modlinear/modified_linear_base.hpp"
 #include "basis/poly/poly_base.hpp"
 #include "basis/modpoly/modified_poly_base.hpp"

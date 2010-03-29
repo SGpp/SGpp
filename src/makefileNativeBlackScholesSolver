@@ -20,7 +20,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-SRCDIR = ./../../../src/sgpp/
+SRCDIR = ./../../../src/application_cpp/
 BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
@@ -30,8 +30,8 @@ default: $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppBlackScholesSolver.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)BSSolver
 	
-NativeCppBlackScholesSolver.o : $(SRCDIR)application/pde/NativeCppBlackScholesSolver.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppBlackScholesSolver.o $(SRCDIR)application/pde/NativeCppBlackScholesSolver.cpp
+NativeCppBlackScholesSolver.o : $(SRCDIR)NativeCppBlackScholesSolver.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppBlackScholesSolver.o $(SRCDIR)NativeCppBlackScholesSolver.cpp
 			
 clean:
 	rm *

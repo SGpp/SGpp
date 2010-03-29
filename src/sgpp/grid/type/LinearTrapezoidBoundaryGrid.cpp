@@ -26,18 +26,17 @@
 #include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/lineartrapezoidboundary/operation/datadriven/OperationBLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/datadriven/OperationTestLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/common/OperationEvalLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/common/OperationEvalBBLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/common/OperationHierarchisationLinearTrapezoidBoundary.hpp"
+#include "basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 // @todo (heinecke) removed this when done
-#include "basis/lineartrapezoidboundary/operation/common/OperationUpDownTestLinearTrapezoidBoundary.hpp"
+#include "basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.hpp"
 
-#include "basis/lineartrapezoidboundary/operation/pde/OperationLaplaceLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/OperationLTwoDotProductLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationDeltaLinearTrapezoidBoundary.hpp"
-#include "basis/lineartrapezoidboundary/operation/pde/finance/OperationGammaLinearTrapezoidBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -88,57 +87,50 @@ GridGenerator* LinearTrapezoidBoundaryGrid::createGridGenerator()
 
 OperationB* LinearTrapezoidBoundaryGrid::createOperationB()
 {
-	return new OperationBLinearTrapezoidBoundary(this->storage);
+	return new OperationBLinearBoundary(this->storage);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
 {
-	return new OperationLaplaceLinearTrapezoidBoundary(this->storage);
+	return new OperationLaplaceLinearBoundary(this->storage);
 }
 
 OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 {
-	if (this->storage->getBoundingBox()->isTrivialCube())
-	{
-		return new OperationEvalLinearTrapezoidBoundary(this->storage);
-	}
-	else
-	{
-		return new OperationEvalBBLinearTrapezoidBoundary(this->storage);
-	}
+	return new OperationEvalLinearBoundary(this->storage);
 }
 
 OperationTest* LinearTrapezoidBoundaryGrid::createOperationTest()
 {
-	return new OperationTestLinearTrapezoidBoundary(this->storage);
+	return new OperationTestLinearBoundary(this->storage);
 }
 
 OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchisation()
 {
-	return new OperationHierarchisationLinearTrapezoidBoundary(this->storage);
+	return new OperationHierarchisationLinearBoundary(this->storage);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
 {
-	return new OperationLTwoDotProductLinearTrapezoidBoundary(this->storage);
+	return new OperationLTwoDotProductLinearBoundary(this->storage);
 }
 
 // @todo (heinecke) removed this when done
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
 {
-	return new OperationUpDownTestLinearTrapezoidBoundary(this->storage);
+	return new OperationUpDownTestLinearBoundary(this->storage);
 }
 
 // finance operations
 /////////////////////
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& coef)
 {
-	return new OperationDeltaLinearTrapezoidBoundary(this->storage, coef);
+	return new OperationDeltaLinearBoundary(this->storage, coef);
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataVector& coef)
 {
-	return new OperationGammaLinearTrapezoidBoundary(this->storage, coef);
+	return new OperationGammaLinearBoundary(this->storage, coef);
 }
 
 }
