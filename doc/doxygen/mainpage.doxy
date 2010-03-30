@@ -125,19 +125,7 @@ $SVN_LOG$
 - Example usage
 
 
-@section mainpage__unittests Unittests/Testing
 
-In the subfolder <tt>tests</tt> there are @link tests the following@endlink 
-unittests written in Python.
-They can be tested separately or all together via the file
-<tt>test_pyclass.py</tt>. If you modify existing code, do not forget 
-to make sure that no new errors are introduced. If you write new
-functionalities, do <i>always</i> add unittests for each functionality!
-
-
-@section mainpage__description Description of the SG++ package
-
-Here comes the description...
 @image html SG++_XS_wcrop.png
 
 @section mainpage__doxygen Usage of Doxygen

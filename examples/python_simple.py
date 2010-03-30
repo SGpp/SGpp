@@ -3,7 +3,7 @@
 # import modules
 import sys
 # append trunk/bin to search path for modules
-sys.path.append('../bin')
+sys.path.append('../lib/pysgpp')
 from pysgpp import DataVector, Grid
 
 # create a two-dimensional piecewise bi-linear grid
