@@ -49,10 +49,9 @@ Euler::~Euler()
 {
 }
 
-void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+void Euler::solve(OperationODESolverSystem& System, bool verbose)
 {
 	size_t allIter = 0;
-	DataVector rhs(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
 
     // Do some animation creation exception handling
@@ -64,22 +63,20 @@ void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, boo
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
+		DataVector rhs(System.getGridCoefficientsForCG()->getSize());
 		rhs.setAll(0.0);
 
-
 		// generate right hand side
-		SystemMatrix.generateRHS(alpha, rhs);
+		System.generateRHS(*System.getGridCoefficientsForCG(), rhs);
 
-
-	    // Do some adjustments on the boundaries if needed
+		// Do some adjustments on the boundaries if needed
 		if (this->ExMode == "ImEul")
 		{
-		    SystemMatrix.startTimestep(alpha);
+		    System.startTimestep(*System.getGridCoefficients());
 		}
 
-
 		// solve the system of the current timestep
-	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
+	    myCG.solve(System, *System.getGridCoefficientsForCG(), rhs, true, false, -1.0);
 	    allIter += myCG.getNumberIterations();
 	    if (verbose == true)
 	    {
@@ -107,7 +104,7 @@ void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, boo
 	    // Do some adjustments on the boundaries if needed
 		if (this->ExMode == "ExEul")
 		{
-			SystemMatrix.finishTimestep(alpha);
+			System.finishTimestep(*System.getGridCoefficients());
 		}
 
 
@@ -123,8 +120,8 @@ void Euler::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, boo
 			tFilename.append(".gnuplot");
 
 			// Print grid to file
-			GridPrinter myPrinter(*SystemMatrix.getGrid());
-			myPrinter.printGrid(alpha, tFilename, this->evalsAnimation);
+			GridPrinter myPrinter(*System.getGrid());
+			myPrinter.printGrid(*System.getGridCoefficients(), tFilename, this->evalsAnimation);
 		}
 	}
 

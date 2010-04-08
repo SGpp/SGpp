@@ -21,8 +21,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef OPERATIONODESOLVERMATRIX_HPP
-#define OPERATIONODESOLVERMATRIX_HPP
+#ifndef OPERATIONODESOLVERSYSTEM_HPP
+#define OPERATIONODESOLVERSYSTEM_HPP
 
 #include "grid/Grid.hpp"
 #include "operation/common/OperationMatrix.hpp"
@@ -32,7 +32,7 @@ namespace sg
 {
 
 /**
- * Defines a Systemmatrix that is used to solve parabolic partial
+ * Defines a System that is used to solve parabolic partial
  * differential equations. So an instance of this class has to pass to
  * any ODE Solver used in SGpp.
  *
@@ -40,18 +40,18 @@ namespace sg
  * using an iterative SLE solver, that solving step is integrated in the
  * ODE Solver.
  */
-class OperationODESolverMatrix : public OperationMatrix
+class OperationODESolverSystem : public OperationMatrix
 {
 public:
 	/**
 	 * Constructor
 	 */
-	OperationODESolverMatrix() {}
+	OperationODESolverSystem() {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationODESolverMatrix() {}
+	virtual ~OperationODESolverSystem() {}
 
 	/**
 	 * Multiplicates a vector with the matrix
@@ -91,6 +91,22 @@ public:
 	 * @return returns a pointer to the underlying grid object
 	 */
 	virtual Grid* getGrid() = 0;
+
+	/**
+	 * gets a pointer to the sparse grids coefficients used in the CG method to solve
+	 * one timestep. This is useful because (direchlet) boundaries can be skipped when
+	 * solving the system.
+	 *
+	 * @return alpha vector for CG method
+	 */
+	virtual DataVector* getGridCoefficientsForCG() = 0;
+
+	/**
+	 * gets the complete coefficients vector
+	 *
+	 * @return the complete coefficients vector
+	 */
+	virtual DataVector* getGridCoefficients() = 0;
 };
 
 }

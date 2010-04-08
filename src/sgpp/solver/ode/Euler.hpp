@@ -72,7 +72,7 @@ public:
 	 */
 	virtual ~Euler();
 
-	virtual void solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+	virtual void solve(OperationODESolverSystem& System, bool verbose = false);
 };
 
 }

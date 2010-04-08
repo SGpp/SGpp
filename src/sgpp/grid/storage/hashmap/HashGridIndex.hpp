@@ -299,6 +299,22 @@ public:
 	}
 
 	/**
+	 * determines if the grid point is an inner grid point
+	 *
+	 * @return true if the grid point is an inner grid point
+	 */
+	bool isInnerPoint()
+	{
+		for (size_t d = 0; d < DIM; d++)
+		{
+			if (level[d] == 0)
+				return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * gets a Pointer to the instance of the HashGridIndex Object
 	 *
 	 * @return Pointer to this instance

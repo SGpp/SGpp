@@ -26,7 +26,7 @@
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
-#include "operation/common/OperationODESolverMatrix.hpp"
+#include "operation/common/OperationODESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 
 namespace sg
@@ -35,7 +35,7 @@ namespace sg
 /**
  * @todo (heinecke) add description here
  */
-class LogBlackScholesTimestepMatrix : public OperationODESolverMatrix
+class LogBlackScholesTimestepMatrix : public OperationODESolverSystem
 {
 private:
 	/// the riskfree interest rate

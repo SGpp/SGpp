@@ -20,13 +20,13 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
+#include "algorithm/pde/HeatEquationODESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 
 namespace sg
 {
 
-HeatEquationTimestepMatrix::HeatEquationTimestepMatrix(Grid& SparseGrid, double a, double TimestepSize, std::string OperationMode)
+HeatEquationODESolverSystem::HeatEquationODESolverSystem(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
 {
 	this->OpLaplace = SparseGrid.createOperationLaplace();
 	this->OpMass = SparseGrid.createOperationLTwoDotProduct();
@@ -34,15 +34,17 @@ HeatEquationTimestepMatrix::HeatEquationTimestepMatrix(Grid& SparseGrid, double 
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
 	this->myGrid = &SparseGrid;
+	this->alpha_complete = &alpha;
+	this->alpha_inner = &alpha;
 }
 
-HeatEquationTimestepMatrix::~HeatEquationTimestepMatrix()
+HeatEquationODESolverSystem::~HeatEquationODESolverSystem()
 {
 	delete this->OpLaplace;
 	delete this->OpMass;
 }
 
-void HeatEquationTimestepMatrix::mult(DataVector& alpha, DataVector& result)
+void HeatEquationODESolverSystem::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -84,7 +86,7 @@ void HeatEquationTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 	}
 }
 
-void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
+void HeatEquationODESolverSystem::generateRHS(DataVector& data, DataVector& rhs)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -124,7 +126,7 @@ void HeatEquationTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 }
 
-void HeatEquationTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)
+void HeatEquationODESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -134,7 +136,7 @@ void HeatEquationTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& 
 	result.add(temp);
 }
 
-void HeatEquationTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& result)
+void HeatEquationODESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -143,17 +145,27 @@ void HeatEquationTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationTimestepMatrix::finishTimestep(DataVector& alpha)
+void HeatEquationODESolverSystem::finishTimestep(DataVector& alpha)
 {
 }
 
-void HeatEquationTimestepMatrix::startTimestep(DataVector& alpha)
+void HeatEquationODESolverSystem::startTimestep(DataVector& alpha)
 {
 }
 
-Grid* HeatEquationTimestepMatrix::getGrid()
+Grid* HeatEquationODESolverSystem::getGrid()
 {
 	return myGrid;
+}
+
+DataVector* HeatEquationODESolverSystem::getGridCoefficients()
+{
+	return this->alpha_complete;
+}
+
+DataVector* HeatEquationODESolverSystem::getGridCoefficientsForCG()
+{
+	return this->alpha_inner;
 }
 
 }

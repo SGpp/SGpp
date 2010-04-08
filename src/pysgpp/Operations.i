@@ -54,7 +54,7 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
-class OperationODESolverMatrix : public OperationMatrix
+class OperationODESolverSystem : public OperationMatrix
 {
 public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;

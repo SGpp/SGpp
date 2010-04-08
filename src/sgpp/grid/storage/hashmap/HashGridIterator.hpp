@@ -214,6 +214,11 @@ public:
 
 	 }
 
+	 bool isInnerPoint()
+	 {
+		 return index.isInnerPoint();
+	 }
+
 	/**
 	 * returns true if there are no more childs in any dimension
 	 *

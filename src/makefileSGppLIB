@@ -28,14 +28,14 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o\
 	OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
 	OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
-	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesTimestepMatrix.o BlackScholesSolver.o\
+	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesODESolverSystem.o BlackScholesSolver.o\
 	ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
 	Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
 	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o\
 	OperationLaplaceLinearBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o\
 	OperationTestModWavelet.o OperationBModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
 	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o\
-	HeatEquationTimestepMatrix.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o\
+	HeatEquationODESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o\
 	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o
 
@@ -192,11 +192,11 @@ OperationLTwoDotProductLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operati
 OperationLaplaceLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 	
-BlackScholesTimestepMatrix.o : $(SRCDIR)algorithm/pde/BlackScholesTimestepMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesTimestepMatrix.o $(SRCDIR)algorithm/pde/BlackScholesTimestepMatrix.cpp
+BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 
-HeatEquationTimestepMatrix.o : $(SRCDIR)algorithm/pde/HeatEquationTimestepMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationTimestepMatrix.o $(SRCDIR)algorithm/pde/HeatEquationTimestepMatrix.cpp
+HeatEquationODESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationODESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
 	
 DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp

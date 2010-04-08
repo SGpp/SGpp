@@ -36,24 +36,24 @@ CrankNicolson::~CrankNicolson()
 {
 }
 
-void CrankNicolson::solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose)
+void CrankNicolson::solve(OperationODESolverSystem& System, bool verbose)
 {
 	size_t allIter = 0;
-	DataVector rhs(alpha.getSize());
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
+		DataVector rhs(System.getGridCoefficientsForCG()->getSize());
 		rhs.setAll(0.0);
 
 		// generate right hand side
-		SystemMatrix.generateRHS(alpha, rhs);
+		System.generateRHS(*System.getGridCoefficientsForCG(), rhs);
 
 	    // Do some adjustments on the boundaries if needed
-		SystemMatrix.startTimestep(alpha);
+		System.startTimestep(*System.getGridCoefficients());
 
 		// solve the system of the current timestep
-	    myCG.solve(SystemMatrix, alpha, rhs, true, false, -1.0);
+	    myCG.solve(System, *System.getGridCoefficientsForCG(), rhs, true, false, -1.0);
 	    allIter += myCG.getNumberIterations();
 	    if (verbose == true)
 	    {
