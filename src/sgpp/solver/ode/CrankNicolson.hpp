@@ -65,7 +65,7 @@ public:
 	 */
 	virtual ~CrankNicolson();
 
-	virtual void solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false);
+	virtual void solve(OperationODESolverSystem& System, bool verbose = false);
 };
 
 }

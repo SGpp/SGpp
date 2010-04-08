@@ -20,7 +20,7 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -226,12 +226,12 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ExEul");
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ExEul");
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
 		myStopwatch->start();
-		myEuler->solve(*myBSMatrix, alpha, verbose);
+		myEuler->solve(*myBSSystem, verbose);
 		execTime = myStopwatch->stop();
 
 		if (myScreen != NULL)
@@ -240,7 +240,7 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 			myScreen->writeEmptyLines(2);
 		}
 
-		delete myBSMatrix;
+		delete myBSSystem;
 		delete myEuler;
 	}
 	else
@@ -254,12 +254,12 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ImEul");
+		BlackScholesODESolverSystem* myBSSolver = new BlackScholesODESolverSystem(*myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "ImEul");
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
 		myStopwatch->start();
-		myEuler->solve(*myBSMatrix, alpha, verbose);
+		myEuler->solve(*myBSSolver, verbose);
 		execTime = myStopwatch->stop();
 
 		if (myScreen != NULL)
@@ -268,7 +268,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 			myScreen->writeEmptyLines(2);
 		}
 
-		delete myBSMatrix;
+		delete myBSSolver;
 		delete myEuler;
 	}
 	else
@@ -282,12 +282,12 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	if (bGridConstructed && bStochasticDataAlloc)
 	{
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG, myScreen);
-		BlackScholesTimestepMatrix* myBSMatrix = new BlackScholesTimestepMatrix(*myGrid, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "CrNic");
+		BlackScholesODESolverSystem* myBSSolver = new BlackScholesODESolverSystem(*myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, r, timestepsize, "CrNic");
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
 		myStopwatch->start();
-		myCN->solve(*myBSMatrix, alpha, false);
+		myCN->solve(*myBSSolver, false);
 		execTime = myStopwatch->stop();
 
 		if (myScreen != NULL)
@@ -296,7 +296,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 			myScreen->writeEmptyLines(2);
 		}
 
-		delete myBSMatrix;
+		delete myBSSolver;
 		delete myCN;
 	}
 	else

@@ -50,7 +50,7 @@ public:
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
-	 * @param coef reference to a DataVector object that contains the bilinear form's constant coefficients
+	 * @param coef reference to a DataVector object that contains the bilinear form's constant coefficients; one per dimension
 	 */
 	UpDownOneOpDim(GridStorage* storage, DataVector& coef);
 

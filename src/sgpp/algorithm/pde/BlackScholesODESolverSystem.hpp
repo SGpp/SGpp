@@ -20,30 +20,48 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef HEATEQUATIONTIMESTEPMATRIX_HPP
-#define HEATEQUATIONTIMESTEPMATRIX_HPP
+#ifndef BLACKSCHOLESODESOLVERSYSTEM_HPP
+#define BLACKSCHOLESODESOLVERSYSTEM_HPP
 
-#include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/common/OperationODESolverMatrix.hpp"
-
-#include <string>
+#include "data/DataVector.hpp"
+#include "operation/common/OperationODESolverSystem.hpp"
+#include "grid/common/DirichletUpdateVector.hpp"
 
 namespace sg
 {
 
 /**
- * @todo (heinecke) add description here
+ * This class implements the ODESolverSystem for the BlackScholes
+ * Equation.
  */
-class HeatEquationTimestepMatrix : public OperationODESolverMatrix
+class BlackScholesODESolverSystem : public OperationODESolverSystem
 {
 private:
-	/// the heat coefficient
-	double a;
-	/// the Laplace Operation (Stiffness Matrix)
-	OperationMatrix* OpLaplace;
+	/// the riskfree interest rate
+	double r;
+	/// the delta Operation
+	OperationMatrix* OpDelta;
+	/// the Gamma Operation
+	OperationMatrix* OpGamma;
+	/// Pointer to the alphas (ansatzfunctions' coefficients)
+	DataVector* alpha_complete;
+	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
+	DataVector* alpha_inner;
+	/// Pointer to the mus
+	DataVector* mus;
+	/// Pointer to the sigmas
+	DataVector* sigmas;
+	/// Pointer to the rhos;
+	DataVector* rhos;
+	/// Pointer to the coefficients of operation Delta
+	DataVector* deltaCoef;
+	/// Pointer to the coefficients ot operation Gamma
+	DataVector* gammaCoef;
 	/// the LTwoDotProduct Operation (Mass Matrix)
-	OperationMatrix* OpMass;
+	OperationMatrix* OpLTwo;
+	/// Routine to modify the boundaries of the grid
+	DirichletUpdateVector* BoundaryUpdate;
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
 	 *  ExEul for explicit Euler
@@ -57,7 +75,15 @@ private:
 	Grid* myGrid;
 
 	/**
-	 * @todo (heinecke) add description
+	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
+	 * @param return reference to the DataVector into which the result is written
+	 */
+	void applyLOperator(DataVector& alpha, DataVector& result);
+
+	/**
+	 * Do Matrix mutlitplication with left hand side mass matrix
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
@@ -65,29 +91,39 @@ private:
 	void applyMassMatrix(DataVector& alpha, DataVector& result);
 
 	/**
-	 * @todo (heinecke) add description
+	 * Build the coefficients for the Gamma Operation, which
+	 * are the assets' covariance matrix multiplied by 0.5
 	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
+	 * this routine handles also the symmtrie of the
+	 * gamma operation
 	 */
-	void applyLOperator(DataVector& alpha, DataVector& result);
+	void buildGammaCoefficients();
+
+	/**
+	 * Build the coefficients for the combined Delta Operation
+	 */
+	void buildDeltaCoefficients();
 
 public:
 	/**
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
-	 * @param a the heat coefficient
+	 * @param alpha the ansatzfunctions' coefficients
+	 * @param mu reference to the mus
+	 * @param sigma reference to the sigmas
+	 * @param rho reference to the rhos
+	 * @param r the riskfree interest rate
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	HeatEquationTimestepMatrix(Grid& SparseGrid, double a, double TimestepSize, std::string OperationMode = "ExEul");
+	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~HeatEquationTimestepMatrix();
+	virtual ~BlackScholesODESolverSystem();
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
@@ -98,8 +134,12 @@ public:
 	virtual void startTimestep(DataVector& alpha);
 
 	virtual Grid* getGrid();
+
+	virtual DataVector* getGridCoefficientsForCG();
+
+	virtual DataVector* getGridCoefficients();
 };
 
 }
 
-#endif /* HEATEQUATIONTIMESTEPMATRIX_HPP */
+#endif /* BLACKSCHOLESODESOLVERSYSTEM_HPP */

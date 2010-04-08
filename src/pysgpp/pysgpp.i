@@ -89,8 +89,8 @@ namespace std {
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesTimestepMatrix.hpp"
-%include "src/sgpp/algorithm/pde/HeatEquationTimestepMatrix.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesODESolverSystem.hpp"
+%include "src/sgpp/algorithm/pde/HeatEquationODESolverSystem.hpp"
 
 %include "src/sgpp/application/common/ScreenOutput.hpp"
 

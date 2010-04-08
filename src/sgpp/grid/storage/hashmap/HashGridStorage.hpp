@@ -214,6 +214,24 @@ public:
     }
 
     /**
+     * gets the number of inner grid points
+     *
+     * @return the number of inner grid points
+     */
+    size_t getNumInnerPoints()
+    {
+    	size_t innerPoints = 0;
+
+    	for (size_t p = 0; p < map.size(); p++)
+    	{
+    		if (list[p]->isInnerPoint())
+    			innerPoints++;
+    	}
+
+    	return innerPoints;
+    }
+
+    /**
      * gets the dimension of the grid
      *
      * @return the dimension of the grid stored in this GridStorage object

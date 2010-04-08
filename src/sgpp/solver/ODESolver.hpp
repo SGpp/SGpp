@@ -50,11 +50,10 @@ public:
 	/**
 	 * Pure virtual Function that defines a solve method for an ODE solver
 	 *
-	 * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector multiplication
-	 * @param alpha the sparse grid's coefficients which have to be determined
+	 * @param System reference to an OperationMatrix Object that implements the matrix vector multiplication
 	 * @param verbose prints information during execution of the solver
 	 */
-	virtual void solve(OperationODESolverMatrix& SystemMatrix, DataVector& alpha, bool verbose = false) = 0;
+	virtual void solve(OperationODESolverSystem& System, bool verbose = false) = 0;
 };
 
 }

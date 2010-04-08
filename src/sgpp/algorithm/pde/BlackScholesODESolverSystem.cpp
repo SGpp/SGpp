@@ -20,16 +20,18 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include <cmath>
 
 namespace sg
 {
 
-BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode)
+BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode)
 {
 	this->myGrid = &SparseGrid;
+	this->alpha_complete = &alpha;
+	this->alpha_inner = &alpha;
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
 	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
@@ -50,7 +52,7 @@ BlackScholesTimestepMatrix::BlackScholesTimestepMatrix(Grid& SparseGrid, DataVec
 	this->OpLTwo = SparseGrid.createOperationLTwoDotProduct();
 }
 
-BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
+BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 {
 	delete this->OpDelta;
 	delete this->OpGamma;
@@ -60,7 +62,7 @@ BlackScholesTimestepMatrix::~BlackScholesTimestepMatrix()
 	delete this->BoundaryUpdate;
 }
 
-void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
+void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -98,7 +100,7 @@ void BlackScholesTimestepMatrix::mult(DataVector& alpha, DataVector& result)
 	}
 }
 
-void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
+void BlackScholesODESolverSystem::generateRHS(DataVector& data, DataVector& rhs)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -134,7 +136,7 @@ void BlackScholesTimestepMatrix::generateRHS(DataVector& data, DataVector& rhs)
 	}
 }
 
-void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& result)
+void BlackScholesODESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -156,7 +158,7 @@ void BlackScholesTimestepMatrix::applyLOperator(DataVector& alpha, DataVector& r
 	result.sub_parallel(temp);
 }
 
-void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& result)
+void BlackScholesODESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -168,7 +170,7 @@ void BlackScholesTimestepMatrix::applyMassMatrix(DataVector& alpha, DataVector& 
 	result.add_parallel(temp);
 }
 
-void BlackScholesTimestepMatrix::finishTimestep(DataVector& alpha)
+void BlackScholesODESolverSystem::finishTimestep(DataVector& alpha)
 {
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
@@ -180,7 +182,7 @@ void BlackScholesTimestepMatrix::finishTimestep(DataVector& alpha)
 	}
 }
 
-void BlackScholesTimestepMatrix::startTimestep(DataVector& alpha)
+void BlackScholesODESolverSystem::startTimestep(DataVector& alpha)
 {
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
@@ -192,12 +194,12 @@ void BlackScholesTimestepMatrix::startTimestep(DataVector& alpha)
 	}
 }
 
-Grid* BlackScholesTimestepMatrix::getGrid()
+Grid* BlackScholesODESolverSystem::getGrid()
 {
 	return myGrid;
 }
 
-void BlackScholesTimestepMatrix::buildGammaCoefficients()
+void BlackScholesODESolverSystem::buildGammaCoefficients()
 {
 	size_t dim = this->myGrid->getStorage()->dim();
 
@@ -218,7 +220,7 @@ void BlackScholesTimestepMatrix::buildGammaCoefficients()
 	}
 }
 
-void BlackScholesTimestepMatrix::buildDeltaCoefficients()
+void BlackScholesODESolverSystem::buildDeltaCoefficients()
 {
 	size_t dim = this->myGrid->getStorage()->dim();
 	double covar_sum = 0.0;
@@ -240,6 +242,16 @@ void BlackScholesTimestepMatrix::buildDeltaCoefficients()
 		}
 		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
 	}
+}
+
+DataVector* BlackScholesODESolverSystem::getGridCoefficients()
+{
+	return this->alpha_complete;
+}
+
+DataVector* BlackScholesODESolverSystem::getGridCoefficientsForCG()
+{
+	return this->alpha_inner;
 }
 
 }
