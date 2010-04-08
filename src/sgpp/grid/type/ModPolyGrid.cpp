@@ -130,4 +130,14 @@ OperationMatrix* ModPolyGrid::createOperationGamma(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
+OperationMatrix* ModPolyGrid::createOperationDeltaLog(DataVector& coef)
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModPolyGrid::createOperationGammaLog(DataVector& coef)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

@@ -121,4 +121,14 @@ OperationMatrix* ModWaveletGrid::createOperationGamma(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
+OperationMatrix* ModWaveletGrid::createOperationDeltaLog(DataVector& coef)
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModWaveletGrid::createOperationGammaLog(DataVector& coef)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

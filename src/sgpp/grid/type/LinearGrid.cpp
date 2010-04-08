@@ -124,4 +124,14 @@ OperationMatrix* LinearGrid::createOperationGamma(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
+OperationMatrix* LinearGrid::createOperationDeltaLog(DataVector& coef)
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearGrid::createOperationGammaLog(DataVector& coef)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }
