@@ -219,7 +219,7 @@ public:
 	 * this operation allows you to calculate the following bilinear form
 	 * needed to solve the multidimensional Black Scholes Equation
 	 *
-	 * \f$ \int_{\Omega} S_i \frac{\partial u(\vec{s}}{\partial S_i} v(\vec{s}) d \vec{s}\f$
+	 * \f$ \int_{\Omega} S_i v(\vec{s}) \frac{\partial u(\vec{s}}{\partial S_i} d \vec{s}\f$
 	 *
 	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
 	 */
