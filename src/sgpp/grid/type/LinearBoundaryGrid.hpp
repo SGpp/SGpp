@@ -67,6 +67,8 @@ public:
 	// finance operations
 	virtual OperationMatrix* createOperationDelta(DataVector& coef);
 	virtual OperationMatrix* createOperationGamma(DataVector& coef);
+	virtual OperationMatrix* createOperationDeltaLog(DataVector& coef);
+	virtual OperationMatrix* createOperationGammaLog(DataVector& coef);
 
 	static Grid* unserialize(std::istream& istr);
 };

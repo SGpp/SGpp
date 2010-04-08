@@ -60,6 +60,8 @@ basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.cpp
 basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
 basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.cpp
 basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
+basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
+basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 
