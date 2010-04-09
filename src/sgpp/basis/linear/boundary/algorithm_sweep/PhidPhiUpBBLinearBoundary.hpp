@@ -86,104 +86,55 @@ public:
 		double fl = 0.0;
 		double fr = 0.0;
 
-		if(useBB)
+
+		// the following computations are independent from a bounding box
+
+		if(!index.hint())
 		{
-			if(!index.hint())
+			index.top(dim);
+
+			if(!this->storage->end(index.seq()))
 			{
-				index.top(dim);
-
-				if(!this->storage->end(index.seq()))
-				{
-					recBB(source, result, index, dim, fl, fr);
-				}
-
-				index.left_levelzero(dim);
-			}
-
-			size_t seq_left;
-			size_t seq_right;
-
-			// left boundary
-			seq_left = index.seq();
-
-			// right boundary
-			index.right_levelzero(dim);
-			seq_right = index.seq();
-
-			// check boundary conditions
-			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-			{
-				result[seq_left] = 0.0; // source[seq_left];
-			}
-			else
-			{
-				// up
-				//////////////////////////////////////
-				result[seq_left] = fl;
-
-				result[seq_left] += source[seq_right] * (0.5);
-			}
-
-			if (this->boundingBox->hasDirichletBoundaryRight(dim))
-			{
-				result[seq_right] = 0.0; //source[seq_right];
-			}
-			else
-			{
-				result[seq_right] = fr;
+				rec(source, result, index, dim, fl, fr);
 			}
 
 			index.left_levelzero(dim);
+		}
+
+		size_t seq_left;
+		size_t seq_right;
+
+		// left boundary
+		seq_left = index.seq();
+
+		// right boundary
+		index.right_levelzero(dim);
+		seq_right = index.seq();
+
+		// check boundary conditions
+		if (this->boundingBox->hasDirichletBoundaryLeft(dim))
+		{
+			result[seq_left] = 0.0; // source[seq_left];
 		}
 		else
 		{
-			if(!index.hint())
-			{
-				index.top(dim);
+			// up
+			//////////////////////////////////////
+			result[seq_left] = fl;
 
-				if(!this->storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fl, fr);
-				}
-
-				index.left_levelzero(dim);
-			}
-
-			size_t seq_left;
-			size_t seq_right;
-
-			// left boundary
-			seq_left = index.seq();
-
-			// right boundary
-			index.right_levelzero(dim);
-			seq_right = index.seq();
-
-			// check boundary conditions
-			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-			{
-				result[seq_left] = 0.0; // source[seq_left];
-			}
-			else
-			{
-				// up
-				//////////////////////////////////////
-				result[seq_left] = fl;
-
-				result[seq_left] += source[seq_right] * (0.5);
-			}
-
-			if (this->boundingBox->hasDirichletBoundaryRight(dim))
-			{
-				result[seq_right] = 0.0; //source[seq_right];
-			}
-			else
-			{
-				result[seq_right] = fr;
-			}
-
-			index.left_levelzero(dim);
+			result[seq_left] += source[seq_right] * (0.5);
 		}
+
+		if (this->boundingBox->hasDirichletBoundaryRight(dim))
+		{
+			result[seq_right] = 0.0; //source[seq_right];
+		}
+		else
+		{
+			result[seq_right] = fr;
+		}
+
+		index.left_levelzero(dim);
 	}
 };
 

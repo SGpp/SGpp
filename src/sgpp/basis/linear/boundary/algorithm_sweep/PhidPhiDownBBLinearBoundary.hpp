@@ -74,16 +74,6 @@ public:
 	 */
 	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		this->q = this->boundingBox->getIntervalWidth(dim);
-		this->t = this->boundingBox->getIntervalOffset(dim);
-
-		bool useBB = false;
-
-		if (this->q != 1.0 || this->t != 0.0)
-		{
-			useBB = true;
-		}
-
 		// get boundary values
 		double left_boundary;
 		double right_boundary;
@@ -105,79 +95,42 @@ public:
 		seq_right = index.seq();
 		right_boundary = source[seq_right];
 
-		if (useBB)
+
+		// the following code is independent from a bounding box
+
+		// check boundary conditions
+		if (this->boundingBox->hasDirichletBoundaryLeft(dim))
 		{
-			// check boundary conditions
-			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-			{
-				result[seq_left] = 0.0; //left_boundary;
-			}
-			else
-			{
-				result[seq_left] = left_boundary * (-0.5);
-			}
-
-			if (this->boundingBox->hasDirichletBoundaryRight(dim))
-			{
-				result[seq_right] = 0.0; //right_boundary;
-			}
-			else
-			{
-				result[seq_right] = right_boundary * (0.5);
-				// down
-				//////////////////////////////////////
-				result[seq_right] += left_boundary * (-0.5);
-			}
-
-			// move to root
-			if (!index.hint())
-			{
-				index.top(dim);
-
-				if(!this->storage->end(index.seq()))
-				{
-					recBB(source, result, index, dim, left_boundary, right_boundary);
-				}
-
-				index.left_levelzero(dim);
-			}
+			result[seq_left] = 0.0; //left_boundary;
 		}
 		else
 		{
-			// check boundary conditions
-			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
+			result[seq_left] = left_boundary * (-0.5);
+		}
+
+		if (this->boundingBox->hasDirichletBoundaryRight(dim))
+		{
+			result[seq_right] = 0.0; //right_boundary;
+		}
+		else
+		{
+			result[seq_right] = right_boundary * (0.5);
+			// down
+			//////////////////////////////////////
+			result[seq_right] += left_boundary * (-0.5);
+		}
+
+		// move to root
+		if (!index.hint())
+		{
+			index.top(dim);
+
+			if(!this->storage->end(index.seq()))
 			{
-				result[seq_left] = 0.0; //left_boundary;
-			}
-			else
-			{
-				result[seq_left] = left_boundary * (-0.5);
+				rec(source, result, index, dim, left_boundary, right_boundary);
 			}
 
-			if (this->boundingBox->hasDirichletBoundaryRight(dim))
-			{
-				result[seq_right] = 0.0; //right_boundary;
-			}
-			else
-			{
-				result[seq_right] = right_boundary * (0.5);
-				// down
-				//////////////////////////////////////
-				result[seq_right] += left_boundary * (-0.5);
-			}
-
-			// move to root
-			if (!index.hint())
-			{
-				index.top(dim);
-
-				if(!this->storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, left_boundary, right_boundary);
-				}
-
-				index.left_levelzero(dim);
-			}
+			index.left_levelzero(dim);
 		}
 	}
 };

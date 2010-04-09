@@ -84,30 +84,14 @@ public:
 	 */
 	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		q = boundingBox->getIntervalWidth(dim);
-		t = boundingBox->getIntervalOffset(dim);
-
-		bool useBB = false;
-
-		if (q != 1.0 || t != 0.0)
-		{
-			useBB = true;
-		}
-
-		if (useBB)
-		{
-			recBB(source, result, index, dim, 0.0, 0.0);
-		}
-		else
-		{
-			rec(source, result, index, dim, 0.0, 0.0);
-		}
+		rec(source, result, index, dim, 0.0, 0.0);
 	}
 
 protected:
 
 	/**
-	 * recursive function for the calculation of Down without Bounding Box support
+	 * recursive function for the calculation of Down with and without Bounding Box support
+	 * (since the calculations are independent from a bounding box)
 	 *
 	 * @param source DataVector that contains the coefficients of the ansatzfunction
 	 * @param result DataVector in which the result of the operation is stored
@@ -151,50 +135,6 @@ protected:
 		}
 	}
 
-	/**
-	 * recursive function for the calculation of Down wit Bounding Box support
-	 *
-	 * @param source DataVector that contains the coefficients of the ansatzfunction
-	 * @param result DataVector in which the result of the operation is stored
-	 * @param index reference to a griditerator object that is used navigate through the grid
-	 * @param dim the dimension in which the operation is executed
-	 * @param fl function value on the left boundary
-	 * @param fr function value on the right boundary
-	 */
-	void recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-	{
-		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
-
-		GridStorage::index_type::level_type l;
-		GridStorage::index_type::index_type i;
-
-		index.get(dim, l, i);
-
-		// integration
-		result[seq] = ( 0.5*(fl-fr) );    // diagonal entry = 0.0
-
-		// dehierarchisation
-		double fm = ((fl+fr)/2.0) + alpha_value;
-
-		if(!index.hint())
-		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				recBB(source, result, index, dim, fl, fm);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				recBB(source, result, index, dim, fm, fr);
-			}
-
-			index.up(dim);
-		}
-	}
 };
 
 } // namespace detail
