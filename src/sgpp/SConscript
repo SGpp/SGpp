@@ -32,6 +32,7 @@ grid/Grid.cpp
 
 grid/common/BoundingBox.cpp
 grid/common/DirichletUpdateVector.cpp
+grid/common/DirichletGridConverter.cpp
 
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp
@@ -52,6 +53,8 @@ basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
 basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
 basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
 basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
