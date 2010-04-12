@@ -25,6 +25,7 @@
 #define LINEARGRID_HPP
 
 #include "grid/Grid.hpp"
+#include "grid/common/BoundingBox.hpp"
 
 #include <iostream>
 
@@ -46,6 +47,13 @@ public:
 	 * @param dim the dimension of the grid
 	 */
 	LinearGrid(size_t dim);
+
+	/**
+	 * Constructor Linear Grid
+	 *
+	 * @param BB the BoundingBox of the grid
+	 */
+	LinearGrid(BoundingBox& BB);
 
 	/**
 	 * Destructor
