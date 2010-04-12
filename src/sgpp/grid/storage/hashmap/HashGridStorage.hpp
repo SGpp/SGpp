@@ -139,6 +139,23 @@ public:
 	}
 
 	/**
+	 * deletes all grid points in the storage
+	 */
+	void emptyStorage()
+	{
+		// delete all grid points
+		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
+		{
+			delete *iter;
+		}
+
+		// remove all elements from hashmap
+		map.clear();
+		// remove all list entries
+		list.clear();
+	}
+
+	/**
 	 * serialize the gridstorage into a string
 	 *
 	 * @return a string the contains all gridstorage information
