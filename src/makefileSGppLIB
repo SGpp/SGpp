@@ -37,7 +37,9 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o\
 	HeatEquationODESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o\
 	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
-	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o
+	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
+	DirichletGridConverter.o OperationDeltaLinear.o OperationGammaLinear.o OperationDeltaLogLinearBoundary.o\
+	OperationGammaLogLinearBoundary.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -125,6 +127,12 @@ OperationLTwoDotProductLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde
 
 OperationLaplaceLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
+	
+OperationDeltaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
+	
+OperationGammaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 
 OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
@@ -185,7 +193,13 @@ OperationDeltaLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/fi
 	
 OperationGammaLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
-		
+	
+OperationDeltaLogLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
+	
+OperationGammaLogLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
+	
 OperationLTwoDotProductLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
 	
@@ -230,6 +244,9 @@ GridPrinter.o : $(SRCDIR)tools/common/GridPrinter.cpp
 	
 DirichletUpdateVector.o : $(SRCDIR)grid/common/DirichletUpdateVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DirichletUpdateVector.o $(SRCDIR)grid/common/DirichletUpdateVector.cpp	
+
+DirichletGridConverter.o : $(SRCDIR)grid/common/DirichletGridConverter.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DirichletGridConverter.o $(SRCDIR)grid/common/DirichletGridConverter.cpp	
 	
 StdNormalDistribution.o : $(SRCDIR)tools/common/StdNormalDistribution.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StdNormalDistribution.o $(SRCDIR)tools/common/StdNormalDistribution.cpp
