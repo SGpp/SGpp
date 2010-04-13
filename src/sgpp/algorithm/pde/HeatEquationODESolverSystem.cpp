@@ -86,44 +86,46 @@ void HeatEquationODESolverSystem::mult(DataVector& alpha, DataVector& result)
 	}
 }
 
-void HeatEquationODESolverSystem::generateRHS(DataVector& data, DataVector& rhs)
+DataVector* HeatEquationODESolverSystem::generateRHS()
 {
-	if (this->tOperationMode == "ExEul")
-	{
-		DataVector temp(data.getSize());
-		temp.setAll(0.0);
+//	if (this->tOperationMode == "ExEul")
+//	{
+//		DataVector temp(data.getSize());
+//		temp.setAll(0.0);
+//
+//		applyMassMatrix(data, temp);
+//		rhs.add(temp);
+//
+//		temp.setAll(0.0);
+//		applyLOperator(data, temp);
+//		rhs.axpy(this->TimestepSize, temp);
+//	}
+//	else if (this->tOperationMode == "ImEul")
+//	{
+//		rhs.setAll(0.0);
+//
+//		applyMassMatrix(data, rhs);
+//	}
+//	else if (this->tOperationMode == "CrNic")
+//	{
+//		rhs.setAll(0.0);
+//
+//		DataVector temp(data.getSize());
+//
+//		temp.setAll(0.0);
+//		applyMassMatrix(data, temp);
+//		rhs.add(temp);
+//
+//		temp.setAll(0.0);
+//		applyLOperator(data, temp);
+//		rhs.axpy((0.5)*this->TimestepSize, temp);
+//	}
+//	else
+//	{
+//		throw new algorithm_exception(" HeatEquationTimestepMatrix::generateRHS : An unknown operation mode was specified!");
+//	}
 
-		applyMassMatrix(data, temp);
-		rhs.add(temp);
-
-		temp.setAll(0.0);
-		applyLOperator(data, temp);
-		rhs.axpy(this->TimestepSize, temp);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		rhs.setAll(0.0);
-
-		applyMassMatrix(data, rhs);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		rhs.setAll(0.0);
-
-		DataVector temp(data.getSize());
-
-		temp.setAll(0.0);
-		applyMassMatrix(data, temp);
-		rhs.add(temp);
-
-		temp.setAll(0.0);
-		applyLOperator(data, temp);
-		rhs.axpy((0.5)*this->TimestepSize, temp);
-	}
-	else
-	{
-		throw new algorithm_exception(" HeatEquationTimestepMatrix::generateRHS : An unknown operation mode was specified!");
-	}
+	return this->alpha_complete;
 }
 
 void HeatEquationODESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& result)
@@ -145,11 +147,11 @@ void HeatEquationODESolverSystem::applyLOperator(DataVector& alpha, DataVector& 
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationODESolverSystem::finishTimestep(DataVector& alpha)
+void HeatEquationODESolverSystem::finishTimestep()
 {
 }
 
-void HeatEquationODESolverSystem::startTimestep(DataVector& alpha)
+void HeatEquationODESolverSystem::startTimestep()
 {
 }
 
@@ -158,14 +160,14 @@ Grid* HeatEquationODESolverSystem::getGrid()
 	return myGrid;
 }
 
-DataVector* HeatEquationODESolverSystem::getGridCoefficients()
-{
-	return this->alpha_complete;
-}
-
 DataVector* HeatEquationODESolverSystem::getGridCoefficientsForCG()
 {
 	return this->alpha_inner;
+}
+
+DataVector* HeatEquationODESolverSystem::getGridCoefficients()
+{
+	return this->alpha_complete;
 }
 
 }

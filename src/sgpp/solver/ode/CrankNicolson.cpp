@@ -40,20 +40,16 @@ void CrankNicolson::solve(OperationODESolverSystem& System, bool verbose)
 {
 	size_t allIter = 0;
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
+    DataVector* rhs = NULL;
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
-		DataVector rhs(System.getGridCoefficientsForCG()->getSize());
-		rhs.setAll(0.0);
-
 		// generate right hand side
-		System.generateRHS(*System.getGridCoefficientsForCG(), rhs);
-
-	    // Do some adjustments on the boundaries if needed
-		System.startTimestep(*System.getGridCoefficients());
+		rhs = System.generateRHS();
 
 		// solve the system of the current timestep
-	    myCG.solve(System, *System.getGridCoefficientsForCG(), rhs, true, false, -1.0);
+	    myCG.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+
 	    allIter += myCG.getNumberIterations();
 	    if (verbose == true)
 	    {
@@ -77,8 +73,8 @@ void CrankNicolson::solve(OperationODESolverSystem& System, bool verbose)
     		}
     	}
 
-	    // Do some adjustments on the boundaries if needed
-		//SystemMatrix.finishTimestep(alpha);
+	    // Do some adjustments on the boundaries if needed, copy values back
+		System.finishTimestep();
 	}
 
 	// write some empty lines to console

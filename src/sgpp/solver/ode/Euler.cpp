@@ -53,6 +53,7 @@ void Euler::solve(OperationODESolverSystem& System, bool verbose)
 {
 	size_t allIter = 0;
     BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
+    DataVector* rhs;
 
     // Do some animation creation exception handling
     size_t animationStep = this->nMaxIterations/1500;
@@ -63,20 +64,11 @@ void Euler::solve(OperationODESolverSystem& System, bool verbose)
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
-		DataVector rhs(System.getGridCoefficientsForCG()->getSize());
-		rhs.setAll(0.0);
-
 		// generate right hand side
-		System.generateRHS(*System.getGridCoefficientsForCG(), rhs);
-
-		// Do some adjustments on the boundaries if needed
-		if (this->ExMode == "ImEul")
-		{
-		    System.startTimestep(*System.getGridCoefficients());
-		}
+		rhs = System.generateRHS();
 
 		// solve the system of the current timestep
-	    myCG.solve(System, *System.getGridCoefficientsForCG(), rhs, true, false, -1.0);
+	    myCG.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 	    allIter += myCG.getNumberIterations();
 	    if (verbose == true)
 	    {
@@ -99,14 +91,7 @@ void Euler::solve(OperationODESolverSystem& System, bool verbose)
     			myScreen->update(100, soutput.str());
     		}
     	}
-
-
-	    // Do some adjustments on the boundaries if needed
-		if (this->ExMode == "ExEul")
-		{
-			System.finishTimestep(*System.getGridCoefficients());
-		}
-
+	    System.finishTimestep();
 
 		// Create pictures of the animation, if specified
 	    if ((this->bAnimation == true) && (i%animationStep == 0))

@@ -55,7 +55,7 @@ void OperationGammaLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 	detail::PhiPhiUpBBLinear func(this->storage);
 	sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationGammaLinear::down(DataVector& alpha, DataVector& result, size_t dim)
@@ -64,7 +64,7 @@ void OperationGammaLinear::down(DataVector& alpha, DataVector& result, size_t di
 	detail::PhiPhiDownBBLinear func(this->storage);
 	sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationGammaLinear::upOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
@@ -73,7 +73,7 @@ void OperationGammaLinear::upOpDimOne(DataVector& alpha, DataVector& result, siz
 	detail::XPhidPhiUpBBLinear func(this->storage);
 	sweep<detail::XPhidPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationGammaLinear::downOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
@@ -82,7 +82,7 @@ void OperationGammaLinear::downOpDimOne(DataVector& alpha, DataVector& result, s
 	detail::XPhidPhiDownBBLinear func(this->storage);
 	sweep<detail::XPhidPhiDownBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationGammaLinear::upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
@@ -91,7 +91,7 @@ void OperationGammaLinear::upOpDimTwo(DataVector& alpha, DataVector& result, siz
 	detail::XdPhiPhiUpBBLinear func(this->storage);
 	sweep<detail::XdPhiPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationGammaLinear::downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
@@ -100,7 +100,7 @@ void OperationGammaLinear::downOpDimTwo(DataVector& alpha, DataVector& result, s
 	detail::XdPhiPhiDownBBLinear func(this->storage);
 	sweep<detail::XdPhiPhiDownBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationGammaLinear::upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
@@ -109,7 +109,7 @@ void OperationGammaLinear::upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& 
 	detail::SqXdPhidPhiUpBBLinear func(this->storage);
 	sweep<detail::SqXdPhidPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationGammaLinear::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
@@ -118,7 +118,7 @@ void OperationGammaLinear::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector
 	detail::SqXdPhidPhiDownBBLinear func(this->storage);
 	sweep<detail::SqXdPhidPhiDownBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 }
