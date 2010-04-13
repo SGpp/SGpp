@@ -77,6 +77,11 @@ private:
 	 */
 	void applyLOperator(DataVector& alpha, DataVector& result);
 
+	/**
+	 * Implements some adjustments needed before soling a timestep
+	 */
+	void startTimestep();
+
 public:
 	/**
 	 * Std-Constructor
@@ -96,11 +101,9 @@ public:
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
-	virtual void generateRHS(DataVector& data, DataVector& rhs);
+	virtual DataVector* generateRHS();
 
-	virtual void finishTimestep(DataVector& alpha);
-
-	virtual void startTimestep(DataVector& alpha);
+	virtual void finishTimestep();
 
 	virtual Grid* getGrid();
 

@@ -71,7 +71,7 @@ public:
 	 * @param InnerGrid Pointer to the inner grid, initialized in this method
 	 * @param InnerCoefs Pointer to the inner grid's coefficients, initialized in this mehtod
 	 */
-	void buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid* InnerGrid, DataVector* InnerCoefs);
+	void buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid** InnerGrid, DataVector** InnerCoefs);
 
 	/**
 	 * rebuilds a sparse grid without any boundaries from a sparse grid with boundaries. In addition
@@ -82,7 +82,7 @@ public:
 	 * @param InnerGrid Pointer to the inner grid, initialized in this method
 	 * @param InnerCoefs Pointer to the inner grid's coefficients, initialized in this mehtod
 	 */
-	void rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid* InnerGrid, DataVector* InnerCoefs);
+	void rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid** InnerGrid, DataVector** InnerCoefs);
 
 	/**
 	 * copies the inner grid's coefficients to the identical (inner) ansatzfunctions in the boundary grid.

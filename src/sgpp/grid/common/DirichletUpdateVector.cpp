@@ -99,6 +99,33 @@ void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
 	}
 }
 
+void DirichletUpdateVector::setInnerPointsToZero(DataVector& updateVector)
+{
+#ifdef USEOMP
+	#pragma omp parallel for shared(updateVector) schedule(static)
+#endif
+	for (size_t i = 0; i < storage->size(); i++)
+	{
+		GridStorage::index_type::level_type level;
+		GridStorage::index_type::index_type index;
+		size_t dim;
+		DimensionBoundary myBounds;
+		for (size_t j = 0; j < storage->dim(); j++)
+		{
+			dim = j;
+			(*storage)[i]->get(dim, level, index);
+			myBounds = myBoundingBox->getBoundary(dim);
+			if (level > 0)
+			{
+				if (myBounds.bDirichletRight == true && myBounds.bDirichletLeft == true)
+				{
+					updateVector.set(i, 0.0);
+				}
+			}
+		}
+	}
+}
+
 void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double value)
 {
 #ifdef USEOMP

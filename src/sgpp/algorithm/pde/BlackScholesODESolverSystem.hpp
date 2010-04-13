@@ -27,6 +27,7 @@
 #include "data/DataVector.hpp"
 #include "operation/common/OperationODESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
+#include "grid/common/DirichletGridConverter.hpp"
 
 namespace sg
 {
@@ -40,10 +41,18 @@ class BlackScholesODESolverSystem : public OperationODESolverSystem
 private:
 	/// the riskfree interest rate
 	double r;
-	/// the delta Operation
-	OperationMatrix* OpDelta;
-	/// the Gamma Operation
-	OperationMatrix* OpGamma;
+	/// the delta Operation, on boundary grid
+	OperationMatrix* OpDeltaBound;
+	/// the Gamma Operation, on boundary grid
+	OperationMatrix* OpGammaBound;
+	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
+	OperationMatrix* OpLTwoBound;
+	/// the delta Operation, on Inner grid
+	OperationMatrix* OpDeltaInner;
+	/// the Gamma Operation, on Inner grid
+	OperationMatrix* OpGammaInner;
+	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
+	OperationMatrix* OpLTwoInner;
 	/// Pointer to the alphas (ansatzfunctions' coefficients)
 	DataVector* alpha_complete;
 	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
@@ -58,10 +67,13 @@ private:
 	DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
 	DataVector* gammaCoef;
-	/// the LTwoDotProduct Operation (Mass Matrix)
-	OperationMatrix* OpLTwo;
 	/// Routine to modify the boundaries of the grid
 	DirichletUpdateVector* BoundaryUpdate;
+	/// Class that allows a simple conversion between a grid with and a without boundary points
+	DirichletGridConverter* GridConverter;
+	/// DateVector to store the right hand side
+	DataVector* rhs;
+
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
 	 *  ExEul for explicit Euler
@@ -71,16 +83,34 @@ private:
 	std::string tOperationMode;
 	/// the size of one timestep used in the ODE Solver
 	double TimestepSize;
-	/// Pointer to the grid object
-	Grid* myGrid;
+	/// Pointer to the boundary grid object
+	Grid* BoundGrid;
+	/// Pointer to the inner grid object
+	Grid* InnerGrid;
 
 	/**
-	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix
+	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix, inner grid points only
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions (inner grid points)
+	 * @param return reference to the DataVector into which the result is written (inner grid points)
+	 */
+	void applyLOperatorInner(DataVector& alpha, DataVector& result);
+
+	/**
+	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix, complete boundary grid
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
 	 */
-	void applyLOperator(DataVector& alpha, DataVector& result);
+	void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+
+	/**
+	 * Do Matrix mutlitplication with left hand side mass matrix, inner grid points only
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions (inner grid points)
+	 * @param return reference to the DataVector into which the result is written (inner grid points)
+	 */
+	void applyMassMatrixInner(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Do Matrix mutlitplication with left hand side mass matrix
@@ -88,7 +118,7 @@ private:
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
 	 */
-	void applyMassMatrix(DataVector& alpha, DataVector& result);
+	void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Build the coefficients for the Gamma Operation, which
@@ -103,6 +133,11 @@ private:
 	 * Build the coefficients for the combined Delta Operation
 	 */
 	void buildDeltaCoefficients();
+
+	/**
+	 * Implements some start jobs of every timestep, e.g.discounting boundaries
+	 */
+	void startTimestep();
 
 public:
 	/**
@@ -127,11 +162,9 @@ public:
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
-	virtual void generateRHS(DataVector& data, DataVector& rhs);
+	virtual DataVector* generateRHS();
 
-	virtual void finishTimestep(DataVector& alpha);
-
-	virtual void startTimestep(DataVector& alpha);
+	virtual void finishTimestep();
 
 	virtual Grid* getGrid();
 

@@ -64,26 +64,15 @@ public:
 	/**
 	 * generates the right hand side of the system
 	 *
-	 * @param alpha data that is needed to generate the RHS of the system of linear equations
-	 * @param rhs DataVector the contains the RHS
+	 * @return returns the rhs
 	 */
-	virtual void generateRHS(DataVector& alpha, DataVector& rhs) = 0;
+	virtual DataVector* generateRHS() = 0;
 
 	/**
 	 * performs some action that might be needed after a timestep has be finished in the ODE
 	 * Solver, e.g. some boundary adjustments.
-	 *
-	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
 	 */
-	virtual void finishTimestep(DataVector& alpha) = 0;
-
-	/**
-	 * performs some action that might be needed before a timestep is executed in the ODE
-	 * Solver, e.g. some boundary adjustments.
-	 *
-	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
-	 */
-	virtual void startTimestep(DataVector& alpha) = 0;
+	virtual void finishTimestep() = 0;
 
 	/**
 	 * get the pointer to the underlying grid object
@@ -102,9 +91,9 @@ public:
 	virtual DataVector* getGridCoefficientsForCG() = 0;
 
 	/**
-	 * gets the complete coefficients vector
+	 * gets a pointer to the sparse grids coefficients with evtl. boundaries
 	 *
-	 * @return the complete coefficients vector
+	 * @return alpha vector of complete grid
 	 */
 	virtual DataVector* getGridCoefficients() = 0;
 };

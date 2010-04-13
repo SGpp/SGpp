@@ -58,8 +58,8 @@ class OperationODESolverSystem : public OperationMatrix
 {
 public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
-	virtual void generateRHS(DataVector& data, DataVector& result) = 0;
-	virtual void finishTimestep(DataVector& alpha) = 0;
+	virtual DataVector* generateRHS() = 0;
+	virtual void finishTimestep() = 0;
 };
 
 class OperationEval

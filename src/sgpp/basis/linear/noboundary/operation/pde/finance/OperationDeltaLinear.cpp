@@ -47,7 +47,7 @@ void OperationDeltaLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 	detail::PhiPhiUpBBLinear func(this->storage);
 	sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationDeltaLinear::down(DataVector& alpha, DataVector& result, size_t dim)
@@ -56,7 +56,7 @@ void OperationDeltaLinear::down(DataVector& alpha, DataVector& result, size_t di
 	detail::PhiPhiDownBBLinear func(this->storage);
 	sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationDeltaLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
@@ -65,7 +65,7 @@ void OperationDeltaLinear::upOpDim(DataVector& alpha, DataVector& result, size_t
 	detail::XPhidPhiUpBBLinear func(this->storage);
 	sweep<detail::XPhidPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationDeltaLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
@@ -74,7 +74,7 @@ void OperationDeltaLinear::downOpDim(DataVector& alpha, DataVector& result, size
 	detail::XPhidPhiDownBBLinear func(this->storage);
 	sweep<detail::XPhidPhiDownBBLinear> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
+	s.sweep1D(alpha, result, dim);
 }
 
 }

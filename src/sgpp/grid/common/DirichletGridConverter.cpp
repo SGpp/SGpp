@@ -31,7 +31,7 @@
 namespace sg
 {
 
-DirichletGridConverter::DirichletGridConverter() : numTotalGridPoints(0), numInnerGridPoints(0), conCoefArray(NULL), bFirstTime(false)
+DirichletGridConverter::DirichletGridConverter() : numTotalGridPoints(0), numInnerGridPoints(0), conCoefArray(NULL), bFirstTime(true)
 {
 }
 
@@ -43,7 +43,7 @@ DirichletGridConverter::~DirichletGridConverter()
 	}
 }
 
-void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid* InnerGrid, DataVector* InnerCoefs)
+void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid** InnerGrid, DataVector** InnerCoefs)
 {
 	if (this->bFirstTime == true)
 	{
@@ -55,14 +55,17 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVec
 			this->numTotalGridPoints = myGridStorage->size();
 			this->numInnerGridPoints = myGridStorage->getNumInnerPoints();
 
+			//std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
+			//std::cout << "Inner Points: " << this->numInnerGridPoints << std::endl;
+
 			// allocate the translation array for the coefficients
 			this->conCoefArray = new size_t[this->numInnerGridPoints];
 
 			// create new inner Grid, with one grid point
-			InnerGrid = new LinearGrid(*BoundaryGrid.getBoundingBox());
+			*InnerGrid = new LinearGrid(*BoundaryGrid.getBoundingBox());
 
 			// create new DataVector for storing the inner grid's coefficients
-			InnerCoefs = new DataVector(this->numInnerGridPoints);
+			*InnerCoefs = new DataVector(this->numInnerGridPoints);
 
 			// Iterate through all grid points and filter inner points
 			size_t numInner = 0;
@@ -73,13 +76,17 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVec
 				{
 					// handle coefficients
 					this->conCoefArray[numInner] = i;
-					InnerCoefs[numInner] = BoundaryCoefs[i];
+					(*InnerCoefs)->set(numInner, BoundaryCoefs.get(i));
 					numInner++;
 					// insert point into inner grid
-					InnerGrid->getStorage()->insert(*curPoint);
+					(*InnerGrid)->getStorage()->insert(*curPoint);
 				}
 			}
-			this->bFirstTime = true;
+			//std::string inGrid;
+			//*InnerGrid->serialize(inGrid);
+			//std::cout << inGrid << std::endl;
+
+			this->bFirstTime = false;
 		}
 		else
 		{
@@ -92,7 +99,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVec
 	}
 }
 
-void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid* InnerGrid, DataVector* InnerCoefs)
+void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid** InnerGrid, DataVector** InnerCoefs)
 {
 	if (this->bFirstTime == false)
 	{
@@ -109,11 +116,11 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataV
 			this->conCoefArray = new size_t[this->numInnerGridPoints];
 
 			// create new inner Grid, with one grid point
-			InnerGrid->getStorage()->emptyStorage();
+			(*InnerGrid)->getStorage()->emptyStorage();
 
 			// create new DataVector for storing the inner grid's coefficients
-			delete[] InnerCoefs;
-			InnerCoefs = new DataVector(this->numInnerGridPoints);
+			delete (*InnerCoefs);
+			*InnerCoefs = new DataVector(this->numInnerGridPoints);
 
 			// Iterate through all grid points and filter inner points
 			size_t numInner = 0;
@@ -124,10 +131,10 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataV
 				{
 					// handle coefficients
 					this->conCoefArray[numInner] = i;
-					InnerCoefs[numInner] = BoundaryCoefs[i];
+					(*InnerCoefs)->set(numInner, BoundaryCoefs.get(i));
 					numInner++;
 					// insert point into inner grid
-					InnerGrid->getStorage()->insert(*curPoint);
+					(*InnerGrid)->getStorage()->insert(*curPoint);
 				}
 			}
 		}
@@ -144,11 +151,11 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataV
 
 void DirichletGridConverter::calcInnerCoefs(DataVector& BoundaryCoefs, DataVector& InnerCoefs)
 {
-	if (this->numInnerGridPoints == 0)
+	if (this->numInnerGridPoints > 0)
 	{
 		for (size_t i = 0; i < this->numInnerGridPoints; i++)
 		{
-			InnerCoefs[i] = BoundaryCoefs[this->conCoefArray[i]];
+			InnerCoefs.set(i, BoundaryCoefs.get(this->conCoefArray[i]));
 		}
 	}
 	else
@@ -159,11 +166,11 @@ void DirichletGridConverter::calcInnerCoefs(DataVector& BoundaryCoefs, DataVecto
 
 void DirichletGridConverter::updateBoundaryCoefs(DataVector& BoundaryCoefs, DataVector& InnerCoefs)
 {
-	if (this->numInnerGridPoints == 0)
+	if (this->numInnerGridPoints > 0)
 	{
 		for (size_t i = 0; i < this->numInnerGridPoints; i++)
 		{
-			BoundaryCoefs[this->conCoefArray[i]] = InnerCoefs[i];
+			BoundaryCoefs.set(this->conCoefArray[i], InnerCoefs.get(i));
 		}
 	}
 	else
