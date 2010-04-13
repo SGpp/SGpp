@@ -44,7 +44,7 @@ class Runner:
         z    = float(line[2])
 
         vx   = float(line[3])
-        vy   = float(line[4])
+        vy   = float(line[5])
       
         ix = int(round(x*(2**self.levels[0])))
         iy = int(round(y*(2**self.levels[1])))
@@ -80,15 +80,15 @@ class Runner:
     return
  
   def serializeGrid(self):
-    text = self.grid.serialize()
-    fout = open("grid.obstacle.store", "w")
-    fout.write(text)
-    fout.close()
+    #text = self.grid.serialize()
+    #fout = open("grid.obstacle.store", "w")
+    #fout.write(text)
+    #fout.close()
     
-    fout = open("grid.obstacle.vx", "w")
-    pickle.dump(self.node_value_vx, fout)
+    #fout = open("grid.obstacle.vx", "w")
+    #pickle.dump(self.node_value_vx, fout)
 
-    fout = open("grid.obstacle.vy", "w")
+    fout = open("grid.obstacle.vz", "w")
     pickle.dump(self.node_value_vy, fout)
 
   def run(self):
