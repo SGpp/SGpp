@@ -86,7 +86,6 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 		delete this->alpha_inner;
 	}
 	delete this->rhs;
-
 }
 
 void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)

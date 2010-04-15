@@ -26,6 +26,8 @@
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
 #include "operation/common/OperationODESolverSystem.hpp"
+#include "grid/common/DirichletUpdateVector.hpp"
+#include "grid/common/DirichletGridConverter.hpp"
 
 #include <string>
 
@@ -45,10 +47,14 @@ private:
 	DataVector* alpha_complete;
 	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
 	DataVector* alpha_inner;
-	/// the Laplace Operation (Stiffness Matrix)
-	OperationMatrix* OpLaplace;
-	/// the LTwoDotProduct Operation (Mass Matrix)
-	OperationMatrix* OpMass;
+	/// the Laplace Operation (Stiffness Matrix), on boundary grid
+	OperationMatrix* OpLaplaceBound;
+	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
+	OperationMatrix* OpMassBound;
+	/// the Laplace Operation (Stiffness Matrix), on inner grid
+	OperationMatrix* OpLaplaceInner;
+	/// the LTwoDotProduct Operation (Mass Matrix), on inner grid
+	OperationMatrix* OpMassInner;
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
 	 *  ExEul for explicit Euler
@@ -58,24 +64,49 @@ private:
 	std::string tOperationMode;
 	/// the size of one timestep used in the ODE Solver
 	double TimestepSize;
+	/// Routine to modify the boundaries/inner points of the grid
+	DirichletUpdateVector* BoundaryUpdate;
+	/// Class that allows a simple conversion between a grid with and a without boundary points
+	DirichletGridConverter* GridConverter;
+	/// DateVector to store the right hand side
+	DataVector* rhs;
 	/// Pointer to the grid object
-	Grid* myGrid;
+	Grid* BoundGrid;
+	/// Pointer to the inner grid object
+	Grid* InnerGrid;
+
 
 	/**
-	 * applies the mass matrix of the Heat Equation
+	 * applies the mass matrix of the Heat Equation, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
 	 */
-	void applyMassMatrix(DataVector& alpha, DataVector& result);
+	void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
 
 	/**
-	 * applies the system matrix of the Heat Equation
+	 * applies the system matrix of the Heat Equation, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
 	 * @param return reference to the DataVector into which the result is written
 	 */
-	void applyLOperator(DataVector& alpha, DataVector& result);
+	void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+
+	/**
+	 * applies the mass matrix of the Heat Equation, on inner grid only
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
+	 * @param return reference to the DataVector into which the result is written
+	 */
+	void applyMassMatrixInner(DataVector& alpha, DataVector& result);
+
+	/**
+	 * applies the system matrix of the Heat Equation, on inner grid only
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
+	 * @param return reference to the DataVector into which the result is written
+	 */
+	void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Implements some adjustments needed before soling a timestep
