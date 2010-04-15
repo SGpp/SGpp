@@ -90,10 +90,6 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 
 void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)
 {
-//	std::cout << "entered mult" << std::endl;
-//	std::cout << result.getSize() << std::endl;
-//	std::cout << alpha.getSize() << std::endl;
-
 	if (this->tOperationMode == "ExEul")
 	{
 		result.setAll(0.0);
@@ -132,8 +128,6 @@ void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)
 
 DataVector* BlackScholesODESolverSystem::generateRHS()
 {
-	//std::cout << "Entered generateRHS" << std::endl;
-
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
 	if (this->tOperationMode == "ExEul")
@@ -190,7 +184,6 @@ DataVector* BlackScholesODESolverSystem::generateRHS()
 	else if (this->tOperationMode == "ImEul")
 	{
 		DataVector temp(alpha_bound.getSize());
-		temp.setAll(0.0);
 
 		applyMassMatrixComplete(alpha_bound, temp);
 		result_complete.add_parallel(temp);
@@ -201,7 +194,6 @@ DataVector* BlackScholesODESolverSystem::generateRHS()
 	else if (this->tOperationMode == "CrNic")
 	{
 		DataVector temp(alpha_bound.getSize());
-		temp.setAll(0.0);
 
 		applyMassMatrixComplete(alpha_bound, temp);
 		result_complete.add_parallel(temp);
@@ -216,9 +208,6 @@ DataVector* BlackScholesODESolverSystem::generateRHS()
 	rhs_complete.sub(result_complete);
 
 	this->rhs->resize(this->alpha_inner->getSize());
-
-	//std::cout << this->rhs->getSize() << std::endl;
-	//std::cout << rhs_complete.getSize() << std::endl;
 
 	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 

@@ -77,8 +77,6 @@ void HeatEquationODESolverSystem::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
-		result.setAll(0.0);
-
 		applyMassMatrixInner(alpha, result);
 	}
 	else if (this->tOperationMode == "ImEul")
@@ -87,11 +85,9 @@ void HeatEquationODESolverSystem::mult(DataVector& alpha, DataVector& result)
 
 		DataVector temp(alpha.getSize());
 
-		temp.setAll(0.0);
 		applyMassMatrixInner(alpha, temp);
 		result.add(temp);
 
-		temp.setAll(0.0);
 		applyLOperatorInner(alpha, temp);
 		result.axpy((-1.0)*this->TimestepSize, temp);
 	}
@@ -101,11 +97,9 @@ void HeatEquationODESolverSystem::mult(DataVector& alpha, DataVector& result)
 
 		DataVector temp(alpha.getSize());
 
-		temp.setAll(0.0);
 		applyMassMatrixInner(alpha, temp);
 		result.add(temp);
 
-		temp.setAll(0.0);
 		applyLOperatorInner(alpha, temp);
 		result.axpy((-0.5)*this->TimestepSize, temp);
 	}
@@ -173,7 +167,6 @@ DataVector* HeatEquationODESolverSystem::generateRHS()
 	else if (this->tOperationMode == "ImEul")
 	{
 		DataVector temp(alpha_bound.getSize());
-		temp.setAll(0.0);
 
 		applyMassMatrixComplete(alpha_bound, temp);
 		result_complete.add_parallel(temp);
@@ -184,7 +177,6 @@ DataVector* HeatEquationODESolverSystem::generateRHS()
 	else if (this->tOperationMode == "CrNic")
 	{
 		DataVector temp(alpha_bound.getSize());
-		temp.setAll(0.0);
 
 		applyMassMatrixComplete(alpha_bound, temp);
 		result_complete.add_parallel(temp);
@@ -207,6 +199,8 @@ DataVector* HeatEquationODESolverSystem::generateRHS()
 
 void HeatEquationODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
 {
+	result.setAll(0.0);
+
 	DataVector temp(alpha.getSize());
 
 	// Apply the mass matrix
@@ -217,6 +211,8 @@ void HeatEquationODESolverSystem::applyMassMatrixComplete(DataVector& alpha, Dat
 
 void HeatEquationODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
+	result.setAll(0.0);
+
 	DataVector temp(alpha.getSize());
 
 	// Apply the laplace Operator rate
@@ -226,6 +222,8 @@ void HeatEquationODESolverSystem::applyLOperatorComplete(DataVector& alpha, Data
 
 void HeatEquationODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVector& result)
 {
+	result.setAll(0.0);
+
 	DataVector temp(alpha.getSize());
 
 	// Apply the mass matrix
@@ -236,6 +234,8 @@ void HeatEquationODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVe
 
 void HeatEquationODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
+	result.setAll(0.0);
+
 	DataVector temp(alpha.getSize());
 
 	// Apply the laplace Operator rate
