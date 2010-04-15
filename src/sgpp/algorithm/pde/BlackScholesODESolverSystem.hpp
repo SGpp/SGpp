@@ -67,7 +67,7 @@ private:
 	DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
 	DataVector* gammaCoef;
-	/// Routine to modify the boundaries of the grid
+	/// Routine to modify the boundaries/inner points of the grid
 	DirichletUpdateVector* BoundaryUpdate;
 	/// Class that allows a simple conversion between a grid with and a without boundary points
 	DirichletGridConverter* GridConverter;
