@@ -47,16 +47,12 @@ public:
 	 *
 	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
 	 */
-	HierarchisationLinearBoundary(GridStorage* storage) : HierarchisationLinear(storage)
-	{
-	}
+	HierarchisationLinearBoundary(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~HierarchisationLinearBoundary()
-	{
-	}
+	virtual ~HierarchisationLinearBoundary();
 
 	/**
 	 * Implements operator() needed by the sweep class during the grid traversal. This function
@@ -72,34 +68,7 @@ public:
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		double left_boundary;
-		double right_boundary;
-		size_t seq;
-
-		// left boundary
-		index.left_levelzero(dim);
-		seq = index.seq();
-		left_boundary = source[seq];
-		// right boundary
-		index.right_levelzero(dim);
-		seq = index.seq();
-		right_boundary = source[seq];
-
-		// move to root
-		if (!index.hint())
-		{
-			index.top(dim);
-
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, left_boundary, right_boundary);
-			}
-
-			index.left_levelzero(dim);
-		}
-	}
+	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 };
 
 }	// namespace detail

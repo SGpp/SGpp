@@ -39,7 +39,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
 	DirichletGridConverter.o OperationDeltaLinear.o OperationGammaLinear.o OperationDeltaLogLinearBoundary.o\
-	OperationGammaLogLinearBoundary.o
+	OperationGammaLogLinearBoundary.o HierarchisationLinear.o DehierarchisationLinear.o HierarchisationLinearBoundary.o\
+	DehierarchisationLinearBoundary.o HierarchisationModLinear.o DehierarchisationModLinear.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -134,6 +135,12 @@ OperationDeltaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/
 OperationGammaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 
+HierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+
+DehierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+
 OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 
@@ -148,6 +155,12 @@ OperationEvalModLinear.o : $(SRCDIR)basis/modlinear/operation/common/OperationEv
 
 OperationHierarchisationModLinear.o : $(SRCDIR)basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModLinear.o $(SRCDIR)basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+
+HierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
+
+DehierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
 
 OperationBModPoly.o : $(SRCDIR)basis/modpoly/operation/datadriven/OperationBModPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBModPoly.o $(SRCDIR)basis/modpoly/operation/datadriven/OperationBModPoly.cpp
@@ -205,7 +218,13 @@ OperationLTwoDotProductLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operati
 	
 OperationLaplaceLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
-	
+
+HierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+
+DehierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
+		
 BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 

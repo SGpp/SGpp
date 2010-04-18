@@ -51,16 +51,12 @@ public:
 	 *
 	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
 	 */
-	HierarchisationModLinear(GridStorage* storage) : storage(storage)
-	{
-	}
+	HierarchisationModLinear(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	~HierarchisationModLinear()
-	{
-	}
+	~HierarchisationModLinear();
 
 	/**
 	 * Implements operator() needed by the sweep class during the grid traversal. This function
@@ -71,10 +67,7 @@ public:
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		rec(source, result, index, dim, 0.0, 0.0);
-	}
+	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 
 protected:
 
@@ -90,73 +83,7 @@ protected:
 	 * @param fl left value of the current region regarded in this step of the recursion
 	 * @param fr right value of the current region regarded in this step of the recursion
 	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-	{
-		// current position on the grid
-		size_t seq = index.seq();
-		// value in the middle, needed for recursive call and calculation of the hierarchical surplus
-		double fm = source[seq];
-
-		GridStorage::index_type::level_type l;
-		GridStorage::index_type::index_type i;
-
-		index.get(dim, l, i);
-
-		// recursive calls for the right and left side of the current node
-		if(index.hint() == false)
-		{
-			double fltemp = fl;
-			double frtemp = fr;
-
-			// When we descend the hierarchical basis we have to modify the boundary values
-			// in case the index is 1 or (2^l)-1 or we are on the first level
-			// level 1, constant function
-			if(l == 1)
-			{
-				// constant function
-				fltemp = fm;
-				frtemp = fm;
-			}
-			// left boundary
-			else if(i == 1)
-			{
-				double ftemp;
-				ftemp = fr - fm;
-				fltemp = fm - ftemp;
-			}
-			// right boundary
-			else if(static_cast<int>(i) == static_cast<int>((1 << l)-1))
-			{
-				double ftemp;
-				ftemp = fl - fm;
-				frtemp = fm - ftemp;
-			}
-			// inner functions
-			else
-			{
-			}
-
-			// descend left
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fltemp, fm);
-			}
-
-			// descend right
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fm, frtemp);
-			}
-
-			// ascend
-			index.up(dim);
-		}
-
-		// hierarchisation
-		result[seq] = fm - ((fl + fr)/2.0);
-	}
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
 };
 
 }	// namespace detail
