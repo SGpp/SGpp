@@ -51,16 +51,12 @@ public:
 	 *
 	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
 	 */
-	HierarchisationLinear(GridStorage* storage) : storage(storage)
-	{
-	}
+	HierarchisationLinear(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~HierarchisationLinear()
-	{
-	}
+	virtual ~HierarchisationLinear();
 
 	/**
 	 * Implements operator() needed by the sweep class during the grid traversal. This function
@@ -71,10 +67,7 @@ public:
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		rec(source, result, index, dim, 0.0, 0.0);
-	}
+	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 
 protected:
 
@@ -90,37 +83,7 @@ protected:
 	 * @param fl left value of the current region regarded in this step of the recursion
 	 * @param fr right value of the current region regarded in this step of the recursion
 	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-	{
-		// current position on the grid
-		size_t seq = index.seq();
-		// value in the middle, needed for recursive call and calculation of the hierarchical surplus
-		double fm = source[seq];
-
-		// recursive calls for the right and left side of the current node
-		if(index.hint() == false)
-		{
-			// descend left
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fm);
-			}
-
-			// descend right
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fm, fr);
-			}
-
-			// ascend
-			index.up(dim);
-		}
-
-		// hierarchisation
-		result[seq] = fm - ((fl + fr)/2.0);
-	}
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
 };
 
 }	// namespace detail

@@ -20,13 +20,10 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef DEHIERARCHISATIONLINEARBOUNDARY_HPP
-#define DEHIERARCHISATIONLINEARBOUNDARY_HPP
-
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
-#include "basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp"
+#include "basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp"
 
 namespace sg
 {
@@ -34,45 +31,51 @@ namespace sg
 namespace detail
 {
 
-/**
- * Class that implements the dehierarchisation on a linear sparse grid with boundaries. Therefore
- * the ()operator has to be implement in order to use the sweep algorithm for
- * the grid traversal
- */
-class DehierarchisationLinearBoundary : public DehierarchisationLinear
+HierarchisationLinear::HierarchisationLinear(GridStorage* storage) : storage(storage)
 {
-public:
-	/**
-	 * Constructor, must be bind to a grid
-	 *
-	 * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
-	 */
-	DehierarchisationLinearBoundary(GridStorage* storage);
+}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~DehierarchisationLinearBoundary();
+HierarchisationLinear::~HierarchisationLinear()
+{
+}
 
-	/**
-	 * Implements operator() needed by the sweep class during the grid traversal. This function
-	 * is applied to the whole grid.
-	 *
-	 * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
-	 * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
-	 * result)
-	 * So please assure that both functions do exist!
-	 *
-	 * @param source this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
-	 * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
-	 * @param index a iterator object of the grid
-	 * @param dim current fixed dimension of the 'execution direction'
-	 */
-	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
-};
+void HierarchisationLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+{
+	rec(source, result, index, dim, 0.0, 0.0);
+}
+
+void HierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+{
+	// current position on the grid
+	size_t seq = index.seq();
+	// value in the middle, needed for recursive call and calculation of the hierarchical surplus
+	double fm = source[seq];
+
+	// recursive calls for the right and left side of the current node
+	if(index.hint() == false)
+	{
+		// descend left
+		index.left_child(dim);
+		if(!storage->end(index.seq()))
+		{
+			rec(source, result, index, dim, fl, fm);
+		}
+
+		// descend right
+		index.step_right(dim);
+		if(!storage->end(index.seq()))
+		{
+			rec(source, result, index, dim, fm, fr);
+		}
+
+		// ascend
+		index.up(dim);
+	}
+
+	// hierarchisation
+	result[seq] = fm - ((fl + fr)/2.0);
+}
 
 }	// namespace detail
 
 }	// namespace sg
-
-#endif /* DEHIERARCHISATIONLINEARBOUNDARY_HPP */

@@ -56,6 +56,9 @@ basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
 basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
 basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 
+basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
@@ -68,12 +71,17 @@ basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 
+basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+
 basis/modlinear/operation/datadriven/OperationBModLinear.cpp
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
 basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 
+basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
+basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
 
 basis/poly/operation/datadriven/OperationBPoly.cpp
 basis/poly/operation/datadriven/OperationTestPoly.cpp
