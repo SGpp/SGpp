@@ -44,26 +44,10 @@ void DirichletUpdateVector::applyDirichletConditions(DataVector& updateVector, D
 #endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
-		size_t dim;
-		DimensionBoundary myBounds;
-		for (size_t j = 0; j < storage->dim(); j++)
+		GridIndex* curPoint = (*storage)[i];
+		if (curPoint->isInnerPoint() == false)
 		{
-			dim = j;
-			(*storage)[i]->get(dim, level, index);
-			myBounds = myBoundingBox->getBoundary(dim);
-			if (level == 0)
-			{
-				if (index == 0 && myBounds.bDirichletLeft == true)
-				{
-					updateVector.set(i, sourceVector.get(i));
-				}
-				if (index == 1 && myBounds.bDirichletRight == true)
-				{
-					updateVector.set(i, sourceVector.get(i));
-				}
-			}
+			updateVector.set(i, sourceVector.get(i));
 		}
 	}
 }
@@ -75,26 +59,10 @@ void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
 #endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
-		size_t dim;
-		DimensionBoundary myBounds;
-		for (size_t j = 0; j < storage->dim(); j++)
+		GridIndex* curPoint = (*storage)[i];
+		if (curPoint->isInnerPoint() == false)
 		{
-			dim = j;
-			(*storage)[i]->get(dim, level, index);
-			myBounds = myBoundingBox->getBoundary(dim);
-			if (level == 0)
-			{
-				if (index == 0 && myBounds.bDirichletLeft == true)
-				{
-					updateVector.set(i, 0.0);
-				}
-				if (index == 1 && myBounds.bDirichletRight == true)
-				{
-					updateVector.set(i, 0.0);
-				}
-			}
+			updateVector.set(i, 0.0);
 		}
 	}
 }
@@ -106,22 +74,10 @@ void DirichletUpdateVector::setInnerPointsToZero(DataVector& updateVector)
 #endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
-		size_t dim;
-		DimensionBoundary myBounds;
-		for (size_t j = 0; j < storage->dim(); j++)
+		GridIndex* curPoint = (*storage)[i];
+		if (curPoint->isInnerPoint() == true)
 		{
-			dim = j;
-			(*storage)[i]->get(dim, level, index);
-			myBounds = myBoundingBox->getBoundary(dim);
-			if (level > 0)
-			{
-				if (myBounds.bDirichletRight == true && myBounds.bDirichletLeft == true)
-				{
-					updateVector.set(i, 0.0);
-				}
-			}
+			updateVector.set(i, 0.0);
 		}
 	}
 }
@@ -133,26 +89,10 @@ void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double va
 #endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
-		size_t dim;
-		DimensionBoundary myBounds;
-		for (size_t j = 0; j < storage->dim(); j++)
+		GridIndex* curPoint = (*storage)[i];
+		if (curPoint->isInnerPoint() == false)
 		{
-			dim = j;
-			(*storage)[i]->get(dim, level, index);
-			myBounds = myBoundingBox->getBoundary(dim);
-			if (level == 0)
-			{
-				if (index == 0 && myBounds.bDirichletLeft == true)
-				{
-					updateVector.set(i, updateVector.get(i)*value);
-				}
-				if (index == 1 && myBounds.bDirichletRight == true)
-				{
-					updateVector.set(i, updateVector.get(i)*value);
-				}
-			}
+			updateVector.set(i, updateVector.get(i)*value);
 		}
 	}
 }
