@@ -21,91 +21,47 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef LOGBLACKSCHOLESTIMESTEPMATRIX_HPP
-#define LOGBLACKSCHOLESTIMESTEPMATRIX_HPP
+#ifndef LOGBLACKSCHOLESODESOLVERSYSTEM_HPP
+#define LOGBLACKSCHOLESODESOLVERSYSTEM_HPP
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
-#include "operation/common/OperationODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
+
 
 namespace sg
 {
 
 /**
- * @todo (heinecke) add description here
+ * implements the ODESolverSystem for the log-transformed Black-Scholes equation
  */
-class LogBlackScholesTimestepMatrix : public OperationODESolverSystem
+class LogBlackScholesODESolverSystem : public BlackScholesODESolverSystem
 {
 private:
-	/// the riskfree interest rate
-	double r;
-	/// the delta Operation
-	OperationMatrix* OpDeltaLog;
-	/// the Gamma Operation
-	OperationMatrix* OpGammaLog;
-	/// Pointer to the mus
-	DataVector* mus;
-	/// Pointer to the sigmas
-	DataVector* sigmas;
-	/// Pointer to the rhos;
-	DataVector* rhos;
-	/// Pointer to the coefficients of operation Delta
-	DataVector* deltaCoef;
-	/// Pointer to the coefficients ot operation Gamma
-	DataVector* gammaCoef;
-	/// the LTwoDotProduct Operation (Mass Matrix)
-	OperationMatrix* OpLTwo;
-	/// Routine to modify the boundaries of the grid
-	DirichletUpdateVector* BoundaryUpdate;
 	/**
-	 *  specifies in which solver this matrix is used, valid values are:
-	 *  ExEul for explicit Euler
-	 *  ImEul for implicit Euler
-	 *  CrNic for Crank Nicolson solver
-	 */
-	std::string tOperationMode;
-	// @todo (heinecke) try to do some refactoring here with the timestep size
-	/// the size of one timestep used in the ODE Solver
-	double TimestepSize;
-	/// Pointer to the grid object
-	Grid* myGrid;
-
-	/**
-	 * Do Matrix mutlitplication with the Log Black Scholes Systemmatrix
+	 * Build the coefficients for the Gamma Operation
+	 * (term for second derivative in PDE), which are the
+	 * assets' covariance matrix multiplied by 0.5
 	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
-	void applyLOperator(DataVector& alpha, DataVector& result);
-
-	/**
-	 * Do Matrix mutlitplication with left hand side mass matrix
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
-	void applyMassMatrix(DataVector& alpha, DataVector& result);
-
-	/**
-	 * Build the coefficients for the Gamma Operation, which
-	 * are the assets' covariance matrix multiplied by 0.5
-	 *
-	 * this routine handles also the symmtrie of the
+	 * this routine handles also the symmetry of the
 	 * gamma operation
 	 */
 	void buildGammaCoefficients();
 
 	/**
 	 * Build the coefficients for the combined Delta Operation
+	 * (term for first derivative in PDE), which are the drift factors
 	 */
 	void buildDeltaCoefficients();
+
 
 public:
 	/**
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
+	 * @param alpha the ansatzfunctions' coefficients
 	 * @param mu reference to the mus
 	 * @param sigma reference to the sigmas
 	 * @param rho reference to the rhos
@@ -114,24 +70,9 @@ public:
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	LogBlackScholesTimestepMatrix(Grid& SparseGrid, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul");
-
-	/**
-	 * Std-Destructor
-	 */
-	virtual ~LogBlackScholesTimestepMatrix();
-
-	virtual void mult(DataVector& alpha, DataVector& result);
-
-	virtual void generateRHS(DataVector& data, DataVector& rhs);
-
-	virtual void finishTimestep(DataVector& alpha);
-
-	virtual void startTimestep(DataVector& alpha);
-
-	virtual Grid* getGrid();
+	LogBlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul");
 };
 
 }
 
-#endif /* LOGBLACKSCHOLESTIMESTEPMATRIX_HPP */
+#endif /* LOGBLACKSCHOLESODESOLVERSYSTEM_HPP */

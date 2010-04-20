@@ -38,7 +38,7 @@ namespace sg
  */
 class BlackScholesODESolverSystem : public OperationODESolverSystem
 {
-private:
+protected:
 	/// the riskfree interest rate
 	double r;
 	/// the delta Operation, on boundary grid
