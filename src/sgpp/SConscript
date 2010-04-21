@@ -58,6 +58,8 @@ basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 
 basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
 
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
