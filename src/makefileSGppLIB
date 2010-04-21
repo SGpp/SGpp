@@ -40,7 +40,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
 	DirichletGridConverter.o OperationDeltaLinear.o OperationGammaLinear.o OperationDeltaLogLinearBoundary.o\
 	OperationGammaLogLinearBoundary.o HierarchisationLinear.o DehierarchisationLinear.o HierarchisationLinearBoundary.o\
-	DehierarchisationLinearBoundary.o HierarchisationModLinear.o DehierarchisationModLinear.o
+	DehierarchisationLinearBoundary.o HierarchisationModLinear.o DehierarchisationModLinear.o\
+	PhiPhiUpBBLinear.o PhiPhiDownBBLinear.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -141,6 +142,12 @@ HierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/Hiera
 DehierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 
+PhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
+
+PhiPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
+	
 OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 
