@@ -85,7 +85,7 @@ void DataVector::resize(size_t size) {
     double* newdata = new double[size * this->dim];
     // copy entries of old vector
     memcpy(newdata, this->data, this->size * this->dim * sizeof(double));
-    // set everything else to zero
+    // set new elements to zero
     for (size_t i = this->size * this->dim; i < size * this->dim; i++) {
         newdata[i] = 0.0;
     }
@@ -97,7 +97,9 @@ void DataVector::resize(size_t size) {
 }
 
 void DataVector::addSize(int add) {
+    // create new vector
     double* newdata = new double[(size + add) * this->dim];
+    // copy entries of old vector
     memcpy(newdata, this->data, this->size * this->dim * sizeof(double));
 
     delete[] this->data;
