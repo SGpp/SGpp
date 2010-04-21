@@ -76,15 +76,17 @@ void DataVector::getDataVectorDefinition(DataVectorDefinition& DataVectorDef) {
 }
 
 void DataVector::resize(size_t size) {
+	// don't do anyhing, if vector is already bigger
     if ((int) size < this->size) {
         return;
     }
 
+    // create new vector
     double* newdata = new double[size * this->dim];
-
+    // copy entries of old vector
     memcpy(newdata, this->data, this->size * this->dim * sizeof(double));
-
-    for (size_t i = this->size; i < size; i++) {
+    // set everything else to zero
+    for (size_t i = this->size * this->dim; i < size * this->dim; i++) {
         newdata[i] = 0.0;
     }
 
