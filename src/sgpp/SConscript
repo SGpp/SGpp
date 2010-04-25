@@ -81,6 +81,14 @@ basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 
 basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
 
 basis/modlinear/operation/datadriven/OperationBModLinear.cpp
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
