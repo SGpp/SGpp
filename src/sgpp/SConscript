@@ -66,6 +66,12 @@ basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
 
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp

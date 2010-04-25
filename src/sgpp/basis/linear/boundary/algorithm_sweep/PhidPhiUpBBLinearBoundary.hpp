@@ -72,23 +72,11 @@ public:
 	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		this->q = this->boundingBox->getIntervalWidth(dim);
-		this->t = this->boundingBox->getIntervalOffset(dim);
-
-		bool useBB = false;
-
-		if (this->q != 1.0 || this->t != 0.0)
-		{
-			useBB = true;
-		}
-
 		// get boundary values
 		double fl = 0.0;
 		double fr = 0.0;
 
-
 		// the following computations are independent from a bounding box
-
 		if(!index.hint())
 		{
 			index.top(dim);
