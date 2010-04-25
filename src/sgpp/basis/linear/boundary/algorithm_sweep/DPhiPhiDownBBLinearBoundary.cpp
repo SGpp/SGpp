@@ -21,13 +21,7 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#ifndef DPHIPHIDOWNBBLINEARBOUNDARY_HPP
-#define DPHIPHIDOWNBBLINEARBOUNDARY_HPP
-
-#include "grid/GridStorage.hpp"
-#include "data/DataVector.hpp"
-
-#include "basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.hpp"
+#include "basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
 
 namespace sg
 {
@@ -35,44 +29,77 @@ namespace sg
 namespace detail
 {
 
-/**
- * Implementation of sweep operator (): 1D Down for
- * Bilinearform \f$\int_{x} \frac{\partial \phi(x)}{x} \phi(x) dx\f$
- * on linear boundary grids
- */
-class DPhiPhiDownBBLinearBoundary : public DPhiPhiDownBBLinear
+DPhiPhiDownBBLinearBoundary::DPhiPhiDownBBLinearBoundary(GridStorage* storage) : DPhiPhiDownBBLinear(storage)
 {
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 */
-	DPhiPhiDownBBLinearBoundary(GridStorage* storage);
+}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~DPhiPhiDownBBLinearBoundary();
+DPhiPhiDownBBLinearBoundary::~DPhiPhiDownBBLinearBoundary()
+{
+}
 
-	/**
-	 * This operations performs the calculation of down in the direction of dimension <i>dim</i>
-	 *
-	 * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
-	 * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
-	 * result)
-	 * So please assure that both functions do exist!
-	 *
-	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-	 * @param result DataVector that contains the result of the down operation
-	 * @param index a iterator object of the grid
-	 * @param dim current fixed dimension of the 'execution direction'
+
+void DPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+{
+	// get boundary values
+	double left_boundary;
+	double right_boundary;
+	size_t seq_left;
+	size_t seq_right;
+
+	/*
+	 * Handle Level 0
 	 */
-	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
-};
+	// This handles the diagonal only
+	//////////////////////////////////////
+	// left boundary
+	index.left_levelzero(dim);
+	seq_left = index.seq();
+	left_boundary = source[seq_left];
+
+	// right boundary
+	index.right_levelzero(dim);
+	seq_right = index.seq();
+	right_boundary = source[seq_right];
+
+
+	// the following is independent from a bounding box
+
+	// check boundary conditions
+	if (this->boundingBox->hasDirichletBoundaryLeft(dim))
+	{
+		result[seq_left] = 0.0; //left_boundary;
+	}
+	else
+	{
+		result[seq_left] = left_boundary * (-0.5);
+	}
+
+	if (this->boundingBox->hasDirichletBoundaryRight(dim))
+	{
+		result[seq_right] = 0.0; //right_boundary;
+	}
+	else
+	{
+		result[seq_right] = right_boundary * (0.5);
+		// down
+		//////////////////////////////////////
+		result[seq_right] += left_boundary * (0.5);
+	}
+
+	// move to root
+	if (!index.hint())
+	{
+		index.top(dim);
+
+		if(!this->storage->end(index.seq()))
+		{
+			rec(source, result, index, dim, left_boundary, right_boundary);
+		}
+
+		index.left_levelzero(dim);
+	}
+}
 
 } // namespace detail
 
 } // namespace sg
-
-#endif /* DPHIPHIDOWNBBLINEARBOUNDARY_HPP */

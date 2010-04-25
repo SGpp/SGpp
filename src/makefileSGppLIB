@@ -45,7 +45,11 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	XdPhiPhiDownBBLinear.o XdPhiPhiUpBBLinear.o XPhidPhiDownBBLinear.o XPhidPhiUpBBLinear.o dPhidPhiDownModLinear.o\
 	dPhidPhiUpModLinear.o PhiPhiDownModLinear.o PhiPhiUpModLinear.o\
 	PhiPhiUpBBLinearBoundary.o PhiPhiDownBBLinearBoundary.o SqXdPhidPhiDownBBLinearBoundary.o SqXdPhidPhiUpBBLinearBoundary.o\
-	XdPhiPhiDownBBLinearBoundary.o XdPhiPhiUpBBLinearBoundary.o XPhidPhiDownBBLinearBoundary.o XPhidPhiUpBBLinearBoundary.o
+	XdPhiPhiDownBBLinearBoundary.o XdPhiPhiUpBBLinearBoundary.o XPhidPhiDownBBLinearBoundary.o XPhidPhiUpBBLinearBoundary.o\
+	DPhidPhiDownBBLinearBoundary.o DPhidPhiUpBBLinearBoundary.o\
+	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
+	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
+	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -169,6 +173,24 @@ XPhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidP
 	
 XPhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp		
+
+DPhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
+
+DPhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
+	
+DPhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
+	
+DPhiPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp	
+	
+PhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp	
+	
+PhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp		
 	
 OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
@@ -289,6 +311,24 @@ XPhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/
 	
 XPhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp		
+
+DPhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
+
+DPhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
+	
+DPhiPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
+	
+DPhiPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp	
+	
+PhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp	
+	
+PhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp		
 		
 BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
