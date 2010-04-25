@@ -36,7 +36,9 @@ namespace detail
 {
 
 /**
- * up-operation in dimension dim. for use with sweep
+ * Implementation of sweep operator (): 1D Up for
+ * Bilinearform \f$\int_{x} \phi(x) \frac{\partial \phi(x)}{x} dx\f$
+ * on linear boundary grids
  */
 class PhidPhiUpBBLinearBoundary : public PhidPhiUpBBLinear
 {
@@ -46,16 +48,12 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	PhidPhiUpBBLinearBoundary(GridStorage* storage) : PhidPhiUpBBLinear(storage)
-	{
-	}
+	PhidPhiUpBBLinearBoundary(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	~PhidPhiUpBBLinearBoundary()
-	{
-	}
+	virtual ~PhidPhiUpBBLinearBoundary();
 
 	/**
 	 * This operations performs the calculation of up in the direction of dimension <i>dim</i>
@@ -70,60 +68,7 @@ public:
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		// get boundary values
-		double fl = 0.0;
-		double fr = 0.0;
-
-		// the following computations are independent from a bounding box
-		if(!index.hint())
-		{
-			index.top(dim);
-
-			if(!this->storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fr);
-			}
-
-			index.left_levelzero(dim);
-		}
-
-		size_t seq_left;
-		size_t seq_right;
-
-		// left boundary
-		seq_left = index.seq();
-
-		// right boundary
-		index.right_levelzero(dim);
-		seq_right = index.seq();
-
-		// check boundary conditions
-		if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-		{
-			result[seq_left] = 0.0; // source[seq_left];
-		}
-		else
-		{
-			// up
-			//////////////////////////////////////
-			result[seq_left] = fl;
-
-			result[seq_left] += source[seq_right] * (0.5);
-		}
-
-		if (this->boundingBox->hasDirichletBoundaryRight(dim))
-		{
-			result[seq_right] = 0.0; //source[seq_right];
-		}
-		else
-		{
-			result[seq_right] = fr;
-		}
-
-		index.left_levelzero(dim);
-	}
+	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 };
 
 } // namespace detail

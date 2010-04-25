@@ -95,6 +95,12 @@ basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
 
 basis/modlinear/operation/datadriven/OperationBModLinear.cpp
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp

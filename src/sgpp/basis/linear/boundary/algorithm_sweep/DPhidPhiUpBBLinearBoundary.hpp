@@ -36,7 +36,9 @@ namespace detail
 {
 
 /**
- * up-operation in dimension dim. for use with sweep
+ * Implementation of sweep operator (): 1D Up for
+ * Bilinearform \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
+ * on linear boundary grids
  */
 class DPhidPhiUpBBLinearBoundary : public DPhidPhiUpBBLinear
 {
@@ -46,16 +48,12 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	DPhidPhiUpBBLinearBoundary(GridStorage* storage) : DPhidPhiUpBBLinear(storage)
-	{
-	}
+	DPhidPhiUpBBLinearBoundary(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~DPhidPhiUpBBLinearBoundary()
-	{
-	}
+	virtual ~DPhidPhiUpBBLinearBoundary();
 
 	/**
 	 * This operations performs the calculation of up in the direction of dimension <i>dim</i>
@@ -70,120 +68,7 @@ public:
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		double q = this->boundingBox->getIntervalWidth(dim);
-		double t = this->boundingBox->getIntervalOffset(dim);
-
-		bool useBB = false;
-
-		if (q != 1.0 || t != 0.0)
-		{
-			useBB = true;
-		}
-
-		// get boundary values
-		double fl = 0.0;
-		double fr = 0.0;
-
-		if (useBB)
-		{
-			if(!index.hint())
-			{
-				index.top(dim);
-				if(!this->storage->end(index.seq()))
-				{
-					recBB(source, result, index, dim, fl, fr, q, t);
-				}
-
-				index.left_levelzero(dim);
-			}
-
-			size_t seq_left;
-			size_t seq_right;
-
-			// left boundary
-			seq_left = index.seq();
-
-			// right boundary
-			index.right_levelzero(dim);
-			seq_right = index.seq();
-
-			// up
-			//////////////////////////////////////
-			// check boundary conditions
-			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-			{
-				result[seq_left] = 0.0; // source[seq_left];
-			}
-			else
-			{
-				result[seq_left] = fl;
-				double bbFactor = 1.0/(q);
-				result[seq_left] -= source[seq_right]*bbFactor;
-			}
-
-			if (this->boundingBox->hasDirichletBoundaryRight(dim))
-			{
-				result[seq_right] = 0.0; //source[seq_right];
-			}
-			else
-			{
-				result[seq_right] = fr;
-			}
-
-			index.left_levelzero(dim);
-		}
-		else
-		{
-			if(!index.hint())
-			{
-				index.top(dim);
-
-				if(!this->storage->end(index.seq()))
-				{
-					rec(source, result, index, dim, fl, fr);
-				}
-
-				index.left_levelzero(dim);
-			}
-
-			size_t seq_left;
-			size_t seq_right;
-
-			// left boundary
-			seq_left = index.seq();
-
-			// right boundary
-			index.right_levelzero(dim);
-			seq_right = index.seq();
-
-			// up
-			//////////////////////////////////////
-			// check boundary conditions
-			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-			{
-				result[seq_left] = 0.0; // source[seq_left];
-			}
-			else
-			{
-				result[seq_left] = fl;
-
-				result[seq_left] -= source[seq_right];
-			}
-
-			if (this->boundingBox->hasDirichletBoundaryRight(dim))
-			{
-				result[seq_right] = 0.0; //source[seq_right];
-			}
-			else
-			{
-				result[seq_right] = fr;
-			}
-
-			index.left_levelzero(dim);
-		}
-	}
+	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 };
 
 } // namespace detail
