@@ -62,11 +62,7 @@ public:
 
 	/**
 	 * This operations performs the calculation of up in the direction of dimension <i>dim</i>
-	 *
-	 * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
-	 * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
-	 * result)
-	 * So please assure that both functions do exist!
+	 * on a grid with fix Dirichlet 0 boundary conditions
 	 *
 	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
 	 * @param result DataVector that contains the result of the up operation
@@ -80,8 +76,6 @@ protected:
 	/**
 	 * recursive function for the calculation of Up without bounding Box support
 	 *
-	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
-	 *
 	 * @param source DataVector that contains the coefficients of the ansatzfunction
 	 * @param result DataVector in which the result of the operation is stored
 	 * @param index reference to a griditerator object that is used navigate through the grid
@@ -93,8 +87,6 @@ protected:
 
 	/**
 	 * recursive function for the calculation of Up with Bounding Box Support
-	 *
-	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
 	 *
 	 * @param source DataVector that contains the coefficients of the ansatzfunction
 	 * @param result DataVector in which the result of the operation is stored

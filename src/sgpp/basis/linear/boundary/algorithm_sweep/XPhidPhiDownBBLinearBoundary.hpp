@@ -73,12 +73,12 @@ public:
 	 */
 	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		this->q = this->boundingBox->getIntervalWidth(dim);
-		this->t = this->boundingBox->getIntervalOffset(dim);
+		double q = this->boundingBox->getIntervalWidth(dim);
+		double t = this->boundingBox->getIntervalOffset(dim);
 
 		bool useBB = false;
 
-		if (this->q != 1.0 || this->t != 0.0)
+		if (q != 1.0 || t != 0.0)
 		{
 			useBB = true;
 		}
@@ -113,7 +113,7 @@ public:
 			}
 			else
 			{
-				result[seq_left] = left_boundary * (((-1.0/6.0)*this->q) - (0.5*this->t));
+				result[seq_left] = left_boundary * (((-1.0/6.0)*q) - (0.5*t));
 			}
 
 			if (this->boundingBox->hasDirichletBoundaryRight(dim))
@@ -122,10 +122,10 @@ public:
 			}
 			else
 			{
-				result[seq_right] = right_boundary * (((1.0/3.0)*this->q) + (0.5*this->t));
+				result[seq_right] = right_boundary * (((1.0/3.0)*q) + (0.5*t));
 				// down
 				//////////////////////////////////////
-				result[seq_right] += (left_boundary * (((-1.0/3.0)*this->q) - (0.5*this->t)));
+				result[seq_right] += (left_boundary * (((-1.0/3.0)*q) - (0.5*t)));
 			}
 
 			// move to root
@@ -135,7 +135,7 @@ public:
 
 				if(!this->storage->end(index.seq()))
 				{
-					recBB(source, result, index, dim, left_boundary, right_boundary);
+					recBB(source, result, index, dim, left_boundary, right_boundary, q, t);
 				}
 
 				index.left_levelzero(dim);
