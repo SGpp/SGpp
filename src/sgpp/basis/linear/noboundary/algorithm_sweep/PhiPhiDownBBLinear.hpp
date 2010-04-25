@@ -61,13 +61,7 @@ public:
 
 	/**
 	 * This operations performs the calculation of down in the direction of dimension <i>dim</i>
-	 *
-	 * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
-	 * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
-	 * result)
-	 * So please assure that both functions do exist!
-	 *
-	 * On level zero the getfixDirechletBoundaries of the storage object evaluated
+	 * on a grid with Dirichlet 0 boundary conditions.
 	 *
 	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
 	 * @param result DataVector that contains the result of the down operation

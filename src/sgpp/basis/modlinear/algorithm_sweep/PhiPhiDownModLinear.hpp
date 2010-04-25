@@ -34,7 +34,9 @@ namespace detail
 {
 
 /**
- * Implements the down Method needed for the Laplace operator on mod linear grids
+ * Implementation of sweep operator (): 1D Down for
+ * Bilinearform \f$\int_{x} \phi(x) \phi(x) dx\f$
+ * on mod-linear grids
  */
 class PhiPhiDownModLinear
 {
@@ -49,16 +51,12 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	PhiPhiDownModLinear(GridStorage* storage) : storage(storage)
-	{
-	}
+	PhiPhiDownModLinear(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	~PhiPhiDownModLinear()
-	{
-	}
+	~PhiPhiDownModLinear();
 
 	/**
 	 * This operations performs the calculation of down in the direction of dimension <i>dim</i>
@@ -68,10 +66,7 @@ public:
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		rec(source, result, index, dim, 0.0, 0.0);
-	}
+	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 
 protected:
 
@@ -85,95 +80,8 @@ protected:
 	 * @param fl function value on the left boundary
 	 * @param fr function value on the right boundary
 	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-	{
-		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
-
-		GridStorage::index_type::level_type l;
-		GridStorage::index_type::index_type i;
-
-		index.get(dim, l, i);
-
-		double h = 1/pow(2.0, static_cast<int>(l));
-		double fm;
-
-		// level 1, constant function
-		if(l == 1)
-		{
-			//integration
-			result[seq] = 0.0 + alpha_value;
-
-			//dehierarchisation
-			fm = (fl + fr) / 2.0 + alpha_value;
-
-			//boundary value
-			fl += alpha_value;
-			fr += alpha_value;
-		}
-		// left boundary
-		else if(i == 1)
-		{
-			//integration
-			result[seq] = 2.0/3.0 * h * (2.0*fl + fr)
-                        + 8.0/3.0 * h * alpha_value;
-
-            //dehierarchisation
-            fm = (fl + fr) / 2.0 + alpha_value;
-
-            //boundary value
-            fl += 2.0 * alpha_value;
-		}
-		// right boundary
-		else if(static_cast<int>(i) == static_cast<int>((1 << l)-1))
-		{
-			//integration
-			result[seq] = 2.0/3.0 * h * (fl + 2.0*fr)
-                        + 8.0/3.0 * h * alpha_value;
-
-            //dehierarchisation
-            fm = (fl + fr) / 2.0 + alpha_value;
-
-            //boundary value
-            fr += 2.0 * alpha_value;
-		}
-		// inner functions
-		else
-		{
-			//integration
-			result[seq] = h * (fl + fr) / 2.0
-                       + 2.0/3.0 * h * alpha_value;
-
-            //dehierarchisation
-            fm = (fl + fr) / 2.0 + alpha_value;
-
-			//boundary value
-
-		}
-
-		if(!index.hint())
-		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fm);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fm, fr);
-			}
-
-			index.up(dim);
-		}
-
-	}
-
-
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
 };
-
 
 }
 

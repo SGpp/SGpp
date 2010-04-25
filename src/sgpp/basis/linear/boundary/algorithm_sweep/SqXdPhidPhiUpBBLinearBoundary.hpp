@@ -71,12 +71,12 @@ public:
 	 */
 	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		this->q = this->boundingBox->getIntervalWidth(dim);
-		this->t = this->boundingBox->getIntervalOffset(dim);
+		double q = this->boundingBox->getIntervalWidth(dim);
+		double t = this->boundingBox->getIntervalOffset(dim);
 
 		bool useBB = false;
 
-		if (this->q != 1.0 || this->t != 0.0)
+		if (q != 1.0 || t != 0.0)
 		{
 			useBB = true;
 		}
@@ -92,7 +92,7 @@ public:
 				index.top(dim);
 				if(!this->storage->end(index.seq()))
 				{
-					recBB(source, result, index, dim, fl, fr);
+					recBB(source, result, index, dim, fl, fr, q, t);
 				}
 
 				index.left_levelzero(dim);
@@ -118,7 +118,7 @@ public:
 			else
 			{
 				result[seq_left] = fl;
-				double bbFactor = ((this->q*this->q) + (3.0*this->q*this->t) + (3.0*this->t*this->t))/(this->q);
+				double bbFactor = ((q*q) + (3.0*q*t) + (3.0*t*t))/(q);
 				result[seq_left] -= (1.0/3.0)*source[seq_right]*bbFactor;
 			}
 
