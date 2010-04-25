@@ -74,12 +74,12 @@ public:
 	 */
 	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 	{
-		this->q = this->boundingBox->getIntervalWidth(dim);
-		this->t = this->boundingBox->getIntervalOffset(dim);
+		double q = this->boundingBox->getIntervalWidth(dim);
+		double t = this->boundingBox->getIntervalOffset(dim);
 
 		bool useBB = false;
 
-		if (this->q != 1.0 || this->t != 0.0)
+		if (q != 1.0 || t != 0.0)
 		{
 			useBB = true;
 		}
@@ -107,7 +107,7 @@ public:
 
 		if (useBB)
 		{
-			double bbFactor = 1.0/(this->q);
+			double bbFactor = 1.0/(q);
 
 			// check boundary conditions
 			if (this->boundingBox->hasDirichletBoundaryLeft(dim))
@@ -138,7 +138,7 @@ public:
 
 				if(!this->storage->end(index.seq()))
 				{
-					recBB(source, result, index, dim, left_boundary, right_boundary);
+					recBB(source, result, index, dim, left_boundary, right_boundary, q, t);
 				}
 
 				index.left_levelzero(dim);
