@@ -20,12 +20,10 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "solver/sle/ConjugateGradients.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/Euler.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "tools/common/GridPrinter.hpp"
-#include "solver/sle/BiCGStab.hpp"
 #include "exception/solver_exception.hpp"
 
 #include <iostream>
@@ -35,7 +33,7 @@
 namespace sg
 {
 
-Euler::Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation, size_t numEvalsAnimation, ScreenOutput* screen) : ODESolver(imax, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), ExMode(Mode), myScreen(screen)
+Euler::Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation, size_t numEvalsAnimation, ScreenOutput* screen) : ODESolver(imax, timestepSize), bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), ExMode(Mode), myScreen(screen)
 {
 	this->residuum = 0.0;
 
@@ -49,10 +47,9 @@ Euler::~Euler()
 {
 }
 
-void Euler::solve(OperationODESolverSystem& System, bool verbose)
+void Euler::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose)
 {
 	size_t allIter = 0;
-    BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
     DataVector* rhs;
 
     // Do some animation creation exception handling
@@ -68,19 +65,19 @@ void Euler::solve(OperationODESolverSystem& System, bool verbose)
 		rhs = System.generateRHS();
 
 		// solve the system of the current timestep
-	    myCG.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
-	    allIter += myCG.getNumberIterations();
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+	    allIter += LinearSystemSolver.getNumberIterations();
 	    if (verbose == true)
 	    {
 	    	if (myScreen == NULL)
 	    	{
-	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
+	    		std::cout << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
 	    	}
 	    }
 	    if (myScreen != NULL)
     	{
     		std::stringstream soutput;
-    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
+    		soutput << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
     		if (i < this->nMaxIterations-1)
     		{

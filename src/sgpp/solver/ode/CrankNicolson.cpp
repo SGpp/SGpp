@@ -22,12 +22,11 @@
 
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/CrankNicolson.hpp"
-#include "solver/sle/BiCGStab.hpp"
 
 namespace sg
 {
 
-CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, size_t iMaxCG, double epsilonCG, ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), maxCGIterations(iMaxCG), epsilonCG(epsilonCG), myScreen(screen)
+CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen)
 {
 	this->residuum = 0.0;
 }
@@ -36,10 +35,9 @@ CrankNicolson::~CrankNicolson()
 {
 }
 
-void CrankNicolson::solve(OperationODESolverSystem& System, bool verbose)
+void CrankNicolson::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose)
 {
 	size_t allIter = 0;
-    BiCGStab myCG(this->maxCGIterations, this->epsilonCG);
     DataVector* rhs = NULL;
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
@@ -48,20 +46,20 @@ void CrankNicolson::solve(OperationODESolverSystem& System, bool verbose)
 		rhs = System.generateRHS();
 
 		// solve the system of the current timestep
-	    myCG.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+	    allIter += LinearSystemSolver.getNumberIterations();
 
-	    allIter += myCG.getNumberIterations();
 	    if (verbose == true)
 	    {
 	    	if (myScreen == NULL)
 	    	{
-	    		std::cout << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
+	    		std::cout << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
 	    	}
 	    }
 	    if (myScreen != NULL)
     	{
     		std::stringstream soutput;
-    		soutput << "Final residuum " << myCG.residuum << "; with " << myCG.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
+    		soutput << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
     		if (i < this->nMaxIterations-1)
     		{
