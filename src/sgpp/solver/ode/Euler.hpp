@@ -39,10 +39,6 @@ namespace sg
 class Euler : public ODESolver
 {
 private:
-	/// the number of CG maximum CG iterations
-	size_t maxCGIterations;
-	/// the CG's epsilon
-	double epsilonCG;
 	/// specifies if a grid evaluation should be execute in every time step
 	bool bAnimation;
 	/// specifies the evaluation per dimension when a animation is created
@@ -59,20 +55,18 @@ public:
 	 * @param Mode the mode of the euler that should be executed, must be ExEul or ImEul
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
-	 * @param iMaxCG maximum number of CG steps
-	 * @param epsilonCG the epsilon used in CG
 	 * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
 	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
 	 * @param screen possible pointer to a ScreenOutput object
 	 */
-	Euler(std::string Mode, size_t imax, double timestepSize, size_t iMaxCG, double epsilonCG, bool generateAnimation = false, size_t numEvalsAnimation = 20, ScreenOutput* screen = NULL);
+	Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation = false, size_t numEvalsAnimation = 20, ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~Euler();
 
-	virtual void solve(OperationODESolverSystem& System, bool verbose = false);
+	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose = false);
 };
 
 }

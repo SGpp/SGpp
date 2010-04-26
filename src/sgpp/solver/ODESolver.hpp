@@ -24,6 +24,7 @@
 #define ODESOLVER_HPP
 
 #include "solver/SGSolver.hpp"
+#include "solver/SLESolver.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg
@@ -50,10 +51,11 @@ public:
 	/**
 	 * Pure virtual Function that defines a solve method for an ODE solver
 	 *
+	 * @param LinearSystemSolver reference to an instance of a linear system solver that is used by this ODE solver
 	 * @param System reference to an OperationMatrix Object that implements the matrix vector multiplication
 	 * @param verbose prints information during execution of the solver
 	 */
-	virtual void solve(OperationODESolverSystem& System, bool verbose = false) = 0;
+	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose = false) = 0;
 };
 
 }
