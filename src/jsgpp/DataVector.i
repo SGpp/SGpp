@@ -55,9 +55,12 @@ public:
 
 	void add(DataVector& vec);
 	void sub(DataVector& vec);
+	void componentwise_mult(DataVector& vec);
+	void componentwise_div(DataVector& vec);
 	void mult(double scalar);
 	
 	void sqr();
+	void abs();
 	double sum();
 	
 	void axpy(double alpha, DataVector& x);
@@ -79,7 +82,9 @@ public:
 	void normalizeDimension(int d, double border);
 	
 	double min(int d);
+	double min();
 	double max(int d);
+	double max();
 	void minmax(int d, double* min, double* max);
 	
 	void toString(std::string& text);
