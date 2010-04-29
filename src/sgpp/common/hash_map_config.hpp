@@ -27,7 +27,7 @@ namespace std {
 #endif
 #endif
 
-// if available you can use the upcoming standard: unorded_map
+// if available you can use the upcoming standard: unordered_map
 #ifdef USETRONE
 
 // do some defines for icc, avoiding

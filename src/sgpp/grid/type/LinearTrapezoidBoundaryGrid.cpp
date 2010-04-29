@@ -22,6 +22,8 @@
 #include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -116,6 +118,16 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& c
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataVector& coef)
 {
 	return new OperationGammaLinearBoundary(this->storage, coef);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDeltaLog(DataVector& coef)
+{
+	return new OperationDeltaLogLinearBoundary(this->storage, coef);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaLog(DataVector& coef)
+{
+	return new OperationGammaLogLinearBoundary(this->storage, coef);
 }
 
 }

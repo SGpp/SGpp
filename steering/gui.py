@@ -5,6 +5,7 @@ from storage import Storage
 from vtk import *
 from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
 
+import time
 
 class SampleViewer:
 
@@ -25,7 +26,7 @@ class SampleViewer:
   def __init__ ( self ):
     self.storage = Storage()
     self.currParam = [0.5, 0.5]
-    self.dimensionSize = 100
+    self.dimensionSize = 10
     self.once = 0 
     self.grid = vtk.vtkStructuredGrid()
     self.createGUI()
@@ -35,15 +36,23 @@ class SampleViewer:
     # Make a root window
     self.TK = Tk() 
 
+    #info = Label(self.TK, text = "Storage Info: " + str(self.storage.grid.getStorage().size()) + " points.")
+    info = Label(self.TK, text = "Storage Info: " + " points.")
+    info.grid(row=0,column=2)  
+
     # Add a vtkTkRenderWidget
-    self.renderWidget = vtkTkRenderWidget(self.TK,width=800,height=800)
-    self.renderWidget.grid(row=0, column=2)
+    self.renderWidget = vtkTkRenderWidget(self.TK,width=1200,height=800)
+    self.renderWidget.grid(row=1, column=2)
 
     # Get the render window from the widget
     scale = Scale ( self.TK, label='T', orient='vertical', from_=1, to=100, command=self.changeTime)
-    scale.grid(row=0,column=0, sticky=N+S)
+    scale.grid(row=1,column=0,sticky=N+S)
     scale = Scale ( self.TK, label='Re', orient='vertical', from_=1, to=100, command=self.changeRe)
-    scale.grid(row=0,column=1, sticky=N+S)
+    scale.grid(row=1,column=1,sticky=N+S)
+
+    var = IntVar()
+    check = Checkbutton(self.TK, text="Colored Vectors", variable=var)
+    check.grid(row=3,column=2)    
 
     self.renWin = self.renderWidget.GetRenderWindow()
 
@@ -53,7 +62,7 @@ class SampleViewer:
     self.renWin.AddRenderer(ren)
 
     self.loadGrid()
-    self.created = True
+    self.created = False
   
     append = vtk.vtkAppendFilter()
     append.AddInput(self.grid)
@@ -66,72 +75,57 @@ class SampleViewer:
     glyph.SetVectorModeToUseVector()
     glyph.SetScaleModeToScaleByVector()
     glyph.SetScaleFactor(10)
+    glyph.SetColorModeToColorByVector()
 
     glyphMapper = vtk.vtkPolyDataMapper()
     glyphMapper.SetInputConnection(glyph.GetOutputPort())
 
     glyph = vtk.vtkActor()
     glyph.SetMapper(glyphMapper)
-  
-    rake = vtk.vtkLineSource()
-    rake.SetPoint1(15, -5, 0)
-    rake.SetPoint2(15, 5, 0)
-    rake.SetResolution(5)
-    rakeMapper = vtk.vtkPolyDataMapper()
-    rakeMapper.SetInputConnection(rake.GetOutputPort())
-    rakeActor = vtk.vtkActor()
-
-    rk4 = vtk.vtkRungeKutta4()
-    streamer = vtk.vtkStreamTracer()
-    streamer.SetInputConnection(append.GetOutputPort())
-    #streamer.SetSource(rake)
-    streamer.SetStartPosition(50, 50, 0)
-    #streamer.SetMaximumPropagationTime(100)
-    #streamer.SetIntegrationStepLength(.2)
-    #streamer.SetStepLength(.001)
-    #streamer.SetNumberOfThreads(1)
-    #streamer.SetIntegrationDirectionToForward()
-    #streamer.VorticityOn()
-    streamer.SetIntegrator(rk4)
-    #rf = vtk.vtkRibbonFilter()
-    #rf.SetInputConnection(streamer.GetOutputPort())
-    #rf.SetWidth(0.1)
-    #rf.SetWidthFactor(5)
-    streamMapper = vtk.vtkPolyDataMapper()
-    streamMapper.SetInputConnection(streamer.GetOutputPort())
-    streamMapper.SetScalarRange(append.GetOutput().GetScalarRange())
-    streamline = vtk.vtkActor()
-    streamline.SetMapper(streamMapper)
-    streamline.VisibilityOn()
 
     outline = vtk.vtkOutlineFilter()
-    outline.SetInputConnection( append.GetOutputPort() )
+    outline.SetInputConnection(append.GetOutputPort())
     outlineMapper = vtk.vtkPolyDataMapper()
     outlineMapper.SetInput( outline.GetOutput() )
     outlineActor = vtk.vtkActor()
     outlineActor.SetMapper( outlineMapper )
     outlineActor.GetProperty().SetColor(0.0,0.0,1.0)
 
+    seeds = vtk.vtkLineSource()
+    seeds.SetPoint1(5, 5, 5)
+    seeds.SetPoint2(7, 7, 7)
+    seeds.SetResolution(1)
+
+    integ = vtk.vtkRungeKutta4()
+    sl = vtk.vtkStreamLine()
+    sl.SetInput(self.grid)
+    sl.SetStartPosition(5, 5, 5)
+    sl.SetMaximumPropagationTime(500)
+    sl.SetStepLength(0.0005)
+    sl.SetIntegrationStepLength(0.00005)
+    sl.SetIntegrationDirectionToIntegrateBothDirections()
+    sl.SetIntegrator(integ)
+ 
+    tube = vtk.vtkTubeFilter()
+    tube.SetInputConnection(sl.GetOutputPort())
+    tube.SetRadius(0.1)
+
+    mapper = vtk.vtkPolyDataMapper()
+    mapper.SetInputConnection(tube.GetOutputPort())
+
+    actor = vtk.vtkActor()
+    actor.SetMapper(mapper)
+
     ren.AddActor(outlineActor)
     ren.AddActor(glyph)
-    ren.AddActor(rakeActor)
-    ren.AddActor(streamline)
- 
-    #lineWidget.SetInteractor(self.renWin.GetInteractor()) 
-    #lineWidget.AddObserver("StartInteractionEvent", self.generateStreamlines)
-    #lineWidget.AddObserver("InteractionEvent", self.generateStreamlines)
-    #lineWidget.AddObserver("EndInteractionEvent", self.generateStreamlines)
- 
-    #button = Button(text="Quit",command=quit)
-    #button.pack(expand='true',fill='x')
- 
+    #ren.AddActor(actor)
+
     # start up the event loop
     self.TK.mainloop()
-
-  def constructActors(self):
-    return 
-   
+  
   def loadGrid(self):
+    print "Loading new grid."
+
     nr = self.dimensionSize
 
     if not self.created:
@@ -141,15 +135,16 @@ class SampleViewer:
     vectors = vtk.vtkFloatArray()
     vectors.SetNumberOfComponents(3)
 
-    values = self.storage.extractGrid(self.dimensionSize, self.currParam)
+    x = time.time()
+    values = self.storage.extractGrid(nr, [0.5,0.5])#self.currParam)
+    print "Extract time ", time.time() - x 
 
-    for i in range(0, 20000, 2):
-   
-      if not self.created:
-        points.InsertNextPoint( i / (2 * nr) , (i/2) % nr, 0)
+    dim = 3
   
-      vectors.InsertNextTuple3(values[i], values[i+1],0) 
-      #vectors.InsertNextTuple3(i%3, 1, 0) 
+    for i in range(0, dim * (nr**3), dim):
+      if not self.created:
+        points.InsertNextPoint( (i/(3 * nr)) % nr , (i/3) % (nr), i / (3 * nr*nr) )
+      vectors.InsertNextTuple3(values[i], values[i+1], values[i+2]) 
   
     if not self.created:
       self.grid.SetPoints(points)
@@ -158,20 +153,18 @@ class SampleViewer:
 
     return
 
-  def generateStreamlines(obj, event):
-    print "bla bla"
-    obj.GetPolyData(seeds)
-    self.stream.VisibilityOn()
-    self.renWin.Render()
-
   def changeTime(self, value):
     self.currParam[0] = float(value)/100.0
+    x = time.time()
     self.loadGrid()
+    print "Load Grid Time ChangeT ", time.time() - x
     self.renWin.Render()
   
   def changeRe(self, value):
     self.currParam[1] = float(value)/100.0
+    x = time.time()
     self.loadGrid()
+    print "Load Grid Time ChangeRe ", time.time() - x
     self.renWin.Render()
 
 

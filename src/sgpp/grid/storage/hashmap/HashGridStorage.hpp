@@ -122,6 +122,23 @@ public:
 	}
 
 	/**
+	 * deletes all grid points in the storage
+	 */
+	void emptyStorage()
+	{
+		// delete all grid points
+		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
+		{
+			delete *iter;
+		}
+
+		// remove all elements from hashmap
+		map.clear();
+		// remove all list entries
+		list.clear();
+	}
+
+	/**
 	 * serialize the gridstorage into a string
 	 *
 	 * @return a string the contains all gridstorage information
@@ -194,6 +211,24 @@ public:
     size_t size() const
     {
         return map.size();
+    }
+
+    /**
+     * gets the number of inner grid points
+     *
+     * @return the number of inner grid points
+     */
+    size_t getNumInnerPoints()
+    {
+    	size_t innerPoints = 0;
+
+    	for (size_t p = 0; p < map.size(); p++)
+    	{
+    		if (list[p]->isInnerPoint())
+    			innerPoints++;
+    	}
+
+    	return innerPoints;
     }
 
     /**

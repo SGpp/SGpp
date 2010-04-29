@@ -18,7 +18,9 @@ namespace detail
 {
 
 /**
- * Implements the up Method needed for the Laplace operator on mod linear grids
+ * Implementation of sweep operator (): 1D Up for
+ * Bilinearform \f$\int_{x} \phi(x) \phi(x) dx\f$
+ * on mod-linear grids
  */
 class PhiPhiUpModLinear
 {
@@ -33,16 +35,12 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 */
-	PhiPhiUpModLinear(GridStorage* storage) : storage(storage)
-	{
-	}
+	PhiPhiUpModLinear(GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	~PhiPhiUpModLinear()
-	{
-	}
+	~PhiPhiUpModLinear();
 
 	/**
 	 * This operations performs the calculation of up in the direction of dimension <i>dim</i>
@@ -52,12 +50,7 @@ public:
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-	{
-		double fl = 0.0;
-		double fr = 0.0;
-		rec(source, result, index, dim, fl, fr);
-	}
+	void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 
 protected:
 
@@ -71,76 +64,8 @@ protected:
 	 * @param fl function value on the left boundary
 	 * @param fr function value on the right boundary
 	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-	{
-		size_t seq = index.seq();
-
-		double alpha_value = source[seq];
-
-		GridStorage::index_type::level_type l;
-		GridStorage::index_type::index_type i;
-
-		index.get(dim, l, i);
-
-		double h = 1/pow(2.0, static_cast<int>(l));
-		double fml = 0.0;
-		double fmr = 0.0;
-
-		if(!index.hint())
-		{
-			index.left_child(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fml);
-			}
-
-			index.step_right(dim);
-			if(!storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fmr, fr);
-			}
-
-			index.up(dim);
-		}
-
-		double fm = fml + fmr;
-
-		// level 1, constant function
-		if(l == 1)
-		{
-			result[seq] = fl + fm + fr;
-
-			fl += fm/2.0 + alpha_value;
-			fr += fm/2.0 + alpha_value;
-		}
-		// left boundary
-		else if(i == 1)
-		{
-			result[seq] = 2.0 * fl + fm;
-
-			fl += fm/2.0 + 4.0/3.0*h*alpha_value;
-			fr += fm/2.0 + 2.0/3.0*h*alpha_value;
-		}
-		// right boundary
-		else if(static_cast<int>(i) == static_cast<int>((1 << l)-1))
-		{
-			result[seq] = 2.0 * fr + fm;
-
-			fl += fm/2.0 + 2.0/3.0*h*alpha_value;
-			fr += fm/2.0 + 4.0/3.0*h*alpha_value;
-		}
-		// inner functions
-		else
-		{
-			result[seq] = fm;
-
-			fl += fm/2.0 + h/2.0*alpha_value;
-			fr += fm/2.0 + h/2.0*alpha_value;
-		}
-	}
-
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr);
 };
-
 
 }
 

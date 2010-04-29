@@ -15,7 +15,13 @@
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -86,7 +92,7 @@ OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
 
 OperationMatrix* LinearBoundaryGrid::createOperationLTwoDotProduct()
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationLTwoDotProductLinearBoundary(this->storage);
 }
 
 // @todo (heinecke) removed this when done
@@ -99,12 +105,22 @@ OperationMatrix* LinearBoundaryGrid::createOperationUpDownTest()
 /////////////////////
 OperationMatrix* LinearBoundaryGrid::createOperationDelta(DataVector& coef)
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationDeltaLinearBoundary(this->storage, coef);
 }
 
 OperationMatrix* LinearBoundaryGrid::createOperationGamma(DataVector& coef)
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationGammaLinearBoundary(this->storage, coef);
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationDeltaLog(DataVector& coef)
+{
+	return new OperationDeltaLogLinearBoundary(this->storage, coef);
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationGammaLog(DataVector& coef)
+{
+	return new OperationGammaLogLinearBoundary(this->storage, coef);
 }
 
 }

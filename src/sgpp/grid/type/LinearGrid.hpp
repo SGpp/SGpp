@@ -9,6 +9,7 @@
 #define LINEARGRID_HPP
 
 #include "grid/Grid.hpp"
+#include "grid/common/BoundingBox.hpp"
 
 #include <iostream>
 
@@ -32,6 +33,13 @@ public:
 	LinearGrid(size_t dim);
 
 	/**
+	 * Constructor Linear Grid
+	 *
+	 * @param BB the BoundingBox of the grid
+	 */
+	LinearGrid(BoundingBox& BB);
+
+	/**
 	 * Destructor
 	 */
 	virtual ~LinearGrid();
@@ -52,6 +60,8 @@ public:
 	// finance operations
 	virtual OperationMatrix* createOperationDelta(DataVector& coef);
 	virtual OperationMatrix* createOperationGamma(DataVector& coef);
+	virtual OperationMatrix* createOperationDeltaLog(DataVector& coef);
+	virtual OperationMatrix* createOperationGammaLog(DataVector& coef);
 
 	static Grid* unserialize(std::istream& istr);
 };
