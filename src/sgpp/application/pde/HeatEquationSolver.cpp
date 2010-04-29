@@ -5,10 +5,11 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
+#include "algorithm/pde/HeatEquationODESolverSystem.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "stdlib.h"
@@ -64,12 +65,14 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	if (bGridConstructed)
 	{
 		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
-		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ExEul");
+		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
+		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*myGrid, alpha, a, timestepsize, "ExEul");
 
-		myEuler->solve(*myHEMatrix, alpha, verbose);
+		myEuler->solve(*myCG, *myHESolver, verbose);
 
-		delete myHEMatrix;
+		delete myHESolver;
+		delete myCG;
 		delete myEuler;
 	}
 	else
@@ -83,12 +86,14 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	if (bGridConstructed)
 	{
 		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, maxCGIterations, epsilonCG, generateAnimation, numEvalsAnimation, myScreen);
-		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "ImEul");
+		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
+		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*myGrid, alpha, a, timestepsize, "ImEul");
 
-		myEuler->solve(*myHEMatrix, alpha, verbose);
+		myEuler->solve(*myCG, *myHESolver, verbose);
 
-		delete myHEMatrix;
+		delete myHESolver;
+		delete myCG;
 		delete myEuler;
 	}
 	else
@@ -101,12 +106,15 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 {
 	if (bGridConstructed)
 	{
-		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, maxCGIterations, epsilonCG);
-		HeatEquationTimestepMatrix* myHEMatrix = new HeatEquationTimestepMatrix(*myGrid, a, timestepsize, "CrNic");
+		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize);
+		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*myGrid, alpha, a, timestepsize, "CrNic");
 
-		myCN->solve(*myHEMatrix, alpha, false);
+		myCN->solve(*myCG, *myHESolver, false);
 
-		delete myHEMatrix;
+		delete myHESolver;
+		delete myCG;
 		delete myCN;
 	}
 	else

@@ -38,6 +38,7 @@ class GridGenerator
 public:
 	virtual void regular(size_t level) = 0;
 	virtual void refine(RefinementFunctor* func) = 0;
+	virtual int getNumberOfRefinablePoints() = 0;
 };
 
 class OperationB
@@ -53,11 +54,25 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
+class OperationODESolverSystem : public OperationMatrix
+{
+public:
+	virtual void mult(DataVector& alpha, DataVector& result) = 0;
+	virtual DataVector* generateRHS() = 0;
+	virtual void finishTimestep() = 0;
+};
+
 class OperationEval
 {
 public:
 	virtual double eval(DataVector& alpha, DataVector& point) = 0;
+};
+
+class OperationTest
+{
+public:
 	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers) = 0;
 };
 
 class OperationHierarchisation

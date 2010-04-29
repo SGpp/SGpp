@@ -67,14 +67,15 @@ public:
 	void getDataVectorDefinition(DataVectorDefinition& DataVectorDef);
 
 	/**
-	 * resizes the DataVector
+	 * Resizes the DataVector to size*dim elements; sets all new entries to zero.
+	 * Does nothing if size smaller than current size.
 	 *
 	 * @param size new size of the DataVector
 	 */
 	void resize(size_t size);
 
 	/**
-	 * add elements to the DataVector
+	 * Add add potentially new elements to the DataVector. The size remains unchanged.
 	 *
 	 * @param add number of elements that should be added to the data vector
 	 */

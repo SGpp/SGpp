@@ -20,8 +20,8 @@
 #include "algorithm/datadriven/test_dataset.hpp"
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 
-#include "algorithm/pde/BlackScholesTimestepMatrix.hpp"
-#include "algorithm/pde/HeatEquationTimestepMatrix.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/HeatEquationODESolverSystem.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"
 #include "application/pde/HeatEquationSolver.hpp"

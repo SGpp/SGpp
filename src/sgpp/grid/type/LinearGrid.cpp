@@ -15,8 +15,11 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationEvalLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
+
 #include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -35,6 +38,11 @@ LinearGrid::LinearGrid(std::istream& istr) : Grid(istr)
 LinearGrid::LinearGrid(size_t dim)
 {
 	this->storage = new GridStorage(dim);
+}
+
+LinearGrid::LinearGrid(BoundingBox& BB)
+{
+	this->storage = new GridStorage(BB);
 }
 
 LinearGrid::~LinearGrid()
@@ -100,10 +108,20 @@ OperationMatrix* LinearGrid::createOperationUpDownTest()
 /////////////////////
 OperationMatrix* LinearGrid::createOperationDelta(DataVector& coef)
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationDeltaLinear(this->storage, coef);
 }
 
 OperationMatrix* LinearGrid::createOperationGamma(DataVector& coef)
+{
+	return new OperationGammaLinear(this->storage, coef);
+}
+
+OperationMatrix* LinearGrid::createOperationDeltaLog(DataVector& coef)
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* LinearGrid::createOperationGammaLog(DataVector& coef)
 {
 	throw factory_exception("Unsupported operation");
 }

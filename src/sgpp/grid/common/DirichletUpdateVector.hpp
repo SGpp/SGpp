@@ -67,6 +67,14 @@ public:
 	void setBoundariesToZero(DataVector& updateVector);
 
 	/**
+	 * Replace the inner entries in updateVector with Zero only in that dimension, for which Dirichlet Boundary Conditions
+	 * were specified
+	 *
+	 * @param updateVector the vector that should be updated
+	 */
+	void setInnerPointsToZero(DataVector& updateVector);
+
+	/**
 	 * Multiplies the values on the boundary with a constant value
 	 *
 	 * @param updateVector the vector that should be updated
