@@ -30,7 +30,7 @@ Import('src_objs')
 
 j_env = env.Clone()
 
-j_env.Append(SWIGFLAGS=['-c++','-java']) 			#, '-package', 'weka.de.tum.in.www5.sgpp'])
+j_env.Append(SWIGFLAGS=['-c++','-java', '-package', 'weka.de.tum.in.www5.sgpp'])
 j_env.Append(CPPPATH=['#/src/sgpp', env['JNI_CPPPATH'], env['JNI_CPPPATH'] + '/' + env['JNI_OS']])
 j_env.Append(CPPFLAGS=['-fno-strict-aliasing'])
 
