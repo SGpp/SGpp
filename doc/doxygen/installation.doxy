@@ -108,6 +108,24 @@ the default compilation with gcc is selected. For all other cases please execute
   scons TARGETCPU=ia64ICC
 @endverbatim
 
+
+@subsection sconsEclipse Configuration for use of Scons within Eclipse
+
+Create a makefile project (e.g. by checking out source with Subeclipse) and change the project properties as follows:
+  - Properties -> C/C++ Build -> Builder Settings: disable "Use default build command" and set 'build command' to "scons"
+  - Properties -> C/C++ Build -> Behaviour: set 'Build (Incremental build)' e.g. to "-j 2" and 'Clean' to "-c"
+
+
+@subsection libjsgpp Building the jsgpp Library for use with Java
+
+For the use of SGpp with Java, you have to generate the <tt>libjsgpp</tt>. It can be generated with 
+@verbatim
+  scons JSGPP=True JNI_CPPPATH=<jnipath> JNI_OS=linux 
+@endverbatim
+The <tt><jnipath></tt> can be determined with the command <tt>locate jni.h</tt>. On <tt>atsccsXX</tt> it is in general something in the form of <tt>/usr/lib/jvm/java-6-sun-1.6.X.XX/include</tt>.
+
+
+
 @section compilation_make Compilation with make
 
 It's also possible to build a static library and some applications with make. 
