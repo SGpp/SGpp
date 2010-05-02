@@ -143,7 +143,27 @@ void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, st
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::refineGrid : The grid wasn't initialized before!");
+		throw new application_exception("BlackScholesSolver::refineInitialGrid : The grid wasn't initialized before!");
+	}
+}
+
+void BlackScholesSolver::refineInitialGridSurplus(DataVector& alpha, double dPercentage)
+{
+	size_t nRefinements = 0;
+
+	if (bGridConstructed)
+	{
+		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, 0.0);
+
+		myGrid->createGridGenerator()->refine(myRefineFunc);
+
+		delete myRefineFunc;
+
+		alpha.resize(myGridStorage->size());
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::refineIntialGridSurplus : The grid wasn't initialized before!");
 	}
 }
 

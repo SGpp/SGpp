@@ -116,8 +116,8 @@ public:
 
 	/**
 	 * This function tries to refine the grid such that
-	 * the same meshwidth is used for the singularity as on the grid's boundary. So this grid
-	 * is able to approximate the start solution correctly
+	 * most of the grid points are used for interpolation of the singularity. So this grid
+	 * is able to approximate the start solution better.
 	 *
 	 * After refining the grid the payoff function is applied to the grid.
 	 *
@@ -127,6 +127,17 @@ public:
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 */
 	void refineInitialGrid(DataVector& alpha, double* strike, std::string payoffType, double dStrikeDistance);
+
+	/**
+	 * Refines a grid by taking the grid's coefficients into account. This refinement method
+	 * refines the grid based on the surplus by refining grid points with big surpluses
+	 * first. The number of grid points to refine is specified by a max. percentage
+	 * of all grid points.
+	 *
+	 * @param alpha a DataVector containing the grids coefficients
+	 * @param dPercentage percentage of number the give the number of grid points that should be refined
+	 */
+	void refineInitialGridSurplus(DataVector& alpha, double dPercentage);
 
 	/**
 	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
