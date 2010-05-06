@@ -73,8 +73,7 @@ namespace std {
 
 // the Bad
 
-//%include "DataVector.i"
-%include "src/sgpp/data/DataVector.hpp"
+%include "DataVector.i"
 
 // and the rest
 
@@ -89,9 +88,6 @@ namespace std {
 %include "src/sgpp/algorithm/pde/HeatEquationODESolverSystem.hpp"
 
 %include "src/sgpp/application/common/ScreenOutput.hpp"
-
-%include "src/sgpp/application/pde/BlackScholesSolver.hpp"
-%include "src/sgpp/application/pde/HeatEquationSolver.hpp"
 
 %include "src/sgpp/basis/linear/noboundary/linear_base.hpp"
 %include "src/sgpp/basis/linear/boundary/linearboundaryBase.hpp"
