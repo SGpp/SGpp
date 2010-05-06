@@ -21,6 +21,12 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
+
+#############################################################################
+# SConscript for weka - please rename file to SConscript                    #
+# before executing scons!                                                   #
+#############################################################################
+
 srcs = Split("""
 jsgpp.i
 """)
@@ -30,21 +36,25 @@ Import('src_objs')
 
 j_env = env.Clone()
 
-j_env.Append(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'])
+
+j_env.Append(SWIGFLAGS=['-c++','-java', '-package', 'weka.de.tum.in.www5.sgpp'])
 j_env.Append(CPPPATH=['#/src/sgpp', env['JNI_CPPPATH'], env['JNI_CPPPATH'] + '/' + env['JNI_OS']])
 j_env.Append(CPPFLAGS=['-fno-strict-aliasing'])
 
-jsgpp = j_env.SharedLibrary(target="jsgpp", source = srcs + src_objs, SHLIBPREFIX = 'lib')
+jsgpp = j_env.SharedLibrary(target="jsgpp_weka", source = srcs + src_objs, SHLIBPREFIX = 'lib')
 
 from glob import glob
 files = glob('*.java')
 
-Command('#/jsgpp/sgpp/', files, Mkdir('sgpp'))
+Command('#/wekasgpp/weka/de/tum/in/www5/sgpp', files, Mkdir('wekasgpp/weka/de/tum/in/www5/sgpp'))
 
 for f in files:
-	Command('#/lib/jsgpp/sgpp/' + f, f, Copy('$TARGET', 'tmp/build_jsgpp/' + f))
+	Command('#/wekasgpp/weka/de/tum/in/www5/sgpp/' + f, f, Copy('$TARGET', 'tmp/build_jsgpp_weka/' + f))	
+	#Command('#/lib/jsgpp/' + f, f, Copy('$TARGET', 'tmp/build_jsgpp/' + f))
+
+Command('#/wekasgpp/libjsgpp.so', jsgpp, Copy('$TARGET', '$SOURCE'))
 
 # copy the stuff to /lib/jsgpp
-Command('#/lib/jsgpp/libjsgpp.so', jsgpp, Copy('$TARGET', '$SOURCE'))
+#Command('#/lib/jsgpp/libjsgpp.so', jsgpp, Copy('$TARGET', '$SOURCE'))
 
 Export('jsgpp')

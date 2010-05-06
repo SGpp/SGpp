@@ -157,6 +157,7 @@ SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
 SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
 if env['JSGPP']:
     SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
+    SConscript('src/jsgpp_weka/SConscript', build_dir='tmp/build_jsgpp_weka', duplicate=0)
 
 # Copy required files
 cpy = []
