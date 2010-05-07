@@ -39,7 +39,7 @@ jsgpp = j_env.SharedLibrary(target="jsgpp", source = srcs + src_objs, SHLIBPREFI
 from glob import glob
 files = glob('*.java')
 
-Command('#/jsgpp/sgpp/', files, Mkdir('sgpp'))
+Command('#/jsgpp/sgpp/', files, Mkdir('jsgpp/sgpp'))
 
 for f in files:
 	Command('#/lib/jsgpp/sgpp/' + f, f, Copy('$TARGET', 'tmp/build_jsgpp/' + f))
