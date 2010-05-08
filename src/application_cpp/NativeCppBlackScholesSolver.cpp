@@ -407,7 +407,9 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
 
-	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl << std::endl << std::endl;
+	std::cout << "Grid has " << level << " Levels" << std::endl;
+	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// Init the grid with on payoff function
 	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
@@ -471,11 +473,182 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
 	}
 
+	delete alpha;
 	delete myBSSolver;
 	delete myBoundingBox;
-	delete alpha;
 }
 
+/**
+ * Do a Black Scholes solver test with n assets (ND Sparse Grid) European call option
+ *
+ * @param d the number of dimensions used in the Sparse Grid
+ * @param start_l the number of levels used in the Sparse Grid (first test)
+ * @param end_l the number of level used in the Sparse Grid (last test)
+ * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
+ * @param fileBound filename of the file that contains the grid's bounding box
+ * @param fileStrike filename of the file that contains the assets' strikes
+ * @param payoffType method that is used to determine the multidimensional payoff function
+ * @param riskfree the riskfree rate of the marketmodel
+ * @param timeSt the number of timesteps that are executed during the solving process
+ * @param dt the size of delta t in the ODE solver
+ * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
+ * @param CGeps the epsilon used in the CG/BiCGStab
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ */
+void testNUnderlyingsAnalyse(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver)
+{
+	size_t dim = d;
+	double* strike = new double[dim];
+
+	size_t timesteps = timeSt;
+	double stepsize = dt;
+	size_t CGiterations = CGIt;
+	double CGepsilon = CGeps;
+
+	DataVector mu(dim);
+	DataVector sigma(dim);
+	DataVector rho(dim,dim);
+
+	DataVector EvalPoints(1, d);
+
+	double r = riskfree;
+
+	std::vector<DataVector> results;
+
+	if (readStrikes(fileStrike, dim, strike) != 0)
+	{
+		return;
+	}
+
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
+	{
+		return;
+	}
+
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+	{
+		return;
+	}
+
+	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	delete[] myBoundaries;
+
+	// init Screen Object
+	myBSSolver->initScreen();
+
+	for (size_t i = start_l; i <= end_l; i++)
+	{
+		size_t level = i;
+
+		// Construct a grid
+		myBSSolver->constructGrid(*myBoundingBox, level);
+
+		// in the first iteration -> calculate the evaluation points
+		if (i == start_l)
+		{
+			std::vector<double> center;
+			for (size_t i = 0; i < d; i++)
+			{
+				center.push_back(1.0);
+			}
+
+			myBSSolver->getEvaluationCuboid(EvalPoints, center, 0.2, 10);
+
+			//std::cout << EvalPoints.toString() << std::endl;
+		}
+
+		// init the basis functions' coefficient vector
+		DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+
+		std::cout << "Grid has " << level << " Levels" << std::endl;
+		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+		if (i > start_l)
+			std::cout << std::endl << std::endl << std::endl;
+
+		// Init the grid with on payoff function
+		myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
+
+		// Print the payoff function into a gnuplot file
+		if (dim < 3)
+		{
+			myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+			myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+			myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+		}
+		else
+		{
+			myBSSolver->storeGrid("payoff_Nd.bonn", *alpha, true);
+		}
+
+		// Set stochastic data
+		myBSSolver->setStochasticData(mu, sigma, rho, r);
+
+		// Start solving the Black Scholes Equation
+		if (Solver == "ExEul")
+		{
+			myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		}
+		else if (Solver == "ImEul")
+		{
+			myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		}
+		else if (Solver == "CrNic")
+		{
+			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		}
+		else
+		{
+			std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
+		}
+
+		if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+		{
+			if (dim < 3)
+			{
+				// Print the solved Black Scholes Equation into a gnuplot file
+				myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+				myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+				myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+			}
+			else
+			{
+				myBSSolver->storeGrid("solvedBS_Nd.bonn", *alpha, true);
+			}
+		}
+
+		// Test call @ the money
+		if (payoffType == "avgM")
+		{
+			std::vector<double> point;
+			for (size_t i = 0; i < d; i++)
+			{
+				point.push_back(1.0);
+			}
+			std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
+		}
+
+		// Evaluate Cuboid
+		DataVector Prices(EvalPoints.getSize(), d);
+		myBSSolver->getOptionPricesCuboid(*alpha, Prices, EvalPoints);
+		results.push_back(Prices);
+
+		//std::cout << Prices.toString() << std::endl;
+
+		myBSSolver->deleteGrid();
+
+		delete alpha;
+
+		std::cout << std::endl;
+	}
+
+	delete myBSSolver;
+	delete myBoundingBox;
+}
 
 /**
  * Do a Black Scholes solver test with n assets (ND Sparse Grid) European call option, with Intial
@@ -544,6 +717,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
 
 	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// refine the grid to approximate the singularity in the start solution better
 	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
@@ -817,6 +991,30 @@ int main(int argc, char *argv[])
 			solver.assign(argv[11]);
 
 			testNUnderlyings(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, fileStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver);
+		}
+	}
+	else if (option == "solveNDanalyse")
+	{
+		if (argc != 15)
+		{
+			writeHelp();
+		}
+		else
+		{
+			std::string fileStoch;
+			std::string fileBound;
+			std::string fileStrike;
+			std::string ani;
+			std::string solver;
+			std::string payoff;
+
+			fileStoch.assign(argv[6]);
+			fileBound.assign(argv[5]);
+			fileStrike.assign(argv[7]);
+			payoff.assign(argv[8]);
+			solver.assign(argv[12]);
+
+			testNUnderlyingsAnalyse(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, fileStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver);
 		}
 	}
 	else if (option == "solveNDadapt")

@@ -73,11 +73,61 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	myBoundingBox = myGrid->getBoundingBox();
 	myGridStorage = myGrid->getStorage();
 
-	//std::string serGrid;
-	//myGrid->serialize(serGrid);
-	//std::cout << serGrid << std::endl;
+	std::string serGrid;
+	myGrid->serialize(serGrid);
+	std::cout << serGrid << std::endl;
 
 	bGridConstructed = true;
+}
+
+void BlackScholesSolver::deleteGrid()
+{
+	if (bGridConstructed)
+	{
+		delete myGrid;
+		bGridConstructed = false;
+		myBoundingBox = NULL;
+		myGridStorage = NULL;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::deleteGrid : The grid wasn't initialized before!");
+	}
+}
+
+void BlackScholesSolver::setGrid(std::string serializedGrid)
+{
+	if (bGridConstructed)
+	{
+		delete myGrid;
+		bGridConstructed = false;
+		myBoundingBox = NULL;
+		myGridStorage = NULL;
+	}
+
+	myGrid = Grid::unserialize(serializedGrid);
+
+	myBoundingBox = myGrid->getBoundingBox();
+	myGridStorage = myGrid->getStorage();
+
+	bGridConstructed = true;
+}
+
+std::string BlackScholesSolver::getGrid()
+{
+	std::string gridSer = "";
+
+	if (bGridConstructed)
+	{
+		// Serialize the grid
+		myGrid->serialize(gridSer);
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::getGrid : The grid wasn't initialized before!");
+	}
+
+	return gridSer;
 }
 
 void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, std::string payoffType, double dStrikeDistance)
@@ -435,11 +485,86 @@ double BlackScholesSolver::getOptionPrice(std::vector<double>& evalPoint, DataVe
 	return result;
 }
 
-size_t BlackScholesSolver:: getNumberGridPoints()
+void BlackScholesSolver::getCuboidEvalPoints(std::vector<DataVector>& evalPoints, DataVector& curPoint, std::vector<double>& center, double size, size_t points, size_t curDim)
+{
+	if (curDim == 0)
+	{
+		for (size_t i = 0; i < points; i++)
+		{
+			curPoint.set(curDim, min(max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
+					((myBoundingBox->getIntervalWidth(curDim)*size*2/points)*static_cast<double>(i)),
+					myBoundingBox->getIntervalWidth(curDim)),
+					myBoundingBox->getIntervalWidth(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+
+			evalPoints.push_back(curPoint);
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < points; i++)
+		{
+			curPoint.set(curDim, min(max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
+					((myBoundingBox->getIntervalWidth(curDim)*size*2/points)*static_cast<double>(i)),
+					myBoundingBox->getIntervalWidth(curDim)),
+					myBoundingBox->getIntervalWidth(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+
+			getCuboidEvalPoints(evalPoints, curPoint, center, size, points, curDim-1);
+		}
+	}
+}
+
+void BlackScholesSolver::getOptionPricesCuboid(DataVector& alpha, DataVector& OptionPrices, DataVector& EvaluationPoints)
+{
+	if (bGridConstructed)
+	{
+		if (OptionPrices.getSize() != EvaluationPoints.getSize())
+		{
+			throw new application_exception("BlackScholesSolver::getOptionPricesCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
+		}
+
+		OperationB* myOpB = myGrid->createOperationB();
+		myOpB->mult(alpha, EvaluationPoints, OptionPrices);
+		delete myOpB;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::getOptionPricesCuboid : A grid wasn't constructed before!");
+	}
+}
+
+void BlackScholesSolver::getEvaluationCuboid(DataVector& EvaluationPoints, std::vector<double>& center, double size, size_t points)
+{
+	std::vector<DataVector> evalPoints;
+	DataVector curPoint(getNumberDimensions());
+
+	getCuboidEvalPoints(evalPoints, curPoint, center, size, points, getNumberDimensions()-1);
+
+	size_t numEvalPoints = evalPoints.size();
+	EvaluationPoints.resize(numEvalPoints);
+
+	for (size_t i = 0; i < numEvalPoints; i++)
+	{
+		EvaluationPoints.setRow(i, evalPoints[i]);
+	}
+}
+
+size_t BlackScholesSolver::getNumberGridPoints()
 {
 	if (bGridConstructed)
 	{
 		return myGridStorage->size();
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::getNumberGridPoints : A grid wasn't constructed before!");
+	}
+}
+
+size_t BlackScholesSolver::getNumberInnerGridPoints()
+{
+	if (bGridConstructed)
+	{
+		return myGridStorage->getNumInnerPoints();
 	}
 	else
 	{

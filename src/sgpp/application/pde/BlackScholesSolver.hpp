@@ -95,6 +95,17 @@ private:
 	 */
 	double get1DEuroCallPayoffValue(double assetValue, double strike);
 
+	/**
+	 * This function is a recursive implementation in order the build the evaluation cuboid
+	 *
+	 * @param evalPoints vector of dynamic size into which the points are "submitted" during calculation
+	 * @param curPoint a current point in the d-dimensional space which which is adjusted during this recursive calculations
+	 * @param center the center of the cuboid
+	 * @param size the precentage of the whole array the cuboid will cover in a every dimension
+	 * @param points number of points used in every dimension
+	 */
+	void getCuboidEvalPoints(std::vector<DataVector>& evalPoints, DataVector& curPoint, std::vector<double>& center, double size, size_t points, size_t curDim);
+
 public:
 	/**
 	 * Std-Constructor of the solver
@@ -113,6 +124,26 @@ public:
 	 * @param level number of the regular's grid levels
 	 */
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+
+	/**
+	 * Sets the grid used in this BlackScholes Solver by an given serialized string
+	 * of the grid.
+	 *
+	 * @param serializedGrid a string that describes the grid that should be used in this solver
+	 */
+	void setGrid(std::string serializedGrid);
+
+	/**
+	 * gets the a string the describes the grid which is currently used to solve
+	 *
+	 * @return a string containing a serialized grid
+	 */
+	std::string getGrid();
+
+	/**
+	 * deletes the grid created within that solver
+	 */
+	void deleteGrid();
 
 	/**
 	 * This function tries to refine the grid such that
@@ -226,6 +257,31 @@ public:
 	double getOptionPrice(std::vector<double>& evalPoint, DataVector& alpha);
 
 	/**
+	 * Evaluates the sparse grid's function given by the stored grid and the alpha coefficients.
+	 * on different points specified in EvaluationPoints and stores the result into OptionPrices.
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param OptionPrices DataVector into the which the result of function's evaluation is stored
+	 * @param EvaluationPoints DataVector that contains the points at which the sparse grid's function is evaluated
+	 */
+	void getOptionPricesCuboid(DataVector& alpha, DataVector& OptionPrices, DataVector& EvaluationPoints);
+
+	/**
+	 * This function builds an cuboid which will be stored into the EvaluationPoint
+	 * variable of this function.
+	 * This is by done by building a cuboid around a given center. The size
+	 * of the cuboid is determined in every dimension by a fix percent size of the interval in that dimension.
+	 * In addition there is a fix number of EvalutionPoints in every dimension. Be aware that this
+	 * function returns point to the power of d points.
+	 *
+	 * @param EvaluationPoints DataVector that will contain the evaluation points afterwards
+	 * @param center the center of the cuboid
+	 * @param size the precentage of the whole array the cuboid will cover in a every dimension
+	 * @param points number of points used in every dimension
+	 */
+	void getEvaluationCuboid(DataVector& EvaluationPoints, std::vector<double>& center, double size, size_t points);
+
+	/**
 	 * Solves the closed form of the Black Scholes equation, the Black Scholes
 	 * formular. It evaluates the Black Scholes formular in a Stock Price Range
 	 * from 0.0 to maxStock, by increasing the stock price in every step by
@@ -288,6 +344,14 @@ public:
 	 * @return the number of grid points
 	 */
 	size_t getNumberGridPoints();
+
+	/**
+	 * use this to determine the number of inner grid points, used to solve
+	 * the current problem
+	 *
+	 * @return the number of inner grid points
+	 */
+	size_t getNumberInnerGridPoints();
 
 	/**
 	 * use this the determine the number of dimensions that are currently used

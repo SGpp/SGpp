@@ -60,6 +60,13 @@ public:
 	DataVector(DataVector& vec);
 
 	/**
+	 * Copy Constructor.
+	 *
+	 * @param vec reference to another instance of DataVector
+	 */
+	DataVector(const DataVector& vec);
+
+	/**
 	 * Constructor that construct a DataVector from a double array.
 	 * The double array contains the entries rowwise: x00,x01,...,x0dim-1,x10,x11,...
 	 *
