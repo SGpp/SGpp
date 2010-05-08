@@ -73,9 +73,9 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	myBoundingBox = myGrid->getBoundingBox();
 	myGridStorage = myGrid->getStorage();
 
-	std::string serGrid;
-	myGrid->serialize(serGrid);
-	std::cout << serGrid << std::endl;
+	//std::string serGrid;
+	//myGrid->serialize(serGrid);
+	//std::cout << serGrid << std::endl;
 
 	bGridConstructed = true;
 }
@@ -489,24 +489,42 @@ void BlackScholesSolver::getCuboidEvalPoints(std::vector<DataVector>& evalPoints
 {
 	if (curDim == 0)
 	{
-		for (size_t i = 0; i < points; i++)
+		if (points > 1)
 		{
-			curPoint.set(curDim, min(max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
-					((myBoundingBox->getIntervalWidth(curDim)*size*2/points)*static_cast<double>(i)),
-					myBoundingBox->getIntervalWidth(curDim)),
-					myBoundingBox->getIntervalWidth(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+			for (size_t i = 0; i < points; i++)
+			{
+				curPoint.set(curDim, min(max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
+						((myBoundingBox->getIntervalWidth(curDim)*size*2/(points-1))*static_cast<double>(i)),
+						myBoundingBox->getIntervalOffset(curDim)),
+						myBoundingBox->getIntervalOffset(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+
+				evalPoints.push_back(curPoint);
+			}
+		}
+		else
+		{
+			curPoint.set(curDim, center[curDim]);
 
 			evalPoints.push_back(curPoint);
 		}
 	}
 	else
 	{
-		for (size_t i = 0; i < points; i++)
+		if (points > 1)
 		{
-			curPoint.set(curDim, min(max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
-					((myBoundingBox->getIntervalWidth(curDim)*size*2/points)*static_cast<double>(i)),
-					myBoundingBox->getIntervalWidth(curDim)),
-					myBoundingBox->getIntervalWidth(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+			for (size_t i = 0; i < points; i++)
+			{
+				curPoint.set(curDim, min(max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
+						((myBoundingBox->getIntervalWidth(curDim)*size*2/(points-1))*static_cast<double>(i)),
+						myBoundingBox->getIntervalOffset(curDim)),
+						myBoundingBox->getIntervalOffset(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+
+				getCuboidEvalPoints(evalPoints, curPoint, center, size, points, curDim-1);
+			}
+		}
+		else
+		{
+			curPoint.set(curDim, center[curDim]);
 
 			getCuboidEvalPoints(evalPoints, curPoint, center, size, points, curDim-1);
 		}
@@ -523,7 +541,7 @@ void BlackScholesSolver::getOptionPricesCuboid(DataVector& alpha, DataVector& Op
 		}
 
 		OperationB* myOpB = myGrid->createOperationB();
-		myOpB->mult(alpha, EvaluationPoints, OptionPrices);
+		myOpB->multTranspose(alpha, EvaluationPoints, OptionPrices);
 		delete myOpB;
 	}
 	else
@@ -637,145 +655,8 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.0.1", "Alexander Heinecke, (C) 2009-2010");
+	myScreen->writeTitle("SGpp - Black Scholes Solver, 1.1.0", "Alexander Heinecke, (C) 2009-2010");
 	myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
-}
-
-void BlackScholesSolver::writeHelp()
-{
-	std::stringstream mySStream;
-
-	if (myScreen != NULL)
-	{
-		mySStream << "Some instructions for the use of Black Scholes Solver:" << std::endl;
-		mySStream << "------------------------------------------------------" << std::endl << std::endl;
-		mySStream << "Available execution modes are:" << std::endl;
-		mySStream << "	test1D		Solves a simple 1D example" << std::endl;
-		mySStream << "	test2D		Solves a 2D example" << std::endl;
-		mySStream << "	solveND		Solves a ND example" << std::endl;
-		mySStream << "	solveBonn	Solves an option delivered in Bonn's format" << std::endl << std::endl;
-
-		mySStream << "test1D" << std::endl << "------" << std::endl;
-		mySStream << "the following options must be specified:" << std::endl;
-		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-		mySStream << "	strike: the strike of the call option" << std::endl;
-		mySStream << "	r: the riskfree rate" << std::endl;
-		mySStream << "	T: time to maturity" << std::endl;
-		mySStream << "	dT: timestep size" << std::endl;
-		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Example:" << std::endl;
-		mySStream << "5 " << "bound.data stoch.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Remark: This test generates following output files:" << std::endl;
-		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-		mySStream << "	analyticBS.gnuplot: the analytical solution" << std::endl;
-		mySStream << std::endl << std::endl;
-
-		mySStream << "test2D" << std::endl << "------" << std::endl;
-		mySStream << "the following options must be specified:" << std::endl;
-		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-		mySStream << "	strike1: the strike 1 of the call option" << std::endl;
-		mySStream << "	strike2: the strike 1 of the call option" << std::endl;
-		mySStream << "	r: the riskfree rate" << std::endl;
-		mySStream << "	T: time to maturity" << std::endl;
-		mySStream << "	dT: timestep size" << std::endl;
-		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-		mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Example:" << std::endl;
-		mySStream << "5 " << "bound.data stoch.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Remark: This test generates following output files:" << std::endl;
-		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-		mySStream << std::endl << std::endl;
-
-		mySStream << "solveND" << std::endl << "------" << std::endl;
-		mySStream << "the following options must be specified:" << std::endl;
-		mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-		mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
-		mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
-		mySStream << "	r: the riskfree rate" << std::endl;
-		mySStream << "	T: time to maturity" << std::endl;
-		mySStream << "	dT: timestep size" << std::endl;
-		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Example:" << std::endl;
-		mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 " << std::endl;
-		mySStream << std::endl;
-		mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
-		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-		mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
-		mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
-		mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
-		mySStream << std::endl << std::endl;
-
-		mySStream << "solveNDadapt" << std::endl << "------" << std::endl;
-		mySStream << "the following options must be specified:" << std::endl;
-		mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-		mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-		mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
-		mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
-		mySStream << "	r: the riskfree rate" << std::endl;
-		mySStream << "	T: time to maturity" << std::endl;
-		mySStream << "	dT: timestep size" << std::endl;
-		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-		mySStream << "	Adapt-Initial-Refinement: Number of Initial" << std::endl;
-		mySStream << "			Refinements" << std::endl;
-		mySStream << "	Adapt-Initial-Distance: determines the distance" << std::endl;
-		mySStream << "			a grid point must have from @money to" << std::endl;
-		mySStream << "			by refined" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Example:" << std::endl;
-		mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
-		mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-		mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-		mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
-		mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
-		mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
-		mySStream << std::endl << std::endl;
-
-		mySStream << "solveBonn" << std::endl << "---------" << std::endl;
-		mySStream << "the following options must be specified:" << std::endl;
-		mySStream << "	file_grid_in: file the specifies the unsolved grid" << std::endl;
-		mySStream << "	file_grid_out: file that contains the solved grid when finished" << std::endl;
-		mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-		mySStream << "	r: the riskfree rate" << std::endl;
-		mySStream << "	T: time to maturity" << std::endl;
-		mySStream << "	dT: timestep size" << std::endl;
-		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-		mySStream << std::endl;
-		mySStream << "Example:" << std::endl;
-		mySStream << "grid.in grid.out " << "stoch.data " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << std::endl;
-
-		mySStream << std::endl << std::endl;
-		myScreen->writeHelp(mySStream.str());
-	}
 }
 
 }

@@ -145,6 +145,46 @@ int readStrikes(std::string tFile, size_t numAssests, double* strikes)
 }
 
 /**
+ * reads the analyze configuration from a file
+ *
+ * @param tFile the file that contains the analyze data
+ * @param numAssests the number of assets
+ * @param percent variable to store size of cuboid in every dimension
+ * @param points variable to store the number of points in every dimension
+ * @param center vector to store the center of the evaluation cuboid
+ *
+ * @return returns 0 if the file was successfully read, otherwise -1
+ */
+int readAnalyzeData(std::string tFile, size_t numAssests, double& percent, size_t& points, std::vector<double>& center)
+{
+	std::fstream file;
+	double cur_coord;
+
+	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
+
+	center.empty();
+	for (size_t i = 0; i < numAssests; i++)
+	{
+		file >> cur_coord;
+		center.push_back(cur_coord);
+	}
+
+	file >> percent;
+	file >> points;
+
+	file.close();
+
+	return 0;
+}
+
+
+/**
  * Do a Black Scholes solver test with one asset (1D Sparse Grid) European call option
  *
  * @param l the number of levels used in the Sparse Grid
@@ -495,8 +535,8 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
-void testNUnderlyingsAnalyse(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
-		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver)
+void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, std::string fileAnalyze)
 {
 	size_t dim = d;
 	double* strike = new double[dim];
@@ -532,6 +572,14 @@ void testNUnderlyingsAnalyse(size_t d, size_t start_l, size_t end_l, std::string
 		return;
 	}
 
+	double cuboidSize = 0.0;
+	size_t points = 0;
+ 	std::vector<double> center;
+	if (readAnalyzeData(fileAnalyze, dim, cuboidSize, points, center) != 0)
+	{
+		return;
+	}
+
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
@@ -549,13 +597,7 @@ void testNUnderlyingsAnalyse(size_t d, size_t start_l, size_t end_l, std::string
 		// in the first iteration -> calculate the evaluation points
 		if (i == start_l)
 		{
-			std::vector<double> center;
-			for (size_t i = 0; i < d; i++)
-			{
-				center.push_back(1.0);
-			}
-
-			myBSSolver->getEvaluationCuboid(EvalPoints, center, 0.2, 10);
+			myBSSolver->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
 
 			//std::cout << EvalPoints.toString() << std::endl;
 		}
@@ -633,14 +675,13 @@ void testNUnderlyingsAnalyse(size_t d, size_t start_l, size_t end_l, std::string
 		}
 
 		// Evaluate Cuboid
-		DataVector Prices(EvalPoints.getSize(), d);
+		DataVector Prices(EvalPoints.getSize());
 		myBSSolver->getOptionPricesCuboid(*alpha, Prices, EvalPoints);
 		results.push_back(Prices);
 
 		//std::cout << Prices.toString() << std::endl;
 
 		myBSSolver->deleteGrid();
-
 		delete alpha;
 
 		std::cout << std::endl;
@@ -648,6 +689,43 @@ void testNUnderlyingsAnalyse(size_t d, size_t start_l, size_t end_l, std::string
 
 	delete myBSSolver;
 	delete myBoundingBox;
+
+	std::cout << "=====================================================================" << std::endl;
+	std::cout << "=====================================================================" << std::endl << std::endl;
+	std::cout << "Calculating norms of relative errors to a grid" << std::endl;
+	std::cout << "with " << end_l << " levels and testing-coboid" << std::endl;
+	std::cout << "with the center:" << std::endl;
+	for (size_t i = 0; i < d; i++)
+	{
+		std::cout << center[i] << " ";
+	}
+	std::cout << std::endl << "and " << points << " test-points in a range of " << std::endl;
+	std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
+
+	// Calculate relative errors and some norms
+	for (size_t i = 0; i < end_l-start_l; i++)
+	{
+		DataVector maxLevel(results[end_l-start_l]);
+		DataVector relError(results[i]);
+		double maxNorm = 0.0;
+		double twoNorm = 0.0;
+
+		// calculate relative error
+		relError.sub(maxLevel);
+		relError.componentwise_div(maxLevel);
+
+		// calculate max. norm of relative error
+		maxNorm = relError.max();
+
+		// calculate two norm of relative error
+		relError.componentwise_mult(relError);
+		twoNorm = relError.sum();
+		twoNorm = sqrt(twoNorm);
+
+		// Printing norms
+		std::cout << "Level " << i + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+	}
+	std::cout << std::endl << std::endl;
 }
 
 /**
@@ -882,13 +960,168 @@ void writeHelp()
 {
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 
-	// init Screen Object
 	myBSSolver->initScreen();
 
-	// print Help
-	myBSSolver->writeHelp();
-
 	delete myBSSolver;
+
+	std::stringstream mySStream;
+
+	mySStream << "Some instructions for the use of Black Scholes Solver:" << std::endl;
+	mySStream << "------------------------------------------------------" << std::endl << std::endl;
+	mySStream << "Available execution modes are:" << std::endl;
+	mySStream << "	test1D		Solves a simple 1D example" << std::endl;
+	mySStream << "	test2D		Solves a 2D example" << std::endl;
+	mySStream << "	solveND		Solves a ND example" << std::endl;
+	mySStream << "	solveBonn	Solves an option delivered in Bonn's format" << std::endl << std::endl;
+
+	mySStream << "test1D" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	strike: the strike of the call option" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "5 " << "bound.data stoch.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following output files:" << std::endl;
+	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << "	analyticBS.gnuplot: the analytical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
+	mySStream << "test2D" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	strike1: the strike 1 of the call option" << std::endl;
+	mySStream << "	strike2: the strike 1 of the call option" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "5 " << "bound.data stoch.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following output files:" << std::endl;
+	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
+	mySStream << "solveND" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 " << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
+	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
+	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
+	mySStream << "solveNDanalyze" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+	mySStream << "	level_start: number of levels within the Sparse Grid (start)" << std::endl;
+	mySStream << "	level_end: number of levels within the Sparse Grid (end)" << std::endl;
+	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << "	file_analyze: file containing the analyzing options" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "3 2 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
+	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
+	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
+	mySStream << "solveNDadapt" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << "	Adapt-Initial-Refinement: Number of Initial" << std::endl;
+	mySStream << "			Refinements" << std::endl;
+	mySStream << "	Adapt-Initial-Distance: determines the distance" << std::endl;
+	mySStream << "			a grid point must have from @money to" << std::endl;
+	mySStream << "			by refined" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
+	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
+	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
+	mySStream << "solveBonn" << std::endl << "---------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	file_grid_in: file the specifies the unsolved grid" << std::endl;
+	mySStream << "	file_grid_out: file that contains the solved grid when finished" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "grid.in grid.out " << "stoch.data " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << std::endl;
+
+	mySStream << std::endl << std::endl;
+	std::cout << mySStream.str() << std::endl;
 }
 
 /**
@@ -993,9 +1226,9 @@ int main(int argc, char *argv[])
 			testNUnderlyings(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, fileStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver);
 		}
 	}
-	else if (option == "solveNDanalyse")
+	else if (option == "solveNDanalyze")
 	{
-		if (argc != 15)
+		if (argc != 16)
 		{
 			writeHelp();
 		}
@@ -1004,6 +1237,7 @@ int main(int argc, char *argv[])
 			std::string fileStoch;
 			std::string fileBound;
 			std::string fileStrike;
+			std::string fileAnalyze;
 			std::string ani;
 			std::string solver;
 			std::string payoff;
@@ -1011,10 +1245,11 @@ int main(int argc, char *argv[])
 			fileStoch.assign(argv[6]);
 			fileBound.assign(argv[5]);
 			fileStrike.assign(argv[7]);
+			fileAnalyze.assign(argv[15]);
 			payoff.assign(argv[8]);
 			solver.assign(argv[12]);
 
-			testNUnderlyingsAnalyse(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, fileStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver);
+			testNUnderlyingsAnalyze(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, fileStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, fileAnalyze);
 		}
 	}
 	else if (option == "solveNDadapt")
