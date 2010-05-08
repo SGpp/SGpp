@@ -365,11 +365,6 @@ public:
 	 * Inits the screen object
 	 */
 	void initScreen();
-
-	/**
-	 * writes some help and calling instruction to console
-	 */
-	void writeHelp();
 };
 
 }
