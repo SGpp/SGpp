@@ -55,6 +55,15 @@ DataVector::DataVector(DataVector &vec) :
     memcpy(this->data, vec.data, size * dim * sizeof(double));
 }
 
+DataVector::DataVector(const DataVector &vec) :
+    unused(0) {
+    this->size = vec.size;
+    this->dim = vec.dim;
+    this->data = new double[size * dim];
+
+    memcpy(this->data, vec.data, size * dim * sizeof(double));
+}
+
 DataVector::DataVector(double * input, size_t size, size_t dim) :
     size(size), dim(dim), unused(0) {
     this->data = new double[size * dim];
