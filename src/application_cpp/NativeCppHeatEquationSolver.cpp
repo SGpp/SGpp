@@ -53,7 +53,7 @@ void testHeatEquation()
 	myHESolver->initScreen();
 
 	// Construct a grid
-	myHESolver->constructGrid(*myBoundingBox, level, true);
+	myHESolver->constructGrid(*myBoundingBox, level);
 
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
@@ -65,10 +65,13 @@ void testHeatEquation()
 	// Print the initial heat function into a gnuplot file
 	myHESolver->printGrid(*alpha, 50, "heatStart.gnuplot");
 
+	// set heat coefficient
+	myHESolver->setHeatCoefficient(a);
+
 	// Start solving the Heat Equation
-	//myHESolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true, true, 50);
-	myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha, true, false, 50);
-	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, a, *alpha);
+	//myHESolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true, true, 50);
+	myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true, false, 50);
+	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
 
 	// Print the solved Heat Equation into a gnuplot file
 	myHESolver->printGrid(*alpha, 50, "solvedHeat.gnuplot");
