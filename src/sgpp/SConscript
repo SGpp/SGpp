@@ -146,6 +146,8 @@ algorithm/pde/UpDownOneOpDim.cpp
 algorithm/pde/UpDownTwoOpDims.cpp
 
 application/common/ScreenOutput.cpp
+application/pde/PDESolver.cpp
+application/pde/ParabolicPDESolver.cpp
 application/pde/BlackScholesSolver.cpp
 application/pde/HeatEquationSolver.cpp
 

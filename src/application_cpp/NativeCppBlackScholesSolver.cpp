@@ -463,7 +463,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	}
 	else
 	{
-		myBSSolver->storeGrid("payoff_Nd.bonn", *alpha, true);
+		myBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
 	}
 
 	// Set stochastic data
@@ -498,7 +498,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		}
 		else
 		{
-			myBSSolver->storeGrid("solvedBS_Nd.bonn", *alpha, true);
+			myBSSolver->storeGridBonn("solvedBS_Nd.bonn", *alpha, true);
 		}
 	}
 
@@ -510,7 +510,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		{
 			point.push_back(1.0);
 		}
-		std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
+		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 	}
 
 	delete alpha;
@@ -624,7 +624,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 		else
 		{
-			myBSSolver->storeGrid("payoff_Nd.bonn", *alpha, true);
+			myBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
 		}
 
 		// Set stochastic data
@@ -659,7 +659,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			}
 			else
 			{
-				myBSSolver->storeGrid("solvedBS_Nd.bonn", *alpha, true);
+				myBSSolver->storeGridBonn("solvedBS_Nd.bonn", *alpha, true);
 			}
 		}
 
@@ -671,12 +671,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			{
 				point.push_back(1.0);
 			}
-			std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
+			std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 		}
 
 		// Evaluate Cuboid
 		DataVector Prices(EvalPoints.getSize());
-		myBSSolver->getOptionPricesCuboid(*alpha, Prices, EvalPoints);
+		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
 		results.push_back(Prices);
 
 		//std::cout << Prices.toString() << std::endl;
@@ -815,7 +815,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 	else
 	{
-		myBSSolver->storeGrid("payoff_Nd.bonn", *alpha, true);
+		myBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
 	}
 
 	// Set stochastic data
@@ -850,7 +850,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		}
 		else
 		{
-			myBSSolver->storeGrid("solvedBS_Nd.bonn", *alpha, true);
+			myBSSolver->storeGridBonn("solvedBS_Nd.bonn", *alpha, true);
 		}
 	}
 
@@ -862,7 +862,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		{
 			point.push_back(1.0);
 		}
-		std::cout << "Optionprice at testpoint: " << myBSSolver->getOptionPrice(point, *alpha) << std::endl << std::endl;
+		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 	}
 
 	delete myBSSolver;
@@ -903,7 +903,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	myBSSolver->initScreen();
 
 	// Construct a grid, read it from Bonn's format
-	myBSSolver->constructGrid(fileIn, *alpha, hier);
+	myBSSolver->constructGridBonn(fileIn, *alpha, hier);
 	dim = myBSSolver->getNumberDimensions();
 
 	// read stochastic data
@@ -945,7 +945,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 		//myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
 
 		// export the grid, store it to Bonn's format
-		myBSSolver->storeGrid(fileOut, *alpha, hier);
+		myBSSolver->storeGridBonn(fileOut, *alpha, hier);
 	}
 
 	delete myBSSolver;

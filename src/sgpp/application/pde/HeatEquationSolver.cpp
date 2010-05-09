@@ -33,56 +33,54 @@
 namespace sg
 {
 
-HeatEquationSolver::HeatEquationSolver()
+HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver()
 {
-	bGridConstructed = false;
-	myScreen = NULL;
+	this->bGridConstructed = false;
+	this->myScreen = NULL;
 }
 
 HeatEquationSolver::~HeatEquationSolver()
 {
-	if (bGridConstructed)
+	if (this->bGridConstructed)
 	{
-		delete myGrid;
+		delete this->myGrid;
 	}
-	if (myScreen != NULL)
+	if (this->myScreen != NULL)
 	{
-		delete myScreen;
+		delete this->myScreen;
 	}
 }
 
-void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level, bool useBoundary)
+void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 {
-	dim = BoundingBox.getDimensions();
-	levels = level;
+	this->dim = BoundingBox.getDimensions();
+	this->levels = level;
 
-	if (useBoundary)
-	{
-		myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
-	}
-	else
-	{
-		myGrid = new LinearGrid(dim);
-	}
+	this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
 
-	GridGenerator* myGenerator = myGrid->createGridGenerator();
-	myGenerator->regular(levels);
+	GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+	myGenerator->regular(this->levels);
 	delete myGenerator;
 
-	myBoundingBox = myGrid->getBoundingBox();
-	myGridStorage = myGrid->getStorage();
+	this->myBoundingBox = this->myGrid->getBoundingBox();
+	this->myGridStorage = this->myGrid->getStorage();
 
-	bGridConstructed = true;
+	this->bGridConstructed = true;
 }
 
-void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+void HeatEquationSolver::setHeatCoefficient(double a)
 {
-	if (bGridConstructed)
+	this->a = a;
+}
+
+void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+{
+	if (this->bGridConstructed)
 	{
-		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
+		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*myGrid, alpha, a, timestepsize, "ExEul");
+		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
 
 		myEuler->solve(*myCG, *myHESolver, verbose);
 
@@ -96,14 +94,14 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	}
 }
 
-void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	if (bGridConstructed)
+	if (this->bGridConstructed)
 	{
-		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
+		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*myGrid, alpha, a, timestepsize, "ImEul");
+		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
 
 		myEuler->solve(*myCG, *myHESolver, verbose);
 
@@ -117,14 +115,14 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	}
 }
 
-void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, double a, DataVector& alpha)
+void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha)
 {
-	if (bGridConstructed)
+	if (this->bGridConstructed)
 	{
-		myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
 		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*myGrid, alpha, a, timestepsize, "CrNic");
+		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
 
 		myCN->solve(*myCG, *myHESolver, false);
 
@@ -138,24 +136,18 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
-void HeatEquationSolver::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename)
-{
-	GridPrinter myPrinter(*this->myGrid);
-	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
-}
-
 void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
 {
 	double tmp;
 	double tmp2;
 
-	if (bGridConstructed)
+	if (this->bGridConstructed)
 	{
-		if (dim == 1)
+		if (this->dim == 1)
 		{
-			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{
-				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
+				tmp = atof(this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox).c_str());
 
 				if (tmp == 0.5)
 				{
@@ -167,15 +159,15 @@ void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
 				}
 			}
 
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
 		}
-		else if (dim == 2)
+		else if (this->dim == 2)
 		{
-			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{
-					std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+					std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 					std::stringstream coordsStream(coords);
 
 					coordsStream >> tmp;
@@ -191,16 +183,8 @@ void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
 					}
 			}
 
-			//std::cout << alpha.toString() << std::endl;
-
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
-
-			//std::cout << alpha.toString() << std::endl;
-
-			//myHierarchisation->doDehierarchisation(alpha);
-
-			//std::cout << alpha.toString() << std::endl;
 			delete myHierarchisation;
 		}
 		else
@@ -214,43 +198,31 @@ void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
 	}
 }
 
-size_t HeatEquationSolver:: getNumberGridPoints()
-{
-	if (bGridConstructed)
-	{
-		return myGridStorage->size();
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::getNumberGridPoints : A grid wasn't constructed before!");
-	}
-}
-
 void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor)
 {
 	double tmp;
 	double tmp2;
 
-	if (bGridConstructed)
+	if (this->bGridConstructed)
 	{
-		if (dim == 1)
+		if (this->dim == 1)
 		{
-			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{
-				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
+				tmp = atof(this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox).c_str());
 
 				alpha[i] = factor*(1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma));
 			}
 
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
 		}
-		else if (dim == 2)
+		else if (this->dim == 2)
 		{
-			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{
-				std::string coords = myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox);
+				std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 				std::stringstream coordsStream(coords);
 
 				coordsStream >> tmp;
@@ -259,7 +231,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 				alpha[i] = factor*factor*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma))) * ((1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp2-mu)/sigma)*((tmp2-mu)/sigma)));
 			}
 
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
 		}
@@ -279,18 +251,18 @@ void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double cons
 	double tmp;
 	//double tmp2;
 
-	if (bGridConstructed)
+	if (this->bGridConstructed)
 	{
-		if (dim == 1)
+		if (this->dim == 1)
 		{
-			for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{
-				tmp = atof(myGridStorage->get(i)->getCoordsStringBB(*myBoundingBox).c_str());
+				tmp = atof(this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox).c_str());
 
 				alpha[i] = constHeat;
 			}
 
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
 		}
@@ -307,8 +279,8 @@ void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double cons
 
 void HeatEquationSolver::initScreen()
 {
-	myScreen = new ScreenOutput();
-	myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2010");
+	this->myScreen = new ScreenOutput();
+	this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2010");
 }
 
 }

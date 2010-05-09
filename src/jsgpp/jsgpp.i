@@ -90,6 +90,8 @@ namespace std {
 
 %include "src/sgpp/application/common/ScreenOutput.hpp"
 
+%include "src/sgpp/application/pde/PDESolver.hpp"
+%include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
 %include "src/sgpp/application/pde/BlackScholesSolver.hpp"
 %include "src/sgpp/application/pde/HeatEquationSolver.hpp"
 
