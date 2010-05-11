@@ -114,7 +114,7 @@ public:
 	 *
 	 * @param istr string that contains the grid information
 	 */
-	static Grid* unserialize(std::string& istr);
+	static Grid* unserialize(const std::string& istr);
 
 	/**
 	 * reads a grid out of a stream

@@ -61,7 +61,7 @@ void PDESolver::deleteGrid()
 	}
 }
 
-void PDESolver::setGrid(std::string serializedGrid)
+void PDESolver::setGrid(const std::string& serializedGrid)
 {
 	if (bGridConstructed)
 	{
