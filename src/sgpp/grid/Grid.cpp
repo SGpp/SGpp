@@ -87,7 +87,7 @@ Grid* Grid::createModPolyGrid(size_t dim, size_t degree)
 	return new ModPolyGrid(dim, degree);
 }
 
-Grid* Grid::unserialize(std::string& istr)
+Grid* Grid::unserialize(const std::string& istr)
 {
 	std::istringstream istream;
 	istream.str(istr);

@@ -551,7 +551,8 @@ public:
 	 */
 	void setBoundingBox(BoundingBox& bb)
 	{
-		boundingBox = &bb;
+		delete boundingBox;
+		boundingBox = new BoundingBox(bb);
 	}
 
 protected:

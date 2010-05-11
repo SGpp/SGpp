@@ -94,7 +94,7 @@ public:
 	 *
 	 * @param serializedGrid a string that describes the grid that should be used in this solver
 	 */
-	void setGrid(std::string serializedGrid);
+	void setGrid(const std::string& serializedGrid);
 
 	/**
 	 * gets the a string the describes the grid which is currently used to solve
