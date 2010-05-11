@@ -544,6 +544,16 @@ public:
 		return boundingBox;
 	}
 
+	/**
+	 * sets the bounding box of the current grid
+	 *
+	 * @param bb bounding box to which the GridStorage's pointer is set
+	 */
+	void setBoundingBox(BoundingBox& bb)
+	{
+		boundingBox = &bb;
+	}
+
 protected:
 	/**
 	 * returns the next sequence numbers

@@ -184,6 +184,11 @@ BoundingBox* Grid::getBoundingBox()
 	return this->storage->getBoundingBox();
 }
 
+void Grid::setBoundingBox(BoundingBox& bb)
+{
+	this->storage->setBoundingBox(bb);
+}
+
 void Grid::serialize(std::string& ostr)
 {
 	std::ostringstream ostream;

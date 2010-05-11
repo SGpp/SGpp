@@ -160,6 +160,13 @@ public:
 	virtual BoundingBox* getBoundingBox();
 
 	/**
+	 * sets the GridStorage's BoundingsBox pointer to a BoundingBox object
+	 *
+	 * @return pointer to the GridStorage's BoundingsBox object
+	 */
+	virtual void setBoundingBox(BoundingBox& bb);
+
+	/**
 	 * gets a pointer to GridGenerator object
 	 *
 	 * @return pointer to the GrdGenerator object

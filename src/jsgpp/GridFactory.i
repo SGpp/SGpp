@@ -21,6 +21,14 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+%include "std_string.i"
+
+//namespace std {
+//     %typemap(in) string & = const string &;
+//     // others
+//}
+
+
 %newobject sg::Grid::createLinearGrid(size_t dim);
 %newobject sg::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sg::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
@@ -43,8 +51,9 @@
 %include "stl.i"
 %include "typemaps.i"
 
-%apply std::string *OUTPUT { std::string& ostr };
-%apply std::string *INPUT { std::string& istr };
+
+//%apply std::string *OUTPUT { std::string& ostr };
+//%apply std::string *INPUT { std::string& istr };
 
 
 
@@ -92,6 +101,7 @@ public:
 	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
+	virtual void setBoundingBox(BoundingBox& bb);
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr);
