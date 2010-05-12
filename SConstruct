@@ -85,18 +85,18 @@ elif env['TARGETCPU'] == 'ia64ICC':
     # ICC doesn't know '-pedantic'
     # ICC has different options on ia64
     env.Append(CPPFLAGS = ['-O3', '-fno-fnalias', '-funroll-loops', '-no-alias-const', 
-                           '-no-ansi-alias', '-i-static', '-gcc-version=400', 
+                           '-no-alias', '-i-static', '-gcc-version=400', 
                            '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
                            '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
 elif env['TARGETCPU'] == 'opteronICC':
     print "Using icc 11.x for Opteron systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
-                           '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', 
+                           '-no-alias-const', '-fno-alias', '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp', '-pthread'])
 elif env['TARGETCPU'] == 'core2ICC':
     print "Using icc 11.x for Core2 systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
-                           '-no-alias-const', '-no-ansi-alias', '-Wall', '-ansi', '-wd981', 
+                           '-no-alias-const', '-fno-alias', '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp', '-pthread'])
 else:
     print "You must specify a valid value for TARGETCPU."

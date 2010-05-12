@@ -109,7 +109,7 @@ public:
      */
     static Grid* createModBsplineGrid(size_t dim, size_t degree);
 
-	/**
+    /**
 	 * reads a grid out of a string
 	 *
 	 * @param istr string that contains the grid information
