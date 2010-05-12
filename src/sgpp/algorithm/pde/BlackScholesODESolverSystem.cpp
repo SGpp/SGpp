@@ -27,7 +27,7 @@
 namespace sg
 {
 
-BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode)
+BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode, bool bLogTransform, size_t MPIRank)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -48,18 +48,32 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	buildDeltaCoefficients();
 	buildGammaCoefficients();
 
-	// Create needed operations, on boundary grid
-	this->OpDeltaBound = this->BoundGrid->createOperationDelta(*this->deltaCoef);
-	this->OpGammaBound = this->BoundGrid->createOperationGamma(*this->gammaCoef);
-	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
-
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
-	//Create needed operations, on inner grid
-	this->OpDeltaInner = this->InnerGrid->createOperationDelta(*this->deltaCoef);
-	this->OpGammaInner = this->InnerGrid->createOperationGamma(*this->gammaCoef);
+	if (bLogTransform == false)
+	{
+		//Create needed operations, on inner grid
+		this->OpDeltaInner = this->InnerGrid->createOperationDelta(*this->deltaCoef);
+		this->OpGammaInner = this->InnerGrid->createOperationGamma(*this->gammaCoef);
+		// Create needed operations, on boundary grid
+		this->OpDeltaBound = this->BoundGrid->createOperationDelta(*this->deltaCoef);
+		this->OpGammaBound = this->BoundGrid->createOperationGamma(*this->gammaCoef);
+	}
+	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
+	else
+	{
+		// operations on boundary grid
+		this->OpDeltaBound = this->BoundGrid->createOperationDeltaLog(*this->deltaCoef);
+		this->OpGammaBound = this->BoundGrid->createOperationGammaLog(*this->gammaCoef);
+		//operations on inner grid
+		this->OpDeltaInner = this->InnerGrid->createOperationDeltaLog(*this->deltaCoef);
+		this->OpGammaInner = this->InnerGrid->createOperationGammaLog(*this->gammaCoef);
+	}
+
+	// Create operations, independent bLogTransform
 	this->OpLTwoInner = this->InnerGrid->createOperationLTwoDotProduct();
+	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
 
 	// right hand side if System
 	this->rhs = new DataVector(1);

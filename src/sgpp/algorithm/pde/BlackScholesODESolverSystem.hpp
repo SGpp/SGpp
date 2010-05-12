@@ -152,8 +152,10 @@ public:
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
+	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
+	 * @param MPIRank indicates the MPI-Rank of this instance, 0 indicates the master rank
 	 */
-	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul");
+	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul", bool bLogTransform = false, size_t MPIRank = 0);
 
 	/**
 	 * Std-Destructor
