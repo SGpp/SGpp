@@ -89,7 +89,7 @@ public:
 	/**
 	 * Std-Destructor of the solver
 	 */
-	~BlackScholesSolver();
+	virtual ~BlackScholesSolver();
 
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 

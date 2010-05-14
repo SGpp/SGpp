@@ -31,10 +31,6 @@ ParabolicPDESolver::ParabolicPDESolver() : PDESolver()
 
 ParabolicPDESolver::~ParabolicPDESolver()
 {
-	if (this->bGridConstructed)
-	{
-		delete this->myGrid;
-	}
 }
 
 }

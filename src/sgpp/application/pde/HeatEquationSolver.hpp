@@ -70,7 +70,7 @@ public:
 	/**
 	 * Std-Destructor of the solver
 	 */
-	~HeatEquationSolver();
+	virtual ~HeatEquationSolver();
 
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
