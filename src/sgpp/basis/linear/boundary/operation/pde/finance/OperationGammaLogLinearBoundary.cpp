@@ -115,7 +115,7 @@ void OperationGammaLogLinearBoundary::upOpDimOneAndOpDimTwo(DataVector& alpha, D
 
 void OperationGammaLogLinearBoundary::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// x^2 * dphi * dphi
+	// dphi * dphi
 	detail::DPhidPhiDownBBLinearBoundary func(this->storage);
 	sweep<detail::DPhidPhiDownBBLinearBoundary> s(func, this->storage);
 

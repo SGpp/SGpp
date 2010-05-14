@@ -62,7 +62,7 @@ void OperationDeltaLogLinearBoundary::down(DataVector& alpha, DataVector& result
 
 void OperationDeltaLogLinearBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// x * phi * dphi
+	// phi * dphi
 	detail::PhidPhiUpBBLinearBoundary func(this->storage);
 	sweep<detail::PhidPhiUpBBLinearBoundary> s(func, this->storage);
 
@@ -71,7 +71,7 @@ void OperationDeltaLogLinearBoundary::upOpDim(DataVector& alpha, DataVector& res
 
 void OperationDeltaLogLinearBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// x * phi * dphi
+	// phi * dphi
 	detail::PhidPhiDownBBLinearBoundary func(this->storage);
 	sweep<detail::PhidPhiDownBBLinearBoundary> s(func, this->storage);
 
