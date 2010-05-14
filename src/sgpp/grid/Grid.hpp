@@ -294,6 +294,14 @@ public:
 	virtual void serialize(std::ostream& ostr);
 
 	/**
+	 * Serializes grid to a string.
+	 * Needed for Java compatibility.
+	 *
+	 * @param ostr string into which the grid is written
+	 */
+	std::string serialize();
+
+	/**
 	 * Refine grid
 	 * Refine the given number of points on the grid according to the vector
 	 *

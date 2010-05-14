@@ -105,6 +105,7 @@ public:
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr);
+	virtual std::string serialize();
 	void refine(DataVector* vector, int num);
 	double eval(DataVector& alpha, DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
