@@ -197,6 +197,14 @@ void Grid::serialize(std::string& ostr)
 	ostr = ostream.str();
 }
 
+std::string Grid::serialize()
+{
+	std::ostringstream ostream;
+	this->serialize(ostream);
+
+	return ostream.str();
+}
+
 void Grid::serialize(std::ostream& ostr)
 {
 	ostr << this->getType() << std::endl;
