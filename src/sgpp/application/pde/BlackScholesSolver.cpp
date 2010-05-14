@@ -49,10 +49,6 @@ BlackScholesSolver::~BlackScholesSolver()
 		delete this->sigmas;
 		delete this->rhos;
 	}
-	if (this->bGridConstructed)
-	{
-		delete this->myGrid;
-	}
 	if (this->myScreen != NULL)
 	{
 		delete this->myScreen;
@@ -373,7 +369,7 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
-	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.1.0", "Alexander Heinecke, (C) 2009-2010");
+	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.1.1", "Alexander Heinecke, (C) 2009-2010");
 	this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
