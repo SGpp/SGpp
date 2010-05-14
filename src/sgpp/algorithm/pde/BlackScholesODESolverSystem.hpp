@@ -135,6 +135,24 @@ protected:
 	void buildDeltaCoefficients();
 
 	/**
+	 * Build the coefficients for the Gamma Operation, which
+	 * are the assets' covariance matrix multiplied by 0.5
+	 *
+	 * this routine handles also the symmtrie of the
+	 * gamma operation
+	 *
+	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
+	 */
+	void buildGammaCoefficientsLogTransform();
+
+	/**
+	 * Build the coefficients for the combined Delta Operation
+	 *
+	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
+	 */
+	void buildDeltaCoefficientsLogTransform();
+
+	/**
 	 * Implements some start jobs of every timestep, e.g.discounting boundaries
 	 */
 	void startTimestep();
