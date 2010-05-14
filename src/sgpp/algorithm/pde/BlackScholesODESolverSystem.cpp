@@ -45,14 +45,15 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	// build the coefficient vectors for the operations
 	this->gammaCoef = new DataVector(SparseGrid.getStorage()->dim(), SparseGrid.getStorage()->dim());
 	this->deltaCoef = new DataVector(SparseGrid.getStorage()->dim());
-	buildDeltaCoefficients();
-	buildGammaCoefficients();
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
 	if (bLogTransform == false)
 	{
+		buildDeltaCoefficients();
+		buildGammaCoefficients();
+
 		//Create needed operations, on inner grid
 		this->OpDeltaInner = this->InnerGrid->createOperationDelta(*this->deltaCoef);
 		this->OpGammaInner = this->InnerGrid->createOperationGamma(*this->gammaCoef);
@@ -63,6 +64,9 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
 	else
 	{
+		buildDeltaCoefficientsLogTransform();
+		buildGammaCoefficientsLogTransform();
+
 		// operations on boundary grid
 		this->OpDeltaBound = this->BoundGrid->createOperationDeltaLog(*this->deltaCoef);
 		this->OpGammaBound = this->BoundGrid->createOperationGammaLog(*this->gammaCoef);
@@ -350,6 +354,51 @@ void BlackScholesODESolverSystem::buildGammaCoefficients()
 }
 
 void BlackScholesODESolverSystem::buildDeltaCoefficients()
+{
+	size_t dim = this->BoundGrid->getStorage()->dim();
+	double covar_sum = 0.0;
+
+	for (size_t i = 0; i < dim; i++)
+	{
+		covar_sum = 0.0;
+		for (size_t j = 0; j < dim; j++)
+		{
+			// handle diagonal
+			if (i == j)
+			{
+				covar_sum += ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j));
+			}
+			else
+			{
+				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+		}
+		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
+	}
+}
+
+void BlackScholesODESolverSystem::buildGammaCoefficientsLogTransform()
+{
+	size_t dim = this->BoundGrid->getStorage()->dim();
+
+	for (size_t i = 0; i < dim; i++)
+	{
+		for (size_t j = 0; j < dim; j++)
+		{
+			// handle diagonal
+			if (i == j)
+			{
+				this->gammaCoef->set((dim*i)+j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+			else
+			{
+				this->gammaCoef->set((dim*i)+j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+		}
+	}
+}
+
+void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
 {
 	size_t dim = this->BoundGrid->getStorage()->dim();
 	double covar_sum = 0.0;
