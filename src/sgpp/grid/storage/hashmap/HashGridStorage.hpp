@@ -196,6 +196,18 @@ public:
 		}
 	}
 
+    /**
+	 * serialize the gridstorage's gridpoints into a stream
+	 *
+	 * @return returns the string that contains all gridpoint information
+	 */
+    std::string toString()
+	{
+		std::ostringstream ostream;
+		this->toString(ostream);
+		return ostream.str();
+	}
+
 	/**
 	 * serialize the gridstorage's gridpoints into a stream
 	 *
