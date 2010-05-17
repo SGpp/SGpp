@@ -411,7 +411,9 @@ void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
 			// handle diagonal
 			if (i == j)
 			{
-				covar_sum += ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j));
+				// factor 1.5, since in log-trafo, the factor \mu_i is changed to \mu_i - 0.5*\sigma_i^2
+				// and, thus, we have (1.0+0.5)-times the term
+				covar_sum += (1.5*(this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j));
 			}
 			else
 			{
