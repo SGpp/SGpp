@@ -18,6 +18,24 @@ if os.environ.has_key("SGPP"):
     sys.path.append(os.environ["SGPP"]+"/bin")
 import tools
 
+
+def getminmax(filename, separator=None):
+    """Computes min and max for each parameter"""
+    fd = tools.gzOpen(filename, 'r')
+
+    mmax = [-10e10 for d in range(dim)]
+    mmin = [10e10 for d in range(dim)]
+    for line in fd.readlines():
+        line = line.split(separator)
+        for d in range(len(line)-1):
+            mmax[d] = max(float(line[d]), mmax[d])
+            mmin[d] = min(float(line[d]), mmin[d])
+    fd.close()
+
+    return (mmin, mmax)
+
+
+
 # parse args
 parser = optparse.OptionParser()
 parser.set_usage('''%prog 
@@ -28,6 +46,12 @@ parser.add_option("--data", dest="data", action="store", type="string",
                   help="Filename for of data")
 parser.add_option("--datsep", dest="datsep", action="store", type="string", 
                   help="Data file separator (default: ' ')", default=" ")
+parser.add_option("--minima", dest="minima", action="store", type="string", 
+                  help="Minima for intervals as a string with one entry per attribute, e.g. \"0.1 0.0 0.3 0.3\" in four dimensions", 
+                  default=None)
+parser.add_option("--maxima", dest="maxima", action="store", type="string", 
+                  help="Maxima for intervals as a string with one entry per attribute, e.g. \"0.9 1.0 0.8 0.7\" in four dimensions", 
+                  default=None)
 parser.add_option("--prefix", dest="prefix", action="store", 
                   default=None, 
                   help="Prefix of eps-, png- and gnuplot-files. If not set, no files are created")
@@ -58,6 +82,13 @@ fd = tools.gzOpen(options.data, 'r')
 data = fd.readlines()
 fd.close()
 
+if not options.datsep.strip():
+    options.datsep = None
+    gnuplot_separator = ""
+else:
+    gnuplot_separator = 'set datafile separator "%s"' % (options.datsep)
+
+
 if options.data[-3:] == ".gz":
     fname = "< zcat "+options.data
 else:
@@ -73,6 +104,13 @@ if options.dotwidth:
 else:
     dotwidth = ""
 
+# get bounds of intervals
+if options.minima and options.maxima:
+    mmin = map(lambda x: float(x), options.minima.split())
+    mmax = map(lambda x: float(x), options.maxima.split())
+else:
+    (mmin, mmax) = getminmax(options.data, options.datsep)
+
 # prepare multiplot
 if True:
     margin = 0 #0.05
@@ -87,7 +125,7 @@ if True:
 
     s = """
 # taking data from %s
-set datafile separator "%s"
+%s
 set pm3d map
 set nokey
 unset colorbox
@@ -99,19 +137,19 @@ set bmargin 0
 #set multiplot layout 3,3
 set multiplot
 #
-""" % (options.data, options.datsep)
+""" % (options.data, gnuplot_separator)
 
     for i in range(dim):
         for j in range(dim):
             s += "set lmargin 0\nset rmargin 0\nset tmargin 0\nset bmargin 0\n"
             s += "set size %f,%f\n" % (1.38*dx-margin, 1.38*dy-margin)
             s += "set origin %f,%f\n" % (i*dx+xoffset-0.16*dx,j*dy+yoffset-0.16*dy)
-#            s += "set yrange[%g:%g]\n" % (0,1) # Here, one could enforce certain max and min values
+            s += "set yrange[%g:%g]\n" % (mmin[j], mmax[j]) # Enforce certain max and min values
             if i==0 and not options.nolabel:
                 s += "set ytics nomirror #(%g,%g,%g) format \"%%11.4e\"\n" % (0,0.5,1)
             else:
                 s += "set noytic\n"
-#            s += "set xrange[%g:%g]\n" % (0,1) # Here, one could enforce certain max and min values
+            s += "set xrange[%g:%g]\n" % (mmin[i], mmax[i]) # Enforce certain max and min values
             if j == 0 and not options.nolabel:
                 s += "set xtics nomirror rotate #(%g,%g,%g) format \"%%f\" offset 0,-2\n" % (0,0.5,1)
             else:
