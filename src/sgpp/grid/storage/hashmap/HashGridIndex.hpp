@@ -477,6 +477,21 @@ public:
         return *this;
     }
 
+	/**
+	 * Generates a string with level and index of the gridpoint.
+     * The format is <tt>[l1, i1, l2, i2, ..., ld, id]</tt>.
+     * Needed for Java compatibility.
+	 *
+	 * @returns string into which the gridpoint is written
+	 */
+	std::string toString()
+	{
+		std::ostringstream ostream;
+		toString(ostream);
+
+		return ostream.str();
+	}
+
     /**
      * Generates a string with level and index of the gridpoint.
      * The format is <tt>[l1, i1, l2, i2, ..., ld, id]</tt>.

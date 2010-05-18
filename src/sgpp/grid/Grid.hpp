@@ -298,7 +298,7 @@ public:
 	 * Serializes grid to a string.
 	 * Needed for Java compatibility.
 	 *
-	 * @param ostr string into which the grid is written
+	 * @returns string into which the grid is written
 	 */
 	std::string serialize();
 
