@@ -188,14 +188,14 @@ void ARFFTools::writeNewClass(std::string& instance, DataVector& destination, si
 	destination.set(instanceNo, dbl_cur_value);
 }
 
-void ARFFTools::writeAlpha(std::string tfilename, DataVector& source)
-{
+//void ARFFTools::writeAlpha(std::string tfilename, DataVector& source)
+//{
+//
+//}
 
-}
-
-void ARFFTools::readAlpha(std::string tfilename, DataVector& destination)
-{
-
-}
+//void ARFFTools::readAlpha(std::string tfilename, DataVector& destination)
+//{
+//
+//}
 
 }

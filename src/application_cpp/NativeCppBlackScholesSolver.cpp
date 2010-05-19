@@ -183,6 +183,86 @@ int readAnalyzeData(std::string tFile, size_t numAssests, double& percent, size_
 	return 0;
 }
 
+/**
+ * reads a cuboid defined by several points from a file. These points are stored in the
+ * cuboid DataVector
+ *
+ * @param cuboid DataVector into which the evaluations points are stored
+ * @param tFile file that contains the cuboid
+ * @param dim the dimensions of cuboid
+ * @param numPoints number of points in the cuboid
+ */
+int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_t numPoints)
+{
+	std::fstream file;
+	double cur_coord;
+
+	file.open(tFile.c_str());
+
+	if(cuboid.getDim() != dim || cuboid.getSize() != numPoints)
+	{
+		std::cout << "Cuboid-definition file doesn't match: " << tFile << std::endl;
+		return -1;
+	}
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
+
+	for (size_t i = 0; i < numPoints; i++)
+	{
+		DataVector line(dim);
+		for (size_t d = 0; d < dim; d++)
+		{
+			file >> cur_coord;
+			line.set(d, cur_coord);
+		}
+		cuboid.setRow(i, line);
+	}
+
+	file.close();
+
+	return 0;
+}
+
+/**
+ * reads function values (here option prices) from a file
+ *
+ * @param values DataVector into which the values will be stored
+ * @param tFile file from which the values are read
+ * @param numValues number of values stored in the file
+ */
+int readOptionsValues(DataVector& values, std::string tFile, size_t numValues)
+{
+	std::fstream file;
+	double cur_value;
+
+	file.open(tFile.c_str());
+
+	if(values.getSize() != numValues)
+	{
+		std::cout << "values-definition file doesn't match: " << tFile << std::endl;
+		return -1;
+	}
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
+
+	for (size_t i = 0; i < numValues; i++)
+	{
+		file >> cur_value;
+		values.set(i, cur_value);
+	}
+
+	file.close();
+
+	return 0;
+}
 
 /**
  * Do a Black Scholes solver test with one asset (1D Sparse Grid) European call option
