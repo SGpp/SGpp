@@ -633,3 +633,18 @@ double* DataVector::getPointer() {
 DataVector::~DataVector() {
     delete[] data;
 }
+
+size_t DataVector::getNumberNonZero()
+{
+    size_t n = size * dim;
+    size_t nonZero = 0;
+
+    for (size_t i = 0; i < n; i++)
+    {
+        if (data[i] > 0.0 || data[i] < 0.0)
+        {
+            nonZero++;
+        }
+    }
+    return nonZero;
+}

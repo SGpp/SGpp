@@ -101,7 +101,7 @@ std::string PDESolver::getGrid()
 
 void PDESolver::refineInitialGridSurplus(DataVector& alpha, double dPercentage)
 {
-	size_t nRefinements = static_cast<size_t>(myGridStorage->size()*dPercentage);
+	size_t nRefinements = static_cast<size_t>(static_cast<double>(alpha.getNumberNonZero())*(dPercentage/100));
 
 	if (bGridConstructed)
 	{
