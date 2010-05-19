@@ -444,6 +444,13 @@ public:
 	 */
 	virtual ~DataVector();
 
+	/**
+	 * gets the number of none zero elements in the vector
+	 *
+	 * @return the number of none zero elements
+	 */
+	size_t getNumberNonZero();
+
 private:
 	/**
 	 * Standard Constructor
