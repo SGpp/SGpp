@@ -641,7 +641,7 @@ size_t DataVector::getNumberNonZero()
 
     for (size_t i = 0; i < n; i++)
     {
-        if (data[i] > 0.0 || data[i] < 0.0)
+        if (fabs(data[i]) > 0.0)
         {
             nonZero++;
         }
