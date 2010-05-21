@@ -20,6 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
+#define CRNIC_IMEUL_START 4
+
 #include "sgpp.hpp"
 #include <iostream>
 #include <string>
@@ -199,7 +201,7 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
 
 	file.open(tFile.c_str());
 
-	if(cuboid.getDim() != dim || cuboid.getSize() != numPoints)
+	if(cuboid.getDim() != dim)
 	{
 		std::cout << "Cuboid-definition file doesn't match: " << tFile << std::endl;
 		return -1;
@@ -219,6 +221,7 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
 			file >> cur_coord;
 			line.set(d, cur_coord);
 		}
+		cuboid.resize(i+1);
 		cuboid.setRow(i, line);
 	}
 
@@ -241,7 +244,7 @@ int readOptionsValues(DataVector& values, std::string tFile, size_t numValues)
 
 	file.open(tFile.c_str());
 
-	if(values.getSize() != numValues)
+	if(values.getDim() != 1)
 	{
 		std::cout << "values-definition file doesn't match: " << tFile << std::endl;
 		return -1;
@@ -256,7 +259,41 @@ int readOptionsValues(DataVector& values, std::string tFile, size_t numValues)
 	for (size_t i = 0; i < numValues; i++)
 	{
 		file >> cur_value;
+		values.resize(i+1);
 		values.set(i, cur_value);
+	}
+
+	file.close();
+
+	return 0;
+}
+
+/**
+ * Writes a DataVector into a file
+ *
+ * @param data the DataVector that should be written into a file
+ * @param tFile the file into which the data is written
+ *
+ * @return error code
+ */
+int writeDataVector(DataVector& data, std::string tFile)
+{
+	std::ofstream file;
+	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot write file: " << tFile << std::endl;
+		return -1;
+	}
+
+	for (size_t i = 0; i < data.getSize(); i++)
+	{
+		for (size_t j = 0; j < data.getDim(); j++)
+		{
+			file << std::scientific << data.get((i*data.getDim())+j) << " ";
+		}
+		file << std::endl;
 	}
 
 	file.close();
@@ -679,7 +716,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			myBSSolver->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
 
-			//std::cout << EvalPoints.toString() << std::endl;
+			writeDataVector(EvalPoints, "EvalCuboidPoints.data");
 		}
 
 		// init the basis functions' coefficient vector
@@ -781,6 +818,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	}
 	std::cout << std::endl << "and " << points << " test-points in a range of " << std::endl;
 	std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
+
+	// write high-leveled solution into file
+	writeDataVector(results[end_l-start_l], "HighLevelOptionValue.data");
 
 	// Calculate relative errors and some norms
 	for (size_t i = 0; i < end_l-start_l; i++)
@@ -1293,6 +1333,11 @@ void writeHelp()
 	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
 	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
 	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
+	mySStream << "For all cases following files are generated:" << std::endl;
+	mySStream << "	EvalCuboidPoints.data: containing the evaluation" << std::endl;
+	mySStream << "		cuboid" << std::endl;
+	mySStream << "	HighLevelOptionValue.data: containing the option's" << std::endl;
+	mySStream << "		for the highest leveled grid." << std::endl;
 	mySStream << std::endl << std::endl;
 
 	mySStream << "solveNDadapt" << std::endl << "------" << std::endl;
