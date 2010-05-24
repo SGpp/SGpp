@@ -436,4 +436,14 @@ DataVector* BlackScholesODESolverSystem::getGridCoefficients()
 	return this->alpha_complete;
 }
 
+void BlackScholesODESolverSystem::setODESolver(std::string ode)
+{
+	this->tOperationMode = ode;
+}
+
+std::string BlackScholesODESolverSystem::getODESolver()
+{
+	return this->tOperationMode;
+}
+
 }

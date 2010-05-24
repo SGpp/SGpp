@@ -176,6 +176,7 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		delete myBSSystem;
 		delete myCG;
 		delete myEuler;
+		delete myStopwatch;
 	}
 	else
 	{
@@ -206,6 +207,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		delete myBSSystem;
 		delete myCG;
 		delete myEuler;
+		delete myStopwatch;
 	}
 	else
 	{
@@ -213,17 +215,35 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	}
 }
 
-void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha)
+void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
 {
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
-		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize, this->myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic");
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
+		size_t numCNSteps;
+		size_t numIESteps;
+
+		numCNSteps = numTimesteps;
+		if (numTimesteps > NumImEul)
+		{
+			numCNSteps = numTimesteps - NumImEul;
+		}
+		numIESteps = NumImEul;
+
+		Euler* myEuler = new Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+		CrankNicolson* myCN = new CrankNicolson(numCNSteps, timestepsize, this->myScreen);
+
 		myStopwatch->start();
+		if (numIESteps > 0)
+		{
+			myBSSystem->setODESolver("ImEul");
+			myEuler->solve(*myCG, *myBSSystem, false);
+		}
+		myBSSystem->setODESolver("CrNic");
 		myCN->solve(*myCG, *myBSSystem, false);
 		execTime = myStopwatch->stop();
 
@@ -236,6 +256,8 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		delete myBSSystem;
 		delete myCG;
 		delete myCN;
+		delete myEuler;
+		delete myStopwatch;
 	}
 	else
 	{

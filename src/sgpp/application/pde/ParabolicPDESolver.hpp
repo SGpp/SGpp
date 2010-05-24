@@ -89,8 +89,9 @@ public:
 	 * @param maxCGIterations the maximum of interation in the CG solver
 	 * @param epsilonCG the epsilon used in the CG
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param NumImEul specifies how many ImEul steps should be executed before CrNic is used, default is 3
 	 */
-	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha) = 0;
+	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 3) = 0;
 };
 
 }

@@ -20,8 +20,6 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#define CRNIC_IMEUL_START 4
-
 #include "sgpp.hpp"
 #include <iostream>
 #include <string>

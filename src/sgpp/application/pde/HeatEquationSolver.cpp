@@ -115,20 +115,38 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	}
 }
 
-void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha)
+void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
 {
 	if (this->bGridConstructed)
 	{
 		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		CrankNicolson* myCN = new CrankNicolson(numTimesteps, timestepsize);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+
+		size_t numCNSteps;
+		size_t numIESteps;
+
+		numCNSteps = numTimesteps;
+		if (numTimesteps > NumImEul)
+		{
+			numCNSteps = numTimesteps - NumImEul;
+		}
+		numIESteps = NumImEul;
+
+		Euler* myEuler = new Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+		CrankNicolson* myCN = new CrankNicolson(numCNSteps, timestepsize);
+
+		if (numIESteps > 0)
+		{
+			myEuler->solve(*myCG, *myHESolver, false);
+		}
 
 		myCN->solve(*myCG, *myHESolver, false);
 
 		delete myHESolver;
 		delete myCG;
 		delete myCN;
+		delete myEuler;
 	}
 	else
 	{
