@@ -141,6 +141,22 @@ public:
 	virtual DataVector* getGridCoefficientsForCG();
 
 	virtual DataVector* getGridCoefficients();
+
+	/**
+	 * defines the used ODE Solver for this instance, this is important because
+	 * the implementation of mult and generateRHS depends on the used
+	 * ODE solver
+	 *
+	 * @param ode the used ODESolver: ExEul, ImEul or CrNic
+	 */
+	void setODESolver(std::string ode);
+
+	/**
+	 * Returns the specified ODE solver for this instance
+	 *
+	 * @return the ODE solver: ExEul, ImEul or CrNic
+	 */
+	std::string getODESolver();
 };
 
 }
