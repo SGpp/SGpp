@@ -25,14 +25,6 @@
 #ifndef SGPP_HPP_
 #define SGPP_HPP_
 
-/**
- *  When using CrNic start with this
- *  number of ImEul steps
- *
- *  @todo (heinecke) should be removed when having config-file for BlackScholes Solver
- */
-#define CRNIC_START_IMEUL 3
-
 #include "grid/GridStorage.hpp"
 
 #include "application/common/ScreenOutput.hpp"
