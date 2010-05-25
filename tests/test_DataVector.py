@@ -39,8 +39,7 @@ class TestDataVector(unittest.TestCase):
 
     ## 
     # Set up, create random DataVector and corresponding Python data structures.
-    # @test DataVector::get()
-    # @test DataVector::set()
+    # @test DataVector::get(), DataVector::set()
     def setUp(self):
         from pysgpp import DataVector
         import random
@@ -67,13 +66,8 @@ class TestDataVector(unittest.TestCase):
 
     ##
     # Constructors4.
-    # @test DataVector::DataVector(size_t size)
-    # @test DataVector::DataVector(size_t size, size_t dim)
-    # @text DataVector::DataVector(DataVectorDefinition &DataVectorDef)
+    # @test DataVector::DataVector(size_t size), DataVector::DataVector(size_t size, size_t dim), DataVector::DataVector(DataVectorDefinition &DataVectorDef), DataVector::getSize(), DataVector::getDim(), DataVector::getTotalSize()
     # @todo (pflueged) DataVector::DataVector(double *input, size_t size, size_t dim)
-    # @test DataVector::getSize()
-    # @test DataVector::getDim()
-    # @test DataVector::getTotalSize()
     def testConstructor(self):
         from pysgpp import DataVector
         
@@ -96,11 +90,7 @@ class TestDataVector(unittest.TestCase):
 
     ##
     # Min, Max operations.
-    # @test DataVector::min(int d)
-    # @test DataVector::max(int d)
-    # @test DataVector::minmax(int d, double *min, double *max)
-    # @test DataVector::min()
-    # @test DataVector::max()
+    # @test DataVector::min(int d), DataVector::max(int d), DataVector::minmax(int d, double *min, double *max), DataVector::min(), DataVector::max()
     def testMinMax(self):
 
         # test dimension-dependent min, max
@@ -120,11 +110,7 @@ class TestDataVector(unittest.TestCase):
 
     ##
     # Operations on DataVectors.
-    # @test DataVector::sum()
-    # @test DataVector::sqr()
-    # @test DataVector::abs()
-    # @test DataVector::componentwise_mult()
-    # @test DataVector::componentwise_div()
+    # @test DataVector::sum(), DataVector::sqr(), DataVector::abs(), DataVector::componentwise_mult(), DataVector::componentwise_div()
     def testOps(self):
         from pysgpp import DataVector
         # sum
