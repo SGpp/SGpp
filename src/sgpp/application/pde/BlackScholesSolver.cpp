@@ -61,7 +61,7 @@ void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	this->bGridConstructed = true;
 }
 
-void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, std::string payoffType, double dStrikeDistance)
+void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance)
 {
 	size_t nRefinements = 0;
 
@@ -70,7 +70,7 @@ void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, st
 
 		DataVector refineVector(alpha.getSize());
 
-		if (payoffType == "avgM")
+		if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
 		{
 			double tmp;
 			double* dblFuncValues = new double[dim];
@@ -93,7 +93,16 @@ void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, st
 				{
 					tmp += dblFuncValues[j];
 				}
-				dDistance = fabs(((tmp/static_cast<double>(this->dim))-1.0));
+
+				if (payoffType == "std_euro_call")
+				{
+					dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
+				}
+				if (payoffType == "std_euro_put")
+				{
+					dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
+				}
+
 				if (dDistance <= dStrikeDistance)
 				{
 					refineVector[i] = dDistance;
@@ -104,6 +113,7 @@ void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, st
 					refineVector[i] = 0.0;
 				}
 			}
+
 			delete[] dblFuncValues;
 
 			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
@@ -115,7 +125,7 @@ void BlackScholesSolver::refineInitialGrid(DataVector& alpha, double* strike, st
 			alpha.resize(this->myGridStorage->size());
 
 			// reinit the grid with the payoff function
-			initGridWithEuroCallPayoff(alpha, strike, payoffType);
+			initGridWithPayoff(alpha, strike, payoffType);
 		}
 		else
 		{
@@ -148,6 +158,7 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
+		std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, verbose);
 		execTime = myStopwatch->stop();
@@ -179,6 +190,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
+		std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, verbose);
 		execTime = myStopwatch->stop();
@@ -225,10 +237,12 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		myStopwatch->start();
 		if (numIESteps > 0)
 		{
+			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
 			myBSSystem->setODESolver("ImEul");
 			myEuler->solve(*myCG, *myBSSystem, false);
 		}
 		myBSSystem->setODESolver("CrNic");
+		std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
 		myCN->solve(*myCG, *myBSSystem, false);
 		execTime = myStopwatch->stop();
 
@@ -250,7 +264,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
-void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* strike, std::string payoffType)
+void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
 {
 	double tmp;
 
@@ -265,49 +279,31 @@ void BlackScholesSolver::initGridWithEuroCallPayoff(DataVector& alpha, double* s
 			for (size_t j = 0; j < this->dim; j++)
 			{
 				coordsStream >> tmp;
-				if ((payoffType == "max") || (payoffType == "avg"))
-				{
-					dblFuncValues[j] = get1DEuroCallPayoffValue(tmp, strike[j]);
-				}
-				if (payoffType == "avgM")
-				{
-					dblFuncValues[j] = tmp;
-				}
+
+				dblFuncValues[j] = tmp;
 			}
 
-			if (payoffType == "max")
-			{
-				tmp = 0.0;
-				for (size_t j = 0; j < dim; j++)
-				{
-					if (dblFuncValues[j] > tmp)
-					{
-						tmp = dblFuncValues[j];
-					}
-				}
-				alpha[i] = tmp;
-			}
-			else if (payoffType == "avg")
+			if (payoffType == "std_euro_call")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
 				{
 					tmp += dblFuncValues[j];
 				}
-				alpha[i] = tmp/static_cast<double>(dim);
+				alpha[i] = max(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
-			else if (payoffType == "avgM")
+			else if (payoffType == "std_euro_put")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
 				{
 					tmp += dblFuncValues[j];
 				}
-				alpha[i] = max(((tmp/static_cast<double>(dim))-1.0), 0.0);
+				alpha[i] = max(strike-((tmp/static_cast<double>(dim))), 0.0);
 			}
 			else
 			{
-				throw new application_exception("BlackScholesSolver::initGridWithEuroCallPayoff : An unknown payoff-type was specified!");
+				throw new application_exception("BlackScholesSolver::initGridWithPayoff : An unknown payoff-type was specified!");
 			}
 
 			delete[] dblFuncValues;
