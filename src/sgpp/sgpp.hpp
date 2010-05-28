@@ -54,6 +54,7 @@
 #include "tools/finance/IOToolBonnSG.hpp"
 #include "tools/common/GridPrinter.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+#include "tools/common/EvalCuboidGenerator.hpp"
 
 namespace sg
 {

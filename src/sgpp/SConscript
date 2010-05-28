@@ -158,6 +158,7 @@ solver/ode/CrankNicolson.cpp
 tools/common/StdNormalDistribution.cpp
 tools/common/GridPrinter.cpp
 tools/common/SGppStopwatch.cpp
+tools/common/EvalCuboidGenerator.cpp
 tools/finance/IOToolBonnSG.cpp
 
 """)

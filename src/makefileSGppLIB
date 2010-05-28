@@ -49,7 +49,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhidPhiDownBBLinearBoundary.o DPhidPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
-	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o
+	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
+	EvalCuboidGenerator.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -386,6 +387,9 @@ ScreenOutput.o : $(SRCDIR)application/common/ScreenOutput.cpp
 	
 SGppStopwatch.o : $(SRCDIR)tools/common/SGppStopwatch.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)SGppStopwatch.o $(SRCDIR)tools/common/SGppStopwatch.cpp
+
+EvalCuboidGenerator.o : $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGenerator.o $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
 	
 ARFFTools.o : $(SRCDIR)tools/datadriven/ARFFTools.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ARFFTools.o $(SRCDIR)tools/datadriven/ARFFTools.cpp
