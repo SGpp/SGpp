@@ -1,62 +1,134 @@
 /**
-@mainpage SGpp Documentation
-Welcome to the sparse grid ++ (SGpp) documentation.
+@mainpage SG++ Documentation
+Welcome to the Sparse Grid ++ (SG++ or SGpp) documentation.
 
 @version $HEAD$
 
+@image html teaser.gif "Images taken from [1]"
 
-@section overview Overview
-- \ref lastmodifications
-- \ref svn instructions (separate page)
-- \ref installation instructions (separate page)
-- \ref grid (separate page)
-- \ref guideline
-- \ref unittests
-- \ref description
-- \ref doxygen
-- \ref copyright
+<div align="center">
+  <table width="600">
+    <tr>
+      <td>
+        If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see section \ref copyright).
+      </td>
+     </tr>
+  </table>
+</div>
 
 
-@section lastmodifications Last modifications
+SG++ is a toolbox allowing to employ spatially adaptive sparse grids
+straightforward, flexibly, and without the vast initial overhead that
+has to be spent when implementing sparse grids and the corresponding
+algorithms. To be able to deal with different kinds
+of problems in a spatially adaptive way - ranging from interpolation
+and quadrature via the solution of differential equations to
+regression, classification, and more - a main motivation behind the
+development and all considerations was to create a toolbox which can
+be used in a very flexible and modular way by different users in
+different applications.
+
+The main features of the sparse grid toolbox are efficiency and
+flexibility, both of which can sometimes be nasty rivals, for example
+if the reusability of an algorithm for different purposes requires
+extra data structures or control mechanisms, thus slowing down special
+algorithmic variants. To ensure performance at run-time, we use C++
+for all performance critical parts. Considering flexibility, we have
+spent a great deal in ensuring modularity, reusability and the
+separation of data structures and algorithms. Furthermore, we provide
+the means to use the SG++ toolbox from within Python, Matlab, Java,
+and C++, of course.
+
+To name a few special features:
+- Different types of basis functions are supported which enable to
+cope with the characteristics of special applications.
+- Modern shared-memory multi-core systems are supported via OpenMP to
+speed-up computations.
+- Adaptive refinement criteria can easily specified as functor
+objects.
+- The underlying data structure (which is, per default, hash-based)
+is encapsulated so that it can be exchanged by other choices.
+- Template-based support for fast realizations of typical sparse-grid
+algorithms that make use of the tensor product structure of the
+underlying basis.
+
+SG++ is open source software and delivered as source code. For
+questions, contributions, and requests, please <a
+href="mailto:Dirk.Pflueger@in.tum.de">contact us</a>.
+
+
+
+<!-- ############################################################# -->
+@section mainpage__overview Overview
+
+- @subpage development
+- @subpage manual
+
+The documentation of the SG++ toolbox is structured in two main
+parts. The first one, @ref development, addresses all those who
+want to contribute to SG++ or who are involved in its
+development. There, the styleguide can be found, references to useful
+tools and utilities are provided, and a few issues that did arise at
+the initial development at the Chair of Scientific Computing at the TU
+Munich are gathered.
+
+The second one, @ref manual, is dedicated to users of
+SG++. For example, installation instructions are provided as well
+as short use cases as a quick-start to using SG++.
+
+
+
+<!-- ############################################################# -->
+@section mainpage__literature Literature
+
+The following publications address SG++:
+
+- Lit1
+- Lit2
+- Lit3
+
+
+<!-- ############################################################# -->
+@section mainpage__references References
+
+[1] Blah
+
+
+
+<!--
+
+@section mainpage__overview Overview
+#- \ref mainpage__lastmodifications
+#- @ subpage svn instructions (separate page)
+#- @ subpage installation instructions (separate page)
+#- @ subpage grid (separate page)
+#- \ref guideline
+#- \ref unittests
+#- \ref description
+#- \ref doxygen
+#- \ref copyright
+
+
+@section mainpage__lastmodifications Last modifications
 $SVN_LOG$
 
 
-@section guideline Guideline documenting the code
-<div style="color:#FF0000;">All code has to be documented so that the functions,
-classes and all other entities appearing in the Doxygen-webpage are
-commented so that some \e other person can understand what they are
-doing.</div>
-
-Especially tags like \e \@todo should be used. They are then listed on the 
-\link todo ToDo\endlink-page. 
-
-Different scripts can be grouped together
-in so-called Modules. The link to the Modules-page is shown in the navigation bar.
-
-Please correct any warnings or errors that appear when creating the
-documentation with doxygen!
-
-@sa Doxygen Manual http://www.stack.nl/~dimitri/doxygen/manual.html
-@sa - Documenting the code http://www.stack.nl/~dimitri/doxygen/docblocks.html
-@sa - Special Commands http://www.stack.nl/~dimitri/doxygen/commands.html
+@section mainpage__references References
 
 
-@section unittests Unittests/Testing
-
-In the subfolder <tt>tests</tt> there are @link tests the following@endlink 
-unittests written in Python.
-They can be tested separately or all together via the file
-<tt>test_pyclass.py</tt>. If you modify existing code, do not forget 
-to make sure that no new errors are introduced. If you write new
-functionalities, do <i>always</i> add unittests for each functionality!
+<hr><hr><hr><hr>
 
 
-@section description Description of the SGClass package
+@section mainpage__tmpoverview Overview
+- Getting started
+  - blah
+- Example usage
 
-Here comes the description...
 
 
-@section doxygen Usage of Doxygen
+@image html SG++_XS_wcrop.png
+
+@section mainpage__doxygen Usage of Doxygen
 
 Executing <tt>doxygen</tt> in the main folder creates the
 Doxygen-documentation in the subfolder <tt>doc</tt>. The settings
@@ -84,7 +156,7 @@ $<tt>SVN_LOG</tt>$
 is substituted by a list of the last few check-ins, as shown above.
 
 
-@section copyright Copyright
+//section mainpage__copyright Copyright
 
 Copyright (C) 2007  Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), 
 Richard Roettger (roettger@in.tum.de)
@@ -110,6 +182,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @todo Structure the Doxygen Documentation / Group the files somehow, see README for an example
 @todo Remove the all leftover from SGClass
 
+
+
+
+
+
+
+
+
+-->
 
 
 */
