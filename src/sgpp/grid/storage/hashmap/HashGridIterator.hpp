@@ -274,6 +274,8 @@ public:
 	 * @param d the dimension of the gridpoint
 	 * @param l the ansatzfunction's level
 	 * @param i the ansartfunction's index
+	 *
+	 * @todo (pflueged) What is set and get useful for in the Iterator? Check and remove.
 	 */
 	void set(size_t d, typename index_type::level_type l, typename index_type::index_type i)
 	{
