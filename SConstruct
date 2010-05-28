@@ -46,7 +46,7 @@ vars.Add('JNI_OS', 'JNI os path', None)
 env = Environment(variables = vars, ENV = os.environ)
 
 # Specifying the target
-# there are several target avialable:
+# there are several targets avialable:
 # 	- default: using the gcc toolchain with OpenMP 2
 #	- opteronICC: using the ICC 11.x toolchain with OpenMP 3 with standard x86_64 options
 #	- core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options

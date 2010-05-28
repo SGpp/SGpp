@@ -168,6 +168,10 @@ def constructGrid(dim):
                 if options.verbose:
                     print "LinearBoundaryGrid, l=%s" % (options.level)
                 grid = Grid.createLinearBoundaryGrid(dim)            
+        elif options.function_type == "modWavelet":
+            if options.verbose:
+                print "ModWaveletGrid, l=%s" % (options.level)
+            grid = Grid.createModWaveletGrid(dim)
         else:
             if options.border:
                 if options.polynom > 1:
@@ -556,10 +560,24 @@ def doTest():
             
         #increment adaptive step
         adaptStep += 1
-        if(options.adaptive >= 0 and adaptStep <= options.adaptive) \
-            or (options.epochs_limit > 0 and options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
-            or (options.regression and options.mse_limit > 0 and options.mse_limit < te_refine[-1]) \
-            or (options.grid_limit > 0 and options.grid_limit > grid.getStorage().size()) \
+#        if(options.adaptive >= 0 and adaptStep <= options.adaptive) \
+#            or (options.epochs_limit > 0 and options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
+#            or (options.regression and options.mse_limit > 0 and options.mse_limit < te_refine[-1]) \
+#            or (options.grid_limit > 0 and options.grid_limit > grid.getStorage().size()) \
+#            :
+#        print "-----------------------------------------------------------------"
+#        print options.adaptive < 0, adaptStep <= options.adaptive
+#        print options.epochs_limit <= 0, options.epochs_limit > getEpochsErrorIncreasing(te_refine)
+#        print options.mse_limit <= 0, options.regression, options.mse_limit < te_refine[-1]
+#        print options.grid_limit <= 0 , options.grid_limit >= grid.getStorage().size()
+#        print ((options.adaptive < 0 or adaptStep <= options.adaptive) \
+#            and (options.epochs_limit <= 0 or options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
+#            and (options.mse_limit <= 0 or (options.regression and options.mse_limit < te_refine[-1])) \
+#            and (options.grid_limit <= 0 or options.grid_limit >= grid.getStorage().size()))
+        if((options.adaptive < 0 or adaptStep <= options.adaptive) \
+            and (options.epochs_limit <= 0 or options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
+            and (options.mse_limit <= 0 or (options.regression and options.mse_limit < te_refine[-1])) \
+            and (options.grid_limit <= 0 or options.grid_limit >= grid.getStorage().size())) \
             :
             print("refining grid")
             if options.regression:
@@ -578,7 +596,7 @@ def doTest():
 
     if options.stats != None:
         txt = formTxt(te_refine, tr_refine, num_refine)
-        #writeStats(options.stats, txt)
+        writeStats(options.stats, txt)
         if options.verbose: print txt
     
     return (tr_refine, te_refine, num_refine)
@@ -594,33 +612,29 @@ def getEpochsErrorIncreasing(list):
     else:
         for i in xrange(1,length):
             if list[-i] < list[-i - 1]:
-                return i
-    return length
-
-def formHeader():
-    return  "#\t%f, %-10g, %f" % (options.level, options.regparam, options.adaptive)
-
-###
-## returns txt variable for stats and checkpoint
-##
-def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
-    txt = ""
-    #if withHeader:
-    #    txt = formHeader()
-    for i in xrange(len(tr_refine)):
-        txt = txt + "%f %.10f %f %f %f %.10f %.10f" % (options.level, options.regparam, options.adaptive, i, num_refine[i], tr_refine[i], te_refine[i])
-    
-    return txt + "\n"
+                return i-1
+    return length-1
 
 ##
 # returns txt variable for stats
 #
+def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
+    txt = ""
+    if withHeader:
+        txt = "%d %-10g %2d" % (options.level, options.regparam, options.adaptive)
+    for i in xrange(len(tr_refine)):
+        txt = txt + ", %d %.10f %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
+    return txt + "\n"
+
+##
+# returns txt variable for stats with validation set
+#
 def formTxtVal(te_refine, tr_refine, val_refine, num_points, withHeader = True):
     txt = ""
     if withHeader:
-        txt = "%d, %-10g, %2d" % (options.level, options.regparam, options.adaptive)
+        txt = "%d %-10g %2d" % (options.level, options.regparam, options.adaptive)
     for i in xrange(len(tr_refine)):
-        txt = txt + ", %f, %.10f, %.10f, %.10f" % (num_points[i], tr_refine[i], val_refine[i], te_refine[i])
+        txt = txt + ", %f %.10f %.10f %.10f" % (num_points[i], tr_refine[i], val_refine[i], te_refine[i])
     return txt + "\n"
 
 #-------------------------------------------------------------------------------
@@ -798,13 +812,13 @@ def performFoldNew(dvec,cvec,ifold):
     val_refine = []
     te_refine = []
     
+    # construct/split DataVectors
+    training,classes = assembleTrainingVector(dvec, cvec, ifold)
+    data_tr,data_val,class_tr,class_val = split_DataVectors_by_proportion_stratified(training, classes, 0.66)
+
     # loop until number of refinements reached
     for adaptStep in xrange(options.adaptive + 1):
         if options.verbose: print "Step %d" % (adaptStep)
-
-        # construct/split DataVectors
-        training,classes = assembleTrainingVector(dvec, cvec, ifold)
-        data_tr,data_val,class_tr,class_val = split_DataVectors_by_proportion_stratified(training, classes, 0.66)
 
         # construct and solve CG
         alpha = DataVector(grid.getStorage().size())
@@ -1145,6 +1159,8 @@ if __name__=='__main__':
     parser.add_option("--max_accuracy", action="store", type="float", default=None, metavar="ACCURACY", dest="max_r", help="If the norm of the residuum falls below ACCURACY, stop the CG iterations")
     parser.add_option("-d", "--data", action="append", type="string", dest="data", help="Filename for the Datafile.")
     parser.add_option("-t", "--test", action="store", type="string", dest="test", help="File containing the testdata")
+    parser.add_option("--val_proportion", action="store", type="string", dest="val_proportion", metavar="p", default=None,
+                      help="Proportion (0<=p<=1) of training data to take as validation data (if applicable)")
     parser.add_option("-A", "--alpha", action="store", type="string", dest="alpha", help="Filename for a file containing an alpha-Vector")
     parser.add_option("-o", "--outfile", action="store", type="string", dest="outfile", help="Filename where the calculated alphas are stored")
     parser.add_option("-g", "--gnuplot", action="store", type="string", dest="gnuplot", help="In 2D case, the generated can be stored in a gnuplot readable format.")
@@ -1165,6 +1181,9 @@ if __name__=='__main__':
     parser.add_option("--epochs_limit", action="store", type="int", default="0", dest="epochs_limit", help="Number of refinement iterations (epochs), MSE of test data have to increase, before refinement will stop.")
     parser.add_option("--mse_limit", action="store", type="float", default="0.0", dest="mse_limit", help="If MSE of test data fall below this limit, refinement will stop.")
     parser.add_option("--grid_limit", action="store", type="int", default="0", dest="grid_limit", help="If the number of points on grid exceed grid_limit, refinement will stop.")
+
+    parser.add_option("--function_type", action="store", type="choice", default=None, dest="function_type", choices=['modWavelet'],
+                      help="Choose type for non-standard basis functions")
 
     # parse options
     (options,args)=parser.parse_args()
@@ -1189,9 +1208,9 @@ if __name__=='__main__':
         print("Wrong C-mode selected for high-order grids.")
         sys.exit(1)
 
-    if options.polynom > 1 and options.border:
-        print("Special border bases do not work for High-Order Grids")
-        sys.exit(1)
+#    if options.polynom > 1 and options.border:
+#        print("Special border bases do not work for High-Order Grids")
+#        sys.exit(1)
 
     # check further parameters:
     if options.onlyfoldnum <> -1 and (not options.onlyfoldnum in range(options.f_level)):
@@ -1224,7 +1243,7 @@ if __name__=='__main__':
         'folds'    : {'help': "learn a dataset with a sequential n-fold",
                       'required_options': ['data', ['level', 'grid']],
                       'action': doFolds},
-        'foldstratified'    : {'help': "learn a dataset with a stratified n-fold",
+        'foldstratified'    : {'help': "learn a dataset with a stratified n-fold using a validation set",
                       'required_options': ['data', ['level', 'grid']],
                       'action': doFoldStratified},
         'foldr'    : {'help': "learn a dataset with a stratified n-fold",

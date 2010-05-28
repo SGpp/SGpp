@@ -1,0 +1,176 @@
+/**
+@page code_examples Quick-Start: Short Code Examples
+
+To be able to quickly start with a toolkit, it is often advantageous
+(not only for the impatient users), to look at some code examples
+first. As SG++ can be used from within different programming
+languages, we provide a short example for some of them. They show
+nicely the differences between the different types of usage. Sooner or
+later they will be extended to additional functionality and more
+programming languages.
+
+To this end, we create a regular sparse grid with level three in two dimensions
+using piecewise linear basis functions without gridpoints on the
+boundary. We then interpolate the function 
+@f[ f(x_0,x_1) := 16 * (x_0-1)*x_0 * (x_1-1)*x_1 @f]
+with
+@f[ u(x_0,x_1) := \sum_{j=1}^N \alpha_j \varphi_j(x_0,x_1) @f]
+by setting the coefficients @f$\alpha_j@f$ to the function values of
+@f$f@f$ at the corresponding grid points. Then we hierarchize it,
+transforming the function values at the grid points into hierarchical
+coefficients. Finally, we evaluate the sparse grid function @f$u@f$ at
+@f$(0.52,0.73)@f$.
+
+
+
+@section code_examples__overview Overview
+- \ref code_examples__python
+ - \ref code_examples__python_linebyline
+- \ref code_examples__cpp
+ - \ref code_examples__cpp_linebyline
+
+
+
+@section code_examples__python Python
+
+First, the whole code of file python_simple.py at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include python_simple.py
+which can be executed by
+@code
+> python python_simple.py
+@endcode 
+in the directory @c examples/.
+
+This results in the output
+@include all_simple.output.txt
+It can be clearly seen that the surplusses decay with a factor of 1/4:
+On the first level, we obtain 1, on the second 1/4, and on the third
+1/16 as surplusses.
+
+
+@subsection code_examples__python_linebyline Explanations line by line
+
+@dontinclude python_simple.py
+@until pysgpp
+This includes the typicial python header. Then, the module sys is
+imported. The list @c sys.path includes the search paths for modules. To
+be able to import the module pysgpp, we have to add the directory
+<tt>../lib/pysgpp</tt> to the search path. After that, we import the two classes
+DataVector and @link sg::Grid Grid @endlink, which we require afterwards.
+
+@until dimensionality
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+@link sg::Grid.createLinearGrid() Grid.createLinearGrid()
+@endlink. Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until number
+Here, we use a @link sg::GridGenerator GridGenerator @endlink to
+create a regular sparse grid of level 
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until length
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until print alpha
+Here, the function @f$f@f$, which we want to interpolate, is
+defined. The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+
+@until print alpha
+An object @link sg::OperationHierarchisation OperationHierarchisation
+@endlink is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
+
+
+
+@section code_examples__cpp C++
+
+Again, we first show the whole code of file c++_simple.py at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include c++_simple.cpp
+
+which can be compiled and executed by
+@code
+> g++ -O3 -I../src/sgpp -L../lib/sgpp -o c++_simple c++_simple.cpp -lsgpp
+> ./c++-simple
+@endcode 
+in the directory @c examples/.
+
+This results in the same output as before,
+@include all_simple.output.txt
+
+
+@subsection code_examples__cpp_linebyline Explanations line by line
+
+@dontinclude c++_simple.cpp
+@until sg;
+Apart from iostream, we have to include the header files of all
+classes we are using. Finally, we import the two namespaces std and sg.
+
+@until }
+defines the function @f$f@f$ we want to interpolate.
+
+@until dimensionality
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+sg::Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until number
+Here, we use a sg::GridGenerator to create a regular sparse grid of level
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until length
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until cout << alpha
+The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+
+@until cout << alpha
+An object sg::OperationHierarchisation is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
+
+
+
+
+
+
+*/
