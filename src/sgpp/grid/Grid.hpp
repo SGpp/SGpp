@@ -92,12 +92,12 @@ public:
      */
     static Grid* createModBsplineGrid(size_t dim, size_t degree);
 
-	/**
+    /**
 	 * reads a grid out of a string
 	 *
 	 * @param istr string that contains the grid information
 	 */
-	static Grid* unserialize(std::string& istr);
+	static Grid* unserialize(const std::string& istr);
 
 	/**
 	 * reads a grid out of a stream
@@ -141,6 +141,13 @@ public:
 	 * @return pointer to the GridStorage's BoundingsBox object
 	 */
 	virtual BoundingBox* getBoundingBox();
+
+	/**
+	 * sets the GridStorage's BoundingsBox pointer to a BoundingBox object
+	 *
+	 * @return pointer to the GridStorage's BoundingsBox object
+	 */
+	virtual void setBoundingBox(BoundingBox& bb);
 
 	/**
 	 * gets a pointer to GridGenerator object
@@ -268,6 +275,14 @@ public:
 	 * @param ostr stream to which the grid is written
 	 */
 	virtual void serialize(std::ostream& ostr);
+
+	/**
+	 * Serializes grid to a string.
+	 * Needed for Java compatibility.
+	 *
+	 * @returns string into which the grid is written
+	 */
+	std::string serialize();
 
 	/**
 	 * Refine grid

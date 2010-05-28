@@ -38,6 +38,15 @@ DataVector::DataVector(DataVector &vec) :
     memcpy(this->data, vec.data, size * dim * sizeof(double));
 }
 
+DataVector::DataVector(const DataVector &vec) :
+    unused(0) {
+    this->size = vec.size;
+    this->dim = vec.dim;
+    this->data = new double[size * dim];
+
+    memcpy(this->data, vec.data, size * dim * sizeof(double));
+}
+
 DataVector::DataVector(double * input, size_t size, size_t dim) :
     size(size), dim(dim), unused(0) {
     this->data = new double[size * dim];
@@ -606,4 +615,19 @@ double* DataVector::getPointer() {
 
 DataVector::~DataVector() {
     delete[] data;
+}
+
+size_t DataVector::getNumberNonZero()
+{
+    size_t n = size * dim;
+    size_t nonZero = 0;
+
+    for (size_t i = 0; i < n; i++)
+    {
+        if (fabs(data[i]) > 0.0)
+        {
+            nonZero++;
+        }
+    }
+    return nonZero;
 }

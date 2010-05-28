@@ -49,7 +49,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhidPhiDownBBLinearBoundary.o DPhidPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
-	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o
+	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -350,6 +350,12 @@ Euler.o : $(SRCDIR)solver/ode/Euler.cpp
 	
 CrankNicolson.o : $(SRCDIR)solver/ode/CrankNicolson.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)CrankNicolson.o $(SRCDIR)solver/ode/CrankNicolson.cpp
+
+PDESolver.o : $(SRCDIR)application/pde/PDESolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PDESolver.o $(SRCDIR)application/pde/PDESolver.cpp
+
+ParabolicPDESolver.o : $(SRCDIR)application/pde/ParabolicPDESolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ParabolicPDESolver.o $(SRCDIR)application/pde/ParabolicPDESolver.cpp
 
 BlackScholesSolver.o : $(SRCDIR)application/pde/BlackScholesSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolver.o $(SRCDIR)application/pde/BlackScholesSolver.cpp

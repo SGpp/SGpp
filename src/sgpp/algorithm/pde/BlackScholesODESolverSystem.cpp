@@ -12,7 +12,7 @@
 namespace sg
 {
 
-BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode)
+BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode, bool bLogTransform, size_t MPIRank)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -30,21 +30,39 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	// build the coefficient vectors for the operations
 	this->gammaCoef = new DataVector(SparseGrid.getStorage()->dim(), SparseGrid.getStorage()->dim());
 	this->deltaCoef = new DataVector(SparseGrid.getStorage()->dim());
-	buildDeltaCoefficients();
-	buildGammaCoefficients();
-
-	// Create needed operations, on boundary grid
-	this->OpDeltaBound = this->BoundGrid->createOperationDelta(*this->deltaCoef);
-	this->OpGammaBound = this->BoundGrid->createOperationGamma(*this->gammaCoef);
-	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
-	//Create needed operations, on inner grid
-	this->OpDeltaInner = this->InnerGrid->createOperationDelta(*this->deltaCoef);
-	this->OpGammaInner = this->InnerGrid->createOperationGamma(*this->gammaCoef);
+	if (bLogTransform == false)
+	{
+		buildDeltaCoefficients();
+		buildGammaCoefficients();
+
+		//Create needed operations, on inner grid
+		this->OpDeltaInner = this->InnerGrid->createOperationDelta(*this->deltaCoef);
+		this->OpGammaInner = this->InnerGrid->createOperationGamma(*this->gammaCoef);
+		// Create needed operations, on boundary grid
+		this->OpDeltaBound = this->BoundGrid->createOperationDelta(*this->deltaCoef);
+		this->OpGammaBound = this->BoundGrid->createOperationGamma(*this->gammaCoef);
+	}
+	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
+	else
+	{
+		buildDeltaCoefficientsLogTransform();
+		buildGammaCoefficientsLogTransform();
+
+		// operations on boundary grid
+		this->OpDeltaBound = this->BoundGrid->createOperationDeltaLog(*this->deltaCoef);
+		this->OpGammaBound = this->BoundGrid->createOperationGammaLog(*this->gammaCoef);
+		//operations on inner grid
+		this->OpDeltaInner = this->InnerGrid->createOperationDeltaLog(*this->deltaCoef);
+		this->OpGammaInner = this->InnerGrid->createOperationGammaLog(*this->gammaCoef);
+	}
+
+	// Create operations, independent bLogTransform
 	this->OpLTwoInner = this->InnerGrid->createOperationLTwoDotProduct();
+	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
 
 	// right hand side if System
 	this->rhs = new DataVector(1);
@@ -344,6 +362,53 @@ void BlackScholesODESolverSystem::buildDeltaCoefficients()
 	}
 }
 
+void BlackScholesODESolverSystem::buildGammaCoefficientsLogTransform()
+{
+	size_t dim = this->BoundGrid->getStorage()->dim();
+
+	for (size_t i = 0; i < dim; i++)
+	{
+		for (size_t j = 0; j < dim; j++)
+		{
+			// handle diagonal
+			if (i == j)
+			{
+				this->gammaCoef->set((dim*i)+j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+			else
+			{
+				this->gammaCoef->set((dim*i)+j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+		}
+	}
+}
+
+void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
+{
+	size_t dim = this->BoundGrid->getStorage()->dim();
+	double covar_sum = 0.0;
+
+	for (size_t i = 0; i < dim; i++)
+	{
+		covar_sum = 0.0;
+		for (size_t j = 0; j < dim; j++)
+		{
+			// handle diagonal
+			if (i == j)
+			{
+				// factor 1.5, since in log-trafo, the factor \mu_i is changed to \mu_i - 0.5*\sigma_i^2
+				// and, thus, we have (1.0+0.5)-times the term
+				covar_sum += (1.5*(this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j));
+			}
+			else
+			{
+				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			}
+		}
+		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
+	}
+}
+
 DataVector* BlackScholesODESolverSystem::getGridCoefficientsForCG()
 {
 	this->GridConverter->calcInnerCoefs(*this->alpha_complete, *this->alpha_inner);
@@ -354,6 +419,16 @@ DataVector* BlackScholesODESolverSystem::getGridCoefficientsForCG()
 DataVector* BlackScholesODESolverSystem::getGridCoefficients()
 {
 	return this->alpha_complete;
+}
+
+void BlackScholesODESolverSystem::setODESolver(std::string ode)
+{
+	this->tOperationMode = ode;
+}
+
+std::string BlackScholesODESolverSystem::getODESolver()
+{
+	return this->tOperationMode;
 }
 
 }

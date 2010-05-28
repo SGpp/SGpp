@@ -71,7 +71,7 @@ Grid* Grid::createModPolyGrid(size_t dim, size_t degree)
 	return new ModPolyGrid(dim, degree);
 }
 
-Grid* Grid::unserialize(std::string& istr)
+Grid* Grid::unserialize(const std::string& istr)
 {
 	std::istringstream istream;
 	istream.str(istr);
@@ -168,12 +168,25 @@ BoundingBox* Grid::getBoundingBox()
 	return this->storage->getBoundingBox();
 }
 
+void Grid::setBoundingBox(BoundingBox& bb)
+{
+	this->storage->setBoundingBox(bb);
+}
+
 void Grid::serialize(std::string& ostr)
 {
 	std::ostringstream ostream;
 	this->serialize(ostream);
 
 	ostr = ostream.str();
+}
+
+std::string Grid::serialize()
+{
+	std::ostringstream ostream;
+	this->serialize(ostream);
+
+	return ostream.str();
 }
 
 void Grid::serialize(std::ostream& ostr)

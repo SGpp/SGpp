@@ -23,12 +23,12 @@
 
 %apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
-/* %rename(__str__) DataVector::toString; */
+%rename(__str__) DataVector::toString;
 
-/* %rename(__getitem__) DataVector::get(int i) const; */
-/* %rename(__setitem__) DataVector::set(int i, double value); */
-/* %rename(assign) DataVector::operator=; */
-/* %rename(__len__) DataVector::getTotalSize; */
+%rename(__getitem__) DataVector::get(int i) const;
+%rename(__setitem__) DataVector::set(int i, double value);
+%rename(assign) DataVector::operator=;
+%rename(__len__) DataVector::getTotalSize;
 
 class DataVector
 {

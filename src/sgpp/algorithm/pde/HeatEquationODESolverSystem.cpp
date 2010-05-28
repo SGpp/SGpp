@@ -255,4 +255,14 @@ DataVector* HeatEquationODESolverSystem::getGridCoefficients()
 	return this->alpha_complete;
 }
 
+void HeatEquationODESolverSystem::setODESolver(std::string ode)
+{
+	this->tOperationMode = ode;
+}
+
+std::string HeatEquationODESolverSystem::getODESolver()
+{
+	return this->tOperationMode;
+}
+
 }

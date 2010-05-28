@@ -21,14 +21,6 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-%include "std_string.i"
-
-//namespace std {
-//     %typemap(in) string & = const string &;
-//     // others
-//}
-
-
 %newobject sg::Grid::createLinearGrid(size_t dim);
 %newobject sg::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sg::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
@@ -39,7 +31,7 @@
 %newobject sg::Grid::createModWaveletGrid(size_t dim);
 %newobject sg::Grid::createModBsplineGrid(size_t dim, size_t degree);
 
-%newobject sg::Grid::unserialize(const std::string& istr);
+%newobject sg::Grid::unserialize(std::string& istr);
 
 %newobject sg::Grid::createOperationB();
 %newobject sg::Grid::createGridGenerator();
@@ -51,9 +43,8 @@
 %include "stl.i"
 %include "typemaps.i"
 
-
-//%apply std::string *OUTPUT { std::string& ostr };
-//%apply std::string *INPUT { std::string& istr };
+%apply std::string *OUTPUT { std::string& ostr };
+%apply std::string *INPUT { std::string& istr };
 
 
 
@@ -75,7 +66,7 @@ public:
 	static Grid* createModWaveletGrid(size_t dim);
 	static Grid* createModBsplineGrid(size_t dim, size_t degree);
 	
-	static Grid* unserialize(const std::string& istr);
+	static Grid* unserialize(std::string& istr);
 	
 protected:
 	Grid();
@@ -101,11 +92,9 @@ public:
 	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
-	virtual void setBoundingBox(BoundingBox& bb);
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr);
-	virtual std::string serialize();
 	void refine(DataVector* vector, int num);
 	double eval(DataVector& alpha, DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);

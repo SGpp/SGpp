@@ -120,6 +120,24 @@ protected:
 	void buildDeltaCoefficients();
 
 	/**
+	 * Build the coefficients for the Gamma Operation, which
+	 * are the assets' covariance matrix multiplied by 0.5
+	 *
+	 * this routine handles also the symmtrie of the
+	 * gamma operation
+	 *
+	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
+	 */
+	void buildGammaCoefficientsLogTransform();
+
+	/**
+	 * Build the coefficients for the combined Delta Operation
+	 *
+	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
+	 */
+	void buildDeltaCoefficientsLogTransform();
+
+	/**
 	 * Implements some start jobs of every timestep, e.g.discounting boundaries
 	 */
 	void startTimestep();
@@ -137,8 +155,10 @@ public:
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
+	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
+	 * @param MPIRank indicates the MPI-Rank of this instance, 0 indicates the master rank
 	 */
-	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul");
+	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul", bool bLogTransform = false, size_t MPIRank = 0);
 
 	/**
 	 * Std-Destructor
@@ -156,6 +176,22 @@ public:
 	virtual DataVector* getGridCoefficientsForCG();
 
 	virtual DataVector* getGridCoefficients();
+
+	/**
+	 * defines the used ODE Solver for this instance, this is important because
+	 * the implementation of mult and generateRHS depends on the used
+	 * ODE solver
+	 *
+	 * @param ode the used ODESolver: ExEul, ImEul or CrNic
+	 */
+	void setODESolver(std::string ode);
+
+	/**
+	 * Returns the specified ODE solver for this instance
+	 *
+	 * @return the ODE solver: ExEul, ImEul or CrNic
+	 */
+	std::string getODESolver();
 };
 
 }

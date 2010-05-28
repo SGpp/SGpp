@@ -179,6 +179,18 @@ public:
 		}
 	}
 
+    /**
+	 * serialize the gridstorage's gridpoints into a stream
+	 *
+	 * @return returns the string that contains all gridpoint information
+	 */
+    std::string toString()
+	{
+		std::ostringstream ostream;
+		this->toString(ostream);
+		return ostream.str();
+	}
+
 	/**
 	 * serialize the gridstorage's gridpoints into a stream
 	 *
@@ -525,6 +537,17 @@ public:
 	BoundingBox* getBoundingBox()
 	{
 		return boundingBox;
+	}
+
+	/**
+	 * sets the bounding box of the current grid
+	 *
+	 * @param bb bounding box to which the GridStorage's pointer is set
+	 */
+	void setBoundingBox(BoundingBox& bb)
+	{
+		delete boundingBox;
+		boundingBox = new BoundingBox(bb);
 	}
 
 protected:
