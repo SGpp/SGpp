@@ -86,11 +86,11 @@ public:
 	 * After refining the grid the payoff function is applied to the grid.
 	 *
 	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param strike pointer to an array the contains all call options strikes
+	 * @param strike containing the option's strike
 	 * @param payoffType the type of payoff Function used ONLY supported: avgM
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 */
-	void refineInitialGrid(DataVector& alpha, double* strike, std::string payoffType, double dStrikeDistance);
+	void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
@@ -137,10 +137,10 @@ public:
 	 * Inits the alpha vector with a payoff function of an European call option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strike pointer to an array the contains all call options strikes
-	 * @param payoffType specifies the type of the combined payoff function; max or avg are available
+	 * @param strik the option's strike
+	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	void initGridWithEuroCallPayoff(DataVector& alpha, double* strike, std::string payoffType);
+	void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * Inits the screen object

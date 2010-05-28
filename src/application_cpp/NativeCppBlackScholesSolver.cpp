@@ -1,24 +1,9 @@
-/*****************************************************************************/
-/* This file is part of sgpp, a program package making use of spatially      */
-/* adaptive sparse grids to solve numerical problems                         */
-/*                                                                           */
-/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
-/*                                                                           */
-/* sgpp is free software; you can redistribute it and/or modify              */
-/* it under the terms of the GNU Lesser General Public License as published  */
-/* by the Free Software Foundation; either version 3 of the License, or      */
-/* (at your option) any later version.                                       */
-/*                                                                           */
-/* sgpp is distributed in the hope that it will be useful,                   */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
-/* GNU Lesser General Public License for more details.                       */
-/*                                                                           */
-/* You should have received a copy of the GNU Lesser General Public License  */
-/* along with sgpp; if not, write to the Free Software                       */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
-/* or see <http://www.gnu.org/licenses/>.                                    */
-/*****************************************************************************/
+/******************************************************************************
+* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+******************************************************************************/
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "sgpp.hpp"
 #include <iostream>
@@ -103,40 +88,6 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
 		BoundaryArray[i].rightBoundary = cur_right;
 		BoundaryArray[i].bDirichletLeft = true;
 		BoundaryArray[i].bDirichletRight = true;
-	}
-
-	file.close();
-
-	return 0;
-}
-
-/**
- * reads the strikes of all assets from
- * a file and stores them into an array
- *
- * @param tFile the file that contains the strikes
- * @param numAssests the of Assets stored in the file
- * @param strikes array into which the stikes should be stored
- *
- * @return returns 0 if the file was successfully read, otherwise -1
- */
-int readStrikes(std::string tFile, size_t numAssests, double* strikes)
-{
-	std::fstream file;
-	double cur_strike;
-
-	file.open(tFile.c_str());
-
-	if(!file.is_open())
-	{
-		std::cout << "Error cannot read file: " << tFile << std::endl;
-		return -1;
-	}
-
-	for (size_t i = 0; i < numAssests; i++)
-	{
-		file >> cur_strike;
-		strikes[i] = cur_strike;
 	}
 
 	file.close();
@@ -300,213 +251,13 @@ int writeDataVector(DataVector& data, std::string tFile)
 }
 
 /**
- * Do a Black Scholes solver test with one asset (1D Sparse Grid) European call option
- *
- * @param l the number of levels used in the Sparse Grid
- * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
- * @param fileBound filename of the file that contains the grid's bounding box
- * @param strike1 the strike of the call option
- * @param riskfree the riskfree rate of the marketmodel
- * @param timeSt the number of timesteps that are executed during the solving process
- * @param dt the size of delta t in the ODE solver
- * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
- * @param CGeps the epsilon used in the CG/BiCGStab
- * @param animation set this to true if you want to create several pictures during solving in order to create an animation
- * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
- */
-void testOneUnderlying(size_t l, std::string fileStoch, std::string fileBound, double strike1, double riskfree, size_t timeSt,
-						double dt, size_t CGIt, double CGeps, bool animation, std::string Solver)
-{
-	size_t dim = 1;
-	size_t level = l;
-	double* strike = new double[dim];
-	strike[0] = strike1;
-
-	size_t timesteps = timeSt;
-	double stepsize = dt;
-	size_t CGiterations = CGIt;
-	double CGepsilon = CGeps;
-
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataVector rho(dim);
-
-	double r = riskfree;
-
-	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
-	{
-		return;
-	}
-
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
-	{
-		return;
-	}
-
-	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-
-	// init Screen Object
-	myBSSolver->initScreen();
-
-	// Construct a grid
-	myBSSolver->constructGrid(*myBoundingBox, level);
-
-	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
-
-	// Init the grid with on payoff function
-	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, "avg");
-
-	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 50, "payoff.gnuplot");
-
-	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigma, rho, r);
-
-	// Start solving the Black Scholes Equation
-	if (Solver == "ExEul")
-	{
-		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
-	}
-	else if (Solver == "ImEul")
-	{
-		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
-	}
-	else if (Solver == "CrNic")
-	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
-	}
-	else
-	{
-		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-	}
-
-	if (Solver == "ImEul" || Solver == "ExEul" || Solver == "CrNic")
-	{
-		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
-
-		// Do analytic test
-		std::vector< std::pair<double, double> >premium;
-		double t = (((double)timesteps)*stepsize);
-		myBSSolver->solve1DAnalytic(premium, myBoundaries[0].rightBoundary, myBoundaries[0].rightBoundary/50.0, strike[0], t);
-		myBSSolver->print1DAnalytic(premium, "analyticBS.gnuplot");
-	}
-
-	delete[] myBoundaries;
-	delete myBSSolver;
-	delete myBoundingBox;
-	delete alpha;
-}
-
-/**
- * Do a Black Scholes solver test with one asset (2D Sparse Grid) European call option
- *
- * @param l the number of levels used in the Sparse Grid
- * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
- * @param fileBound filename of the file that contains the grid's bounding box
- * @param strike1 the strike of the call option, first asset
- * @param strike2 the strike of the call option, second asset
- * @param riskfree the riskfree rate of the marketmodel
- * @param timeSt the number of timesteps that are executed during the solving process
- * @param dt the size of delta t in the ODE solver
- * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
- * @param CGeps the epsilon used in the CG/BiCGStab
- * @param animation set this to true if you want to create several pictures during solving in order to create an animation
- * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
- */
-void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, double strike1, double strike2, double riskfree, size_t timeSt,
-		double dt, size_t CGIt, double CGeps, bool animation, std::string Solver)
-{
-	size_t dim = 2;
-	size_t level = l;
-	double* strike = new double[dim];
-	strike[0] = strike1;
-	strike[1] = strike2;
-
-	size_t timesteps = timeSt;
-	double stepsize = dt;
-	size_t CGiterations = CGIt;
-	double CGepsilon = CGeps;
-
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataVector rho(dim,dim);
-
-	double r = riskfree;
-
-	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
-	{
-		return;
-	}
-
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
-	{
-		return;
-	}
-
-	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-	delete[] myBoundaries;
-
-	// init Screen Object
-	myBSSolver->initScreen();
-
-	// Construct a grid
-	myBSSolver->constructGrid(*myBoundingBox, level);
-
-	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
-
-	// Init the grid with on payoff function
-	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, "max");
-
-	// Print the payoff function into a gnuplot file
-	myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
-
-	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigma, rho, r);
-
-	// Start solving the Black Scholes Equation
-	if (Solver == "ExEul")
-	{
-		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
-	}
-	else if (Solver == "ImEul")
-	{
-		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, animation, 20);
-	}
-	else if (Solver == "CrNic")
-	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
-	}
-	else
-	{
-		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-	}
-
-	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
-	{
-		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
-	}
-
-	delete myBSSolver;
-	delete myBoundingBox;
-	delete alpha;
-}
-
-/**
  * Do a Black Scholes solver test with n assets (ND Sparse Grid) European call option
  *
  * @param d the number of dimensions used in the Sparse Grid
  * @param l the number of levels used in the Sparse Grid
  * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
  * @param fileBound filename of the file that contains the grid's bounding box
- * @param fileStrike filename of the file that contains the assets' strikes
+ * @param dStrike the strike of the option
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param riskfree the riskfree rate of the marketmodel
  * @param timeSt the number of timesteps that are executed during the solving process
@@ -515,13 +266,11 @@ void testTwoUnderlyings(size_t l, std::string fileStoch, std::string fileBound, 
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
-void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
+void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
 		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver)
 {
 	size_t dim = d;
 	size_t level = l;
-	double* strike = new double[dim];
-
 	size_t timesteps = timeSt;
 	double stepsize = dt;
 	size_t CGiterations = CGIt;
@@ -532,11 +281,6 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	DataVector rho(dim,dim);
 
 	double r = riskfree;
-
-	if (readStrikes(fileStrike, dim, strike) != 0)
-	{
-		return;
-	}
 
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
 	{
@@ -567,7 +311,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// Init the grid with on payoff function
-	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
+	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -618,15 +362,12 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	}
 
 	// Test call @ the money
-	if (payoffType == "avgM")
+	std::vector<double> point;
+	for (size_t i = 0; i < d; i++)
 	{
-		std::vector<double> point;
-		for (size_t i = 0; i < d; i++)
-		{
-			point.push_back(1.0);
-		}
-		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		point.push_back(1.0);
 	}
+	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSSolver;
@@ -641,7 +382,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
  * @param end_l the number of level used in the Sparse Grid (last test)
  * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
  * @param fileBound filename of the file that contains the grid's bounding box
- * @param fileStrike filename of the file that contains the assets' strikes
+ * @param dStrike the strike of the option
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param riskfree the riskfree rate of the marketmodel
  * @param timeSt the number of timesteps that are executed during the solving process
@@ -650,12 +391,10 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
-void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
+void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
 		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, std::string fileAnalyze)
 {
 	size_t dim = d;
-	double* strike = new double[dim];
-
 	size_t timesteps = timeSt;
 	double stepsize = dt;
 	size_t CGiterations = CGIt;
@@ -671,10 +410,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
 	std::vector<DataVector> results;
 
-	if (readStrikes(fileStrike, dim, strike) != 0)
-	{
-		return;
-	}
 
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
 	{
@@ -724,11 +459,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-		if (i > start_l)
-			std::cout << std::endl << std::endl << std::endl;
-
 		// Init the grid with on payoff function
-		myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
+		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 		// Print the payoff function into a gnuplot file
 		if (dim < 3)
@@ -779,15 +511,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 
 		// Test call @ the money
-		if (payoffType == "avgM")
+		std::vector<double> point;
+		for (size_t i = 0; i < d; i++)
 		{
-			std::vector<double> point;
-			for (size_t i = 0; i < d; i++)
-			{
-				point.push_back(1.0);
-			}
-			std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+			point.push_back(1.0);
 		}
+		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 		// Evaluate Cuboid
 		DataVector Prices(EvalPoints.getSize());
@@ -854,7 +583,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
  * @param l the number of levels used in the Sparse Grid
  * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
  * @param fileBound filename of the file that contains the grid's bounding box
- * @param fileStrike filename of the file that contains the assets' strikes
+ * @param dStrike the strike of the option
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param riskfree the riskfree rate of the marketmodel
  * @param timeSt the number of timesteps that are executed during the solving process
@@ -865,13 +594,11 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
  * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  * @param dInitialAdpatDist initial distance from @the money. Is devided in every iteration by the number of the iteration
  */
-void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
+void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
 		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, size_t nIterAdaptSteps, double dInitialAdpatDist)
 {
 	size_t dim = d;
 	size_t level = l;
-	double* strike = new double[dim];
-
 	size_t timesteps = timeSt;
 	double stepsize = dt;
 	size_t CGiterations = CGIt;
@@ -882,11 +609,6 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	DataVector rho(dim,dim);
 
 	double r = riskfree;
-
-	if (readStrikes(fileStrike, dim, strike) != 0)
-	{
-		return;
-	}
 
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
 	{
@@ -919,7 +641,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 	{
 		std::cout << "Refining Grid..." << std::endl;
-		myBSSolver->refineInitialGrid(*alpha, strike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
+		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
 		std::cout << "Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 	}
 	std::cout << std::endl << std::endl;
@@ -973,15 +695,12 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 
 	// Test call @ the money
-	if (payoffType == "avgM")
+	std::vector<double> point;
+	for (size_t i = 0; i < d; i++)
 	{
-		std::vector<double> point;
-		for (size_t i = 0; i < d; i++)
-		{
-			point.push_back(1.0);
-		}
-		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		point.push_back(1.0);
 	}
+	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete myBSSolver;
 	delete myBoundingBox;
@@ -996,7 +715,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  * @param l the number of levels used in the Sparse Grid
  * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
  * @param fileBound filename of the file that contains the grid's bounding box
- * @param fileStrike filename of the file that contains the assets' strikes
+ * @param dStrike the strike of the option
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param riskfree the riskfree rate of the marketmodel
  * @param timeSt the number of timesteps that are executed during the solving process
@@ -1006,13 +725,11 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  * @param refinePercent percantage of points that should be refined before Black Scholes Equation is solved
  */
-void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, std::string fileStrike, std::string payoffType,
+void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
 		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent)
 {
 	size_t dim = d;
 	size_t level = l;
-	double* strike = new double[dim];
-
 	size_t timesteps = timeSt;
 	double stepsize = dt;
 	size_t CGiterations = CGIt;
@@ -1023,11 +740,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	DataVector rho(dim,dim);
 
 	double r = riskfree;
-
-	if (readStrikes(fileStrike, dim, strike) != 0)
-	{
-		return;
-	}
 
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
 	{
@@ -1057,7 +769,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// Init the grid with on payoff function
-	myBSSolver->initGridWithEuroCallPayoff(*alpha, strike, payoffType);
+	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// refine the grid to approximate the singularity in the start solution better
 	myBSSolver->refineInitialGridSurplus(*alpha, refinePercent);
@@ -1112,16 +824,12 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		}
 	}
 
-	// Test call @ the money
-	if (payoffType == "avgM")
+	std::vector<double> point;
+	for (size_t i = 0; i < d; i++)
 	{
-		std::vector<double> point;
-		for (size_t i = 0; i < d; i++)
-		{
-			point.push_back(1.0);
-		}
-		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		point.push_back(1.0);
 	}
+	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete myBSSolver;
 	delete myBoundingBox;
@@ -1228,56 +936,11 @@ void writeHelp()
 	mySStream << "Some instructions for the use of Black Scholes Solver:" << std::endl;
 	mySStream << "------------------------------------------------------" << std::endl << std::endl;
 	mySStream << "Available execution modes are:" << std::endl;
-	mySStream << "	test1D		Solves a simple 1D example" << std::endl;
-	mySStream << "	test2D		Solves a 2D example" << std::endl;
-	mySStream << "	solveND		Solves a ND example" << std::endl;
+	mySStream << "	solveND				Solves a ND example" << std::endl;
+	mySStream << "	solveNDanalyze		Solves a ND for serveral levels" << std::endl;
+	mySStream << "	solveNDadapt		Solves a ND adapt (dist.) example" << std::endl;
+	mySStream << "	solveNDadaptSurplus	Solves a ND surplus adapt example" << std::endl;
 	mySStream << "	solveBonn	Solves an option delivered in Bonn's format" << std::endl << std::endl;
-
-	mySStream << "test1D" << std::endl << "------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	strike: the strike of the call option" << std::endl;
-	mySStream << "	r: the riskfree rate" << std::endl;
-	mySStream << "	T: time to maturity" << std::endl;
-	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "5 " << "bound.data stoch.data " << "65.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Remark: This test generates following output files:" << std::endl;
-	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-	mySStream << "	analyticBS.gnuplot: the analytical solution" << std::endl;
-	mySStream << std::endl << std::endl;
-
-	mySStream << "test2D" << std::endl << "------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	strike1: the strike 1 of the call option" << std::endl;
-	mySStream << "	strike2: the strike 1 of the call option" << std::endl;
-	mySStream << "	r: the riskfree rate" << std::endl;
-	mySStream << "	T: time to maturity" << std::endl;
-	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	[no]animation: generate pictures for an animation" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "5 " << "bound.data stoch.data " << "65.0 55.0 " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << "noanimation" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Remark: This test generates following output files:" << std::endl;
-	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-	mySStream << std::endl << std::endl;
 
 	mySStream << "solveND" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
@@ -1285,8 +948,8 @@ void writeHelp()
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
-	mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+	mySStream << "	Strike: the strike" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
@@ -1295,7 +958,7 @@ void writeHelp()
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 " << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 " << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1312,8 +975,8 @@ void writeHelp()
 	mySStream << "	level_end: number of levels within the Sparse Grid (end)" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
-	mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+	mySStream << "	Strikes: the strike" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
@@ -1323,7 +986,7 @@ void writeHelp()
 	mySStream << "	file_analyze: file containing the analyzing options" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 2 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data" << std::endl;
+	mySStream << "3 2 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1344,8 +1007,8 @@ void writeHelp()
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
-	mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+	mySStream << "	Strike: the strike" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
@@ -1359,7 +1022,7 @@ void writeHelp()
 	mySStream << "			by refined" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1375,8 +1038,8 @@ void writeHelp()
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	file_Strikes: file containing strikes of Europ. Call" << std::endl;
-	mySStream << "	payoff_func: function for n-d payoff: max, avg/avgM" << std::endl;
+	mySStream << "	Strike: the strike" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
@@ -1386,7 +1049,7 @@ void writeHelp()
 	mySStream << "	Adapt-Refinement Percent: Percent of grid points that should be refined" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data strike.data max "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1436,36 +1099,7 @@ int main(int argc, char *argv[])
 
 	option.assign(argv[1]);
 
-	if (option == "test1D")
-	{
-		if (argc != 13)
-		{
-			writeHelp();
-		}
-		else
-		{
-			std::string fileStoch;
-			std::string fileBound;
-			std::string ani;
-			std::string solver;
-			bool animation;
-
-			fileStoch.assign(argv[4]);
-			fileBound.assign(argv[3]);
-			solver.assign(argv[9]);
-			ani.assign(argv[12]);
-			if (ani == "animation")
-			{
-				animation = true;
-			}
-			else
-			{
-				animation = false;
-			}
-			testOneUnderlying(atoi(argv[2]), fileStoch, fileBound, atof(argv[5]), atof(argv[6]), (size_t)(atof(argv[7])/atof(argv[8])), atof(argv[8]), atoi(argv[10]), atof(argv[11]), animation, solver);
-		}
-	}
-	else if (option == "test2D")
+	if (option == "solveND")
 	{
 		if (argc != 14)
 		{
@@ -1475,47 +1109,18 @@ int main(int argc, char *argv[])
 		{
 			std::string fileStoch;
 			std::string fileBound;
-			std::string ani;
-			std::string solver;
-			bool animation;
-
-			fileStoch.assign(argv[4]);
-			fileBound.assign(argv[3]);
-			solver.assign(argv[10]);
-			ani.assign(argv[13]);
-			if (ani == "animation")
-			{
-				animation = true;
-			}
-			else
-			{
-				animation = false;
-			}
-			testTwoUnderlyings(atoi(argv[2]), fileStoch, fileBound, atof(argv[5]), atof(argv[6]), atof(argv[7]), (size_t)(atof(argv[8])/atof(argv[9])), atof(argv[9]), atoi(argv[11]), atof(argv[12]), animation, solver);
-		}
-	}
-	else if (option == "solveND")
-	{
-		if (argc != 14)
-		{
-			writeHelp();
-		}
-		else
-		{
-			std::string fileStoch;
-			std::string fileBound;
-			std::string fileStrike;
+			double dStrike;
 			std::string ani;
 			std::string solver;
 			std::string payoff;
 
 			fileStoch.assign(argv[5]);
 			fileBound.assign(argv[4]);
-			fileStrike.assign(argv[6]);
+			dStrike = atof(argv[6]);
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyings(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, fileStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver);
+			testNUnderlyings(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver);
 		}
 	}
 	else if (option == "solveNDanalyze")
@@ -1528,7 +1133,7 @@ int main(int argc, char *argv[])
 		{
 			std::string fileStoch;
 			std::string fileBound;
-			std::string fileStrike;
+			double dStrike;
 			std::string fileAnalyze;
 			std::string ani;
 			std::string solver;
@@ -1536,12 +1141,12 @@ int main(int argc, char *argv[])
 
 			fileStoch.assign(argv[6]);
 			fileBound.assign(argv[5]);
-			fileStrike.assign(argv[7]);
+			dStrike = atof(argv[7]);
 			fileAnalyze.assign(argv[15]);
 			payoff.assign(argv[8]);
 			solver.assign(argv[12]);
 
-			testNUnderlyingsAnalyze(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, fileStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, fileAnalyze);
+			testNUnderlyingsAnalyze(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, fileAnalyze);
 		}
 	}
 	else if (option == "solveNDadapt")
@@ -1554,18 +1159,18 @@ int main(int argc, char *argv[])
 		{
 			std::string fileStoch;
 			std::string fileBound;
-			std::string fileStrike;
+			double dStrike;
 			std::string ani;
 			std::string solver;
 			std::string payoff;
 
 			fileStoch.assign(argv[5]);
 			fileBound.assign(argv[4]);
-			fileStrike.assign(argv[6]);
+			dStrike = atof(argv[6]);
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, fileStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]));
+			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]));
 		}
 	}
 	else if (option == "solveNDadaptSurplus")
@@ -1578,18 +1183,18 @@ int main(int argc, char *argv[])
 		{
 			std::string fileStoch;
 			std::string fileBound;
-			std::string fileStrike;
+			double dStrike;
 			std::string ani;
 			std::string solver;
 			std::string payoff;
 
 			fileStoch.assign(argv[5]);
 			fileBound.assign(argv[4]);
-			fileStrike.assign(argv[6]);
+			dStrike = atof(argv[6]);
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, fileStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]));
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]));
 		}
 	}
 	else if (option == "solveBonn")
