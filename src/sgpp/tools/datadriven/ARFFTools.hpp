@@ -86,15 +86,23 @@ public:
 	 * @param tfilename the file's filename that should be written with the data
 	 * @param source reference to a DataVector object that contains the data that should be stored
 	 */
-	void writeAlpha(std::string tfilename, DataVector& source);
+	//void writeAlpha(std::string tfilename, DataVector& source);
 
 	/**
 	 * reads the content of an ARFF File, used the Sparse Grid's coefficients
 	 *
-	 * @param tfilename the file's filename that should be written with the data
-	 * @param destination reference to a DataVector object that contains the data
+	 * @param tfilename the file's filename from with the data should be read
+	 * @param destination reference to a DataVector object into which the data should be stored
 	 */
-	void readAlpha(std::string tfilename, DataVector& destination);
+	//void readAlpha(std::string tfilename, DataVector& destination);
+
+	/**
+	 * reads numeric data stored in a ARFF file.
+	 *
+	 * @param tfilename the file's filename from with the data should be read
+	 * @param destination reference to a DataVector object into which the data should be stored
+	 */
+	//void readData(std::string tfilename, DataVector& destination);
 };
 
 }

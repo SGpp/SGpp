@@ -8,8 +8,6 @@
 #ifndef SGPP_HPP_
 #define SGPP_HPP_
 
-// Optimizations currently useless
-//#define SGPP_OPTIMIZE
 #include "grid/GridStorage.hpp"
 
 #include "application/common/ScreenOutput.hpp"
