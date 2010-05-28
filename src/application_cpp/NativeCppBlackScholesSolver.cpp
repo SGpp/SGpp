@@ -432,6 +432,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
 	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator(*myBoundingBox, dim);
 	delete[] myBoundaries;
 
 	// init Screen Object
@@ -447,7 +448,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// in the first iteration -> calculate the evaluation points
 		if (i == start_l)
 		{
-			myBSSolver->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
+			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
 
 			writeDataVector(EvalPoints, "EvalCuboidPoints.data");
 		}
@@ -531,6 +532,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::cout << std::endl;
 	}
 
+	delete myEvalCuboidGen;
 	delete myBSSolver;
 	delete myBoundingBox;
 

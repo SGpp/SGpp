@@ -74,7 +74,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double s
 		{
 			double tmp;
 			double* dblFuncValues = new double[dim];
-			double dDistance;
+			double dDistance = 0.0;
 
 			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{

@@ -43,17 +43,6 @@ protected:
 	/// Stores Pointer to the Girs's Storage
 	GridStorage* myGridStorage;
 
-	/**
-	 * This function is a recursive implementation in order the build the evaluation cuboid
-	 *
-	 * @param evalPoints vector of dynamic size into which the points are "submitted" during calculation
-	 * @param curPoint a current point in the d-dimensional space which which is adjusted during this recursive calculations
-	 * @param center the center of the cuboid
-	 * @param size the precentage of the whole array the cuboid will cover in a every dimension
-	 * @param points number of points used in every dimension
-	 */
-	void getCuboidEvalPoints(std::vector<DataVector>& evalPoints, DataVector& curPoint, std::vector<double>& center, double size, size_t points, size_t curDim);
-
 public:
 	/**
 	 * Std-Constructor of the solver
@@ -145,21 +134,6 @@ public:
 	 * @param EvaluationPoints DataVector that contains the points at which the sparse grid's function is evaluated
 	 */
 	void evaluateCuboid(DataVector& alpha, DataVector& FunctionValues, DataVector& EvaluationPoints);
-
-	/**
-	 * This function builds an cuboid which will be stored into the EvaluationPoint
-	 * variable of this function.
-	 * This is by done by building a cuboid around a given center. The size
-	 * of the cuboid is determined in every dimension by a fix percent size of the interval in that dimension.
-	 * In addition there is a fix number of EvalutionPoints in every dimension. Be aware that this
-	 * function returns point to the power of d points.
-	 *
-	 * @param EvaluationPoints DataVector that will contain the evaluation points afterwards
-	 * @param center the center of the cuboid
-	 * @param size the precentage of the whole array the cuboid will cover in a every dimension
-	 * @param points number of points used in every dimension
-	 */
-	void getEvaluationCuboid(DataVector& EvaluationPoints, std::vector<double>& center, double size, size_t points);
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
