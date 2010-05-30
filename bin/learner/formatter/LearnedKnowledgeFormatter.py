@@ -26,7 +26,7 @@
 
 from bin.utils.GzipSerializer import GzipSerializer
 
-from LearnedKnowledge import LearnedKnowledge
+from bin.learner.LearnedKnowledge import LearnedKnowledge
 from bin.pysgpp import DataVector
 
 ## Provides functionality for the runtime serialization of the LearnedKnowledge object

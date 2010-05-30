@@ -20,11 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-from Classifier import Classifier
-from LearnedKnowledge import LearnedKnowledge
-from Learner import Learner, LearnerEvents
-from LearnerBuilder import LearnerBuilder
-from Regressor import Regressor
-from TrainingSpecification import TrainingSpecification
-from TrainingStopPolicy import TrainingStopPolicy
-from Types import BorderTypes, SolverTypes
+from GridFormatter import GridFormatter
+from LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
+from LearnerFormatter import LearnerFormatter

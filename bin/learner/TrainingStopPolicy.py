@@ -45,22 +45,33 @@ class TrainingStopPolicy(object):
         self.__accuracyLimit = None
         self.__gridSize = None
 
+
+    ## Returns the maximal number of refinement iterations
+    # @return: the maximal number of refinement iterations
     def getAdaptiveIterationLimit(self):
         return self.__adaptiveIterationLimit
 
 
+    ## Returns the maximal number of iterations, during which accuracy can decreases
+    # @return: the maximal number of iterations, during which accuracy can decreases
     def getEpochsLimit(self):
         return self.__epochsLimit
 
 
+    ## Returns MSE on validation data, that have to be achieved
+    # @return: MSE on validation data, that have to be achieved
     def getMSELimit(self):
         return self.__MSELimit
 
 
+    ## Returns the accuracy on validation data, that have to be achieved
+    # @return: accuracy on validation data, that have to be achieved
     def getAccuracyLimit(self):
         return self.__accuracyLimit
 
 
+    ## Returns the maximal grid size
+    # @return: maximal grid size
     def getGridSize(self):
         return self.__gridSize
 

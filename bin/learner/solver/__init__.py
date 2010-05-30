@@ -20,28 +20,6 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
+from CGSolver import CGSolver
+from LinearSolver import LinearSolver, LinearSolverEvents
 
-
-import time
-import math
-
-from FoldingPolicy import FoldingPolicy
-from bin.data.ARFFAdapter import ARFFAdapter
-
-## Provides functionality for accomplishment of learning with cross-validation
-# by generating a set of training data/validation data pairs sequentially
-class SequentialFoldingPolicy(FoldingPolicy):
-    
-    
-    ##Constructor
-    #
-    #@param dataContainer: DataContainer with data set
-    #@param level: Integer folding level, default value: 1
-    def __init__(self, dataContainer, level):
-        FoldingPolicy.__init__(self,  dataContainer, level)
-        self.seq = range(self.size)
-        for step in xrange(self.level):
-            validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
-            self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))
-            
-            
