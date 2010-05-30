@@ -105,10 +105,10 @@ DataVector* HeatEquationODESolverSystem::generateRHS()
 		DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add_parallel(temp);
+		rhs_complete.add(temp);
 
 		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy_parallel(this->TimestepSize, temp);
+		rhs_complete.axpy(this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
@@ -123,10 +123,10 @@ DataVector* HeatEquationODESolverSystem::generateRHS()
 		DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add_parallel(temp);
+		rhs_complete.add(temp);
 
 		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy_parallel((0.5)*this->TimestepSize, temp);
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -154,20 +154,20 @@ DataVector* HeatEquationODESolverSystem::generateRHS()
 		DataVector temp(alpha_bound.getSize());
 
 		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add_parallel(temp);
+		result_complete.add(temp);
 
 		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy_parallel((-1.0)*this->TimestepSize, temp);
+		result_complete.axpy((-1.0)*this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
 		DataVector temp(alpha_bound.getSize());
 
 		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add_parallel(temp);
+		result_complete.add(temp);
 
 		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy_parallel((-0.5)*this->TimestepSize, temp);
+		result_complete.axpy((-0.5)*this->TimestepSize, temp);
 	}
 	else
 	{

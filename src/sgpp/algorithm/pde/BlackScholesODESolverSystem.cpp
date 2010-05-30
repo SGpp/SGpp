@@ -106,10 +106,10 @@ void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)
 		DataVector temp(alpha.getSize());
 
 		applyMassMatrixInner(alpha, temp);
-		result.add_parallel(temp);
+		result.add(temp);
 
 		applyLOperatorInner(alpha, temp);
-		result.axpy_parallel((-1.0)*this->TimestepSize, temp);
+		result.axpy((-1.0)*this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
@@ -118,10 +118,10 @@ void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)
 		DataVector temp(alpha.getSize());
 
 		applyMassMatrixInner(alpha, temp);
-		result.add_parallel(temp);
+		result.add(temp);
 
 		applyLOperatorInner(alpha, temp);
-		result.axpy_parallel((-0.5)*this->TimestepSize, temp);
+		result.axpy((-0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -140,10 +140,10 @@ DataVector* BlackScholesODESolverSystem::generateRHS()
 		DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add_parallel(temp);
+		rhs_complete.add(temp);
 
 		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy_parallel(this->TimestepSize, temp);
+		rhs_complete.axpy(this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
@@ -158,10 +158,10 @@ DataVector* BlackScholesODESolverSystem::generateRHS()
 		DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add_parallel(temp);
+		rhs_complete.add(temp);
 
 		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy_parallel((0.5)*this->TimestepSize, temp);
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -189,20 +189,20 @@ DataVector* BlackScholesODESolverSystem::generateRHS()
 		DataVector temp(alpha_bound.getSize());
 
 		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add_parallel(temp);
+		result_complete.add(temp);
 
 		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy_parallel((-1.0)*this->TimestepSize, temp);
+		result_complete.axpy((-1.0)*this->TimestepSize, temp);
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
 		DataVector temp(alpha_bound.getSize());
 
 		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add_parallel(temp);
+		result_complete.add(temp);
 
 		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy_parallel((-0.5)*this->TimestepSize, temp);
+		result_complete.axpy((-0.5)*this->TimestepSize, temp);
 	}
 	else
 	{
@@ -227,16 +227,16 @@ void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, Data
 	if (this->r != 0.0)
 	{
 		this->OpLTwoBound->mult(alpha, temp);
-		result.axpy_parallel((-1.0)*this->r, temp);
+		result.axpy((-1.0)*this->r, temp);
 	}
 
 	// Apply the delta method
 	this->OpDeltaBound->mult(alpha, temp);
-	result.add_parallel(temp);
+	result.add(temp);
 
 	// Apply the gamma method
 	this->OpGammaBound->mult(alpha, temp);
-	result.sub_parallel(temp);
+	result.sub(temp);
 }
 
 void BlackScholesODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
@@ -249,16 +249,16 @@ void BlackScholesODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVec
 	if (this->r != 0.0)
 	{
 		this->OpLTwoInner->mult(alpha, temp);
-		result.axpy_parallel((-1.0)*this->r, temp);
+		result.axpy((-1.0)*this->r, temp);
 	}
 
 	// Apply the delta method
 	this->OpDeltaInner->mult(alpha, temp);
-	result.add_parallel(temp);
+	result.add(temp);
 
 	// Apply the gamma method
 	this->OpGammaInner->mult(alpha, temp);
-	result.sub_parallel(temp);
+	result.sub(temp);
 }
 
 void BlackScholesODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
@@ -270,7 +270,7 @@ void BlackScholesODESolverSystem::applyMassMatrixComplete(DataVector& alpha, Dat
 	// Apply the mass matrix
 	this->OpLTwoBound->mult(alpha, temp);
 
-	result.add_parallel(temp);
+	result.add(temp);
 }
 
 void BlackScholesODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVector& result)
@@ -282,7 +282,7 @@ void BlackScholesODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVe
 	// Apply the mass matrix
 	this->OpLTwoInner->mult(alpha, temp);
 
-	result.add_parallel(temp);
+	result.add(temp);
 }
 
 void BlackScholesODESolverSystem::finishTimestep()
