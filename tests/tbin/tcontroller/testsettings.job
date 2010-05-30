@@ -6,7 +6,7 @@
 type = classification
 
 # What action should be performed?
-# Possible options: learn, apply
+# Possible options: learn, apply, fold
 action = learn
 
 # Should the learning with testing be performed?
@@ -87,8 +87,9 @@ file_type = arff
 # Path to the file with validation data
 test_file = testdata.arff
 
-# Path to the file with training data
+# Path to the file with training data, multiple definitions are possible for file folding cross-validation
 train_file = traindata.arff
+# train_file = traindata2.arff
 
 # Path to the file with points, in which the values should be evaluated
 # points_file = points.arff.gz
@@ -164,9 +165,8 @@ path = .
 # Denines the type of data folding. Possible values:
 # fold - learn a dataset with a random n-fold
 # folds - learn a dataset with a sequential n-fold
-# foldr - learn a dataset with a stratified n-fold
 # foldf - learn a dataset with a n-fold from a set of files
-# foldstratified - learn a dataset with a stratified n-fold
+# foldstratified, foldr - learn a dataset with a stratified n-fold
 # type = fold
 # 
 # Defines the number of Folds:

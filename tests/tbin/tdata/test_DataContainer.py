@@ -36,22 +36,28 @@ from bin.data.DataEntry import DataEntry
 from bin.pysgpp import DataVector
 from bin.data.DataContainer import DataContainer
 
+
+##
+# @package tests.tbin.test_DataContainer
+# Contains class test_DataContainer::TestDataContainer with unittests for @link bin.data.DataContainer.DataContainer DataContainer @endlink
+
+##
+# Class with unittests for @link bin.data.DataContainer.DataContainer DataContainer @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.data.DataContainer.DataContainer DataContainer @endlink
 class TestDataContainer(unittest.TestCase):
     
-    container = None
-    size = None
-    dim = None
-    vectors = None
     
-    #---
+    ##
+    # Set up the variables
     #    It makes following construct: 
     #        [[1,1,1,1,1],  [1, 
     #         [2,2,2,2,2],   2, 
     #         ...            ... 
     #         [42,...,42]]   42]
-    #---
     def setUp(self):
-         
         self.size = 42
         self.dim = 5
         self.container = DataContainer(self.size,self.dim)
@@ -65,6 +71,9 @@ class TestDataContainer(unittest.TestCase):
             points.setRow(row,vector)
             values[row] =row
     
+    
+    ##
+    # Tests the function @link bin.data.DataContainer.DataContainer.next() DataContainer.next() @endlink
     def testNext(self):
         c = 0
         for entry in self.container:
@@ -73,6 +82,9 @@ class TestDataContainer(unittest.TestCase):
             c += 1
         self.assertEqual(c, self.size)
 
+
+    ##
+    # Tests the function @link bin.data.DataContainer.DataContainer.getTrainDataset() DataContainer.getTrainDataset() @endlink
     def testGetTrainDataset(self):
         c = 0
         trainContainer = self.container.getTrainDataset()
@@ -81,6 +93,9 @@ class TestDataContainer(unittest.TestCase):
             self.assertEqual(entry.getValue()[0], c)
             c += 1
 
+
+    ##
+    # Tests the function @link bin.data.DataContainer.DataContainer.getTestDataset() DataContainer.getTestDataset() @endlink
     def testGetTestDataset(self):
         container = DataContainer(self.container.getPoints(), self.container.getValues(), DataContainer.TEST_CATEGORY)
         c = 0
@@ -96,12 +111,18 @@ class TestDataContainer(unittest.TestCase):
 #    def testNormalize(self):
 #        self.fail("Not implemented")
 
+    
+    ##
+    # Tests the function @link bin.data.DataContainer.DataContainer.combine() DataContainer.combine() @endlink
     def testCombine(self):
         container = DataContainer(self.container.getPoints(), self.container.getValues(), DataContainer.TEST_CATEGORY)
         self.container = self.container.combine(container)
         self.testGetTrainDataset()
         self.testGetTestDataset()
 
+
+    ##
+    # Tests the function @link bin.data.DataContainer.DataContainer.createNullVector() DataContainer.createNullVector() @endlink
     def testCreateNullVector(self):
         vector = self.container.createNullVector(self.size, self.dim)
         entry = DataVector(self.dim)
@@ -109,6 +130,8 @@ class TestDataContainer(unittest.TestCase):
             vector.getRow(row, entry)
             for index in xrange(self.dim):
                 self.assertEqual(entry[index], 0)
+        
+        
         
 if __name__=="__main__":
     unittest.main()   
