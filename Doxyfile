@@ -453,7 +453,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 #INPUT                  = README class/ class/QuSquare include/ include/QuSquare bin/ tests/ WekaSpGrid/weka/classifiers/functions/ WekaSpGrid/weka/search/ WekaSpGrid/weka/classifiers/functions/sparseGrid/Matrix.java
-INPUT                  = src/sgpp/ tests/ bin/ doc/doxygen/ SPARSE_GRID_ALGORITHM101
+INPUT                  = src/sgpp/ tests/ bin/ doc/doxygen/ 
 
 
 # If the value of the INPUT tag contains directories, you can use the 
