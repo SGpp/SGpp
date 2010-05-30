@@ -38,8 +38,21 @@ import gzip
 
 from bin.controller import CheckpointController
 
+
+##
+# @package tests.tbin.test_CheckpointController
+# Contains class test_CheckpointController::TestCheckpointController with unittests for @link bin.controller.CheckpointController.CheckpointController CheckpointController @endlink
+
+##
+# Class with unittests for @link bin.controller.CheckpointController.CheckpointController CheckpointController @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.controller.CheckpointController.CheckpointController CheckpointController @endlink
 class TestCheckpointController(unittest.TestCase):
 
+    ##
+    # Tests the function @link bin.controller.CheckpointController.CheckpointController.saveGrid() CheckpointController.saveGrid() @endlink
     def testSaveGrid(self):
         dim = 2
         level = 2
@@ -60,7 +73,8 @@ class TestCheckpointController(unittest.TestCase):
         self.assertEqual(grid.serialize(), sampleString)
 
         
-        
+    ##
+    # Tests the function @link bin.controller.CheckpointController.CheckpointController.loadGrid() CheckpointController.loadGrid() @endlink   
     def testLoadGrid(self):
         dim = 2
         level = 2
@@ -79,7 +93,8 @@ class TestCheckpointController(unittest.TestCase):
         self.assertEqual(grid.serialize(), sampleGrid.serialize())
         
         
-        
+    ##
+    # Tests the function @link bin.controller.CheckpointController.CheckpointController.saveLearnedKnowledge() CheckpointController.saveLearnedKnowledge() @endlink    
     def testSaveLearnedKnowledge(self):
         testValues = [-0.0310651210442,
                       -0.618841896127,
@@ -106,7 +121,8 @@ class TestCheckpointController(unittest.TestCase):
         self.assertEqual(testValues, [float(i) for i in sampleLines])
         
         
-        
+    ##
+    # Tests the function @link bin.controller.CheckpointController.CheckpointController.loadLearnedKnowledge() CheckpointController.loadLearnedKnowledge() @endlink    
     def testLoadLearnedKnowledge(self):
         controller = CheckpointController("sample", pathlocal)
         learnedKnowledge = controller.loadLearnedKnowledge(0)
@@ -124,7 +140,9 @@ class TestCheckpointController(unittest.TestCase):
             self.assertAlmostEqual(testValues[i], learnedKnowledge.getAlphas()[i])
             
             
-            
+    ##
+    # Tests the functions @link bin.controller.CheckpointController.CheckpointController.saveAll() CheckpointController.saveAll() @endlink
+    # @link bin.controller.CheckpointController.CheckpointController.loadAll() CheckpointController.loadAll() @endlink          
     def testSaveAllLoadAll(self):
         # test of two method is put together since it should test the capability 
         # to store and restore data accurately
@@ -143,8 +161,6 @@ class TestCheckpointController(unittest.TestCase):
                      .andGetResult()
         classifier.learnData()
         
-        
-
         controller.setLearner(classifier)
         controller.saveAll(0)
         

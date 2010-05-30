@@ -32,16 +32,28 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from bin.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
 from bin.data.DataContainer import DataContainer
 from bin.pysgpp import DataVector
 
+
+##
+# @package tests.tbin.test_StratifiedFoldingPolicy
+# Contains class test_StratifiedFoldingPolicy::TestStratifiedFoldingPolicy with unittests for @link bin.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+
+##
+# Class with unittests for @link bin.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
 class TestStratifiedFoldingPolicy(unittest.TestCase):
-    policy = None
-    size = 9
-    level = 4
+
     
+    ## Set up the variables
     def setUp(self):
+        self.size = 9
+        self.level = 4
         points = DataVector(self.size, 1)
         values = DataVector(self.size, 1)
         for i in xrange(self.size):
@@ -49,7 +61,10 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
             values[i] = -1 if i < self.size/2 else 1
         self.dataContainer = DataContainer(points, values)
         self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
-        
+    
+    
+    ##
+    # Tests the function @link bin.learner.folding.FoldingPolicy.FoldingPolicy.next() StratifiedFoldingPolicy.next() @endlink    
     def testNext(self):
         validationCorrectData = [[4,0],[5,1], [6,2], [7,8,3]]
         self.assertEqual(self.level, len(self.policy.dataFold))

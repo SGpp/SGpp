@@ -35,11 +35,27 @@ from bin.controller import InfoToScreen
 from bin.controller import InfoToFile
 
 
+##
+# @package tests.tbin.test_LearnerBuilder
+# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link bin.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+
+##
+# Class with unittests for @link bin.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 class TestLearnerBuilder(unittest.TestCase):
     
-    builder = None
-    classifier = None
     
+    ## Set up the variables and
+    # test the functions @link bin.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
+    # @link bin.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
+    # @link bin.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
+    # @link bin.learner.LearnerBuilder.StopPolicyDescriptor.withAdaptiveItarationLimit() LearnerBuilder.withAdaptiveItarationLimit() @endlink
+    # @link bin.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
+    # @link bin.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
+    # @link bin.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
     def setUp(self):
         self.builder = LearnerBuilder()
         self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\
@@ -69,8 +85,8 @@ class TestLearnerBuilder(unittest.TestCase):
 #        self.classifier.setSolver(CGSolver())
 
     
-    def testScreenEventPresentor(self,):
-        self.classifier.learnDataWithTest()
+#    def testScreenEventPresentor(self,):
+#        self.classifier.learnDataWithTest()
 
 
         

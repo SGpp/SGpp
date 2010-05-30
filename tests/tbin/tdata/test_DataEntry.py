@@ -35,18 +35,33 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 from bin.data.DataEntry import DataEntry
 from bin.pysgpp import DataVector
 
+
+##
+# @package tests.tbin.test_DataEntry
+# Contains class test_DataEntry::TestDataEntry with unittests for @link bin.data.DataEntry.DataEntry DataEntry @endlink
+
+##
+# Class with unittests for @link bin.data.DataEntry.DataEntry DataEntry @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.data.DataEntry.DataEntry DataEntry @endlink
 class TestDataEntry(unittest.TestCase):
     
-    dataEntry = None
-    dataVector = None
-    
+    ## Set up the variables
     def setUp(self):
         self.dataVector = DataVector(5)
         self.dataEntry = DataEntry(self.dataVector, 2.0)
-        
+       
+       
+    ##
+    # Tests the function @link bin.data.DataEntry.DataEntry.getValue() DataEntry.getValue() @endlink 
     def testGetValue(self):
         self.assertEqual(self.dataEntry.getValue(), 2.0)
-        
+    
+    
+    ##
+    # Tests the function @link bin.data.DataEntry.DataEntry.getPoint() DataEntry.getPoint() @endlink
     def testGetPoint(self):
         self.assertEqual(self.dataEntry.getPoint(), self.dataVector)
         
