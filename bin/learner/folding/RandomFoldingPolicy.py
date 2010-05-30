@@ -30,11 +30,9 @@ from FoldingPolicy import FoldingPolicy
 
 ## Provides functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs randomly
+# This class corresponds to the old doFold() method.
 class RandomFoldingPolicy(FoldingPolicy):
     
-    
-    random = None   #Random number generator
-
     
     ##Constructor
     #
@@ -48,6 +46,7 @@ class RandomFoldingPolicy(FoldingPolicy):
             self.seed = int(time.time())
         else:
             self.seed = seed
+        ## Random number generator
         self.random = random.seed(self.seed)
         self.seq = range(self.size)
         random.shuffle(self.seq, self.random)

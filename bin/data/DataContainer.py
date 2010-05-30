@@ -100,9 +100,13 @@ class DataContainer(object):
     #
     # @param category: String category name (train or test)
     # @return: DataContainer only with requested data set 
+    # @exception if requested category name doesn't exist
     def getDataSubsetByCategory(self, category):
-        result = DataContainer(DataVector(self.points[category]), DataVector(self.values[category]), category)
-        return result
+        if self.points.has_key(category) and self.values.has_key(category):
+            result = DataContainer(DataVector(self.points[category]), DataVector(self.values[category]), category)
+            return result
+        else:
+            raise Exception("Requested category name doesn't exist")
     
     
     ##Creates DataContainer with entries from the given list
@@ -150,12 +154,12 @@ class DataContainer(object):
     # DataContainer(size, dim, [name="train", filename=None])
     # DataContianer(points, values, [name="train", filename=None])
     #
-    # @param adapter: Object implementing DataContainer
-    # @param size: Integer size of data set
-    # @param dim: Integer dimension of data set
-    # @param name: category name, default: "train"
-    # @param points: DataVector with points
-    # @param values: DataVector with values
+    # param adapter: Object implementing DataContainer
+    # param size: Integer size of data set
+    # param dim: Integer dimension of data set
+    # param name: category name, default: "train"
+    # param points: DataVector with points
+    # param values: DataVector with values
     def __init__(self, *args):
         self.points={}
         self.values={}
@@ -221,17 +225,51 @@ class DataContainer(object):
             
         except IndexError:
             raise Exception('Wrong or no attributes in constructor')
-       
 
 
-    ##Merge to Data container into one, so it stores several data sets with different categories
+    ## Merge to Data container into one, so it stores several data sets with different categories
     #
     # @param container: DataContainer that has to be combined with the called one
     # @return: new DataContainer with several data sets
     def combine(self, container):
         newContainer = DataContainer(self.getPoints(), self.getValues(), self.name)
+        for k in self.points.keys():
+            if k != self.name:
+                newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.specifications[k], k)
         return newContainer.__setSubContainer(container.getPoints(), container.getValues(), container.getSpecifiction(), container.getName())
+    
+    
+    ## Merges several data containers to one.
+    # Unlike combine(), this method actually merges the set of points and values
+    # and not just puts them to the different categories
+    # @param containerList list of DataContainer's
+    @classmethod
+    def merge(cls, containerList):
+        if len(containerList) == 0:
+            return None
         
+        # determine the total number of entries
+        size = 0
+        for container in containerList:
+            size += container.getValues().getSize()
+            
+        dim = container.getPoints().getDim()
+        
+        # Copy data to the new DataVector's entry by entry
+        allPoints = DataVector(size, dim)
+        allValues = DataVector(size) 
+        i = 0
+        for container in containerList:
+            points = container.getPoints()
+            values = container.getValues()
+            for j in xrange(values.getSize()):
+                allPoints[i] = points[j]
+                allValues[i] = values[j]
+                i += 1
+        
+        # return new DataContainer
+        return DataContainer(allPoints, allValues)
+            
     
     ##Adds points and values into dictionaries
     #
@@ -258,7 +296,7 @@ class DataContainer(object):
     
     
     ## Returns points stored in the data set with default name
-    #
+    # @param category String category name of the requested data ("train" or "test")
     # @return: DataVector of points
     def getPoints(self, category = None):
         if category == None:
@@ -267,7 +305,7 @@ class DataContainer(object):
     
     
     ## Returns values stored in the data set with default name
-    #
+    # @param category String category name of the requested data ("train" or "test")
     # @return: DataVector of values
     def getValues(self, category = None):
         if category == None:

@@ -26,8 +26,8 @@ from bin.learner.Classifier import Classifier
 from bin.learner.TrainingStopPolicy import TrainingStopPolicy
 
 from bin.learner.TrainingSpecification import TrainingSpecification
-from bin.learner.CGSolver import CGSolver
-from bin.learner.GridFormatter import GridFormatter
+from bin.learner.solver.CGSolver import CGSolver
+from bin.learner.formatter.GridFormatter import GridFormatter
 from bin.learner import Types
 
 from bin.pysgpp import *
@@ -36,8 +36,10 @@ from bin.data.DataContainer import DataContainer
 from bin.learner.Regressor import Regressor
 
 import bin.utils.json as json
-from bin.learner.SequentialFoldingPolicy import SequentialFoldingPolicy
-from bin.learner.RandomFoldingPolicy import RandomFoldingPolicy
+from bin.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
+from bin.learner.folding.RandomFoldingPolicy import RandomFoldingPolicy
+from bin.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from bin.learner.folding.FilesFoldingPolicy import FilesFoldingPolicy
 
 ## Implement mechanisms to create customized learning system
 #
@@ -248,16 +250,37 @@ class LearnerBuilder(object):
     def withRandomFoldingPolicy(self):
         self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.RANDOM)
         return self.__foldingPolicyDescroptor
+    
+    
+    ## 
+    # Signals to use N-fold cross validation with stratified folding rule
+    #
+    # @return: FoldingDescriptor
+    ##
+    def withStratifiedFoldingPolicy(self):
+        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
+        return self.__foldingPolicyDescroptor
+    
+    
+    ## 
+    # Signals to use N-fold cross validation from a set of files
+    #
+    # @return: FoldingDescriptor
+    ##
+    def withFilesFoldingPolicy(self):
+        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
+        return self.__foldingPolicyDescroptor
 
     
     ## 
     # Signals to use data from ARFF file for training dataset
     #
     # @param filename: Filename where to read the data from
+    # @param name: Category name, default: "train"
     # @return: LearnerBuilder
     ##
-    def withTrainingDataFromARFFFile(self, filename):
-        dataContainer = ARFFAdapter(filename).loadData()
+    def withTrainingDataFromARFFFile(self, filename, name="train"):
+        dataContainer = ARFFAdapter(filename).loadData(name)
         if self.__learner.dataContainer != None:
             self.__learner.setDataContainer(self.__learner.dataContainer.combine(dataContainer))
         else:
@@ -682,10 +705,16 @@ class LearnerBuilder(object):
             return self
         
     
+    ##
+    # Folding Descriptor helps to implement fluid interface patter on python
+    # it encapsulates functionality concerning the usage for N-fold cross-validation
+    ##   
     class FoldingDescriptor:
         
-        SEQUENTIAL = 100
-        RANDOM = 200
+        SEQUENTIAL = 100 ## Sequential folding policy
+        RANDOM = 200 ## Random folding policy
+        STRATIFIED = 300 ## Stratified folding policy
+        FILES = 400 ## Files folding policy
         
         __builder = None
         __level = None
@@ -697,6 +726,7 @@ class LearnerBuilder(object):
         # Constructor
         #
         # @param builder: LearnerBuilder which creates this Descriptor
+        # @param type: Type of folding policy that should be build
         ##
         def __init__(self, builder, type):
             self.__builder = builder
@@ -722,10 +752,14 @@ class LearnerBuilder(object):
             if self.__level == None:
                 raise Exception("Folding level has to be defined")
             
-            if self.__type == self.SEQUENTIAL:
+            if self.__type == FoldingDescriptor.SEQUENTIAL:
                 self.__policy = SequentialFoldingPolicy(dataContainer, self.__level)
-            elif self.__type == self.RANDOM:
+            elif self.__type == FoldingDescriptor.RANDOM:
                 self.__policy = RandomFoldingPolicy(dataContainer, self.__level, self.__seed)
+            elif self.__type == FoldingDescriptor.STRATIFIED:
+                self.__policy = StratifiedFoldingPolicy(dataContainer, self.__level, self.__seed)
+            elif self.__type == FoldingDescriptor.FILES:
+                self.__policy = FilesFoldingPolicy(dataContainer, self.__level)
             else:
                 raise Exception("Folding type is not defined or is unproper")
             

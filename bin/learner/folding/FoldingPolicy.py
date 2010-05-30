@@ -26,26 +26,29 @@ import math
 ## Abstract class for providing functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs
 class FoldingPolicy(object):
-
-
-    level = None        #Folding level
-    size = None         #Size of dataset
-    dataset = None      #Dataset
-    dataFold = []       #List of partitioned data sets
-    window = None       #Number of points in one subset
-    seq = None          #Sequence of indices of points from data set
-    
     
     ##Constructor
     #
     #@param dataset: DataContainer with data set
     #@param level: Integer folding level, default value: 1
     def __init__(self, dataset, level=1):
+        ##List of partitioned data sets
         self.dataFold = []
+        
+        ##Folding level
         self.level = level
+        
+        ##Dataset
         self.dataset = dataset
+        
+        ##Size of dataset
         self.size = dataset.getPoints().getSize()
+        
+        ##Number of points in one subset
         self.window = int( math.ceil( float(self.size) / self.level ) ) #number of points in validation set
+        
+        ##Sequence of indices of points from data set
+        self.seq = None 
 
         
     ##Implementation of iterator method next()

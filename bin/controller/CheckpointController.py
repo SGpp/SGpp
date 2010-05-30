@@ -27,7 +27,7 @@ from bin.controller.LearnerEventController import LearnerEventController
 #from bin.data.ARFFAdapter import ARFFAdapter
 
 import bin.utils.json as json
-from bin.learner import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
+from bin.learner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
 from bin.controller.InfoToScreenRegressor import InfoToScreenRegressor
 from bin.controller.InfoToScreen import InfoToScreen
 from bin.controller.InfoToFile import InfoToFile
@@ -112,7 +112,8 @@ class CheckpointController(LearnerEventController):
     # save checkpoint files will have a name like title.iteration.[grid | learner | arff].gz
     #@param title: string title for checkpoints
     #@param path: string absolute path to the checkpoint files
-    #@param interval: integer defines the number of iteration between saved checkpoints, e.g. if interval = 5, only states from 0,5th, 10th, 15th ... iteration will be saved
+    #@param interval: integer defines the number of iteration between saved checkpoints, e.g. if interval = 1, only states from 0,5th, 10th, 15th ... iteration will be saved
+    #@param fold: the folding level, if n-fold cross-validation is used
     def __init__(self, title, path = None, interval = None, fold = None):
         self.title = title
         self.path = path if path != None else '.'
@@ -123,6 +124,7 @@ class CheckpointController(LearnerEventController):
     
     ## Composes checkpoint file name from path title and iteration number
     #@param iteration integer iteration number
+    #@param fold: the folding level, if n-fold cross-validation is used
     #@return string composed name
     def composeName(self, iteration = None, fold=None):
         result = ""
@@ -319,7 +321,8 @@ class CheckpointController(LearnerEventController):
     
     ## Generates a SGE array job script for concurrent performing of cross-fold
     # validation computations. The script can be then lunched using
-    # <code>qsub -t 1-XXX <scriptname>.sge.job
+    # \<code\>qsub -t 1-XXX \<scriptname\>.sge.job
+    # @param email String with email-address, the status information from SGE should be sent to
     def generateFoldValidationJob(self, email=""):
         
         if not self.learner.iteration == None:
