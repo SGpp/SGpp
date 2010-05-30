@@ -200,20 +200,6 @@ public:
  	 */
 	void sub(DataVector& vec);
 
- 	/**
- 	 * adds the values from another DataVector; parallel version
- 	 *
- 	 * @param vec the DataVector which Data is added
- 	 */
-	void add_parallel(DataVector& vec);
-
-	/**
- 	 * subs the values of another DataVector: parallel version
- 	 *
- 	 * @param vec the DataVector which Data is subtracted
- 	 */
-	void sub_parallel(DataVector& vec);
-
     /**
      * Multiplies the current DataVector component-wise with another DataVector.
      * Performs
@@ -272,16 +258,6 @@ public:
 	 * @param x reference the the DataVector
 	 */
 	void axpy(double alpha, DataVector& x);
-
-	/**
-	 * Adds alpha*x to current vector.
-	 * BLAS Level 1 (elementary vector operations) operation: axpy.
-	 * parallel version
-	 *
-	 * @param alpha the constant
-	 * @param x reference the the DataVector
-	 */
-	void axpy_parallel(double alpha, DataVector& x);
 
 	/**
 	 * gets a line of the DataVector
