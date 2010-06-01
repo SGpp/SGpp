@@ -137,6 +137,8 @@ basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 basis/modbspline/operation/common/OperationEvalModBspline.cpp
 basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 
+operation/pde/OperationODESolverSystem.cpp
+
 algorithm/datadriven/DMSystemMatrix.cpp
 algorithm/pde/BlackScholesODESolverSystem.cpp
 algorithm/pde/HeatEquationODESolverSystem.cpp

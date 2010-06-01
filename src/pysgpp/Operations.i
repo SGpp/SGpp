@@ -56,10 +56,17 @@ public:
 
 class OperationODESolverSystem : public OperationMatrix
 {
+protected:
+	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result) = 0;
+
 public:
-	virtual void mult(DataVector& alpha, DataVector& result) = 0;
-	virtual DataVector* generateRHS() = 0;
-	virtual void finishTimestep() = 0;
+	void mult(DataVector& alpha, DataVector& result);
+	DataVector* generateRHS();
+	virtual void finishTimestep();
+	virtual void startTimestep();
 };
 
 class OperationEval

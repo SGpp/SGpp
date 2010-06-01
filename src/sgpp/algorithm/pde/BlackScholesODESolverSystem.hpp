@@ -10,9 +10,7 @@
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
-#include "operation/common/OperationODESolverSystem.hpp"
-#include "grid/common/DirichletUpdateVector.hpp"
-#include "grid/common/DirichletGridConverter.hpp"
+#include "operation/pde/OperationODESolverSystem.hpp"
 
 namespace sg
 {
@@ -38,10 +36,6 @@ protected:
 	OperationMatrix* OpGammaInner;
 	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
 	OperationMatrix* OpLTwoInner;
-	/// Pointer to the alphas (ansatzfunctions' coefficients)
-	DataVector* alpha_complete;
-	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
-	DataVector* alpha_inner;
 	/// Pointer to the mus
 	DataVector* mus;
 	/// Pointer to the sigmas
@@ -52,57 +46,13 @@ protected:
 	DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
 	DataVector* gammaCoef;
-	/// Routine to modify the boundaries/inner points of the grid
-	DirichletUpdateVector* BoundaryUpdate;
-	/// Class that allows a simple conversion between a grid with and a without boundary points
-	DirichletGridConverter* GridConverter;
-	/// DateVector to store the right hand side
-	DataVector* rhs;
 
-	/**
-	 *  specifies in which solver this matrix is used, valid values are:
-	 *  ExEul for explicit Euler
-	 *  ImEul for implicit Euler
-	 *  CrNic for Crank Nicolson solver
-	 */
-	std::string tOperationMode;
-	/// the size of one timestep used in the ODE Solver
-	double TimestepSize;
-	/// Pointer to the boundary grid object
-	Grid* BoundGrid;
-	/// Pointer to the inner grid object
-	Grid* InnerGrid;
-
-	/**
-	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix, inner grid points only
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions (inner grid points)
-	 * @param return reference to the DataVector into which the result is written (inner grid points)
-	 */
 	void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
-	/**
-	 * Do Matrix mutlitplication with the Black Scholes Systemmatrix, complete boundary grid
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
 	void applyLOperatorComplete(DataVector& alpha, DataVector& result);
 
-	/**
-	 * Do Matrix mutlitplication with left hand side mass matrix, inner grid points only
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions (inner grid points)
-	 * @param return reference to the DataVector into which the result is written (inner grid points)
-	 */
 	void applyMassMatrixInner(DataVector& alpha, DataVector& result);
 
-	/**
-	 * Do Matrix mutlitplication with left hand side mass matrix
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
 	void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
 
 	/**
@@ -137,11 +87,6 @@ protected:
 	 */
 	void buildDeltaCoefficientsLogTransform();
 
-	/**
-	 * Implements some start jobs of every timestep, e.g.discounting boundaries
-	 */
-	void startTimestep();
-
 public:
 	/**
 	 * Std-Constructor
@@ -165,33 +110,9 @@ public:
 	 */
 	virtual ~BlackScholesODESolverSystem();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	void finishTimestep();
 
-	virtual DataVector* generateRHS();
-
-	virtual void finishTimestep();
-
-	virtual Grid* getGrid();
-
-	virtual DataVector* getGridCoefficientsForCG();
-
-	virtual DataVector* getGridCoefficients();
-
-	/**
-	 * defines the used ODE Solver for this instance, this is important because
-	 * the implementation of mult and generateRHS depends on the used
-	 * ODE solver
-	 *
-	 * @param ode the used ODESolver: ExEul, ImEul or CrNic
-	 */
-	void setODESolver(std::string ode);
-
-	/**
-	 * Returns the specified ODE solver for this instance
-	 *
-	 * @return the ODE solver: ExEul, ImEul or CrNic
-	 */
-	std::string getODESolver();
+	void startTimestep();
 };
 
 }

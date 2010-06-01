@@ -8,7 +8,7 @@
 #ifndef SGSOLVER_HPP
 #define SGSOLVER_HPP
 
-#include "operation/common/OperationODESolverSystem.hpp"
+#include "operation/pde/OperationODESolverSystem.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "solver/SGSolverInfo.hpp"
 #include "solver/SGSolverResult.hpp"
