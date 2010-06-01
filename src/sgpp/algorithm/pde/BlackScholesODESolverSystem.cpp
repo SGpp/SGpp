@@ -91,132 +91,6 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 	delete this->rhs;
 }
 
-void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)
-{
-	if (this->tOperationMode == "ExEul")
-	{
-		result.setAll(0.0);
-
-		applyMassMatrixInner(alpha, result);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		result.setAll(0.0);
-
-		DataVector temp(alpha.getSize());
-
-		applyMassMatrixInner(alpha, temp);
-		result.add(temp);
-
-		applyLOperatorInner(alpha, temp);
-		result.axpy((-1.0)*this->TimestepSize, temp);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		result.setAll(0.0);
-
-		DataVector temp(alpha.getSize());
-
-		applyMassMatrixInner(alpha, temp);
-		result.add(temp);
-
-		applyLOperatorInner(alpha, temp);
-		result.axpy((-0.5)*this->TimestepSize, temp);
-	}
-	else
-	{
-		throw new algorithm_exception("BlackScholesTimestepMatrix::mult : An unknown operation mode was specified!");
-	}
-}
-
-DataVector* BlackScholesODESolverSystem::generateRHS()
-{
-	DataVector rhs_complete(this->alpha_complete->getSize());
-
-	if (this->tOperationMode == "ExEul")
-	{
-		rhs_complete.setAll(0.0);
-
-		DataVector temp(this->alpha_complete->getSize());
-
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add(temp);
-
-		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy(this->TimestepSize, temp);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		rhs_complete.setAll(0.0);
-
-		applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		rhs_complete.setAll(0.0);
-
-		DataVector temp(this->alpha_complete->getSize());
-
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add(temp);
-
-		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
-	}
-	else
-	{
-		throw new algorithm_exception("BlackScholesTimestepMatrix::generateRHS : An unknown operation mode was specified!");
-	}
-
-	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
-	this->startTimestep();
-
-	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-	DataVector result_complete(this->alpha_complete->getSize());
-	DataVector alpha_bound(*this->alpha_complete);
-
-	result_complete.setAll(0.0);
-
-	this->BoundaryUpdate->setInnerPointsToZero(alpha_bound);
-
-	// apply CG Matrix
-	if (this->tOperationMode == "ExEul")
-	{
-		applyMassMatrixComplete(alpha_bound, result_complete);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		DataVector temp(alpha_bound.getSize());
-
-		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add(temp);
-
-		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy((-1.0)*this->TimestepSize, temp);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		DataVector temp(alpha_bound.getSize());
-
-		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add(temp);
-
-		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy((-0.5)*this->TimestepSize, temp);
-	}
-	else
-	{
-		throw new algorithm_exception("BlackScholesTimestepMatrix::generateRHS : An unknown operation mode was specified (mult)!");
-	}
-	rhs_complete.sub(result_complete);
-
-	this->rhs->resize(this->alpha_inner->getSize());
-
-	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
-
-	return this->rhs;
-}
-
 void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
@@ -312,11 +186,6 @@ void BlackScholesODESolverSystem::startTimestep()
 	}
 }
 
-Grid* BlackScholesODESolverSystem::getGrid()
-{
-	return BoundGrid;
-}
-
 void BlackScholesODESolverSystem::buildGammaCoefficients()
 {
 	size_t dim = this->BoundGrid->getStorage()->dim();
@@ -407,28 +276,6 @@ void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
 		}
 		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
 	}
-}
-
-DataVector* BlackScholesODESolverSystem::getGridCoefficientsForCG()
-{
-	this->GridConverter->calcInnerCoefs(*this->alpha_complete, *this->alpha_inner);
-
-	return this->alpha_inner;
-}
-
-DataVector* BlackScholesODESolverSystem::getGridCoefficients()
-{
-	return this->alpha_complete;
-}
-
-void BlackScholesODESolverSystem::setODESolver(std::string ode)
-{
-	this->tOperationMode = ode;
-}
-
-std::string BlackScholesODESolverSystem::getODESolver()
-{
-	return this->tOperationMode;
 }
 
 }
