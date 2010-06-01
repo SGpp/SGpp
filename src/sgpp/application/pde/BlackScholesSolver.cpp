@@ -315,7 +315,7 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, st
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::initGridWithEuroCallPayoff : A grid wasn't constructed before!");
+		throw new application_exception("BlackScholesSolver::initGridWithPayoff : A grid wasn't constructed before!");
 	}
 }
 

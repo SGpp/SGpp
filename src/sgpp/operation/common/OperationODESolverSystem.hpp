@@ -59,6 +59,11 @@ public:
 	virtual void finishTimestep() = 0;
 
 	/**
+	 * Implements some start jobs of every timestep, e.g.discounting boundaries
+	 */
+	virtual void startTimestep() = 0;
+
+	/**
 	 * get the pointer to the underlying grid object
 	 *
 	 * @return returns a pointer to the underlying grid object

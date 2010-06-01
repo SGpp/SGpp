@@ -46,6 +46,8 @@ namespace sg {
  *   \image html GetAffectedBasisFunctions_subspaces_affectedBasisFunctions_recursive.png "Minimize the number of evaluations" width=10cm
  * Descending recursively in the d-th dimension, one can propagate the value of the intermediate function
  * evaluation for the first d-1 dimensions that have already been looked at.
+ *
+ * @todo (heinecke) add bounding box support for every grid type
  */
 template<class BASIS>
 class GetAffectedBasisFunctions {
