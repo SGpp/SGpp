@@ -726,9 +726,10 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  * @param refinePercent percantage of points that should be refined before Black Scholes Equation is solved
+ * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  */
 void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
-		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent)
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent, size_t nIterAdaptSteps)
 {
 	size_t dim = d;
 	size_t level = l;
@@ -774,9 +775,15 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// refine the grid to approximate the singularity in the start solution better
-	myBSSolver->refineInitialGridSurplus(*alpha, refinePercent);
-	std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+	{
+		std::cout << "Refining Grid..." << std::endl;
+		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent);
+		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+	}
+	std::cout << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -1049,9 +1056,10 @@ void writeHelp()
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	Adapt-Refinement Percent: Percent of grid points that should be refined" << std::endl;
+	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50 10" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1177,7 +1185,7 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "solveNDadaptSurplus")
 	{
-		if (argc != 15)
+		if (argc != 16)
 		{
 			writeHelp();
 		}
@@ -1196,7 +1204,7 @@ int main(int argc, char *argv[])
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]));
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]));
 		}
 	}
 	else if (option == "solveBonn")

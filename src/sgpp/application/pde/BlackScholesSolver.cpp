@@ -237,7 +237,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		myStopwatch->start();
 		if (numIESteps > 0)
 		{
-			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
+			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl;
 			myBSSystem->setODESolver("ImEul");
 			myEuler->solve(*myCG, *myBSSystem, false);
 		}
