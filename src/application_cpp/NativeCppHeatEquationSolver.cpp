@@ -5,6 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+/// default number of Implicit Euler steps when using Crank Nicolson
+#define CRNIC_IMEUL_STEPS 3
+
 #include "sgpp.hpp"
 
 void testHeatEquation()
@@ -56,7 +59,7 @@ void testHeatEquation()
 	// Start solving the Heat Equation
 	//myHESolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true, true, 50);
 	myHESolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, true, false, 50);
-	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+	//myHESolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 
 	// Print the solved Heat Equation into a gnuplot file
 	myHESolver->printGrid(*alpha, 50, "solvedHeat.gnuplot");

@@ -15,6 +15,9 @@
 std::string tFileEvalCuboid = "evalCuboid.data";
 std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 
+/// default number of Implicit Euler steps when using Crank Nicolson
+#define CRNIC_IMEUL_STEPS 3
+
 /**
  * reads the values of mu, sigma and rho of all assets from
  * a file and stores them into three separated DataVectors
@@ -346,7 +349,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
@@ -496,7 +499,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 		else if (Solver == "CrNic")
 		{
-			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 		}
 		else
 		{
@@ -683,7 +686,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
@@ -863,7 +866,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
@@ -1003,7 +1006,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
