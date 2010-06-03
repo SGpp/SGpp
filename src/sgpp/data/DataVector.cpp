@@ -300,6 +300,18 @@ double DataVector::sum() {
     return result;
 }
 
+double DataVector::maxNorm() {
+    int n = size * dim;
+    double max = 0.0;
+    for (int i = 0; i < n; i++) {
+        if (max < fabs(data[i]))
+        {
+        	max = fabs(data[i]);
+        }
+    }
+    return max;
+}
+
 void DataVector::partitionClasses(double border) {
     int n = size * dim;
     for (int i = 0; i < n; i++) {

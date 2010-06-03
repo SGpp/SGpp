@@ -571,7 +571,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		relError.componentwise_div(maxLevel);
 
 		// calculate max. norm of relative error
-		maxNorm = relError.max();
+		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
 		relError.componentwise_mult(relError);
@@ -738,7 +738,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		relError.componentwise_div(EvalCuboidValues);
 
 		// calculate max. norm of relative error
-		maxNorm = relError.max();
+		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
 		relError.componentwise_mult(relError);
@@ -916,7 +916,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		relError.componentwise_div(EvalCuboidValues);
 
 		// calculate max. norm of relative error
-		maxNorm = relError.max();
+		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
 		relError.componentwise_mult(relError);
