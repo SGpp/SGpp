@@ -251,6 +251,13 @@ public:
 	double sum();
 
 	/**
+	 * calculates the vector's max norm
+	 *
+	 * @return the vector's max norm
+	 */
+	double maxNorm();
+
+	/**
 	 * Adds alpha*x to current vector.
 	 * BLAS Level 1 (elementary vector operations) operation: axpy.
 	 *
