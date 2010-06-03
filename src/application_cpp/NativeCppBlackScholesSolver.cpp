@@ -576,6 +576,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// calculate two norm of relative error
 		relError.componentwise_mult(relError);
 		twoNorm = relError.sum();
+		twoNorm = twoNorm / static_cast<double>(relError.getSize());
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
@@ -743,6 +744,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		// calculate two norm of relative error
 		relError.componentwise_mult(relError);
 		twoNorm = relError.sum();
+		twoNorm = twoNorm / static_cast<double>(relError.getSize());
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
@@ -921,6 +923,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		// calculate two norm of relative error
 		relError.componentwise_mult(relError);
 		twoNorm = relError.sum();
+		twoNorm = twoNorm / static_cast<double>(relError.getSize());
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
