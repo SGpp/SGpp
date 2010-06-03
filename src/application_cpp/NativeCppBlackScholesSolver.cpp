@@ -652,9 +652,10 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	{
 		std::cout << "Refining Grid..." << std::endl;
 		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
-		std::cout << "Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
 	}
-	std::cout << std::endl << std::endl;
+	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -716,7 +717,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	////////////////////////////
 
 	// read Evaluation cuboid
-	DataVector EvalCuboid(dim);
+	DataVector EvalCuboid(1, dim);
 	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
 	// read reference values for evaluation cuboid
@@ -832,9 +833,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent);
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
 	}
-	std::cout << std::endl << std::endl;
+	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
