@@ -178,4 +178,19 @@ cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOUR
 SConscript('tests/SConscript')
 
 
-Help(vars.GenerateHelpText(env))
+# Help Text
+Help("""Type: 'scons [parameters]' to build the libraries
+
+There are compiler optimizations for different platforms which can be
+specified via parameters.
+
+Parameters can be set either by setting the corresponding environment
+variables, or directly via the commandline, e.g.,
+> scons OMP=True
+to enable OpenMP support.
+
+---------------------------------------------------------------------
+
+Parameters are:
+""" +
+vars.GenerateHelpText(env))
