@@ -11,6 +11,10 @@
 #include <stdlib.h>
 #include <fstream>
 
+// @todo (heinecke) remove global variables
+std::string tFileEvalCuboid = "evalCuboid.data";
+std::string tFileEvalCuboidValues = "evalCuboidValues.data";
+
 /**
  * reads the values of mu, sigma and rho of all assets from
  * a file and stores them into three separated DataVectors
@@ -141,9 +145,8 @@ int readAnalyzeData(std::string tFile, size_t numAssests, double& percent, size_
  * @param cuboid DataVector into which the evaluations points are stored
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
- * @param numPoints number of points in the cuboid
  */
-int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_t numPoints)
+int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim)
 {
 	std::fstream file;
 	double cur_coord;
@@ -162,7 +165,8 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
 		return -1;
 	}
 
-	for (size_t i = 0; i < numPoints; i++)
+	size_t i = 0;
+	while (!file.eof())
 	{
 		DataVector line(dim);
 		for (size_t d = 0; d < dim; d++)
@@ -172,6 +176,7 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
 		}
 		cuboid.resize(i+1);
 		cuboid.setRow(i, line);
+		i++;
 	}
 
 	file.close();
@@ -186,7 +191,7 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(DataVector& values, std::string tFile, size_t numValues)
+int readOptionsValues(DataVector& values, std::string tFile)
 {
 	std::fstream file;
 	double cur_value;
@@ -205,11 +210,13 @@ int readOptionsValues(DataVector& values, std::string tFile, size_t numValues)
 		return -1;
 	}
 
-	for (size_t i = 0; i < numValues; i++)
+	size_t i = 0;
+	while (!file.eof())
 	{
 		file >> cur_value;
 		values.resize(i+1);
 		values.set(i, cur_value);
+		i++;
 	}
 
 	file.close();
@@ -450,7 +457,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
 
-			writeDataVector(EvalPoints, "EvalCuboidPoints.data");
+			writeDataVector(EvalPoints, tFileEvalCuboid);
 		}
 
 		// init the basis functions' coefficient vector
@@ -549,7 +556,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
 
 	// write high-leveled solution into file
-	writeDataVector(results[end_l-start_l], "HighLevelOptionValue.data");
+	writeDataVector(results[end_l-start_l], tFileEvalCuboidValues);
 
 	// Calculate relative errors and some norms
 	for (size_t i = 0; i < end_l-start_l; i++)
@@ -704,6 +711,48 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
+	// calculate relative errors
+	////////////////////////////
+
+	// read Evaluation cuboid
+	DataVector EvalCuboid(dim);
+	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+
+	// read reference values for evaluation cuboid
+	DataVector EvalCuboidValues(1);
+	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+
+	if (retCuboid == 0 && retCuboidValues == 0)
+	{
+		std::cout << "Calculating relative errors..." << std::endl;
+		// Evaluate Cuboid
+		DataVector Prices(EvalCuboid.getSize());
+		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
+
+		DataVector relError(Prices);
+		double maxNorm = 0.0;
+		double twoNorm = 0.0;
+
+		// calculate relative error
+		relError.sub(EvalCuboidValues);
+		relError.componentwise_div(EvalCuboidValues);
+
+		// calculate max. norm of relative error
+		maxNorm = relError.max();
+
+		// calculate two norm of relative error
+		relError.componentwise_mult(relError);
+		twoNorm = relError.sum();
+		twoNorm = sqrt(twoNorm);
+
+		// Printing norms
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+	}
+	else
+	{
+		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
+	}
+
 	delete myBSSolver;
 	delete myBoundingBox;
 	delete alpha;
@@ -839,6 +888,48 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		point.push_back(1.0);
 	}
 	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+
+	// calculate relative errors
+	////////////////////////////
+
+	// read Evaluation cuboid
+	DataVector EvalCuboid(1, dim);
+	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+
+	// read reference values for evaluation cuboid
+	DataVector EvalCuboidValues(1);
+	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+
+	if (retCuboid == 0 && retCuboidValues == 0)
+	{
+		std::cout << "Calculating relative errors..." << std::endl;
+		// Evaluate Cuboid
+		DataVector Prices(EvalCuboid.getSize());
+		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
+
+		DataVector relError(Prices);
+		double maxNorm = 0.0;
+		double twoNorm = 0.0;
+
+		// calculate relative error
+		relError.sub(EvalCuboidValues);
+		relError.componentwise_div(EvalCuboidValues);
+
+		// calculate max. norm of relative error
+		maxNorm = relError.max();
+
+		// calculate two norm of relative error
+		relError.componentwise_mult(relError);
+		twoNorm = relError.sum();
+		twoNorm = sqrt(twoNorm);
+
+		// Printing norms
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+	}
+	else
+	{
+		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
+	}
 
 	delete myBSSolver;
 	delete myBoundingBox;
