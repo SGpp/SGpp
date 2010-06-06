@@ -122,7 +122,7 @@ void Classifier::createRegularGrid()
 void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
 {
     ARFFTools ARFFTool;
-	DataVector training(this->instancesNo, this->dim);
+	DataMatrix training(this->instancesNo, this->dim);
     DataVector classes(this->instancesNo);
     DataVector rhs(this->myGrid->getStorage()->size());
     std::cout << "The datavectors for training and the right hand side have been created" << std::endl;
@@ -159,7 +159,7 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
     double correct;
 
 	ARFFTools ARFFTool;
-	DataVector test(this->testinstancesNo, this->dim);
+	DataMatrix test(this->testinstancesNo, this->dim);
     DataVector testclasses(this->testinstancesNo);
     std::cout << "the test datavectors have been created" << std::endl;
 

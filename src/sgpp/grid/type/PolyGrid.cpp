@@ -107,7 +107,7 @@ OperationMatrix* PolyGrid::createOperationDelta(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* PolyGrid::createOperationGamma(DataVector& coef)
+OperationMatrix* PolyGrid::createOperationGamma(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
 }
@@ -117,7 +117,7 @@ OperationMatrix* PolyGrid::createOperationDeltaLog(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* PolyGrid::createOperationGammaLog(DataVector& coef)
+OperationMatrix* PolyGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
 }
