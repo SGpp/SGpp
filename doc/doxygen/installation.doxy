@@ -37,6 +37,11 @@ Compilation of the C++ libraries is done with SCons. Execute
 @endverbatim
 in the main folder. For configuration and optimization, see below.
 
+To obtain help on parameters for compilation, type
+@verbatim
+  scons --help
+@endverbatim
+
 Within compilation, all unit-tests (located in the
 <tt>tests</tt>-folder) are executed.
 
