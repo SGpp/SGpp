@@ -1,5 +1,8 @@
 import gzip, re
 
+
+##The class provides the method, used by subclasses to work with gzip-compressed
+# files 
 class GzipSerializer(object):
     
     ## Opens a file. If the file ends with ".gz", automatically gzip compression

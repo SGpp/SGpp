@@ -11,6 +11,13 @@
 #include <stdlib.h>
 #include <fstream>
 
+// @todo (heinecke) remove global variables
+std::string tFileEvalCuboid = "evalCuboid.data";
+std::string tFileEvalCuboidValues = "evalCuboidValues.data";
+
+/// default number of Implicit Euler steps when using Crank Nicolson
+#define CRNIC_IMEUL_STEPS 3
+
 /**
  * reads the values of mu, sigma and rho of all assets from
  * a file and stores them into three separated DataVectors
@@ -141,9 +148,8 @@ int readAnalyzeData(std::string tFile, size_t numAssests, double& percent, size_
  * @param cuboid DataVector into which the evaluations points are stored
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
- * @param numPoints number of points in the cuboid
  */
-int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_t numPoints)
+int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim)
 {
 	std::fstream file;
 	double cur_coord;
@@ -162,7 +168,8 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
 		return -1;
 	}
 
-	for (size_t i = 0; i < numPoints; i++)
+	size_t i = 0;
+	while (!file.eof())
 	{
 		DataVector line(dim);
 		for (size_t d = 0; d < dim; d++)
@@ -172,6 +179,7 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
 		}
 		cuboid.resize(i+1);
 		cuboid.setRow(i, line);
+		i++;
 	}
 
 	file.close();
@@ -186,7 +194,7 @@ int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim, size_
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(DataVector& values, std::string tFile, size_t numValues)
+int readOptionsValues(DataVector& values, std::string tFile)
 {
 	std::fstream file;
 	double cur_value;
@@ -205,11 +213,13 @@ int readOptionsValues(DataVector& values, std::string tFile, size_t numValues)
 		return -1;
 	}
 
-	for (size_t i = 0; i < numValues; i++)
+	size_t i = 0;
+	while (!file.eof())
 	{
 		file >> cur_value;
 		values.resize(i+1);
 		values.set(i, cur_value);
+		i++;
 	}
 
 	file.close();
@@ -339,7 +349,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
@@ -450,7 +460,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
 
-			writeDataVector(EvalPoints, "EvalCuboidPoints.data");
+			writeDataVector(EvalPoints, tFileEvalCuboid);
 		}
 
 		// init the basis functions' coefficient vector
@@ -489,7 +499,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 		else if (Solver == "CrNic")
 		{
-			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 		}
 		else
 		{
@@ -549,7 +559,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
 
 	// write high-leveled solution into file
-	writeDataVector(results[end_l-start_l], "HighLevelOptionValue.data");
+	writeDataVector(results[end_l-start_l], tFileEvalCuboidValues);
 
 	// Calculate relative errors and some norms
 	for (size_t i = 0; i < end_l-start_l; i++)
@@ -564,11 +574,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		relError.componentwise_div(maxLevel);
 
 		// calculate max. norm of relative error
-		maxNorm = relError.max();
+		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
 		relError.componentwise_mult(relError);
 		twoNorm = relError.sum();
+		twoNorm = twoNorm / static_cast<double>(relError.getSize());
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
@@ -644,9 +655,10 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	{
 		std::cout << "Refining Grid..." << std::endl;
 		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
-		std::cout << "Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
 	}
-	std::cout << std::endl << std::endl;
+	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -674,7 +686,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
@@ -704,6 +716,49 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
+	// calculate relative errors
+	////////////////////////////
+
+	// read Evaluation cuboid
+	DataVector EvalCuboid(1, dim);
+	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+
+	// read reference values for evaluation cuboid
+	DataVector EvalCuboidValues(1);
+	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+
+	if (retCuboid == 0 && retCuboidValues == 0)
+	{
+		std::cout << "Calculating relative errors..." << std::endl;
+		// Evaluate Cuboid
+		DataVector Prices(EvalCuboid.getSize());
+		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
+
+		DataVector relError(Prices);
+		double maxNorm = 0.0;
+		double twoNorm = 0.0;
+
+		// calculate relative error
+		relError.sub(EvalCuboidValues);
+		relError.componentwise_div(EvalCuboidValues);
+
+		// calculate max. norm of relative error
+		maxNorm = relError.maxNorm();
+
+		// calculate two norm of relative error
+		relError.componentwise_mult(relError);
+		twoNorm = relError.sum();
+		twoNorm = twoNorm / static_cast<double>(relError.getSize());
+		twoNorm = sqrt(twoNorm);
+
+		// Printing norms
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+	}
+	else
+	{
+		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
+	}
+
 	delete myBSSolver;
 	delete myBoundingBox;
 	delete alpha;
@@ -726,9 +781,10 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  * @param refinePercent percantage of points that should be refined before Black Scholes Equation is solved
+ * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  */
 void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
-		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent)
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent, size_t nIterAdaptSteps)
 {
 	size_t dim = d;
 	size_t level = l;
@@ -774,9 +830,15 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// refine the grid to approximate the singularity in the start solution better
-	myBSSolver->refineInitialGridSurplus(*alpha, refinePercent);
-	std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+	{
+		std::cout << "Refining Grid..." << std::endl;
+		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent);
+		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+	}
+	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -804,7 +866,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
@@ -832,6 +894,49 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		point.push_back(1.0);
 	}
 	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+
+	// calculate relative errors
+	////////////////////////////
+
+	// read Evaluation cuboid
+	DataVector EvalCuboid(1, dim);
+	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+
+	// read reference values for evaluation cuboid
+	DataVector EvalCuboidValues(1);
+	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+
+	if (retCuboid == 0 && retCuboidValues == 0)
+	{
+		std::cout << "Calculating relative errors..." << std::endl;
+		// Evaluate Cuboid
+		DataVector Prices(EvalCuboid.getSize());
+		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
+
+		DataVector relError(Prices);
+		double maxNorm = 0.0;
+		double twoNorm = 0.0;
+
+		// calculate relative error
+		relError.sub(EvalCuboidValues);
+		relError.componentwise_div(EvalCuboidValues);
+
+		// calculate max. norm of relative error
+		maxNorm = relError.maxNorm();
+
+		// calculate two norm of relative error
+		relError.componentwise_mult(relError);
+		twoNorm = relError.sum();
+		twoNorm = twoNorm / static_cast<double>(relError.getSize());
+		twoNorm = sqrt(twoNorm);
+
+		// Printing norms
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+	}
+	else
+	{
+		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
+	}
 
 	delete myBSSolver;
 	delete myBoundingBox;
@@ -901,7 +1006,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha);
+		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else
 	{
@@ -1049,9 +1154,10 @@ void writeHelp()
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	Adapt-Refinement Percent: Percent of grid points that should be refined" << std::endl;
+	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50 10" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1177,7 +1283,7 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "solveNDadaptSurplus")
 	{
-		if (argc != 15)
+		if (argc != 16)
 		{
 			writeHelp();
 		}
@@ -1196,7 +1302,7 @@ int main(int argc, char *argv[])
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]));
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]));
 		}
 	}
 	else if (option == "solveBonn")

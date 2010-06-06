@@ -237,7 +237,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		myStopwatch->start();
 		if (numIESteps > 0)
 		{
-			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
+			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl;
 			myBSSystem->setODESolver("ImEul");
 			myEuler->solve(*myCG, *myBSSystem, false);
 		}
@@ -315,7 +315,7 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, st
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::initGridWithEuroCallPayoff : A grid wasn't constructed before!");
+		throw new application_exception("BlackScholesSolver::initGridWithPayoff : A grid wasn't constructed before!");
 	}
 }
 
@@ -372,7 +372,7 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 void BlackScholesSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
-	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.1.1", "Alexander Heinecke, (C) 2009-2010");
+	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.2.0", "Alexander Heinecke, (C) 2009-2010");
 	this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 

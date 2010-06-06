@@ -19,6 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
+from bin.data.DataContainer import DataContainer
 
 
 import ConfigParser, os
@@ -33,7 +34,9 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 from bin.controller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
 from bin.learner.LearnerBuilder import LearnerBuilder
 from bin.data.ARFFAdapter import ARFFAdapter
+from bin.data.DataContainer import DataContainer
 from bin.learner.Types import BorderTypes
+import types
 
 
 ## The class provides the functionality for launching of learning jobs from
@@ -132,7 +135,16 @@ class TerminalController:
         options = TerminalController.itemsToDict(configuration.items('data'))
         
         if options['file_type'] == 'arff':
-            if options.has_key('train_file'): builder.withTrainingDataFromARFFFile(options['train_file'])
+            if options.has_key('train_file'): 
+                if type(options['train_file']) != types.ListType:
+                    builder.withTrainingDataFromARFFFile(options['train_file'])
+                else:
+                    fileCounter = 0
+                    for train_file in options['train_file']:
+                        builder.withTrainingDataFromARFFFile(train_file, DataContainer.TRAIN_CATEGORY + str(fileCounter))
+                        fileCounter += 1
+                                                            
+                        
             else: raise Exception('Path to file with training data set is not defined in configurationfile')
             
             if options.has_key('test_file'): builder.withTestingDataFromARFFFile(options['test_file'])
@@ -223,17 +235,14 @@ class TerminalController:
         
         # Folding
         options = TerminalController.itemsToDict(configuration.items('folding'))
-        if options.type in ['fold', 'folds'] :
-            if options.type == 'fold':
-                builder.withRandomFoldingPolicy()
-                
-            elif options.type == 'folds':
-                builder.withSequentialFoldingPolicy()
+        if options.type in ['fold', 'folds', 'foldstratified', 'foldr', 'foldf'] :
+            if options.type == 'fold': builder.withRandomFoldingPolicy() 
+            elif options.type == 'folds': builder.withSequentialFoldingPolicy()
+            elif options.type in ['foldstratified', 'foldr']: builder.withStratifiedFoldingPolicy()
+            elif options.type == 'foldf': builder.withFilesFoldingPolicy()
             if options.seed: builder.withSeed(options.seed)
             if options.level: builder.withLevel(options.level)
-        elif options.type in ['foldstratified', 'foldr', 'foldf']:
-            # @todo (khakhutv) implementd this fency folding strategies
-            raise Exception('The requested folding strategy is not implemented yet')
+        else: raise Exception('Unknown folding type')
             
         
         options = TerminalController.itemsToDict(configuration.items('learner'))
@@ -269,10 +278,14 @@ class TerminalController:
         
         
         #dataset options
-        if len(options.data) > 0:
-            #@todo (khakhutv) here implement the option to load from a number of files
+        if len(options.data) == 1:
             #@todo (khakhutv) it may make sense for crossfold validation to separate data set into chunks and then use the same chunks for different instance
             builder.withTrainingDataFromARFFFile(options.data[0])
+        elif len(options.data) > 1:
+            fileCounter = 0
+            for filename in options.data:
+                builder.withTrainingDataFromARFFFile(filename, DataContainer.TRAIN_CATEGORY + str(fileCounter))
+                fileCounter += 1
         else: 
             raise Exception('Define the path to the training data set')
             
@@ -338,14 +351,14 @@ class TerminalController:
             builder.withCheckpointController(checkpointController)
             
         # Folding
-        # @todo (khakhutv) implement folding for configuration from file
-        if options.mode in ['fold', 'folds'] :
-            if options.mode == 'fold':
-                builder.withRandomFoldingPolicy()
-            elif options.mode == 'folds':
-                builder.withSequentialFoldingPolicy()
+        if options.mode in ['fold', 'folds', 'foldstratified', 'foldf', 'foldr'] :
+            if options.mode == 'fold': builder.withRandomFoldingPolicy()
+            elif options.mode == 'folds': builder.withSequentialFoldingPolicy()
+            elif options.mode in ['foldstratified', 'foldr']: builder.withStratifiedFoldingPolicy()
+            elif options.mode == 'foldf': builder.withFilesFoldingPolicy()
             if options.seed: builder.withSeed(options.seed)
             if options.level: builder.withLevel(options.level)
+        else: raise Exception('Unknown folding type')
             
             
         #Get Results and perform wanted action
@@ -357,11 +370,8 @@ class TerminalController:
             learner.learnDataWithTest()
         elif options.mode == 'apply':
             learner.applyData( ARFFAdapter(options.data).loadData().getPoints() )
-        elif options.mode in ['fold', 'folds']:
+        elif options.mode in ['fold', 'folds', 'foldstratified', 'foldf', 'foldr']:
             builder.getCheckpointController().generateFoldValidationJob('PUT_YOUR_EMAIL_HERE')
-        elif options.mode in ['foldstratified', 'foldr', 'foldf']:
-            # @todo (khakhutv) implementd this fency folding strategies
-            raise Exception('The requested folding strategy is not implemented yet')
         elif options.mode in ['eval', 'evalstdin']:
             # @todo (khakhutv) does it have to be implemented?
             raise Exception('This action is not implemented yet')
@@ -379,7 +389,16 @@ class TerminalController:
     def itemsToDict(cls, items):
         result = {}
         for item in items:
-            result[item[0]] = item[1]
+            if result.has_key(item[0]) == False:
+                result[item[0]] = item[1]
+            else:
+                # the old value is already a list
+                if type( result[item[0]] ) == types.ListType:
+                    result[ item[0] ].append( item[1] )
+                # create new list with old and new values
+                else:
+                    result[item[0]] = [ result[item[0]], item[1] ]
+            
             
         return result
     

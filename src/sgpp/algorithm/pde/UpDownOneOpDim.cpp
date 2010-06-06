@@ -50,7 +50,7 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 		}
 		if (this->coefs != NULL)
 		{
-			result.axpy_parallel(this->coefs->get(i),beta);
+			result.axpy(this->coefs->get(i),beta);
 		}
 		else
 		{

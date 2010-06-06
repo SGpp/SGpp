@@ -31,7 +31,7 @@ namespace sg {
  * @param classes the classes computed by the sparse grid's classification algorithm
  */
 template<class BASIS>
-double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes)
+double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& classes)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -53,7 +53,7 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 			IndexValVector vec;
 			double result = 0;
 
-			data.getLine(i, point);
+			data.getRow(i, point);
 
 			ga(basis, point, vec);
 
@@ -84,7 +84,7 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 		IndexValVector vec;
 		double result = 0;
 
-		data.getLine(i, point);
+		data.getRow(i, point);
 
 		ga(basis, point, vec);
 
@@ -115,7 +115,7 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
  * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
  */
 template<class BASIS>
-double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis, DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
+double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -141,7 +141,7 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 			IndexValVector vec;
 			double result = 0;
 
-			data.getLine(i, point);
+			data.getRow(i, point);
 
 			ga(basis, point, vec);
 
@@ -195,7 +195,7 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 		IndexValVector vec;
 		double result = 0;
 
-		data.getLine(i, point);
+		data.getRow(i, point);
 
 		ga(basis, point, vec);
 

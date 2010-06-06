@@ -91,132 +91,6 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 	delete this->rhs;
 }
 
-void BlackScholesODESolverSystem::mult(DataVector& alpha, DataVector& result)
-{
-	if (this->tOperationMode == "ExEul")
-	{
-		result.setAll(0.0);
-
-		applyMassMatrixInner(alpha, result);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		result.setAll(0.0);
-
-		DataVector temp(alpha.getSize());
-
-		applyMassMatrixInner(alpha, temp);
-		result.add_parallel(temp);
-
-		applyLOperatorInner(alpha, temp);
-		result.axpy_parallel((-1.0)*this->TimestepSize, temp);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		result.setAll(0.0);
-
-		DataVector temp(alpha.getSize());
-
-		applyMassMatrixInner(alpha, temp);
-		result.add_parallel(temp);
-
-		applyLOperatorInner(alpha, temp);
-		result.axpy_parallel((-0.5)*this->TimestepSize, temp);
-	}
-	else
-	{
-		throw new algorithm_exception("BlackScholesTimestepMatrix::mult : An unknown operation mode was specified!");
-	}
-}
-
-DataVector* BlackScholesODESolverSystem::generateRHS()
-{
-	DataVector rhs_complete(this->alpha_complete->getSize());
-
-	if (this->tOperationMode == "ExEul")
-	{
-		rhs_complete.setAll(0.0);
-
-		DataVector temp(this->alpha_complete->getSize());
-
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add_parallel(temp);
-
-		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy_parallel(this->TimestepSize, temp);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		rhs_complete.setAll(0.0);
-
-		applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		rhs_complete.setAll(0.0);
-
-		DataVector temp(this->alpha_complete->getSize());
-
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		rhs_complete.add_parallel(temp);
-
-		applyLOperatorComplete(*this->alpha_complete, temp);
-		rhs_complete.axpy_parallel((0.5)*this->TimestepSize, temp);
-	}
-	else
-	{
-		throw new algorithm_exception("BlackScholesTimestepMatrix::generateRHS : An unknown operation mode was specified!");
-	}
-
-	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
-	this->startTimestep();
-
-	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-	DataVector result_complete(this->alpha_complete->getSize());
-	DataVector alpha_bound(*this->alpha_complete);
-
-	result_complete.setAll(0.0);
-
-	this->BoundaryUpdate->setInnerPointsToZero(alpha_bound);
-
-	// apply CG Matrix
-	if (this->tOperationMode == "ExEul")
-	{
-		applyMassMatrixComplete(alpha_bound, result_complete);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		DataVector temp(alpha_bound.getSize());
-
-		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add_parallel(temp);
-
-		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy_parallel((-1.0)*this->TimestepSize, temp);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		DataVector temp(alpha_bound.getSize());
-
-		applyMassMatrixComplete(alpha_bound, temp);
-		result_complete.add_parallel(temp);
-
-		applyLOperatorComplete(alpha_bound, temp);
-		result_complete.axpy_parallel((-0.5)*this->TimestepSize, temp);
-	}
-	else
-	{
-		throw new algorithm_exception("BlackScholesTimestepMatrix::generateRHS : An unknown operation mode was specified (mult)!");
-	}
-	rhs_complete.sub(result_complete);
-
-	this->rhs->resize(this->alpha_inner->getSize());
-
-	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
-
-	return this->rhs;
-}
-
 void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
@@ -227,16 +101,16 @@ void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, Data
 	if (this->r != 0.0)
 	{
 		this->OpLTwoBound->mult(alpha, temp);
-		result.axpy_parallel((-1.0)*this->r, temp);
+		result.axpy((-1.0)*this->r, temp);
 	}
 
 	// Apply the delta method
 	this->OpDeltaBound->mult(alpha, temp);
-	result.add_parallel(temp);
+	result.add(temp);
 
 	// Apply the gamma method
 	this->OpGammaBound->mult(alpha, temp);
-	result.sub_parallel(temp);
+	result.sub(temp);
 }
 
 void BlackScholesODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
@@ -249,16 +123,16 @@ void BlackScholesODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVec
 	if (this->r != 0.0)
 	{
 		this->OpLTwoInner->mult(alpha, temp);
-		result.axpy_parallel((-1.0)*this->r, temp);
+		result.axpy((-1.0)*this->r, temp);
 	}
 
 	// Apply the delta method
 	this->OpDeltaInner->mult(alpha, temp);
-	result.add_parallel(temp);
+	result.add(temp);
 
 	// Apply the gamma method
 	this->OpGammaInner->mult(alpha, temp);
-	result.sub_parallel(temp);
+	result.sub(temp);
 }
 
 void BlackScholesODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
@@ -270,7 +144,7 @@ void BlackScholesODESolverSystem::applyMassMatrixComplete(DataVector& alpha, Dat
 	// Apply the mass matrix
 	this->OpLTwoBound->mult(alpha, temp);
 
-	result.add_parallel(temp);
+	result.add(temp);
 }
 
 void BlackScholesODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVector& result)
@@ -282,7 +156,7 @@ void BlackScholesODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVe
 	// Apply the mass matrix
 	this->OpLTwoInner->mult(alpha, temp);
 
-	result.add_parallel(temp);
+	result.add(temp);
 }
 
 void BlackScholesODESolverSystem::finishTimestep()
@@ -310,11 +184,6 @@ void BlackScholesODESolverSystem::startTimestep()
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
 	}
-}
-
-Grid* BlackScholesODESolverSystem::getGrid()
-{
-	return BoundGrid;
 }
 
 void BlackScholesODESolverSystem::buildGammaCoefficients()
@@ -407,28 +276,6 @@ void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
 		}
 		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
 	}
-}
-
-DataVector* BlackScholesODESolverSystem::getGridCoefficientsForCG()
-{
-	this->GridConverter->calcInnerCoefs(*this->alpha_complete, *this->alpha_inner);
-
-	return this->alpha_inner;
-}
-
-DataVector* BlackScholesODESolverSystem::getGridCoefficients()
-{
-	return this->alpha_complete;
-}
-
-void BlackScholesODESolverSystem::setODESolver(std::string ode)
-{
-	this->tOperationMode = ode;
-}
-
-std::string BlackScholesODESolverSystem::getODESolver()
-{
-	return this->tOperationMode;
 }
 
 }

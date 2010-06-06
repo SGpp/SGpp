@@ -39,12 +39,18 @@ class _StringGenerator(object):
 	def all(self):
 		return self.string
 
+
+## Exceptions which can happen during the writing process
 class WriteException(Exception):
     pass
 
+
+## Exceptions which can happen during the reading process
 class ReadException(Exception):
     pass
 
+
+## Reader for json-formatted objects
 class JsonReader(object):
     hex_digits = {'A': 10,'B': 11,'C': 12,'D': 13,'E': 14,'F':15}
     escapes = {'t':'\t','n':'\n','f':'\f','r':'\r','b':'\b'}
@@ -244,6 +250,8 @@ class JsonReader(object):
     def _next(self):
         return self._generator.next()
 
+
+## Writer for json-formatted objects
 class JsonWriter(object):
         
     def _append(self, s):

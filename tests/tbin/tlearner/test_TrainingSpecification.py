@@ -34,6 +34,18 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.LearnedKnowledge import LearnedKnowledge
 
+
+##
+# @package tests.tbin.test_TrainingSpecification
+# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link bin.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+
+##
+# Class with unittests for @link bin.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# @todo (khakhutv) implement the test case for TrainingSpecification
 class TestTrainingSpecification(unittest.TestCase):
 
     def testSetLambda(self, ):

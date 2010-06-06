@@ -31,9 +31,15 @@ from matplotlib import pyplot
 from matplotlib.lines import Line2D
 
 
+## This class processes the information about the current state of the learning 
+# process and presents it in form of a graph.
+# In order to use this class the <a href="http://matplotlib.sourceforge.net" target="new">matplotlib library</a> is required.
 class InfoToGraph(LearnerEventController, SolverEventController):
     
-    LEARNER_FIGURE = 1
+    ##The constant figure ID of the plot with learner information
+    LEARNER_FIGURE = 1 
+    
+    ##The constant figure ID of the plot with solver information
     SOLVER_FIGURE = 2
         
     __solverFigure = None

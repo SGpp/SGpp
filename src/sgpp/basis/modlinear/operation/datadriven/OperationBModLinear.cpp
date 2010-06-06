@@ -13,11 +13,12 @@
 #include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 namespace sg
 {
 
-void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModLinear::mult(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModLinearBase> op;
 	modified_linear_base<unsigned int, unsigned int> base;
@@ -25,7 +26,7 @@ void OperationBModLinear::mult(DataVector& alpha, DataVector& data, DataVector& 
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBModLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModLinear::multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModLinearBase> op;
 	modified_linear_base<unsigned int, unsigned int> base;

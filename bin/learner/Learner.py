@@ -23,8 +23,8 @@
 
 
 from bin.pysgpp import *
-from CGSolver import CGSolver
-from bin.learner.FoldingPolicy import FoldingPolicy
+from bin.learner.solver.CGSolver import CGSolver
+from bin.learner.folding.FoldingPolicy import FoldingPolicy
 import bin.utils.json as json
 from bin.learner.TrainingStopPolicy import TrainingStopPolicy
 from bin.learner.TrainingSpecification import TrainingSpecification
@@ -55,7 +55,7 @@ import types
 # - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from LinearSolver. 
-# See documentation of@link bin.learner.LinearSolver.LinearSolver LinearSolver@endlink for more information.
+# See documentation of@link bin.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
 class Learner(object):
     
     ##list of object listening to the learning events

@@ -69,7 +69,7 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 			{
 				if (this->coefs != NULL)
 				{
-					result.axpy_parallel(this->coefs->get((storage->dim()*i)+j),beta);
+					result.axpy(this->coefs->get((storage->dim()*i)+j),beta);
 				}
 				else
 				{
