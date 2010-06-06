@@ -13,14 +13,14 @@ import unittest, tools
 # @param data a list of lists that contains the points a the training data set, coordinate-wise
 # @return a instance of a DataVector that stores the training data
 def buildTrainingVector(data):
-    from pysgpp import DataVector
+    from pysgpp import DataMatrix
     dim = len(data["data"])
-    training = DataVector(len(data["data"][0]), dim)
+    training = DataMatrix(len(data["data"][0]), dim)
     
     # i iterates over the data points, d over the dimension of one data point
     for i in xrange(len(data["data"][0])):
         for d in xrange(dim):
-            training[i*dim + d] = data["data"][d][i]
+            training.set(i, d, data["data"][d][i])
     
     return training
 
@@ -38,16 +38,16 @@ def openFile(filename):
 
 
 def generateBTMatrix(factory, training, verbose=False):
-    from pysgpp import DataVector
+    from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
        
     b = factory.createOperationB()
     
     alpha = DataVector(storage.size())
-    temp = DataVector(training.getSize())
+    temp = DataVector(training.getNrows())
     
     # create BT matrix
-    m = DataVector(training.getSize(), storage.size())
+    m = DataMatrix(training.getNrows(), storage.size())
     
     for i in xrange(storage.size()):
         # apply unit vectors
@@ -63,7 +63,7 @@ def generateBTMatrix(factory, training, verbose=False):
 
 
 def readReferenceMatrix(self, storage, filename):
-    from pysgpp import DataVector
+    from pysgpp import DataMatrix
     # read reference matrix
     try:
         fd = tools.gzOpen(filename, 'r')
@@ -81,10 +81,10 @@ def readReferenceMatrix(self, storage, filename):
     # right number of entries?
     self.assertEqual(storage.size(), len(dat[0]))
 
-    m_ref = DataVector(len(dat), len(dat[0]))
+    m_ref = DataMatrix(len(dat), len(dat[0]))
     for i in xrange(len(dat)):
         for j in xrange(len(dat[0])):
-            m_ref[i*len(dat[0]) + j] = float(dat[i][j])
+            m_ref.set(i, j, float(dat[i][j]))
 
     return m_ref
 
@@ -145,11 +145,11 @@ def compareBTMatrices(testCaseClass, m1, m2):
     from pysgpp import DataVector
 
     # check dimensions
-    testCaseClass.assertEqual(m1.getSize(), m2.getSize())
-    testCaseClass.assertEqual(m1.getDim(), m2.getDim())
+    testCaseClass.assertEqual(m1.getNrows(), m2.getNrows())
+    testCaseClass.assertEqual(m1.getNcols(), m2.getNcols())
 
-    n = m1.getSize() # lines
-    m = m1.getDim()  # columns
+    n = m1.getNrows() # lines
+    m = m1.getNcols() # columns
 
     # check row sum
     v = DataVector(m)
