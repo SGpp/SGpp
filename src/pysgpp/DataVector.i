@@ -9,10 +9,10 @@
 %apply std::string *OUTPUT { std::string& text };
 %rename(__str__) DataVector::toString;
 
-%rename(__getitem__) DataVector::get(int i) const;
-%rename(__setitem__) DataVector::set(int i, double value);
+%rename(__getitem__) DataVector::get(size_t i) const;
+%rename(__setitem__) DataVector::set(size_t i, double value);
 %rename(assign) DataVector::operator=;
-%rename(__len__) DataVector::getTotalSize;
+%rename(__len__) DataVector::getSize;
 
 class DataVector
 {

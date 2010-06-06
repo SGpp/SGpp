@@ -416,7 +416,7 @@ public:
 	void normalizeDimension(size_t d);
 
 	/**
-     * Normalizes the d-th dimension (entries in the d-th column) to @f$[\text{border},1-\text{border}]@f$.
+     * Normalizes the d-th dimension (entries in the d-th column) to @f$[border,1-border]@f$.
      * Considers contents of DataMatrix as a d-dimensional dataset, one
      * data point per row.
      *
