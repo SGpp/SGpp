@@ -125,12 +125,13 @@ public:
 	 */
 	void copyFrom(const DataMatrix& matr);
 
-//	/**
-//	 * copies the data from another DataMatrix
-//	 *
-//	 * @param vec the DataMatrix containing the data
-//	 */
-//	DataMatrix& operator=(const DataMatrix& vec);
+	/**
+	 * Copies the data from another DataMatrix.
+	 * Dimensions have to match.
+	 *
+	 * @param matr the DataMatrix containing the data
+	 */
+	DataMatrix& operator=(const DataMatrix& matr);
 
 	/**
 	 * Returns the i-th element.

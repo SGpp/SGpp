@@ -221,9 +221,9 @@ public:
 	 *
 	 * \f$ \int_{\Omega} S_i S_j \frac{\partial u(\vec{s}}{\partial S_i} \frac{\partial v(\vec{s}}{\partial S_j} d \vec{s}\f$
 	 *
-	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
+	 * @param coef reference to a DataMatrix object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationGamma(DataVector& coef) = 0;
+	virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
 
 	/**
 	 * this operation allows you to calculate the following bilinear form
@@ -243,7 +243,7 @@ public:
 	 *
 	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationGammaLog(DataVector& coef) = 0;
+	virtual OperationMatrix* createOperationGammaLog(DataMatrix& coef) = 0;
 
 	/**
 	 * gets a pointer to OperationIdentity (OperationMatrix) object

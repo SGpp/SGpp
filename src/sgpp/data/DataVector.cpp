@@ -228,9 +228,11 @@ DataVector& DataVector::operator=(const DataVector &vec) {
     }
 
     if (size != vec.size) {
-        delete[] data;
-        size = vec.size;
-        this->data = new double[size];
+		throw new sg::data_exception(
+				"DataVector::add : Dimensions do not match");
+//        delete[] data;
+//        size = vec.size;
+//        this->data = new double[size];
     }
     memcpy(this->data, vec.data, size * sizeof(double));
     return *this;

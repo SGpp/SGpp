@@ -229,6 +229,19 @@ void DataMatrix::copyFrom(const DataMatrix& matr) {
  return *this;
  }
  */
+DataMatrix& DataMatrix::operator=(const DataMatrix &matr) {
+    if (this == &matr) {
+        return *this;
+    }
+
+    if (nrows*ncols != matr.ncols*matr.nrows) {
+		throw new sg::data_exception(
+				"DataMatrix::= : Dimensions do not match");
+    }
+    memcpy(this->data, matr.data, nrows*ncols * sizeof(double));
+    return *this;
+}
+
 
 void DataMatrix::add(DataMatrix &matr) {
 	if (this->nrows != matr.nrows || this->ncols != matr.ncols) {

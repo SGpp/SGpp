@@ -10,6 +10,7 @@
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 #include "operation/pde/OperationODESolverSystem.hpp"
 
 namespace sg
@@ -45,7 +46,7 @@ protected:
 	/// Pointer to the coefficients of operation Delta
 	DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
-	DataVector* gammaCoef;
+	DataMatrix* gammaCoef;
 
 	void applyLOperatorInner(DataVector& alpha, DataVector& result);
 

@@ -108,7 +108,7 @@ OperationMatrix* LinearBoundaryGrid::createOperationDelta(DataVector& coef)
 	return new OperationDeltaLinearBoundary(this->storage, coef);
 }
 
-OperationMatrix* LinearBoundaryGrid::createOperationGamma(DataVector& coef)
+OperationMatrix* LinearBoundaryGrid::createOperationGamma(DataMatrix& coef)
 {
 	return new OperationGammaLinearBoundary(this->storage, coef);
 }
@@ -118,7 +118,7 @@ OperationMatrix* LinearBoundaryGrid::createOperationDeltaLog(DataVector& coef)
 	return new OperationDeltaLogLinearBoundary(this->storage, coef);
 }
 
-OperationMatrix* LinearBoundaryGrid::createOperationGammaLog(DataVector& coef)
+OperationMatrix* LinearBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	return new OperationGammaLogLinearBoundary(this->storage, coef);
 }

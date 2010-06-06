@@ -159,9 +159,9 @@ public:
 //	void copySmall(const DataVector& vec);
 
 	/**
-	 * copies the data from another DataVector
+	 * Copies the data from another DataVector.
+	 * Dimensions have to match.
 	 *
-	 * @todo (pflueged) Adapt functionality
 	 * @param vec the DataVector containing the data
 	 */
 	DataVector& operator=(const DataVector& vec);
