@@ -34,21 +34,32 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
+from bin.learner.formatter.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
 from bin.learner.LearnedKnowledge import LearnedKnowledge
 from bin.pysgpp import DataVector
 
 
+##
+# @package tests.tbin.test_LearnedKnowledgeFormatter
+# Contains class test_LearnedKnowledgeFormatte::TestLearnedKnowledgeFormatter with unittests for @link bin.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+
+##
+# Class with unittests for @link bin.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
 class TestLearnedKnowledgeFormatter(unittest.TestCase):
     
-    formatter = None
-    filename_load = pathlocal + "/datasets/load.alpha.arff"
-    filename_save = pathlocal + "/datasets/save.alpha.arff"
-    
+    ## Set up the variables
     def setUp(self,):
+        self.filename_load = pathlocal + "/datasets/load.alpha.arff"
+        self.filename_save = pathlocal + "/datasets/save.alpha.arff"
         self.formatter = LearnedKnowledgeFormatter()
 
     
+    ##
+    # Tests the function @link bin.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.deserializeFromFile() LearnedKnowledgeFormatter.deserializeFromFile() @endlink
     def testLoad(self,):
         alphas = self.formatter.deserializeFromFile(self.filename_load)
         self.assertEqual(alphas.getSize(), 10)
@@ -59,7 +70,10 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
             alphas.getRow(i, row)
             self.assertAlmostEqual(row[0], a)
             a = a + 0.1
-        
+    
+    
+    ##
+    # Tests the functions @link bin.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.serializeToFile() LearnedKnowledgeFormatter.serializeToFile() @endlink    
     def testSave(self,):
         alphas = DataVector(10)
         a = 0.1

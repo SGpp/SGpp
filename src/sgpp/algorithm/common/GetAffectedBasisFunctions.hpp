@@ -46,6 +46,8 @@ namespace sg {
  *   \image html GetAffectedBasisFunctions_subspaces_affectedBasisFunctions_recursive.png "Minimize the number of evaluations" width=10cm
  * Descending recursively in the d-th dimension, one can propagate the value of the intermediate function
  * evaluation for the first d-1 dimensions that have already been looked at.
+ *
+ * @todo (heinecke) add bounding box support for every grid type
  */
 template<class BASIS>
 class GetAffectedBasisFunctions {
@@ -401,10 +403,6 @@ public:
 protected:
     GridStorage* storage;
 
-    /**
-     * Example implementation of storage agnostic algorithm.
-     * Returns all affected base functions
-     */
     void rec(SModBsplineBase& base, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
     {
         typedef GridStorage::index_type::level_type level_type;
@@ -531,6 +529,9 @@ protected:
 
 };
 
+/**
+ * Template Specialization for linearboundaryBase basis.
+ */
 template<>
 class GetAffectedBasisFunctions<linearboundaryBase<unsigned int, unsigned int> >
 {

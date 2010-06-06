@@ -37,8 +37,8 @@ public:
 	 */
 	virtual ~OperationBModPoly() {}
 
-	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
-	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
+	virtual void mult(DataVector& alpha, DataMatrix& data, DataVector& result);
+	virtual void multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result);
 
 protected:
 	/// Pointer to GridStorage object

@@ -17,12 +17,12 @@
 namespace sg
 {
 
-double OperationTestModPoly::test(DataVector& alpha, DataVector& data, DataVector& classes)
+double OperationTestModPoly::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
 {
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestModPoly::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestModPoly::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
 {
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }

@@ -27,6 +27,7 @@ Import("env")
 
 srcs = Split("""
 data/DataVector.cpp
+data/DataMatrix.cpp
 
 grid/Grid.cpp
 
@@ -136,6 +137,8 @@ basis/modbspline/operation/datadriven/OperationBModBspline.cpp
 basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 basis/modbspline/operation/common/OperationEvalModBspline.cpp
 basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
+
+operation/pde/OperationODESolverSystem.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
 algorithm/pde/BlackScholesODESolverSystem.cpp

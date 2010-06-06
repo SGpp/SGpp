@@ -50,7 +50,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
-	EvalCuboidGenerator.o
+	EvalCuboidGenerator.o OperationODESolverSystem.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -402,6 +402,9 @@ UpDownOneOpDim.o : $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
 
 UpDownTwoOpDims.o : $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownTwoOpDims.o $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
+	
+OperationODESolverSystem.o : $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationODESolverSystem.o $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
 	
 clean:
 	rm *

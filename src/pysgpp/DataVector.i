@@ -1,26 +1,9 @@
-/*****************************************************************************/
-/* This file is part of pysgpp, a program package making use of spatially    */
-/* adaptive sparse grids to solve numerical problems                         */
-/*                                                                           */
-/* Copyright (C) 2008 Joerg Blank (blankj@in.tum.de)                         */
-/* Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       */
-/*               2008-2010 Dirk Pflueger (Dirk.Pflueger@in.tum.de)           */
-/*                                                                           */
-/* pysgpp is free software; you can redistribute it and/or modify            */
-/* it under the terms of the GNU Lesser General Public License as published  */
-/* by the Free Software Foundation; either version 3 of the License, or      */
-/* (at your option) any later version.                                       */
-/*                                                                           */
-/* pysgpp is distributed in the hope that it will be useful,                 */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
-/* GNU Lesser General Public License for more details.                       */
-/*                                                                           */
-/* You should have received a copy of the GNU Lesser General Public License  */
-/* along with pysgpp; if not, write to the Free Software                     */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
-/* or see <http://www.gnu.org/licenses/>.                                    */
-/*****************************************************************************/
+/******************************************************************************
+* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+******************************************************************************/
+// @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
 %apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
@@ -34,24 +17,26 @@
 class DataVector
 {
 public:
-	DataVector(int size);
-	DataVector(int size, int dim);
+	DataVector(size_t size);
+//	DataVector(size_t size, size_t dim);
 	DataVector(DataVector& vec);
-	DataVector(double* input, int size, int dim);
+	DataVector(double* input, size_t size);
 	
-	void resize(int size);
-	void addSize(int add);
-	int addValue();
+	void resize(size_t size);
+	void resizeZero(size_t size);
+	void addSize(size_t add);
+	size_t append();
+	size_t append(double value);
 	
 	void setAll(double value);
 	
 	void copyFrom(const DataVector& vec);
-	void copySmall(const DataVector& vec);
+//	void copySmall(const DataVector& vec);
 	DataVector& operator=(const DataVector& vec);	
 	
-	double get(int i) const;
+	double get(size_t i) const;
 //	double get(int row, int col) const;
-	void set(int i, double value);
+	void set(size_t i, double value);
 //	void set(int row, int col, double value);
 
 	void add(DataVector& vec);
@@ -59,35 +44,33 @@ public:
 	void componentwise_mult(DataVector& vec);
 	void componentwise_div(DataVector& vec);
 	void mult(double scalar);
-	
 	void sqr();
+	void sqrt();
 	void abs();
 	double sum();
+	double min();
+	double max();
+	void minmax(double* min, double* max);
+	double maxNorm();
+	double dotProduct(DataVector& vec);
 	
 	void axpy(double alpha, DataVector& x);
 	
-	void getRow(int row, DataVector& vec);
-	void setRow(int row, DataVector& vec);
-	void getColumn(int col, DataVector& vec);
-	void setColumn(int col, DataVector& vec);
+//	void getRow(size_t row, DataVector& vec);
+//	void setRow(size_t row, DataVector& vec);
+//	void getColumn(size_t col, DataVector& vec);
+//	void setColumn(size_t col, DataVector& vec);
 	
-	double dotProduct(DataVector& vec);
-	
-	int getSize();
-	int getDim();
-	int getTotalSize();	
-	inline int getUnused();
+	size_t getSize();
+	size_t getUnused();
+	size_t getInc();
+	void setInc(size_t inc_elems);
+	size_t getNumberNonZero();	
 		
 	void partitionClasses(double border);
-	void normalizeDimension(int d);
-	void normalizeDimension(int d, double border);
+	void normalize();
+	void normalize(double border);
 	
-	double min(int d);
-	double min();
-	double max(int d);
-	double max();
-	void minmax(int d, double* min, double* max);
-	
-	void toString(std::string& text);
+	std::string toString();
 
 };

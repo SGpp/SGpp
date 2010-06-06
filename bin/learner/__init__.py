@@ -20,20 +20,11 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-from CGSolver import CGSolver
 from Classifier import Classifier
-from FoldingPolicy import FoldingPolicy
-from GridFormatter import GridFormatter
 from LearnedKnowledge import LearnedKnowledge
-from LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
-from LearnerFormatter import LearnerFormatter
 from Learner import Learner, LearnerEvents
 from LearnerBuilder import LearnerBuilder
-from LinearSolver import LinearSolver, LinearSolverEvents
-from RandomFoldingPolicy import RandomFoldingPolicy
 from Regressor import Regressor
-from SequentialFoldingPolicy import SequentialFoldingPolicy
-from StratifiedFoldingPolicy import StratifiedFoldingPolicy
 from TrainingSpecification import TrainingSpecification
 from TrainingStopPolicy import TrainingStopPolicy
 from Types import BorderTypes, SolverTypes

@@ -38,10 +38,21 @@ from bin.data.ARFFAdapter import ARFFAdapter
 from bin.pysgpp import DataVector
 
 
+##
+# @package tests.tbin.test_ARFFAdapter
+# Contains class test_ARFFAdapter::TestARFFAdapter with unittests for @link bin.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+
+##
+# Class with unittests for @link bin.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+#
+# @ingroup tests
+#
+# @test Unittests for @link bin.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
 class TestARFFAdapter(unittest.TestCase):
     
 
-    
+    ##
+    # Tests the function @link bin.data.ARFFAdapter.ARFFAdapter.save() ARFFAdapter.save() @endlink
     def testSave(self):
         filename = pathlocal + '/datasets/saving.arff.gz'
         testPoints = [[0.307143,0.130137,0.050000],
@@ -85,7 +96,9 @@ class TestARFFAdapter(unittest.TestCase):
                 self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[colIdx], testValues[colIdx])
         
-        
+    
+    ##
+    # Tests the function @link bin.data.ARFFAdapter.ARFFAdapter.loadData() ARFFAdapter.loadData() @endlink   
     def testLoadData(self):
         testPoints = [[0.307143,0.130137,0.050000],
                       [0.365584,0.105479,0.050000],
@@ -114,6 +127,8 @@ class TestARFFAdapter(unittest.TestCase):
             self.assertEqual(values[colIdx], testValues[colIdx])
         
 
+    ##
+    # Tests the function @link bin.data.ARFFAdapter.ARFFAdapter.loadSpecification() ARFFAdapter.loadSpecification() @endlink
     def testLoadSpecification(self):
         attributes = {
                       "x0":"NUMERIC",

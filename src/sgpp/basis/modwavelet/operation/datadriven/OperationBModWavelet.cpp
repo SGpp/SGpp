@@ -11,13 +11,14 @@
 #include "sgpp.hpp"
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 #include "exception/operation_exception.hpp"
 
 namespace sg
 {
 
-void OperationBModWavelet::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModWavelet::mult(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModWaveletBase> op;
 	modified_wavelet_base<unsigned int, unsigned int> base;
@@ -25,7 +26,7 @@ void OperationBModWavelet::mult(DataVector& alpha, DataVector& data, DataVector&
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBModWavelet::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModWavelet::multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModWaveletBase> op;
 	modified_wavelet_base<unsigned int, unsigned int> base;

@@ -49,7 +49,8 @@ env = Environment(variables = vars, ENV = os.environ)
 # there are several targets avialable:
 # 	- default: using the gcc toolchain with OpenMP 2
 #	- opteronICC: using the ICC 11.x toolchain with OpenMP 3 with standard x86_64 options
-#	- core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options
+#	- core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (core architecture)
+#   - nehalemICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (nehalem architecture)
 #	- ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
 #
 # Take care that you have defined following env. variables for loading the 
@@ -98,13 +99,18 @@ elif env['TARGETCPU'] == 'core2ICC':
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
                            '-no-alias-const', '-fno-alias', '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp', '-pthread'])
+elif env['TARGETCPU'] == 'nehalemICC':
+    print "Using icc 11.x for Nehalem/Westmere systems"
+    env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
+                           '-no-alias-const', '-fno-alias', '-ansi-alias', '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing', '-openmp', '-pthread'])
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"
     Exit(1)
     
 # sets ICC-wide commen options and the tool chain   
-if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
+if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC']:
     env['CC'] = ('icc')
     env['LINK'] = ('icpc')
     env['CXX'] = ('icpc')	    
@@ -126,13 +132,13 @@ if not env.GetOption('clean'):
     config = env.Configure()
 	
     # check if the intel omp lib is available
-    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC'] and env['OMP']:
+    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC'] and env['OMP']:
         if not config.CheckLib('iomp5'):
             print "Error: Intel omp library iomp5 is missing."
             Exit(1)
                
     # check if the the intel vector lib is available
-    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC']:
+    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC']:
         if not config.CheckLib('svml'):
             print "SVML should be available when using intelc. Consider runnning scons --config=force!"
 
@@ -172,4 +178,19 @@ cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOUR
 SConscript('tests/SConscript')
 
 
-Help(vars.GenerateHelpText(env))
+# Help Text
+Help("""Type: 'scons [parameters]' to build the libraries
+
+There are compiler optimizations for different platforms which can be
+specified via parameters.
+
+Parameters can be set either by setting the corresponding environment
+variables, or directly via the commandline, e.g.,
+> scons OMP=True
+to enable OpenMP support.
+
+---------------------------------------------------------------------
+
+Parameters are:
+""" +
+vars.GenerateHelpText(env))

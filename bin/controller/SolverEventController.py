@@ -23,7 +23,7 @@
 
 ## Abstract class of Subscribers of LinearSolverEvents. The classes that wants to obtain
 # the progress notifications from LinearSolver subclasses should implement this class. See @link
-# bin.learner.LinearSolver.LinearSolver documentation of Learner@endlink for details.
+# bin.learner.solver.LinearSolver.LinearSolver documentation of Learner@endlink for details.
 class SolverEventController(object):
 
     ##
