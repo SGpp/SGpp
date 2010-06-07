@@ -42,7 +42,7 @@ protected:
 	/// Pointer to the sigmas
 	DataVector* sigmas;
 	/// Pointer to the rhos;
-	DataVector* rhos;
+	DataMatrix* rhos;
 	/// Pointer to the coefficients of operation Delta
 	DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
@@ -104,7 +104,7 @@ public:
 	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
 	 * @param MPIRank indicates the MPI-Rank of this instance, 0 indicates the master rank
 	 */
-	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul", bool bLogTransform = false, size_t MPIRank = 0);
+	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul", bool bLogTransform = false, size_t MPIRank = 0);
 
 	/**
 	 * Std-Destructor
