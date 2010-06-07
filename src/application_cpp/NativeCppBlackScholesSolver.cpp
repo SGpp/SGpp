@@ -240,7 +240,7 @@ int writeDataMatrix(DataMatrix& data, std::string tFile)
 		return -1;
 	}
 
-	for (size_t i = 0; i < data.getSize(); i++)
+	for (size_t i = 0; i < data.getNrows(); i++)
 	{
 		for (size_t j = 0; j < data.getNcols(); j++)
 		{
@@ -555,7 +555,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 		// Evaluate Cuboid
-		DataVector Prices(EvalPoints.getSize());
+		DataVector Prices(EvalPoints.getNrows());
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
 		results.push_back(Prices);
 
@@ -756,7 +756,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	{
 		std::cout << "Calculating relative errors..." << std::endl;
 		// Evaluate Cuboid
-		DataVector Prices(EvalCuboid.getSize());
+		DataVector Prices(EvalCuboid.getNrows());
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
 		DataVector relError(Prices);
@@ -935,7 +935,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		std::cout << "Calculating relative errors..." << std::endl;
 		// Evaluate Cuboid
-		DataVector Prices(EvalCuboid.getSize());
+		DataVector Prices(EvalCuboid.getNrows());
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
 		DataVector relError(Prices);

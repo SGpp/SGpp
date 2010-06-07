@@ -203,7 +203,7 @@ void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, Data
 {
 	if (bGridConstructed)
 	{
-		if (OptionPrices.getSize() != EvaluationPoints.getSize())
+		if (OptionPrices.getSize() != EvaluationPoints.getNrows())
 		{
 			throw new application_exception("PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
 		}

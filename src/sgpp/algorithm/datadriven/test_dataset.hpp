@@ -40,7 +40,7 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 #ifdef USEOMP
 	#pragma omp parallel shared(correct)
 	{
-		size_t size = data.getSize();
+		size_t size = data.getNrows();
 
 		std::vector<double> point;
 
@@ -72,7 +72,7 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 		}
 	}
 #else
-	size_t size = data.getSize();
+	size_t size = data.getNrows();
 
 	std::vector<double> point;
 
@@ -128,7 +128,7 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 #ifdef USEOMP
 	#pragma omp parallel shared(correct, tp, tn, fp, fn)
 	{
-		size_t size = data.getSize();
+		size_t size = data.getNrows();
 
 		std::vector<double> point;
 
@@ -183,7 +183,7 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 		}
 	}
 #else
-	size_t size = data.getSize();
+	size_t size = data.getNrows();
 
 	std::vector<double> point;
 
