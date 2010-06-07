@@ -50,7 +50,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
-	EvalCuboidGenerator.o OperationODESolverSystem.o
+	EvalCuboidGenerator.o OperationODESolverSystem.o DataMatrix.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -60,6 +60,9 @@ default : $(OBJS)
 
 DataVector.o : $(SRCDIR)data/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)data/DataVector.cpp
+
+DataMatrix.o : $(SRCDIR)data/DataMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrix.o $(SRCDIR)data/DataMatrix.cpp
 
 Grid.o : $(SRCDIR)grid/Grid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)Grid.o $(SRCDIR)grid/Grid.cpp

@@ -131,9 +131,9 @@ public:
 	 *
 	 * @param alpha the sparse grid's coefficients
 	 * @param FunctionValues DataVector into the which the result of function's evaluation is stored
-	 * @param EvaluationPoints DataVector that contains the points at which the sparse grid's function is evaluated
+	 * @param EvaluationPoints DataMatrix that contains the points at which the sparse grid's function is evaluated
 	 */
-	void evaluateCuboid(DataVector& alpha, DataVector& FunctionValues, DataVector& EvaluationPoints);
+	void evaluateCuboid(DataVector& alpha, DataVector& FunctionValues, DataMatrix& EvaluationPoints);
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,

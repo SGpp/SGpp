@@ -13,6 +13,7 @@
 #include "operation/common/OperationMatrix.hpp"
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 #ifdef USEOMP
 #include <omp.h>
@@ -43,7 +44,7 @@ public:
 	 * @param storage the grid's GridStorage object
 	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	UpDownTwoOpDims(GridStorage* storage, DataVector& coef);
+	UpDownTwoOpDims(GridStorage* storage, DataMatrix& coef);
 
 	/**
 	 * Constructor
@@ -66,7 +67,7 @@ protected:
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
 	/// Pointer to the coefficients of this bilinear form
-	DataVector* coefs;
+	DataMatrix* coefs;
 
 #ifndef USEOMPTHREE
 	/**

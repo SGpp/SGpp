@@ -9,6 +9,7 @@
 #define EVALCUBOIDGENERATOR_HPP
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 #include "grid/common/BoundingBox.hpp"
 #include <vector>
 
@@ -61,12 +62,12 @@ public:
 	 * In addition there is a fix number of EvalutionPoints in every dimension. Be aware that this
 	 * function returns point to the power of d points.
 	 *
-	 * @param EvaluationPoints DataVector that will contain the evaluation points afterwards
+	 * @param EvaluationPoints DataMatrix that will contain the evaluation points afterwards
 	 * @param center the center of the cuboid
 	 * @param size the precentage of the whole array the cuboid will cover in a every dimension
 	 * @param points number of points used in every dimension
 	 */
-	void getEvaluationCuboid(DataVector& EvaluationPoints, std::vector<double>& center, double size, size_t points);
+	void getEvaluationCuboid(DataMatrix& EvaluationPoints, std::vector<double>& center, double size, size_t points);
 };
 
 }
