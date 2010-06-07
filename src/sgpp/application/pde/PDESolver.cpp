@@ -199,7 +199,7 @@ double PDESolver::evaluatePoint(std::vector<double>& evalPoint, DataVector& alph
 	return result;
 }
 
-void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, DataVector& EvaluationPoints)
+void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, DataMatrix& EvaluationPoints)
 {
 	if (bGridConstructed)
 	{

@@ -26,7 +26,7 @@
 namespace sg
 {
 
-OperationGammaLinearBoundary::OperationGammaLinearBoundary(GridStorage* storage, DataVector& coef) : UpDownTwoOpDims(storage, coef)
+OperationGammaLinearBoundary::OperationGammaLinearBoundary(GridStorage* storage, DataMatrix& coef) : UpDownTwoOpDims(storage, coef)
 {
 }
 

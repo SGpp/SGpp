@@ -67,7 +67,7 @@ void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>& evalPoint
 	}
 }
 
-void EvalCuboidGenerator::getEvaluationCuboid(DataVector& EvaluationPoints, std::vector<double>& center, double size, size_t points)
+void EvalCuboidGenerator::getEvaluationCuboid(DataMatrix& EvaluationPoints, std::vector<double>& center, double size, size_t points)
 {
 	std::vector<DataVector> evalPoints;
 	DataVector curPoint(numDimensions);
