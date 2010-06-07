@@ -26,11 +26,11 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
  * @param numAssests the of Assets stored in the file
  * @param mu DataVector for the exspected values
  * @param sigma DataVector for standard deviation
- * @param rho DataVector for the correlations
+ * @param rho DataMatrix for the correlations
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigma, DataVector& rho)
+int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigma, DataMatrix& rho)
 {
 	std::fstream file;
 	double cur_mu;
@@ -54,7 +54,7 @@ int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, Dat
 		for (size_t j = 0; j < numAssests; j++)
 		{
 			file >> cur_rho;
-			rho.set((i*numAssests)+j, cur_rho);
+			rho.set(i,j, cur_rho);
 		}
 	}
 
@@ -149,14 +149,14 @@ int readAnalyzeData(std::string tFile, size_t numAssests, double& percent, size_
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(DataVector& cuboid, std::string tFile, size_t dim)
+int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 {
 	std::fstream file;
 	double cur_coord;
 
 	file.open(tFile.c_str());
 
-	if(cuboid.getDim() != dim)
+	if(cuboid.getNcols() != dim)
 	{
 		std::cout << "Cuboid-definition file doesn't match: " << tFile << std::endl;
 		return -1;
@@ -201,12 +201,6 @@ int readOptionsValues(DataVector& values, std::string tFile)
 
 	file.open(tFile.c_str());
 
-	if(values.getDim() != 1)
-	{
-		std::cout << "values-definition file doesn't match: " << tFile << std::endl;
-		return -1;
-	}
-
 	if(!file.is_open())
 	{
 		std::cout << "Error cannot read file: " << tFile << std::endl;
@@ -226,6 +220,40 @@ int readOptionsValues(DataVector& values, std::string tFile)
 
 	return 0;
 }
+
+/**
+ * Writes a DataMatrix into a file
+ *
+ * @param data the DataMatrix that should be written into a file
+ * @param tFile the file into which the data is written
+ *
+ * @return error code
+ */
+int writeDataMatrix(DataMatrix& data, std::string tFile)
+{
+	std::ofstream file;
+	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot write file: " << tFile << std::endl;
+		return -1;
+	}
+
+	for (size_t i = 0; i < data.getSize(); i++)
+	{
+		for (size_t j = 0; j < data.getNcols(); j++)
+		{
+			file << std::scientific << data.get(i,j) << " ";
+		}
+		file << std::endl;
+	}
+
+	file.close();
+
+	return 0;
+}
+
 
 /**
  * Writes a DataVector into a file
@@ -248,10 +276,7 @@ int writeDataVector(DataVector& data, std::string tFile)
 
 	for (size_t i = 0; i < data.getSize(); i++)
 	{
-		for (size_t j = 0; j < data.getDim(); j++)
-		{
-			file << std::scientific << data.get((i*data.getDim())+j) << " ";
-		}
+		file << std::scientific << data.get(i) << " ";
 		file << std::endl;
 	}
 
@@ -288,7 +313,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 
 	DataVector mu(dim);
 	DataVector sigma(dim);
-	DataVector rho(dim,dim);
+	DataMatrix rho(dim,dim);
 
 	double r = riskfree;
 
@@ -412,9 +437,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
 	DataVector mu(dim);
 	DataVector sigma(dim);
-	DataVector rho(dim,dim);
+	DataMatrix rho(dim,dim);
 
-	DataVector EvalPoints(1, d);
+	DataMatrix EvalPoints(1, d);
 
 	double r = riskfree;
 
@@ -460,7 +485,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
 
-			writeDataVector(EvalPoints, tFileEvalCuboid);
+			writeDataMatrix(EvalPoints, tFileEvalCuboid);
 		}
 
 		// init the basis functions' coefficient vector
@@ -619,7 +644,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 
 	DataVector mu(dim);
 	DataVector sigma(dim);
-	DataVector rho(dim,dim);
+	DataMatrix rho(dim,dim);
 
 	double r = riskfree;
 
@@ -720,7 +745,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	////////////////////////////
 
 	// read Evaluation cuboid
-	DataVector EvalCuboid(1, dim);
+	DataMatrix EvalCuboid(1, dim);
 	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
 	// read reference values for evaluation cuboid
@@ -795,7 +820,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	DataVector mu(dim);
 	DataVector sigma(dim);
-	DataVector rho(dim,dim);
+	DataMatrix rho(dim,dim);
 
 	double r = riskfree;
 
@@ -899,7 +924,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	////////////////////////////
 
 	// read Evaluation cuboid
-	DataVector EvalCuboid(1, dim);
+	DataMatrix EvalCuboid(1, dim);
 	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
 	// read reference values for evaluation cuboid
@@ -983,7 +1008,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	// read stochastic data
 	DataVector mu(dim);
 	DataVector sigma(dim);
-	DataVector rho(dim, dim);
+	DataMatrix rho(dim, dim);
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
 	{
 		return;

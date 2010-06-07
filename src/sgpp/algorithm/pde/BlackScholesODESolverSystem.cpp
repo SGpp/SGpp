@@ -12,7 +12,7 @@
 namespace sg
 {
 
-BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode, bool bLogTransform, size_t MPIRank)
+BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode, bool bLogTransform, size_t MPIRank)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -198,12 +198,12 @@ void BlackScholesODESolverSystem::buildGammaCoefficients()
 			if (i == j)
 			{
 //			  this->gammaCoef->set((dim*i)+j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
-			  this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			  this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
 			}
 			else
 			{
 //				this->gammaCoef->set((dim*i)+j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
-			  this->gammaCoef->set(i, j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			  this->gammaCoef->set(i, j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
 			}
 		}
 	}
@@ -222,11 +222,11 @@ void BlackScholesODESolverSystem::buildDeltaCoefficients()
 			// handle diagonal
 			if (i == j)
 			{
-				covar_sum += ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j));
+				covar_sum += ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j));
 			}
 			else
 			{
-				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
 			}
 		}
 		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
@@ -245,12 +245,12 @@ void BlackScholesODESolverSystem::buildGammaCoefficientsLogTransform()
 			if (i == j)
 			{
 //				this->gammaCoef->set((dim*i)+j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
-			  this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			  this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
 			}
 			else
 			{
 //				this->gammaCoef->set((dim*i)+j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
-			  this->gammaCoef->set(i, j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+			  this->gammaCoef->set(i, j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
 			}
 		}
 	}
@@ -271,11 +271,11 @@ void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
 			{
 				// factor 1.5, since in log-trafo, the factor \mu_i is changed to \mu_i - 0.5*\sigma_i^2
 				// and, thus, we have (1.0+0.5)-times the term
-				covar_sum += (1.5*(this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j));
+				covar_sum += (1.5*(this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j));
 			}
 			else
 			{
-				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get((i*dim)+j)));
+				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
 			}
 		}
 		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
