@@ -11,6 +11,7 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <cstring>
 
 /*
 DataVector::DataVector() {
