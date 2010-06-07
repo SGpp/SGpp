@@ -10,33 +10,20 @@
 
 #include "grid/GridStorage.hpp"
 
-#include "application/common/ScreenOutput.hpp"
-
 #include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
 #include "algorithm/datadriven/test_dataset.hpp"
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
-#include "algorithm/pde/HeatEquationODESolverSystem.hpp"
-
-#include "application/pde/BlackScholesSolver.hpp"
-#include "application/pde/HeatEquationSolver.hpp"
-
 #include "basis/basis.hpp"
 
 // @todo (heinecke) check if this can be removed
-#include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
-#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
-#include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
-
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 
 #include "grid/Grid.hpp"
 #include "grid/common/BoundingBox.hpp"
-#include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/StandardGridGenerator.hpp"
 #include "grid/generation/BoundaryGridGenerator.hpp"
@@ -47,15 +34,6 @@
 #include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 
-#include "solver/sle/ConjugateGradients.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-
-#include "tools/finance/IOToolBonnSG.hpp"
-#include "tools/common/GridPrinter.hpp"
-#include "tools/common/SGppStopwatch.hpp"
-#include "tools/common/EvalCuboidGenerator.hpp"
 
 namespace sg
 {
@@ -63,10 +41,6 @@ namespace sg
 typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
 typedef linear_base<unsigned int, unsigned int> SLinearBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
-typedef poly_base<unsigned int, unsigned int> SPolyBase;
-typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
-typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
-typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
 
 typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
 typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;

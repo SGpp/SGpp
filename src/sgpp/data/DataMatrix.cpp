@@ -12,6 +12,7 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <cstring>
 
 DataMatrix::DataMatrix(size_t nrows, size_t ncols) :
 	nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {

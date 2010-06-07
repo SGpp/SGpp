@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #ifndef GRID_HPP
 #define GRID_HPP
@@ -183,67 +183,6 @@ public:
 	 * @return pointer to the OperationHierarchisation object
 	 */
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
-
-	/**
-	 * gets a pointer to OperationLaplace (OperationMatrix) object
-	 *
-	 * @return point to the OperationLaplace object
-	 */
-	virtual OperationMatrix* createOperationLaplace() = 0;
-
-	/**
-	 * gets a pointer to OperationLTwoDotProduct (OperationMatrix) object
-	 *
-	 * @return pointer to OperationLTwoDotProduct object
-	 */
-	virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
-
-	/**
-	 * (heinecke) temporal function
-	 *
-	 * @todo remove this when done
-	 */
-	virtual OperationMatrix* createOperationUpDownTest() = 0;
-
-	/**
-	 * this operation allows you to calculate the following bilinear form
-	 * needed to solve the multidimensional Black Scholes Equation
-	 *
-	 * \f$ \int_{\Omega} S_i v(\vec{s}) \frac{\partial u(\vec{s}}{\partial S_i} d \vec{s}\f$
-	 *
-	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
-	 */
-	virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
-
-	/**
-	 * this operation allows you to calculate the following bilinear form
-	 * needed to solve the multidimensional Black Scholes Equation
-	 *
-	 * \f$ \int_{\Omega} S_i S_j \frac{\partial u(\vec{s}}{\partial S_i} \frac{\partial v(\vec{s}}{\partial S_j} d \vec{s}\f$
-	 *
-	 * @param coef reference to a DataMatrix object that contains the constant coeffecients of this bilinear from
-	 */
-	virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
-
-	/**
-	 * this operation allows you to calculate the following bilinear form
-	 * needed to solve the multidimensional log-transformed Black Scholes Equation
-	 *
-	 * \f$ \int_{\Omega} \frac{\partial u(\vec{s}}{\partial S_i} v(\vec{s}) d \vec{s}\f$
-	 *
-	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
-	 */
-	virtual OperationMatrix* createOperationDeltaLog(DataVector& coef) = 0;
-
-	/**
-	 * this operation allows you to calculate the following bilinear form
-	 * needed to solve the multidimensional log-transformed Black Scholes Equation
-	 *
-	 * \f$ \int_{\Omega} \frac{\partial u(\vec{s}}{\partial S_i} \frac{\partial v(\vec{s}}{\partial S_j} d \vec{s}\f$
-	 *
-	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
-	 */
-	virtual OperationMatrix* createOperationGammaLog(DataMatrix& coef) = 0;
 
 	/**
 	 * gets a pointer to OperationIdentity (OperationMatrix) object

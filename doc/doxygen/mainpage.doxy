@@ -60,10 +60,13 @@ href="mailto:Dirk.Pflueger@in.tum.de">contact us</a>.
 
 
 <!-- ############################################################# -->
-@section mainpage__overview Overview
+@section mainpage__overview Overview and Documentation
 
 - @subpage development
 - @subpage manual
+
+<em>The documentation can also be found in the navigation bar, unfolding
+<b>SG++ Documentation</b>.</em>
 
 The documentation of the SG++ toolbox is structured in two main
 parts. The first one, @ref development, addresses all those who

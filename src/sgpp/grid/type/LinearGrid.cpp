@@ -16,11 +16,6 @@
 #include "basis/linear/noboundary/operation/common/OperationEvalLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
 
-#include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
-#include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
-#include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
-#include "basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.hpp"
-
 #include "exception/factory_exception.hpp"
 
 #include "sgpp.hpp"
@@ -73,11 +68,6 @@ OperationB* LinearGrid::createOperationB()
 	return new OperationBLinear(this->storage);
 }
 
-OperationMatrix* LinearGrid::createOperationLaplace()
-{
-	return new OperationLaplaceLinear(this->storage);
-}
-
 OperationEval* LinearGrid::createOperationEval()
 {
 	return new OperationEvalLinear(this->storage);
@@ -93,37 +83,5 @@ OperationHierarchisation* LinearGrid::createOperationHierarchisation()
 	return new OperationHierarchisationLinear(this->storage);
 }
 
-OperationMatrix* LinearGrid::createOperationLTwoDotProduct()
-{
-	return new OperationLTwoDotProductLinear(this->storage);
-}
-
-// @todo (heinecke) removed this when done
-OperationMatrix* LinearGrid::createOperationUpDownTest()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-// finance operations
-/////////////////////
-OperationMatrix* LinearGrid::createOperationDelta(DataVector& coef)
-{
-	return new OperationDeltaLinear(this->storage, coef);
-}
-
-OperationMatrix* LinearGrid::createOperationGamma(DataMatrix& coef)
-{
-	return new OperationGammaLinear(this->storage, coef);
-}
-
-OperationMatrix* LinearGrid::createOperationDeltaLog(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearGrid::createOperationGammaLog(DataMatrix& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
 
 }
