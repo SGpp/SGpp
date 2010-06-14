@@ -10,6 +10,7 @@
 #include <string>
 #include <stdlib.h>
 #include <fstream>
+#include <iomanip>
 
 // @todo (heinecke) remove global variables
 std::string tFileEvalCuboid = "evalCuboid.data";
@@ -250,7 +251,7 @@ int writeDataVector(DataVector& data, std::string tFile)
 	{
 		for (size_t j = 0; j < data.getDim(); j++)
 		{
-			file << std::scientific << data.get((i*data.getDim())+j) << " ";
+			file << std::scientific << std::setprecision( 16 ) << data.get((i*data.getDim())+j) << " ";
 		}
 		file << std::endl;
 	}
