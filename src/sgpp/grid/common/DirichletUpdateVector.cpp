@@ -7,10 +7,6 @@
 
 #include "grid/common/DirichletUpdateVector.hpp"
 
-#ifdef USEOMP
-#include <omp.h>
-#endif
-
 namespace sg
 {
 
@@ -24,9 +20,6 @@ DirichletUpdateVector::~DirichletUpdateVector()
 
 void DirichletUpdateVector::applyDirichletConditions(DataVector& updateVector, DataVector& sourceVector)
 {
-#ifdef USEOMP
-	#pragma omp parallel for shared(updateVector) schedule(static)
-#endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
 		GridIndex* curPoint = (*storage)[i];
@@ -39,9 +32,6 @@ void DirichletUpdateVector::applyDirichletConditions(DataVector& updateVector, D
 
 void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
 {
-#ifdef USEOMP
-	#pragma omp parallel for shared(updateVector) schedule(static)
-#endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
 		GridIndex* curPoint = (*storage)[i];
@@ -54,9 +44,6 @@ void DirichletUpdateVector::setBoundariesToZero(DataVector& updateVector)
 
 void DirichletUpdateVector::setInnerPointsToZero(DataVector& updateVector)
 {
-#ifdef USEOMP
-	#pragma omp parallel for shared(updateVector) schedule(static)
-#endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
 		GridIndex* curPoint = (*storage)[i];
@@ -69,9 +56,6 @@ void DirichletUpdateVector::setInnerPointsToZero(DataVector& updateVector)
 
 void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double value)
 {
-#ifdef USEOMP
-	#pragma omp parallel for shared(updateVector) schedule(static)
-#endif
 	for (size_t i = 0; i < storage->size(); i++)
 	{
 		GridIndex* curPoint = (*storage)[i];
