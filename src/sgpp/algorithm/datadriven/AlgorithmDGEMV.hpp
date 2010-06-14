@@ -55,7 +55,7 @@ public:
 
 		result.setAll(0.0);
 #ifdef USEOMP
-		#pragma omp parallel shared(result)
+		#pragma omp parallel
 		{
 			size_t source_size = source.getSize();
 
@@ -130,7 +130,7 @@ public:
 		result.setAll(0.0);
 
 #ifdef USEOMP
-		#pragma omp parallel shared (result)
+		#pragma omp parallel
 		{
 			size_t result_size = result.getSize();
 
