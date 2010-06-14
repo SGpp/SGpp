@@ -59,7 +59,7 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 	}
 #endif
 #ifndef USEOMPTHREE
-	#pragma omp parallel shared(result)
+	#pragma omp parallel
 	{
 		#pragma omp for schedule(static)
 		for(size_t i = 0; i < storage->dim(); i++)
