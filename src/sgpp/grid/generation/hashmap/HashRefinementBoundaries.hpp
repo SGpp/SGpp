@@ -153,8 +153,6 @@ public:
 	/**
 	 * Calculates the number of points, which can be refined
 	 *
-	 * @todo URGENT (heinecke) !!!! this doesn't work for boundary grids!!!!!
-	 *
 	 * @param storage hashmap that stores the grid points
 	 */
 	int getNumberOfRefinablePoints(GridStorage* storage)
@@ -182,23 +180,36 @@ public:
 				level_t source_level;
 				index.get(d, source_level, source_index);
 
-				// left child
-				index.set(d, source_level + 1, 2 * source_index - 1);
-				child_iter = storage->find(&index);
-				// if there no more grid points --> test if we should refine the grid
-				if(child_iter == end_iter)
+				if (source_level == 0)
 				{
-					counter++;
+					// level 1
+					index.set(d, 1, 1);
+					child_iter = storage->find(&index);
+					// if there no more grid points --> test if we should refine the grid
+					if(child_iter == end_iter)
+					{
+						counter++;
+					}
 				}
-
-				// right child
-				index.set(d, source_level + 1, 2 * source_index + 1);
-				child_iter = storage->find(&index);
-				if(child_iter == end_iter)
+				else
 				{
-					counter++;
-				}
+					// left child
+					index.set(d, source_level + 1, 2 * source_index - 1);
+					child_iter = storage->find(&index);
+					// if there no more grid points --> test if we should refine the grid
+					if(child_iter == end_iter)
+					{
+						counter++;
+					}
 
+					// right child
+					index.set(d, source_level + 1, 2 * source_index + 1);
+					child_iter = storage->find(&index);
+					if(child_iter == end_iter)
+					{
+						counter++;
+					}
+				}
 				index.set(d, source_level, source_index);
 			}
 		}
