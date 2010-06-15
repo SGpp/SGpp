@@ -90,8 +90,9 @@ public:
 	 *
 	 * @param alpha a DataVector containing the grids coefficients
 	 * @param dPercentage percentage of number the give the number of grid points that should be refined
+	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 */
-	void refineInitialGridSurplus(DataVector& alpha, double dPercentage);
+	void refineInitialGridSurplus(DataVector& alpha, double dPercentage, double dThreshold);
 
 	/**
 	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation

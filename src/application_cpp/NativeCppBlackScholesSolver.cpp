@@ -524,7 +524,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
 		// Test call @ the money
 		std::vector<double> point;
-		for (size_t i = 0; i < d; i++)
+		for (size_t j = 0; j < d; j++)
 		{
 			point.push_back(1.0);
 		}
@@ -535,7 +535,51 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
 		results.push_back(Prices);
 
-		//std::cout << Prices.toString() << std::endl;
+		// write solution in a additional file
+		std::stringstream level_string;
+		level_string << i;
+		writeDataVector(Prices, tFileEvalCuboidValues+".level_"+ level_string.str());
+
+		if (i > start_l)
+		{
+			std::cout << "=====================================================================" << std::endl;
+			std::cout << "=====================================================================" << std::endl << std::endl;
+			std::cout << "Calculating norms of relative errors to a grid" << std::endl;
+			std::cout << "with " << i << " levels and testing-coboid" << std::endl;
+			std::cout << "with the center:" << std::endl;
+			for (size_t j = 0; j < d; j++)
+			{
+				std::cout << center[j] << " ";
+			}
+			std::cout << std::endl << "and " << points << " test-points in a range of " << std::endl;
+			std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
+
+			// Calculate relative errors and some norms
+			for (size_t j = 0; j < i-start_l; j++)
+			{
+				DataVector maxLevel(results[i-start_l]);
+				DataVector relError(results[j]);
+				double maxNorm = 0.0;
+				double twoNorm = 0.0;
+
+				// calculate relative error
+				relError.sub(maxLevel);
+				relError.componentwise_div(maxLevel);
+
+				// calculate max. norm of relative error
+				maxNorm = relError.maxNorm();
+
+				// calculate two norm of relative error
+				relError.componentwise_mult(relError);
+				twoNorm = relError.sum();
+				twoNorm = twoNorm / static_cast<double>(relError.getSize());
+				twoNorm = sqrt(twoNorm);
+
+				// Printing norms
+				std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+			}
+		}
+		std::cout << std::endl << std::endl;
 
 		myBSSolver->deleteGrid();
 		delete alpha;
@@ -547,46 +591,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	delete myBSSolver;
 	delete myBoundingBox;
 
-	std::cout << "=====================================================================" << std::endl;
-	std::cout << "=====================================================================" << std::endl << std::endl;
-	std::cout << "Calculating norms of relative errors to a grid" << std::endl;
-	std::cout << "with " << end_l << " levels and testing-coboid" << std::endl;
-	std::cout << "with the center:" << std::endl;
-	for (size_t i = 0; i < d; i++)
-	{
-		std::cout << center[i] << " ";
-	}
-	std::cout << std::endl << "and " << points << " test-points in a range of " << std::endl;
-	std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
-
 	// write high-leveled solution into file
 	writeDataVector(results[end_l-start_l], tFileEvalCuboidValues);
-
-	// Calculate relative errors and some norms
-	for (size_t i = 0; i < end_l-start_l; i++)
-	{
-		DataVector maxLevel(results[end_l-start_l]);
-		DataVector relError(results[i]);
-		double maxNorm = 0.0;
-		double twoNorm = 0.0;
-
-		// calculate relative error
-		relError.sub(maxLevel);
-		relError.componentwise_div(maxLevel);
-
-		// calculate max. norm of relative error
-		maxNorm = relError.maxNorm();
-
-		// calculate two norm of relative error
-		relError.componentwise_mult(relError);
-		twoNorm = relError.sum();
-		twoNorm = twoNorm / static_cast<double>(relError.getSize());
-		twoNorm = sqrt(twoNorm);
-
-		// Printing norms
-		std::cout << "Level " << i + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
-	}
-	std::cout << std::endl << std::endl;
 }
 
 /**
@@ -783,9 +789,10 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  * @param refinePercent percantage of points that should be refined before Black Scholes Equation is solved
  * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
+ * @param dRefineThreshold Threshold for a point's surplus for refining this point
  */
 void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
-		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent, size_t nIterAdaptSteps)
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent, size_t nIterAdaptSteps, double dRefineThreshold)
 {
 	size_t dim = d;
 	size_t level = l;
@@ -834,7 +841,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 	{
 		std::cout << "Refining Grid..." << std::endl;
-		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent);
+		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent, dRefineThreshold);
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
@@ -1199,9 +1206,10 @@ void writeHelp()
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	Adapt-Refinement Percent: Percent of grid points that should be refined" << std::endl;
 	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
+	mySStream << "	refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50 10" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50 10 1e-10" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1327,7 +1335,7 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "solveNDadaptSurplus")
 	{
-		if (argc != 16)
+		if (argc != 17)
 		{
 			writeHelp();
 		}
@@ -1346,7 +1354,7 @@ int main(int argc, char *argv[])
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]));
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]), atof(argv[16]));
 		}
 	}
 	else if (option == "solveBonn")

@@ -84,13 +84,13 @@ std::string PDESolver::getGrid()
 	return gridSer;
 }
 
-void PDESolver::refineInitialGridSurplus(DataVector& alpha, double dPercentage)
+void PDESolver::refineInitialGridSurplus(DataVector& alpha, double dPercentage, double dThreshold)
 {
-	size_t nRefinements = static_cast<size_t>(static_cast<double>(alpha.getNumberNonZero())*(dPercentage/100.0));
+	size_t nRefinements = static_cast<size_t>(static_cast<double>(myGrid->createGridGenerator()->getNumberOfRefinablePoints())*(dPercentage/100.0));
 
 	if (bGridConstructed)
 	{
-		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, 0.0);
+		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
 
 		myGrid->createGridGenerator()->refine(myRefineFunc);
 
