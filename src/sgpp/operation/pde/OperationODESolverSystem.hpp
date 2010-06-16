@@ -38,6 +38,12 @@ protected:
 	DataVector* alpha_complete;
 	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
 	DataVector* alpha_inner;
+
+
+
+	DataVector* alpha_complete_old;
+	DataVector* alpha_complete_tmp;
+
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
 	 *  ExEul for explicit Euler
@@ -47,6 +53,9 @@ protected:
 	std::string tOperationMode;
 	/// the size of one timestep used in the ODE Solver
 	double TimestepSize;
+
+	double TimestepSize_old;
+
 	/// Routine to modify the boundaries/inner points of the grid
 	DirichletUpdateVector* BoundaryUpdate;
 	/// Class that allows a simple conversion between a grid with and a without boundary points
@@ -165,6 +174,11 @@ public:
 	 * @return the ODE solver: ExEul, ImEul or CrNic
 	 */
 	std::string getODESolver();
+
+
+	void setTimestepSize(double newTimestepSize);
+	void abortTimestep();
+	void saveAlpha();
 };
 
 }

@@ -16,10 +16,18 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
+
+	this->alpha_complete_old = new DataVector(this->alpha_complete->getSize());
+	this->alpha_complete_old->setAll(0.0);
+	this->alpha_complete_tmp = new DataVector(this->alpha_complete->getSize());
+	this->alpha_complete_tmp->setAll(0.0);
+	this->alpha_complete_tmp->add(*this->alpha_complete);
+
 	this->InnerGrid = NULL;
 	this->alpha_inner = NULL;
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
+	this->TimestepSize_old = TimestepSize;
 	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
 	this->GridConverter = new DirichletGridConverter();
 	this->r = r;
@@ -167,7 +175,7 @@ void BlackScholesODESolverSystem::finishTimestep()
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
 	{
-		if (this->tOperationMode == "ExEul")
+		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}

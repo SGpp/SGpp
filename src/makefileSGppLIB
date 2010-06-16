@@ -50,7 +50,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
-	EvalCuboidGenerator.o OperationODESolverSystem.o
+	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -351,7 +351,13 @@ Euler.o : $(SRCDIR)solver/ode/Euler.cpp
 	
 CrankNicolson.o : $(SRCDIR)solver/ode/CrankNicolson.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)CrankNicolson.o $(SRCDIR)solver/ode/CrankNicolson.cpp
+	
+AdamsBashforth.o : $(SRCDIR)solver/ode/AdamsBashforth.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AdamsBashforth.o $(SRCDIR)solver/ode/AdamsBashforth.cpp
 
+VarTimestep.o : $(SRCDIR)solver/ode/VarTimestep.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)VarTimestep.o $(SRCDIR)solver/ode/VarTimestep.cpp
+	
 PDESolver.o : $(SRCDIR)application/pde/PDESolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PDESolver.o $(SRCDIR)application/pde/PDESolver.cpp
 

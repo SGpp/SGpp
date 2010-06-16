@@ -49,6 +49,12 @@ void OperationODESolverSystem::mult(DataVector& alpha, DataVector& result)
 		applyLOperatorInner(alpha, temp);
 		result.axpy((-0.5)*this->TimestepSize, temp);
 	}
+	else if (this->tOperationMode == "AdBas")
+	{
+		result.setAll(0.0);
+
+		applyMassMatrixInner(alpha, result);
+	}
 	else
 	{
 		throw new algorithm_exception(" HeatEquationTimestepMatrix::mult : An unknown operation mode was specified!");
@@ -87,6 +93,27 @@ DataVector* OperationODESolverSystem::generateRHS()
 		rhs_complete.add(temp);
 
 		applyLOperatorComplete(*this->alpha_complete, temp);
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "AdBas")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		rhs_complete.add(temp);
+
+		applyLOperatorComplete(*this->alpha_complete, temp);
+
+		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
+
+		DataVector temp_old(this->alpha_complete->getSize());
+		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
+		applyLOperatorComplete(*this->alpha_complete_old, temp_old);
+		temp_old.mult(this->TimestepSize/this->TimestepSize_old);
+		temp.sub(temp_old);
+
 		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
 	}
 	else
@@ -129,6 +156,10 @@ DataVector* OperationODESolverSystem::generateRHS()
 
 		applyLOperatorComplete(alpha_bound, temp);
 		result_complete.axpy((-0.5)*this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "AdBas")
+	{
+		applyMassMatrixComplete(alpha_bound, result_complete);
 	}
 	else
 	{
@@ -178,6 +209,25 @@ void OperationODESolverSystem::setODESolver(std::string ode)
 std::string OperationODESolverSystem::getODESolver()
 {
 	return this->tOperationMode;
+}
+
+void OperationODESolverSystem::setTimestepSize(double newTimestepSize)
+{
+	this->TimestepSize_old = this->TimestepSize;
+	this->TimestepSize = newTimestepSize;
+}
+
+void OperationODESolverSystem::abortTimestep()
+{
+	this->alpha_complete->setAll(0.0);
+	this->alpha_complete->add(*this->alpha_complete_tmp);
+}
+
+void OperationODESolverSystem::saveAlpha() {
+	this->alpha_complete_old->setAll(0.0);
+	this->alpha_complete_old->add(*this->alpha_complete_tmp);
+	this->alpha_complete_tmp->setAll(0.0);
+	this->alpha_complete_tmp->add(*this->alpha_complete);
 }
 
 }
