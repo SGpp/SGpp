@@ -8,6 +8,8 @@
 #ifndef UPDOWNONEOPDIM_HPP
 #define UPDOWNONEOPDIM_HPP
 
+#include <vector>
+
 #include "grid/GridStorage.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
@@ -61,6 +63,8 @@ protected:
 	GridStorage* storage;
 	/// Pointer to the DataVector of the coefs
 	DataVector* coefs;
+	/// algorithmic dimensions, operator is applied in this dimensions
+	std::vector<size_t> algoDims;
 
 #ifndef USEOMPTHREE
 	/**

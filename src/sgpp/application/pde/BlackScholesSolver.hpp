@@ -150,6 +150,22 @@ public:
 	 * Inits the screen object
 	 */
 	void initScreen();
+
+	/**
+	 * returns the algorithmic dimensions (the dimensions in which the Up Down
+	 * operations (need for space discretization) should be applied)
+	 *
+	 * @return the algorithmic dimensions
+	 */
+	std::vector<size_t> getAlgorithmicDimensions();
+
+	/**
+	 * sets the algorithmic dimensions (the dimensions in which the Up Down
+	 * operations (need for space discretization) should be applied)
+	 *
+	 * @param algoDims std::vector containing the algorithmic dimensions
+	 */
+	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 };
 
 }

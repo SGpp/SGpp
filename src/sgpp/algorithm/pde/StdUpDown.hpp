@@ -8,6 +8,8 @@
 #ifndef STDUPDOWN_HPP
 #define STDUPDOWN_HPP
 
+#include <vector>
+
 #include "grid/GridStorage.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
@@ -49,6 +51,8 @@ protected:
 
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
+	/// algorithmic dimensions, operator is applied in this dimensions
+	std::vector<size_t> algoDims;
 
 #ifndef USEOMPTHREE
 	/**

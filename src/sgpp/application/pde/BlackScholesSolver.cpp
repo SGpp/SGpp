@@ -434,6 +434,16 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 	fileout.close();
 }
 
+std::vector<size_t> BlackScholesSolver::getAlgorithmicDimensions()
+{
+	return this->myGrid->getAlgorithmicDimensions();
+}
+
+void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
+{
+	this->myGrid->setAlgorithmicDimensions(newAlgoDims);
+}
+
 void BlackScholesSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();

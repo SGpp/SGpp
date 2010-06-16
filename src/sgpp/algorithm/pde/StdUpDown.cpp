@@ -13,6 +13,7 @@ namespace sg
 StdUpDown::StdUpDown(GridStorage* storage)
 {
 	this->storage = storage;
+	this->algoDims = this->storage->getAlgorithmicDimensions();
 }
 
 StdUpDown::~StdUpDown()
@@ -34,19 +35,19 @@ void StdUpDown::mult(DataVector& alpha, DataVector& result)
 		#pragma omp single
 #endif
 		{
-			this->updown_parallel(alpha, beta, storage->dim() - 1);
+			this->updown_parallel(alpha, beta, this->algoDims.size() - 1);
 		}
 	}
 	result.add(beta);
 #endif
 #ifndef USEOMPTHREE
-	this->updown(alpha, beta, storage->dim() - 1);
+	this->updown(alpha, beta, this->algoDims.size() - 1);
 
 	result.add(beta);
 #endif
 #endif
 #ifndef USEOMP
-	this->updown(alpha, beta, storage->dim() - 1);
+	this->updown(alpha, beta, this->algoDims.size() - 1);
 
 	result.add(beta);
 #endif
@@ -60,22 +61,22 @@ void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
 	{
 		// Reordering ups and downs
 		DataVector temp(alpha.getSize());
-		up(alpha, temp, dim);
+		up(alpha, temp, this->algoDims[dim]);
 		updown(temp, result, dim-1);
 
 		DataVector result_temp(alpha.getSize());
 		updown(alpha, temp, dim-1);
-		down(temp, result_temp, dim);
+		down(temp, result_temp, this->algoDims[dim]);
 
 		result.add(result_temp);
 	}
 	else
 	{
 		// Terminates dimension recursion
-		up(alpha, result, dim);
+		up(alpha, result, this->algoDims[dim]);
 
 		DataVector temp(alpha.getSize());
-		down(alpha, temp, dim);
+		down(alpha, temp, this->algoDims[dim]);
 
 		result.add(temp);
 	}
@@ -95,7 +96,7 @@ void StdUpDown::updown_parallel(DataVector& alpha, DataVector& result, size_t di
 
 		#pragma omp task shared(alpha, temp, result)
 		{
-			up(alpha, temp, dim);
+			up(alpha, temp, this->algoDims[dim]);
 			updown_parallel(temp, result, dim-1);
 		}
 
@@ -103,7 +104,7 @@ void StdUpDown::updown_parallel(DataVector& alpha, DataVector& result, size_t di
 		#pragma omp task shared(alpha, temp_two, result_temp)
 		{
 			updown_parallel(alpha, temp_two, dim-1);
-			down(temp_two, result_temp, dim);
+			down(temp_two, result_temp, this->algoDims[dim]);
 		}
 
 		#pragma omp taskwait
@@ -116,10 +117,10 @@ void StdUpDown::updown_parallel(DataVector& alpha, DataVector& result, size_t di
 		DataVector temp(alpha.getSize());
 
 		#pragma omp task shared(alpha, result)
-		up(alpha, result, dim);
+		up(alpha, result, this->algoDims[dim]);
 
 		#pragma omp task shared(alpha, temp)
-		down(alpha, temp, dim);
+		down(alpha, temp, this->algoDims[dim]);
 
 		#pragma omp taskwait
 

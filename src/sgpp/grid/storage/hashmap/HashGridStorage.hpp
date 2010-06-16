@@ -19,6 +19,7 @@
 #include "grid/common/BoundingBox.hpp"
 
 #include <memory>
+#include <vector>
 #include <string>
 #include <sstream>
 #include <exception>
@@ -64,6 +65,10 @@ public:
 	HashGridStorage(size_t dim) : DIM(dim), list(), map()
 	{
 		boundingBox = new BoundingBox(DIM);
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
 	}
 
 	/**
@@ -77,6 +82,10 @@ public:
 	{
 		boundingBox = new BoundingBox(creationBoundingBox);
 		DIM = boundingBox->getDimensions();
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
 	}
 
 	/**
@@ -90,6 +99,11 @@ public:
     	istream.str(istr);
 
 		parseGridDescription(istream);
+
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
 	}
 
 	/**
@@ -100,6 +114,11 @@ public:
 	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
 	{
 		parseGridDescription(istream);
+
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
 	}
 
 
@@ -113,9 +132,6 @@ public:
 		{
 			delete *iter;
 		}
-
-		// delete hash map of grid indices
-		// --> is auto deleted, because it's a class's element
 
 		// delete the grid's bounding box
 		delete boundingBox;
@@ -478,6 +494,39 @@ public:
 	}
 
 	/**
+	 * returns the algorithmic dimensions (the dimensions in which the Up Down
+	 * operations should be applied)
+	 *
+	 * @return the algorithmic dimensions
+	 */
+	std::vector<size_t> getAlgorithmicDimensions()
+	{
+		return algoDims;
+	}
+
+	/**
+	 * sets the algorithmic dimensions (the dimensions in which the Up Down
+	 * operations should be applied)
+	 *
+	 * @param algoDims std::vector containing the algorithmic dimensions
+	 */
+	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
+	{
+		algoDims.clear();
+
+		// throw an exception if there is
+		if (newAlgoDims.size() > DIM)
+		{
+			throw generation_exception("There are more algorithmic dimensions than real dimensions!");
+		}
+
+		for (size_t i = 0; i < newAlgoDims.size(); i++)
+		{
+			algoDims.push_back(newAlgoDims[i]);
+		}
+	}
+
+	/**
 	 * Recalculates the leaf-property of every grid point.
 	 * This might be useful in case of a grid unserialization
 	 */
@@ -570,6 +619,8 @@ private:
     grid_map map;
     /// the grids bounding box
     BoundingBox* boundingBox;
+    /// algorithmic dimension, these are used in Up/Downs
+    std::vector<size_t> algoDims;
 
     /**
      * Parses the gird's information (grid points, dimensions, bounding box) from a string stream
@@ -594,7 +645,6 @@ private:
 		{
 			if (version != 4)
 			{
-				//	    throw generation_exception("Version of serialized grid is too new. Max. recognized version is "+string(SERIALIZATION_VERSION));
 				std::ostringstream errstream;
 				errstream << "Version of serialized grid (" << version << ") is too new. Max. recognized version is " << SERIALIZATION_VERSION << ".";
 				throw generation_exception(errstream.str().c_str());

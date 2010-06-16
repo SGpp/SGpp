@@ -232,4 +232,14 @@ int Grid::getSize(){
 	return this->storage->size();
 }
 
+std::vector<size_t> Grid::getAlgorithmicDimensions()
+{
+	return this->storage->getAlgorithmicDimensions();
+}
+
+void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
+{
+	this->storage->setAlgorithmicDimensions(newAlgoDims);
+}
+
 }

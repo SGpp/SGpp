@@ -8,6 +8,8 @@
 #ifndef UPDOWNTWOOPDIMS_HPP
 #define UPDOWNTWOOPDIMS_HPP
 
+#include <vector>
+
 #include "grid/GridStorage.hpp"
 
 #include "operation/common/OperationMatrix.hpp"
@@ -67,6 +69,8 @@ protected:
 	GridStorage* storage;
 	/// Pointer to the coefficients of this bilinear form
 	DataVector* coefs;
+	/// algorithmic dimensions, operator is applied in this dimensions
+	std::vector<size_t> algoDims;
 
 #ifndef USEOMPTHREE
 	/**
