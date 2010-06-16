@@ -352,12 +352,20 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	{
 		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
+	else if (Solver == "AdBas")
+	{
+		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "VaTim")
+	{
+		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
 	else
 	{
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
 	{
 		if (dim < 3)
 		{
@@ -502,12 +510,20 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 		}
+		else if (Solver == "AdBas")
+		{
+			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		}
+		else if (Solver == "VaTim")
+		{
+			myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		}
 		else
 		{
 			std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 		}
 
-		if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+		if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
 		{
 			if (dim < 3)
 			{
@@ -695,12 +711,20 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	{
 		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
+	else if (Solver == "AdBas")
+	{
+		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "VaTim")
+	{
+		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
 	else
 	{
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
 	{
 		if (dim < 3)
 		{
@@ -876,12 +900,20 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
+	else if (Solver == "AdBas")
+	{
+		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "VaTim")
+	{
+		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
 	else
 	{
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
 	{
 		if (dim < 3)
 		{
@@ -1016,12 +1048,20 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	{
 		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
+	else if (Solver == "AdBas")
+	{
+		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "VaTim")
+	{
+		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
 	else
 	{
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
 		//myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");

@@ -50,6 +50,8 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+#include "solver/ode/AdamsBashforth.hpp"
+#include "solver/ode/VarTimestep.hpp"
 
 #include "tools/finance/IOToolBonnSG.hpp"
 #include "tools/common/GridPrinter.hpp"

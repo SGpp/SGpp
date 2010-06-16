@@ -264,6 +264,71 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
+
+
+void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+{
+	if (this->bGridConstructed && this->bStochasticDataAlloc)
+	{
+
+		AdamsBashforth* myAdamsBashforth = new AdamsBashforth(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
+		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas");
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+		double execTime;
+
+		myStopwatch->start();
+		myAdamsBashforth->solve(*myCG, *myBSSystem, verbose);
+		execTime = myStopwatch->stop();
+		if (this->myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			this->myScreen->writeEmptyLines(2);
+		}
+
+		delete myBSSystem;
+		delete myCG;
+		delete myAdamsBashforth;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::solveAdamsBashforth : A grid wasn't constructed before or stochastic parameters weren't set!");
+	}
+}
+
+
+void BlackScholesSolver::solveVarTimestep(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+{
+	if (this->bGridConstructed && this->bStochasticDataAlloc)
+	{
+
+		VarTimestep* myVarTimestep = new VarTimestep(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
+		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul");
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+		double execTime;
+
+		myStopwatch->start();
+		myVarTimestep->solve(*myCG, *myBSSystem, verbose);
+		execTime = myStopwatch->stop();
+		if (this->myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			this->myScreen->writeEmptyLines(2);
+		}
+
+		delete myBSSystem;
+		delete myCG;
+		delete myVarTimestep;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::solveVarTimestep : A grid wasn't constructed before or stochastic parameters weren't set!");
+	}
+}
+
 void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
 {
 	double tmp;

@@ -156,6 +156,8 @@ solver/sle/ConjugateGradients.cpp
 solver/sle/BiCGStab.cpp
 solver/ode/Euler.cpp
 solver/ode/CrankNicolson.cpp
+solver/ode/AdamsBashforth.cpp
+solver/ode/VarTimestep.cpp
 
 tools/common/StdNormalDistribution.cpp
 tools/common/GridPrinter.cpp
