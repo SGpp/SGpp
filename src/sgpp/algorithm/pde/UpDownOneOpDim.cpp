@@ -14,12 +14,14 @@ UpDownOneOpDim::UpDownOneOpDim(GridStorage* storage, DataVector& coef)
 {
 	this->storage = storage;
 	this->coefs = &coef;
+	this->algoDims = this->storage->getAlgorithmicDimensions();
 }
 
 UpDownOneOpDim::UpDownOneOpDim(GridStorage* storage)
 {
 	this->storage = storage;
 	this->coefs = NULL;
+	this->algoDims = this->storage->getAlgorithmicDimensions();
 }
 
 UpDownOneOpDim::~UpDownOneOpDim()
@@ -34,7 +36,7 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 #ifdef USEOMPTHREE
 	DataVector beta(result.getSize());
 
-	for(size_t i = 0; i < storage->dim(); i++)
+	for(size_t i = 0; i < this->algoDims.size(); i++)
 	{
 		#pragma omp parallel
 		{
@@ -45,7 +47,7 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 			#pragma omp single
 #endif
 			{
-				this->updown_parallel(alpha, beta, storage->dim() - 1, i);
+				this->updown_parallel(alpha, beta, this->algoDims.size() - 1, i);
 			}
 		}
 		if (this->coefs != NULL)
@@ -62,11 +64,11 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 	#pragma omp parallel
 	{
 		#pragma omp for schedule(static)
-		for(size_t i = 0; i < storage->dim(); i++)
+		for(size_t i = 0; i < this->algoDims.size(); i++)
 		{
 			DataVector beta(result.getSize());
 
-			this->updown(alpha, beta, storage->dim() - 1, i);
+			this->updown(alpha, beta, this->algoDims.size() - 1, i);
 
 			#pragma omp critical
 			{
@@ -86,9 +88,9 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 #ifndef USEOMP
 	DataVector beta(result.getSize());
 
-	for(size_t i = 0; i < storage->dim(); i++)
+	for(size_t i = 0; i < this->algoDims.size(); i++)
 	{
-		this->updown(alpha, beta, storage->dim() - 1, i);
+		this->updown(alpha, beta, this->algoDims.size() - 1, i);
 		if (this->coefs != NULL)
 		{
 			result.axpy(this->coefs->get(i),beta);
@@ -115,24 +117,24 @@ void UpDownOneOpDim::updown(DataVector& alpha, DataVector& result, size_t dim, s
 		{
 			// Reordering ups and downs
 			DataVector temp(alpha.getSize());
-			up(alpha, temp, dim);
+			up(alpha, temp, this->algoDims[dim]);
 			updown(temp, result, dim-1, op_dim);
 
 
 			// Same from the other direction:
 			DataVector result_temp(alpha.getSize());
 			updown(alpha, temp, dim-1, op_dim);
-			down(temp, result_temp, dim);
+			down(temp, result_temp, this->algoDims[dim]);
 
 			result.add(result_temp);
 		}
 		else
 		{
 			// Terminates dimension recursion
-			up(alpha, result, dim);
+			up(alpha, result, this->algoDims[dim]);
 
 			DataVector temp(alpha.getSize());
-			down(alpha, temp, dim);
+			down(alpha, temp, this->algoDims[dim]);
 
 			result.add(temp);
 		}
@@ -147,24 +149,24 @@ void UpDownOneOpDim::specialOP(DataVector& alpha, DataVector& result, size_t dim
 	{
 		// Reordering ups and downs
 		DataVector temp(alpha.getSize());
-		upOpDim(alpha, temp, dim);
+		upOpDim(alpha, temp, this->algoDims[dim]);
 		updown(temp, result, dim-1, op_dim);
 
 
 		// Same from the other direction:
 		DataVector result_temp(alpha.getSize());
 		updown(alpha, temp, dim-1, op_dim);
-		downOpDim(temp, result_temp, dim);
+		downOpDim(temp, result_temp, this->algoDims[dim]);
 
 		result.add(result_temp);
 	}
 	else
 	{
 		// Terminates dimension recursion
-		upOpDim(alpha, result, dim);
+		upOpDim(alpha, result, this->algoDims[dim]);
 
 		DataVector temp(alpha.getSize());
-		downOpDim(alpha, temp, dim);
+		downOpDim(alpha, temp, this->algoDims[dim]);
 
 		result.add(temp);
 	}
@@ -190,7 +192,7 @@ void UpDownOneOpDim::updown_parallel(DataVector& alpha, DataVector& result, size
 
 			#pragma omp task shared(alpha, temp, result)
 			{
-				up(alpha, temp, dim);
+				up(alpha, temp, this->algoDims[dim]);
 				updown_parallel(temp, result, dim-1, op_dim);
 			}
 
@@ -198,7 +200,7 @@ void UpDownOneOpDim::updown_parallel(DataVector& alpha, DataVector& result, size
 			#pragma omp task shared(alpha, temp_two, result_temp)
 			{
 				updown_parallel(alpha, temp_two, dim-1, op_dim);
-				down(temp_two, result_temp, dim);
+				down(temp_two, result_temp, this->algoDims[dim]);
 			}
 
 			#pragma omp taskwait
@@ -211,10 +213,10 @@ void UpDownOneOpDim::updown_parallel(DataVector& alpha, DataVector& result, size
 			DataVector temp(alpha.getSize());
 
 			#pragma omp task shared(alpha, result)
-			up(alpha, result, dim);
+			up(alpha, result, this->algoDims[dim]);
 
 			#pragma omp task shared(alpha, temp)
-			down(alpha, temp, dim);
+			down(alpha, temp, this->algoDims[dim]);
 
 			#pragma omp taskwait
 
@@ -236,7 +238,7 @@ void UpDownOneOpDim::specialOP_parallel(DataVector& alpha, DataVector& result, s
 
 		#pragma omp task shared(alpha, temp, result)
 		{
-			upOpDim(alpha, temp, dim);
+			upOpDim(alpha, temp, this->algoDims[dim]);
 			updown_parallel(temp, result, dim-1, op_dim);
 		}
 
@@ -244,7 +246,7 @@ void UpDownOneOpDim::specialOP_parallel(DataVector& alpha, DataVector& result, s
 		#pragma omp task shared(alpha, temp_two, result_temp)
 		{
 			updown_parallel(alpha, temp_two, dim-1, op_dim);
-			downOpDim(temp_two, result_temp, dim);
+			downOpDim(temp_two, result_temp, this->algoDims[dim]);
 		}
 
 		#pragma omp taskwait
@@ -257,10 +259,10 @@ void UpDownOneOpDim::specialOP_parallel(DataVector& alpha, DataVector& result, s
 		DataVector temp(alpha.getSize());
 
 		#pragma omp task shared(alpha, result)
-		upOpDim(alpha, result, dim);
+		upOpDim(alpha, result, this->algoDims[dim]);
 
 		#pragma omp task shared(alpha, temp)
-		downOpDim(alpha, temp, dim);
+		downOpDim(alpha, temp, this->algoDims[dim]);
 
 		#pragma omp taskwait
 
