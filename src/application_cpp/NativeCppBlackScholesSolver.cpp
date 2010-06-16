@@ -555,6 +555,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::stringstream level_string;
 		level_string << i;
 		writeDataVector(Prices, tFileEvalCuboidValues+".level_"+ level_string.str());
+		writeDataVector(Prices, tFileEvalCuboidValues);
 
 		if (i > start_l)
 		{
@@ -606,9 +607,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	delete myEvalCuboidGen;
 	delete myBSSolver;
 	delete myBoundingBox;
-
-	// write high-leveled solution into file
-	writeDataVector(results[end_l-start_l], tFileEvalCuboidValues);
 }
 
 /**
