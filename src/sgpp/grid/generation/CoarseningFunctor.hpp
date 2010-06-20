@@ -57,7 +57,7 @@ public:
 	 *
 	 * @return number of points that should removed. Default value: 1.
 	 */
-	virtual int getRemovementsNum(){ return 1;}
+	virtual size_t getRemovementsNum(){ return 1;}
 
 	/**
 	 * Returns the threshold value.

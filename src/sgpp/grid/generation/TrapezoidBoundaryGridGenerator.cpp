@@ -33,7 +33,7 @@ void TrapezoidBoundaryGridGenerator::refine(RefinementFunctor* func)
 	refine.free_refine(this->storage, func);
 }
 
-int TrapezoidBoundaryGridGenerator::getNumberOfRefinablePoints()
+size_t TrapezoidBoundaryGridGenerator::getNumberOfRefinablePoints()
 {
 	HashRefinementBoundaries refine;
 	return refine.getNumberOfRefinablePoints(this->storage);
