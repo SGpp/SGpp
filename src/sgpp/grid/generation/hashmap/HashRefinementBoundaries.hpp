@@ -43,14 +43,14 @@ public:
 		}
 		//Algorithm should be able to look for several points in grid to refine
 		//So we store an array with refinements_num maximal points
-		int refinements_num = functor->getRefinementsNum();
+		size_t refinements_num = functor->getRefinementsNum();
 		RefinementFunctor::value_type* max_values = new RefinementFunctor::value_type[refinements_num];
 		size_t* max_indexes = new size_t[refinements_num];
-		for (int i = 0; i<refinements_num; i++){
+		for (size_t i = 0; i<refinements_num; i++){
 			max_values[i] = functor->start();
 			max_indexes[i] = 0;
 		}
-		int min_idx = 0;
+		size_t min_idx = 0;
 
 		RefinementFunctor::value_type max_value = max_values[min_idx];
 		size_t max_index = max_indexes[min_idx];
@@ -136,7 +136,7 @@ public:
 
 		//can refine grid on several points
 		double threshold = functor->getRefinementThreshold();
-		for (int i = 0; i < refinements_num; i++){
+		for (size_t i = 0; i < refinements_num; i++){
 			max_value = max_values[i];
 			max_index = max_indexes[i];
 			if(max_value != functor->start() && fabs(max_value) >= threshold)
@@ -465,10 +465,10 @@ protected:
 	 *
 	 * @return index of the first accurance of minimal element in array
 	 */
-	int getIndexOfMin(RefinementFunctor::value_type* array, int length)
+	size_t getIndexOfMin(RefinementFunctor::value_type* array, size_t length)
 	{
-		int min_idx = 0;
-		for (int i = 1; i < length; i++)
+		size_t min_idx = 0;
+		for (size_t i = 1; i < length; i++)
 		{
 			if(array[i] < array[min_idx])
 				min_idx = i;
