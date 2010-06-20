@@ -50,7 +50,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
-	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o
+	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -93,6 +93,9 @@ StandardGridGenerator.o : $(SRCDIR)grid/generation/StandardGridGenerator.cpp
 	
 BoundaryGridGenerator.o : $(SRCDIR)grid/generation/BoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundaryGridGenerator.o $(SRCDIR)grid/generation/BoundaryGridGenerator.cpp
+	
+SurplusRefinementFunctor.o : $(SRCDIR)grid/generation/SurplusRefinementFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)grid/generation/SurplusRefinementFunctor.cpp
 
 TrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TrapezoidBoundaryGridGenerator.o $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
