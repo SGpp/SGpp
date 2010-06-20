@@ -355,7 +355,7 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, st
 				{
 					tmp += dblFuncValues[j];
 				}
-				alpha[i] = max(((tmp/static_cast<double>(dim))-strike), 0.0);
+				alpha[i] = std::max(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
 			else if (payoffType == "std_euro_put")
 			{
@@ -364,7 +364,7 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, st
 				{
 					tmp += dblFuncValues[j];
 				}
-				alpha[i] = max(strike-((tmp/static_cast<double>(dim))), 0.0);
+				alpha[i] = std::max(strike-((tmp/static_cast<double>(dim))), 0.0);
 			}
 			else
 			{
