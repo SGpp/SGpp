@@ -10,7 +10,7 @@
 namespace sg
 {
 
-SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha, int refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
+SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
 {
 }
 
@@ -29,7 +29,7 @@ double SurplusRefinementFunctor::start()
 	return 0.0;
 }
 
-int SurplusRefinementFunctor::getRefinementsNum()
+size_t SurplusRefinementFunctor::getRefinementsNum()
 {
 	return this->refinements_num;
 }

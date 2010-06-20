@@ -26,39 +26,23 @@ public:
 	 * Constructor.
 	 *
 	 * @param alpha DataVector that is basis for coarsening decisions. The i-th entry corresponds to the i-th grid point.
-	 * @param removements_num Number of grid points which should be removed (if possible - there could be less removeabled grid points)
+	 * @param removements_num Number of grid points which should be removed (if possible - there could be less removable grid points)
 	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold
 	 */
-	SurplusCoarseningFunctor(DataVector* alpha, int removements_num = 1, double threshold = 0.0) : alpha(alpha), removements_num(removements_num), threshold(threshold)
-	{
-	}
+	SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num = 1, double threshold = 0.0);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~SurplusCoarseningFunctor() {}
+	virtual ~SurplusCoarseningFunctor();
 
+	virtual double operator()(GridStorage* storage, size_t seq);
 
-	virtual double operator()(GridStorage* storage, size_t seq)
-	{
-		return fabs(alpha->get(seq));
-	}
+	virtual double start();
 
-	virtual double start()
-	{
-		return 0.0;
-	}
+	size_t getRemovementsNum();
 
-	int getRemovementsNum()
-	{
-		return this->removements_num;
-	}
-
-	double getCoarseningThreshold()
-	{
-		return this->threshold;
-	}
-
+	double getCoarseningThreshold();
 
 protected:
 	/// pointer to the vector that stores the alpha values

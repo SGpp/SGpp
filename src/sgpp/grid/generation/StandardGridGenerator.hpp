@@ -34,7 +34,7 @@ public:
 
 	virtual void regular(size_t level);
 	virtual void refine(RefinementFunctor* func);
-	virtual int getNumberOfRefinablePoints();
+	virtual size_t getNumberOfRefinablePoints();
 
 protected:
 	/// pointer to the storage object

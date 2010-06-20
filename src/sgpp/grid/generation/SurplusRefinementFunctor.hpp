@@ -29,7 +29,7 @@ public:
 	 * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points)
 	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold
 	 */
-	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1, double threshold = 0.0);
+	SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num = 1, double threshold = 0.0);
 
 	/**
 	 * Destructor
@@ -40,7 +40,7 @@ public:
 
 	virtual double start();
 
-	int getRefinementsNum();
+	size_t getRefinementsNum();
 
 	double getRefinementThreshold();
 
