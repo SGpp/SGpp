@@ -8,6 +8,8 @@
 #ifndef HASHCOARSENING_HPP
 #define HASHCOARSENING_HPP
 
+#include "data/DataVector.hpp"
+
 #include "grid/GridStorage.hpp"
 #include "grid/generation/CoarseningFunctor.hpp"
 
@@ -15,6 +17,9 @@
 
 #include <vector>
 #include <cmath>
+#include <utility>
+
+#include <iostream>
 
 namespace sg
 {
@@ -28,6 +33,7 @@ public:
 	typedef GridStorage::index_type index_type;
 	typedef index_type::index_type index_t;
 	typedef index_type::level_type level_t;
+	typedef std::pair<size_t, CoarseningFunctor::value_type> GridPoint;
 
 	/**
 	 * Performs coarsening on grid. It's possible to remove a certain number
@@ -37,8 +43,9 @@ public:
 	 *
 	 * @param storage hashmap that stores the grid points
 	 * @param functor a function used to determine if refinement is needed
+	 * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
 	 */
-	void free_coarsen(GridStorage* storage, CoarseningFunctor* functor)
+	void free_coarsen(GridStorage* storage, CoarseningFunctor* functor, DataVector* alpha)
 	{
 		// chech if the grid has any points
 		if(storage->size() == 0)
@@ -49,62 +56,96 @@ public:
 		// Perepare temp-data in order to determine the removable grid points
 		// -> leafs with minimal surplus
 		size_t remove_num = functor->getRemovementsNum();
-		RefinementFunctor::value_type* min_values = new RefinementFunctor::value_type[remove_num];
-		size_t* min_indexes = new size_t [refinements_num];
 
-		// init temp data
+		// create an array that will contain the GridPoints
+		// (pair of the grid Point's index and its surplus)
+		// that should be removed
+		GridPoint* removePoints = new GridPoint[remove_num];
+
+		// init the removePoints array:
+		// set initial surplus and set all indices to zero
 		for (size_t i = 0; i<remove_num; i++){
-			min_values[i] = functor->start();
-			min_indexes[i] = 0;
+			removePoints[i].second = functor->start();
+			removePoints[i].first = 0;
 		}
+
+		// help variable to store the gridpoint with highest
+		// surplus in removePoints
 		size_t max_idx = 0;
 
-		RefinementFunctor::value_type min_value = min_values[max_idx];
-		size_t min_index = min_indexes[max_idx];
-
-		index_type index;
-		GridStorage::grid_map_iterator end_iter = storage->end();
-
-		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
+		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != storage->end(); iter++)
 		{
-			index = *(iter->first);
-
-			GridStorage::grid_map_iterator child_iter;
+			index_type* index = iter->first;
 
 			if (index->isLeaf())
 			{
-				RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-				if(current_value < min_value)
+				CoarseningFunctor::value_type current_value = (*functor)(storage, iter->second);
+				if(current_value < removePoints[max_idx].second)
 				{
 					//Replace the maximum point array of removable candidates, find the new maximal point
-					min_values[max_idx] = current_value;
-					min_indexes[max_idx] = iter->second;
-					max_idx = getIndexOfMax(min_values, remove_num);
-					min_value = min_values[max_idx];
-					break;
+					removePoints[max_idx].second = current_value;
+					removePoints[max_idx].first = iter->second;
+
+					// find new maximum entry
+					max_idx = 0;
+					for (size_t i = 1; i < remove_num; i++)
+					{
+						if(removePoints[i].second > removePoints[max_idx].second)
+						{
+							max_idx = i;
+						}
+					}
 				}
 			}
 		}
 
+		//DEBUG : print list of removable candidates
+		//for (size_t i = 0; i < remove_num; i++)
+		//{
+		//	std::cout << "Index: " << removePoints[i].first << " with surplus " << removePoints[i].second << std::endl;
+		//}
+		//std::cout << std::endl;
 
-		//can refine grid on several points
-		double threshold = functor->getCoarseningThreshold();
-		for (size_t i = 0; i < refinements_num; i++){
-			max_value = max_values[i];
-			max_index = max_indexes[i];
+		// remove the marked grid point if their surplus
+		// is below the given threshold
+		CoarseningFunctor::value_type threshold = functor->getCoarseningThreshold();
+		CoarseningFunctor::value_type initValue = functor->start();
 
-			if(max_value > functor->start() && fabs(max_value) >= threshold)
+		// copy GridStorage in order to shrink grid
+		GridStorage tempStorage(*storage);
+
+		// vector to save remaining points
+		std::vector<size_t> remainingIndex;
+
+		// remove all grid points;
+		storage->emptyStorage();
+
+		// re-insert grid points
+		for(size_t i = 0; i < tempStorage.size(); i++)
+		{
+			index_type* index = tempStorage[i];
+
+			if (shouldRemovePoint(removePoints, i, initValue, threshold, remove_num) == false)
 			{
-				remove_gridpoint(storage, max_index);
+				storage->insert(*index);
+				remainingIndex.push_back(i);
 			}
 		}
 
-		delete[] max_values;
-		delete[] max_indexes;
+		// DEBUG
+		//std::cout << "List of remaining GridPoints (indices)" << std::endl;
+		//for (size_t i = 0; i < remainingIndex.size(); i++)
+		//{
+		//	std::cout << remainingIndex[i] << " ";
+		//}
+		//std::cout << std::endl << std::endl;
 
 		// make the grid a consistent grid again -> the leaf property was destroyed
 		// by removing grid points -> re-calculate it.
 		storage->recalcLeafProperty();
+
+		// Drop Elements from DataVector
+		alpha->restructure(remainingIndex);
 	}
 
 	/**
@@ -124,12 +165,11 @@ public:
 		index_type index;
 		GridStorage::grid_map_iterator end_iter = storage->end();
 
-		// I think this may be depedent on local support
 		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
 		{
 			index = *(iter->first);
 
-			if (index->isLeaf())
+			if (index.isLeaf())
 			{
 				counter++;
 			}
@@ -140,40 +180,34 @@ public:
 
 
 protected:
-	/**
-	 * This method refines a grid point be generating the children in every dimension
-	 * of the grid.
-	 *
-	 * @param storage hashmap that stores the gridpoints
-	 * @param refine_index the index in the hashmap of the point that should be refined
-	 */
-	void remove_gridpoint(GridStorage* storage, size_t refine_index)
-	{
-		index_type index((*storage)[refine_index]);
-
-		//Sets leaf property of index, which is refined to false
-		//(*storage)[refine_index]->setLeaf(false);
-
-	}
 
 	/**
-	 * Returns the index of the first accurance of minimal element in array
+	 * Determines if a gird point should be removed from the grid
 	 *
-	 * @param array array with ???
-	 * @param length length of ??
-	 *
-	 * @return index of the first accurance of minimal element in array
+	 * @param removePoints point to an array of pairs of index and surplus of candidates fro removing
+	 * @param current_index current grid point which is tested
+	 * @param initValue init value of the removable points array for the surpluses
+	 * @param threshold threshold used in removing decision
+	 * @param remove_num number of elements in removePoints
 	 */
-	size_t getIndexOfMax(RefinementFunctor::value_type* array, size_t length)
+	bool shouldRemovePoint(GridPoint* removePoints, size_t current_index, CoarseningFunctor::value_type initValue, CoarseningFunctor::value_type threshold, size_t remove_num)
 	{
-		size_t max_idx = 0;
-		for (size_t i = 1; i < length; i++)
+		for (size_t i = 0; i < remove_num; i++)
 		{
-			if(array[i] > array[max_idx])
-				max_idx = i;
+			if (removePoints[i].first == current_index)
+			{
+				if(removePoints[i].second < initValue && removePoints[i].second <= threshold)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
 		}
 
-		return max_idx;
+		return false;
 	}
 };
 

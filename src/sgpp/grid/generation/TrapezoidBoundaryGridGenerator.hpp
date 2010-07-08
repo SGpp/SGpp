@@ -37,6 +37,9 @@ public:
 	virtual void refine(RefinementFunctor* func);
 	virtual size_t getNumberOfRefinablePoints();
 
+	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
+	virtual size_t getNumberOfRemoveablePoints();
+
 protected:
 	/// Pointer to the grid's storage object
 	GridStorage* storage;

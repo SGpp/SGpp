@@ -24,7 +24,7 @@ double SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq)
 
 double SurplusCoarseningFunctor::start()
 {
-	return 1.0e6;
+	return 1.0;
 }
 
 size_t SurplusCoarseningFunctor::getRemovementsNum()

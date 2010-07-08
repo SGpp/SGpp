@@ -82,6 +82,14 @@ public:
 	void resize(size_t size);
 
 	/**
+	 * Resizes the DataVector by removing entries. Throws an exception
+	 * if boundaries a violated.
+	 *
+	 * @param remainingIndex vector that contains the remaining indices of the DataVector
+	 */
+	void restructure(std::vector<size_t>& remainingIndex);
+
+	/**
 	 * Add add potentially new elements to the DataVector. The size remains unchanged.
 	 *
 	 * @param add number of elements that should be added to the data vector
