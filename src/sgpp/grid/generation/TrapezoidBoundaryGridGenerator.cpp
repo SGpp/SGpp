@@ -39,4 +39,16 @@ size_t TrapezoidBoundaryGridGenerator::getNumberOfRefinablePoints()
 	return refine.getNumberOfRefinablePoints(this->storage);
 }
 
+void TrapezoidBoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
+{
+	HashCoarsening coarsen;
+	coarsen.free_coarsen(this->storage, func, alpha);
+}
+
+size_t TrapezoidBoundaryGridGenerator::getNumberOfRemoveablePoints()
+{
+	HashCoarsening coarsen;
+	return coarsen.getNumberOfRemovablePoints(this->storage);
+}
+
 }

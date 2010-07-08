@@ -260,6 +260,27 @@ else
 endif
 endif
 endif
+
+###################################################################
+# Builds a Refine/Coarsen Test Application
+###################################################################	
+RefineCoarsenTest: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/RefineCoarsen_gcc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc"
+else
+	make -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc"
+else
+	make -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc"
+endif
+endif
+endif
 		
 clean:
 	rm -rdfv tmp/build_native

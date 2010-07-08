@@ -121,6 +121,28 @@ public:
 		}
 	}
 
+	/**
+	 * Copy Constructor
+	 */
+	HashGridStorage(HashGridStorage& copyFrom) : DIM(0), list(), map()
+	{
+		// Copy dimensions and bounding box
+		DIM = copyFrom.DIM;
+		boundingBox = new BoundingBox(*(copyFrom.boundingBox));
+
+		// copy algorithmic dimensions
+		for (size_t i = 0; i > copyFrom.algoDims.size(); i++)
+		{
+			algoDims.push_back(copyFrom.algoDims[i]);
+		}
+
+		// copy gridpoints
+		for(size_t i = 0; i < copyFrom.size(); i++)
+		{
+			this->insert(*(copyFrom[i]));
+		}
+	}
+
 
 	/**
 	 * Desctructor
@@ -142,12 +164,6 @@ public:
 	 */
 	void emptyStorage()
 	{
-		// delete all grid points
-		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
-		{
-			delete *iter;
-		}
-
 		// remove all elements from hashmap
 		map.clear();
 		// remove all list entries

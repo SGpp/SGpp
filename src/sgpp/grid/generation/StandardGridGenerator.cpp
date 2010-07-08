@@ -41,4 +41,16 @@ size_t StandardGridGenerator::getNumberOfRefinablePoints()
 	return refine.getNumberOfRefinablePoints(this->storage);
 }
 
+void StandardGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
+{
+	HashCoarsening coarsen;
+	coarsen.free_coarsen(this->storage, func, alpha);
+}
+
+size_t StandardGridGenerator::getNumberOfRemoveablePoints()
+{
+	HashCoarsening coarsen;
+	return coarsen.getNumberOfRemovablePoints(this->storage);
+}
+
 }

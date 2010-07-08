@@ -39,4 +39,16 @@ size_t BoundaryGridGenerator::getNumberOfRefinablePoints()
 	return refine.getNumberOfRefinablePoints(this->storage);
 }
 
+void BoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
+{
+	HashCoarsening coarsen;
+	coarsen.free_coarsen(this->storage, func, alpha);
+}
+
+size_t BoundaryGridGenerator::getNumberOfRemoveablePoints()
+{
+	HashCoarsening coarsen;
+	return coarsen.getNumberOfRemovablePoints(this->storage);
+}
+
 }

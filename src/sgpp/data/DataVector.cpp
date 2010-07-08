@@ -6,8 +6,10 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
 #include "data/DataVector.hpp"
-#include <string.h>
 
+#include "exception/algorithm_exception.hpp"
+
+#include <string.h>
 #include <sstream>
 #include <cmath>
 
@@ -61,6 +63,26 @@ void DataVector::getDataVectorDefinition(DataVectorDefinition& DataVectorDef) {
     DataVectorDef.dim = this->dim;
     DataVectorDef.unused = this->unused;
     DataVectorDef.pointerToData = this->data;
+}
+
+void DataVector::restructure(std::vector<size_t>& remainingIndex)
+{
+	if ((int)remainingIndex.size() > this->size)
+	{
+		throw sg::algorithm_exception("more indecies than entries!");
+	}
+
+	double* newdata = new double[remainingIndex.size() * this->dim];
+
+	for (size_t i = 0; i < remainingIndex.size(); i++)
+	{
+		newdata[i] = this->data[remainingIndex[i]];
+	}
+
+	delete[] this->data;
+
+	this->data = newdata;
+	this->size = remainingIndex.size();
 }
 
 void DataVector::resize(size_t size) {

@@ -11,6 +11,8 @@
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/CoarseningFunctor.hpp"
 
+#include "data/DataVector.hpp"
+
 namespace sg
 {
 
@@ -48,8 +50,9 @@ public:
 	 * Coarsens a  grid according to the settings of the CoarseningFunctor func.
 	 *
 	 * @param func pointer to coarsening functor
+	 * @param alpha Pointer to DataVector containing the grid's coefficients
 	 */
-	//virtual void coarsen(CoarseningFunctor* func) = 0;
+	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
 
 	/**
 	 * Returns the number of points on the grid that can be refined in the next iteration
@@ -63,7 +66,7 @@ public:
 	 *
 	 * @return the number of points on the grid that can be removed
 	 */
-	//virtual size_t getNumberOfRemoveablePoints() = 0;
+	virtual size_t getNumberOfRemoveablePoints() = 0;
 };
 
 }
