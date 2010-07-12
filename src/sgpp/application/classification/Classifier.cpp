@@ -57,6 +57,19 @@ void Classifier::trainNtestRegular(std::string tfileTrain, std::string tfileTest
 	std::cout << "the problem has " << this->dim << " dimensions" << std::endl;
 	std::cout << "the training set contains " << this->instancesNo << " instances" << std::endl;
 	std::cout << "the test set contains " << this->testinstancesNo << " instances" << std::endl;
+	if (this->StiffnessMode == "L")
+	{
+		std::cout << "using Laplacian matrix" << std::endl;
+	}
+	else if (this->StiffnessMode == "I")
+	{
+		std::cout << "using Identity matrix" << std::endl;
+	}
+	else
+	{
+		std::cout << "using Laplacian matrix" << std::endl;
+	}
+	std::cout << std::endl;
 	std::cout << "classifier instance is initialized by trainNtestRegular" << std::endl;
 	std::cout << "------------------------------------------------------" << std::endl;
 	std::cout << "start constructing regular grid" << std::endl;
@@ -133,7 +146,19 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "The class training vector has been initialized" << std::endl;
 
     // init the Systemmatrix Functor
-    OperationMatrix* C = this->myGrid->createOperationLaplace();
+    OperationMatrix* C;
+    if (this->StiffnessMode  == "L" )
+    {
+    	C = this->myGrid->createOperationLaplace();
+    }
+    else if (this->StiffnessMode == "I")
+    {
+    	C = this->myGrid->createOperationIdentity();
+    }
+    else
+    {
+    	C = this->myGrid->createOperationLaplace();
+    }
     DMSystemMatrix DMMatrix(*this->myGrid, training, *C, this->lambda);
     std::cout << "Instance of the matrix functor has been created and initialized" << std::endl;
     // generate the rhs of the equation
