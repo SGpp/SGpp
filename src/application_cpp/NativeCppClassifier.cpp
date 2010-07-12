@@ -11,14 +11,18 @@
 
 int main(int argc, char *argv[])
 {
-	double lambda = 0.001;
-	double epsilon = 0.00001;
+	double lambda = 0.00001;
+	double epsilon = 0.0000001;
 	size_t imax = 2000;
-	size_t level = 4;
+	size_t level = 5;
 	std::string GridType = "N";
-	std::string StiffMode = "L";
-	std::string tfileTrain = "ripleyGarcke.train.arff";
-	std::string tfileTest = "ripleyGarcke.test.arff";
+	std::string StiffMode = "I";
+
+	//std::string tfileTrain = "ripleyGarcke.train.arff";
+	//std::string tfileTest = "ripleyGarcke.test.arff";
+
+	std::string tfileTrain = "liver-disorders_normalized.arff";
+	std::string tfileTest = "liver-disorders_normalized.arff";
 
 	std::cout << "Starting the Native Cpp Classifier" << std::endl;
 	std::cout << "==================================" << std::endl;
