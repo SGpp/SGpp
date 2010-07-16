@@ -23,6 +23,7 @@
 #include <string>
 #include <sstream>
 #include <exception>
+#include <list>
 
 namespace sg
 {
@@ -168,6 +169,56 @@ public:
 		map.clear();
 		// remove all list entries
 		list.clear();
+	}
+
+	/**
+	 * Remove several point from GridStorage. The points to removed
+	 * are stored in a list. This function returns a vector of remaining points
+	 * given by their
+	 *
+	 * @param removePoints vector containing the indices of the points that should be removed
+	 *
+	 * @return a vector containing the indices of remaining points given by their "old" index
+	 */
+	std::vector<size_t> deletePoints(std::list<size_t>& removePoints)
+	{
+		index_pointer curPoint;
+		std::vector<size_t> remainingPoints;
+		size_t delCounter = 0;
+
+		// sort list
+		removePoints.sort();
+
+		// Remove points with given indices for index vector and hashmap
+		for(std::list<size_t>::iterator iter = removePoints.begin(); iter != removePoints.end(); iter++)
+		{
+			size_t tmpIndex = *iter;
+			size_t delPos = 0;
+
+			// GridIndex
+			curPoint = list[tmpIndex];
+
+			// erase point
+			map.erase(curPoint);
+			delPos += tmpIndex - delCounter;
+			list.erase(list.begin() + delPos);
+			delCounter++;
+		}
+
+		// reset all entries in hash map and build list of remaining
+		for(size_t i = 0; i < list.size(); i++)
+		{
+			curPoint = list[i];
+			remainingPoints.push_back(map[curPoint]);
+			map[curPoint] = i;
+		}
+
+		// reset the whole grid's leaf property in order
+		// to garantuee a consistent grid
+		recalcLeafProperty();
+
+		// return indices of "surviver"
+		return remainingPoints;
 	}
 
 	/**
