@@ -58,32 +58,31 @@ public:
 		#pragma omp parallel
 		{
 			size_t source_size = source.getSize();
-
+			DataVector privateResult(result);
 			std::vector<double> line;
 			IndexValVector vec;
-
 			GetAffectedBasisFunctions<BASIS> ga(storage);
+
+			privateResult.setAll(0.0);
 
 			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
 			{
-				//DataVector* temp = new DataVector(1);
-				//double dbl_temp = 0.0;
-
 				vec.clear();
 
 				x.getLine(i, line);
 
 				ga(basis, line, vec);
 
-				#pragma omp critical
+				for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
 				{
-					for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-					{
-
-						result[iter->first] += iter->second * source[i];
-					}
+					privateResult[iter->first] += iter->second * source[i];
 				}
+			}
+
+			#pragma omp critical
+			{
+				result.add(privateResult);
 			}
 		}
 #else
