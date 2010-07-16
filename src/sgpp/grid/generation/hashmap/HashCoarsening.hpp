@@ -16,6 +16,7 @@
 #include "exception/generation_exception.hpp"
 
 #include <vector>
+#include <list>
 #include <cmath>
 #include <utility>
 
@@ -111,26 +112,21 @@ public:
 		CoarseningFunctor::value_type threshold = functor->getCoarseningThreshold();
 		CoarseningFunctor::value_type initValue = functor->start();
 
-		// copy GridStorage in order to shrink grid
-		GridStorage tempStorage(*storage);
-
 		// vector to save remaining points
 		std::vector<size_t> remainingIndex;
 
-		// remove all grid points;
-		storage->emptyStorage();
+		// vector to stored the points that match all condition for deleting
+		std::list<size_t> deletePoints;
 
-		// re-insert grid points
-		for(size_t i = 0; i < tempStorage.size(); i++)
+		for (size_t i = 0; i < remove_num; i++)
 		{
-			index_type* index = tempStorage[i];
-
-			if (shouldRemovePoint(removePoints, i, initValue, threshold, remove_num) == false)
+			if(removePoints[i].second < initValue && removePoints[i].second <= threshold)
 			{
-				storage->insert(*index);
-				remainingIndex.push_back(i);
+				deletePoints.push_back(removePoints[i].first);
 			}
 		}
+
+		remainingIndex = storage->deletePoints(deletePoints);
 
 		// DEBUG
 		//std::cout << "List of remaining GridPoints (indices)" << std::endl;
@@ -139,10 +135,6 @@ public:
 		//	std::cout << remainingIndex[i] << " ";
 		//}
 		//std::cout << std::endl << std::endl;
-
-		// make the grid a consistent grid again -> the leaf property was destroyed
-		// by removing grid points -> re-calculate it.
-		storage->recalcLeafProperty();
 
 		// Drop Elements from DataVector
 		alpha->restructure(remainingIndex);
@@ -176,38 +168,6 @@ public:
 		}
 
 		return counter;
-	}
-
-
-protected:
-
-	/**
-	 * Determines if a gird point should be removed from the grid
-	 *
-	 * @param removePoints point to an array of pairs of index and surplus of candidates fro removing
-	 * @param current_index current grid point which is tested
-	 * @param initValue init value of the removable points array for the surpluses
-	 * @param threshold threshold used in removing decision
-	 * @param remove_num number of elements in removePoints
-	 */
-	bool shouldRemovePoint(GridPoint* removePoints, size_t current_index, CoarseningFunctor::value_type initValue, CoarseningFunctor::value_type threshold, size_t remove_num)
-	{
-		for (size_t i = 0; i < remove_num; i++)
-		{
-			if (removePoints[i].first == current_index)
-			{
-				if(removePoints[i].second < initValue && removePoints[i].second <= threshold)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-
-		return false;
 	}
 };
 

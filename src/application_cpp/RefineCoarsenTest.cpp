@@ -16,6 +16,9 @@ int main(int argc, char *argv[])
 	size_t dim = 1;
 	size_t numGridPoints;
 
+	double coarsenThreshold = 0.01;
+	size_t numCoarsen = 2;
+
 	sg::Grid* myGrid;
 
 	std::cout << std::endl;
@@ -37,7 +40,14 @@ int main(int argc, char *argv[])
 
 	numGridPoints = myGrid->getStorage()->size();
 	std::cout << "the grid has " << numGridPoints << " gridpoints" << std::endl;
-	std::cout << "finished construction regular grid" << std::endl;
+	std::cout << "finished construction regular grid" << std::endl << std::endl;
+
+	std::cout << "===========================================================" << std::endl;
+	std::cout << "Coarsening parameters are as followed:" << std::endl;
+	std::cout << "threshold: " << coarsenThreshold << std::endl;
+	std::cout << "No. Coarsenings: " << numCoarsen <<  std::endl;
+	std::cout << "===========================================================" << std::endl;
+	std::cout << std::endl;
 
 	std::string ser;
 	myGrid->serialize(ser);
@@ -47,13 +57,13 @@ int main(int argc, char *argv[])
 	DataVector alpha(numGridPoints);
 	alpha.setAll(1.0);
 	alpha.set(5, 0.00001);
-	alpha.set(6, 0.01);
+	alpha.set(6, 0.1);
 
 	std::cout << "Orig alpha:" << std::endl;
 	std::cout << alpha.toString() << std::endl << std::endl;
 
 	sg::GridGenerator* myGeneratorCoarsen = myGrid->createGridGenerator();
-	sg::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::SurplusCoarseningFunctor(&alpha, 1, 0.01);
+	sg::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::SurplusCoarseningFunctor(&alpha, numCoarsen, coarsenThreshold);
 
 	myGeneratorCoarsen->coarsen(myCoarsenFunctor, &alpha);
 
