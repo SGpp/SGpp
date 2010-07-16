@@ -14,6 +14,7 @@
 #include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 #include <iostream>
 
 namespace sg
@@ -138,6 +139,7 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
 	DataVector training(this->instancesNo, this->dim);
     DataVector classes(this->instancesNo);
     DataVector rhs(this->myGrid->getStorage()->size());
+    double execTime;
     std::cout << "The datavectors for training and the right hand side have been created" << std::endl;
 
     ARFFTool.readTrainingData(tfileTrain, training);
@@ -170,13 +172,21 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
     std::cout << "An instance of the CG method has been created" << std::endl;
 
     // slove the system of linear equations
+    SGppStopwatch* myStopwatch = new SGppStopwatch();
+    myStopwatch->start();
     myCG.solve(DMMatrix, alpha, rhs, false, false, -1.0);
+    execTime = myStopwatch->stop();
 
     delete C;
 
     // Write the data of CG
+    std::cout << std::endl;
+    std::cout << "===============================================================" << std::endl;
+    std::cout << "Needed time: " << execTime << " seconds" << std::endl;
     std::cout << "Needed iterations: " << myCG.getNumberIterations() << std::endl;
     std::cout << "Final norm of residuum: " << myCG.getResiduum() << std::endl;
+    std::cout << "===============================================================" << std::endl;
+    std::cout << std::endl;
 }
 
 double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
@@ -200,7 +210,7 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
 
     std::cout << "finishes evaluating the test instances" << std::endl;
 
-    std::cout << "Correctly classified elements: " << (correct/((double)test.getSize()))*100.0 << " percentage" << std::endl;
+    std::cout << "Correctly classified elements: " << (correct/((double)test.getSize()))*100.0 << " %" << std::endl;
 
     return correct/((double)test.getSize());
 }
