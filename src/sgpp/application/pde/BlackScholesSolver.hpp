@@ -54,6 +54,12 @@ private:
 	bool bStochasticDataAlloc;
 	/// screen object used in this solver
 	ScreenOutput* myScreen;
+	/// use coarsening between timesteps in order to reduce gridsize
+	bool useCoarsen;
+	/// Threshold used to decide if a grid point should be deleted
+	double coarsenThreshold;
+	/// Percent how many of the removable points should be tested for deletion
+	double coarsenPercent;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -166,6 +172,16 @@ public:
 	 * @param algoDims std::vector containing the algorithmic dimensions
 	 */
 	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
+
+	/**
+	 *	enables coarsening of grid during solving the Black Scholes
+	 *	Equation. The coarsening settings have to be specified in order to
+	 *	enable coarsening.
+	 *
+	 *	@param coarsenThreshold Threshold needed to determine if a grid point should be removed
+	 *	@param coarsenPercent Percent of removable grid points that should be tested for deletion
+	 */
+	void setEnableCoarseningData(double coarsenThreshold, double coarsenPercent);
 };
 
 }

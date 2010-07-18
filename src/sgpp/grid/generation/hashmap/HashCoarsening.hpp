@@ -20,13 +20,14 @@
 #include <cmath>
 #include <utility>
 
-#include <iostream>
+//#include <iostream>
 
 namespace sg
 {
 
 /**
- * Standard free coarsening class for sparse grids without boundaries
+ * Standard free coarsening class for sparse grids, only
+ * inner grid points can be removed
  */
 class HashCoarsening
 {
@@ -40,7 +41,8 @@ public:
 	 * Performs coarsening on grid. It's possible to remove a certain number
 	 * of gridpoints in one coarsening step. This number is specified within the
 	 * declaration of the coarsening functor. Also the coarsening threshold is
-	 * specified in the coarsening functor.
+	 * specified in the coarsening functor. ONLY INNER GRID POINTS WILL
+	 * BE REMOVED!
 	 *
 	 * @param storage hashmap that stores the grid points
 	 * @param functor a function used to determine if refinement is needed
@@ -78,7 +80,7 @@ public:
 		{
 			index_type* index = iter->first;
 
-			if (index->isLeaf())
+			if (index->isLeaf() && index->isInnerPoint())
 			{
 				CoarseningFunctor::value_type current_value = (*functor)(storage, iter->second);
 				if(current_value < removePoints[max_idx].second)
@@ -125,6 +127,12 @@ public:
 				deletePoints.push_back(removePoints[i].first);
 			}
 		}
+
+		//DEBUG : print list points to delete
+		//for(std::list<size_t>::iterator iter = deletePoints.begin(); iter != deletePoints.end(); iter++)
+		//{
+		//	std::cout << "Index: " << *iter << std::endl;
+		//}
 
 		remainingIndex = storage->deletePoints(deletePoints);
 

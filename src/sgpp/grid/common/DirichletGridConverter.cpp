@@ -71,6 +71,8 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVec
 			//*InnerGrid->serialize(inGrid);
 			//std::cout << inGrid << std::endl;
 
+			//(*InnerGrid)->getStorage()->recalcLeafProperty();
+
 			this->bFirstTime = false;
 		}
 		else
@@ -122,6 +124,8 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataV
 					(*InnerGrid)->getStorage()->insert(*curPoint);
 				}
 			}
+
+			//(*InnerGrid)->getStorage()->recalcLeafProperty();
 		}
 		else
 		{

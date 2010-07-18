@@ -24,6 +24,9 @@ BlackScholesSolver::BlackScholesSolver() : ParabolicPDESolver()
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
 	this->myScreen = NULL;
+	this->useCoarsen = false;
+	this->coarsenThreshold = 0.0;
+	this->coarsenPercent = 0.0;
 }
 
 BlackScholesSolver::~BlackScholesSolver()
@@ -154,7 +157,7 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul");
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", false, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -162,6 +165,9 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, verbose);
 		execTime = myStopwatch->stop();
+
+		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 		if (this->myScreen != NULL)
 		{
@@ -186,7 +192,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul");
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", false, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -194,6 +200,9 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, verbose);
 		execTime = myStopwatch->stop();
+
+		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 		if (this->myScreen != NULL)
 		{
@@ -217,7 +226,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic");
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", false, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -246,6 +255,9 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		myCN->solve(*myCG, *myBSSystem, false);
 		execTime = myStopwatch->stop();
 
+		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
 		if (this->myScreen != NULL)
 		{
 			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
@@ -273,7 +285,7 @@ void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timeste
 
 		AdamsBashforth* myAdamsBashforth = new AdamsBashforth(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas");
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", false, false, this->coarsenThreshold, this->coarsenPercent);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		double execTime;
@@ -305,7 +317,7 @@ void BlackScholesSolver::solveVarTimestep(size_t numTimesteps, double timestepsi
 
 		VarTimestep* myVarTimestep = new VarTimestep(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul");
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", false, false, this->coarsenThreshold, this->coarsenPercent);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		double execTime;
@@ -447,8 +459,15 @@ void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDim
 void BlackScholesSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
-	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.2.1", "Alexander Heinecke, (C) 2009-2010");
+	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.3.0", "TUM (C) 2009-2010, by Alexander Heinecke");
 	this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
+}
+
+void BlackScholesSolver::setEnableCoarseningData(double coarsenThreshold, double coarsenPercent)
+{
+	this->useCoarsen = true;
+	this->coarsenThreshold = coarsenThreshold;
+	this->coarsenPercent = coarsenPercent;
 }
 
 }

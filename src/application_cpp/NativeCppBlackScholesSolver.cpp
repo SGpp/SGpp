@@ -627,9 +627,13 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  * @param dInitialAdpatDist initial distance from @the money. Is devided in every iteration by the number of the iteration
+ * @param useCoarsen specifies if the grid should be coarsened between timesteps
+ * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
+ * @param coarsenPercent Number of removable grid points that should be tested for deletion
  */
 void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
-		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, size_t nIterAdaptSteps, double dInitialAdpatDist)
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, size_t nIterAdaptSteps,
+		double dInitialAdpatDist, bool useCoarsen, double coarsenPercent, double coarsenThreshold)
 {
 	size_t dim = d;
 	size_t level = l;
@@ -664,6 +668,12 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 
 	// Construct a grid
 	myBSSolver->constructGrid(*myBoundingBox, level);
+
+	// Enable Coarsening
+	if (useCoarsen == true)
+	{
+		myBSSolver->setEnableCoarseningData(coarsenThreshold, coarsenPercent);
+	}
 
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
@@ -812,9 +822,14 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  * @param refinePercent percantage of points that should be refined before Black Scholes Equation is solved
  * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  * @param dRefineThreshold Threshold for a point's surplus for refining this point
+ * @param useCoarsen specifies if the grid should be coarsened between timesteps
+ * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
+ * @param coarsenPercent Number of removable grid points that should be tested for deletion
  */
-void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
-		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double refinePercent, size_t nIterAdaptSteps, double dRefineThreshold)
+void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike,
+		std::string payoffType, double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps,
+		std::string Solver, double refinePercent, size_t nIterAdaptSteps, double dRefineThreshold,
+		bool useCoarsen, double coarsenPercent, double coarsenThreshold)
 {
 	size_t dim = d;
 	size_t level = l;
@@ -849,6 +864,12 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	// Construct a grid
 	myBSSolver->constructGrid(*myBoundingBox, level);
+
+	// Enable Coarsening
+	if (useCoarsen == true)
+	{
+		myBSSolver->setEnableCoarseningData(coarsenThreshold, coarsenPercent);
+	}
 
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
@@ -1228,6 +1249,40 @@ void writeHelp()
 	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
 	mySStream << std::endl << std::endl;
 
+	mySStream << "solveNDadaptFull" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	Strike: the strike" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << "	Adapt-Initial-Refinement: Number of Initial" << std::endl;
+	mySStream << "			Refinements" << std::endl;
+	mySStream << "	Adapt-Initial-Distance: determines the distance" << std::endl;
+	mySStream << "			a grid point must have from @money to" << std::endl;
+	mySStream << "			by refined" << std::endl;
+	mySStream << "	Coarsening Percent: Percent of gird point that should be removed" << std::endl;
+	mySStream << "	Coarsening Threshold: Threshold of point's surplus to remove point" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5 80 1e-6" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
+	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
+	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
+
 	mySStream << "solveNDadaptSurplus" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
@@ -1257,6 +1312,36 @@ void writeHelp()
 	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
 	mySStream << std::endl << std::endl;
 
+	mySStream << "solveNDadaptSurplusFull" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+	mySStream << "	Strike: the strike" << std::endl;
+	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
+	mySStream << "	r: the riskfree rate" << std::endl;
+	mySStream << "	T: time to maturity" << std::endl;
+	mySStream << "	dT: timestep size" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << "	Adapt-Refinement Percent: Percent of grid points that should be refined" << std::endl;
+	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
+	mySStream << "	refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
+	mySStream << "	Coarsening Percent: Percent of gird point that should be removed" << std::endl;
+	mySStream << "	Coarsening Threshold: Threshold of point's surplus to remove point" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50 10 1e-10 80 1e-6" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
+	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
+	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
+	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
 
 	mySStream << "solveBonn" << std::endl << "---------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
@@ -1368,7 +1453,7 @@ int main(int argc, char *argv[])
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]));
+			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]), false, 0.0, 0.0);
 		}
 	}
 	else if (option == "solveNDadaptSurplus")
@@ -1392,7 +1477,55 @@ int main(int argc, char *argv[])
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]), atof(argv[16]));
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]), atof(argv[16]), false, 0.0, 0.0);
+		}
+	}
+	else if (option == "solveNDadaptFull")
+	{
+		if (argc != 18)
+		{
+			writeHelp();
+		}
+		else
+		{
+			std::string fileStoch;
+			std::string fileBound;
+			double dStrike;
+			std::string ani;
+			std::string solver;
+			std::string payoff;
+
+			fileStoch.assign(argv[5]);
+			fileBound.assign(argv[4]);
+			dStrike = atof(argv[6]);
+			payoff.assign(argv[7]);
+			solver.assign(argv[11]);
+
+			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]), true, atof(argv[16]), atof(argv[17]));
+		}
+	}
+	else if (option == "solveNDadaptSurplusFull")
+	{
+		if (argc != 19)
+		{
+			writeHelp();
+		}
+		else
+		{
+			std::string fileStoch;
+			std::string fileBound;
+			double dStrike;
+			std::string ani;
+			std::string solver;
+			std::string payoff;
+
+			fileStoch.assign(argv[5]);
+			fileBound.assign(argv[4]);
+			dStrike = atof(argv[6]);
+			payoff.assign(argv[7]);
+			solver.assign(argv[11]);
+
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]), atof(argv[16]), true, atof(argv[17]), atof(argv[18]));
 		}
 	}
 	else if (option == "solveBonn")

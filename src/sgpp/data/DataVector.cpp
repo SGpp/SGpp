@@ -19,7 +19,7 @@ DataVector::DataVector() {
 
 DataVector::DataVector(size_t size) :
     size(size), dim(1), unused(0) {
-    this->data = new double[size * dim];
+	this->data = new double[size * dim];
 }
 
 DataVector::DataVector(size_t size, size_t dim) :
@@ -69,7 +69,7 @@ void DataVector::restructure(std::vector<size_t>& remainingIndex)
 {
 	if ((int)remainingIndex.size() > this->size)
 	{
-		throw sg::algorithm_exception("more indecies than entries!");
+		throw sg::algorithm_exception("more indices than entries!");
 	}
 
 	double* newdata = new double[remainingIndex.size() * this->dim];
@@ -380,8 +380,8 @@ void DataVector::normalizeDimension(int d, double border) {
 
 void DataVector::toString(std::string& text) {
     std::stringstream str;
-    int n = size * dim;
 
+    int n = size * dim;
     str << "[";
 
     for (int i = 0; i < n; i++) {
@@ -395,7 +395,7 @@ void DataVector::toString(std::string& text) {
 }
 
 std::string DataVector::toString() {
-    std::string str;
+	std::string str;
     toString(str);
     return str;
 }
@@ -467,7 +467,7 @@ double* DataVector::getPointer() {
 }
 
 DataVector::~DataVector() {
-    delete[] data;
+	delete[] data;
 }
 
 size_t DataVector::getNumberNonZero()

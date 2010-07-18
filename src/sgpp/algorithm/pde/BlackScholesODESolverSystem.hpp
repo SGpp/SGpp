@@ -46,6 +46,12 @@ protected:
 	DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
 	DataVector* gammaCoef;
+	/// use coarsening between timesteps in order to reduce gridsize
+	bool useCoarsen;
+	/// Threshold used to decide if a grid point should be deleted
+	double coarsenThreshold;
+	/// Percent how many of the removable points should be tested for deletion
+	double coarsenPercent;
 
 	void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
@@ -101,9 +107,15 @@ public:
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
+	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
+	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
+	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
 	 * @param MPIRank indicates the MPI-Rank of this instance, 0 indicates the master rank
 	 */
-	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul", bool bLogTransform = false, size_t MPIRank = 0);
+	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
+			DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0, double coarsenPercent = 0,
+			size_t MPIRank = 0);
 
 	/**
 	 * Std-Destructor

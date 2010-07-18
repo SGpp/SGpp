@@ -7,12 +7,15 @@
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
+#include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include <cmath>
 
 namespace sg
 {
 
-BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode, bool bLogTransform, size_t MPIRank)
+BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
+			DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode,
+			bool bLogTransform, bool useCoarsen, double coarsenThreshold, double coarsenPercent, size_t MPIRank)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -73,7 +76,12 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
 
 	// right hand side if System
-	this->rhs = new DataVector(1);
+	this->rhs = NULL;
+
+	// set coarsen settings
+	this->useCoarsen = useCoarsen;
+	this->coarsenThreshold = coarsenThreshold;
+	this->coarsenPercent = coarsenPercent;
 }
 
 BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
@@ -96,7 +104,10 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 	{
 		delete this->alpha_inner;
 	}
-	delete this->rhs;
+	if (this->rhs != NULL)
+	{
+		delete this->rhs;
+	}
 }
 
 void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
@@ -179,6 +190,27 @@ void BlackScholesODESolverSystem::finishTimestep()
 		{
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
+	}
+
+	if (this->useCoarsen)
+	{
+		size_t numCoarsen;
+
+		// Coarsen the grid
+		GridGenerator* myGeneratorCoarsen = this->BoundGrid->createGridGenerator();
+
+		numCoarsen = myGeneratorCoarsen->getNumberOfRemoveablePoints();
+		numCoarsen = static_cast<size_t>(((double)numCoarsen)*(this->coarsenPercent)/100.0);
+
+		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
+
+		myGeneratorCoarsen->coarsen(myCoarsenFunctor, this->alpha_complete);
+
+		delete myGeneratorCoarsen;
+		delete myCoarsenFunctor;
+
+		// rebuild the inner grid + coefficients
+		this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 	}
 }
 
