@@ -32,7 +32,7 @@ Euler::~Euler()
 {
 }
 
-void Euler::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose)
+void Euler::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
     DataVector* rhs;
@@ -73,7 +73,21 @@ void Euler::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& Syste
     			myScreen->update(100, soutput.str());
     		}
     	}
-	    System.finishTimestep();
+	    if (bIdentifyLastStep == false)
+	    {
+			System.finishTimestep(false);
+	    }
+	    else
+	    {
+			if (i < (this->nMaxIterations-1))
+			{
+				System.finishTimestep(false);
+			}
+			else
+			{
+				System.finishTimestep(true);
+			}
+	    }
 
 		// Create pictures of the animation, if specified
 	    if ((this->bAnimation == true) && (i%animationStep == 0))

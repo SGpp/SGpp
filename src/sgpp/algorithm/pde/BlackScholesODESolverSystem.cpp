@@ -15,7 +15,8 @@ namespace sg
 
 BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataVector& rho, double r, double TimestepSize, std::string OperationMode,
-			bool bLogTransform, bool useCoarsen, double coarsenThreshold, double coarsenPercent, size_t MPIRank)
+			bool bLogTransform, bool useCoarsen, double coarsenThreshold, double coarsenPercent,
+			size_t numExecCoarsen, size_t MPIRank)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -82,6 +83,7 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->useCoarsen = useCoarsen;
 	this->coarsenThreshold = coarsenThreshold;
 	this->coarsenPercent = coarsenPercent;
+	this->numExecCoarsen = numExecCoarsen;
 }
 
 BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
@@ -178,7 +180,7 @@ void BlackScholesODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVe
 	result.add(temp);
 }
 
-void BlackScholesODESolverSystem::finishTimestep()
+void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
@@ -192,7 +194,7 @@ void BlackScholesODESolverSystem::finishTimestep()
 		}
 	}
 
-	if (this->useCoarsen)
+	if (this->useCoarsen == true && isLastTimestep == false)
 	{
 		size_t numCoarsen;
 
@@ -204,7 +206,10 @@ void BlackScholesODESolverSystem::finishTimestep()
 
 		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
 
-		myGeneratorCoarsen->coarsen(myCoarsenFunctor, this->alpha_complete);
+		for (size_t i = 0; i < this->numExecCoarsen; i++)
+		{
+			myGeneratorCoarsen->coarsen(myCoarsenFunctor, this->alpha_complete);
+		}
 
 		delete myGeneratorCoarsen;
 		delete myCoarsenFunctor;

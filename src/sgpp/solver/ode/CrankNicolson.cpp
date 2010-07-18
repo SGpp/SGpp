@@ -20,7 +20,7 @@ CrankNicolson::~CrankNicolson()
 {
 }
 
-void CrankNicolson::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose)
+void CrankNicolson::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
     DataVector* rhs = NULL;
@@ -57,7 +57,21 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver, OperationODESolverSyste
     	}
 
 	    // Do some adjustments on the boundaries if needed, copy values back
-		System.finishTimestep();
+	    if (bIdentifyLastStep == false)
+	    {
+			System.finishTimestep(false);
+	    }
+	    else
+	    {
+			if (i < (this->nMaxIterations-1))
+			{
+				System.finishTimestep(false);
+			}
+			else
+			{
+				System.finishTimestep(true);
+			}
+	    }
 	}
 
 	// write some empty lines to console

@@ -27,7 +27,7 @@ AdamsBashforth::~AdamsBashforth()
 {
 }
 
-void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose)
+void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
     DataVector* rhs;
@@ -68,7 +68,21 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationODESolverSyst
     			myScreen->update(100, soutput.str());
     		}
     	}
-	    System.finishTimestep();
+	    if (bIdentifyLastStep == false)
+	    {
+			System.finishTimestep(false);
+	    }
+	    else
+	    {
+			if (i < (this->nMaxIterations-1))
+			{
+				System.finishTimestep(false);
+			}
+			else
+			{
+				System.finishTimestep(true);
+			}
+	    }
 	    System.saveAlpha();
 
 

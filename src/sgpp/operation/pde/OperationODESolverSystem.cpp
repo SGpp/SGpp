@@ -178,7 +178,7 @@ DataVector* OperationODESolverSystem::generateRHS()
 	return this->rhs;
 }
 
-void OperationODESolverSystem::finishTimestep()
+void OperationODESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);

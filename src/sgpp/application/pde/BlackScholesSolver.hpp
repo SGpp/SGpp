@@ -60,6 +60,8 @@ private:
 	double coarsenThreshold;
 	/// Percent how many of the removable points should be tested for deletion
 	double coarsenPercent;
+	/// denotes the number of coarsening procedures within one timestep
+	size_t numExecCoarsen;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -180,8 +182,9 @@ public:
 	 *
 	 *	@param coarsenThreshold Threshold needed to determine if a grid point should be removed
 	 *	@param coarsenPercent Percent of removable grid points that should be tested for deletion
+	 *	@param numExecCoarsen denotes the number coarsening procedures within one timestep
 	 */
-	void setEnableCoarseningData(double coarsenThreshold, double coarsenPercent);
+	void setEnableCoarseningData(double coarsenThreshold, double coarsenPercent, size_t numExecCoarsen);
 };
 
 }
