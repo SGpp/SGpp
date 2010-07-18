@@ -189,20 +189,27 @@ public:
 		// sort list
 		removePoints.sort();
 
+		//DEBUG : print list points to delete, sorted
+		//std::cout << std::endl << "List of points to delete, sorted" << std::endl;
+		//for(std::list<size_t>::iterator iter = removePoints.begin(); iter != removePoints.end(); iter++)
+		//{
+		//	std::cout << " " << *iter << " ";
+		//}
+		//std::cout << std::endl;
+
 		// Remove points with given indices for index vector and hashmap
 		for(std::list<size_t>::iterator iter = removePoints.begin(); iter != removePoints.end(); iter++)
 		{
 			size_t tmpIndex = *iter;
-			size_t delPos = 0;
+			size_t curPos = tmpIndex - delCounter;
 
 			// GridIndex
-			curPoint = list[tmpIndex];
+			curPoint = list[curPos];
 
 			// erase point
-			map.erase(curPoint);
-			delPos += tmpIndex - delCounter;
-			list.erase(list.begin() + delPos);
 			delCounter++;
+			map.erase(curPoint);
+			list.erase(list.begin() + curPos);
 		}
 
 		// reset all entries in hash map and build list of remaining
@@ -214,7 +221,7 @@ public:
 		}
 
 		// reset the whole grid's leaf property in order
-		// to garantuee a consistent grid
+		// to guarantee a consistent grid
 		recalcLeafProperty();
 
 		// return indices of "surviver"

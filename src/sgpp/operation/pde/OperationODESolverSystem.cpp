@@ -167,8 +167,12 @@ DataVector* OperationODESolverSystem::generateRHS()
 	}
 	rhs_complete.sub(result_complete);
 
-	this->rhs->resize(this->alpha_inner->getSize());
+	if (this->rhs != NULL)
+	{
+		delete this->rhs;
+	}
 
+	this->rhs = new DataVector(this->alpha_inner->getSize());
 	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 
 	return this->rhs;
