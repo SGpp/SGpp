@@ -52,7 +52,7 @@ public:
 	 */
 	virtual ~VarTimestep();
 
-	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose = false);
+	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }

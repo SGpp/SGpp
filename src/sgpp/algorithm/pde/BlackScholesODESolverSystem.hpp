@@ -52,6 +52,8 @@ protected:
 	double coarsenThreshold;
 	/// Percent how many of the removable points should be tested for deletion
 	double coarsenPercent;
+	/// denotes the number of complete coarsen procedures per timestep
+	size_t numExecCoarsen;
 
 	void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
@@ -110,19 +112,20 @@ public:
 	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
 	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
+	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
 	 * @param MPIRank indicates the MPI-Rank of this instance, 0 indicates the master rank
 	 */
 	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
 			DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
-			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0, double coarsenPercent = 0,
-			size_t MPIRank = 0);
+			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, double coarsenPercent = 0.0,
+			size_t numExecCoarsen = 0, size_t MPIRank = 0);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~BlackScholesODESolverSystem();
 
-	void finishTimestep();
+	void finishTimestep(bool isLastTimestep = false);
 
 	void startTimestep();
 };

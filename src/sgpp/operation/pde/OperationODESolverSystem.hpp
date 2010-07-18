@@ -128,8 +128,10 @@ public:
 	/**
 	 * performs some action that might be needed after a timestep has be finished in the ODE
 	 * Solver, e.g. some boundary adjustments.
+	 *
+	 * @param isLastTimestep denotes of this is the clean up for the last time of solving the ODE
 	 */
-	virtual void finishTimestep();
+	virtual void finishTimestep(bool isLastTimestep = false);
 
 	/**
 	 * Implements some start jobs of every timestep, e.g.discounting boundaries

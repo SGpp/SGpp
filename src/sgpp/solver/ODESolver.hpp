@@ -38,9 +38,10 @@ public:
 	 *
 	 * @param LinearSystemSolver reference to an instance of a linear system solver that is used by this ODE solver
 	 * @param System reference to an OperationMatrix Object that implements the matrix vector multiplication
+	 * @param bIdentifyLastStep set this to true to tell System the last step
 	 * @param verbose prints information during execution of the solver
 	 */
-	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool verbose = false) = 0;
+	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
 };
 
 }
