@@ -46,6 +46,7 @@
 #include "grid/generation/hashmap/HashRefinement.hpp"
 #include "grid/generation/hashmap/HashCoarsening.hpp"
 #include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
+#include "grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 

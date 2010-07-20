@@ -185,6 +185,18 @@ public:
 	 *	@param numExecCoarsen denotes the number coarsening procedures within one timestep
 	 */
 	void setEnableCoarseningData(double coarsenThreshold, double coarsenPercent, size_t numExecCoarsen);
+
+	/**
+	 * Refines a grid by taking the grid's coefficients into account. This refinement method
+	 * refines the grid based on the surplus by refining grid points with big surpluses
+	 * first.
+	 * The grid is refined to max. Level!
+	 *
+	 * @param alpha a DataVector containing the grids coefficients
+	 * @param dThreshold Threshold for a point's surplus for refining this point
+	 * @param maxLevel maxLevel of refinement
+	 */
+	void refineSurplusToMaxLevel(DataVector& alpha, double dThreshold, unsigned int maxLevel);
 };
 
 }

@@ -39,6 +39,9 @@ public:
 	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
 	virtual size_t getNumberOfRemoveablePoints();
 
+	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel);
+	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel);
+
 protected:
 	/// pointer to the storage object
 	GridStorage* storage;

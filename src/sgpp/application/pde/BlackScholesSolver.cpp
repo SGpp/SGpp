@@ -470,4 +470,24 @@ void BlackScholesSolver::setEnableCoarseningData(double coarsenThreshold, double
 	this->numExecCoarsen = numExecCoarsen;
 }
 
+void BlackScholesSolver::refineSurplusToMaxLevel(DataVector& alpha, double dThreshold, unsigned int maxLevel)
+{
+	size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
+
+	if (bGridConstructed)
+	{
+		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
+
+		myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+
+		delete myRefineFunc;
+
+		alpha.resize(myGridStorage->size());
+	}
+	else
+	{
+		throw new application_exception("PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
+	}
+}
+
 }

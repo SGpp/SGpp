@@ -53,4 +53,13 @@ size_t StandardGridGenerator::getNumberOfRemoveablePoints()
 	return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
+void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+{
+}
+
+size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+{
+	return 0;
+}
+
 }
