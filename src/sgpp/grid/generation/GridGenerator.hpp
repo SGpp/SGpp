@@ -67,6 +67,25 @@ public:
 	 * @return the number of points on the grid that can be removed
 	 */
 	virtual size_t getNumberOfRemoveablePoints() = 0;
+
+	/**
+	 * Refines a grid according to the settings of the RefinementFunctor func.
+	 * additionally a maximum level for refinement is taken into account
+	 *
+	 * @param func pointer to refinement functor
+	 * @param maxLevel no points on higher levels than maxLevel will be created
+	 */
+	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;
+
+	/**
+	 * Returns the number of points on the grid that can be refined in the next iteration
+	 * additionally a maximum level for refinement is taken into account
+	 *
+	 * @param maxLevel no points on higher levels than maxLevel will be created
+	 *
+	 * @return the number of points on the grid that can be refined
+	 */
+	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
 
 }

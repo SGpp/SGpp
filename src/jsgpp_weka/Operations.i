@@ -50,6 +50,8 @@ public:
 	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
 	virtual int getNumberOfRefinablePoints() = 0;
 	virtual int getNumberOfRemoveablePoints() = 0;
+	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;
+	virtual int getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
 
 class OperationB

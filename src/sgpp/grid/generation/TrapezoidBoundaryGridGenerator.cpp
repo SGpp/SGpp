@@ -51,4 +51,16 @@ size_t TrapezoidBoundaryGridGenerator::getNumberOfRemoveablePoints()
 	return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
+void TrapezoidBoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+{
+	HashRefinementBoundariesMaxLevel refine;
+	refine.refineToMaxLevel(this->storage, func, maxLevel);
+}
+
+size_t TrapezoidBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+{
+	HashRefinementBoundariesMaxLevel refine;
+	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
+}
+
 }

@@ -51,4 +51,16 @@ size_t BoundaryGridGenerator::getNumberOfRemoveablePoints()
 	return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
+void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+{
+	HashRefinementBoundariesMaxLevel refine;
+	refine.refineToMaxLevel(this->storage, func, maxLevel);
+}
+
+size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+{
+	HashRefinementBoundariesMaxLevel refine;
+	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
+}
+
 }

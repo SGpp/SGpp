@@ -883,14 +883,30 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// refine the grid to approximate the singularity in the start solution better
-	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+//	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+//	{
+//		std::cout << "Refining Grid..." << std::endl;
+//		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent, dRefineThreshold);
+//		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+//	}
+//	std::cout << std::endl << std::endl << std::endl;
+
+	size_t oldGridSize = 0;
+	size_t newGridSize = myBSSolver->getNumberGridPoints();
+	size_t addedGridPoint = 0;
+	do
 	{
+		oldGridSize = newGridSize;
 		std::cout << "Refining Grid..." << std::endl;
-		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent, dRefineThreshold);
+		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, 2*level);
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-	}
+		newGridSize = myBSSolver->getNumberGridPoints();
+		addedGridPoint = newGridSize - oldGridSize;
+	} while (addedGridPoint > 0);
 	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
