@@ -101,6 +101,22 @@ public:
 	void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
 
 	/**
+	 * This function tries to refine the grid such that
+	 * most of the grid points are used for interpolation of the singularity. So this grid
+	 * is able to approximate the start solution better. Refining is done only if the max
+	 * refinement level hasn't be reached.
+	 *
+	 * After refining the grid the payoff function is applied to the grid.
+	 *
+	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
+	 * @param strike containing the option's strike
+	 * @param payoffType the type of payoff Function used ONLY supported: avgM
+	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
+	 * @param maxLevel maximum level of refinement
+	 */
+	void refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
+
+	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
 	 * some statistical data about the underlying (assets' weight, standard deviation
 	 * and the correlation between them). This function allows you to set this data.
@@ -197,6 +213,17 @@ public:
 	 * @param maxLevel maxLevel of refinement
 	 */
 	void refineSurplusToMaxLevel(DataVector& alpha, double dThreshold, unsigned int maxLevel);
+
+	/**
+	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding
+	 * box [0,x] X [0,y] is assumed.
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename the name of file contain the interpolation error
+	 * @param numTestpoints Number of equal distribute testpoints @money
+	 * @param strike the option's strike
+	 */
+	void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
 };
 
 }

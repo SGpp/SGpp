@@ -692,12 +692,31 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 	std::cout << std::endl << std::endl << std::endl;
 
+//	size_t oldGridSize = 0;
+//	size_t newGridSize = myBSSolver->getNumberGridPoints();
+//	size_t addedGridPoint = 0;
+//	size_t i = 0;
+//	do
+//	{
+//		oldGridSize = newGridSize;
+//		std::cout << "Refining Grid..." << std::endl;
+//		myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType,  (dInitialAdpatDist/(static_cast<double>(i+1))), level);
+//		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+//		newGridSize = myBSSolver->getNumberGridPoints();
+//		addedGridPoint = newGridSize - oldGridSize;
+//		i++;
+//	} while (addedGridPoint > 0);
+//	std::cout << std::endl << std::endl << std::endl;
+
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
 		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
 		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+		// Write interpolation error into a file
+		myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 129, dStrike);
 	}
 	else
 	{
@@ -900,7 +919,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 //	{
 //		oldGridSize = newGridSize;
 //		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, 2*level);
+//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level);
 //		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 //		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 //		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
@@ -915,6 +934,8 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
 		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+		// Write interpolation error into a file
+		myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
 	}
 	else
 	{
