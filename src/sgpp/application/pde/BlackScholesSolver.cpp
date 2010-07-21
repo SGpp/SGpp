@@ -15,6 +15,8 @@
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
+#include <fstream>
+#include <iomanip>
 
 namespace sg
 {
@@ -133,12 +135,89 @@ void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double s
 		}
 		else
 		{
-			throw new application_exception("BlackScholesSolver::refineGrid : An unsupported payoffType was specified!");
+			throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoff : An unsupported payoffType was specified!");
 		}
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::refineInitialGrid : The grid wasn't initialized before!");
+		throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
+	}
+}
+
+void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel)
+{
+	size_t nRefinements = 0;
+
+	if (this->bGridConstructed)
+	{
+
+		DataVector refineVector(alpha.getSize());
+
+		if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+		{
+			double tmp;
+			double* dblFuncValues = new double[dim];
+			double dDistance = 0.0;
+
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+			{
+				std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+				std::stringstream coordsStream(coords);
+
+				for (size_t j = 0; j < this->dim; j++)
+				{
+					coordsStream >> tmp;
+
+					dblFuncValues[j] = tmp;
+				}
+
+				tmp = 0.0;
+				for (size_t j = 0; j < this->dim; j++)
+				{
+					tmp += dblFuncValues[j];
+				}
+
+				if (payoffType == "std_euro_call")
+				{
+					dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
+				}
+				if (payoffType == "std_euro_put")
+				{
+					dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
+				}
+
+				if (dDistance <= dStrikeDistance)
+				{
+					refineVector[i] = dDistance;
+					nRefinements++;
+				}
+				else
+				{
+					refineVector[i] = 0.0;
+				}
+			}
+
+			delete[] dblFuncValues;
+
+			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+
+			this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+
+			delete myRefineFunc;
+
+			alpha.resize(this->myGridStorage->size());
+
+			// reinit the grid with the payoff function
+			initGridWithPayoff(alpha, strike, payoffType);
+		}
+		else
+		{
+			throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : An unsupported payoffType was specified!");
+		}
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : The grid wasn't initialized before!");
 	}
 }
 
@@ -487,6 +566,51 @@ void BlackScholesSolver::refineSurplusToMaxLevel(DataVector& alpha, double dThre
 	else
 	{
 		throw new application_exception("PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
+	}
+}
+
+void BlackScholesSolver::printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike)
+{
+	if (this->bGridConstructed)
+	{
+		if (this->myGrid->getStorage()->getBoundingBox()->getDimensions() == 2)
+		{
+			if (numTestpoints < 2)
+				numTestpoints = 2;
+
+			double dInc = (2.0*strike)/static_cast<double>(numTestpoints-1);
+
+			double dX = 0.0;
+			double dY = 2*strike;
+
+			std::ofstream file;
+			file.open(tFilename.c_str());
+
+			OperationEval* myEval = this->myGrid->createOperationEval();
+
+			for (size_t i = 0; i < numTestpoints; i++)
+			{
+				std::vector<double> point;
+
+				point.push_back(dX);
+				point.push_back(dY);
+
+				double result = myEval->eval(alpha, point);
+
+				file << std::scientific << std::setprecision( 16 ) << dX << " " << dY << " " << result << std::endl;
+
+				dX += dInc;
+				dY -= dInc;
+			}
+
+			delete myEval;
+
+			file.close();
+		}
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::getPayoffInterpolationError : A grid wasn't constructed before!");
 	}
 }
 
