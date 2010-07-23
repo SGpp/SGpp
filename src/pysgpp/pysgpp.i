@@ -88,8 +88,10 @@ namespace std {
 %include "src/sgpp/sgpp.hpp"
 
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
+%include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
 %include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluation.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesODESolverSystem.hpp"
@@ -137,4 +139,5 @@ namespace std {
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
+%template(SAlgorithmEvaluation) sg::AlgorithmEvaluation<sg::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;
