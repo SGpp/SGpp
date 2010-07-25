@@ -11,8 +11,8 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
-#include "algorithm/common/GetAffectedBasisFunctions.hpp"
 #include "algorithm/common/AlgorithmEvaluation.hpp"
+#include "algorithm/common/AlgorithmEvaluationTransposed.hpp"
 
 #include <vector>
 #include <utility>
@@ -51,34 +51,24 @@ public:
 	 */
 	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
-		typedef std::vector<std::pair<size_t, double> > IndexValVector;
-
 		result.setAll(0.0);
-#ifdef USEOMP
 		size_t source_size = source.getSize();
 
+#ifdef USEOMP
 		#pragma omp parallel
 		{
 			DataVector privateResult(result);
 			std::vector<double> line;
-			IndexValVector vec;
-			GetAffectedBasisFunctions<BASIS> ga(storage);
+			AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
 
 			privateResult.setAll(0.0);
 
 			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
 			{
-				vec.clear();
-
 				x.getLine(i, line);
 
-				ga(basis, line, vec);
-
-				for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-				{
-					privateResult[iter->first] += iter->second * source[i];
-				}
+				AlgoEvalTrans(basis, line, source[i], privateResult);
 			}
 
 			#pragma omp critical
@@ -87,25 +77,14 @@ public:
 			}
 		}
 #else
-		size_t source_size = source.getSize();
-
 		std::vector<double> line;
-		IndexValVector vec;
-
-		GetAffectedBasisFunctions<BASIS> ga(storage);
+		AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
 
 		for(size_t i = 0; i < source_size; i++)
 		{
-			vec.clear();
-
 			x.getLine(i, line);
 
-			ga(basis, line, vec);
-
-			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-			{
-				result[iter->first] += iter->second * source[i];
-			}
+			AlgoEvalTrans(basis, line, source[i], result);
 		}
 #endif /* USEOMP */
 	}
@@ -125,9 +104,10 @@ public:
 	 */
 	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
-#ifdef USEOMP
+		result.setAll(0.0);
 		size_t result_size = result.getSize();
 
+#ifdef USEOMP
 		#pragma omp parallel
 		{
 			std::vector<double> line;
@@ -142,7 +122,6 @@ public:
 			}
 		}
 #else
-		size_t result_size = result.getSize();
 		std::vector<double> line;
 		AlgorithmEvaluation<BASIS> AlgoEval(storage);
 
