@@ -16,6 +16,7 @@
 #include "algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 #include "algorithm/common/AlgorithmEvaluation.hpp"
+#include "algorithm/common/AlgorithmEvaluationTransposed.hpp"
 
 #include "algorithm/datadriven/test_dataset.hpp"
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
