@@ -88,6 +88,7 @@ namespace std {
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/algorithm/common/AlgorithmEvaluation.hpp"
 %include "src/sgpp/algorithm/common/AlgorithmEvaluationTransposed.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluationIterative.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesODESolverSystem.hpp"

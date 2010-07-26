@@ -13,6 +13,7 @@
 
 #include "algorithm/common/AlgorithmEvaluation.hpp"
 #include "algorithm/common/AlgorithmEvaluationTransposed.hpp"
+#include "algorithm/common/AlgorithmEvaluationIterative.hpp"
 
 #include <vector>
 #include <utility>
@@ -106,6 +107,32 @@ public:
 	{
 		result.setAll(0.0);
 		size_t result_size = result.getSize();
+
+//#ifdef USEOMP
+//		#pragma omp parallel
+//		{
+//			std::vector<double> line;
+//			AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
+//
+//			#pragma omp for schedule (static)
+//			for(size_t i = 0; i < result_size; i++)
+//			{
+//				x.getLine(i, line);
+//
+//				result[i] = AlgoEval(basis, line, source);
+//			}
+//		}
+//#else
+//		std::vector<double> line;
+//		AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
+//
+//		for(size_t i = 0; i < result_size; i++)
+//		{
+//			x.getLine(i, line);
+//
+//			result[i] = AlgoEval(basis, line, source);
+//		}
+//#endif /* USEOMP */
 
 #ifdef USEOMP
 		#pragma omp parallel
