@@ -598,6 +598,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 		std::cout << std::endl << std::endl;
 
+		// Printing number of gridpoints in cube
+		std::cout << "Number gridpoints in eval. cuboid: " << myBSSolver->getNumberGridPointsInEvaluationCuboid(EvalPoints) << std::endl;
+
 		myBSSolver->deleteGrid();
 		delete alpha;
 
@@ -811,7 +814,10 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
-		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl << std::endl;
+
+		// Printing number of gridpoints in cube
+		std::cout << "Number gridpoints in eval. cuboid: " << myBSSolver->getNumberGridPointsInEvaluationCuboid(EvalCuboid) << std::endl;
 	}
 	else
 	{
@@ -1029,7 +1035,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
-		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl << std::endl;
+
+		// Printing number of gridpoints in cube
+		std::cout << "Number gridpoints in eval. cuboid: " << myBSSolver->getNumberGridPointsInEvaluationCuboid(EvalCuboid) << std::endl;
 	}
 	else
 	{

@@ -137,6 +137,15 @@ public:
 	void evaluateCuboid(DataVector& alpha, DataVector& FunctionValues, DataVector& EvaluationPoints);
 
 	/**
+	 * Checks how many of the current grid's gridpoints are in the evaluation cuboid.
+	 *
+	 * @param EvaluationPoints Points at whicht the grid should be evaluated
+	 *
+	 * @return number of grid points in the evaluation cuboid
+	 */
+	size_t getNumberGridPointsInEvaluationCuboid(DataVector& EvaluationPoints);
+
+	/**
 	 * This is some kind of debug functionality. It writes a file,
 	 * that can be used with gnuplot the print the grid.
 	 *
