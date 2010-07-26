@@ -9,6 +9,7 @@
 #define LINEAR_BASE_HPP
 
 #include <cmath>
+#include <algorithm>
 
 namespace sg
 {
@@ -28,6 +29,18 @@ public:
 	double eval(LT level, IT index, double p)
 	{
 		return 1.0 - fabs((1<<level) * p - index);
+	}
+
+	/**
+	 * Evaluate a base functions.
+	 * Has a dependence on the absolute position of grid point and support.
+	 *
+	 * This version catches errors, that occur if a basis function
+	 * is evaluated outside its domain
+	 */
+	double evalSave(LT level, IT index, double p)
+	{
+		return std::max(1.0 - fabs((1<<level) * p - index), 0.0);
 	}
 };
 
