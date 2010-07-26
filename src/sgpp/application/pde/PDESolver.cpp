@@ -218,57 +218,6 @@ void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, Data
 	}
 }
 
-size_t PDESolver::getNumberGridPointsInEvaluationCuboid(DataVector& EvaluationPoints)
-{
-	size_t nPoints = 0;
-
-	if (bGridConstructed)
-	{
-		typedef GridStorage::index_pointer index;
-		size_t dims = myGrid->getStorage()->dim();
-		BoundingBox tmpBB(dims);
-		DataVector coords(dims);
-
-		for (size_t d = 0; d < dims; d++)
-		{
-			DimensionBoundary tmpDB;
-
-			tmpDB.leftBoundary = EvaluationPoints.min(d);
-			tmpDB.rightBoundary = EvaluationPoints.max(d);
-
-			tmpBB.setBoundary(d, tmpDB);
-		}
-
-		for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
-		{
-			bool isInside = true;
-			index myIndex = (*myGrid->getStorage())[i];
-
-			myIndex->getCoordsBB(coords, *myGrid->getBoundingBox());
-
-			for (size_t d = 0; d < dims; d++)
-			{
-				if (coords[d] < tmpBB.getBoundary(d).leftBoundary || coords[d] > tmpBB.getBoundary(d).rightBoundary)
-				{
-					isInside = false;
-				}
-			}
-
-			if (isInside == true)
-			{
-				nPoints++;
-			}
-		}
-
-	}
-	else
-	{
-		throw new application_exception("PDESolver::getNumberGridPointsInEvaluationCuboid : A grid wasn't constructed before!");
-	}
-
-	return nPoints;
-}
-
 size_t PDESolver::getNumberGridPoints()
 {
 	if (bGridConstructed)
@@ -293,7 +242,7 @@ size_t PDESolver::getNumberInnerGridPoints()
 	}
 }
 
-size_t PDESolver:: getNumberDimensions()
+size_t PDESolver::getNumberDimensions()
 {
 	if (bGridConstructed)
 	{

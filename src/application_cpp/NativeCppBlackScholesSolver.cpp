@@ -16,8 +16,10 @@
 std::string tFileEvalCuboid = "evalCuboid.data";
 std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 
-/// default number of Implicit Euler steps when using Crank Nicolson
+/// default number of Implicit Euler steps before starting with Crank Nicolson approach
 #define CRNIC_IMEUL_STEPS 3
+/// default value for epsilon in gridpoints @money
+#define DFLT_EPS_AT_MONEY 0.0
 
 /**
  * reads the values of mu, sigma and rho of all assets from
@@ -324,6 +326,9 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	// Init the grid with on payoff function
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
+	// Gridpoints @Money
+	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
@@ -482,6 +487,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// Init the grid with on payoff function
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
+		// Gridpoints @Money
+		std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+
 		// Print the payoff function into a gnuplot file
 		if (dim < 3)
 		{
@@ -597,9 +605,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			}
 		}
 		std::cout << std::endl << std::endl;
-
-		// Printing number of gridpoints in cube
-		std::cout << "Number gridpoints in eval. cuboid: " << myBSSolver->getNumberGridPointsInEvaluationCuboid(EvalPoints) << std::endl;
 
 		myBSSolver->deleteGrid();
 		delete alpha;
@@ -726,6 +731,9 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		myBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
 	}
 
+	// Gridpoints @Money
+	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
@@ -814,10 +822,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
-		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl << std::endl;
-
-		// Printing number of gridpoints in cube
-		std::cout << "Number gridpoints in eval. cuboid: " << myBSSolver->getNumberGridPointsInEvaluationCuboid(EvalCuboid) << std::endl;
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
 	}
 	else
 	{
@@ -948,6 +953,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		myBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
 	}
 
+	// Gridpoints @Money
+	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
@@ -1035,10 +1043,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		twoNorm = sqrt(twoNorm);
 
 		// Printing norms
-		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl << std::endl;
-
-		// Printing number of gridpoints in cube
-		std::cout << "Number gridpoints in eval. cuboid: " << myBSSolver->getNumberGridPointsInEvaluationCuboid(EvalCuboid) << std::endl;
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
 	}
 	else
 	{
