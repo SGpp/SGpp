@@ -224,6 +224,17 @@ public:
 	 * @param strike the option's strike
 	 */
 	void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
+
+	/**
+	 * gets the number of gridpoints @money
+	 *
+	 * @param payoffType the payoff type
+	 * @param strike the option's strike
+	 * @param eps epsilon to determine the gridpoints, use if @money is not exactly on grid
+	 *
+	 * @param number of gridpoints @money
+	 */
+	size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 };
 
 }

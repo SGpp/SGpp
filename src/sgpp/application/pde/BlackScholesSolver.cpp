@@ -614,4 +614,46 @@ void BlackScholesSolver::printPayoffInterpolationError2D(DataVector& alpha, std:
 	}
 }
 
+size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, double strike, double eps)
+{
+	size_t nPoints = 0;
+
+	if (this->bGridConstructed)
+	{
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			bool isAtMoney = true;
+			DataVector coords(this->dim);
+			this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
+
+			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+			{
+				for (size_t d = 0; d < this->dim; d++)
+				{
+					if ( ((coords.sum()/static_cast<double>(this->dim)) < (strike-eps)) || ((coords.sum()/static_cast<double>(this->dim)) > (strike+eps)) )
+					{
+						isAtMoney = false;
+					}
+
+				}
+			}
+			else
+			{
+				throw new application_exception("BlackScholesSolver::getGridPointsAtMoney : An unknown payoff-type was specified!");
+			}
+
+			if (isAtMoney == true)
+			{
+				nPoints++;
+			}
+		}
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
+	}
+
+	return nPoints;
+}
+
 }
