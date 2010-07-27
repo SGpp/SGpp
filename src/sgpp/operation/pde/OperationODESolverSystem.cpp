@@ -13,6 +13,8 @@ namespace sg
 
 OperationODESolverSystem::OperationODESolverSystem()
 {
+	this->numSumGridpointsInner = 0;
+	this->numSumGridpointsComplete = 0;
 }
 
 OperationODESolverSystem::~OperationODESolverSystem()
@@ -227,11 +229,22 @@ void OperationODESolverSystem::abortTimestep()
 	this->alpha_complete->add(*this->alpha_complete_tmp);
 }
 
-void OperationODESolverSystem::saveAlpha() {
+void OperationODESolverSystem::saveAlpha()
+{
 	this->alpha_complete_old->setAll(0.0);
 	this->alpha_complete_old->add(*this->alpha_complete_tmp);
 	this->alpha_complete_tmp->setAll(0.0);
 	this->alpha_complete_tmp->add(*this->alpha_complete);
+}
+
+size_t OperationODESolverSystem::getSumGridPointsComplete()
+{
+	return this->numSumGridpointsComplete;
+}
+
+size_t OperationODESolverSystem::getSumGridPointsInner()
+{
+	return this->numSumGridpointsInner;
 }
 
 }

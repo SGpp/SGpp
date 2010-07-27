@@ -84,6 +84,10 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->coarsenThreshold = coarsenThreshold;
 	this->coarsenPercent = coarsenPercent;
 	this->numExecCoarsen = numExecCoarsen;
+
+	// init Number of AverageGridPoins
+	this->numSumGridpointsInner = 0;
+	this->numSumGridpointsComplete = 0;
 }
 
 BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
@@ -193,6 +197,10 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
 	}
+
+	// add number of Gridpoints
+	this->numSumGridpointsInner += this->InnerGrid->getSize();
+	this->numSumGridpointsComplete += this->BoundGrid->getSize();
 
 	if (this->useCoarsen == true && isLastTimestep == false)
 	{

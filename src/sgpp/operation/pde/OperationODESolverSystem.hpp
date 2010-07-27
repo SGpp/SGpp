@@ -66,6 +66,10 @@ protected:
 	Grid* BoundGrid;
 	/// Pointer to the inner grid object
 	Grid* InnerGrid;
+	/// Stores number of average gridpoints, inner grid
+	size_t numSumGridpointsInner;
+	/// Stores number of average gridpoints, complete grid
+	size_t numSumGridpointsComplete;
 
 	/**
 	 * applies the PDE's mass matrix, on complete grid - with boundaries
@@ -176,6 +180,20 @@ public:
 	 * @return the ODE solver: ExEul, ImEul or CrNic
 	 */
 	std::string getODESolver();
+
+	/**
+	 * Returns the number of average grid points for the complete grid
+	 *
+	 * @return the number of average grid points for the complete grid
+	 */
+	size_t getSumGridPointsComplete();
+
+	/**
+	 * Returns the number of average grid points for the inner grid
+	 *
+	 * @return the number of average grid points for the inner grid
+	 */
+	size_t getSumGridPointsInner();
 
 
 	void setTimestepSize(double newTimestepSize);
