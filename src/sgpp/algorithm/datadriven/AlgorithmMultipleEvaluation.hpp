@@ -108,32 +108,6 @@ public:
 		result.setAll(0.0);
 		size_t result_size = result.getSize();
 
-//#ifdef USEOMP
-//		#pragma omp parallel
-//		{
-//			std::vector<double> line;
-//			AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
-//
-//			#pragma omp for schedule (static)
-//			for(size_t i = 0; i < result_size; i++)
-//			{
-//				x.getLine(i, line);
-//
-//				result[i] = AlgoEval(basis, line, source);
-//			}
-//		}
-//#else
-//		std::vector<double> line;
-//		AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
-//
-//		for(size_t i = 0; i < result_size; i++)
-//		{
-//			x.getLine(i, line);
-//
-//			result[i] = AlgoEval(basis, line, source);
-//		}
-//#endif /* USEOMP */
-
 #ifdef USEOMP
 		#pragma omp parallel
 		{
@@ -158,7 +132,39 @@ public:
 
 			result[i] = AlgoEval(basis, line, source);
 		}
-#endif /* USEOMP */
+#endif
+	}
+
+	void mult_transpose_iterative(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
+	{
+		result.setAll(0.0);
+		size_t result_size = result.getSize();
+
+#ifdef USEOMP
+		#pragma omp parallel
+		{
+			std::vector<double> line;
+			AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
+
+			#pragma omp for schedule (static)
+			for(size_t i = 0; i < result_size; i++)
+			{
+				x.getLine(i, line);
+
+				result[i] = AlgoEval(basis, line, source);
+			}
+		}
+#else
+		std::vector<double> line;
+		AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
+
+		for(size_t i = 0; i < result_size; i++)
+		{
+			x.getLine(i, line);
+
+			result[i] = AlgoEval(basis, line, source);
+		}
+#endif
 	}
 };
 
