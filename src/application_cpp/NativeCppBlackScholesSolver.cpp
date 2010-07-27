@@ -700,6 +700,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	}
 	std::cout << std::endl << std::endl << std::endl;
 
+//	// Generate Full Grid at @Money
 //	size_t oldGridSize = 0;
 //	size_t newGridSize = myBSSolver->getNumberGridPoints();
 //	size_t addedGridPoint = 0;
@@ -715,6 +716,24 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 //		addedGridPoint = newGridSize - oldGridSize;
 //		i++;
 //	} while (addedGridPoint > 0);
+//	// Refine @Money by two Levels
+//	for (size_t r = 0; r < 1; r++)
+//	{
+//		oldGridSize = 0;
+//		newGridSize = myBSSolver->getNumberGridPoints();
+//		addedGridPoint = 0;
+//		do
+//		{
+//			oldGridSize = newGridSize;
+//			std::cout << "Refining Grid..." << std::endl;
+//			myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType, 2.0*(1.0/((double)(1<<(level+r)))), level+1+r);
+//			std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//			std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+//			newGridSize = myBSSolver->getNumberGridPoints();
+//			addedGridPoint = newGridSize - oldGridSize;
+//			i++;
+//		} while (addedGridPoint > 0);
+//	}
 //	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
