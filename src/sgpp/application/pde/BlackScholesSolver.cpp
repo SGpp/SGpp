@@ -249,6 +249,9 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
+		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+
 		if (this->myScreen != NULL)
 		{
 			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
@@ -283,6 +286,9 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
 
 		if (this->myScreen != NULL)
 		{
@@ -337,6 +343,9 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
 
 		if (this->myScreen != NULL)
 		{
