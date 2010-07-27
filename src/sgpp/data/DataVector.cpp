@@ -13,6 +13,8 @@
 #include <sstream>
 #include <cmath>
 
+#include "malloc.h"
+
 DataVector::DataVector() {
 
 }
