@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "sgpp.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
 #include <string>
 #include <iostream>
@@ -51,11 +52,16 @@ void executesOperationBmultTrans_DR5()
     alpha.setAll(1.0);
 
     // init the Systemmatrix Functor
-    sg::OperationB* B = myGrid->createOperationB();
+    sg::OperationBLinear* B = (sg::OperationBLinear*)myGrid->createOperationB();
 
     std::cout << "Grid, Data, Operation created! Start test..." << std::endl;
     std::cout << "GridSize: " << myGrid->getSize() << std::endl;
     std::cout << "DataSize: " << data.getSize() << std::endl;
+
+    std::cout << "Pointers: " << data.getPointer() << std::endl;
+
+    // Generate SOA from AOS
+//    unsigned int* level = memalign
 
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();

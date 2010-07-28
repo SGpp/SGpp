@@ -28,6 +28,8 @@ Import("env")
 srcs = Split("""
 data/DataVector.cpp
 
+common/AlignedMemory.cpp
+
 grid/Grid.cpp
 
 grid/common/BoundingBox.cpp
