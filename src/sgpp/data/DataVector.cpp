@@ -13,7 +13,7 @@
 #include <sstream>
 #include <cmath>
 
-#include "malloc.h"
+#include "common/AlignedMemory.hpp"
 
 DataVector::DataVector() {
 
