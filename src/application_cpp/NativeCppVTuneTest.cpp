@@ -8,6 +8,8 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
+#include "common/AlignedMemory.hpp"
+
 #include <string>
 #include <iostream>
 
@@ -58,21 +60,24 @@ void executesOperationBmultTrans_DR5()
     std::cout << "GridSize: " << myGrid->getSize() << std::endl;
     std::cout << "DataSize: " << data.getSize() << std::endl;
 
-    std::cout << "Pointers: " << data.getPointer() << std::endl;
-
     // Generate SOA from AOS
-//    unsigned int* level = memalign
+    unsigned int* level = new unsigned int[myGrid->getSize()*nDim];
+    unsigned int* index = new unsigned int[myGrid->getSize()*nDim];
+
+    myGrid->getStorage()->getLevelIndexArrays(level, index);
 
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
 
     for (size_t i = 0; i < ITERATIONS; i++)
     {
-    	B->multTranspose(alpha, data, result);
+    	B->multTransposeIterativeTest(level,index,alpha, data, result);
     }
 
     execTime = myStopwatch->stop();
 
+    delete[] level;
+    delete[] index;
     delete B;
 
     // Write the data of CG
