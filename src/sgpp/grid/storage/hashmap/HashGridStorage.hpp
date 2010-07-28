@@ -673,6 +673,30 @@ public:
 		boundingBox = new BoundingBox(bb);
 	}
 
+	/**
+	 * Converts this storage from AOS (array of structures) to SOA (structure of array)
+	 *
+	 * @param level array to store the grid's level
+	 * @param index array to store the grid's indices
+	 */
+	void getLevelIndexArrays(unsigned int* level, unsigned int* index)
+	{
+		typename index_type::level_type curLevel;
+		typename index_type::level_type curIndex;
+		size_t curPoint = 0;
+
+		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
+		{
+			for (size_t current_dim = 0; current_dim < DIM; current_dim++)
+			{
+				(*iter)->get(current_dim, curLevel, curIndex);
+				level[(curPoint*DIM)+current_dim] = curLevel;
+				index[(curPoint*DIM)+current_dim] = curIndex;
+			}
+			curPoint++;
+		}
+	}
+
 protected:
 	/**
 	 * returns the next sequence numbers
