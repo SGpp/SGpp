@@ -35,7 +35,13 @@ public:
 
 	virtual void regular(size_t level);
 	virtual void refine(RefinementFunctor* func);
-	virtual int getNumberOfRefinablePoints();
+	virtual size_t getNumberOfRefinablePoints();
+
+	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
+	virtual size_t getNumberOfRemoveablePoints();
+
+	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel);
+	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel);
 
 protected:
 	/// Pointer to the grid's storage object

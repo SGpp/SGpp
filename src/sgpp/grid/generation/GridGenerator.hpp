@@ -9,6 +9,9 @@
 #define GRIDGENERATOR_HPP
 
 #include "grid/generation/RefinementFunctor.hpp"
+#include "grid/generation/CoarseningFunctor.hpp"
+
+#include "data/DataVector.hpp"
 
 namespace sg
 {
@@ -37,18 +40,52 @@ public:
 	virtual void regular(size_t level) = 0;
 
 	/**
-	 * Refines a regular grid according to the settings of the RefinementFunctor func.
+	 * Refines a grid according to the settings of the RefinementFunctor func.
 	 *
 	 * @param func pointer to refinement functor
 	 */
 	virtual void refine(RefinementFunctor* func) = 0;
 
 	/**
+	 * Coarsens a  grid according to the settings of the CoarseningFunctor func.
+	 *
+	 * @param func pointer to coarsening functor
+	 * @param alpha Pointer to DataVector containing the grid's coefficients
+	 */
+	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
+
+	/**
 	 * Returns the number of points on the grid that can be refined in the next iteration
-	 * 
+	 *
 	 * @return the number of points on the grid that can be refined
 	 */
-	virtual int getNumberOfRefinablePoints() = 0;
+	virtual size_t getNumberOfRefinablePoints() = 0;
+
+	/**
+	 * Returns the number of points on the grid that can be removed in the next iteration
+	 *
+	 * @return the number of points on the grid that can be removed
+	 */
+	virtual size_t getNumberOfRemoveablePoints() = 0;
+
+	/**
+	 * Refines a grid according to the settings of the RefinementFunctor func.
+	 * additionally a maximum level for refinement is taken into account
+	 *
+	 * @param func pointer to refinement functor
+	 * @param maxLevel no points on higher levels than maxLevel will be created
+	 */
+	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;
+
+	/**
+	 * Returns the number of points on the grid that can be refined in the next iteration
+	 * additionally a maximum level for refinement is taken into account
+	 *
+	 * @param maxLevel no points on higher levels than maxLevel will be created
+	 *
+	 * @return the number of points on the grid that can be refined
+	 */
+	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
 
 }

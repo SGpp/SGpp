@@ -15,7 +15,6 @@
 #include "basis/modlinear/operation/datadriven/OperationTestModLinear.hpp"
 #include "basis/modlinear/operation/common/OperationEvalModLinear.hpp"
 #include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
-#include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -63,11 +62,6 @@ OperationB* ModLinearGrid::createOperationB()
 	return new OperationBModLinear(this->storage);
 }
 
-OperationMatrix* ModLinearGrid::createOperationLaplace()
-{
-	return new OperationLaplaceModLinear(this->storage);
-}
-
 OperationEval* ModLinearGrid::createOperationEval()
 {
 	return new OperationEvalModLinear(this->storage);
@@ -83,37 +77,5 @@ OperationHierarchisation* ModLinearGrid::createOperationHierarchisation()
 	return new OperationHierarchisationModLinear(this->storage);
 }
 
-OperationMatrix* ModLinearGrid::createOperationLTwoDotProduct()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-// @todo (heinecke) removed this when done
-OperationMatrix* ModLinearGrid::createOperationUpDownTest()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-// finance operations
-/////////////////////
-OperationMatrix* ModLinearGrid::createOperationDelta(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* ModLinearGrid::createOperationGamma(DataMatrix& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* ModLinearGrid::createOperationDeltaLog(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* ModLinearGrid::createOperationGammaLog(DataMatrix& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
 
 }

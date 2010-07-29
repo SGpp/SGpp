@@ -99,10 +99,18 @@ public:
     void resizeZero(size_t nrows);
 
 	/**
-	 * Reserves memory for potentially inc_elems new elements;
-	 * the actual number of elements remains unchanged.
-	 * Corresponds to a resize to size+inc_elems new elements while leaving
-	 * the current vector's size unchanged.
+         * Resizes the DataVector by removing entries. Throws an exception
+         * if boundaries a violated.
+         *
+         * @param remainingIndex vector that contains the remaining indices of the DataVector
+         */
+        void restructure(std::vector<size_t>& remainingIndex);
+
+        /**
+         * Reserves memory for potentially inc_elems new elements;
+         * the actual number of elements remains unchanged.
+         * Corresponds to a resize to size+inc_elems new elements while leaving
+         * the current vector's size unchanged.
 	 *
 	 * @param inc_nrows Number of additional elements for which storage is to be reserved.
 	 */

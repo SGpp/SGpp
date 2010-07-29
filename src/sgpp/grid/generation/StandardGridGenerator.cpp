@@ -35,10 +35,31 @@ void StandardGridGenerator::refine(RefinementFunctor* func)
 	refine.free_refine(this->storage, func);
 }
 
-int StandardGridGenerator::getNumberOfRefinablePoints()
+size_t StandardGridGenerator::getNumberOfRefinablePoints()
 {
 	HashRefinement refine;
 	return refine.getNumberOfRefinablePoints(this->storage);
+}
+
+void StandardGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
+{
+	HashCoarsening coarsen;
+	coarsen.free_coarsen(this->storage, func, alpha);
+}
+
+size_t StandardGridGenerator::getNumberOfRemoveablePoints()
+{
+	HashCoarsening coarsen;
+	return coarsen.getNumberOfRemovablePoints(this->storage);
+}
+
+void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+{
+}
+
+size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+{
+	return 0;
 }
 
 }

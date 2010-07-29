@@ -19,9 +19,15 @@
 #include "grid/common/BoundingBox.hpp"
 
 #include <memory>
+#include <vector>
 #include <string>
 #include <sstream>
 #include <exception>
+#include <list>
+
+#ifdef USEOMP
+#include <omp.h>
+#endif
 
 namespace sg
 {
@@ -64,6 +70,10 @@ public:
 	HashGridStorage(size_t dim) : DIM(dim), list(), map()
 	{
 		boundingBox = new BoundingBox(DIM);
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
 	}
 
 	/**
@@ -77,6 +87,10 @@ public:
 	{
 		boundingBox = new BoundingBox(creationBoundingBox);
 		DIM = boundingBox->getDimensions();
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
 	}
 
 	/**
@@ -90,6 +104,11 @@ public:
     	istream.str(istr);
 
 		parseGridDescription(istream);
+
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
 	}
 
 	/**
@@ -100,6 +119,33 @@ public:
 	HashGridStorage(std::istream& istream) : DIM(0), list(), map()
 	{
 		parseGridDescription(istream);
+
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
+	}
+
+	/**
+	 * Copy Constructor
+	 */
+	HashGridStorage(HashGridStorage& copyFrom) : DIM(0), list(), map()
+	{
+		// Copy dimensions and bounding box
+		DIM = copyFrom.DIM;
+		boundingBox = new BoundingBox(*(copyFrom.boundingBox));
+
+		// copy algorithmic dimensions
+		for (size_t i = 0; i > copyFrom.algoDims.size(); i++)
+		{
+			algoDims.push_back(copyFrom.algoDims[i]);
+		}
+
+		// copy gridpoints
+		for(size_t i = 0; i < copyFrom.size(); i++)
+		{
+			this->insert(*(copyFrom[i]));
+		}
 	}
 
 
@@ -114,9 +160,6 @@ public:
 			delete *iter;
 		}
 
-		// delete hash map of grid indices
-		// --> is auto deleted, because it's a class's element
-
 		// delete the grid's bounding box
 		delete boundingBox;
 	}
@@ -126,16 +169,67 @@ public:
 	 */
 	void emptyStorage()
 	{
-		// delete all grid points
-		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
-		{
-			delete *iter;
-		}
-
 		// remove all elements from hashmap
 		map.clear();
 		// remove all list entries
 		list.clear();
+	}
+
+	/**
+	 * Remove several point from GridStorage. The points to removed
+	 * are stored in a list. This function returns a vector of remaining points
+	 * given by their
+	 *
+	 * @param removePoints vector containing the indices of the points that should be removed
+	 *
+	 * @return a vector containing the indices of remaining points given by their "old" index
+	 */
+	std::vector<size_t> deletePoints(std::list<size_t>& removePoints)
+	{
+		index_pointer curPoint;
+		std::vector<size_t> remainingPoints;
+		size_t delCounter = 0;
+
+		// sort list
+		removePoints.sort();
+
+		//DEBUG : print list points to delete, sorted
+		//std::cout << std::endl << "List of points to delete, sorted" << std::endl;
+		//for(std::list<size_t>::iterator iter = removePoints.begin(); iter != removePoints.end(); iter++)
+		//{
+		//	std::cout << " " << *iter << " ";
+		//}
+		//std::cout << std::endl;
+
+		// Remove points with given indices for index vector and hashmap
+		for(std::list<size_t>::iterator iter = removePoints.begin(); iter != removePoints.end(); iter++)
+		{
+			size_t tmpIndex = *iter;
+			size_t curPos = tmpIndex - delCounter;
+
+			// GridIndex
+			curPoint = list[curPos];
+
+			// erase point
+			delCounter++;
+			map.erase(curPoint);
+			list.erase(list.begin() + curPos);
+		}
+
+		// reset all entries in hash map and build list of remaining
+		for(size_t i = 0; i < list.size(); i++)
+		{
+			curPoint = list[i];
+			remainingPoints.push_back(map[curPoint]);
+			map[curPoint] = i;
+		}
+
+		// reset the whole grid's leaf property in order
+		// to guarantee a consistent grid
+		recalcLeafProperty();
+
+		// return indices of "surviver"
+		return remainingPoints;
 	}
 
 	/**
@@ -478,6 +572,39 @@ public:
 	}
 
 	/**
+	 * returns the algorithmic dimensions (the dimensions in which the Up Down
+	 * operations should be applied)
+	 *
+	 * @return the algorithmic dimensions
+	 */
+	std::vector<size_t> getAlgorithmicDimensions()
+	{
+		return algoDims;
+	}
+
+	/**
+	 * sets the algorithmic dimensions (the dimensions in which the Up Down
+	 * operations should be applied)
+	 *
+	 * @param algoDims std::vector containing the algorithmic dimensions
+	 */
+	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
+	{
+		algoDims.clear();
+
+		// throw an exception if there is
+		if (newAlgoDims.size() > DIM)
+		{
+			throw generation_exception("There are more algorithmic dimensions than real dimensions!");
+		}
+
+		for (size_t i = 0; i < newAlgoDims.size(); i++)
+		{
+			algoDims.push_back(newAlgoDims[i]);
+		}
+	}
+
+	/**
 	 * Recalculates the leaf-property of every grid point.
 	 * This might be useful in case of a grid unserialization
 	 */
@@ -550,6 +677,38 @@ public:
 		boundingBox = new BoundingBox(bb);
 	}
 
+	/**
+	 * Converts this storage from AOS (array of structures) to SOA (structure of array)
+	 * with modification to speed up iterative function evaluation. The Level
+	 * array won't contain the levels, it contains the level to the power of two
+	 *
+	 * @param level array to store the grid's level to the power of two
+	 * @param index array to store the grid's indices
+	 */
+	void getLevelIndexArraysForEval(double* level, double* index)
+	{
+		typename index_type::level_type curLevel;
+		typename index_type::level_type curIndex;
+
+#ifdef USEOMP
+		#pragma omp parallel
+		{
+			#pragma omp for schedule (static) private(curLevel, curIndex)
+#endif
+			for(size_t i = 0; i < list.size(); i++)
+			{
+				for (size_t current_dim = 0; current_dim < DIM; current_dim++)
+				{
+					(list[i])->get(current_dim, curLevel, curIndex);
+					level[(i*DIM)+current_dim] = static_cast<double>(1<<curLevel);
+					index[(i*DIM)+current_dim] = static_cast<double>(curIndex);
+				}
+			}
+#ifdef USEOMP
+		}
+#endif
+	}
+
 protected:
 	/**
 	 * returns the next sequence numbers
@@ -570,6 +729,8 @@ private:
     grid_map map;
     /// the grids bounding box
     BoundingBox* boundingBox;
+    /// algorithmic dimension, these are used in Up/Downs
+    std::vector<size_t> algoDims;
 
     /**
      * Parses the gird's information (grid points, dimensions, bounding box) from a string stream
@@ -594,7 +755,6 @@ private:
 		{
 			if (version != 4)
 			{
-				//	    throw generation_exception("Version of serialized grid is too new. Max. recognized version is "+string(SERIALIZATION_VERSION));
 				std::ostringstream errstream;
 				errstream << "Version of serialized grid (" << version << ") is too new. Max. recognized version is " << SERIALIZATION_VERSION << ".";
 				throw generation_exception(errstream.str().c_str());

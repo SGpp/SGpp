@@ -76,7 +76,7 @@ if env['TARGETCPU'] == 'default':
     #     ensure you also compile with -fno-strict-aliasing"
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
                          '-fno-strict-aliasing', '-fopenmp', '-O3', '-g',
-                         '-funroll-loops', '-pthread', '-ffloat-store'])
+                         '-funroll-loops', '-ffloat-store'])
     if env['OMP']:
     	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
@@ -88,22 +88,22 @@ elif env['TARGETCPU'] == 'ia64ICC':
     env.Append(CPPFLAGS = ['-O3', '-fno-fnalias', '-funroll-loops', '-no-alias-const', 
                            '-no-alias', '-i-static', '-gcc-version=400', 
                            '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
-                           '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp', '-pthread']) 
+                           '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp']) 
 elif env['TARGETCPU'] == 'opteronICC':
     print "Using icc 11.x for Opteron systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
                            '-no-alias-const', '-fno-alias', '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing', '-openmp', '-pthread'])
+                           '-fno-strict-aliasing', '-openmp'])
 elif env['TARGETCPU'] == 'core2ICC':
     print "Using icc 11.x for Core2 systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
                            '-no-alias-const', '-fno-alias', '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing', '-openmp', '-pthread'])
+                           '-fno-strict-aliasing', '-openmp'])
 elif env['TARGETCPU'] == 'nehalemICC':
     print "Using icc 11.x for Nehalem/Westmere systems"
     env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
                            '-no-alias-const', '-fno-alias', '-ansi-alias', '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing', '-openmp', '-pthread'])
+                           '-fno-strict-aliasing', '-openmp'])
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"

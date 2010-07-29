@@ -17,12 +17,25 @@ public:
 	virtual double start() = 0;	
 };
 
+class CoarseningFunctor
+{
+public:
+	typedef double value_type;
+
+	virtual double operator()(GridStorage* storage, size_t seq) = 0;
+	virtual double start() = 0;	
+};
+
 class GridGenerator
 {
 public:
 	virtual void regular(size_t level) = 0;
 	virtual void refine(RefinementFunctor* func) = 0;
+	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
 	virtual int getNumberOfRefinablePoints() = 0;
+	virtual int getNumberOfRemoveablePoints() = 0;
+	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;
+	virtual int getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
 
 class OperationB
@@ -36,21 +49,6 @@ class OperationMatrix
 {
 public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
-};
-
-class OperationODESolverSystem : public OperationMatrix
-{
-protected:
-	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result) = 0;
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result) = 0;
-	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result) = 0;
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result) = 0;
-
-public:
-	void mult(DataVector& alpha, DataVector& result);
-	DataVector* generateRHS();
-	virtual void finishTimestep();
-	virtual void startTimestep();
 };
 
 class OperationEval
