@@ -16,13 +16,6 @@
 #include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 
-#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
-
 #include "exception/factory_exception.hpp"
 
 #include "sgpp.hpp"
@@ -70,11 +63,6 @@ OperationB* LinearBoundaryGrid::createOperationB()
 	return new OperationBLinearBoundary(this->storage);
 }
 
-OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
-{
-	return new OperationLaplaceLinearBoundary(this->storage);
-}
-
 OperationEval* LinearBoundaryGrid::createOperationEval()
 {
 	return new OperationEvalLinearBoundary(this->storage);
@@ -88,39 +76,6 @@ OperationTest* LinearBoundaryGrid::createOperationTest()
 OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
 {
 	return new OperationHierarchisationLinearBoundary(this->storage);
-}
-
-OperationMatrix* LinearBoundaryGrid::createOperationLTwoDotProduct()
-{
-	return new OperationLTwoDotProductLinearBoundary(this->storage);
-}
-
-// @todo (heinecke) removed this when done
-OperationMatrix* LinearBoundaryGrid::createOperationUpDownTest()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-// finance operations
-/////////////////////
-OperationMatrix* LinearBoundaryGrid::createOperationDelta(DataVector& coef)
-{
-	return new OperationDeltaLinearBoundary(this->storage, coef);
-}
-
-OperationMatrix* LinearBoundaryGrid::createOperationGamma(DataVector& coef)
-{
-	return new OperationGammaLinearBoundary(this->storage, coef);
-}
-
-OperationMatrix* LinearBoundaryGrid::createOperationDeltaLog(DataVector& coef)
-{
-	return new OperationDeltaLogLinearBoundary(this->storage, coef);
-}
-
-OperationMatrix* LinearBoundaryGrid::createOperationGammaLog(DataVector& coef)
-{
-	return new OperationGammaLogLinearBoundary(this->storage, coef);
 }
 
 }

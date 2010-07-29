@@ -35,8 +35,8 @@ public:
 	 */
 	virtual ~OperationTestLinearBoundary() {}
 
-	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers);
+	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes);
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers);
 
 protected:
 	/// Pointer to GridStorage object

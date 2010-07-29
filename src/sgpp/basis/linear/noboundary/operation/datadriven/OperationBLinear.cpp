@@ -9,6 +9,7 @@
 #include "basis/basis.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 //#include "common/AlignedMemory.hpp"
 
 #define CHUNKDATAPOINTS 512
@@ -17,7 +18,7 @@
 namespace sg
 {
 
-void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinear::mult(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmMultipleEvaluation<SLinearBase> op;
 	linear_base<unsigned int, unsigned int> base;
@@ -25,7 +26,7 @@ void OperationBLinear::mult(DataVector& alpha, DataVector& data, DataVector& res
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinear::multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmMultipleEvaluation<SLinearBase> op;
 	linear_base<unsigned int, unsigned int> base;

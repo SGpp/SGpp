@@ -12,11 +12,12 @@
 #include "basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.hpp"
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 namespace sg
 {
 
-void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinearBoundary::mult(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SLinearBoundaryBase> op;
 	linearboundaryBase<unsigned int, unsigned int> base;
@@ -24,7 +25,7 @@ void OperationBLinearBoundary::mult(DataVector& alpha, DataVector& data, DataVec
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBLinearBoundary::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinearBoundary::multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SLinearBoundaryBase> op;
 	linearboundaryBase<unsigned int, unsigned int> base;
