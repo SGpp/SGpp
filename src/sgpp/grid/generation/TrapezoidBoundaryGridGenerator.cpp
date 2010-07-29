@@ -33,10 +33,34 @@ void TrapezoidBoundaryGridGenerator::refine(RefinementFunctor* func)
 	refine.free_refine(this->storage, func);
 }
 
-int TrapezoidBoundaryGridGenerator::getNumberOfRefinablePoints()
+size_t TrapezoidBoundaryGridGenerator::getNumberOfRefinablePoints()
 {
 	HashRefinementBoundaries refine;
 	return refine.getNumberOfRefinablePoints(this->storage);
+}
+
+void TrapezoidBoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
+{
+	HashCoarsening coarsen;
+	coarsen.free_coarsen(this->storage, func, alpha);
+}
+
+size_t TrapezoidBoundaryGridGenerator::getNumberOfRemoveablePoints()
+{
+	HashCoarsening coarsen;
+	return coarsen.getNumberOfRemovablePoints(this->storage);
+}
+
+void TrapezoidBoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+{
+	HashRefinementBoundariesMaxLevel refine;
+	refine.refineToMaxLevel(this->storage, func, maxLevel);
+}
+
+size_t TrapezoidBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+{
+	HashRefinementBoundariesMaxLevel refine;
+	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
 }
 
 }

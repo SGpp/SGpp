@@ -15,7 +15,7 @@ namespace sg
 
 /**
  * Abstract class the defines the interface that refinement functors have to provide
- * @version $HEAD$  
+ * @version $HEAD$
  */
 class RefinementFunctor
 {
@@ -52,19 +52,19 @@ public:
 
 	/**
 	 * Returns the maximal number of points that should be refined.
-	 * 
-	 * The maximal number of points to refine is set in the constructor of implementation class. 
+	 *
+	 * The maximal number of points to refine is set in the constructor of implementation class.
 	 *
 	 * @return number of points that should refined. Default value: 1.
 	 */
-	virtual int getRefinementsNum(){ return 1;}
-	
+	virtual size_t getRefinementsNum(){ return 1;}
+
 	/**
 	 * Returns the threshold value.
-	 * 
-	 * Only the grid points with absolute value of refinement criterion (e.g. alpha or error) greater 
+	 *
+	 * Only the grid points with absolute value of refinement criterion (e.g. alpha or error) greater
 	 * or equal to this threshold will be refined
-	 * 
+	 *
 	 * @return threshold value for refinement. Default value: 0.
 	 */
 	virtual double getRefinementThreshold() = 0;

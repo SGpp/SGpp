@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2010 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -17,7 +17,7 @@ namespace sg
 
 /**
  * A refinement functor, refining according to the maximal absolute values in a DataVector provided.
- * @version $HEAD$ 
+ * @version $HEAD$
  */
 class SurplusRefinementFunctor : public RefinementFunctor
 {
@@ -29,44 +29,28 @@ public:
 	 * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points)
 	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold
 	 */
-	SurplusRefinementFunctor(DataVector* alpha, int refinements_num = 1, double threshold = 0.0) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
-	{
-	}
+	SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num = 1, double threshold = 0.0);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~SurplusRefinementFunctor() {}
+	virtual ~SurplusRefinementFunctor();
 
+	virtual double operator()(GridStorage* storage, size_t seq);
 
-	virtual double operator()(GridStorage* storage, size_t seq)
-	{
-		return fabs(alpha->get(seq));
-	}
+	virtual double start();
 
-	virtual double start()
-	{
-		return 0.0;
-	}
+	size_t getRefinementsNum();
 
-	int getRefinementsNum()
-	{
-		return this->refinements_num;
-	}
-	
-	double getRefinementThreshold()
-	{
-		return this->threshold;
-	}
-
+	double getRefinementThreshold();
 
 protected:
 	/// pointer to the vector that stores the alpha values
 	DataVector* alpha;
-	
+
 	/// number of grid points to refine
 	int refinements_num;
-	
+
 	/// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
 	double threshold;
 };

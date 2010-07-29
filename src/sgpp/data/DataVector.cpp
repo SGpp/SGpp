@@ -7,15 +7,18 @@
 
 #include "data/DataVector.hpp"
 #include "exception/data_exception.hpp"
+#include "exception/algorithm_exception.hpp"
 
+#include <string.h>
 #include <sstream>
 #include <cmath>
 #include <algorithm>
 #include <cstring>
 
+#include "common/AlignedMemory.hpp"
+
 /*
 DataVector::DataVector() {
-
 }
 */
 
@@ -69,6 +72,26 @@ void DataVector::getDataVectorDefinition(DataVectorDefinition& DataVectorDef) {
     DataVectorDef.unused = this->unused;
     DataVectorDef.inc_elems = this->inc_elems;
     DataVectorDef.data = this->data;
+}
+
+void DataVector::restructure(std::vector<size_t>& remainingIndex)
+{
+	if ((int)remainingIndex.size() > this->size)
+	{
+		throw sg::algorithm_exception("more indices than entries!");
+	}
+
+	double* newdata = new double[remainingIndex.size() * this->dim];
+
+	for (size_t i = 0; i < remainingIndex.size(); i++)
+	{
+		newdata[i] = this->data[remainingIndex[i]];
+	}
+
+	delete[] this->data;
+
+	this->data = newdata;
+	this->size = remainingIndex.size();
 }
 
 void DataVector::resize(size_t size) {
@@ -390,7 +413,6 @@ void DataVector::normalize(double border) {
 
 void DataVector::toString(std::string& text) {
     std::stringstream str;
-
     str << "[";
     for (size_t i = 0; i < size; i++) {
         if (i != 0) {
@@ -403,7 +425,7 @@ void DataVector::toString(std::string& text) {
 }
 
 std::string DataVector::toString() {
-    std::string str;
+	std::string str;
     toString(str);
     return str;
 }
@@ -474,7 +496,7 @@ double* DataVector::getPointer() {
 }
 
 DataVector::~DataVector() {
-    delete[] data;
+	delete[] data;
 }
 
 size_t DataVector::getNumberNonZero()

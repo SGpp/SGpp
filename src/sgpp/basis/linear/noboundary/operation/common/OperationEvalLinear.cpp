@@ -18,22 +18,10 @@ namespace sg
 
 double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
-	typedef std::vector<std::pair<size_t, double> > IndexValVector;
-
-	IndexValVector vec;
 	linear_base<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<linear_base<unsigned int, unsigned int> > ga(storage);
+	AlgorithmEvaluation<linear_base<unsigned int, unsigned int> > AlgoEval(storage);
 
-	ga(base, point, vec);
-
-	double result = 0.0;
-
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-	{
-		result += iter->second * alpha[iter->first];
-	}
-
-	return result;
+	return AlgoEval(base, point, alpha);
 }
 
 }

@@ -29,123 +29,52 @@ srcs = Split("""
 data/DataVector.cpp
 data/DataMatrix.cpp
 
+common/AlignedMemory.cpp
+
 grid/Grid.cpp
 
 grid/common/BoundingBox.cpp
-grid/common/DirichletUpdateVector.cpp
-grid/common/DirichletGridConverter.cpp
 
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp
 grid/type/LinearGrid.cpp
 grid/type/ModLinearGrid.cpp
-grid/type/PolyGrid.cpp
-grid/type/ModPolyGrid.cpp
-grid/type/ModWaveletGrid.cpp
-grid/type/ModBsplineGrid.cpp
 
 grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
 grid/generation/TrapezoidBoundaryGridGenerator.cpp
+grid/generation/SurplusRefinementFunctor.cpp
+grid/generation/SurplusCoarseningFunctor.cpp
 
 basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
 basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
-basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
-basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
-basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
-basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 
 basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
-basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
 
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
-basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
 basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.cpp
 basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
-basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.cpp
-basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
-basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
-basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
-basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
-basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 
 basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
 
 basis/modlinear/operation/datadriven/OperationBModLinear.cpp
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 
 basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
 basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
-basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
-basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
-basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
-basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
-
-basis/poly/operation/datadriven/OperationBPoly.cpp
-basis/poly/operation/datadriven/OperationTestPoly.cpp
-basis/poly/operation/common/OperationEvalPoly.cpp
-basis/poly/operation/common/OperationHierarchisationPoly.cpp
-
-basis/modpoly/operation/datadriven/OperationBModPoly.cpp
-basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
-basis/modpoly/operation/common/OperationEvalModPoly.cpp
-basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
-
-
-basis/modwavelet/operation/datadriven/OperationBModWavelet.cpp
-basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
-basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
-basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
-
-
-basis/modbspline/operation/datadriven/OperationBModBspline.cpp
-basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
-basis/modbspline/operation/common/OperationEvalModBspline.cpp
-basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
-
-operation/pde/OperationODESolverSystem.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
-algorithm/pde/BlackScholesODESolverSystem.cpp
-algorithm/pde/HeatEquationODESolverSystem.cpp
-algorithm/pde/StdUpDown.cpp
-algorithm/pde/UpDownOneOpDim.cpp
-algorithm/pde/UpDownTwoOpDims.cpp
 
 application/common/ScreenOutput.cpp
 application/pde/PDESolver.cpp
@@ -157,6 +86,8 @@ solver/sle/ConjugateGradients.cpp
 solver/sle/BiCGStab.cpp
 solver/ode/Euler.cpp
 solver/ode/CrankNicolson.cpp
+solver/ode/AdamsBashforth.cpp
+solver/ode/VarTimestep.cpp
 
 tools/common/StdNormalDistribution.cpp
 tools/common/GridPrinter.cpp

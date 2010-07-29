@@ -49,10 +49,13 @@ namespace std {
 
 %include "src/sgpp/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/grid/generation/hashmap/HashRefinement.hpp"
+%include "src/sgpp/grid/generation/hashmap/HashCoarsening.hpp"
 %include "src/sgpp/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
+%include "src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
+%include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
 %include "GridFactory.i"
 
@@ -66,8 +69,12 @@ namespace std {
 %include "src/sgpp/sgpp.hpp"
 
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
+%include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
 %include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
 %include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluation.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluationTransposed.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluationIterative.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesODESolverSystem.hpp"
@@ -115,4 +122,5 @@ namespace std {
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 %template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
+%template(SAlgorithmEvaluation) sg::AlgorithmEvaluation<sg::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;

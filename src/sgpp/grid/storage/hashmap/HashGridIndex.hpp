@@ -18,6 +18,7 @@
 #include <string>
 #include <sys/types.h>
 #include <cmath>
+#include <algorithm>
 
 namespace sg
 {
@@ -630,7 +631,7 @@ public:
           LT levelmax = 0;
           for (size_t i = 0; i < DIM; i++)
           {
-              levelmax = max(levelmax, level[i]);
+              levelmax = std::max(levelmax, level[i]);
           }
           return levelmax;
       }
