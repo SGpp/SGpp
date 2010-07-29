@@ -61,17 +61,18 @@ void executesOperationBmultTrans_DR5()
     std::cout << "DataSize: " << data.getSize() << std::endl;
 
     // Generate SOA from AOS
-    unsigned int* level = new unsigned int[myGrid->getSize()*nDim];
-    unsigned int* index = new unsigned int[myGrid->getSize()*nDim];
-
-    myGrid->getStorage()->getLevelIndexArrays(level, index);
+    double* level = new double[myGrid->getSize()*nDim];
+    double* index = new double[myGrid->getSize()*nDim];
 
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
 
+    myGrid->getStorage()->getLevelIndexArraysForEval(level, index);
+
     for (size_t i = 0; i < ITERATIONS; i++)
     {
-    	B->multTransposeIterativeTest(level,index,alpha, data, result);
+    	//B->multTranspose(alpha, data, result);
+    	B->multTransposeIterative(level,index,alpha, data, result);
     }
 
     execTime = myStopwatch->stop();
