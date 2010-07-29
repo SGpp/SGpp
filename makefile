@@ -49,7 +49,7 @@ LFLAGS_ICC=-Wall -ansi -O3 -static-intel
 CFLAGS_ICC_TRONE=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSETRONE -std=c++0x
 LFLAGS_ICC_TRONE=-Wall -ansi -O3 -static-intel
 
-CFLAGS_ICC_OMP= -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEINTRINSICS
+CFLAGS_ICC_OMP=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEINTRINSICS
 LFLAGS_ICC_OMP=-Wall -ansi -O3 -static-intel -openmp -openmp-link static
 CFLAGS_ICC_OMP_TRONE=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -std=c++0x
 LFLAGS_ICC_OMP_TRONE=-Wall -ansi -O3 -static-intel -openmp -openmp-link static

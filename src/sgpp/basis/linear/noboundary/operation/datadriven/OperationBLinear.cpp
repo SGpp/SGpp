@@ -9,7 +9,7 @@
 #include "basis/basis.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
 #include "data/DataVector.hpp"
-#include "common/AlignedMemory.hpp"
+//#include "common/AlignedMemory.hpp"
 
 #ifdef __ICC
 #ifdef USEINTRINSICS
@@ -55,17 +55,17 @@ void OperationBLinear::multTranspose(DataVector& alpha, DataVector& data, DataVe
 	AlgorithmMultipleEvaluation<SLinearBase> op;
 	linear_base<unsigned int, unsigned int> base;
 
-	//op.mult_transpose(storage, base, alpha, data, result);
+	op.mult_transpose(storage, base, alpha, data, result);
 	//op.mult_transpose_iterative(storage, base, alpha, data, result);
 
-    double* level = new double[storage->size()*storage->dim()];
-    double* index = new double[storage->size()*storage->dim()];
-
-    storage->getLevelIndexArraysForEval(level, index);
-    multTransposeIterative(level, index, alpha, data, result);
-
-    delete[] level;
-    delete[] index;
+//    double* level = new double[storage->size()*storage->dim()];
+//    double* index = new double[storage->size()*storage->dim()];
+//
+//    storage->getLevelIndexArraysForEval(level, index);
+//    multTransposeIterative(level, index, alpha, data, result);
+//
+//    delete[] level;
+//    delete[] index;
 }
 
 void OperationBLinear::multTransposeIterative(double* Level, double* Index, DataVector& alpha, DataVector& data, DataVector& result)
