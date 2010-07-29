@@ -25,6 +25,10 @@
 #include <exception>
 #include <list>
 
+#ifdef USEOMP
+#include <omp.h>
+#endif
+
 namespace sg
 {
 
@@ -675,26 +679,34 @@ public:
 
 	/**
 	 * Converts this storage from AOS (array of structures) to SOA (structure of array)
+	 * with modification to speed up iterative function evaluation. The Level
+	 * array won't contain the levels, it contains the level to the power of two
 	 *
-	 * @param level array to store the grid's level
+	 * @param level array to store the grid's level to the power of two
 	 * @param index array to store the grid's indices
 	 */
-	void getLevelIndexArrays(unsigned int* level, unsigned int* index)
+	void getLevelIndexArraysForEval(double* level, double* index)
 	{
 		typename index_type::level_type curLevel;
 		typename index_type::level_type curIndex;
-		size_t curPoint = 0;
 
-		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
+#ifdef USEOMP
+		#pragma omp parallel
 		{
-			for (size_t current_dim = 0; current_dim < DIM; current_dim++)
+			#pragma omp for schedule (static) private(curLevel, curIndex)
+#endif
+			for(size_t i = 0; i < list.size(); i++)
 			{
-				(*iter)->get(current_dim, curLevel, curIndex);
-				level[(curPoint*DIM)+current_dim] = curLevel;
-				index[(curPoint*DIM)+current_dim] = curIndex;
+				for (size_t current_dim = 0; current_dim < DIM; current_dim++)
+				{
+					(list[i])->get(current_dim, curLevel, curIndex);
+					level[(i*DIM)+current_dim] = static_cast<double>(1<<curLevel);
+					index[(i*DIM)+current_dim] = static_cast<double>(curIndex);
+				}
 			}
-			curPoint++;
+#ifdef USEOMP
 		}
+#endif
 	}
 
 protected:

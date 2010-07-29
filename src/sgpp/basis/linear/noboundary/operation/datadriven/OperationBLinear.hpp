@@ -35,7 +35,7 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
 	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
 
-	virtual void multTransposeIterativeTest(unsigned int* Level, unsigned int* Index, DataVector& alpha, DataVector& data, DataVector& result);
+	virtual void multTransposeIterative(double* Level, double* Index, DataVector& alpha, DataVector& data, DataVector& result);
 
 protected:
 	/// Pointer to the grid's gridstorage object
