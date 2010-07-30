@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+// @author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
 #ifndef DATAMATRIX_H_
@@ -124,6 +124,11 @@ public:
 	 * @param matr The source DataMatrix containing the data
 	 */
 	void copyFrom(const DataMatrix& matr);
+
+	/**
+	 * Transposes this DataMatrix
+	 */
+	void transpose();
 
 	/**
 	 * Copies the data from another DataMatrix.
