@@ -403,10 +403,6 @@ public:
 protected:
     GridStorage* storage;
 
-    /**
-     * Example implementation of storage agnostic algorithm.
-     * Returns all affected base functions
-     */
     void rec(SModBsplineBase& base, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
     {
         typedef GridStorage::index_type::level_type level_type;
@@ -533,6 +529,9 @@ protected:
 
 };
 
+/**
+ * Template Specialization for linearboundaryBase basis.
+ */
 template<>
 class GetAffectedBasisFunctions<linearboundaryBase<unsigned int, unsigned int> >
 {

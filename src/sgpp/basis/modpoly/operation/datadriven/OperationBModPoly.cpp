@@ -13,18 +13,19 @@
 #include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 namespace sg
 {
 
-void OperationBModPoly::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModPoly::mult(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModPolyBase> op;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBModPoly::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModPoly::multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModPolyBase> op;
 

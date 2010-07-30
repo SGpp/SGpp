@@ -10,6 +10,7 @@
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 #include "operation/pde/OperationODESolverSystem.hpp"
 
 namespace sg
@@ -41,11 +42,11 @@ protected:
 	/// Pointer to the sigmas
 	DataVector* sigmas;
 	/// Pointer to the rhos;
-	DataVector* rhos;
+	DataMatrix* rhos;
 	/// Pointer to the coefficients of operation Delta
 	DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
-	DataVector* gammaCoef;
+	DataMatrix* gammaCoef;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// Threshold used to decide if a grid point should be deleted
@@ -116,7 +117,7 @@ public:
 	 * @param MPIRank indicates the MPI-Rank of this instance, 0 indicates the master rank
 	 */
 	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
-			DataVector& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, double coarsenPercent = 0.0,
 			size_t numExecCoarsen = 0, size_t MPIRank = 0);
 

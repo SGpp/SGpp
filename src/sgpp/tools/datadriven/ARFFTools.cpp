@@ -83,7 +83,7 @@ size_t ARFFTools::getNumberInstances(std::string tfilename)
 	return numInst;
 }
 
-void ARFFTools::readTrainingData(std::string tfilename, DataVector& destination)
+void ARFFTools::readTrainingData(std::string tfilename, DataMatrix& destination)
 {
 	std::string line;
 	std::ifstream myfile (tfilename.c_str());
@@ -115,7 +115,7 @@ void ARFFTools::readTrainingData(std::string tfilename, DataVector& destination)
 	}
 }
 
-void ARFFTools::readClasses(std::string tfilename, DataVector& destination)
+void ARFFTools::readClasses(std::string tfilename, DataMatrix& destination)
 {
 	std::string line;
 	std::ifstream myfile (tfilename.c_str());
@@ -147,11 +147,11 @@ void ARFFTools::readClasses(std::string tfilename, DataVector& destination)
 	}
 }
 
-void ARFFTools::writeNewElement(std::string& instance, DataVector& destination, size_t instanceNo)
+void ARFFTools::writeNewElement(std::string& instance, DataMatrix& destination, size_t instanceNo)
 {
 	size_t cur_pos = 0;
 	size_t cur_find = 0;
-	size_t dim = destination.getDim();
+	size_t dim = destination.getNcols();
 	std::string cur_value;
 	double dbl_cur_value;
 
@@ -160,17 +160,17 @@ void ARFFTools::writeNewElement(std::string& instance, DataVector& destination, 
 		cur_find = instance.find(",", cur_pos);
 		cur_value = instance.substr(cur_pos, cur_find-cur_pos);
 		dbl_cur_value = atof(cur_value.c_str());
-		destination.set((instanceNo*dim) + i, dbl_cur_value);
+		destination.set(instanceNo , i, dbl_cur_value);
 		cur_pos = cur_find + 1;
 	}
 }
 
-void ARFFTools::writeNewClass(std::string& instance, DataVector& destination, size_t instanceNo)
+void ARFFTools::writeNewClass(std::string& instance, DataMatrix& destination, size_t instanceNo)
 {
 	size_t cur_pos = instance.find_last_of(",");
 	std::string cur_value = instance.substr(cur_pos+1);
 	double dbl_cur_value = atof(cur_value.c_str());
-	destination.set(instanceNo, dbl_cur_value);
+	destination.set(instanceNo, 0, dbl_cur_value);
 }
 
 //void ARFFTools::writeAlpha(std::string tfilename, DataVector& source)

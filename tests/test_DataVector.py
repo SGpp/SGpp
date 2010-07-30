@@ -1,25 +1,9 @@
-#############################################################################
-# This file is part of pysgpp, a program package making use of spatially    #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2007-2010 Dirk Pflueger (pflueged@in.tum.de)                #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU Lesser General Public License as published  #
-# by the Free Software Foundation; either version 3 of the License, or      #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU Lesser General Public License  #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
+###############################################################################
+# Copyright (C) 2009 Technische Universitaet Muenchen                         #
+# This file is part of the SG++ project. For conditions of distribution and   #
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp          #
+###############################################################################
+## @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de)
 
 
 import unittest
@@ -56,8 +40,15 @@ class TestDataVector(unittest.TestCase):
         self.l_rand_total = []
         for li in self.l_rand:
             self.l_rand_total.extend(li)
+#        ## Data Vector, corresponding to l_rand
+#        self.d_rand = DataVector(self.nrows,self.ncols)
+#        for i in xrange(self.N):
+#            self.d_rand[i] = self.l_rand_total[i]
+#
+#        for i in xrange(self.N):
+#            self.assertEqual(self.d_rand[i], self.l_rand_total[i])
         ## Data Vector, corresponding to l_rand
-        self.d_rand = DataVector(self.nrows,self.ncols)
+        self.d_rand = DataVector(self.N)
         for i in xrange(self.N):
             self.d_rand[i] = self.l_rand_total[i]
 
@@ -66,42 +57,42 @@ class TestDataVector(unittest.TestCase):
 
     ##
     # Constructors4.
-    # @test DataVector::DataVector(size_t size), DataVector::DataVector(size_t size, size_t dim), DataVector::DataVector(DataVectorDefinition &DataVectorDef), DataVector::getSize(), DataVector::getDim(), DataVector::getTotalSize()
+    # @test DataVector::DataVector(size_t size), DataVector::DataVector(size_t size, size_t dim), DataVector::DataVector(DataVectorDefinition &DataVectorDef), DataVector::getSize(), DataVector::getDim(), DataVector::getSize()
     # @todo (pflueged) DataVector::DataVector(double *input, size_t size, size_t dim)
     def testConstructor(self):
         from pysgpp import DataVector
         
         d = DataVector(2)
-        self.assertEqual(d.getSize(), 2)
+        self.assertEqual(len(d), 2) # getSize()
         
-        d = DataVector(2,3)
-        self.assertEqual(d.getSize(), 2)
-        self.assertEqual(d.getDim(), 3)
-        self.assertEqual(len(d), 2*3) # getTotalSize()
-
-        d2 = DataVector(self.d_rand)
-        for i in xrange(self.N):
-            self.assertEqual(d2[i], self.d_rand[i])
-        self.assertEqual(d2.getSize(), self.nrows)
-        self.assertEqual(d2.getDim(), self.ncols)
-        self.assertEqual(len(d2), self.N)
-        d2[self.ncols] = -4.0
-        self.assertNotEqual(d2[self.ncols], self.d_rand[self.ncols])
+#        d = DataVector(2,3)
+#        self.assertEqual(d.getSize(), 2)
+#        self.assertEqual(d.getDim(), 3)
+#        self.assertEqual(len(d), 2*3) # getSize()
+#
+#        d2 = DataVector(self.d_rand)
+#        for i in xrange(self.N):
+#            self.assertEqual(d2[i], self.d_rand[i])
+#        self.assertEqual(d2.getSize(), self.nrows)
+#        self.assertEqual(d2.getDim(), self.ncols)
+#        self.assertEqual(len(d2), self.N)
+#        d2[self.ncols] = -4.0
+#        self.assertNotEqual(d2[self.ncols], self.d_rand[self.ncols])
 
     ##
     # Min, Max operations.
     # @test DataVector::min(int d), DataVector::max(int d), DataVector::minmax(int d, double *min, double *max), DataVector::min(), DataVector::max()
     def testMinMax(self):
 
-        # test dimension-dependent min, max
-        for j in xrange(self.ncols):
-            minj = min([self.l_rand[i][j] for i in xrange(self.nrows)])
-            maxj = max([self.l_rand[i][j] for i in xrange(self.nrows)])
-            self.assertEqual(self.d_rand.min(j), minj)
-            self.assertEqual(self.d_rand.max(j), maxj)
-            mi, ma = self.d_rand.minmax(j)
-            self.assertEqual(mi, minj)
-            self.assertEqual(ma, maxj)
+#        # test dimension-dependent min, max
+#        for j in xrange(self.ncols):
+#            minj = min([self.l_rand[i][j] for i in xrange(self.nrows)])
+#            maxj = max([self.l_rand[i][j] for i in xrange(self.nrows)])
+#            self.assertEqual(self.d_rand.min(j), minj)
+#            self.assertEqual(self.d_rand.max(j), maxj)
+#            mi, ma = self.d_rand.minmax(j)
+#            self.assertEqual(mi, minj)
+#            self.assertEqual(ma, maxj)
 
         # test global min, max
         self.assertEqual(self.d_rand.min(), min(self.l_rand_total))
@@ -130,7 +121,8 @@ class TestDataVector(unittest.TestCase):
 
         # componentwise_mult
         d = DataVector(self.d_rand)
-	d2 = DataVector(self.nrows,self.ncols)
+#	d2 = DataVector(self.nrows, self.ncols)
+	d2 = DataVector(self.N)
         for i in xrange(self.N):
             d2[i] = i
 	d.componentwise_mult(d2)

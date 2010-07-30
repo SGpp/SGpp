@@ -10,7 +10,7 @@
 namespace sg
 {
 
-UpDownTwoOpDims::UpDownTwoOpDims(GridStorage* storage, DataVector& coef)
+UpDownTwoOpDims::UpDownTwoOpDims(GridStorage* storage, DataMatrix& coef)
 {
 	this->storage = storage;
 	this->coefs = &coef;
@@ -53,7 +53,7 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 					{
 						if (this->coefs != NULL)
 						{
-							if (this->coefs->get((this->algoDims.size()*i)+j) != 0.0)
+							if (this->coefs->get(i,j) != 0.0)
 							{
 								this->updown_parallel(alpha, beta, this->algoDims.size() - 1, i, j);
 							}
@@ -70,7 +70,7 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 			{
 				if (this->coefs != NULL)
 				{
-					result.axpy(this->coefs->get((this->algoDims.size()*i)+j),beta);
+					result.axpy(this->coefs->get(i,j),beta);
 				}
 				else
 				{
@@ -95,7 +95,7 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 				{
 					if (this->coefs != NULL)
 					{
-						if (this->coefs->get((this->algoDims.size()*i)+j) != 0.0)
+						if (this->coefs->get(i,j) != 0.0)
 						{
 							this->updown(alpha, beta, this->algoDims.size() - 1, i, j);
 						}
@@ -113,7 +113,7 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 					{
 						if (this->coefs != NULL)
 						{
-							result.axpy(this->coefs->get((this->algoDims.size()*i)+j),beta);
+							result.axpy(this->coefs->get(i,j),beta);
 						}
 						else
 						{
@@ -143,7 +143,7 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 			{
 				if (this->coefs != NULL)
 				{
-					result.axpy(this->coefs->get((this->algoDims.size()*i)+j),beta);
+					result.axpy(this->coefs->get(i,j),beta);
 				}
 				else
 				{

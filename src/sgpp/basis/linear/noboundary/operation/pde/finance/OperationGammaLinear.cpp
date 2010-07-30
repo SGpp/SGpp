@@ -26,7 +26,7 @@
 namespace sg
 {
 
-OperationGammaLinear::OperationGammaLinear(GridStorage* storage, DataVector& coef) : UpDownTwoOpDims(storage, coef)
+OperationGammaLinear::OperationGammaLinear(GridStorage* storage, DataMatrix& coef) : UpDownTwoOpDims(storage, coef)
 {
 }
 

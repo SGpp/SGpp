@@ -29,7 +29,7 @@ public:
 	 * @param storage the grid's GridStorage object
 	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	OperationGammaLogLinearBoundary(GridStorage* storage, DataVector& coef);
+	OperationGammaLogLinearBoundary(GridStorage* storage, DataMatrix& coef);
 
 	/**
 	 * Destructor

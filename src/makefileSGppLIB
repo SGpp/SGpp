@@ -52,7 +52,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
 	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
-	SurplusCoarseningFunctor.o AlignedMemory.o
+	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -65,6 +65,9 @@ DataVector.o : $(SRCDIR)data/DataVector.cpp
 	
 AlignedMemory.o : $(SRCDIR)common/AlignedMemory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)AlignedMemory.o $(SRCDIR)common/AlignedMemory.cpp
+
+DataMatrix.o : $(SRCDIR)data/DataMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrix.o $(SRCDIR)data/DataMatrix.cpp
 
 Grid.o : $(SRCDIR)grid/Grid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)Grid.o $(SRCDIR)grid/Grid.cpp

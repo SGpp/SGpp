@@ -13,18 +13,19 @@
 #include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 namespace sg
 {
 
-void OperationBModBspline::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModBspline::mult(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModBsplineBase> op;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBModBspline::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBModBspline::multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SModBsplineBase> op;
 
