@@ -111,7 +111,7 @@ OperationMatrix* LinearGrid::createOperationDelta(DataVector& coef)
 	return new OperationDeltaLinear(this->storage, coef);
 }
 
-OperationMatrix* LinearGrid::createOperationGamma(DataVector& coef)
+OperationMatrix* LinearGrid::createOperationGamma(DataMatrix& coef)
 {
 	return new OperationGammaLinear(this->storage, coef);
 }
@@ -121,7 +121,7 @@ OperationMatrix* LinearGrid::createOperationDeltaLog(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* LinearGrid::createOperationGammaLog(DataVector& coef)
+OperationMatrix* LinearGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
 }

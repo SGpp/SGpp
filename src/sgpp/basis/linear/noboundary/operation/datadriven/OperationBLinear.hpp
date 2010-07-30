@@ -32,8 +32,8 @@ public:
 	 */
 	virtual ~OperationBLinear() {}
 
-	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result);
-	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result);
+	virtual void mult(DataVector& alpha, DataMatrix& data, DataVector& result);
+	virtual void multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result);
 
 	virtual void multTransposeIterative(double* Level, double* Index, DataVector& alpha, DataVector& data, DataVector& result);
 

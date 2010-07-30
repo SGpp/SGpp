@@ -107,7 +107,7 @@ OperationMatrix* ModBsplineGrid::createOperationDelta(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* ModBsplineGrid::createOperationGamma(DataVector& coef)
+OperationMatrix* ModBsplineGrid::createOperationGamma(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
 }
@@ -117,7 +117,7 @@ OperationMatrix* ModBsplineGrid::createOperationDeltaLog(DataVector& coef)
 	throw factory_exception("Unsupported operation");
 }
 
-OperationMatrix* ModBsplineGrid::createOperationGammaLog(DataVector& coef)
+OperationMatrix* ModBsplineGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
 }

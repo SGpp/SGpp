@@ -104,6 +104,11 @@ elif env['TARGETCPU'] == 'nehalemICC':
     env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
                            '-no-alias-const', '-fno-alias', '-ansi-alias', '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp'])
+elif env['TARGETCPU'] == 'nehalemICC':
+    print "Using icc 11.x for Nehalem/Westmere systems"
+    env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
+                           '-no-alias-const', '-fno-alias', '-ansi-alias', '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing', '-openmp', '-pthread'])
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"

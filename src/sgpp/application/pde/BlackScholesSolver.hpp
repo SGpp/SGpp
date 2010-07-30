@@ -47,7 +47,7 @@ private:
 	/// vector that contains the standard deviations
 	DataVector* sigmas;
 	/// Matrix that contains the correlations
-	DataVector* rhos;
+	DataMatrix* rhos;
 	/// the riskfree rate
 	double r;
 	/// stores if the stochastic asset data was passed to the solver
@@ -123,10 +123,10 @@ public:
 	 *
 	 * @param mus a DataVector that contains the underlyings' weight
 	 * @param sigmas a DataVector that contains the underlyings' standard deviations
-	 * @param rhos a DataVector that contains the correlations between the underlyings
+	 * @param rhos a DataMatrix that contains the correlations between the underlyings
 	 * @param r the riskfree rate used in the market model
 	 */
-	void setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r);
+	void setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r);
 
 	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 

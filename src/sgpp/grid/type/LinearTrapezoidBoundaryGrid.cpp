@@ -115,7 +115,7 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& c
 	return new OperationDeltaLinearBoundary(this->storage, coef);
 }
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataVector& coef)
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataMatrix& coef)
 {
 	return new OperationGammaLinearBoundary(this->storage, coef);
 }
@@ -125,7 +125,7 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDeltaLog(DataVector
 	return new OperationDeltaLogLinearBoundary(this->storage, coef);
 }
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaLog(DataVector& coef)
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	return new OperationGammaLogLinearBoundary(this->storage, coef);
 }

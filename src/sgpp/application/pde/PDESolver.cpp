@@ -199,11 +199,11 @@ double PDESolver::evaluatePoint(std::vector<double>& evalPoint, DataVector& alph
 	return result;
 }
 
-void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, DataVector& EvaluationPoints)
+void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, DataMatrix& EvaluationPoints)
 {
 	if (bGridConstructed)
 	{
-		if (OptionPrices.getSize() != EvaluationPoints.getSize())
+		if (OptionPrices.getSize() != EvaluationPoints.getNrows())
 		{
 			throw new application_exception("PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
 		}

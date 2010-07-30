@@ -27,6 +27,7 @@ Import("env")
 
 srcs = Split("""
 data/DataVector.cpp
+data/DataMatrix.cpp
 
 common/AlignedMemory.cpp
 

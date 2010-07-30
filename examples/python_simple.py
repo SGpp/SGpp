@@ -35,7 +35,7 @@ grid.createOperationHierarchisation().doHierarchisation(alpha)
 print alpha
 
 # evaluate
-p = DataVector(1, dim)
+p = DataVector(dim)
 p[0] = 0.52
 p[1] = 0.73
 opEval = grid.createOperationEval()

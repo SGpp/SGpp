@@ -11,20 +11,21 @@
 #include "basis/poly/operation/datadriven/OperationBPoly.hpp"
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 #include "exception/operation_exception.hpp"
 
 namespace sg
 {
 
-void OperationBPoly::mult(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBPoly::mult(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SPolyBase> op;
 
 	op.mult(storage, base, alpha, data, result);
 }
 
-void OperationBPoly::multTranspose(DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBPoly::multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	AlgorithmDGEMV<SPolyBase> op;
 

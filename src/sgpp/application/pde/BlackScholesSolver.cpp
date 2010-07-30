@@ -221,11 +221,11 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha
 	}
 }
 
-void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r)
+void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r)
 {
 	this->mus = new DataVector(mus);
 	this->sigmas = new DataVector(sigmas);
-	this->rhos = new DataVector(rhos);
+	this->rhos = new DataMatrix(rhos);
 	this->r = r;
 
 	bStochasticDataAlloc = true;

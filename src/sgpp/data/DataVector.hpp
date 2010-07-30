@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+// @author Jörg Blank (blankj@in.tum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
 #ifndef DATAVECTOR_H_
@@ -14,15 +14,19 @@
 #include "data/DataVectorDefinition.hpp"
 
 /**
- * a data holding class of base function's coefficients
+ * A class to store one-dimensional data.
+ * Typically, an object of type DataVector will contain an array
+ * of (hierarchical) coefficients (or surplusses), or the coordinates
+ * of a data point at which a sparse grid function should be
+ * evaluated.
  */
 class DataVector
 {
 public:
 	/**
-	 * Constructor: one-dimensional DataVector with <it>size</it> rows.
+	 * Create a DataVector with @em size elements.
 	 *
-	 * @param size number of elements
+	 * @param size Number of elements
 	 */
 	DataVector(size_t size);
 
@@ -33,31 +37,29 @@ public:
 	 * @param size number of elements per dimension
 	 * @param dim dimension of Vector
 	 */
-	DataVector(size_t size, size_t dim);
+//	DataVector(size_t size, size_t dim);
 
 	/**
-	 * Copy Constructor.
+	 * Create a new DataVector that is a copy of vec.
 	 *
-	 * @param vec reference to another instance of DataVector
+	 * @param vec Reference to another instance of DataMatrix
 	 */
 	DataVector(DataVector& vec);
 
 	/**
-	 * Copy Constructor.
+	 * Create a new DataVector that is a copy of vec.
 	 *
-	 * @param vec reference to another instance of DataVector
+	 * @param vec Reference to another instance of DataMatrix
 	 */
 	DataVector(const DataVector& vec);
 
 	/**
-	 * Constructor that construct a DataVector from a double array.
-	 * The double array contains the entries rowwise: x00,x01,...,x0dim-1,x10,x11,...
+	 * Create a new DataVector from a double array with size elements.
 	 *
 	 * @param input double array that contains the data
-	 * @param size number of elements per dimension
-	 * @param dim number of dimensions
+	 * @param size number of elements
 	 */
-	DataVector(double* input, size_t size, size_t dim);
+	DataVector(double* input, size_t size);
 
 	/**
 	 * Constructor that constructs a DataVector from a DataVectorDefinition structure
@@ -73,15 +75,31 @@ public:
 	 */
 	void getDataVectorDefinition(DataVectorDefinition& DataVectorDef);
 
+
 	/**
-	 * Resizes the DataVector to size*dim elements; sets all new entries to zero.
-	 * Does nothing if size smaller than current size.
+	 * Resizes the DataVector to size elements.
+	 * All new additional entries are uninitialized.
+	 * If nrows is smaller than the current number of rows,
+	 * all superfluous entries are removed.
 	 *
-	 * @param size new size of the DataVector
+	 * @param size New number of elements of the DataVector
+	 * @todo (pflueged) Check that no wrong usage of reize is left which assumes that new entries are zero.
+	 * @todo (pflueged) Optimize implementation, consider unused elements!
 	 */
 	void resize(size_t size);
 
+    /**
+	 * Resizes the DataVector to size elements.
+     * All new additional entries are set to zero.
+     * If nrows is smaller than the current number of rows,
+     * all superfluous entries are removed.
+     *
+     * @param nrows New number of rows of the DataMatrix
+     */
+    void resizeZero(size_t nrows);
+
 	/**
+<<<<<<< .working
 	 * Resizes the DataVector by removing entries. Throws an exception
 	 * if boundaries a violated.
 	 *
@@ -91,34 +109,56 @@ public:
 
 	/**
 	 * Add add potentially new elements to the DataVector. The size remains unchanged.
+=======
+	 * Reserves memory for potentially inc_elems new elements;
+	 * the actual number of elements remains unchanged.
+	 * Corresponds to a resize to size+inc_elems new elements while leaving
+	 * the current vector's size unchanged.
+>>>>>>> .merge-right.r766
 	 *
-	 * @param add number of elements that should be added to the data vector
+	 * @param inc_nrows Number of additional elements for which storage is to be reserved.
 	 */
-	void addSize(int add);
+	void addSize(size_t inc_elems);
 
 	/**
-	 * adds one element to data vector
+	 * Appends a new element and returns index of it.
+	 * If the new element does not fit into the reserved memory,
+	 * reserves memory for getInc() additional elements.
+	 *
+	 * @return Index of new element
 	 */
-	int addValue();
+	size_t append();
 
 	/**
-	 * Sets all values of DataVector
+     * Appends a new element and returns index of new element.
+     * If the new element does not fit into the reserved memory,
+     * reserves memory for getInc() additional elements.
+     *
+	 * @param value Value of new element
+	 * @return Index of new element
+	 */
+    size_t append(double value);
+
+
+	/**
+	 * Sets all values of DataVector to value
 	 *
-	 * @param value value that is set to all elements
+	 * @param value New value for all entries
 	 */
 	void setAll(double value);
 
 	/**
 	 * Copies the data from another DataVector vec.
-	 * Afterwards, the current vector is an exact copy of vec.
-	 * If the current DataVector has not the sime dimensions
-	 * (size, dim) than vec, it has the same effect than the copy
-	 * constructor: The old memory is discarded, new memory
-	 * allocated, and the data copied.
+	 * Disregards the number of entries set for the two vectors,
+	 * i.e., just copies the data entry by entry.
+	 * If the size matches, the current DataVector is an
+	 * exact copy of vec. If not, as many elements as possible are
+	 * copied, and everything else is left untouched.
 	 *
-	 * @param vec the DataVector containing the data
+	 * @param vec The source DataVector containing the data
 	 */
 	void copyFrom(const DataVector& vec);
+
 
 	/**
 	 * Copies the data from another, smaller DataVector vec.
@@ -128,39 +168,42 @@ public:
 	 *
 	 * @param vec the DataVector containing the data
 	 */
-	void copySmall(const DataVector& vec);
+//	void copySmall(const DataVector& vec);
 
 	/**
-	 * copies the data from another DataVector
+	 * Copies the data from another DataVector.
+	 * Dimensions have to match.
 	 *
 	 * @param vec the DataVector containing the data
 	 */
 	DataVector& operator=(const DataVector& vec);
 
 	/**
-	 * operator to access an element directly
+	 * Returns the i-th element.
 	 *
 	 * @param i position of the element
 	 */
-	inline double& operator[](int i)
+	inline double& operator[](size_t i)
 	{
 		return data[i];
 	};
 
 	/**
-	 * operator to get an element
+	 * Returns the i-th element.
 	 *
 	 * @param i position of the element
 	 */
-	double get(int i) const;
+	inline double get(size_t i) const {
+		return data[i];
+	}
 
 	/**
-	 * operator to set an element
+	 * Sets the element at index i to value.
 	 *
-	 * @param i position of the element
-	 * @param value value that should be set
+	 * @param i Index
+	 * @param value New value for element
 	 */
-	void set(int i, double value);
+	void set(size_t i, double value);
 
 	/**
 	 * gets a row of the DataVector
@@ -168,7 +211,7 @@ public:
 	 * @param row the row that should be read
 	 * @param vec DataVector into which the data is written
 	 */
- 	void getRow(int row, DataVector& vec);
+// 	void getRow(size_t row, DataVector& vec) const;
 
 	/**
 	 * sets a row of the DataVector
@@ -176,7 +219,7 @@ public:
 	 * @param row the row that should be written
 	 * @param vec DataVector from which the data is read
 	 */
- 	void setRow(int row, DataVector& vec);
+// 	void setRow(int row, DataVector& vec);
 
 	/**
 	 * gets a col of the DataVector
@@ -184,7 +227,7 @@ public:
 	 * @param col the col that should be read
 	 * @param vec DataVector into which the data is written
 	 */
- 	void getColumn(int col, DataVector& vec);
+// 	void getColumn(int col, DataVector& vec) const;
 
 	/**
 	 * sets a row of the DataVector
@@ -192,27 +235,31 @@ public:
 	 * @param col the row that should be written
 	 * @param vec DataVector from which the data is read
 	 */
- 	void setColumn(int col, DataVector& vec);
+// 	void setColumn(int col, DataVector& vec);
+
 
  	/**
- 	 * adds the values from another DataVector
+ 	 * Adds the values from another DataVector to the current values.
+ 	 * Modifies the current values.
  	 *
- 	 * @param vec the DataVector which Data is added
+ 	 * @param vec The DataVector which is added to the current values
  	 */
 	void add(DataVector& vec);
 
 	/**
- 	 * subs the values of another DataVector
+     * Subtracts the values from another DataMatrix of the current values.
+     * Modifies the current values.
  	 *
- 	 * @param vec the DataVector which Data is subtracted
+ 	 * @param vec The DataMatrix which is subtracted from the current values
  	 */
 	void sub(DataVector& vec);
 
     /**
      * Multiplies the current DataVector component-wise with another DataVector.
+     * Modifies the current values.
      * Performs
      * @code
-     * for i from 1 to this.getTotalSize()
+     * for i from 1 to this.getSize()
      *   this[i] *= vec[i]
      * @endcode
      *
@@ -222,9 +269,10 @@ public:
 
     /**
      * Divides the current DataVector component-wise by another DataVector.
+     * Modifies the current values.
      * Performs
      * @code
-     * for i from 1 to this.getTotalSize()
+     * for i from 1 to this.getSize()
      *   this[i] /= vec[i]
      * @endcode
      * Note: <b>No check for division by zero!</b>
@@ -241,9 +289,14 @@ public:
 	void mult(double scalar);
 
 	/**
-	 * squares all elements of the DataVector
+	 * Squares all elements of the DataVector
 	 */
 	void sqr();
+
+	/**
+	 * Takes the square root of all elements of the DataVector
+	 */
+	void sqrt();
 
 	/**
 	 * Sets all elements to their absolute value.
@@ -252,9 +305,9 @@ public:
 	void abs();
 
 	/**
-	 * sums all elements up
+	 * Returns the sum of all elements
 	 *
-	 * @return the sum of all elements
+	 * @return The sum of all elements
 	 */
 	double sum();
 
@@ -265,115 +318,13 @@ public:
 	 */
 	double maxNorm();
 
-	/**
-	 * Adds alpha*x to current vector.
-	 * BLAS Level 1 (elementary vector operations) operation: axpy.
-	 *
-	 * @param alpha the constant
-	 * @param x reference the the DataVector
-	 */
-	void axpy(double alpha, DataVector& x);
-
-	/**
-	 * gets a line of the DataVector
-	 *
-	 * @param row the line that should be read
-	 * @param vec DataVector into which the data is written
-	 */
-	void getLine(int row, DataVector& vec);
-
-	/**
-	 * gets a line of the DataVector
-	 *
-	 * @param row the line that should be read
-	 * @param vec std vector into which the data is written
-	 */
-	void getLine(int row, std::vector<double>& vec);
-
-	/**
-	 * Returns the dot product of the two vectors. Only defined for 1 dimensional vectors.
-	 *
-	 * @param vec reference to another vector
-	 *
-	 * @return the dotProduct
-	 */
-	double dotProduct(DataVector& vec);
-
-	/**
-	 * gets the elements stored in the vector
-	 *
-	 * @return elements stored in the vector
-	 */
-	size_t getSize();
-
-	/**
-	 * get the dimension of the DataVector
-	 *
-	 * @return dimension of the DataVector
-	 */
-	size_t getDim();
-
-	/**
-	 * gets number of elements in all dimensions
-	 *
-	 * @return number of elements in all dimensions
-	 */
-	size_t getTotalSize();
-
-	/**
-	 * gets the unsed entries
-	 *
-	 * @return unsed entries
-	 */
-	inline int getUnused() { return unused; };
-
-	/**
-	 * Partitions vector into two classes using a choosen border.
-	 *
-	 * @param border value of the border
-	 */
-	void partitionClasses(double border);
-
-	/**
-	 * Normalizes d-th dimension with border 0.0
-	 *
-	 * @param d the dimension that should be normalized
-	 */
-	void normalizeDimension(int d);
-
-	/**
-	 * Normalizes d-th dimension with border
-	 *
-	 * @param d the dimension that should be normalized
-	 * @param border value ot the border
-	 */
-	void normalizeDimension(int d, double border);
-
 #ifndef LARRABEE
-	/**
-	 * Returns the minimum.
-	 *
-	 * @param d the dimension in which the minimum should be determined
-	 *
-	 * @return the minimum
-	 */
-	double min(int d);
-
 	/**
 	 * Returns the minimum over all entries.
 	 *
 	 * @return global minimum
 	 */
 	double min();
-
-	/**
-	 * Returns the maximum.
-	 *
-	 * @param d the dimension in which the maximum should be determined
-	 *
-	 * @return the maximum
-	 */
-	double max(int d);
 
 	/**
 	 * Returns the maximum over all entries.
@@ -383,14 +334,148 @@ public:
 	double max();
 
 	/**
-	 * gets the minimum and the maximum.
-	 *
-	 * @param d the dimension in which the minimum & maximum should be determined
-	 * @param min reference variable for the minimum
-	 * @param max reference variable for the maximum
+     * Determines minimum and maximum over all entries.
+     *
+     * @param min Reference variable for the minimum
+     * @param max Reference variable for the maximum
 	 */
-	void minmax(int d, double* min, double* max);
+	void minmax(double* min, double* max);
 #endif
+
+	/**
+	 * Calculates the vector's maximum norm
+	 *
+	 * @return Maximum norm
+	 */
+	double maxNorm();
+
+	/**
+	 * Adds a*x to current vector.
+	 * BLAS Level 1 (elementary vector operations) operation: axpy.
+	 *
+	 * @param a A scalar
+	 * @param x Reference to the DataVector
+	 */
+	void axpy(double a, DataVector& x);
+
+	/**
+	 * gets a line of the DataVector
+	 *
+	 * @param row the line that should be read
+	 * @param vec DataVector into which the data is written
+	 */
+//	void getLine(int row, DataVector& vec);
+
+	/**
+	 * gets a line of the DataVector
+	 *
+	 * @param row the line that should be read
+	 * @param vec std vector into which the data is written
+	 */
+//	void getLine(int row, std::vector<double>& vec);
+
+	/**
+	 * Returns the dot product of the two vectors.
+	 *
+	 * @param vec Reference to another vector
+	 *
+	 * @return The dot-product
+	 */
+	double dotProduct(DataVector& vec);
+
+
+	/**
+	 * gets a pointer to the data array
+	 *
+	 * @return pointer to the data array
+	 */
+	double* getPointer();
+
+	/**
+	 * gets the elements stored in the vector
+	 *
+	 * @return elements stored in the vector
+	 */
+	inline size_t getSize() const {
+		return size;
+	};
+
+	/**
+	 * Returns the number of unused elements.
+	 *
+	 * @return number of unused elements
+	 */
+	inline size_t getUnused() {
+		return unused;
+	};
+
+	/**
+	 * Determines the number of non-zero elements in the vector.
+	 *
+	 * @return The number of non-zero elements
+	 */
+	size_t getNumberNonZero();
+
+    /**
+     * Get the current number of elements by which the DataVector is extended,
+     * if append() is called and no unused rows are left
+     *
+     * @return Increment
+     */
+    inline size_t getInc() const
+    {
+        return inc_elems;
+    }
+
+    /**
+     * Sets the current number of elements by which the DataVector is extended,
+     * if append() is called and no unused elements are left.
+     * Defaults to 100.
+     *
+     * @param inc_elems Increment
+     */
+    void setInc(size_t inc_elems)
+    {
+        this->inc_elems = inc_elems;
+    }
+
+
+	/**
+	 * get the dimension of the DataVector
+	 *
+	 * @return dimension of the DataVector
+	 */
+//	size_t getDim() const;
+
+	/**
+	 * gets number of elements in all dimensions
+	 *
+	 * @return number of elements in all dimensions
+	 */
+//	size_t getTotalSize() const;
+
+	/**
+	 * Partitions vector into two classes using a choosen border.
+	 *
+	 * @param threshold value of the border
+	 */
+	void partitionClasses(double threshold);
+
+	/**
+	 * Normalizes d-th dimension with border 0.0
+	 *
+	 * @param d the dimension that should be normalized
+	 */
+	void normalize();
+
+	/**
+	 * Normalizes d-th dimension with border
+	 *
+	 * @param d the dimension that should be normalized
+	 * @param border value ot the border
+	 */
+	void normalize(double border);
+
 
 	/**
 	 * Writes the data stored in the DataVector into a string
@@ -407,38 +492,28 @@ public:
   std::string toString();
 
 	/**
-	 * gets a pointer to the data array
-	 *
-	 * @return pointer to the data array
-	 */
-	double* getPointer();
-
-	/**
 	 * Destructor
 	 */
 	virtual ~DataVector();
 
-	/**
-	 * gets the number of none zero elements in the vector
-	 *
-	 * @return the number of none zero elements
-	 */
-	size_t getNumberNonZero();
+
 
 private:
 	/**
 	 * Standard Constructor
 	 */
-	DataVector();
+//	DataVector();
 
-	/// array to store the data
+	/// Array to store the data
 	double* data;
-	/// number of elements in the data vector
-	int size;
+	/// Number of elements of the data vector
+	size_t size;
 	/// number of dimensions of one element in this vector
-	int dim;
-	/// unused slots in this data vector
-	int unused;
+//	int dim;
+	/// Number of additional rows for which memory has already been reserved
+	size_t unused;
+    /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
+    size_t inc_elems;
 };
 
 #endif /*DATAVECTOR_H_*/
