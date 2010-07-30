@@ -18,6 +18,8 @@
 
 #include "grid/common/BoundingBox.hpp"
 
+#include "data/DataMatrix.hpp"
+
 #include <memory>
 #include <vector>
 #include <string>
@@ -682,10 +684,10 @@ public:
 	 * with modification to speed up iterative function evaluation. The Level
 	 * array won't contain the levels, it contains the level to the power of two
 	 *
-	 * @param level array to store the grid's level to the power of two
-	 * @param index array to store the grid's indices
+	 * @param level DataMatrix to store the grid's level to the power of two
+	 * @param index DataMatrix to store the grid's indices
 	 */
-	void getLevelIndexArraysForEval(double* level, double* index)
+	void getLevelIndexArraysForEval(DataMatrix& level, DataMatrix& index)
 	{
 		typename index_type::level_type curLevel;
 		typename index_type::level_type curIndex;
@@ -700,8 +702,8 @@ public:
 				for (size_t current_dim = 0; current_dim < DIM; current_dim++)
 				{
 					(list[i])->get(current_dim, curLevel, curIndex);
-					level[(i*DIM)+current_dim] = static_cast<double>(1<<curLevel);
-					index[(i*DIM)+current_dim] = static_cast<double>(curIndex);
+					level.set(i, current_dim, static_cast<double>(1<<curLevel));
+					index.set(i, current_dim, static_cast<double>(curIndex));
 				}
 			}
 #ifdef USEOMP

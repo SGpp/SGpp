@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include <iostream>
+
 #include "common/AlignedMemory.hpp"
 
 DataMatrix::DataMatrix(size_t nrows, size_t ncols) :
@@ -120,6 +122,25 @@ size_t DataMatrix::appendRow() {
 	unused--;
 
 	return x;
+}
+
+void DataMatrix::transpose()
+{
+	double* newData = new double[nrows * ncols];
+
+	for (size_t i = 0; i < nrows; i++)
+	{
+		for (size_t j = 0; j < ncols; j++)
+		{
+			newData[(j*nrows)+i] = data[(i*ncols)+j];
+		}
+	}
+
+	delete[] data;
+	data = newData;
+	size_t tmpRows = nrows;
+	nrows = ncols;
+	ncols = tmpRows;
 }
 
 size_t DataMatrix::appendRow(DataVector& vec) {

@@ -61,13 +61,14 @@ void executesOperationBmultTrans_DR5()
     std::cout << "DataSize: " << data.getNrows() << std::endl;
 
     // Generate SOA from AOS
-    double* level = new double[myGrid->getSize()*nDim];
-    double* index = new double[myGrid->getSize()*nDim];
+    DataMatrix level(myGrid->getSize(), nDim);
+    DataMatrix index(myGrid->getSize(), nDim);
 
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
 
     myGrid->getStorage()->getLevelIndexArraysForEval(level, index);
+    data.transpose();
 
     for (size_t i = 0; i < ITERATIONS; i++)
     {
@@ -77,8 +78,6 @@ void executesOperationBmultTrans_DR5()
 
     execTime = myStopwatch->stop();
 
-    delete[] level;
-    delete[] index;
     delete B;
 
     // Write the data of CG
