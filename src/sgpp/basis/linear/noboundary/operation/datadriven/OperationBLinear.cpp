@@ -65,7 +65,7 @@ void OperationBLinear::multTranspose(DataVector& alpha, DataMatrix& data, DataVe
 //    delete[] index;
 }
 
-void OperationBLinear::multTransposeIterative(double* Level, double* Index, DataVector& alpha, DataVector& data, DataVector& result)
+void OperationBLinear::multTransposeIterative(double* Level, double* Index, DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();

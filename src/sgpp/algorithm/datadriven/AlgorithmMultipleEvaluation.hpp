@@ -10,6 +10,7 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 #include "algorithm/common/AlgorithmEvaluation.hpp"
 #include "algorithm/common/AlgorithmEvaluationTransposed.hpp"
@@ -50,7 +51,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
+	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
 	{
 		result.setAll(0.0);
 		size_t source_size = source.getSize();
@@ -67,7 +68,7 @@ public:
 			#pragma omp for schedule(static)
 			for(size_t i = 0; i < source_size; i++)
 			{
-				x.getLine(i, line);
+				x.getRow(i, line);
 
 				AlgoEvalTrans(basis, line, source[i], privateResult);
 			}
@@ -83,7 +84,7 @@ public:
 
 		for(size_t i = 0; i < source_size; i++)
 		{
-			x.getLine(i, line);
+			x.getRow(i, line);
 
 			AlgoEvalTrans(basis, line, source[i], result);
 		}
@@ -103,7 +104,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
+	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
 	{
 		result.setAll(0.0);
 		size_t result_size = result.getSize();
@@ -117,7 +118,7 @@ public:
 			#pragma omp for schedule (static)
 			for(size_t i = 0; i < result_size; i++)
 			{
-				x.getLine(i, line);
+				x.getRow(i, line);
 
 				result[i] = AlgoEval(basis, line, source);
 			}
@@ -128,14 +129,14 @@ public:
 
 		for(size_t i = 0; i < result_size; i++)
 		{
-			x.getLine(i, line);
+			x.getRow(i, line);
 
 			result[i] = AlgoEval(basis, line, source);
 		}
 #endif
 	}
 
-	void mult_transpose_iterative(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
+	void mult_transpose_iterative(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
 	{
 		result.setAll(0.0);
 		size_t result_size = result.getSize();
@@ -149,7 +150,7 @@ public:
 			#pragma omp for schedule (static)
 			for(size_t i = 0; i < result_size; i++)
 			{
-				x.getLine(i, line);
+				x.getRow(i, line);
 
 				result[i] = AlgoEval(basis, line, source);
 			}
@@ -160,7 +161,7 @@ public:
 
 		for(size_t i = 0; i < result_size; i++)
 		{
-			x.getLine(i, line);
+			x.getRow(i, line);
 
 			result[i] = AlgoEval(basis, line, source);
 		}

@@ -8,7 +8,7 @@
 import unittest, tools
 
 def generateLaplaceMatrix(factory, level, verbose=False):
-    from pysgpp import DataVector
+    from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()
@@ -21,7 +21,7 @@ def generateLaplaceMatrix(factory, level, verbose=False):
     erg = DataVector(storage.size())
 
     # create stiffness matrix
-    m = DataVector(storage.size(), storage.size())
+    m = DataMatrix(storage.size(), storage.size())
     m.setAll(0)
     for i in xrange(storage.size()):
         # apply unit vectors
@@ -35,7 +35,7 @@ def generateLaplaceMatrix(factory, level, verbose=False):
     return m
 
 def readReferenceMatrix(self, storage, filename):
-    from pysgpp import DataVector
+    from pysgpp import DataMatrix
     # read reference matrix
     try:
         fd = tools.gzOpen(filename, 'r')
@@ -54,10 +54,10 @@ def readReferenceMatrix(self, storage, filename):
     self.assertEqual(storage.size(), len(dat))
     self.assertEqual(storage.size(), len(dat[0]))
 
-    m_ref = DataVector(len(dat), len(dat[0]))
+    m_ref = DataMatrix(len(dat), len(dat[0]))
     for i in xrange(len(dat)):
         for j in xrange(len(dat[0])):
-            m_ref[i*len(dat) + j] = float(dat[i][j])
+            m_ref.set(i, j, float(dat[i][j]))
 
     return m_ref
 
@@ -67,23 +67,23 @@ def readReferenceMatrix(self, storage, filename):
 # differently. Uses heuristics, e.g. whether the diagonal elements
 # and row and column sums match.
 def compareStiffnessMatrices(testCaseClass, m1, m2):
-    from pysgpp import DataVector
+    from pysgpp import DataVector, DataMatrix
 
     # check dimensions
-    testCaseClass.assertEqual(m1.getSize(), m1.getDim())
-    testCaseClass.assertEqual(m1.getSize(), m2.getSize())
-    testCaseClass.assertEqual(m1.getDim(), m2.getDim())
+    testCaseClass.assertEqual(m1.getNrows(), m1.getNcols())
+    testCaseClass.assertEqual(m1.getNrows(), m2.getNrows())
+    testCaseClass.assertEqual(m1.getNcols(), m2.getNcols())
 
-    n = m1.getSize()
+    n = m1.getNrows()
 
     # check diagonal
     values = []
     for i in range(n):
-        values.append(m1[i*n + i])
+        values.append(m1.get(i,i))
     values.sort()
     values_ref = []
     for i in range(n):
-        values_ref.append(m2[i*n + i])
+        values_ref.append(m2.get(i,i))
     values_ref.sort()
     for i in range(n):
         testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Diagonal %f != %f" % (values[i], values_ref[i]))
@@ -125,7 +125,7 @@ class TestOperationLaplaceLinear(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D(self):
-        from pysgpp import Grid, DataVector
+        from pysgpp import Grid, DataVector, DataMatrix
         
         factory = Grid.createLinearGrid(1)
         storage = factory.getStorage()
@@ -166,7 +166,7 @@ class TestOperationLaplaceLinear(unittest.TestCase):
    
 class TestOperationLaplaceModLinear(unittest.TestCase):
     def testHatRegular1D(self):
-        from pysgpp import Grid
+        from pysgpp import Grid, DataVector, DataMatrix
         
         factory = Grid.createModLinearGrid(1)
 
