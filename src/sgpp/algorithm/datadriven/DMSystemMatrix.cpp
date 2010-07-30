@@ -12,7 +12,7 @@
 namespace sg
 {
 
-DMSystemMatrix::DMSystemMatrix(Grid& SparseGrid, DataMatrix& trainData, OperationMatrix& C, double lambda)
+DMSystemMatrix::DMSystemMatrix(Grid& SparseGrid, DataVector& trainData, OperationMatrix& C, double lambda)
 {
 	// create the operations needed in ApplyMatrix
 	this->C = &C;
@@ -28,8 +28,8 @@ DMSystemMatrix::~DMSystemMatrix()
 
 void DMSystemMatrix::mult(DataVector& alpha, DataVector& result)
 {
-  DataVector temp((*data).getNrows());
-  size_t M = (*data).getNrows();
+	DataVector temp((*data).getSize());
+    size_t M = (*data).getSize();
 
     // Operation B
     this->B->multTranspose(alpha, (*data), temp);

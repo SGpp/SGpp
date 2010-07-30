@@ -10,7 +10,6 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
@@ -50,7 +49,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
+	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -71,7 +70,7 @@ public:
 			{
 				vec.clear();
 
-				x.getRow(i, line);
+				x.getLine(i, line);
 
 				ga(basis, line, vec);
 
@@ -98,7 +97,7 @@ public:
 		{
 			vec.clear();
 
-			x.getRow(i, line);
+			x.getLine(i, line);
 
 			ga(basis, line, vec);
 
@@ -123,7 +122,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
+	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataVector& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -144,7 +143,7 @@ public:
 			{
 				vec.clear();
 
-				x.getRow(i, line);
+				x.getLine(i, line);
 
 				ga(basis, line, vec);
 
@@ -166,7 +165,7 @@ public:
 		{
 			vec.clear();
 
-			x.getRow(i, line);
+			x.getLine(i, line);
 
 			ga(basis, line, vec);
 

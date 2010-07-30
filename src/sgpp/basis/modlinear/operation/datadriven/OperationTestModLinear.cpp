@@ -17,13 +17,13 @@
 namespace sg
 {
 
-double OperationTestModLinear::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
+double OperationTestModLinear::test(DataVector& alpha, DataVector& data, DataVector& classes)
 {
 	modified_linear_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestModLinear::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestModLinear::testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers)
 {
 	modified_linear_base<unsigned int, unsigned int> base;
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

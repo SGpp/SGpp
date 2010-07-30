@@ -2,8 +2,7 @@
 @mainpage SG++ Documentation
 Welcome to the Sparse Grid ++ (SG++ or SGpp) documentation.
 
-@version (Stable Beta) Revision 0.9.0 -- Beta, as still some
-interfaces could change in the very near future towards version 1.0
+@version $HEAD$
 
 @image html teaser.gif "Images taken from [1]"
 
@@ -78,41 +77,21 @@ SG++. For example, installation instructions are provided as well
 as short use cases as a quick-start to using SG++.
 
 
-<!-- ############################################################# -->
-@section mainpage__history Version History
-
-@subsection mainpage_history_090 Version 0.9.0
-- Provides everything that is necessary to use spatially adaptive
-sparse grids for interpolation, optimization, ...
-- Several types of piecewise linear basis functions
- - Different boundary treatment
- - Modified boundary basis functions
-- Grids (handling, creation, modification, ...)
-- Adaptivity
-- Hash-based grid storage
-
-@subsection mainpage_history_100 What will be there for Release Version 1.0
-- Support for the solution of (simple) PDEs
-- Different types of basis functions such as
- - B-splines
- - Polynomial basis functions
-- More documentation, especially on adaptive refinement
-- And much more...
 
 <!-- ############################################################# -->
 @section mainpage__literature Literature
 
 The following publications address SG++:
 
-- TBA
-- ...
-- ...
+- Lit1
+- Lit2
+- Lit3
 
 
 <!-- ############################################################# -->
 @section mainpage__references References
 
-[1] Spatially Adaptive Sparse Grids for Higher-Dimensional Problems ...
+[1] Blah
 
 
 

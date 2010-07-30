@@ -30,7 +30,7 @@ private:
 	/// OperationB for calculating the data matrix
 	OperationB* B;
 	/// Pointer to the data vector
-	DataMatrix* data;
+	DataVector* data;
 
 public:
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
 	 */
-	DMSystemMatrix(Grid& SparseGrid, DataMatrix& trainData, OperationMatrix& C, double lambda);
+	DMSystemMatrix(Grid& SparseGrid, DataVector& trainData, OperationMatrix& C, double lambda);
 
 	/**
 	 * Std-Destructor

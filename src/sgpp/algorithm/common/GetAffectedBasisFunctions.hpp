@@ -10,6 +10,8 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+#include "basis/modwavelet/modified_wavelet_base.hpp"
+#include "basis/modbspline/modified_bspline_base.hpp"
 #include "basis/linear/boundary/linearboundaryBase.hpp"
 
 #include <vector>
@@ -172,10 +174,365 @@ protected:
 
 };
 
+/**
+ * Template Specialization for mod_Wavelet basis.
+ */
+template<>
+class GetAffectedBasisFunctions<modified_wavelet_base<unsigned int, unsigned int> > {
+    typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
+public:
+    GetAffectedBasisFunctions(GridStorage* storage) :
+        storage(storage) {
+    }
+
+    ~GetAffectedBasisFunctions() {
+    }
+
+    void operator()(SModWaveletBase& basis, std::vector<double>& point,
+            std::vector<std::pair<size_t, double> >& result) {
+        GridStorage::grid_iterator working(storage);
+
+        typedef GridStorage::index_type::level_type level_type;
+        typedef GridStorage::index_type::index_type index_type;
+
+        size_t bits = sizeof(index_type) * 8; // how many levels can we store in a index_type?
+
+        size_t dim = storage->dim();
+
+        index_type* source = new index_type[dim];
+
+        for (size_t d = 0; d < dim; ++d) {
+            // This does not really work on grids with borders.
+            double temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            if (point[d] == 1.0) {
+                source[d] = static_cast<index_type> (temp - 1);
+            } else {
+                source[d] = static_cast<index_type> (temp + 1);
+            }
+
+        }
+
+        result.clear();
+        rec(basis, point, 0, 1.0, working, source, result);
+
+        delete[] source;
+
+    }
+
+protected:
+    GridStorage* storage;
+
+    void rec(SModWaveletBase& basis, std::vector<double>& point,
+            size_t current_dim, double value,
+            GridStorage::grid_iterator& working,
+            GridStorage::index_type::index_type* source, std::vector<std::pair<
+                    size_t, double> >& result) {
+        typedef GridStorage::index_type::level_type level_type;
+        typedef GridStorage::index_type::index_type index_type;
+        //size_t i;
+        double tmpValue;
+        size_t tmpSeq;
+
+        // TODO: Remove 'magic' number
+        level_type src_level = static_cast<level_type> (sizeof(index_type) * 8
+                - 1);
+        index_type src_index = source[current_dim];
+
+        level_type work_level = 1;
+
+        while (true) {
+            size_t seq = working.seq();
+            if (storage->end(seq)) {
+                //std::cout << "Grid not found or dim exceed breaking..Grid: " <<seq<<" dim "<<current_dim<<std::endl;
+                break;
+            } else {
+                index_type work_index;
+                level_type temp;
+
+                working.get(current_dim, temp, work_index);
+                //std::cout <<"current dim: "<<current_dim<<" Point:"<<point[current_dim]<<" current_level: "<<work_level<<" current_Index: " << work_index << std::endl;
+
+                double new_value = basis.eval(work_level, work_index,
+                        point[current_dim]);
+
+                if (current_dim == storage->dim() - 1) {
+                    //for( int i=0;i < storage->dim();i++)
+                    //{
+                    //  working.get(i, temp, work_index);
+                    //  std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<work_index<<std::endl;
+                    //}
+                    //std::cout << "Basis function " << seq <<" Value " <<value*new_value<<std::endl;
+                    result.push_back(std::make_pair(seq, value * new_value));
+
+                    //std::cout << "Checking Right Neighbour" << std::endl;
+                    working.step_right(current_dim);
+                    tmpSeq = working.seq();
+                    if (!(storage->end(tmpSeq))) {
+                        //for( int i=0;i < storage->dim();i++)
+                        //{
+                        //  working.get(i, temp, work_index);
+                        //  std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<work_index<<std::endl;
+                        //}
+                        working.get(current_dim, temp, work_index);
+                        tmpValue = basis.eval(work_level, work_index,
+                                point[current_dim]);
+                        //std::cout << "RBasis function " << tmpSeq <<" Value " <<value*tmpValue<<std::endl;
+                        result.push_back(std::make_pair(tmpSeq, value
+                                * tmpValue));
+
+                    }
+                    working.step_left(current_dim);
+
+                    //std::cout << "Checking Left Neighbour" << std::endl;
+                    working.step_left(current_dim);
+                    tmpSeq = working.seq();
+                    if (!(storage->end(tmpSeq))) {
+                        //for( int i=0;i < storage->dim();i++)
+                        //{
+                        //  working.get(i, temp, work_index);
+                        //  std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<work_index<<std::endl;
+                        //}
+                        working.get(current_dim, temp, work_index);
+                        tmpValue = basis.eval(work_level, work_index,
+                                point[current_dim]);
+                        //std::cout << "LBasis function " << tmpSeq <<" Value " <<value*tmpValue<<std::endl;
+                        result.push_back(std::make_pair(tmpSeq, value
+                                * tmpValue));
+
+                    }
+                    working.step_right(current_dim);
+
+                } else {
+                    rec(basis, point, current_dim + 1, value * new_value,
+                            working, source, result);
+
+                    //std::cout << "Checking Right Neighbour" << std::endl;
+                    working.step_right(current_dim);
+                    working.get(current_dim, temp, work_index);
+                    new_value = basis.eval(work_level, work_index,
+                            point[current_dim]);
+                    rec(basis, point, current_dim + 1, value * new_value,
+                            working, source, result);
+                    working.step_left(current_dim);
+
+                    //std::cout << "Checking left Neighbour"<< std::endl;
+                    working.step_left(current_dim);
+                    working.get(current_dim, temp, work_index);
+                    new_value = basis.eval(work_level, work_index,
+                            point[current_dim]);
+                    rec(basis, point, current_dim + 1, value * new_value,
+                            working, source, result);
+                    working.step_right(current_dim);
+                }
+
+            }
+
+            if (working.hint()) {
+                break;
+            }
+
+            // this decides in which direction we should descend by evaluating the corresponding bit
+            // the bits are coded from left to right starting with level 1 being in position src_level
+            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            ++work_level;
+
+            if (right) {
+                working.right_child(current_dim);
+            } else {
+                working.left_child(current_dim);
+            }
+
+        }
+
+        working.top(current_dim);
+    }
+
+};
+
 
 /**
- * Template Specialization for linearboundaryBase basis.
- */
+ * Template Specialization for B-Spline basis.
+ **/
+template<>
+class GetAffectedBasisFunctions<modified_bspline_base<unsigned int, unsigned int> >
+{
+    typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
+public:
+    GetAffectedBasisFunctions(GridStorage* storage) : storage(storage)
+    {
+    }
+
+    ~GetAffectedBasisFunctions() {}
+
+    void operator()(SModBsplineBase& base, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
+    {
+        GridStorage::grid_iterator working(storage);
+
+
+        typedef GridStorage::index_type::level_type level_type;
+        typedef GridStorage::index_type::index_type index_type;
+
+        size_t bits = sizeof(index_type) * 8; // who many levels can we store in a index_type?
+
+        size_t dim = storage->dim();
+
+        index_type* source = new index_type[dim];
+
+        for(size_t d = 0; d < dim; ++d)
+        {
+            // This does not really work on grids with borders.
+            double temp = floor(point[d]*(1<<(bits-2)))*2;
+            if(point[d] == 1.0)
+            {
+                source[d] = static_cast<index_type>(temp-1);
+            }
+            else
+            {
+                source[d] = static_cast<index_type>(temp+1);
+            }
+
+        }
+
+        result.clear();
+        rec(base, point, 0, 1.0, working, source, result);
+
+        delete [] source;
+
+    }
+
+protected:
+    GridStorage* storage;
+
+    /**
+     * Example implementation of storage agnostic algorithm.
+     * Returns all affected base functions
+     */
+    void rec(SModBsplineBase& base, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
+    {
+        typedef GridStorage::index_type::level_type level_type;
+        typedef GridStorage::index_type::index_type index_type;
+        //size_t i;
+        double tmpValue;
+        size_t tmpSeq;
+
+        // TODO: Remove 'magic' number
+        level_type src_level = static_cast<level_type>(sizeof(index_type) * 8 - 1);
+        index_type src_index = source[current_dim];
+
+        level_type work_level = 1;
+
+        while(true)
+        {
+            size_t seq = working.seq();
+            if( storage->end(seq)  )
+            {
+                //std::cout << "Grid not found or dim exceed breaking..Grid: " <<seq<<" dim "<<current_dim<<std::endl;
+                break;
+            }
+            else
+            {
+                index_type work_index;
+                level_type temp;
+
+                working.get(current_dim, temp, work_index);
+                //std::cout <<"current dim: "<<current_dim<<" Point:"<<point[current_dim]<<" current_level: "<<work_level<<" current_Index: " << work_index << std::endl;
+
+                double new_value = base.eval(work_level, work_index, point[current_dim]);
+
+                if(current_dim == storage->dim()-1)
+                {
+                    //for( int i=0;i < storage->dim();i++)
+                    //{
+                    //  working.get(i, temp, work_index);
+                    //  std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<work_index<<std::endl;
+                    //}
+                    //std::cout << "Basis function " << seq <<" Value " <<value*new_value<<std::endl;
+                    result.push_back(std::make_pair(seq, value*new_value));
+
+                    //std::cout << "Checking Right Neighbour" << std::endl;
+                    working.step_right(current_dim);
+                    tmpSeq = working.seq();
+                    if( !(storage->end(tmpSeq)) )
+                    {
+                        //for( int i=0;i < storage->dim();i++)
+                        //{
+                        //  working.get(i, temp, work_index);
+                        //  std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<work_index<<std::endl;
+                        //}
+                        working.get(current_dim, temp, work_index);
+                        tmpValue=base.eval(work_level, work_index, point[current_dim]);
+                        //std::cout << "RBasis function " << tmpSeq <<" Value " <<value*tmpValue<<std::endl;
+                        result.push_back(std::make_pair(tmpSeq, value*tmpValue));
+
+                    }
+                    working.step_left(current_dim);
+
+                    //std::cout << "Checking Left Neighbour" << std::endl;
+                    working.step_left(current_dim);
+                    tmpSeq = working.seq();
+                    if(!(storage->end(tmpSeq)) )
+                    {
+                        //for( int i=0;i < storage->dim();i++)
+                        //{
+                        //  working.get(i, temp, work_index);
+                        //  std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<work_index<<std::endl;
+                        //}
+                        working.get(current_dim, temp, work_index);
+                        tmpValue=base.eval(work_level, work_index, point[current_dim]);
+                        //std::cout << "LBasis function " << tmpSeq <<" Value " <<value*tmpValue<<std::endl;
+                        result.push_back(std::make_pair(tmpSeq, value*tmpValue));
+
+                    }
+                    working.step_right(current_dim);
+
+                }
+                else
+                {
+                    rec(base, point, current_dim + 1, value*new_value, working, source, result);
+
+                    //std::cout << "Checking Right Neighbour" << std::endl;
+                    working.step_right(current_dim);
+                    working.get(current_dim, temp, work_index);
+                    new_value = base.eval(work_level, work_index, point[current_dim]);
+                    rec(base, point, current_dim + 1, value*new_value, working, source, result);
+                    working.step_left(current_dim);
+
+                    //std::cout << "Checking left Neighbour"<< std::endl;
+                    working.step_left(current_dim);
+                    working.get(current_dim, temp, work_index);
+                    new_value = base.eval(work_level, work_index, point[current_dim]);
+                    rec(base, point, current_dim +1 , value*new_value, working, source, result);
+                    working.step_right(current_dim);
+                }
+
+            }
+
+            if(working.hint())
+            {
+                break;
+            }
+
+            // this decides in which direction we should descend by evaluating the corresponding bit
+            // the bits are coded from left to right starting with level 1 being in position src_level
+            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            ++work_level;
+
+            if(right)
+            {
+                working.right_child(current_dim);
+            }
+            else
+            {
+                working.left_child(current_dim);
+            }
+
+        }
+
+        working.top(current_dim);
+    }
+
+};
+
 template<>
 class GetAffectedBasisFunctions<linearboundaryBase<unsigned int, unsigned int> >
 {

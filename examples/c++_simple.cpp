@@ -1,12 +1,10 @@
 #include <iostream>
-// All SG++ headers
-#include "sgpp.hpp"
-// Or, include only those that are required
-//#include "data/DataVector.hpp"
-//#include "grid/Grid.hpp"
-//#include "grid/GridStorage.hpp"
-//#include "grid/generation/GridGenerator.hpp"
-//#include "operation/common/OperationEval.hpp"
+// SG++ headers
+#include "data/DataVector.hpp"
+#include "grid/Grid.hpp"
+#include "grid/GridStorage.hpp"
+#include "grid/generation/GridGenerator.hpp"
+#include "operation/common/OperationEval.hpp"
 
 using namespace std;
 using namespace sg;
@@ -35,9 +33,8 @@ int main() {
   cout << "length of alpha-vector: " << alpha.getSize() << endl;
 
   // set function values in alpha
-  GridIndex* gp;
   for (int i=0; i < gridStorage->size(); i++) {
-    gp = gridStorage->get(i);
+    GridIndex* gp = gridStorage->get(i);
     alpha[i] = f(gp->abs(0), gp->abs(1));
   }
   cout << alpha.toString() << endl;
@@ -47,11 +44,9 @@ int main() {
   cout << alpha.toString() << endl;
 
   // evaluate
-  DataVector p(dim);
+  DataVector p(1, dim);
   p[0] = 0.52;
   p[1] = 0.73;
   OperationEval* opEval = grid->createOperationEval();
   cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << endl;
-
-  delete grid;
 }

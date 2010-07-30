@@ -3,13 +3,17 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "grid/Grid.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
+#include "grid/type/PolyGrid.hpp"
+#include "grid/type/ModPolyGrid.hpp"
+#include "grid/type/ModWaveletGrid.hpp"
+#include "grid/type/ModBsplineGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "operation/common/OperationIdentity.hpp"
@@ -44,23 +48,17 @@ Grid* Grid::createModLinearGrid(size_t dim)
 
 Grid* Grid::createPolyGrid(size_t dim, size_t degree)
 {
-  //	return new PolyGrid(dim, degree);
-	throw factory_exception("Grid-type not in this revision");
-	return NULL;
+	return new PolyGrid(dim, degree);
 }
 
 Grid* Grid::createModWaveletGrid(size_t dim)
 {
-  //    return new ModWaveletGrid(dim);
-	throw factory_exception("Grid-type not in this revision");
-	return NULL;
+    return new ModWaveletGrid(dim);
 }
 
 Grid* Grid::createModBsplineGrid(size_t dim, size_t degree)
 {
-  //    return new ModBsplineGrid(dim, degree);
-	throw factory_exception("Grid-type not in this revision");
-	return NULL;
+    return new ModBsplineGrid(dim, degree);
 }
 
 OperationMatrix* Grid::createOperationIdentity()
@@ -70,9 +68,7 @@ OperationMatrix* Grid::createOperationIdentity()
 
 Grid* Grid::createModPolyGrid(size_t dim, size_t degree)
 {
-  //	return new ModPolyGrid(dim, degree);
-	throw factory_exception("Grid-type not in this revision");
-	return NULL;
+	return new ModPolyGrid(dim, degree);
 }
 
 Grid* Grid::unserialize(const std::string& istr)
@@ -95,7 +91,7 @@ Grid* Grid::unserialize(std::istream& istr)
 	}
 	else
 	{
-		throw factory_exception("factory_exception unserialize: unknown gridtype");
+		throw factory_exception("factory_exeception unserialize: unkown gridtype");
 	}
 
 	return NULL;
@@ -116,12 +112,10 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
-		/*
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
-		tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
-		tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
-		*/
+        tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
+        tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
 	}
 
 	return *tMap;

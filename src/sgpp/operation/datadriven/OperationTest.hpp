@@ -9,7 +9,6 @@
 #define OPERATIONTEST_HPP
 
 #include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 #ifdef WINDOWS
 #pragma warning(disable: 4267)
@@ -45,7 +44,7 @@ public:
 	 * @param data the coordinates of the evaluation points
 	 * @param classes DataVector the holds the class information
 	 */
-	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes) = 0;
+	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes) = 0;
 
 	/**
 	 * Computes the classification accuracy on some test data.
@@ -59,7 +58,7 @@ public:
 	 * @param classes DataVector the holds the class information
 	 * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
 	 */
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataVector& data, DataVector& classes, DataVector& charaNumbers) = 0;
 };
 
 }
