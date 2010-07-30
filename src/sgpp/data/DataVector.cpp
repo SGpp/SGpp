@@ -70,12 +70,12 @@ void DataVector::getDataVectorDefinition(DataVectorDefinition& DataVectorDef) {
 
 void DataVector::restructure(std::vector<size_t>& remainingIndex)
 {
-	if ((int)remainingIndex.size() > this->size)
+	if (remainingIndex.size() > this->size)
 	{
 		throw sg::algorithm_exception("more indices than entries!");
 	}
 
-	double* newdata = new double[remainingIndex.size() * this->dim];
+	double* newdata = new double[remainingIndex.size()];
 
 	for (size_t i = 0; i < remainingIndex.size(); i++)
 	{
@@ -416,7 +416,6 @@ void DataVector::normalize(double border) {
 void DataVector::toString(std::string& text) {
     std::stringstream str;
 
-    int n = size * dim;
     str << "[";
     for (size_t i = 0; i < size; i++) {
         if (i != 0) {

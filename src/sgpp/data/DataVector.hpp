@@ -99,7 +99,6 @@ public:
     void resizeZero(size_t nrows);
 
 	/**
-<<<<<<< .working
 	 * Resizes the DataVector by removing entries. Throws an exception
 	 * if boundaries a violated.
 	 *
@@ -108,13 +107,11 @@ public:
 	void restructure(std::vector<size_t>& remainingIndex);
 
 	/**
-	 * Add add potentially new elements to the DataVector. The size remains unchanged.
-=======
+	 * Add add potentially new elements to the DataVector. The size remains unchanged
 	 * Reserves memory for potentially inc_elems new elements;
 	 * the actual number of elements remains unchanged.
 	 * Corresponds to a resize to size+inc_elems new elements while leaving
 	 * the current vector's size unchanged.
->>>>>>> .merge-right.r766
 	 *
 	 * @param inc_nrows Number of additional elements for which storage is to be reserved.
 	 */
@@ -341,13 +338,6 @@ public:
 	 */
 	void minmax(double* min, double* max);
 #endif
-
-	/**
-	 * Calculates the vector's maximum norm
-	 *
-	 * @return Maximum norm
-	 */
-	double maxNorm();
 
 	/**
 	 * Adds a*x to current vector.
