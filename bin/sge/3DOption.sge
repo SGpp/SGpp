@@ -1,0 +1,22 @@
+#!/bin/bash 
+#$-o $HOME/3DOption.$JOB_ID.out -j y 
+#$-N sgpp_3DOption_16_CPU 
+#$-l h_rt=48:00:00 
+#$-S /bin/bash 
+#$-pe numa_2 16 
+#$-M Alex.Heinecke@web.de 
+. /etc/profile 
+hostname 
+OMP_NUM_THREADS=1
+export OMP_NUM_THREADS
+module unload ccomp
+module load ccomp/intel/11.1
+cd $HOME/SGpp/bin/
+./NativeCppBlackScholesSolver solveND 3 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 1000 0.0001
+export OMP_NUM_THREADS=2
+./NativeCppBlackScholesSolver solveND 3 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 1000 0.0001
+export OMP_NUM_THREADS=4
+./NativeCppBlackScholesSolver solveND 3 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 1000 0.0001
+export OMP_NUM_THREADS=8
+./NativeCppBlackScholesSolver solveND 3 8 BStest3DMC.bound BStest3DMC.stoch BStest3DMC.strike avgM 0.00 1.0 0.05 CrNic 1000 0.0001
+jobperf -j $JOB_ID 

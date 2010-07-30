@@ -1,9 +1,24 @@
-###############################################################################
-# Copyright (C) 2009 Technische Universitaet Muenchen                         #
-# This file is part of the SG++ project. For conditions of distribution and   #
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp          #
-###############################################################################
-## @author Alexander Heinecke (Alexander.Heinecke@mytum.de)####################################################################
+#############################################################################
+# This file is part of pysgpp, a program package making use of spatially    #
+# adaptive sparse grids to solve numerical problems                         #
+#                                                                           #
+# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
+#                                                                           #
+# pysgpp is free software; you can redistribute it and/or modify            #
+# it under the terms of the GNU Lesser General Public License as published  #
+# by the Free Software Foundation; either version 3 of the License, or      #
+# (at your option) any later version.                                       #
+#                                                                           #
+# pysgpp is distributed in the hope that it will be useful,                 #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU Lesser General Public License for more details.                       #
+#                                                                           #
+# You should have received a copy of the GNU Lesser General Public License  #
+# along with pysgpp; if not, write to the Free Software                     #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
+# or see <http://www.gnu.org/licenses/>.                                    #
+#############################################################################
 
 import unittest, tools
 
@@ -13,14 +28,14 @@ import unittest, tools
 # @param data a list of lists that contains the points a the training data set, coordinate-wise
 # @return a instance of a DataVector that stores the training data
 def buildTrainingVector(data):
-    from pysgpp import DataMatrix
+    from pysgpp import DataVector
     dim = len(data["data"])
-    training = DataMatrix(len(data["data"][0]), dim)
+    training = DataVector(len(data["data"][0]), dim)
     
     # i iterates over the data points, d over the dimension of one data point
     for i in xrange(len(data["data"][0])):
         for d in xrange(dim):
-            training.set(i, d, data["data"][d][i])
+            training[i*dim + d] = data["data"][d][i]
     
     return training
 
@@ -38,17 +53,17 @@ def openFile(filename):
 
 
 def generateBBTMatrix(factory, training, verbose=False):
-    from pysgpp import DataVector, DataMatrix
+    from pysgpp import DataVector
     storage = factory.getStorage()
        
     b = factory.createOperationB()
     
     alpha = DataVector(storage.size())
-    erg = DataVector(len(alpha))
-    temp = DataVector(training.getNrows())
+    erg = DataVector(alpha.getSize())
+    temp = DataVector(training.getSize())
     
     # create B matrix
-    m = DataMatrix(storage.size(), storage.size())
+    m = DataVector(storage.size(), storage.size())
     for i in xrange(storage.size()):
         # apply unit vectors
         temp.setAll(0.0)
@@ -64,7 +79,7 @@ def generateBBTMatrix(factory, training, verbose=False):
 
 
 def readReferenceMatrix(self, storage, filename):
-    from pysgpp import DataVector, DataMatrix
+    from pysgpp import DataVector
     # read reference matrix
     try:
         fd = tools.gzOpen(filename, 'r')
@@ -83,10 +98,10 @@ def readReferenceMatrix(self, storage, filename):
     self.assertEqual(storage.size(), len(dat))
     self.assertEqual(storage.size(), len(dat[0]))
 
-    m_ref = DataMatrix(len(dat), len(dat[0]))
+    m_ref = DataVector(len(dat), len(dat[0]))
     for i in xrange(len(dat)):
         for j in xrange(len(dat[0])):
-            m_ref.set(i, j, float(dat[i][j]))
+            m_ref[i*len(dat) + j] = float(dat[i][j])
 
     return m_ref
 
@@ -147,20 +162,20 @@ def compareBBTMatrices(testCaseClass, m1, m2):
     from pysgpp import DataVector
 
     # check dimensions
-    testCaseClass.assertEqual(m1.getNrows(), m1.getNcols())
-    testCaseClass.assertEqual(m1.getNrows(), m2.getNrows())
+    testCaseClass.assertEqual(m1.getSize(), m1.getDim())
     testCaseClass.assertEqual(m1.getSize(), m2.getSize())
+    testCaseClass.assertEqual(m1.getDim(), m2.getDim())
 
-    n = m1.getNrows()
+    n = m1.getSize()
 
     # check diagonal
     values = []
     for i in range(n):
-        values.append(m1.get(i,i))
+        values.append(m1[i*n + i])
     values.sort()
     values_ref = []
     for i in range(n):
-        values_ref.append(m2.get(i,i))
+        values_ref.append(m2[i*n + i])
     values_ref.sort()
     for i in range(n):
         testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Diagonal %f != %f" % (values[i], values_ref[i]))

@@ -15,6 +15,15 @@
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+// @todo (heinecke) removed this when done
+#include "basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.hpp"
+
+#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -68,6 +77,11 @@ OperationB* LinearTrapezoidBoundaryGrid::createOperationB()
 	return new OperationBLinearBoundary(this->storage);
 }
 
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
+{
+	return new OperationLaplaceLinearBoundary(this->storage);
+}
+
 OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 {
 	return new OperationEvalLinearBoundary(this->storage);
@@ -83,5 +97,37 @@ OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchis
 	return new OperationHierarchisationLinearBoundary(this->storage);
 }
 
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
+{
+	return new OperationLTwoDotProductLinearBoundary(this->storage);
+}
+
+// @todo (heinecke) removed this when done
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
+{
+	return new OperationUpDownTestLinearBoundary(this->storage);
+}
+
+// finance operations
+/////////////////////
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& coef)
+{
+	return new OperationDeltaLinearBoundary(this->storage, coef);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataVector& coef)
+{
+	return new OperationGammaLinearBoundary(this->storage, coef);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDeltaLog(DataVector& coef)
+{
+	return new OperationDeltaLogLinearBoundary(this->storage, coef);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaLog(DataVector& coef)
+{
+	return new OperationGammaLogLinearBoundary(this->storage, coef);
+}
 
 }

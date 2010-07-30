@@ -9,7 +9,6 @@
 #define OPERATIONB_HPP
 
 #include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 namespace sg
 {
@@ -40,7 +39,7 @@ public:
 	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual void mult(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual void mult(DataVector& alpha, DataVector& data, DataVector& result) = 0;
 
 	/**
 	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
@@ -49,7 +48,7 @@ public:
 	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual void multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual void multTranspose(DataVector& alpha, DataVector& data, DataVector& result) = 0;
 };
 
 }

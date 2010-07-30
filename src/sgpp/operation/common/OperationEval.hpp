@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #ifndef OPERATIONEVAL_HPP
 #define OPERATIONEVAL_HPP
@@ -18,16 +18,13 @@ namespace sg
 {
 
 /**
- * Operation that evaluates the current sparse grid function defined
- * by the coefficient vector @em alpha at a given point.
- *
- * @todo (pflueged) Use eval(DataVector& alpha, DataVector& point) as default
+ * Operation the evaluate the function that is applied the current Sparse Grid at a given point
  */
 class OperationEval
 {
 public:
 	/**
-	 * Default constructor.
+	 * Constructor
 	 */
 	OperationEval() {}
 
@@ -37,23 +34,23 @@ public:
 	virtual ~OperationEval() {}
 
 	/**
-	 * Evaluates the sparse grid function at a given point.
+	 * Evaluates the grid's function at a given point
 	 *
-	 * @param alpha The coefficients of the sparse grid's basis functions
-	 * @param point The coordinates of the evaluation point
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param point the coordinates of the evaluation point
 	 */
 	virtual double eval(DataVector& alpha, std::vector<double>& point) = 0;
 
 	/**
-	 * Evaluates the sparse grid function at a given point.
+	 * Evaluates the grid's function at a given point
 	 *
-	 * @param alpha The coefficients of the sparse grid's basis functions
-	 * @param point The coordinates of the evaluation point
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param point the coordinates of the evaluation point
 	 */
 	virtual double eval(DataVector& alpha, DataVector& point)
 	{
 		std::vector<double> p;
-		for(size_t i = 0; i < point.getSize(); i++)
+		for(size_t i = 0; i < point.getDim(); i++)
 		{
 			p.push_back(point[i]);
 		}

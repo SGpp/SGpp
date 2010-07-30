@@ -13,9 +13,9 @@
 #include <string>
 #include <iostream>
 
-#define LEVELS 6
+#define LEVELS 5
 #define DATAFILE "DR5_nowarnings_less05_train.arff"
-#define ITERATIONS 1
+#define ITERATIONS 10
 
 /**
  * executes the OperationB mult_transposed (multiple function evaluations)

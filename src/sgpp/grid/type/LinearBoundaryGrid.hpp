@@ -40,9 +40,20 @@ public:
 
 	virtual OperationB* createOperationB();
 	virtual GridGenerator* createGridGenerator();
+	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
 	virtual OperationTest* createOperationTest();
 	virtual OperationHierarchisation* createOperationHierarchisation();
+	virtual OperationMatrix* createOperationLTwoDotProduct();
+
+	// @todo (heinecke) remove this when done
+	virtual OperationMatrix* createOperationUpDownTest();
+
+	// finance operations
+	virtual OperationMatrix* createOperationDelta(DataVector& coef);
+	virtual OperationMatrix* createOperationGamma(DataVector& coef);
+	virtual OperationMatrix* createOperationDeltaLog(DataVector& coef);
+	virtual OperationMatrix* createOperationGammaLog(DataVector& coef);
 
 	static Grid* unserialize(std::istream& istr);
 };

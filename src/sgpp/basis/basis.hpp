@@ -11,5 +11,9 @@
 #include "basis/linear/noboundary/linear_base.hpp"
 #include "basis/linear/boundary/linearboundaryBase.hpp"
 #include "basis/modlinear/modified_linear_base.hpp"
+#include "basis/poly/poly_base.hpp"
+#include "basis/modpoly/modified_poly_base.hpp"
+#include "basis/modwavelet/modified_wavelet_base.hpp"
+#include "basis/modbspline/modified_bspline_base.hpp"
 
 #endif /* BASIS_HPP */

@@ -1,9 +1,25 @@
-###############################################################################
-# Copyright (C) 2009 Technische Universitaet Muenchen                         #
-# This file is part of the SG++ project. For conditions of distribution and   #
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp          #
-###############################################################################
-## @author Joerg Blank (blankj@in.tum.de), Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+#############################################################################
+# This file is part of pysgpp, a program package making use of spatially    #
+# adaptive sparse grids to solve numerical problems                         #
+#                                                                           #
+# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
+# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
+#                                                                           #
+# pysgpp is free software; you can redistribute it and/or modify            #
+# it under the terms of the GNU Lesser General Public License as published  #
+# by the Free Software Foundation; either version 3 of the License, or      #
+# (at your option) any later version.                                       #
+#                                                                           #
+# pysgpp is distributed in the hope that it will be useful,                 #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU Lesser General Public License for more details.                       #
+#                                                                           #
+# You should have received a copy of the GNU Lesser General Public License  #
+# along with pysgpp; if not, write to the Free Software                     #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
+# or see <http://www.gnu.org/licenses/>.                                    #
+#############################################################################
 
 
 import unittest
@@ -91,22 +107,22 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())        
         
-#    def testSerializationPoly(self):
-#        from pysgpp import Grid
-#        
-#        factory = Grid.createPolyGrid(2,2)
-#        self.failIfEqual(factory, None)
-#
-#        gen = factory.createGridGenerator()
-#        gen.regular(3)
-#
-#        str = factory.serialize()
-#        self.assert_(len(str) > 0)
-#        
-#        newfac = Grid.unserialize(str)
-#        self.failIfEqual(newfac, None)
-#        
-#        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+    def testSerializationPoly(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPolyGrid(2,2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
 
     def testSerializationLinearBoundingBox(self):
         """Uses Linear grid for tests"""
@@ -240,37 +256,37 @@ class TestGridFactory(unittest.TestCase):
         self.assertEqual(False, tempBound.bDirichletLeft)
         self.assertEqual(False, tempBound.bDirichletRight)
         
-#    def testSerializationPolyBoundingBox(self):
-#        from pysgpp import Grid
-#        
-#        factory = Grid.createPolyGrid(2,2)
-#        self.failIfEqual(factory, None)
-#
-#        gen = factory.createGridGenerator()
-#        gen.regular(3)
-#
-#        boundingBox = factory.getBoundingBox()
-#        tempBound = boundingBox.getBoundary(0)
-#        tempBound.leftBoundary = 0.0
-#        tempBound.rightBoundary = 100.0
-#        tempBound.bDirichletLeft = False;
-#        tempBound.bDirichletRight = False;
-#        boundingBox.setBoundary(0, tempBound)
-#
-#        str = factory.serialize()
-#        self.assert_(len(str) > 0)
-#        
-#        newfac = Grid.unserialize(str)
-#        self.failIfEqual(newfac, None)
-#        
-#        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
-#        
-#        boundingBox = newfac.getBoundingBox()
-#        tempBound = boundingBox.getBoundary(0)
-#        self.assertEqual(0.0, tempBound.leftBoundary)
-#        self.assertEqual(100.0, tempBound.rightBoundary)
-#        self.assertEqual(False, tempBound.bDirichletLeft)
-#        self.assertEqual(False, tempBound.bDirichletRight)
+    def testSerializationPolyBoundingBox(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPolyGrid(2,2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        boundingBox = factory.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        tempBound.leftBoundary = 0.0
+        tempBound.rightBoundary = 100.0
+        tempBound.bDirichletLeft = False;
+        tempBound.bDirichletRight = False;
+        boundingBox.setBoundary(0, tempBound)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        boundingBox = newfac.getBoundingBox()
+        tempBound = boundingBox.getBoundary(0)
+        self.assertEqual(0.0, tempBound.leftBoundary)
+        self.assertEqual(100.0, tempBound.rightBoundary)
+        self.assertEqual(False, tempBound.bDirichletLeft)
+        self.assertEqual(False, tempBound.bDirichletRight)
 
     def testSerializationLinearWithLeaf(self):
         """Uses Linear grid for tests"""
@@ -372,86 +388,86 @@ class TestGridFactory(unittest.TestCase):
         for i in xrange(factory.getStorage().size()):
             self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])       
         
-#    def testSerializationPolyWithLeaf(self):
-#        from pysgpp import Grid
-#        
-#        srcLeaf = []
-#        factory = Grid.createPolyGrid(2,2)
-#        self.failIfEqual(factory, None)
-#
-#        gen = factory.createGridGenerator()
-#        gen.regular(3)
-#        
-#        for i in xrange(factory.getStorage().size()):
-#            srcLeaf.append(factory.getStorage().get(i).isLeaf())
-#
-#        str = factory.serialize()
-#        self.assert_(len(str) > 0)
-#        
-#        newfac = Grid.unserialize(str)
-#        self.failIfEqual(newfac, None)
-#        
-#        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
-#        
-#        for i in xrange(factory.getStorage().size()):
-#            self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
+    def testSerializationPolyWithLeaf(self):
+        from pysgpp import Grid
         
-#class TestPolyGrid(unittest.TestCase):
-#    def testGeneration(self):
-#        from pysgpp import Grid
-#
-#        factory = Grid.createPolyGrid(2, 4)
-#        self.failIfEqual(factory, None)
-#        
-#        storage = factory.getStorage()
-#        self.failIfEqual(storage, None)
-#        
-#        op = factory.createOperationB()
-#        self.failIfEqual(op, None)
-#
-#        op = factory.createOperationEval()
-#        self.failIfEqual(op, None)
-#        
-#        self.failUnlessRaises(Exception, factory.createOperationLaplace)
-#
-#
-#class TestModPolyGrid(unittest.TestCase):
-#    def testGeneration(self):
-#        from pysgpp import Grid
-#
-#        factory = Grid.createModPolyGrid(2, 4)
-#        self.failIfEqual(factory, None)
-#        
-#        storage = factory.getStorage()
-#        self.failIfEqual(storage, None)
-#        
-#        op = factory.createOperationB()
-#        self.failIfEqual(op, None)
-#
-#        op = factory.createOperationEval()
-#        self.failIfEqual(op, None)
-#        
-#        self.failUnlessRaises(Exception, factory.createOperationLaplace)
-#
-#
-#class TestModLinearGrid(unittest.TestCase):
-#    def testGeneration(self):
-#        from pysgpp import Grid
-#
-#        factory = Grid.createModLinearGrid(2)
-#        self.failIfEqual(factory, None)
-#        
-#        storage = factory.getStorage()
-#        self.failIfEqual(storage, None)
-#        
-#        op = factory.createOperationB()
-#        self.failIfEqual(op, None)
-#
-#        op = factory.createOperationEval()
-#        self.failIfEqual(op, None)
-#        
-#        op = factory.createOperationLaplace()
-#        self.failIfEqual(op, None)
+        srcLeaf = []
+        factory = Grid.createPolyGrid(2,2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+        
+        for i in xrange(factory.getStorage().size()):
+            srcLeaf.append(factory.getStorage().get(i).isLeaf())
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+        for i in xrange(factory.getStorage().size()):
+            self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
+        
+class TestPolyGrid(unittest.TestCase):
+    def testGeneration(self):
+        from pysgpp import Grid
+
+        factory = Grid.createPolyGrid(2, 4)
+        self.failIfEqual(factory, None)
+        
+        storage = factory.getStorage()
+        self.failIfEqual(storage, None)
+        
+        op = factory.createOperationB()
+        self.failIfEqual(op, None)
+
+        op = factory.createOperationEval()
+        self.failIfEqual(op, None)
+        
+        self.failUnlessRaises(Exception, factory.createOperationLaplace)
+
+
+class TestModPolyGrid(unittest.TestCase):
+    def testGeneration(self):
+        from pysgpp import Grid
+
+        factory = Grid.createModPolyGrid(2, 4)
+        self.failIfEqual(factory, None)
+        
+        storage = factory.getStorage()
+        self.failIfEqual(storage, None)
+        
+        op = factory.createOperationB()
+        self.failIfEqual(op, None)
+
+        op = factory.createOperationEval()
+        self.failIfEqual(op, None)
+        
+        self.failUnlessRaises(Exception, factory.createOperationLaplace)
+
+
+class TestModLinearGrid(unittest.TestCase):
+    def testGeneration(self):
+        from pysgpp import Grid
+
+        factory = Grid.createModLinearGrid(2)
+        self.failIfEqual(factory, None)
+        
+        storage = factory.getStorage()
+        self.failIfEqual(storage, None)
+        
+        op = factory.createOperationB()
+        self.failIfEqual(op, None)
+
+        op = factory.createOperationEval()
+        self.failIfEqual(op, None)
+        
+        op = factory.createOperationLaplace()
+        self.failIfEqual(op, None)
         
         
 class TestLinearGrid(unittest.TestCase):
@@ -487,18 +503,18 @@ class TestLinearGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 5)
 
     def testOperationB(self):
-        from pysgpp import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector
         factory = Grid.createLinearGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
         
         alpha = DataVector(factory.getStorage().size())
-        p = DataMatrix(1,1)
+        p = DataVector(1,1)
         beta = DataVector(1)
         
         
         alpha.setAll(0.0)
-        p.set(0,0,0.25)
+        p[0] = 0.25
         beta[0] = 1.0
         
         opb = factory.createOperationB()
@@ -511,7 +527,7 @@ class TestLinearGrid(unittest.TestCase):
         alpha.setAll(0.0)
         alpha[0] = 1.0
         
-        p.set(0,0, 0.25)
+        p[0] = 0.25
         
         beta[0] = 0.0
         
@@ -519,7 +535,7 @@ class TestLinearGrid(unittest.TestCase):
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
-        from pysgpp import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearGrid(1)
         gen = factory.createGridGenerator()
@@ -527,9 +543,9 @@ class TestLinearGrid(unittest.TestCase):
         
         alpha = DataVector(factory.getStorage().size())        
         
-        data = DataMatrix(1,1)
+        data = DataVector(1,1)
         data.setAll(0.25)
-        classes = DataVector(1)
+        classes = DataVector(1,1)
         classes.setAll(1.0)
 
         testOP = factory.createOperationTest()
@@ -552,7 +568,7 @@ class TestLinearGrid(unittest.TestCase):
         alpha = DataVector(factory.getStorage().size())        
         alpha.setAll(1.0)
 
-        p = DataVector(1)
+        p = DataVector(1,1)
         p.setAll(0.25)
         
         eval = factory.createOperationEval()
@@ -619,18 +635,18 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 81)
 
     def testOperationB(self):
-        from pysgpp import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector
         factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
         
         alpha = DataVector(factory.getStorage().size())
-        p = DataMatrix(1,1)
+        p = DataVector(1,1)
         beta = DataVector(1)
         
         
         alpha.setAll(0.0)
-        p.set(0,0,0.25)
+        p[0] = 0.25
         beta[0] = 1.0
         
         opb = factory.createOperationB()
@@ -645,7 +661,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         alpha.setAll(0.0)
         alpha[2] = 1.0
         
-        p.set(0,0, 0.25)
+        p[0] = 0.25
         
         beta[0] = 0.0
         
@@ -653,7 +669,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
-        from pysgpp import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -661,9 +677,9 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         
         alpha = DataVector(factory.getStorage().size())        
         
-        data = DataMatrix(1,1)
+        data = DataVector(1,1)
         data.setAll(0.25)
-        classes = DataVector(1)
+        classes = DataVector(1,1)
         classes.setAll(1.0)
 
         testOP = factory.createOperationTest()
@@ -691,7 +707,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         alpha = DataVector(factory.getStorage().size())        
         alpha.setAll(1.0)
 
-        p = DataVector(1)
+        p = DataVector(1,1)
         p.setAll(0.25)
         
         eval = factory.createOperationEval()
@@ -912,18 +928,18 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 29) 
 
     def testOperationB(self):
-        from pysgpp import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector
         factory = Grid.createLinearBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
         
         alpha = DataVector(factory.getStorage().size())
-        p = DataMatrix(1,1)
+        p = DataVector(1,1)
         beta = DataVector(1)
         
         
         alpha.setAll(0.0)
-        p.set(0,0,0.25)
+        p[0] = 0.25
         beta[0] = 1.0
         
         opb = factory.createOperationB()
@@ -938,7 +954,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         alpha.setAll(0.0)
         alpha[2] = 1.0
         
-        p.set(0,0, 0.25)
+        p[0] = 0.25
         
         beta[0] = 0.0
         
@@ -946,7 +962,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
-        from pysgpp import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -954,9 +970,9 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         
         alpha = DataVector(factory.getStorage().size())        
         
-        data = DataMatrix(1,1)
+        data = DataVector(1,1)
         data.setAll(0.25)
-        classes = DataVector(1)
+        classes = DataVector(1,1)
         classes.setAll(1.0)
 
         testOP = factory.createOperationTest()
@@ -984,7 +1000,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         alpha = DataVector(factory.getStorage().size())        
         alpha.setAll(1.0)
 
-        p = DataVector(1)
+        p = DataVector(1,1)
         p.setAll(0.25)
         
         eval = factory.createOperationEval()
