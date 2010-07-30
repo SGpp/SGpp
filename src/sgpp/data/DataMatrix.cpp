@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include "common/AlignedMemory.hpp"
+
 DataMatrix::DataMatrix(size_t nrows, size_t ncols) :
 	nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {
 	// create new vector

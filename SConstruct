@@ -75,7 +75,7 @@ if env['TARGETCPU'] == 'default':
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
-                         '-fno-strict-aliasing', '-fopenmp', '-O3', '-g',
+                         '-fno-strict-aliasing', '-fopenmp', '-O3',
                          '-funroll-loops', '-ffloat-store'])
     if env['OMP']:
     	env.Append(CPPDEFINES=['USEOMP'])

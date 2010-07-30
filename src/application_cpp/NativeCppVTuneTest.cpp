@@ -15,7 +15,7 @@
 
 #define LEVELS 6
 #define DATAFILE "DR5_nowarnings_less05_train.arff"
-#define ITERATIONS 1
+#define ITERATIONS 10
 
 /**
  * executes the OperationB mult_transposed (multiple function evaluations)
@@ -44,7 +44,7 @@ void executesOperationBmultTrans_DR5()
 	delete myGenerator;
 
 	// Read data from file
-	DataVector data(nInstancesNo, nDim);
+	DataMatrix data(nInstancesNo, nDim);
     DataVector result(nInstancesNo);
     DataVector alpha(myGrid->getSize());
 
@@ -58,7 +58,7 @@ void executesOperationBmultTrans_DR5()
 
     std::cout << "Grid, Data, Operation created! Start test..." << std::endl;
     std::cout << "GridSize: " << myGrid->getSize() << std::endl;
-    std::cout << "DataSize: " << data.getSize() << std::endl;
+    std::cout << "DataSize: " << data.getNrows() << std::endl;
 
     // Generate SOA from AOS
     double* level = new double[myGrid->getSize()*nDim];
