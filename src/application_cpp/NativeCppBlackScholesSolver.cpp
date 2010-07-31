@@ -357,6 +357,22 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
+		if (dim == 2)
+		{
+			sg::DimensionBoundary* myAreaBoundaries = new sg::DimensionBoundary[dim];
+
+			for (size_t i = 0; i < 2; i++)
+			{
+				myAreaBoundaries[i].leftBoundary = 0.95;
+				myAreaBoundaries[i].rightBoundary = 1.05;
+			}
+			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
+
+			myBSSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
+
+			delete[] myAreaBoundaries;
+			delete myGridArea;
+		}
 		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
 		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
@@ -713,31 +729,31 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// refine the grid to approximate the singularity in the start solution better
-//	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-//	{
-//		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
-//		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-//		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-//	}
-
-	// Generate Full Grid at @Money
-	size_t oldGridSize = 0;
-	size_t newGridSize = myBSSolver->getNumberGridPoints();
-	size_t addedGridPoint = 0;
-
-	size_t i = 0;
-	do
+	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 	{
-		oldGridSize = newGridSize;
 		std::cout << "Refining Grid..." << std::endl;
-		myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType,  (dInitialAdpatDist/(static_cast<double>(i+1))), level);
+		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
 		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-		newGridSize = myBSSolver->getNumberGridPoints();
-		addedGridPoint = newGridSize - oldGridSize;
-		i++;
-	} while (addedGridPoint > 0);
+	}
+
+//	// Generate Full Grid at @Money
+//	size_t oldGridSize = 0;
+//	size_t newGridSize = myBSSolver->getNumberGridPoints();
+//	size_t addedGridPoint = 0;
+//
+//	size_t i = 0;
+//	do
+//	{
+//		oldGridSize = newGridSize;
+//		std::cout << "Refining Grid..." << std::endl;
+//		myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType,  (dInitialAdpatDist/(static_cast<double>(i+1))), level);
+//		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+//		newGridSize = myBSSolver->getNumberGridPoints();
+//		addedGridPoint = newGridSize - oldGridSize;
+//		i++;
+//	} while (addedGridPoint > 0);
 //	// Refine @Money by two Levels
 //	for (size_t r = 0; r < 1; r++)
 //	{
@@ -753,7 +769,6 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 //			std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
 //			newGridSize = myBSSolver->getNumberGridPoints();
 //			addedGridPoint = newGridSize - oldGridSize;
-//			i++;
 //		} while (addedGridPoint > 0);
 //	}
 

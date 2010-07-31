@@ -44,10 +44,20 @@ public:
 	 * Print the grid with its function to a file; front end
 	 *
 	 * @param alpha the coefficients of the grid's ansatzfunctions
-	 * @param tFilename absoulte path to the file the grid is written into
+	 * @param tFilename absolute path to the file the grid is written into
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
 	void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
+
+	/**
+	 * Print the grid with its function to a file; front end
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tFilename absolute path to the file the grid is written into
+	 * @param GridArea The area in which the function should be plotted
+	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
+	 */
+	void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value

@@ -143,10 +143,23 @@ public:
 	 * Is only implemented for 1D and 2D grids!
 	 *
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
-	 * @param PointesPerDimension the distance between evalution points
+	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
 	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename);
+
+	/**
+	 * This is some kind of debug functionality. It writes a file,
+	 * that can be used with gnuplot the print the grid.
+	 *
+	 * Is only implemented for 2D grids!
+	 *
+	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param PointesPerDimension the distance between evaluation points
+	 * @param GridArea the area in which the function should be plotted
+	 * @param tfilename absolute path to file into which the grid's evaluation is written
+	 */
+	void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
