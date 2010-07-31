@@ -315,6 +315,13 @@ public:
 	 */
 	double maxNorm();
 
+	/**
+	 * calculates the vectors two norm
+	 *
+	 * @return the vector's two norm
+	 */
+	double twoNorm();
+
 #ifndef LARRABEE
 	/**
 	 * Returns the minimum over all entries.
