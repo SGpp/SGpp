@@ -8,10 +8,11 @@
 #include "sgpp.hpp"
 #include "basis/basis.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
+#include "exception/operation_exception.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 
-#ifdef USEINTRINSICS
+#ifdef USEICCINTRINSICS
 #include <xmmintrin.h>
 
 union doubleAbsMask
@@ -31,7 +32,7 @@ const __m128d _mm_abs_pd( const __m128d& x)
 }
 #endif
 
-#define CHUNKDATAPOINTS 256 // must be divide-able by 8
+#define CHUNKDATAPOINTS 288 // must be divide-able by 12
 #define CHUNKGRIDPOINTS 128
 
 namespace sg
@@ -53,11 +54,21 @@ void OperationBLinear::multTranspose(DataVector& alpha, DataMatrix& data, DataVe
 	op.mult_transpose(storage, base, alpha, data, result);
 	//op.mult_transpose_iterative(storage, base, alpha, data, result);
 
-//    DataMatrix level(storage->getSize(), storage->dim());
-//    DataMatrix index(storage->getSize(), storage->dim());
+//    DataMatrix level(storage->size(), storage->dim());
+//    DataMatrix index(storage->size(), storage->dim());
+//    DataMatrix tmpData(data);
 //
+//    if (tmpData.getNrows() % 2 != 0)
+//    {
+//    	tmpData.resize(tmpData.getNrows()+1);
+//    	DataVector last(tmpData.getNcols());
+//    	tmpData.getRow(tmpData.getNrows()-2, last);
+//    	tmpData.setRow(tmpData.getNrows()-1, last);
+//		result.resize(result.getSize()+1);
+//    }
+//    tmpData.transpose();
 //    storage->getLevelIndexArraysForEval(level, index);
-//    multTransposeIterative(level, index, alpha, data, result);
+//    multTransposeIterative(level, index, alpha, tmpData, result);
 }
 
 void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Index, DataVector& alpha, DataMatrix& data, DataVector& result)
@@ -70,6 +81,12 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
     double* ptrResult = result.getPointer();
     double* ptrLevel = Level.getPointer();
     double* ptrIndex = Index.getPointer();
+
+    if (data.getNcols() % 2 != 0 || result_size != data.getNcols())
+    {
+    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	return;
+    }
 
 #ifdef USEOMP
     #pragma omp parallel
@@ -89,6 +106,7 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 		for(size_t c = start; c < end; c+=std::min((size_t)CHUNKDATAPOINTS, (end-c)))
 		{
 			size_t data_end = std::min((size_t)CHUNKDATAPOINTS+c, end);
+
 #ifdef __ICC
 			#pragma ivdep
 			#pragma vector aligned
@@ -101,11 +119,10 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 			for (size_t m = 0; m < storageSize; m+=std::min((size_t)CHUNKGRIDPOINTS, (storageSize-m)))
 			{
 				size_t grid_end = std::min((size_t)CHUNKGRIDPOINTS+m, storageSize);
-
-#ifdef USEINTRINSICS
+#ifdef USEICCINTRINSICS
 				if ((data_end-c) == CHUNKDATAPOINTS && (grid_end-m) == CHUNKGRIDPOINTS)
 				{
-					for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=8)
+					for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=12)
 					{
 						for (size_t j = m; j < m+CHUNKGRIDPOINTS; j++)
 						{
@@ -113,18 +130,17 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 							__m128d support_1 = _mm_set1_pd(1.0);
 							__m128d support_2 = _mm_set1_pd(1.0);
 							__m128d support_3 = _mm_set1_pd(1.0);
+							__m128d support_4 = _mm_set1_pd(1.0);
+							__m128d support_5 = _mm_set1_pd(1.0);
 
 							for (size_t d = 0; d < dims; d++)
 							{
-								// do data transpose before
-								//__m128d eval_0 = _mm_set_pd(ptrData[((i+1)*dims)+d], ptrData[(i*dims)+d]);
-								//__m128d eval_1 = _mm_set_pd(ptrData[((i+3)*dims)+d], ptrData[((i+2)*dims)+d]);
-								//__m128d eval_2 = _mm_set_pd(ptrData[((i+5)*dims)+d], ptrData[((i+4)*dims)+d]);
-								//__m128d eval_3 = _mm_set_pd(ptrData[((i+7)*dims)+d], ptrData[((i+6)*dims)+d]);
 								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*result_size)+i]));
 								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*result_size)+i+2]));
 								__m128d eval_2 = _mm_load_pd(&(ptrData[(d*result_size)+i+4]));
 								__m128d eval_3 = _mm_load_pd(&(ptrData[(d*result_size)+i+6]));
+								__m128d eval_4 = _mm_load_pd(&(ptrData[(d*result_size)+i+8]));
+								__m128d eval_5 = _mm_load_pd(&(ptrData[(d*result_size)+i+10]));
 
 								__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 								__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
@@ -133,11 +149,15 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 								eval_1 = _mm_mul_pd(eval_1, level);
 								eval_2 = _mm_mul_pd(eval_2, level);
 								eval_3 = _mm_mul_pd(eval_3, level);
+								eval_4 = _mm_mul_pd(eval_4, level);
+								eval_5 = _mm_mul_pd(eval_5, level);
 
 								eval_0 = _mm_sub_pd(eval_0, index);
 								eval_1 = _mm_sub_pd(eval_1, index);
 								eval_2 = _mm_sub_pd(eval_2, index);
 								eval_3 = _mm_sub_pd(eval_3, index);
+								eval_4 = _mm_sub_pd(eval_4, index);
+								eval_5 = _mm_sub_pd(eval_5, index);
 
 								__m128d one = _mm_set1_pd(1.0);
 								__m128d zero = _mm_set1_pd(0.0);
@@ -146,21 +166,29 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 								eval_1 = _mm_abs_pd(eval_1);
 								eval_2 = _mm_abs_pd(eval_2);
 								eval_3 = _mm_abs_pd(eval_3);
+								eval_4 = _mm_abs_pd(eval_4);
+								eval_5 = _mm_abs_pd(eval_5);
 
 								eval_0 = _mm_sub_pd(one, eval_0);
 								eval_1 = _mm_sub_pd(one, eval_1);
 								eval_2 = _mm_sub_pd(one, eval_2);
 								eval_3 = _mm_sub_pd(one, eval_3);
+								eval_4 = _mm_sub_pd(one, eval_4);
+								eval_5 = _mm_sub_pd(one, eval_5);
 
 								eval_0 = _mm_max_pd(zero, eval_0);
 								eval_1 = _mm_max_pd(zero, eval_1);
 								eval_2 = _mm_max_pd(zero, eval_2);
 								eval_3 = _mm_max_pd(zero, eval_3);
+								eval_4 = _mm_max_pd(zero, eval_4);
+								eval_5 = _mm_max_pd(zero, eval_5);
 
 								support_0 = _mm_mul_pd(support_0, eval_0);
 								support_1 = _mm_mul_pd(support_1, eval_1);
 								support_2 = _mm_mul_pd(support_2, eval_2);
 								support_3 = _mm_mul_pd(support_3, eval_3);
+								support_4 = _mm_mul_pd(support_4, eval_4);
+								support_5 = _mm_mul_pd(support_5, eval_5);
 							}
 
 							__m128d alpha = _mm_loaddup_pd(&(ptrAlpha[j]));
@@ -168,21 +196,29 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 							__m128d res_1 = _mm_load_pd(&(ptrResult[i+2]));
 							__m128d res_2 = _mm_load_pd(&(ptrResult[i+4]));
 							__m128d res_3 = _mm_load_pd(&(ptrResult[i+6]));
+							__m128d res_4 = _mm_load_pd(&(ptrResult[i+8]));
+							__m128d res_5 = _mm_load_pd(&(ptrResult[i+10]));
 
 							support_0 = _mm_mul_pd(support_0, alpha);
 							support_1 = _mm_mul_pd(support_1, alpha);
 							support_2 = _mm_mul_pd(support_2, alpha);
 							support_3 = _mm_mul_pd(support_3, alpha);
+							support_4 = _mm_mul_pd(support_4, alpha);
+							support_5 = _mm_mul_pd(support_5, alpha);
 
 							res_0 = _mm_add_pd(res_0, support_0);
 							res_1 = _mm_add_pd(res_1, support_1);
 							res_2 = _mm_add_pd(res_2, support_2);
 							res_3 = _mm_add_pd(res_3, support_3);
+							res_4 = _mm_add_pd(res_4, support_4);
+							res_5 = _mm_add_pd(res_5, support_5);
 
 							_mm_store_pd(&(ptrResult[i]), res_0);
 							_mm_store_pd(&(ptrResult[i+2]), res_1);
 							_mm_store_pd(&(ptrResult[i+4]), res_2);
 							_mm_store_pd(&(ptrResult[i+6]), res_3);
+							_mm_store_pd(&(ptrResult[i+8]), res_4);
+							_mm_store_pd(&(ptrResult[i+10]), res_5);
 						}
 					}
 				}
@@ -193,21 +229,17 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 						for (size_t j = m; j < grid_end; j++)
 						{
 							double curSupport = 1.0;
-	#ifdef __ICC
+
 							#pragma ivdep
 							#pragma vector aligned
-	#endif
 							for (size_t d = 0; d < dims; d++)
 							{
-								//double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*dims)+i]));
 								double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
 								double index_calc = eval - (ptrIndex[(j*dims)+d]);
 								double abs = fabs(index_calc);
 								double last = 1.0 - abs;
 								double localSupport = std::max(last, 0.0);
 								curSupport *= localSupport;
-
-	//							curSupport *= std::max(1.0 - fabs(((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d])) - (ptrIndex[(j*dims)+d])), 0.0);
 							}
 
 							ptrResult[i] += (curSupport * ptrAlpha[j]);
@@ -215,33 +247,29 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 					}
 				}
 #else
-			for (size_t i = c; i < data_end; i++)
-			{
-				for (size_t j = m; j < grid_end; j++)
+				for (size_t i = c; i < data_end; i++)
 				{
-					double curSupport = 1.0;
-#ifdef __ICC
-					#pragma ivdep
-					#pragma vector aligned
-#endif
-					for (size_t d = 0; d < dims; d++)
+					for (size_t j = m; j < grid_end; j++)
 					{
-						//double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
-						double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
-						double index_calc = eval - (Index[(j*dims)+d]);
-						double abs = fabs(index_calc);
-						double last = 1.0 - abs;
-						double localSupport = std::max(last, 0.0);
-						curSupport *= localSupport;
-
-//							curSupport *= std::max(1.0 - fabs(((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d])) - (ptrIndex[(j*dims)+d])), 0.0);
-					}
-
-					ptrResult[i] += (curSupport * ptrAlpha[j]);
-				}
-			}
+						double curSupport = 1.0;
+#ifdef __ICC
+						#pragma ivdep
+						#pragma vector aligned
 #endif
+						for (size_t d = 0; d < dims; d++)
+						{
+							double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
+							double index_calc = eval - (Index[(j*dims)+d]);
+							double abs = fabs(index_calc);
+							double last = 1.0 - abs;
+							double localSupport = std::max(last, 0.0);
+							curSupport *= localSupport;
+						}
 
+						ptrResult[i] += (curSupport * ptrAlpha[j]);
+					}
+				}
+#endif
 	        }
 		}
 #ifdef USEOMP

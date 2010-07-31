@@ -60,9 +60,10 @@ size_t ARFFTools::getNumberInstances(std::string tfilename)
 
 	if (myfile.is_open())
 	{
+		getline (myfile,line);
+
 		while (! myfile.eof() )
 		{
-			getline (myfile,line);
 			if (line.find("@DATA", 0) != line.npos)
 			{
 				numInst = 0;
@@ -71,6 +72,8 @@ size_t ARFFTools::getNumberInstances(std::string tfilename)
 			{
 				numInst++;
 			}
+
+			getline (myfile,line);
 		}
 		myfile.close();
 	}
@@ -92,9 +95,10 @@ void ARFFTools::readTrainingData(std::string tfilename, DataMatrix& destination)
 
 	if (myfile.is_open())
 	{
+		getline (myfile,line);
+
 		while (! myfile.eof() )
 		{
-			getline (myfile,line);
 			if (data == true)
 			{
 				writeNewElement(line, destination, instanceNo);
@@ -105,6 +109,8 @@ void ARFFTools::readTrainingData(std::string tfilename, DataMatrix& destination)
 			{
 				data = true;
 			}
+
+			getline (myfile,line);
 		}
 		myfile.close();
 	}
@@ -124,9 +130,10 @@ void ARFFTools::readClasses(std::string tfilename, DataMatrix& destination)
 
 	if (myfile.is_open())
 	{
+		getline (myfile,line);
+
 		while (! myfile.eof() )
 		{
-			getline (myfile,line);
 			if (data == true)
 			{
 				writeNewClass(line, destination, instanceNo);
@@ -137,6 +144,8 @@ void ARFFTools::readClasses(std::string tfilename, DataMatrix& destination)
 			{
 				data = true;
 			}
+
+			getline (myfile,line);
 		}
 		myfile.close();
 	}
