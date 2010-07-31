@@ -259,7 +259,7 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 						for (size_t d = 0; d < dims; d++)
 						{
 							double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
-							double index_calc = eval - (Index[(j*dims)+d]);
+							double index_calc = eval - (ptrIndex[(j*dims)+d]);
 							double abs = fabs(index_calc);
 							double last = 1.0 - abs;
 							double localSupport = std::max(last, 0.0);

@@ -13,6 +13,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstring>
+#include <cstdlib>
 #include "common/AlignedMemory.hpp"
 
 DataVector::DataVector(size_t size) :
@@ -379,6 +380,19 @@ double DataVector::maxNorm() {
         }
     }
     return max;
+}
+
+double DataVector::twoNorm()
+{
+	double twoNorm;
+	DataVector temp(*this);
+
+	temp.componentwise_mult(temp);
+	twoNorm = temp.sum();
+	twoNorm /= static_cast<double>(temp.getSize());
+	twoNorm = std::sqrt(twoNorm);
+
+    return twoNorm;
 }
 
 void DataVector::partitionClasses(double threshold)

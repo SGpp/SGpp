@@ -56,13 +56,13 @@ protected:
 	/// denotes the number of complete coarsen procedures per timestep
 	size_t numExecCoarsen;
 
-	void applyLOperatorInner(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
-	void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
 
-	void applyMassMatrixInner(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result);
 
-	void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Build the coefficients for the Gamma Operation, which

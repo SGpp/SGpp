@@ -150,6 +150,7 @@ operation/pde/OperationODESolverSystem.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
 algorithm/pde/BlackScholesODESolverSystem.cpp
+algorithm/pde/BlackScholesODESolverSystemParallelOMP.cpp
 algorithm/pde/HeatEquationODESolverSystem.cpp
 algorithm/pde/StdUpDown.cpp
 algorithm/pde/UpDownOneOpDim.cpp

@@ -620,10 +620,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				maxNorm = relError.maxNorm();
 
 				// calculate two norm of relative error
-				relError.componentwise_mult(relError);
-				twoNorm = relError.sum();
-				twoNorm = twoNorm / static_cast<double>(relError.getSize());
-				twoNorm = sqrt(twoNorm);
+				twoNorm = relError.twoNorm();
 
 				// Printing norms
 				std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
@@ -716,31 +713,31 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// refine the grid to approximate the singularity in the start solution better
-	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-	{
-		std::cout << "Refining Grid..." << std::endl;
-		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
-		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-	}
-	std::cout << std::endl << std::endl << std::endl;
-
-//	// Generate Full Grid at @Money
-//	size_t oldGridSize = 0;
-//	size_t newGridSize = myBSSolver->getNumberGridPoints();
-//	size_t addedGridPoint = 0;
-//	size_t i = 0;
-//	do
+//	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 //	{
-//		oldGridSize = newGridSize;
 //		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType,  (dInitialAdpatDist/(static_cast<double>(i+1))), level);
+//		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
 //		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 //		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-//		newGridSize = myBSSolver->getNumberGridPoints();
-//		addedGridPoint = newGridSize - oldGridSize;
-//		i++;
-//	} while (addedGridPoint > 0);
+//	}
+
+	// Generate Full Grid at @Money
+	size_t oldGridSize = 0;
+	size_t newGridSize = myBSSolver->getNumberGridPoints();
+	size_t addedGridPoint = 0;
+
+	size_t i = 0;
+	do
+	{
+		oldGridSize = newGridSize;
+		std::cout << "Refining Grid..." << std::endl;
+		myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType,  (dInitialAdpatDist/(static_cast<double>(i+1))), level);
+		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+		newGridSize = myBSSolver->getNumberGridPoints();
+		addedGridPoint = newGridSize - oldGridSize;
+		i++;
+	} while (addedGridPoint > 0);
 //	// Refine @Money by two Levels
 //	for (size_t r = 0; r < 1; r++)
 //	{
@@ -759,7 +756,8 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 //			i++;
 //		} while (addedGridPoint > 0);
 //	}
-//	std::cout << std::endl << std::endl << std::endl;
+
+	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -860,10 +858,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
-		relError.componentwise_mult(relError);
-		twoNorm = relError.sum();
-		twoNorm = twoNorm / static_cast<double>(relError.getSize());
-		twoNorm = sqrt(twoNorm);
+		twoNorm = relError.twoNorm();
 
 		// Printing norms
 		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
@@ -1082,11 +1077,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
-		relError.componentwise_mult(relError);
-		twoNorm = relError.sum();
-		twoNorm = twoNorm / static_cast<double>(relError.getSize());
-		twoNorm = sqrt(twoNorm);
-
+		twoNorm = relError.twoNorm();
 
 		// Printing norms
 		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
