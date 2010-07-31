@@ -25,6 +25,50 @@ GridPrinter::~GridPrinter()
 {
 }
 
+void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension)
+{
+	DimensionBoundary dimOne;
+	DimensionBoundary dimTwo;
+	std::ofstream fileout;
+
+	if (myGrid->getStorage()->size() > 0)
+	{
+		if (myGrid->getStorage()->dim() != 2)
+		{
+			throw new tool_exception("GridPrinter::printGridDomain : The grid has more not two dimensions. Thus it cannot be printed!");
+		}
+		else
+		{
+			// Open filehandle
+			fileout.open(tFilename.c_str());
+			OperationEval* myEval = myGrid->createOperationEval();
+
+			dimOne = GridArea.getBoundary(0);
+			dimTwo = GridArea.getBoundary(1);
+
+			for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=((dimOne.rightBoundary - dimOne.leftBoundary)/PointsPerDimension))
+			{
+				for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary; j+=((dimTwo.rightBoundary - dimTwo.leftBoundary)/PointsPerDimension))
+				{
+					std::vector<double> point;
+					point.push_back(i);
+					point.push_back(j);
+					fileout << i << " " << j << " " << myEval->eval(alpha,point) << std::endl;
+				}
+				fileout << std::endl;
+			}
+
+			delete myEval;
+			// close filehandle
+			fileout.close();
+		}
+	}
+	else
+	{
+		throw new tool_exception("GridPrinter::printGridDomain : The grid has no dimensions. Thus it cannot be printed!");
+	}
+}
+
 void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension)
 {
 	DimensionBoundary dimOne;

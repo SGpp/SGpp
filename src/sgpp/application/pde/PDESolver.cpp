@@ -175,6 +175,12 @@ void PDESolver::printGrid(DataVector& alpha, double PointesPerDimension, std::st
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
+void PDESolver::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename)
+{
+	GridPrinter myPrinter(*this->myGrid);
+	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
+}
+
 void PDESolver::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus)
 {
 	GridPrinter myPrinter(*this->myGrid);
