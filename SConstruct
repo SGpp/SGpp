@@ -121,7 +121,7 @@ if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC']:
     env['CXX'] = ('icpc')	    
     if env['OMP']:
         env.Append(LINKFLAGS=['-openmp']) 
-        env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE'])
+        env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE', 'USEICCINTRINSICS'])
     
 # sets the architecture option for gcc
 if env.has_key('MARCH'):

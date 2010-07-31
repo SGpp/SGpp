@@ -15,6 +15,7 @@
 
 #define LEVELS 6
 #define DATAFILE "DR5_nowarnings_less05_train.arff"
+//#define DATAFILE "twospirals.wieland.arff"
 #define ITERATIONS 10
 
 /**
@@ -68,12 +69,21 @@ void executesOperationBmultTrans_DR5()
     myStopwatch->start();
 
     myGrid->getStorage()->getLevelIndexArraysForEval(level, index);
+    // needed even number of datapoints -> columns 16-byte aligned
+    if (data.getNrows() % 2 != 0)
+    {
+    	data.resize(data.getNrows()+1);
+    	DataVector last(data.getNcols());
+    	data.getRow(data.getNrows()-2, last);
+    	data.setRow(data.getNrows()-1, last);
+    	result.resize(result.getSize()+1);
+    }
     data.transpose();
 
     for (size_t i = 0; i < ITERATIONS; i++)
     {
     	//B->multTranspose(alpha, data, result);
-    	B->multTransposeIterative(level,index,alpha, data, result);
+    	B->multTransposeIterative(level, index, alpha, data, result);
     }
 
     execTime = myStopwatch->stop();
