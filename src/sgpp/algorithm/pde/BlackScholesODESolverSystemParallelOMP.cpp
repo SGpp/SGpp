@@ -36,10 +36,14 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 
 #ifdef USEOMPTHREE
 	size_t nDims = this->InnerGrid->getStorage()->dim();
-	omp_lock_t resultMutex;
-	omp_init_lock(&resultMutex);
+	omp_lock_t DeltaMutex;
+	omp_lock_t GammaMutex;
+	omp_init_lock(&DeltaMutex);
+	omp_init_lock(&GammaMutex);
+	DataVector DeltaResult(result);
+	DataVector GammaResult(result);
 
-	#pragma omp parallel shared(resultMutex, alpha, result)
+	#pragma omp parallel shared(DeltaMutex, GammaMutex, DeltaResult, GammaResult, alpha, result)
 	{
 #ifndef AIX_XLC
 		#pragma omp single nowait
@@ -49,7 +53,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 #endif
 		{
 			// Apply the riskfree rate
-			#pragma omp task shared(alpha, result, resultMutex)
+			#pragma omp task shared(alpha, result)
 			{
 				if (this->r != 0.0)
 				{
@@ -58,17 +62,15 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 					/// @todo (heinecke) discuss methods in order to avoid this cast
 					((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
 
-					// semaphore
-					omp_set_lock(&resultMutex);
+					// no semaphore needed
 					result.axpy((-1.0)*this->r, myResult);
-					omp_unset_lock(&resultMutex);
 				}
 			}
 
 			// Apply the delta method
 			for (size_t i = 0; i < nDims; i++)
 			{
-				#pragma omp task firstprivate(i) shared(alpha, result, resultMutex)
+				#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult)
 				{
 					DataVector myResult(result.getSize());
 
@@ -76,9 +78,9 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 					((UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, i);
 
 					// semaphore
-					omp_set_lock(&resultMutex);
-					result.add(myResult);
-					omp_unset_lock(&resultMutex);
+					omp_set_lock(&DeltaMutex);
+					DeltaResult.add(myResult);
+					omp_unset_lock(&DeltaMutex);
 				}
 			}
 
@@ -90,7 +92,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 					// symmetric
 					if (j <= i)
 					{
-						#pragma omp task firstprivate(i, j) shared(alpha, result, resultMutex)
+						#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult)
 						{
 							DataVector myResult(result.getSize());
 
@@ -98,9 +100,9 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 							((UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, i, j);
 
 							// semaphore
-							omp_set_lock(&resultMutex);
-							result.sub(myResult);
-							omp_unset_lock(&resultMutex);
+							omp_set_lock(&GammaMutex);
+							GammaResult.add(myResult);
+							omp_unset_lock(&GammaMutex);
 						}
 					}
 				}
@@ -110,7 +112,12 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 		}
 	}
 
-	omp_destroy_lock(&resultMutex);
+	omp_destroy_lock(&GammaMutex);
+	omp_destroy_lock(&DeltaMutex);
+
+	// sum up
+	result.add(DeltaResult);
+	result.sub(GammaResult);
 #else
 	DataVector temp(alpha.getSize());
 
@@ -137,10 +144,14 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 
 #ifdef USEOMPTHREE
 	size_t nDims = this->InnerGrid->getStorage()->dim();
-	omp_lock_t resultMutex;
-	omp_init_lock(&resultMutex);
+	omp_lock_t DeltaMutex;
+	omp_lock_t GammaMutex;
+	omp_init_lock(&DeltaMutex);
+	omp_init_lock(&GammaMutex);
+	DataVector DeltaResult(result);
+	DataVector GammaResult(result);
 
-	#pragma omp parallel shared(resultMutex, alpha, result)
+	#pragma omp parallel shared(DeltaMutex, GammaMutex, DeltaResult, GammaResult, alpha, result)
 	{
 #ifndef AIX_XLC
 		#pragma omp single nowait
@@ -150,7 +161,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 #endif
 		{
 			// Apply the riskfree rate
-			#pragma omp task shared(alpha, result, resultMutex)
+			#pragma omp task shared(alpha, result)
 			{
 				if (this->r != 0.0)
 				{
@@ -159,17 +170,15 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 					/// @todo (heinecke) discuss methods in order to avoid this cast
 					((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
 
-					// semaphore
-					omp_set_lock(&resultMutex);
+					// no semaphore needed
 					result.axpy((-1.0)*this->r, myResult);
-					omp_unset_lock(&resultMutex);
 				}
 			}
 
 			// Apply the delta method
 			for (size_t i = 0; i < nDims; i++)
 			{
-				#pragma omp task firstprivate(i) shared(alpha, result, resultMutex)
+				#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult)
 				{
 					DataVector myResult(result.getSize());
 
@@ -177,9 +186,9 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 					((UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, i);
 
 					// semaphore
-					omp_set_lock(&resultMutex);
-					result.add(myResult);
-					omp_unset_lock(&resultMutex);
+					omp_set_lock(&DeltaMutex);
+					DeltaResult.add(myResult);
+					omp_unset_lock(&DeltaMutex);
 				}
 			}
 
@@ -191,7 +200,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 					// symmetric
 					if (j <= i)
 					{
-						#pragma omp task firstprivate(i, j) shared(alpha, result, resultMutex)
+						#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult)
 						{
 							DataVector myResult(result.getSize());
 
@@ -199,9 +208,9 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 							((UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, i, j);
 
 							// semaphore
-							omp_set_lock(&resultMutex);
-							result.sub(myResult);
-							omp_unset_lock(&resultMutex);
+							omp_set_lock(&GammaMutex);
+							GammaResult.add(myResult);
+							omp_unset_lock(&GammaMutex);
 						}
 					}
 				}
@@ -211,7 +220,12 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 		}
 	}
 
-	omp_destroy_lock(&resultMutex);
+	omp_destroy_lock(&GammaMutex);
+	omp_destroy_lock(&DeltaMutex);
+
+	// sum up
+	result.add(DeltaResult);
+	result.sub(GammaResult);
 #else
 	DataVector temp(alpha.getSize());
 
