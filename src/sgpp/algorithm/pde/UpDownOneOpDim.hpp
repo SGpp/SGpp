@@ -53,8 +53,30 @@ public:
 	 */
 	virtual ~UpDownOneOpDim();
 
-
 	virtual void mult(DataVector& alpha, DataVector& result);
+
+#ifdef USEOMPTHREE
+	/**
+	 * this functions provides the same functionality as the normal mult routine.
+	 * However, it doesn't set up an OpenMP task initialization as the mult routine.
+	 * This method has to be called within a OpenMP task parallelized region.
+	 *
+	 * Using this function is useful in following case: Assuming the solver of a certain
+	 * requires several operators in the space discretization (e.g. Black Scholes Equations)
+	 * this method can be used to parallelize their calculation which might results results
+	 * in a better parallel efficiency on systems with 4 or more cores hence fewer barriers
+	 * are needed.
+	 *
+	 * For full calculation in of mult serval number of up/downs are needed. This number
+	 * is equal to the number of the grid's dimensions. All different steps can be executed
+	 * in parallel, so here only one up/Down is executed, identified by its special dimension.
+	 *
+	 * @param alpha vector of coefficients
+	 * @param result vector to store the results in
+	 * @param operationDim Dimension in which the special operator is applied
+	 */
+	void multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDim);
+#endif
 
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;

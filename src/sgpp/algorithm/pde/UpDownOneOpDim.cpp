@@ -103,6 +103,26 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 #endif
 }
 
+#ifdef USEOMPTHREE
+void UpDownOneOpDim::multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDim)
+{
+	result.setAll(0.0);
+
+	DataVector beta(result.getSize());
+
+	this->updown_parallel(alpha, beta, this->algoDims.size() - 1, operationDim);
+
+	if (this->coefs != NULL)
+	{
+		result.axpy(this->coefs->get(operationDim),beta);
+	}
+	else
+	{
+		result.add(beta);
+	}
+}
+#endif
+
 #ifndef USEOMPTHREE
 void UpDownOneOpDim::updown(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim)
 {

@@ -53,6 +53,18 @@ void StdUpDown::mult(DataVector& alpha, DataVector& result)
 #endif
 }
 
+#ifdef USEOMPTHREE
+void StdUpDown::multParallelBuildingBlock(DataVector& alpha, DataVector& result)
+{
+	DataVector beta(result.getSize());
+	result.setAll(0.0);
+
+	this->updown_parallel(alpha, beta, this->algoDims.size() - 1);
+
+	result.add(beta);
+}
+#endif
+
 #ifndef USEOMPTHREE
 void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
 {

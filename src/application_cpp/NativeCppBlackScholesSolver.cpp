@@ -728,32 +728,33 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-	// refine the grid to approximate the singularity in the start solution better
-	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-	{
-		std::cout << "Refining Grid..." << std::endl;
-		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
-		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-	}
-
-//	// Generate Full Grid at @Money
-//	size_t oldGridSize = 0;
-//	size_t newGridSize = myBSSolver->getNumberGridPoints();
-//	size_t addedGridPoint = 0;
-//
-//	size_t i = 0;
-//	do
+//	// refine the grid to approximate the singularity in the start solution better
+//	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 //	{
-//		oldGridSize = newGridSize;
 //		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType,  (dInitialAdpatDist/(static_cast<double>(i+1))), level);
+//		myBSSolver->refineInitialGridWithPayoff(*alpha, dStrike, payoffType, (dInitialAdpatDist/(static_cast<double>(i+1))));
 //		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 //		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-//		newGridSize = myBSSolver->getNumberGridPoints();
-//		addedGridPoint = newGridSize - oldGridSize;
-//		i++;
-//	} while (addedGridPoint > 0);
+//	}
+
+	// Generate Full Grid at @Money
+	size_t oldGridSize = 0;
+	size_t newGridSize = myBSSolver->getNumberGridPoints();
+	size_t addedGridPoint = 0;
+
+	size_t i = 0;
+	do
+	{
+		oldGridSize = newGridSize;
+		std::cout << "Refining Grid..." << std::endl;
+		myBSSolver->refineInitialGridWithPayoffToMaxLevel(*alpha, dStrike, payoffType,  (dInitialAdpatDist/(static_cast<double>(i+1))), level);
+		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+		newGridSize = myBSSolver->getNumberGridPoints();
+		addedGridPoint = newGridSize - oldGridSize;
+		i++;
+	} while (addedGridPoint > 0);
+//
 //	// Refine @Money by two Levels
 //	for (size_t r = 0; r < 1; r++)
 //	{
