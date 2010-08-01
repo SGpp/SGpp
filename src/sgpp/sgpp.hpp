@@ -23,6 +23,7 @@
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystemParallelOMP.hpp"
 #include "algorithm/pde/HeatEquationODESolverSystem.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"

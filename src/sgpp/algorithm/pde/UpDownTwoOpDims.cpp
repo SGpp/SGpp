@@ -155,6 +155,32 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 #endif
 }
 
+#ifdef USEOMPTHREE
+void UpDownTwoOpDims::multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDimOne, size_t operationDimTwo)
+{
+	result.setAll(0.0);
+	DataVector beta(result.getSize());
+
+	// use the operator's symmetry
+	if ( operationDimTwo <= operationDimOne)
+	{
+		if (this->coefs != NULL)
+		{
+			if (this->coefs->get(operationDimOne,operationDimTwo) != 0.0)
+			{
+				this->updown_parallel(alpha, beta, this->algoDims.size() - 1, operationDimOne, operationDimTwo);
+				result.axpy(this->coefs->get(operationDimOne,operationDimTwo),beta);
+			}
+		}
+		else
+		{
+			this->updown_parallel(alpha, beta, this->algoDims.size() - 1, operationDimOne, operationDimTwo);
+			result.add(beta);
+		}
+	}
+}
+#endif
+
 #ifndef USEOMPTHREE
 void UpDownTwoOpDims::updown(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
 {

@@ -52,7 +52,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
 	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
-	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o
+	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemParallelOMP.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -359,6 +359,9 @@ XPhiPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPh
 		
 BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
+
+BlackScholesODESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemParallelOMP.cpp
 
 HeatEquationODESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationODESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
