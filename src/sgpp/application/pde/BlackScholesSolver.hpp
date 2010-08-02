@@ -62,6 +62,8 @@ private:
 	double coarsenPercent;
 	/// denotes the number of coarsening procedures within one timestep
 	size_t numExecCoarsen;
+	/// identifies if the Black Scholes Equation should be solved on a log-transformed grid
+	bool useLogTransform;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -73,11 +75,31 @@ private:
 	 */
 	double get1DEuroCallPayoffValue(double assetValue, double strike);
 
+	/**
+	 * Inits the alpha vector with a payoff function of an European call option or put option.
+	 * The grid is initialized based on Cartesian coordinates!
+	 *
+	 * @param alpha the coefficient vector of the grid's ansatzfunctions
+	 * @param strik the option's strike
+	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 */
+	void initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+
+	/**
+	 * Inits the alpha vector with a payoff function of an European call option or put option
+	 * The grid is initialized based on log-transformed coordinates!
+	 *
+	 * @param alpha the coefficient vector of the grid's ansatzfunctions
+	 * @param strik the option's strike
+	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 */
+	void initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+
 public:
 	/**
 	 * Std-Constructor of the solver
 	 */
-	BlackScholesSolver();
+	BlackScholesSolver(bool useLogTransform = false);
 
 	/**
 	 * Std-Destructor of the solver
@@ -162,7 +184,7 @@ public:
 	void print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename);
 
 	/**
-	 * Inits the alpha vector with a payoff function of an European call option
+	 * Inits the alpha vector with a payoff function of an European call option or put option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
 	 * @param strik the option's strike

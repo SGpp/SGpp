@@ -22,7 +22,7 @@
 namespace sg
 {
 
-BlackScholesSolver::BlackScholesSolver() : ParabolicPDESolver()
+BlackScholesSolver::BlackScholesSolver(bool useLogTransform) : ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -31,6 +31,7 @@ BlackScholesSolver::BlackScholesSolver() : ParabolicPDESolver()
 	this->coarsenThreshold = 0.0;
 	this->coarsenPercent = 0.0;
 	this->numExecCoarsen = 0;
+	this->useLogTransform = useLogTransform;
 }
 
 BlackScholesSolver::~BlackScholesSolver()
@@ -451,56 +452,13 @@ void BlackScholesSolver::solveVarTimestep(size_t numTimesteps, double timestepsi
 
 void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
 {
-	double tmp;
-
-	if (this->bGridConstructed)
+	if (this->useLogTransform)
 	{
-		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-		{
-			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-			std::stringstream coordsStream(coords);
-			double* dblFuncValues = new double[dim];
-
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				coordsStream >> tmp;
-
-				dblFuncValues[j] = tmp;
-			}
-
-			if (payoffType == "std_euro_call")
-			{
-				tmp = 0.0;
-				for (size_t j = 0; j < dim; j++)
-				{
-					tmp += dblFuncValues[j];
-				}
-				alpha[i] = std::max(((tmp/static_cast<double>(dim))-strike), 0.0);
-			}
-			else if (payoffType == "std_euro_put")
-			{
-				tmp = 0.0;
-				for (size_t j = 0; j < dim; j++)
-				{
-					tmp += dblFuncValues[j];
-				}
-				alpha[i] = std::max(strike-((tmp/static_cast<double>(dim))), 0.0);
-			}
-			else
-			{
-				throw new application_exception("BlackScholesSolver::initGridWithPayoff : An unknown payoff-type was specified!");
-			}
-
-			delete[] dblFuncValues;
-		}
-
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
-		myHierarchisation->doHierarchisation(alpha);
-		delete myHierarchisation;
+		initLogTransformedGridWithPayoff(alpha, strike, payoffType);
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::initGridWithPayoff : A grid wasn't constructed before!");
+		initCartesianGridWithPayoff(alpha, strike, payoffType);
 	}
 }
 
@@ -595,7 +553,7 @@ void BlackScholesSolver::refineSurplusToMaxLevel(DataVector& alpha, double dThre
 	}
 	else
 	{
-		throw new application_exception("PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
+		throw new application_exception("BlackScholesSolver::refineIntialGridSurplus : The grid wasn't initialized before!");
 	}
 }
 
@@ -684,6 +642,116 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, double s
 	}
 
 	return nPoints;
+}
+
+void BlackScholesSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
+{
+	double tmp;
+
+	if (this->bGridConstructed)
+	{
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+			double* dblFuncValues = new double[dim];
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			if (payoffType == "std_euro_call")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += dblFuncValues[j];
+				}
+				alpha[i] = std::max(((tmp/static_cast<double>(dim))-strike), 0.0);
+			}
+			else if (payoffType == "std_euro_put")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += dblFuncValues[j];
+				}
+				alpha[i] = std::max(strike-((tmp/static_cast<double>(dim))), 0.0);
+			}
+			else
+			{
+				throw new application_exception("BlackScholesSolver::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
+			}
+
+			delete[] dblFuncValues;
+		}
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
+	}
+}
+
+void BlackScholesSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
+{
+	double tmp;
+
+	if (this->bGridConstructed)
+	{
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+			double* dblFuncValues = new double[dim];
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			if (payoffType == "std_euro_call")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += exp(dblFuncValues[j]);
+				}
+				alpha[i] = std::max(((tmp/static_cast<double>(dim))-strike), 0.0);
+			}
+			else if (payoffType == "std_euro_put")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += exp(dblFuncValues[j]);
+				}
+				alpha[i] = std::max(strike-((tmp/static_cast<double>(dim))), 0.0);
+			}
+			else
+			{
+				throw new application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was specified!");
+			}
+
+			delete[] dblFuncValues;
+		}
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
+	}
 }
 
 }
