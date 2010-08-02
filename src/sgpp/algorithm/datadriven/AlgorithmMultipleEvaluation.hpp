@@ -59,7 +59,9 @@ public:
 #ifdef USEOMP
 		#pragma omp parallel
 		{
-			DataVector privateResult(result);
+			DataVector privateResult(result.getSize());
+			privateResult.setAll(0.0);
+
 			std::vector<double> line;
 			AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
 
