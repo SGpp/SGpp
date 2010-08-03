@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <iomanip>
+#include <cmath>
 
 // @todo (heinecke) remove global variables
 std::string tFileEvalCuboid = "evalCuboid.data";
@@ -502,36 +503,15 @@ void testLogNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string 
 	// Init the grid with on payoff function
 	myLogBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
-//	// Gridpoints @Money
-//	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
-
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
-		if (dim == 2)
-		{
-			sg::DimensionBoundary* myAreaBoundaries = new sg::DimensionBoundary[dim];
-
-			for (size_t i = 0; i < 2; i++)
-			{
-				myAreaBoundaries[i].leftBoundary = 0.95;
-				myAreaBoundaries[i].rightBoundary = 1.05;
-			}
-			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
-
-			myLogBSSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
-
-			delete[] myAreaBoundaries;
-			delete myGridArea;
-		}
-		myLogBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
-		myLogBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
-		myLogBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+		myLogBSSolver->printSparseGrid(*alpha, "payoff_surplus_log.grid.gnuplot", true);
+		myLogBSSolver->printSparseGrid(*alpha, "payoff_nodal_log.grid.gnuplot", false);
+		myLogBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
+		myLogBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 	}
-	else
-	{
-		myLogBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
-	}
+
 
 	// Set stochastic data
 	myLogBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -567,13 +547,10 @@ void testLogNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string 
 		if (dim < 3)
 		{
 			// Print the solved Black Scholes Equation into a gnuplot file
-			myLogBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
-			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
-			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
-		}
-		else
-		{
-			myLogBSSolver->storeGridBonn("solvedBS_Nd.bonn", *alpha, true);
+			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_surplus_log.grid.gnuplot", true);
+			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_nodal_log.grid.gnuplot", false);
+			myLogBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
+			myLogBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
 		}
 	}
 
@@ -581,7 +558,7 @@ void testLogNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string 
 	std::vector<double> point;
 	for (size_t i = 0; i < d; i++)
 	{
-		point.push_back(1.0);
+		point.push_back(log(1.0));
 	}
 	std::cout << "Optionprice at testpoint: " << myLogBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
@@ -1370,70 +1347,58 @@ void testLogNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
-		myLogBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
-		myLogBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
-		myLogBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
-		// Write interpolation error into a file
-		myLogBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+		myLogBSSolver->printSparseGrid(*alpha, "payoff_surplus_log.grid.gnuplot", true);
+		myLogBSSolver->printSparseGrid(*alpha, "payoff_nodal_log.grid.gnuplot", false);
+		myLogBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
+		myLogBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+	}
+
+	// Set stochastic data
+	myLogBSSolver->setStochasticData(mu, sigma, rho, r);
+
+	// Start solving the Black Scholes Equation
+	if (Solver == "ExEul")
+	{
+		myLogBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "ImEul")
+	{
+		myLogBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "CrNic")
+	{
+		myLogBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+	}
+	else if (Solver == "AdBas")
+	{
+		myLogBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "VaTim")
+	{
+		myLogBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 	}
 	else
 	{
-		myLogBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
+		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	// Gridpoints @Money
-//	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
-//
-//	// Set stochastic data
-//	myBSSolver->setStochasticData(mu, sigma, rho, r);
-//
-//	// Start solving the Black Scholes Equation
-//	if (Solver == "ExEul")
-//	{
-//		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else if (Solver == "ImEul")
-//	{
-//		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else if (Solver == "CrNic")
-//	{
-//		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-//	}
-//	else if (Solver == "AdBas")
-//	{
-//		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else if (Solver == "VaTim")
-//	{
-//		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else
-//	{
-//		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-//	}
-//
-//	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
-//	{
-//		if (dim < 3)
-//		{
-//			// Print the solved Black Scholes Equation into a gnuplot file
-//			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
-//			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
-//			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
-//		}
-//		else
-//		{
-//			myBSSolver->storeGridBonn("solvedBS_Nd.bonn", *alpha, true);
-//		}
-//	}
-//
-//	std::vector<double> point;
-//	for (size_t i = 0; i < d; i++)
-//	{
-//		point.push_back(1.0);
-//	}
-//	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
+	{
+		if (dim < 3)
+		{
+			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_surplus_log.grid.gnuplot", true);
+			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_nodal_log.grid.gnuplot", false);
+			myLogBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
+			myLogBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
+		}
+	}
+
+	std::vector<double> point;
+	for (size_t i = 0; i < d; i++)
+	{
+		point.push_back(log(1.0));
+	}
+	std::cout << "Optionprice at testpoint: " << myLogBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 //
 //	// calculate relative errors
 //	////////////////////////////

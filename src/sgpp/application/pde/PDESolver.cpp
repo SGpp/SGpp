@@ -187,6 +187,12 @@ void PDESolver::printSparseGrid(DataVector& alpha, std::string tfilename, bool b
 	myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
 }
 
+void PDESolver::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus)
+{
+	GridPrinter myPrinter(*this->myGrid);
+	myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
+}
+
 double PDESolver::evaluatePoint(std::vector<double>& evalPoint, DataVector& alpha)
 {
 	double result = 0.0;
