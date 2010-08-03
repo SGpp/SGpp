@@ -121,7 +121,7 @@ void ARFFTools::readTrainingData(std::string tfilename, DataMatrix& destination)
 	}
 }
 
-void ARFFTools::readClasses(std::string tfilename, DataMatrix& destination)
+void ARFFTools::readClasses(std::string tfilename, DataVector& destination)
 {
 	std::string line;
 	std::ifstream myfile (tfilename.c_str());
@@ -174,12 +174,12 @@ void ARFFTools::writeNewElement(std::string& instance, DataMatrix& destination, 
 	}
 }
 
-void ARFFTools::writeNewClass(std::string& instance, DataMatrix& destination, size_t instanceNo)
+void ARFFTools::writeNewClass(std::string& instance, DataVector& destination, size_t instanceNo)
 {
 	size_t cur_pos = instance.find_last_of(",");
 	std::string cur_value = instance.substr(cur_pos+1);
 	double dbl_cur_value = atof(cur_value.c_str());
-	destination.set(instanceNo, 0, dbl_cur_value);
+	destination.set(instanceNo, dbl_cur_value);
 }
 
 //void ARFFTools::writeAlpha(std::string tfilename, DataVector& source)

@@ -28,11 +28,11 @@ int main(int argc, char *argv[])
 		lambda = 0.00001;
 		epsilon = 0.0000001;
 		imax = 2000;
-		level = 5;
+		level = 7;
 		GridType = "N";
-		StiffMode = "I";
-		tfileTrain = "ripleyGarcke.train.arff";
-		tfileTest = "ripleyGarcke.test.arff";
+		StiffMode = "L";
+		tfileTrain = "twospirals.wieland.arff";
+		tfileTest = "twospirals.wieland.arff";
 	}
 	else if (argc == 9)
 	{

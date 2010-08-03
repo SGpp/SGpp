@@ -61,6 +61,11 @@ public:
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
 	void generateb(DataVector& classes, DataVector& b);
+
+	/**
+	 * rebuilds the DataMatrix for Level and Index
+	 */
+	void rebuildLevelAndIndex();
 };
 
 }

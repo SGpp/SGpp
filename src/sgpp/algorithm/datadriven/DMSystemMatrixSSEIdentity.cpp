@@ -44,9 +44,14 @@ void DMSystemMatrixSSEIdentity::mult(DataVector& alpha, DataVector& result)
 
     // Operation B
     this->B->multTransposeVectorized(alpha, (*data), temp);
+    // patch result -> set additional entries zero
+    if (numTrainingInstances != temp.getSize())
+    {
+    	temp.set(temp.getSize()-1, 0.0);
+    }
     this->B->multVectorized(temp, (*data), result);
 
-	result.mult(((double)(numTrainingInstances))*this->lamb);
+    result.axpy(numTrainingInstances*this->lamb, alpha);
 }
 
 void DMSystemMatrixSSEIdentity::generateb(DataVector& classes, DataVector& b)
@@ -59,8 +64,12 @@ void DMSystemMatrixSSEIdentity::generateb(DataVector& classes, DataVector& b)
 	{
 		myClasses.resizeZero(numCols);
 	}
-
 	this->B->multVectorized(myClasses, (*data), b);
+}
+
+void DMSystemMatrixSSEIdentity::rebuildLevelAndIndex()
+{
+	this->B->rebuildLevelAndIndex();
 }
 
 }

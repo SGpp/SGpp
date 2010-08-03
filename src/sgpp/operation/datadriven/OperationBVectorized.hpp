@@ -64,6 +64,11 @@ public:
 	 * @param result the result vector of the matrix vector multiplication
 	 */
 	virtual void multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+
+	/**
+	 * rebuilds the DataMatrix for Level and Index in Derivatives
+	 */
+	virtual void rebuildLevelAndIndex() = 0;
 };
 
 }

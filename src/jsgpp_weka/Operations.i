@@ -50,6 +50,7 @@ class OperationBVectorized
 public:
 	virtual void multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
 	virtual void multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual void rebuildLevelAndIndex() = 0;
 };
 
 class OperationMatrix

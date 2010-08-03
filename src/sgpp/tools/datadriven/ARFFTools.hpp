@@ -21,7 +21,7 @@ class ARFFTools
 {
 private:
 	/**
-	 * stores the attribute info of one instance into a DataVector
+	 * stores the attribute info of one instance into a DataMatrix
 	 *
 	 * @param instance the string that contains the instance's values
 	 * @param destination DataMatrix into which the instance is stored
@@ -33,10 +33,10 @@ private:
 	 * stores the class info of one instance into a DataVector
 	 *
 	 * @param instance the string that contains the instance's class
-	 * @param destination DataMatrix into which the instance is stored
+	 * @param destination DataVector into which the instance is stored
 	 * @param instanceNo the number of the instance
 	 */
-	void writeNewClass(std::string& instance, DataMatrix& destination, size_t instanceNo);
+	void writeNewClass(std::string& instance, DataVector& destination, size_t instanceNo);
 
 public:
 	/**
@@ -79,7 +79,7 @@ public:
 	 * @param tfilename the file's filename that should be opened
 	 * @param destination reference to a DataVector object into which the data should be stored
 	 */
-	void readClasses(std::string tfilename, DataMatrix& destination);
+	void readClasses(std::string tfilename, DataVector& destination);
 };
 
 }
