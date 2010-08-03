@@ -50,14 +50,13 @@ public:
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
 	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
 	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
-	 * @param MPIRank indicates the MPI-Rank of this instance, 0 indicates the master rank
 	 *
 	 * @todo (heinecke) remove MPIRank variable
 	 */
 	BlackScholesODESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
 			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, double coarsenPercent = 0.0,
-			size_t numExecCoarsen = 0, size_t MPIRank = 0);
+			size_t numExecCoarsen = 0);
 
 	/**
 	 * Std-Destructor
