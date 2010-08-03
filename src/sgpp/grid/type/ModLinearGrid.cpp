@@ -63,6 +63,11 @@ OperationB* ModLinearGrid::createOperationB()
 	return new OperationBModLinear(this->storage);
 }
 
+OperationBVectorized* ModLinearGrid::createOperationBVectorized(const std::string& VecType)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationMatrix* ModLinearGrid::createOperationLaplace()
 {
 	return new OperationLaplaceModLinear(this->storage);

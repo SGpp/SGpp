@@ -41,6 +41,7 @@ public:
 	virtual void serialize(std::ostream& ostr);
 
 	virtual OperationB* createOperationB();
+	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType);
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();

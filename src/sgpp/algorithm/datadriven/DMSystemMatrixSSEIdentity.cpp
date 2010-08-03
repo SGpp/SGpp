@@ -1,0 +1,66 @@
+/******************************************************************************
+* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+******************************************************************************/
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+
+#include "algorithm/datadriven/DMSystemMatrixSSEIdentity.hpp"
+#include "exception/operation_exception.hpp"
+
+
+namespace sg
+{
+
+DMSystemMatrixSSEIdentity::DMSystemMatrixSSEIdentity(Grid& SparseGrid, DataMatrix& trainData, double lambda)
+{
+	// create the operations needed in ApplyMatrix
+	this->B = SparseGrid.createOperationBVectorized("SSE");
+	this->lamb = lambda;
+	this->data = new DataMatrix(trainData);
+
+	numTrainingInstances = data->getNrows();
+
+	// Assure that data has a even number of instances -> padding might be needed
+	if (data->getNrows() % 2 != 0)
+	{
+		DataVector lastRow(data->getNcols());
+		data->getRow(data->getNrows()-1, lastRow);
+		data->resize(data->getNrows()+1);
+		data->setRow(data->getNrows()-1, lastRow);
+	}
+	data->transpose();
+}
+
+DMSystemMatrixSSEIdentity::~DMSystemMatrixSSEIdentity()
+{
+	delete this->B;
+	delete this->data;
+}
+
+void DMSystemMatrixSSEIdentity::mult(DataVector& alpha, DataVector& result)
+{
+	DataVector temp((*data).getNcols());
+
+    // Operation B
+    this->B->multTransposeVectorized(alpha, (*data), temp);
+    this->B->multVectorized(temp, (*data), result);
+
+	result.mult(((double)(numTrainingInstances))*this->lamb);
+}
+
+void DMSystemMatrixSSEIdentity::generateb(DataVector& classes, DataVector& b)
+{
+	DataVector myClasses(classes);
+
+	// Apply padding
+	size_t numCols = (*data).getNcols();
+	if (numCols != myClasses.getSize())
+	{
+		myClasses.resizeZero(numCols);
+	}
+
+	this->B->multVectorized(myClasses, (*data), b);
+}
+
+}

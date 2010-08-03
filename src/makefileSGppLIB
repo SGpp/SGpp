@@ -52,7 +52,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
 	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
-	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemParallelOMP.o
+	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemParallelOMP.o\
+	OperationBIterativeSSELinear.o DMSystemMatrixSSEIdentity.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -137,6 +138,9 @@ OperationHierarchisationModBspline.o : $(SRCDIR)basis/modbspline/operation/commo
 
 OperationBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
+	
+OperationBIterativeSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
 
 OperationTestLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
@@ -368,6 +372,9 @@ HeatEquationODESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSyst
 	
 DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
+	
+DMSystemMatrixSSEIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSSEIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
 	
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp

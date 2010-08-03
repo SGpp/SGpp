@@ -45,6 +45,13 @@ public:
 	virtual void multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
 };
 
+class OperationBVectorized
+{
+public:
+	virtual void multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual void multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+};
+
 class OperationMatrix
 {
 public:

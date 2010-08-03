@@ -25,6 +25,7 @@ public:
 
     void resize(size_t size);
     void resizeZero(size_t nrows);
+    void transpose();
 
     void addSize(size_t inc_nrows);
     size_t appendRow();
