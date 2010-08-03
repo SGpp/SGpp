@@ -17,11 +17,10 @@
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 
 #define LEVELS 3
-#define ITERATIONS 10
-#define REFINEMENTS 1
-#define CG_IMAX 1000
-#define CG_EPS 0.000001
-#define LAMBDA 0.00001
+#define REFINEMENTS 3
+#define CG_IMAX 10000
+#define CG_EPS 0.00001
+#define LAMBDA 0.000001
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM 100
 
@@ -33,7 +32,7 @@ void adaptRegressionTest()
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << "Regression/Classification Test App" << std::endl;
-    std::cout << "===============================================================" << std::endl;
+    std::cout << "===============================================================" << std::endl << std::endl;
 
 	double execTime = 0.0;
 	sg::ARFFTools ARFFTool;
@@ -78,7 +77,7 @@ void adaptRegressionTest()
     // execute adaptsteps
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
-    for (size_t i = 0; i < REFINEMENTS; i++)
+    for (size_t i = 0; i < REFINEMENTS+1; i++)
     {
     	std::cout << "Doing refinement :" << i << std::endl;
 
@@ -97,9 +96,6 @@ void adaptRegressionTest()
 
     	DataVector b(alpha.getSize());
     	mySystem->generateb(classes, b);
-
-    	//std::cout << b.toString() << std::endl << std::endl;
-    	//std::cout << alpha.toString() << std::endl << std::endl;
 
     	myCG->solve(*mySystem, alpha, b, false, false, 0.0);
 
