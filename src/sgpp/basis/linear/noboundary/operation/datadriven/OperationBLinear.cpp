@@ -32,8 +32,8 @@ const __m128d _mm_abs_pd( const __m128d& x)
 }
 #endif
 
-#define CHUNKDATAPOINTS 288 // must be divide-able by 12
-#define CHUNKGRIDPOINTS 128
+#define CHUNKDATAPOINTS 12 // must be divide-able by 12
+#define CHUNKGRIDPOINTS 12
 
 namespace sg
 {
@@ -55,8 +55,12 @@ void OperationBLinear::mult(DataVector& alpha, DataMatrix& data, DataVector& res
 //    	DataVector last(tmpData.getNcols());
 //    	tmpData.getRow(tmpData.getNrows()-2, last);
 //    	tmpData.setRow(tmpData.getNrows()-1, last);
-//    	alpha.resize(alpha.getSize()+1);
-//    	alpha.set(alpha.getSize()-1, 0.0);
+//    	size_t oldAlphaSize = alpha.getSize();
+//    	alpha.resize(tmpData.getNrows());
+//    	for (size_t i = oldAlphaSize; i < tmpData.getNrows(); i++)
+//    	{
+//    		alpha.set(i, 0.0);
+//    	}
 //    }
 //    tmpData.transpose();
 //    storage->getLevelIndexArraysForEval(level, index);
@@ -80,7 +84,7 @@ void OperationBLinear::multTranspose(DataVector& alpha, DataMatrix& data, DataVe
 //    	DataVector last(tmpData.getNcols());
 //    	tmpData.getRow(tmpData.getNrows()-2, last);
 //    	tmpData.setRow(tmpData.getNrows()-1, last);
-//		result.resize(result.getSize()+1);
+//		result.resize(tmpData.getNrows());
 //    }
 //    tmpData.transpose();
 //    storage->getLevelIndexArraysForEval(level, index);
@@ -142,12 +146,12 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 					{
 						for (size_t j = m; j < m+CHUNKGRIDPOINTS; j++)
 						{
-							__m128d support_0 = _mm_set1_pd(1.0);
-							__m128d support_1 = _mm_set1_pd(1.0);
-							__m128d support_2 = _mm_set1_pd(1.0);
-							__m128d support_3 = _mm_set1_pd(1.0);
-							__m128d support_4 = _mm_set1_pd(1.0);
-							__m128d support_5 = _mm_set1_pd(1.0);
+							__m128d support_0 = _mm_loaddup_pd(&(ptrAlpha[j]));
+							__m128d support_1 = _mm_loaddup_pd(&(ptrAlpha[j]));
+							__m128d support_2 = _mm_loaddup_pd(&(ptrAlpha[j]));
+							__m128d support_3 = _mm_loaddup_pd(&(ptrAlpha[j]));
+							__m128d support_4 = _mm_loaddup_pd(&(ptrAlpha[j]));
+							__m128d support_5 = _mm_loaddup_pd(&(ptrAlpha[j]));
 
 							__m128d one = _mm_set1_pd(1.0);
 							__m128d zero = _mm_set1_pd(0.0);
@@ -207,20 +211,12 @@ void OperationBLinear::multTransposeIterative(DataMatrix& Level, DataMatrix& Ind
 								support_5 = _mm_mul_pd(support_5, eval_5);
 							}
 
-							__m128d alpha = _mm_loaddup_pd(&(ptrAlpha[j]));
 							__m128d res_0 = _mm_load_pd(&(ptrResult[i]));
 							__m128d res_1 = _mm_load_pd(&(ptrResult[i+2]));
 							__m128d res_2 = _mm_load_pd(&(ptrResult[i+4]));
 							__m128d res_3 = _mm_load_pd(&(ptrResult[i+6]));
 							__m128d res_4 = _mm_load_pd(&(ptrResult[i+8]));
 							__m128d res_5 = _mm_load_pd(&(ptrResult[i+10]));
-
-							support_0 = _mm_mul_pd(support_0, alpha);
-							support_1 = _mm_mul_pd(support_1, alpha);
-							support_2 = _mm_mul_pd(support_2, alpha);
-							support_3 = _mm_mul_pd(support_3, alpha);
-							support_4 = _mm_mul_pd(support_4, alpha);
-							support_5 = _mm_mul_pd(support_5, alpha);
 
 							res_0 = _mm_add_pd(res_0, support_0);
 							res_1 = _mm_add_pd(res_1, support_1);
@@ -346,8 +342,6 @@ void OperationBLinear::multIterative(DataMatrix& Level, DataMatrix& Index, DataV
 					{
 						for (size_t j = m; j < m+CHUNKGRIDPOINTS; j++)
 						{
-							//std::cout << "intrinsic code" << std::endl;
-
 							__m128d support_0 = _mm_load_pd(&(ptrSource[i]));
 							__m128d support_1 = _mm_load_pd(&(ptrSource[i+2]));
 							__m128d support_2 = _mm_load_pd(&(ptrSource[i+4]));
@@ -413,7 +407,8 @@ void OperationBLinear::multIterative(DataMatrix& Level, DataMatrix& Index, DataV
 								support_5 = _mm_mul_pd(support_5, eval_5);
 							}
 
-							__m128d res_0 = _mm_loaddup_pd(&(ptrResult[j]));
+							__m128d res_0 = _mm_setzero_pd();
+							res_0 = _mm_loadl_pd(res_0, &(ptrResult[j]));
 
 							support_0 = _mm_add_pd(support_0, support_1);
 							support_2 = _mm_add_pd(support_2, support_3);
@@ -421,9 +416,8 @@ void OperationBLinear::multIterative(DataMatrix& Level, DataMatrix& Index, DataV
 							support_0 = _mm_add_pd(support_0, support_2);
 							support_0 = _mm_add_pd(support_0, support_4);
 
-							res_0 = _mm_add_pd(res_0, support_0);
-
-							res_0 = _mm_hadd_pd(res_0, res_0);
+							support_0 = _mm_hadd_pd(support_0, support_0);
+							res_0 = _mm_add_sd(res_0, support_0);
 
 							_mm_storel_pd(&(ptrResult[j]), res_0);
 						}
