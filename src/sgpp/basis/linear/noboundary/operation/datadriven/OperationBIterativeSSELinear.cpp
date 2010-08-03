@@ -58,6 +58,8 @@ void OperationBIterativeSSELinear::rebuildLevelAndIndex()
 	delete Level;
 	delete Index;
 
+	std::cout << "Grid size (rebuild): " << storage->size() << std::endl;
+
 	Level = new DataMatrix(storage->size(), storage->dim());
 	Index = new DataMatrix(storage->size(), storage->dim());
 

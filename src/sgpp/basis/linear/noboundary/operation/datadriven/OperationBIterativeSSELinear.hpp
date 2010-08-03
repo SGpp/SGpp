@@ -50,10 +50,7 @@ public:
 
 	virtual void multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result);
 
-	/**
-	 * rebuilds the DataMatrix for Level and Index
-	 */
-	void rebuildLevelAndIndex();
+	virtual void rebuildLevelAndIndex();
 
 protected:
 	/// Pointer to the grid's gridstorage object

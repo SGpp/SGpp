@@ -137,7 +137,6 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
 {
     ARFFTools ARFFTool;
     DataMatrix training(this->instancesNo, this->dim);
-    DataMatrix classesMatrix(this->instancesNo, 1);
     DataVector classes(this->instancesNo);
     DataVector rhs(this->myGrid->getStorage()->size());
     double execTime;
@@ -145,8 +144,7 @@ void Classifier::trainGrid(DataVector& alpha, std::string tfileTrain)
 
     ARFFTool.readTrainingData(tfileTrain, training);
     std::cout << "The training vector has been initialized" << std::endl;
-    ARFFTool.readClasses(tfileTrain, classesMatrix);
-    classesMatrix.getColumn(0, classes);
+    ARFFTool.readClasses(tfileTrain, classes);
     std::cout << "The class training vector has been initialized" << std::endl;
 
     // init the Systemmatrix Functor
@@ -197,13 +195,11 @@ double Classifier::applyTestdata(DataVector& alpha, std::string tfileTest)
 
 	ARFFTools ARFFTool;
 	DataMatrix test(this->testinstancesNo, this->dim);
-    DataMatrix testclassesMatrix(this->instancesNo, 1);
     DataVector testclasses(this->testinstancesNo);
     std::cout << "the test datavectors have been created" << std::endl;
 
     ARFFTool.readTrainingData(tfileTest, test);
-    ARFFTool.readClasses(tfileTest, testclassesMatrix);
-    testclassesMatrix.getColumn(0, testclasses);
+    ARFFTool.readClasses(tfileTest, testclasses);
     std::cout << "the test datavectors have been initialized" << std::endl;
 
     std::cout << "start evaluating the test instances" << std::endl;

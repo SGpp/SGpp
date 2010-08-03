@@ -6,32 +6,39 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "sgpp.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
-#include "common/AlignedMemory.hpp"
 
 #include <string>
 #include <iostream>
 
-#define LEVELS 6
 #define DATAFILE "DR5_nowarnings_less05_train.arff"
 //#define DATAFILE "twospirals.wieland.arff"
-#define ITERATIONS 10
 
-/**
- * executes the OperationB mult_transposed (multiple function evaluations)
- * with the DR5 testcase
- */
-void executesOperationBmultTrans_DR5()
+//#define TESTFILE "DR5_nowarnings_less05_test.arff"
+
+#define LEVELS 3
+#define ITERATIONS 10
+#define REFINEMENTS 1
+#define CG_IMAX 1000
+#define CG_EPS 0.000001
+#define LAMBDA 0.00001
+#define REFINE_THRESHOLD 0.0
+#define REFINE_NUM 100
+
+#define USE_SSE
+
+
+void adaptRegressionTest()
 {
-    // Write the data of CG
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-    std::cout << "Performance Test App" << std::endl;
+    std::cout << "Regression/Classification Test App" << std::endl;
+    std::cout << "===============================================================" << std::endl;
 
 	double execTime = 0.0;
 	sg::ARFFTools ARFFTool;
 	std::string tfileTrain = DATAFILE;
+//	std::string tfileTest = TESTFILE;
 
 	size_t nDim = ARFFTool.getDimension(tfileTrain);
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
@@ -46,60 +53,86 @@ void executesOperationBmultTrans_DR5()
 
 	// Read data from file
 	DataMatrix data(nInstancesNo, nDim);
+    DataVector classes(nInstancesNo);
+//    DataVector testclasses(nInstancesNo);
     DataVector result(nInstancesNo);
     DataVector alpha(myGrid->getSize());
 
     // Set DataVectors
     ARFFTool.readTrainingData(tfileTrain, data);
+    ARFFTool.readClasses(tfileTrain, classes);
+//    ARFFTool.readClasses(tfileTest, testclasses);
     result.setAll(0.0);
-    alpha.setAll(1.0);
+    alpha.setAll(0.0);
 
-    // init the Systemmatrix Functor
-    sg::OperationBLinear* B = (sg::OperationBLinear*)myGrid->createOperationB();
+    // Generate CG to solve System
+    sg::ConjugateGradients* myCG = new sg::ConjugateGradients(CG_IMAX, CG_EPS);
+#ifdef USE_SSE
+    sg::DMSystemMatrixSSEIdentity* mySystem = new sg::DMSystemMatrixSSEIdentity(*myGrid, data, LAMBDA);
+#else
+    sg::OperationMatrix* myC = myGrid->createOperationIdentity();
+    sg::DMSystemMatrix* mySystem = new sg::DMSystemMatrix(*myGrid, data, *myC, LAMBDA);
+#endif
 
-    std::cout << "Grid, Data, Operation created! Start test..." << std::endl;
-    std::cout << "GridSize: " << myGrid->getSize() << std::endl;
-    std::cout << "DataSize: " << data.getNrows() << std::endl;
-
-    // Generate SOA from AOS
-    DataMatrix level(myGrid->getSize(), nDim);
-    DataMatrix index(myGrid->getSize(), nDim);
-
+    std::cout << "Starting Learning...." << std::endl;
+    // execute adaptsteps
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
-
-    myGrid->getStorage()->getLevelIndexArraysForEval(level, index);
-    // needed even number of datapoints -> columns 16-byte aligned
-    if (data.getNrows() % 2 != 0)
+    for (size_t i = 0; i < REFINEMENTS; i++)
     {
-    	data.resize(data.getNrows()+1);
-    	DataVector last(data.getNcols());
-    	data.getRow(data.getNrows()-2, last);
-    	data.setRow(data.getNrows()-1, last);
-    	result.resize(result.getSize()+1);
-    }
-    data.transpose();
+    	std::cout << "Doing refinement :" << i << std::endl;
 
-    for (size_t i = 0; i < ITERATIONS; i++)
-    {
-    	//B->multTranspose(alpha, data, result);
-    	B->multTransposeIterative(level, index, alpha, data, result);
-    }
+    	// Do Refinements
+    	if (i > 0)
+    	{
+    		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, REFINE_NUM, REFINE_THRESHOLD);
+    		myGrid->createGridGenerator()->refine(myRefineFunc);
+    		delete myRefineFunc;
+#ifdef USE_SSE
+    		mySystem->rebuildLevelAndIndex();
+#endif
+    		std::cout << "New Grid Size: " << myGrid->getStorage()->size() << std::endl;
+    		alpha.resizeZero(myGrid->getStorage()->size());
+    	}
 
+    	DataVector b(alpha.getSize());
+    	mySystem->generateb(classes, b);
+
+    	//std::cout << b.toString() << std::endl << std::endl;
+    	//std::cout << alpha.toString() << std::endl << std::endl;
+
+    	myCG->solve(*mySystem, alpha, b, false, false, 0.0);
+
+    	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
+    	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
+
+    	// Do tests on test data
+//        sg::OperationTest* myTest = myGrid->createOperationTest();
+//        correct = myTest->test(alpha, data, testclasses);
+//        delete myTest;
+    }
     execTime = myStopwatch->stop();
+    delete myStopwatch;
 
-    delete B;
+    std::cout << "Finished Learning!" << std::endl;
 
-    // Write the data of CG
+//    sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
+//    myPrinter->printGrid(alpha, "VTuneTest_Result.gnuplot", 50);
+//    delete myPrinter;
+
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << "Needed time: " << execTime << " seconds" << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
+#ifndef USE_SSE
+    delete myC;
+#endif
+    delete myCG;
+    delete mySystem;
     delete myGrid;
 }
-
 
 /**
  * Testapplication for the Intel VTune Profiling Tool
@@ -107,7 +140,7 @@ void executesOperationBmultTrans_DR5()
  */
 int main(int argc, char *argv[])
 {
-	executesOperationBmultTrans_DR5();
+	adaptRegressionTest();
 
 	return 0;
 }
