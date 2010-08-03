@@ -174,6 +174,21 @@ public:
 	void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus);
 
 	/**
+	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * or their hierarchical surplus
+	 *
+	 * This function is available for all dimensions.
+	 *
+	 * The coordinates of the grid points are pushed the exp function. So
+	 * log transformed grids can be plotted in cartesion coordinates.
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tfilename absoulte path to the file the grid is written into
+	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
+	 */
+	void printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus);
+
+	/**
 	 * use this to determine the number of grid points, used to solve
 	 * the current problem
 	 *
