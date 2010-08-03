@@ -12,6 +12,7 @@
 
 // Include all operations on the linear grid
 #include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationEvalLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
@@ -72,6 +73,19 @@ OperationB* LinearGrid::createOperationB()
 {
 	return new OperationBLinear(this->storage);
 }
+
+OperationBVectorized* LinearGrid::createOperationBVectorized(const std::string& VecType)
+{
+	if (VecType == "SSE")
+	{
+			return new OperationBIterativeSSELinear(this->storage);
+	}
+	else
+	{
+		throw factory_exception("Unsupported vectorization type");
+	}
+}
+
 
 OperationMatrix* LinearGrid::createOperationLaplace()
 {

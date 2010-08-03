@@ -63,6 +63,11 @@ OperationB* ModWaveletGrid::createOperationB()
 	return new OperationBModWavelet(this->storage);
 }
 
+OperationBVectorized* ModWaveletGrid::createOperationBVectorized(const std::string& VecType)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationMatrix* ModWaveletGrid::createOperationLaplace()
 {
 	throw factory_exception("Unsupported operation");

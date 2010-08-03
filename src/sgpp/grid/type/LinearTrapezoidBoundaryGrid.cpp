@@ -77,6 +77,11 @@ OperationB* LinearTrapezoidBoundaryGrid::createOperationB()
 	return new OperationBLinearBoundary(this->storage);
 }
 
+OperationBVectorized* LinearTrapezoidBoundaryGrid::createOperationBVectorized(const std::string& VecType)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
 {
 	return new OperationLaplaceLinearBoundary(this->storage);

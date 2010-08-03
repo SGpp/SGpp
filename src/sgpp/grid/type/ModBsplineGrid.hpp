@@ -41,6 +41,7 @@ public:
 	virtual const char* getType();
 
 	virtual OperationB* createOperationB();
+	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType);
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();

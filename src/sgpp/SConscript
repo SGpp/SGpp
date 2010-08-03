@@ -53,6 +53,7 @@ grid/generation/SurplusRefinementFunctor.cpp
 grid/generation/SurplusCoarseningFunctor.cpp
 
 basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
 basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
@@ -149,6 +150,8 @@ basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 operation/pde/OperationODESolverSystem.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
+algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
+
 algorithm/pde/BlackScholesODESolverSystem.cpp
 algorithm/pde/BlackScholesODESolverSystemParallelOMP.cpp
 algorithm/pde/HeatEquationODESolverSystem.cpp
