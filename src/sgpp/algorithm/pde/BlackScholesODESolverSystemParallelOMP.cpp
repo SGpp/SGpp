@@ -22,8 +22,8 @@ namespace sg
 BlackScholesODESolverSystemParallelOMP::BlackScholesODESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, double coarsenPercent,
-			size_t numExecCoarsen, size_t MPIRank) : BlackScholesODESolverSystem(SparseGrid, alpha, mu, sigma, rho,
-			r, TimestepSize, OperationMode, bLogTransform, useCoarsen, coarsenThreshold, coarsenPercent, numExecCoarsen, MPIRank)
+			size_t numExecCoarsen) : BlackScholesODESolverSystem(SparseGrid, alpha, mu, sigma, rho,
+			r, TimestepSize, OperationMode, bLogTransform, useCoarsen, coarsenThreshold, coarsenPercent, numExecCoarsen)
 {}
 
 BlackScholesODESolverSystemParallelOMP::~BlackScholesODESolverSystemParallelOMP()

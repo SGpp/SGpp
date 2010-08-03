@@ -532,58 +532,58 @@ void testLogNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string 
 	{
 		myLogBSSolver->storeGridBonn("payoff_Nd.bonn", *alpha, true);
 	}
-//
-//	// Set stochastic data
-//	myBSSolver->setStochasticData(mu, sigma, rho, r);
-//
-//	// Start solving the Black Scholes Equation
-//	if (Solver == "ExEul")
-//	{
-//		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else if (Solver == "ImEul")
-//	{
-//		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else if (Solver == "CrNic")
-//	{
-//		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-//	}
-//	else if (Solver == "AdBas")
-//	{
-//		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else if (Solver == "VaTim")
-//	{
-//		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-//	}
-//	else
-//	{
-//		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-//	}
-//
-//	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
-//	{
-//		if (dim < 3)
-//		{
-//			// Print the solved Black Scholes Equation into a gnuplot file
-//			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
-//			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
-//			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
-//		}
-//		else
-//		{
-//			myBSSolver->storeGridBonn("solvedBS_Nd.bonn", *alpha, true);
-//		}
-//	}
-//
-//	// Test call @ the money
-//	std::vector<double> point;
-//	for (size_t i = 0; i < d; i++)
-//	{
-//		point.push_back(1.0);
-//	}
-//	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+
+	// Set stochastic data
+	myLogBSSolver->setStochasticData(mu, sigma, rho, r);
+
+	// Start solving the Black Scholes Equation
+	if (Solver == "ExEul")
+	{
+		myLogBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "ImEul")
+	{
+		myLogBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "CrNic")
+	{
+		myLogBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+	}
+	else if (Solver == "AdBas")
+	{
+		myLogBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else if (Solver == "VaTim")
+	{
+		myLogBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+	}
+	else
+	{
+		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
+	}
+
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
+	{
+		if (dim < 3)
+		{
+			// Print the solved Black Scholes Equation into a gnuplot file
+			myLogBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+			myLogBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+		}
+		else
+		{
+			myLogBSSolver->storeGridBonn("solvedBS_Nd.bonn", *alpha, true);
+		}
+	}
+
+	// Test call @ the money
+	std::vector<double> point;
+	for (size_t i = 0; i < d; i++)
+	{
+		point.push_back(1.0);
+	}
+	std::cout << "Optionprice at testpoint: " << myLogBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myLogBSSolver;

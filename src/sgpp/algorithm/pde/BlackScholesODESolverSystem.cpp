@@ -16,7 +16,7 @@ namespace sg
 BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, double coarsenPercent,
-			size_t numExecCoarsen, size_t MPIRank)
+			size_t numExecCoarsen)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
