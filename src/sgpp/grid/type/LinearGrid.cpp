@@ -21,6 +21,8 @@
 #include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -132,12 +134,12 @@ OperationMatrix* LinearGrid::createOperationGamma(DataMatrix& coef)
 
 OperationMatrix* LinearGrid::createOperationDeltaLog(DataVector& coef)
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationDeltaLogLinear(this->storage, coef);
 }
 
 OperationMatrix* LinearGrid::createOperationGammaLog(DataMatrix& coef)
 {
-	throw factory_exception("Unsupported operation");
+	return new OperationGammaLogLinear(this->storage, coef);
 }
 
 }

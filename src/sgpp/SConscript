@@ -61,6 +61,8 @@ basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
 basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
 basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
 basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.cpp
 
 basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
