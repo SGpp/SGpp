@@ -53,7 +53,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
 	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
 	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemParallelOMP.o\
-	OperationBIterativeSSELinear.o DMSystemMatrixSSEIdentity.o
+	OperationBIterativeSSELinear.o DMSystemMatrixSSEIdentity.o OperationDeltaLogLinear.o\
+	OperationGammaLogLinear.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -162,6 +163,12 @@ OperationDeltaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/
 	
 OperationGammaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
+
+OperationDeltaLogLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.cpp
+	
+OperationGammaLogLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.cpp
 
 HierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
