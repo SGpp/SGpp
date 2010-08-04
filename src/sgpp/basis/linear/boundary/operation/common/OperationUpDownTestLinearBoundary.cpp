@@ -22,6 +22,12 @@
 #include "basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.hpp"
 
+#include "basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
+#include "basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
+
+#include "basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.hpp"
+#include "basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.hpp"
+
 #include "algorithm/common/sweep.hpp"
 
 #include "grid/common/BoundingBox.hpp"
@@ -100,8 +106,16 @@ void OperationUpDownTestLinearBoundary::up(DataVector& alpha, DataVector& result
 	//sweep<detail::XPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// dphi * dphi
-	detail::DPhidPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::DPhidPhiUpBBLinearBoundary> s(func, this->storage);
+	//detail::DPhidPhiUpBBLinearBoundary func(this->storage);
+	//sweep<detail::DPhidPhiUpBBLinearBoundary> s(func, this->storage);
+
+	// dphi * phi
+	detail::DPhiPhiUpBBLinearBoundary func(this->storage);
+	sweep<detail::DPhiPhiUpBBLinearBoundary> s(func, this->storage);
+
+	// phi * dphi
+	//detail::PhidPhiUpBBLinearBoundary func(this->storage);
+	//sweep<detail::PhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -128,8 +142,13 @@ void OperationUpDownTestLinearBoundary::down(DataVector& alpha, DataVector& resu
 	//detail::DPhidPhiDownBBLinearBoundary func(this->storage);
 	//sweep<detail::DPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
-	detail::DPhidPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::DPhidPhiDownBBLinearBoundary> s(func, this->storage);
+	//  dphi * phi
+	detail::DPhiPhiDownBBLinearBoundary func(this->storage);
+	sweep<detail::DPhiPhiDownBBLinearBoundary> s(func, this->storage);
+
+	//  phi * dphi
+	//detail::PhidPhiDownBBLinearBoundary func(this->storage);
+	//sweep<detail::PhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

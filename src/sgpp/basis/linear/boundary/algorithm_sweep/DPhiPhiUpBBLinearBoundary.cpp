@@ -60,7 +60,7 @@ void DPhiPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& resul
 		//////////////////////////////////////
 		result[seq_left] = fl;
 
-		result[seq_left] += source[seq_right] * (-0.5);
+		result[seq_left] += source[seq_right] * (0.5);
 	}
 
 	if (this->boundingBox->hasDirichletBoundaryRight(dim))
