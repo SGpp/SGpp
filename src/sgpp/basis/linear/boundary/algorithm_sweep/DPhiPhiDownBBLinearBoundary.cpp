@@ -67,7 +67,7 @@ void DPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& res
 		result[seq_right] = right_boundary * (0.5);
 		// down
 		//////////////////////////////////////
-		result[seq_right] += left_boundary * (0.5);
+		result[seq_right] += left_boundary * (-0.5);
 	}
 
 	// move to root
