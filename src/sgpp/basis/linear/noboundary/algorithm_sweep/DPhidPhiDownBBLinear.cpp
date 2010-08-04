@@ -56,7 +56,7 @@ void DPhidPhiDownBBLinear::rec(DataVector& source, DataVector& result, grid_iter
 	index.get(dim, l, i);
 
 	int l_int = static_cast<int>(l);
-	double diagonal = pow(2.0, -l_int+1.0);
+	double diagonal = pow(2.0, l_int+1.0);
 
 	// integration
 	result[seq] = diagonal * alpha_value; // no contribution of down!
@@ -94,7 +94,7 @@ void DPhidPhiDownBBLinear::recBB(DataVector& source, DataVector& result, grid_it
 	index.get(dim, l, i);
 
 	int l_int = static_cast<int>(l);
-	double diagonal = pow(2.0, (-l_int+1.0))/q;
+	double diagonal = pow(2.0, (l_int+1.0))/q;
 
 	// integration
 	result[seq] = diagonal * alpha_value; // no contribution of down!
