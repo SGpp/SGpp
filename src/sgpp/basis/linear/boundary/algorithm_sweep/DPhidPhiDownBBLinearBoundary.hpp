@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
-#ifndef SQXDPHIDPHIDOWNBBLINEARBOUNDARY_HPP
-#define SQXDPHIDPHIDOWNBBLINEARBOUNDARY_HPP
+#ifndef DPHIDPHIDOWNBBLINEARBOUNDARY_HPP
+#define DPHIDPHIDOWNBBLINEARBOUNDARY_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -59,4 +59,4 @@ public:
 
 } // namespace sg
 
-#endif /* DPHIDPHIUPBBLINEARBOUNDARY_HPP */
+#endif /* DPHIDPHIDOWNBBLINEARBOUNDARY_HPP */

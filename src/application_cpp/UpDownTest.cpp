@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	DataVector result(numGridPoints);
 	result.setAll(0.0);
 
-	DataVector UpDownMatrix(numGridPoints, numGridPoints);
+	DataMatrix UpDownMatrix(numGridPoints, numGridPoints);
 	UpDownMatrix.setAll(0.0);
 
 	myUpDown = myGrid->createOperationUpDownTest();
@@ -90,8 +90,7 @@ int main(int argc, char *argv[])
 		myUpDown->mult(alpha, result);
 
 		// copy data to opartor's matrix
-		result.getColumn(0, alpha);
-		UpDownMatrix.setColumn(i, alpha);
+		UpDownMatrix.setColumn(i, result);
 	}
 	std::cout << "finished constructing the operator's matrix" << std::endl;
 
@@ -105,8 +104,8 @@ int main(int argc, char *argv[])
 	{
 		for (size_t j = 0; j < numGridPoints; j++)
 		{
-			//std::cout << std::scientific << UpDownMatrix.get((i*numGridPoints) + j) << " ";
-			outfile << std::scientific << UpDownMatrix.get((i*numGridPoints) + j) << " ";
+			//std::cout << std::scientific << UpDownMatrix.get(i, j) << " ";
+			outfile << std::scientific << UpDownMatrix.get(i, j) << " ";
 		}
 		//std::cout << std::endl;
 		outfile << std::endl;
@@ -128,7 +127,7 @@ int main(int argc, char *argv[])
 		for (size_t j = 0; j < numGridPoints; j++)
 		{
 			infile >> filedata;
-			std::cout << (UpDownMatrix.get((i*numGridPoints) + j) - filedata) << " ";
+			std::cout << (UpDownMatrix.get(i, j) - filedata) << " ";
 		}
 		std::cout << std::endl;
 	}
@@ -145,7 +144,7 @@ int main(int argc, char *argv[])
 	{
 		for (size_t j = 0; j < numGridPoints; j++)
 		{
-			tempSym = fabs(UpDownMatrix.get((i*numGridPoints) + j)-UpDownMatrix.get((j*numGridPoints) + i));
+			tempSym = fabs(UpDownMatrix.get(i,j)-UpDownMatrix.get(j,i));
 			if (tempSym > symTest)
 			{
 				symTest = tempSym;
