@@ -28,7 +28,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o\
 	OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
 	OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
-	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesODESolverSystem.o BlackScholesSolver.o\
+	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesODESolverSystem.o BlackScholesSolver.o HullWhiteSolver.o\
 	ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
 	Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
 	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o\
@@ -409,6 +409,9 @@ ParabolicPDESolver.o : $(SRCDIR)application/pde/ParabolicPDESolver.cpp
 
 BlackScholesSolver.o : $(SRCDIR)application/pde/BlackScholesSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolver.o $(SRCDIR)application/pde/BlackScholesSolver.cpp
+	
+HullWhiteSolver.o : $(SRCDIR)application/pde/HullWhiteSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteSolver.o $(SRCDIR)application/pde/HullWhiteSolver.cpp
 
 HeatEquationSolver.o : $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolver.o $(SRCDIR)application/pde/HeatEquationSolver.cpp
