@@ -28,6 +28,7 @@
 #include "algorithm/pde/HeatEquationODESolverSystem.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"
+#include "application/pde/HullWhiteSolver.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 
 #include "basis/basis.hpp"
