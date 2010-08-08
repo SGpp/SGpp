@@ -10,8 +10,8 @@
 #include "basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
 
-#include "basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.hpp"
-#include "basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.hpp"
+#include "basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
+#include "basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -46,18 +46,18 @@ void OperationDeltaLogLinearBoundary::down(DataVector& alpha, DataVector& result
 
 void OperationDeltaLogLinearBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// phi * dphi
-	detail::PhidPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::PhidPhiUpBBLinearBoundary> s(func, this->storage);
+	// dphi * phi
+	detail::DPhiPhiUpBBLinearBoundary func(this->storage);
+	sweep<detail::DPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
 void OperationDeltaLogLinearBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// phi * dphi
-	detail::PhidPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::PhidPhiDownBBLinearBoundary> s(func, this->storage);
+	// dphi * phi
+	detail::DPhiPhiDownBBLinearBoundary func(this->storage);
+	sweep<detail::DPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

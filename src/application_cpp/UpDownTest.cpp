@@ -104,10 +104,10 @@ int main(int argc, char *argv[])
 	{
 		for (size_t j = 0; j < numGridPoints; j++)
 		{
-			//std::cout << std::scientific << UpDownMatrix.get(i, j) << " ";
+			std::cout << std::scientific << UpDownMatrix.get(i, j) << " ";
 			outfile << std::scientific << UpDownMatrix.get(i, j) << " ";
 		}
-		//std::cout << std::endl;
+		std::cout << std::endl;
 		outfile << std::endl;
 	}
 

@@ -364,8 +364,8 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 
 			for (size_t i = 0; i < 2; i++)
 			{
-				myAreaBoundaries[i].leftBoundary = 0.95;
-				myAreaBoundaries[i].rightBoundary = 1.05;
+				myAreaBoundaries[i].leftBoundary = 0.9;
+				myAreaBoundaries[i].rightBoundary = 1.1;
 			}
 			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
 
