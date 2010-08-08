@@ -115,6 +115,8 @@ public:
 	 *
 	 * After refining the grid the payoff function is applied to the grid.
 	 *
+	 * Only on Cartesian grids!
+	 *
 	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
 	 * @param strike containing the option's strike
 	 * @param payoffType the type of payoff Function used ONLY supported: avgM
@@ -129,6 +131,8 @@ public:
 	 * refinement level hasn't be reached.
 	 *
 	 * After refining the grid the payoff function is applied to the grid.
+	 *
+	 * Only on Cartesian grids!
 	 *
 	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
 	 * @param strike containing the option's strike
@@ -240,6 +244,8 @@ public:
 	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding
 	 * box [0,x] X [0,y] is assumed.
 	 *
+	 * Only on Cartesian grids!
+	 *
 	 * @param alpha the sparse grid's coefficients
 	 * @param tFilename the name of file contain the interpolation error
 	 * @param numTestpoints Number of equal distribute testpoints @money
@@ -249,6 +255,8 @@ public:
 
 	/**
 	 * gets the number of gridpoints @money
+	 *
+	 * Only on Cartesian grids!
 	 *
 	 * @param payoffType the payoff type
 	 * @param strike the option's strike

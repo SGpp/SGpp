@@ -73,76 +73,79 @@ void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double s
 {
 	size_t nRefinements = 0;
 
-	if (this->bGridConstructed)
+	if (this->useLogTransform == false)
 	{
-
-		DataVector refineVector(alpha.getSize());
-
-		if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+		if (this->bGridConstructed)
 		{
-			double tmp;
-			double* dblFuncValues = new double[dim];
-			double dDistance = 0.0;
 
-			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+			DataVector refineVector(alpha.getSize());
+
+			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
 			{
-				std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-				std::stringstream coordsStream(coords);
+				double tmp;
+				double* dblFuncValues = new double[dim];
+				double dDistance = 0.0;
 
-				for (size_t j = 0; j < this->dim; j++)
+				for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 				{
-					coordsStream >> tmp;
+					std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+					std::stringstream coordsStream(coords);
 
-					dblFuncValues[j] = tmp;
+					for (size_t j = 0; j < this->dim; j++)
+					{
+						coordsStream >> tmp;
+
+						dblFuncValues[j] = tmp;
+					}
+
+					tmp = 0.0;
+					for (size_t j = 0; j < this->dim; j++)
+					{
+						tmp += dblFuncValues[j];
+					}
+
+					if (payoffType == "std_euro_call")
+					{
+						dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
+					}
+					if (payoffType == "std_euro_put")
+					{
+						dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
+					}
+
+					if (dDistance <= dStrikeDistance)
+					{
+						refineVector[i] = dDistance;
+						nRefinements++;
+					}
+					else
+					{
+						refineVector[i] = 0.0;
+					}
 				}
 
-				tmp = 0.0;
-				for (size_t j = 0; j < this->dim; j++)
-				{
-					tmp += dblFuncValues[j];
-				}
+				delete[] dblFuncValues;
 
-				if (payoffType == "std_euro_call")
-				{
-					dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
-				}
-				if (payoffType == "std_euro_put")
-				{
-					dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
-				}
+				SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
 
-				if (dDistance <= dStrikeDistance)
-				{
-					refineVector[i] = dDistance;
-					nRefinements++;
-				}
-				else
-				{
-					refineVector[i] = 0.0;
-				}
+				this->myGrid->createGridGenerator()->refine(myRefineFunc);
+
+				delete myRefineFunc;
+
+				alpha.resize(this->myGridStorage->size());
+
+				// reinit the grid with the payoff function
+				initGridWithPayoff(alpha, strike, payoffType);
 			}
-
-			delete[] dblFuncValues;
-
-			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
-
-			this->myGrid->createGridGenerator()->refine(myRefineFunc);
-
-			delete myRefineFunc;
-
-			alpha.resize(this->myGridStorage->size());
-
-			// reinit the grid with the payoff function
-			initGridWithPayoff(alpha, strike, payoffType);
+			else
+			{
+				throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoff : An unsupported payoffType was specified!");
+			}
 		}
 		else
 		{
-			throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoff : An unsupported payoffType was specified!");
+			throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
 		}
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
 	}
 }
 
@@ -150,76 +153,79 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha
 {
 	size_t nRefinements = 0;
 
-	if (this->bGridConstructed)
+	if (this->useLogTransform == false)
 	{
-
-		DataVector refineVector(alpha.getSize());
-
-		if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+		if (this->bGridConstructed)
 		{
-			double tmp;
-			double* dblFuncValues = new double[dim];
-			double dDistance = 0.0;
 
-			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+			DataVector refineVector(alpha.getSize());
+
+			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
 			{
-				std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-				std::stringstream coordsStream(coords);
+				double tmp;
+				double* dblFuncValues = new double[dim];
+				double dDistance = 0.0;
 
-				for (size_t j = 0; j < this->dim; j++)
+				for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 				{
-					coordsStream >> tmp;
+					std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+					std::stringstream coordsStream(coords);
 
-					dblFuncValues[j] = tmp;
+					for (size_t j = 0; j < this->dim; j++)
+					{
+						coordsStream >> tmp;
+
+						dblFuncValues[j] = tmp;
+					}
+
+					tmp = 0.0;
+					for (size_t j = 0; j < this->dim; j++)
+					{
+						tmp += dblFuncValues[j];
+					}
+
+					if (payoffType == "std_euro_call")
+					{
+						dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
+					}
+					if (payoffType == "std_euro_put")
+					{
+						dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
+					}
+
+					if (dDistance <= dStrikeDistance)
+					{
+						refineVector[i] = dDistance;
+						nRefinements++;
+					}
+					else
+					{
+						refineVector[i] = 0.0;
+					}
 				}
 
-				tmp = 0.0;
-				for (size_t j = 0; j < this->dim; j++)
-				{
-					tmp += dblFuncValues[j];
-				}
+				delete[] dblFuncValues;
 
-				if (payoffType == "std_euro_call")
-				{
-					dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
-				}
-				if (payoffType == "std_euro_put")
-				{
-					dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
-				}
+				SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
 
-				if (dDistance <= dStrikeDistance)
-				{
-					refineVector[i] = dDistance;
-					nRefinements++;
-				}
-				else
-				{
-					refineVector[i] = 0.0;
-				}
+				this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+
+				delete myRefineFunc;
+
+				alpha.resize(this->myGridStorage->size());
+
+				// reinit the grid with the payoff function
+				initGridWithPayoff(alpha, strike, payoffType);
 			}
-
-			delete[] dblFuncValues;
-
-			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
-
-			this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
-
-			delete myRefineFunc;
-
-			alpha.resize(this->myGridStorage->size());
-
-			// reinit the grid with the payoff function
-			initGridWithPayoff(alpha, strike, payoffType);
+			else
+			{
+				throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : An unsupported payoffType was specified!");
+			}
 		}
 		else
 		{
-			throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : An unsupported payoffType was specified!");
+			throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : The grid wasn't initialized before!");
 		}
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : The grid wasn't initialized before!");
 	}
 }
 
@@ -525,7 +531,7 @@ void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDim
 void BlackScholesSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
-	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.3.0", "TUM (C) 2009-2010, by Alexander Heinecke");
+	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.4.0", "TUM (C) 2009-2010, by Alexander Heinecke");
 	this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
@@ -559,46 +565,49 @@ void BlackScholesSolver::refineSurplusToMaxLevel(DataVector& alpha, double dThre
 
 void BlackScholesSolver::printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike)
 {
-	if (this->bGridConstructed)
+	if (this->useLogTransform == false)
 	{
-		if (this->myGrid->getStorage()->getBoundingBox()->getDimensions() == 2)
+		if (this->bGridConstructed)
 		{
-			if (numTestpoints < 2)
-				numTestpoints = 2;
-
-			double dInc = (2.0*strike)/static_cast<double>(numTestpoints-1);
-
-			double dX = 0.0;
-			double dY = 2*strike;
-
-			std::ofstream file;
-			file.open(tFilename.c_str());
-
-			OperationEval* myEval = this->myGrid->createOperationEval();
-
-			for (size_t i = 0; i < numTestpoints; i++)
+			if (this->myGrid->getStorage()->getBoundingBox()->getDimensions() == 2)
 			{
-				std::vector<double> point;
+				if (numTestpoints < 2)
+					numTestpoints = 2;
 
-				point.push_back(dX);
-				point.push_back(dY);
+				double dInc = (2.0*strike)/static_cast<double>(numTestpoints-1);
 
-				double result = myEval->eval(alpha, point);
+				double dX = 0.0;
+				double dY = 2*strike;
 
-				file << std::scientific << std::setprecision( 16 ) << dX << " " << dY << " " << result << std::endl;
+				std::ofstream file;
+				file.open(tFilename.c_str());
 
-				dX += dInc;
-				dY -= dInc;
+				OperationEval* myEval = this->myGrid->createOperationEval();
+
+				for (size_t i = 0; i < numTestpoints; i++)
+				{
+					std::vector<double> point;
+
+					point.push_back(dX);
+					point.push_back(dY);
+
+					double result = myEval->eval(alpha, point);
+
+					file << std::scientific << std::setprecision( 16 ) << dX << " " << dY << " " << result << std::endl;
+
+					dX += dInc;
+					dY -= dInc;
+				}
+
+				delete myEval;
+
+				file.close();
 			}
-
-			delete myEval;
-
-			file.close();
 		}
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::getPayoffInterpolationError : A grid wasn't constructed before!");
+		else
+		{
+			throw new application_exception("BlackScholesSolver::getPayoffInterpolationError : A grid wasn't constructed before!");
+		}
 	}
 }
 
@@ -606,39 +615,42 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, double s
 {
 	size_t nPoints = 0;
 
-	if (this->bGridConstructed)
+	if (this->useLogTransform == false)
 	{
-		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		if (this->bGridConstructed)
 		{
-			bool isAtMoney = true;
-			DataVector coords(this->dim);
-			this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
-
-			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{
-				for (size_t d = 0; d < this->dim; d++)
-				{
-					if ( ((coords.sum()/static_cast<double>(this->dim)) < (strike-eps)) || ((coords.sum()/static_cast<double>(this->dim)) > (strike+eps)) )
-					{
-						isAtMoney = false;
-					}
+				bool isAtMoney = true;
+				DataVector coords(this->dim);
+				this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
 
+				if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+				{
+					for (size_t d = 0; d < this->dim; d++)
+					{
+						if ( ((coords.sum()/static_cast<double>(this->dim)) < (strike-eps)) || ((coords.sum()/static_cast<double>(this->dim)) > (strike+eps)) )
+						{
+							isAtMoney = false;
+						}
+
+					}
+				}
+				else
+				{
+					throw new application_exception("BlackScholesSolver::getGridPointsAtMoney : An unknown payoff-type was specified!");
+				}
+
+				if (isAtMoney == true)
+				{
+					nPoints++;
 				}
 			}
-			else
-			{
-				throw new application_exception("BlackScholesSolver::getGridPointsAtMoney : An unknown payoff-type was specified!");
-			}
-
-			if (isAtMoney == true)
-			{
-				nPoints++;
-			}
 		}
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
+		else
+		{
+			throw new application_exception("BlackScholesSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
+		}
 	}
 
 	return nPoints;
