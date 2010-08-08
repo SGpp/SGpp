@@ -308,26 +308,10 @@ void BlackScholesODESolverSystem::buildGammaCoefficientsLogTransform()
 void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
 {
 	size_t dim = this->BoundGrid->getStorage()->dim();
-	double covar_sum = 0.0;
 
 	for (size_t i = 0; i < dim; i++)
 	{
-		covar_sum = 0.0;
-		for (size_t j = 0; j < dim; j++)
-		{
-			// handle diagonal
-			if (i == j)
-			{
-				// factor 1.5, since in log-trafo, the factor \mu_i is changed to \mu_i - 0.5*\sigma_i^2
-				// and, thus, we have (1.0+0.5)-times the term
-				covar_sum += (1.5*(this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j));
-			}
-			else
-			{
-				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
-			}
-		}
-		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
+		this->deltaCoef->set(i, this->mus->get(i)-(0.5*(this->sigmas->get(i)*this->sigmas->get(i))));
 	}
 }
 

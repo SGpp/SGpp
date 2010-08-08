@@ -102,16 +102,16 @@ void OperationUpDownTestLinearBoundary::up(DataVector& alpha, DataVector& result
 	//sweep<detail::XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// x * phi * dphi
-	//detail::XPhidPhiUpBBLinearBoundary func(this->storage);
-	//sweep<detail::XPhidPhiUpBBLinearBoundary> s(func, this->storage);
+	detail::XPhidPhiUpBBLinearBoundary func(this->storage);
+	sweep<detail::XPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// dphi * dphi
 	//detail::DPhidPhiUpBBLinearBoundary func(this->storage);
 	//sweep<detail::DPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// dphi * phi
-	detail::DPhiPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::DPhiPhiUpBBLinearBoundary> s(func, this->storage);
+	//detail::DPhiPhiUpBBLinearBoundary func(this->storage);
+	//sweep<detail::DPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// phi * dphi
 	//detail::PhidPhiUpBBLinearBoundary func(this->storage);
@@ -135,16 +135,16 @@ void OperationUpDownTestLinearBoundary::down(DataVector& alpha, DataVector& resu
 	//sweep<detail::XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	// x * phi * dphi
-	//detail::XPhidPhiDownBBLinearBoundary func(this->storage);
-	//sweep<detail::XPhidPhiDownBBLinearBoundary> s(func, this->storage);
+	detail::XPhidPhiDownBBLinearBoundary func(this->storage);
+	sweep<detail::XPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 	// dphi * dphi
 	//detail::DPhidPhiDownBBLinearBoundary func(this->storage);
 	//sweep<detail::DPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 	//  dphi * phi
-	detail::DPhiPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::DPhiPhiDownBBLinearBoundary> s(func, this->storage);
+	//detail::DPhiPhiDownBBLinearBoundary func(this->storage);
+	//sweep<detail::DPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	//  phi * dphi
 	//detail::PhidPhiDownBBLinearBoundary func(this->storage);
