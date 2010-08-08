@@ -10,8 +10,8 @@
 #include "basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
 #include "basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
 
-#include "basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.hpp"
+#include "basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.hpp"
+#include "basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -46,18 +46,18 @@ void OperationDeltaLinear::down(DataVector& alpha, DataVector& result, size_t di
 
 void OperationDeltaLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// x * phi * dphi
-	detail::XPhidPhiUpBBLinear func(this->storage);
-	sweep<detail::XPhidPhiUpBBLinear> s(func, this->storage);
+	// x * dphi * phi
+	detail::XdPhiPhiUpBBLinear func(this->storage);
+	sweep<detail::XdPhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
 void OperationDeltaLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// x * phi * dphi
-	detail::XPhidPhiDownBBLinear func(this->storage);
-	sweep<detail::XPhidPhiDownBBLinear> s(func, this->storage);
+	// x * dphi * phi
+	detail::XdPhiPhiDownBBLinear func(this->storage);
+	sweep<detail::XdPhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }

@@ -72,7 +72,7 @@ void XPhidPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& resu
 			//////////////////////////////////////
 			result[seq_left] = fl;
 
-			result[seq_left] += (source[seq_right] * (((1.0/6.0)*q) + (0.5*t)));
+			result[seq_left] += (source[seq_right] * (((-1.0/3.0)*q) - (0.5*t)));
 		}
 
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
@@ -92,7 +92,7 @@ void XPhidPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& resu
 		{
 			index.top(dim);
 
-			if(!storage->end(index.seq()))
+			if(!this->storage->end(index.seq()))
 			{
 				rec(source, result, index, dim, fl, fr);
 			}
@@ -121,7 +121,7 @@ void XPhidPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& resu
 			//////////////////////////////////////
 			result[seq_left] = fl;
 
-			result[seq_left] += (source[seq_right] * (1.0/6.0));
+			result[seq_left] += (source[seq_right] * (-1.0/3.0));
 		}
 
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
