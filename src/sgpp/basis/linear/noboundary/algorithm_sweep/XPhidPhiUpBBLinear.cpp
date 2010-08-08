@@ -81,14 +81,13 @@ void XPhidPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterat
 
 	double alpha_value = source[seq];
 
-	double hhalf = 1.0/pow(2.0,static_cast<int>(current_level+1));
-	double i_dbl = static_cast<double>(current_index);
+	double helper = (1.0/pow(2.0, static_cast<int>(current_level+1))) * (static_cast<double>(current_index));
 
 	// transposed operations:
 	result[seq] = fm;
 
-	fl = (fm/2.0) + ((alpha_value*((hhalf * i_dbl) - hhalf)) + fl);
-	fr = (fm/2.0) + ((alpha_value*(((-1.0)*(hhalf * i_dbl)) - hhalf)) + fr);
+	fl = (fm/2.0) + ((alpha_value*((-1.0)*helper)) + fl);
+	fr = (fm/2.0) + ((alpha_value*helper) + fr);
 }
 
 void XPhidPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
@@ -125,17 +124,15 @@ void XPhidPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iter
 
 	double alpha_value = source[seq];
 
-	double hhalf = 1.0/pow(2.0,static_cast<int>(current_level+1));
-	double i_dbl = static_cast<double>(current_index);
+	double helper = (1.0/pow(2.0, static_cast<int>(current_level+1))) * (q * static_cast<double>(current_index)) + (0.5*t);
 
 	// transposed operations:
 	result[seq] = fm;
 
-	fl = (fm/2.0) + ((alpha_value*((q*((hhalf * i_dbl) - hhalf))+(0.5*t))) + fl);
-	fr = (fm/2.0) + ((alpha_value*((q*(((-1.0)*(hhalf * i_dbl)) - hhalf))-(0.5*t))) + fr);
+	fl = (fm/2.0) + ((alpha_value*((-1.0)*helper)) + fl);
+	fr = (fm/2.0) + ((alpha_value*helper) + fr);
 }
 
 } // namespace detail
 
 } // namespace sg
-

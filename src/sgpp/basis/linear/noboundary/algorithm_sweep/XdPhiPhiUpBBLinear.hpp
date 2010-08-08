@@ -46,7 +46,7 @@ public:
 
 	/**
 	 * This operations performs the calculation of up in the direction of dimension <i>dim</i>
-	 * on a a grid with fix Dirichlet 0 boundary condition
+	 * on a grid with fix Dirichlet 0 boundary conditions
 	 *
 	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
 	 * @param result DataVector that contains the result of the up operation
@@ -78,8 +78,6 @@ protected:
 	 * @param dim the dimension in which the operation is executed
 	 * @param fl function value on the left boundary, reference parameter
 	 * @param fr function value on the right boundary, reference parameter
-	 * @param q interval width in the current dimension <i>dim</i>
-	 * @param t interval offset in current dimension <i>dim</i>
 	 */
 	void recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t);
 };

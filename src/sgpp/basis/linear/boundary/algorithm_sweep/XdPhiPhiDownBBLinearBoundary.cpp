@@ -75,7 +75,7 @@ void XdPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& re
 			result[seq_right] = right_boundary * (((1.0/3.0)*q) + (0.5*t));
 			// down
 			//////////////////////////////////////
-			result[seq_right] += left_boundary * (((1.0/6.0)*q) + (0.5*t));
+			result[seq_right] += (left_boundary * (((-1.0/3.0)*q) - (0.5*t)));
 		}
 
 		// move to root
@@ -100,7 +100,7 @@ void XdPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& re
 		}
 		else
 		{
-			result[seq_left] = left_boundary * (-1.0/6.0);
+			result[seq_left] = left_boundary * (-1.0/3.0);
 		}
 
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
@@ -112,7 +112,7 @@ void XdPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& re
 			result[seq_right] = right_boundary * (1.0/3.0);
 			// down
 			//////////////////////////////////////
-			result[seq_right] += left_boundary * (1.0/6.0);
+			result[seq_right] += (left_boundary * (1.0/6.0));
 		}
 
 		// move to root
