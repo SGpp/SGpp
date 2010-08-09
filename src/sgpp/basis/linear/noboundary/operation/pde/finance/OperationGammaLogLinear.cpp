@@ -16,8 +16,7 @@
 #include "basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.hpp"
 #include "basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
 
-#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
+#include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -90,20 +89,13 @@ void OperationGammaLogLinear::downOpDimTwo(DataVector& alpha, DataVector& result
 
 void OperationGammaLogLinear::upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// dphi * dphi
-	detail::DPhidPhiUpBBLinear func(this->storage);
-	sweep<detail::DPhidPhiUpBBLinear> s(func, this->storage);
-
-	s.sweep1D(alpha, result, dim);
+	result.setAll(0.0);
 }
 
 void OperationGammaLogLinear::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// dphi * dphi
-	detail::DPhidPhiDownBBLinear func(this->storage);
-	sweep<detail::DPhidPhiDownBBLinear> s(func, this->storage);
-
-	s.sweep1D(alpha, result, dim);
+	DowndPhidPhiBBIterativeLinear myDown(this->storage);
+	myDown(alpha, result, dim);
 }
 
 }

@@ -16,8 +16,8 @@
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
 
-#include "basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.hpp"
-#include "basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.hpp"
+#include "basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.hpp"
+#include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -90,20 +90,14 @@ void OperationGammaLogLinearBoundary::downOpDimTwo(DataVector& alpha, DataVector
 
 void OperationGammaLogLinearBoundary::upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// dphi * dphi
-	detail::DPhidPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::DPhidPhiUpBBLinearBoundary> s(func, this->storage);
-
-	s.sweep1D_Boundary(alpha, result, dim);
+	UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+	myUp(alpha, result, dim);
 }
 
 void OperationGammaLogLinearBoundary::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// dphi * dphi
-	detail::DPhidPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::DPhidPhiDownBBLinearBoundary> s(func, this->storage);
-
-	s.sweep1D_Boundary(alpha, result, dim);
+	DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+	myDown(alpha, result, dim);
 }
 
 }

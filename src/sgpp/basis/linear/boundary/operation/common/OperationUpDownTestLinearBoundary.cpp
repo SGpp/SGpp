@@ -19,9 +19,6 @@
 #include "basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.hpp"
 
-#include "basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.hpp"
-#include "basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.hpp"
-
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
 
@@ -105,10 +102,6 @@ void OperationUpDownTestLinearBoundary::up(DataVector& alpha, DataVector& result
 	detail::XPhidPhiUpBBLinearBoundary func(this->storage);
 	sweep<detail::XPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
-	// dphi * dphi
-	//detail::DPhidPhiUpBBLinearBoundary func(this->storage);
-	//sweep<detail::DPhidPhiUpBBLinearBoundary> s(func, this->storage);
-
 	// dphi * phi
 	//detail::DPhiPhiUpBBLinearBoundary func(this->storage);
 	//sweep<detail::DPhiPhiUpBBLinearBoundary> s(func, this->storage);
@@ -137,10 +130,6 @@ void OperationUpDownTestLinearBoundary::down(DataVector& alpha, DataVector& resu
 	// x * phi * dphi
 	detail::XPhidPhiDownBBLinearBoundary func(this->storage);
 	sweep<detail::XPhidPhiDownBBLinearBoundary> s(func, this->storage);
-
-	// dphi * dphi
-	//detail::DPhidPhiDownBBLinearBoundary func(this->storage);
-	//sweep<detail::DPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 	//  dphi * phi
 	//detail::DPhiPhiDownBBLinearBoundary func(this->storage);

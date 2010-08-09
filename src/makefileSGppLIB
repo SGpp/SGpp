@@ -46,15 +46,14 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	dPhidPhiUpModLinear.o PhiPhiDownModLinear.o PhiPhiUpModLinear.o\
 	PhiPhiUpBBLinearBoundary.o PhiPhiDownBBLinearBoundary.o SqXdPhidPhiDownBBLinearBoundary.o SqXdPhidPhiUpBBLinearBoundary.o\
 	XdPhiPhiDownBBLinearBoundary.o XdPhiPhiUpBBLinearBoundary.o XPhidPhiDownBBLinearBoundary.o XPhidPhiUpBBLinearBoundary.o\
-	DPhidPhiDownBBLinearBoundary.o DPhidPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
-	DPhidPhiDownBBLinear.o DPhidPhiUpBBLinear.o\
 	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
 	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
 	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemParallelOMP.o\
 	OperationBIterativeSSELinear.o DMSystemMatrixSSEIdentity.o OperationDeltaLogLinear.o\
-	OperationGammaLogLinear.o
+	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
+	UpdPhidPhiBBIterativeLinearBoundary.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -199,12 +198,6 @@ XPhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidP
 	
 XPhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp		
-
-DPhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
-
-DPhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
 	
 DPhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
@@ -223,6 +216,9 @@ XPhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhiPhi
 	
 XPhiPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp		
+	
+DowndPhidPhiBBIterativeLinear.o : $(SRCDIR)basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinear.o $(SRCDIR)basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.cpp	
 	
 OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
@@ -343,12 +339,6 @@ XPhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/
 	
 XPhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp		
-
-DPhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
-
-DPhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
 	
 DPhiPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
@@ -366,7 +356,13 @@ XPhiPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/X
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp	
 	
 XPhiPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp		
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
+	
+DowndPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp	
+	
+UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp	
 		
 BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
