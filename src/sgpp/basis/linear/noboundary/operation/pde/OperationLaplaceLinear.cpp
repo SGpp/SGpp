@@ -10,6 +10,8 @@
 #include "basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
 #include "basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
 
+#include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
+
 #include "algorithm/common/sweep.hpp"
 
 namespace sg
@@ -77,15 +79,8 @@ void OperationLaplaceLinear::down(DataVector& alpha, DataVector& result, size_t 
 
 void OperationLaplaceLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// traverse all basis function by sequence number
-	for(size_t i = 0; i < storage->size(); i++)
-	{
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
-		(*storage)[i]->get(dim, level, index);
-		//only affects the diagonal of the stiffness matrix
-		result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
-	}
+	DowndPhidPhiBBIterativeLinear myDown(this->storage);
+	myDown(alpha, result, dim);
 }
 
 void OperationLaplaceLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)

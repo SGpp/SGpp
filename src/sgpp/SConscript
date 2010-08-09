@@ -74,14 +74,14 @@ basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
+
+basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.cpp
 
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
@@ -105,14 +105,15 @@ basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
+
+basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp
+basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
 
 basis/modlinear/operation/datadriven/OperationBModLinear.cpp
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp

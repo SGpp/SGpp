@@ -10,6 +10,9 @@
 #include "basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
 
+#include "basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.hpp"
+#include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
+
 #include "algorithm/common/sweep.hpp"
 
 #include "grid/common/BoundingBox.hpp"
@@ -41,162 +44,14 @@ void OperationLaplaceLinearBoundary::down(DataVector& alpha, DataVector& result,
 
 void OperationLaplaceLinearBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// Bounding Box handling
-	BoundingBox* boundingBox = this->storage->getBoundingBox();
-	double q = boundingBox->getIntervalWidth(dim);
-	double Qqout = 1.0/(q*q);
-
-	// init the coefficients of the ansatz functions with boundary
-	result.setAll(0.0);
-
-	if (q != 1.0)
-	{
-		// traverse all basis function by sequence number
-		for(size_t i = 0; i < storage->size(); i++)
-		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
-			(*storage)[i]->get(dim, level, index);
-			if (level == 0)
-			{
-				if (index == 0)
-				{
-					if (!boundingBox->hasDirichletBoundaryLeft(dim))
-					{
-						//only affects the diagonal of the stiffness matrix
-						result[i] += Qqout*alpha[i];
-
-						// down
-						if (index == 0)
-						{
-							GridIndex index_one = (*storage)[i];
-							index_one.set(dim, 0, 1);
-							if (!boundingBox->hasDirichletBoundaryRight(dim))
-							{
-								result[(*storage)[&index_one]] += ((-1.0*Qqout) * alpha[i]);
-							}
-						}
-					}
-				}
-				if (index == 1)
-				{
-					if (!boundingBox->hasDirichletBoundaryRight(dim))
-					{
-						//only affects the diagonal of the stiffness matrix
-						result[i] += Qqout*alpha[i];
-					}
-				}
-			}
-			//only affects the diagonal of the stiffness matrix
-			else
-			{
-				result[i] = alpha[i]*(Qqout*pow(2.0, static_cast<int>(level+1)));
-			}
-		}
-	}
-	else
-	{
-		// traverse all basis function by sequence number
-		for(size_t i = 0; i < storage->size(); i++)
-		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
-			(*storage)[i]->get(dim, level, index);
-			if (level == 0)
-			{
-				if (index == 0)
-				{
-					if (!boundingBox->hasDirichletBoundaryLeft(dim))
-					{
-						//only affects the diagonal of the stiffness matrix
-						result[i] += alpha[i];
-
-						// down
-						if (index == 0)
-						{
-							GridIndex index_one = (*storage)[i];
-							index_one.set(dim, 0, 1);
-							if (!boundingBox->hasDirichletBoundaryRight(dim))
-							{
-								result[(*storage)[&index_one]] += ((-1.0) * alpha[i]);
-							}
-						}
-					}
-				}
-				if (index == 1)
-				{
-					if (!boundingBox->hasDirichletBoundaryRight(dim))
-					{
-						//only affects the diagonal of the stiffness matrix
-						result[i] += alpha[i];
-					}
-				}
-			}
-			//only affects the diagonal of the stiffness matrix
-			else
-			{
-				result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
-			}
-		}
-	}
+	DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+	myDown(alpha, result, dim);
 }
 
 void OperationLaplaceLinearBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// Bounding Box handling
-	BoundingBox* boundingBox = this->storage->getBoundingBox();
-	double q = boundingBox->getIntervalWidth(dim);
-	double Qqout = 1.0/(q*q);
-
-	// init the coefficients of the ansatz functions with boundary
-	result.setAll(0.0);
-
-	if (q != 1.0)
-	{
-		// traverse all basis function by sequence number
-		for(size_t i = 0; i < storage->size(); i++)
-		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
-			(*storage)[i]->get(dim, level, index);
-			if (level == 0)
-			{
-				// up
-				if (index == 1)
-				{
-					GridIndex index_zero = (*storage)[i];
-					index_zero.set(dim, 0, 0);
-					if (!boundingBox->hasDirichletBoundaryLeft(dim))
-					{
-						result[(*storage)[&index_zero]] += ((-1.0*Qqout) * alpha[i]);
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		// traverse all basis function by sequence number
-		for(size_t i = 0; i < storage->size(); i++)
-		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
-			(*storage)[i]->get(dim, level, index);
-			if (level == 0)
-			{
-				// up
-				if (index == 1)
-				{
-					GridIndex index_zero = (*storage)[i];
-					index_zero.set(dim, 0, 0);
-					if (!boundingBox->hasDirichletBoundaryLeft(dim))
-					{
-						result[(*storage)[&index_zero]] += ((-1.0) * alpha[i]);
-					}
-				}
-			}
-		}
-	}
+	UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+	myUp(alpha, result, dim);
 }
 
 }
