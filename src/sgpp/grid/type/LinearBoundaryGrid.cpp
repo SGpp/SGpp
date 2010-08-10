@@ -18,6 +18,10 @@
 
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLELinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLBLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLFLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/OperationLDLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
@@ -98,6 +102,26 @@ OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
 OperationMatrix* LinearBoundaryGrid::createOperationLTwoDotProduct()
 {
 	return new OperationLTwoDotProductLinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationLE()
+{
+	return new OperationLELinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationLB()
+{
+	return new OperationLBLinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationLF()
+{
+	return new OperationLFLinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearBoundaryGrid::createOperationLD()
+{
+	return new OperationLDLinearBoundary(this->storage);
 }
 
 // @todo (heinecke) removed this when done
