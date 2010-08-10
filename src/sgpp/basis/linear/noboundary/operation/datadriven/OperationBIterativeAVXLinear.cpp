@@ -197,7 +197,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 							support_0 = _mm256_add_pd(support_0, support_4);
 
 							support_0 = _mm256_hadd_pd(support_0, support_0);
-							__m256d tmp = _mm256_permute2f128_pd(support_0, support_0, 0x0A);
+							__m256d tmp = _mm256_permute2f128_pd(support_0, support_0, 0x81);
 							support_0 = _mm256_add_pd(support_0, tmp);
 							res_0 = _mm256_add_pd(res_0, support_0);
 
