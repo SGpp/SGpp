@@ -11,13 +11,13 @@
 #include <string>
 #include <iostream>
 
-#define DATAFILE "DR5_nowarnings_less05_train.arff"
-//#define DATAFILE "twospirals.wieland.arff"
+//#define DATAFILE "DR5_nowarnings_less05_train.arff"
+#define DATAFILE "twospirals.wieland.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 
-#define LEVELS 3
-#define REFINEMENTS 3
+#define LEVELS 7
+#define REFINEMENTS 0
 #define CG_IMAX 10000
 #define CG_EPS 0.00001
 #define LAMBDA 0.000001
@@ -25,6 +25,7 @@
 #define REFINE_NUM 100
 
 #define USE_SSE
+//#define USE_AVX
 
 
 void adaptRegressionTest()
@@ -66,8 +67,13 @@ void adaptRegressionTest()
 
     // Generate CG to solve System
     sg::ConjugateGradients* myCG = new sg::ConjugateGradients(CG_IMAX, CG_EPS);
+#if defined(USE_SSE) || defined(USE_AVX)
 #ifdef USE_SSE
     sg::DMSystemMatrixSSEIdentity* mySystem = new sg::DMSystemMatrixSSEIdentity(*myGrid, data, LAMBDA);
+#endif
+#ifdef USE_AVX
+    sg::DMSystemMatrixAVXIdentity* mySystem = new sg::DMSystemMatrixAVXIdentity(*myGrid, data, LAMBDA);
+#endif
 #else
     sg::OperationMatrix* myC = myGrid->createOperationIdentity();
     sg::DMSystemMatrix* mySystem = new sg::DMSystemMatrix(*myGrid, data, *myC, LAMBDA);
@@ -87,7 +93,7 @@ void adaptRegressionTest()
     		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, REFINE_NUM, REFINE_THRESHOLD);
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
-#ifdef USE_SSE
+#if defined(USE_SSE) || defined(USE_AVX)
     		mySystem->rebuildLevelAndIndex();
 #endif
     		std::cout << "New Grid Size: " << myGrid->getStorage()->size() << std::endl;
@@ -112,9 +118,9 @@ void adaptRegressionTest()
 
     std::cout << "Finished Learning!" << std::endl;
 
-//    sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
-//    myPrinter->printGrid(alpha, "VTuneTest_Result.gnuplot", 50);
-//    delete myPrinter;
+    sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
+    myPrinter->printGrid(alpha, "VTuneTest_Result.gnuplot", 50);
+    delete myPrinter;
 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -123,7 +129,9 @@ void adaptRegressionTest()
     std::cout << std::endl;
 
 #ifndef USE_SSE
+#ifndef USE_AVX
     delete myC;
+#endif
 #endif
     delete myCG;
     delete mySystem;
