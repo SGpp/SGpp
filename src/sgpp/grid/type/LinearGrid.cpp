@@ -20,6 +20,11 @@
 
 #include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/OperationLELinear.hpp"
+#include "basis/linear/noboundary/operation/pde/OperationLBLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/OperationLFLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/OperationLDLinear.hpp"
+
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.hpp"
@@ -117,6 +122,26 @@ OperationHierarchisation* LinearGrid::createOperationHierarchisation()
 OperationMatrix* LinearGrid::createOperationLTwoDotProduct()
 {
 	return new OperationLTwoDotProductLinear(this->storage);
+}
+
+OperationMatrix* LinearGrid::createOperationLE()
+{
+	return new OperationLELinear(this->storage);
+}
+
+OperationMatrix* LinearGrid::createOperationLB()
+{
+	return new OperationLBLinear(this->storage);
+}
+
+OperationMatrix* LinearGrid::createOperationLF()
+{
+	return new OperationLFLinear(this->storage);
+}
+
+OperationMatrix* LinearGrid::createOperationLD()
+{
+	return new OperationLDLinear(this->storage);
 }
 
 // @todo (heinecke) removed this when done
