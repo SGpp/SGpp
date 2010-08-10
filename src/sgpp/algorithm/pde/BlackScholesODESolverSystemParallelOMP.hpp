@@ -62,6 +62,14 @@ public:
 	 * Std-Destructor
 	 */
 	virtual ~BlackScholesODESolverSystemParallelOMP();
+
+	/**
+	 * Multiplicates a vector with the matrix, parallel
+	 *
+	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
+	 * @param result DataVector into which the result of the space discretization operation is stored
+	 */
+	virtual void mult(DataVector& alpha, DataVector& result);
 };
 
 }

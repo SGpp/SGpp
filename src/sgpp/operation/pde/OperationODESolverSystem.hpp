@@ -120,7 +120,7 @@ public:
 	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
 	 * @param result DataVector into which the result of the space discretization operation is stored
 	 */
-	void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(DataVector& alpha, DataVector& result);
 
 	/**
 	 * generates the right hand side of the system
