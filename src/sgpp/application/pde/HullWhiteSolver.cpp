@@ -84,7 +84,11 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", false, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+#ifdef USEOMPTHREE
+		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+#else
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+#endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -95,6 +99,9 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
 
 		if (this->myScreen != NULL)
 		{
@@ -120,7 +127,11 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", false, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+#ifdef USEOMPTHREE
+		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+#else
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+#endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -131,6 +142,9 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsiz
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
 
 		if (this->myScreen != NULL)
 		{
