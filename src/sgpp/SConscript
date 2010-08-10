@@ -59,6 +59,10 @@ basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
 basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
 basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLBLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLDLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLELinear.cpp
+basis/linear/noboundary/operation/pde/OperationLFLinear.cpp
 basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
 basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
 basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
@@ -75,6 +79,8 @@ basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
 basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
@@ -93,6 +99,10 @@ basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.cpp
 basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
 basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
 basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
+basis/linear/boundary/operation/pde/OperationLBLinearBoundary.cpp
+basis/linear/boundary/operation/pde/OperationLDLinearBoundary.cpp
+basis/linear/boundary/operation/pde/OperationLELinearBoundary.cpp
+basis/linear/boundary/operation/pde/OperationLFLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
 basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
 
@@ -106,6 +116,8 @@ basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
