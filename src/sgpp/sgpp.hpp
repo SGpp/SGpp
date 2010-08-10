@@ -22,6 +22,7 @@
 #include "algorithm/datadriven/test_dataset.hpp"
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 #include "algorithm/datadriven/DMSystemMatrixSSEIdentity.hpp"
+#include "algorithm/datadriven/DMSystemMatrixAVXIdentity.hpp"
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "algorithm/pde/BlackScholesODESolverSystemParallelOMP.hpp"

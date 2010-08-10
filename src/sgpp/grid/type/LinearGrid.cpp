@@ -13,6 +13,7 @@
 // Include all operations on the linear grid
 #include "basis/linear/noboundary/operation/datadriven/OperationBLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationEvalLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
@@ -80,7 +81,11 @@ OperationBVectorized* LinearGrid::createOperationBVectorized(const std::string& 
 {
 	if (VecType == "SSE")
 	{
-			return new OperationBIterativeSSELinear(this->storage);
+		return new OperationBIterativeSSELinear(this->storage);
+	}
+	else if (VecType == "AVX")
+	{
+		return new OperationBIterativeAVXLinear(this->storage);
 	}
 	else
 	{
