@@ -14,7 +14,8 @@
 #endif
 
 #ifdef USEICCINTRINSICS
-#include <xmmintrin.h>
+// include SSE3 intrinsics
+#include <pmmintrin.h>
 
 union doubleAbsMask
 {
