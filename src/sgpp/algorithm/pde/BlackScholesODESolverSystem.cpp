@@ -8,6 +8,7 @@
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
+#include "grid/generation/SurplusRefinementFunctor.hpp"
 #include <cmath>
 
 namespace sg
@@ -221,6 +222,23 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 
 		delete myGeneratorCoarsen;
 		delete myCoarsenFunctor;
+
+//		size_t numRefines;
+//
+//		// Coarsen the grid
+//		GridGenerator* myGeneratorRefine = this->BoundGrid->createGridGenerator();
+//
+//		numRefines = myGeneratorRefine->getNumberOfRefinablePoints();
+//		numRefines = static_cast<size_t>(((double)numRefines)*(this->coarsenPercent)/100.0);
+//
+//		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->coarsenThreshold);
+//
+//		//myGeneratorRefine->refineMaxLevel(myRefineFunc, this->numExecCoarsen);
+//		myGeneratorRefine->refine(myRefineFunc);
+//		this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+//
+//		delete myGeneratorRefine;
+//		delete myRefineFunc;
 
 		// rebuild the inner grid + coefficients
 		this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
