@@ -16,7 +16,7 @@ namespace sg
 {
 
 /**
- * This class implements the explicit Euler method
+ * This class implements the explicit and implicit Euler method
  * for solving ordinary partial equations
  *
  * @version $HEAD$
