@@ -17,6 +17,7 @@ namespace sg
  * Implements the Delta-Operation, that is needed
  * the solve the multidimensional Black Scholes
  * equation
+ * (in the non-transformed case, this corresponds to matrix F in Master's thesis)
  *
  * This operation implements the Delta-Operation
  * for the log-transformed Black Scholes Equation

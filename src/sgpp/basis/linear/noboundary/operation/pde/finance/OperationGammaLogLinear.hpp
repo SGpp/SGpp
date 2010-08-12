@@ -17,6 +17,7 @@ namespace sg
  * Implements the Gamma-Operation, that is needed
  * the solve the multidimensional Black Scholes
  * equation.
+ * (in the non-transformed case, this corresponds to matrix E in Master's thesis)
  *
  * This operation implements the Gamma-Operation
  * for the log-transformed Black Scholes Equation

@@ -14,7 +14,7 @@ namespace sg
 {
 
 /**
- * Implements the Gamma-Operation, that is needed
+ * Implements the Gamma-Operation (corresponds to matrix E in Master's thesis), that is needed
  * the solve the multidimensional Black Scholes
  * equation, on grids with fix Dirichlet-0-Boundaries.
  *
