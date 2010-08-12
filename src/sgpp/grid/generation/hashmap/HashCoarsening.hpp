@@ -44,13 +44,17 @@ public:
 	 * specified in the coarsening functor. ONLY INNER GRID POINTS WILL
 	 * BE REMOVED!
 	 *
+	 * Here only the numFirstPoints are regarded for coarsening, later points
+	 * are skipped.
+	 *
 	 * @param storage hashmap that stores the grid points
 	 * @param functor a function used to determine if refinement is needed
 	 * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
+	 * @param numFirstPoints number of grid points that are regarded to be coarsened
 	 */
-	void free_coarsen(GridStorage* storage, CoarseningFunctor* functor, DataVector* alpha)
+	void free_coarsen_NFirstOnly(GridStorage* storage, CoarseningFunctor* functor, DataVector* alpha, size_t numFirstPoints)
 	{
-		// chech if the grid has any points
+		// check if the grid has any points
 		if(storage->size() == 0)
 		{
 			throw generation_exception("storage empty");
@@ -76,18 +80,19 @@ public:
 		// surplus in removePoints
 		size_t max_idx = 0;
 
-		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != storage->end(); iter++)
+		// assure that only the first numFirstPoints are checked for coarsening
+		for(size_t z = 0; z < numFirstPoints; z++)
 		{
-			index_type* index = iter->first;
+			index_type* index = storage->get(z);
 
 			if (index->isLeaf() && index->isInnerPoint())
 			{
-				CoarseningFunctor::value_type current_value = (*functor)(storage, iter->second);
+				CoarseningFunctor::value_type current_value = (*functor)(storage, z);
 				if(current_value < removePoints[max_idx].second)
 				{
 					//Replace the maximum point array of removable candidates, find the new maximal point
 					removePoints[max_idx].second = current_value;
-					removePoints[max_idx].first = iter->second;
+					removePoints[max_idx].first = z;
 
 					// find new maximum entry
 					max_idx = 0;
@@ -146,6 +151,25 @@ public:
 
 		// Drop Elements from DataVector
 		alpha->restructure(remainingIndex);
+	}
+
+	/**
+	 * Performs coarsening on grid. It's possible to remove a certain number
+	 * of gridpoints in one coarsening step. This number is specified within the
+	 * declaration of the coarsening functor. Also the coarsening threshold is
+	 * specified in the coarsening functor. ONLY INNER GRID POINTS WILL
+	 * BE REMOVED!
+	 *
+	 * This function calls free_coarsen_NFirstOnly with numFirstPoints equal
+	 * to the grid's size.
+	 *
+	 * @param storage hashmap that stores the grid points
+	 * @param functor a function used to determine if refinement is needed
+	 * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
+	 */
+	void free_coarsen(GridStorage* storage, CoarseningFunctor* functor, DataVector* alpha)
+	{
+		free_coarsen_NFirstOnly(storage, functor, alpha, storage->size());
 	}
 
 	/**

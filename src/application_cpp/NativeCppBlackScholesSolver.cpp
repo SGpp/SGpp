@@ -1068,7 +1068,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 //	{
 //		oldGridSize = newGridSize;
 //		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level);
+//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level+3);
 //		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 //		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 //		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;

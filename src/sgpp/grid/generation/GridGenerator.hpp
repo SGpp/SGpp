@@ -55,6 +55,15 @@ public:
 	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
 
 	/**
+	 * Coarsens a  grid according to the settings of the CoarseningFunctor func.
+	 * Only numFirstOnly first grid points are checked for coarsening.
+	 *
+	 * @param func pointer to coarsening functor
+	 * @param alpha Pointer to DataVector containing the grid's coefficients
+	 */
+	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) = 0;
+
+	/**
 	 * Returns the number of points on the grid that can be refined in the next iteration
 	 *
 	 * @return the number of points on the grid that can be refined
