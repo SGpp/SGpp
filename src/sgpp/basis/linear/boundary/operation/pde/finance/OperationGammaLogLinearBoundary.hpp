@@ -16,6 +16,7 @@ namespace sg
 /**
  * Implements the Gamma-Operation, that is needed
  * the solve the multidimensional Black Scholes
+ * (in the non-transformed case, this corresponds to matrix E in Master's thesis)
  * equation
  *
  * @version $HEAD$
