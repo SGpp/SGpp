@@ -32,6 +32,7 @@ public:
 	virtual void regular(size_t level) = 0;
 	virtual void refine(RefinementFunctor* func) = 0;
 	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
+	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) = 0;
 	virtual int getNumberOfRefinablePoints() = 0;
 	virtual int getNumberOfRemoveablePoints() = 0;
 	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;

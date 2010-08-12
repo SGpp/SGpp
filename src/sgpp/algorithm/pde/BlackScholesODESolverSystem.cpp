@@ -223,22 +223,32 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 		delete myGeneratorCoarsen;
 		delete myCoarsenFunctor;
 
-//		size_t numRefines;
+		///////////////////////////////////////////////////
+		// Start integrated refinement & coarsening
+		///////////////////////////////////////////////////
+
+//		size_t originalGridSize = this->BoundGrid->getStorage()->size();
 //
 //		// Coarsen the grid
-//		GridGenerator* myGeneratorRefine = this->BoundGrid->createGridGenerator();
+//		GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 //
-//		numRefines = myGeneratorRefine->getNumberOfRefinablePoints();
-//		numRefines = static_cast<size_t>(((double)numRefines)*(this->coarsenPercent)/100.0);
-//
+//		size_t numRefines = myGenerator->getNumberOfRefinablePoints();
 //		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->coarsenThreshold);
-//
-//		//myGeneratorRefine->refineMaxLevel(myRefineFunc, this->numExecCoarsen);
-//		myGeneratorRefine->refine(myRefineFunc);
+//		//myGenerator->refineMaxLevel(myRefineFunc, this->numExecCoarsen);
+//		myGenerator->refine(myRefineFunc);
 //		this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
-//
-//		delete myGeneratorRefine;
 //		delete myRefineFunc;
+//
+//		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+//		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, (this->coarsenThreshold/((double)this->numExecCoarsen)));
+//		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
+//		delete myCoarsenFunctor;
+//
+//		delete myGenerator;
+
+		///////////////////////////////////////////////////
+		// End integrated refinement & coarsening
+		///////////////////////////////////////////////////
 
 		// rebuild the inner grid + coefficients
 		this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
