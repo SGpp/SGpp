@@ -10,7 +10,14 @@
 
 #include <new>
 #include <exception>
+#ifdef LARRABEENATIVE
+#include <lmmintrin.h>
+#define memalign _mm_malloc
+#define freealign _mm_free
+#else
 #include <malloc.h>
+#define freealign free
+#endif
 
 /// define number of bytes that should used as alignment
 #define SGPPMEMALIGNMENT 64

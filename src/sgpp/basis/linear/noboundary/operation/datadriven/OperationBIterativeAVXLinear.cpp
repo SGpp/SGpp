@@ -211,7 +211,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 					{
 						for (size_t j = m; j < grid_end; j++)
 						{
-							double curSupport = 1.0;
+							double curSupport = ptrSource[i];
 
 							#pragma ivdep
 							#pragma vector aligned
@@ -225,7 +225,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 								curSupport *= localSupport;
 							}
 
-							ptrResult[j] += (curSupport * ptrSource[i]);
+							ptrResult[j] += curSupport;
 						}
 					}
 				}
@@ -234,7 +234,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 				{
 					for (size_t j = m; j < grid_end; j++)
 					{
-						double curSupport = 1.0;
+						double curSupport = ptrSource[i];
 #ifdef __ICC
 						#pragma ivdep
 						#pragma vector aligned
@@ -249,7 +249,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 							curSupport *= localSupport;
 						}
 
-						ptrResult[j] += (curSupport * ptrSource[i]);
+						ptrResult[j] += curSupport;
 					}
 				}
 #endif
@@ -414,7 +414,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 					{
 						for (size_t j = m; j < grid_end; j++)
 						{
-							double curSupport = 1.0;
+							double curSupport = ptrAlpha[j];
 
 							#pragma ivdep
 							#pragma vector aligned
@@ -428,7 +428,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 								curSupport *= localSupport;
 							}
 
-							ptrResult[i] += (curSupport * ptrAlpha[j]);
+							ptrResult[i] += curSupport;
 						}
 					}
 				}
@@ -437,7 +437,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 				{
 					for (size_t j = m; j < grid_end; j++)
 					{
-						double curSupport = 1.0;
+						double curSupport = ptrAlpha[j];
 #ifdef __ICC
 						#pragma ivdep
 						#pragma vector aligned
@@ -452,7 +452,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 							curSupport *= localSupport;
 						}
 
-						ptrResult[i] += (curSupport * ptrAlpha[j]);
+						ptrResult[i] += curSupport;
 					}
 				}
 #endif
