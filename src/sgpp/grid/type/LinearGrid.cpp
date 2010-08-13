@@ -20,10 +20,10 @@
 
 #include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
-#include "basis/linear/noboundary/operation/pde/OperationLELinear.hpp"
-#include "basis/linear/noboundary/operation/pde/OperationLBLinear.hpp"
-#include "basis/linear/noboundary/operation/pde/OperationLFLinear.hpp"
-#include "basis/linear/noboundary/operation/pde/OperationLDLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLELinear.hpp"
+#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLBLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLFLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLDLinear.hpp"
 
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.hpp"

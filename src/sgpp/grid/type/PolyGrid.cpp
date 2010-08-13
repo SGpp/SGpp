@@ -99,6 +99,26 @@ OperationMatrix* PolyGrid::createOperationLTwoDotProduct()
 	throw factory_exception("Unsupported operation");
 }
 
+OperationMatrix* PolyGrid::createOperationLB()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* PolyGrid::createOperationLD()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* PolyGrid::createOperationLE()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* PolyGrid::createOperationLF()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 // @todo (heinecke) removed this when done
 OperationMatrix* PolyGrid::createOperationUpDownTest()
 {

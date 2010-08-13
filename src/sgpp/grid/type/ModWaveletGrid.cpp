@@ -93,6 +93,26 @@ OperationMatrix* ModWaveletGrid::createOperationLTwoDotProduct()
 	throw factory_exception("Unsupported operation");
 }
 
+OperationMatrix* ModWaveletGrid::createOperationLB()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModWaveletGrid::createOperationLD()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModWaveletGrid::createOperationLE()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix* ModWaveletGrid::createOperationLF()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 // @todo (heinecke) removed this when done
 OperationMatrix* ModWaveletGrid::createOperationUpDownTest()
 {
