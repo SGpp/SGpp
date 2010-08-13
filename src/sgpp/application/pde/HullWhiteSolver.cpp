@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-//#include "algorithm/pde/HullWhiteODESolverSystem.hpp"
+#include "algorithm/pde/HullWhiteODESolverSystem.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -80,28 +80,28 @@ void HullWhiteSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 
 void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	/*if (this->bGridConstructed && this->bStochasticDataAlloc)
+	if (this->bGridConstructed)
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-#ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-#else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-#endif
+//#ifdef USEOMPTHREE
+//		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+//#else
+		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+//#endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
 		std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
-		myEuler->solve(*myCG, *myBSSystem, true, verbose);
+		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 		execTime = myStopwatch->stop();
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+		std::cout << "Average Grid size: " << static_cast<double>(myHWSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+		std::cout << "Average Grid size (Inner): " << static_cast<double>(myHWSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
 
 		if (this->myScreen != NULL)
 		{
@@ -109,15 +109,15 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 			this->myScreen->writeEmptyLines(2);
 		}
 
-		delete myBSSystem;
+		delete myHWSystem;
 		delete myCG;
 		delete myEuler;
 		delete myStopwatch;
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
-	}*/
+		throw new application_exception("HullWhiteSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
+	}
 }
 
 
