@@ -64,6 +64,7 @@ void DMSystemMatrixSSEIdentity::generateb(DataVector& classes, DataVector& b)
 	{
 		myClasses.resizeZero(numCols);
 	}
+
 	this->B->multVectorized(myClasses, (*data), b);
 }
 

@@ -43,7 +43,6 @@ public:
 	typedef index_type::index_type index_t;
 	typedef index_type::level_type level_t;
 
-
 	/**
 	 * Generates a regular sparse grid of level levels, without boundaries
 	 *
