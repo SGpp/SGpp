@@ -152,11 +152,11 @@ void testHullWhite(size_t l, double theta, double sigma, double a, std::string f
 			point.push_back(1.0);
 		}
 		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
-
-		delete alpha;
-		delete myBSSolver;
-		delete myBoundingBox;
 */
+		delete alpha;
+		delete myHWSolver;
+		delete myBoundingBox;
+
 	//std::cout << "Nothing has been implemented so far " << std::endl;
 
 
