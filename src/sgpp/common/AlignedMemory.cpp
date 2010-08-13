@@ -10,7 +10,7 @@
 void* operator new (size_t size) throw (std::bad_alloc)
 {
 	void *p;
-	p = memalign(SGPPMEMALIGNMENT, size);
+	p = aligned_malloc(size, SGPPMEMALIGNMENT);
 	if (p==0)
 	{
 		throw std::bad_alloc();
@@ -21,7 +21,7 @@ void* operator new (size_t size) throw (std::bad_alloc)
 void* operator new[] (size_t size) throw (std::bad_alloc)
 {
 	void *p;
-	p = memalign(SGPPMEMALIGNMENT, size);
+	p = aligned_malloc(size, SGPPMEMALIGNMENT);
 	if (p==0)
 	{
 		throw std::bad_alloc();
@@ -31,10 +31,10 @@ void* operator new[] (size_t size) throw (std::bad_alloc)
 
 void operator delete (void *p) throw ()
 {
-	freealign(p);
+	aligned_free(p);
 }
 
 void operator delete[] (void *p) throw()
 {
-	freealign(p);
+	aligned_free(p);
 }

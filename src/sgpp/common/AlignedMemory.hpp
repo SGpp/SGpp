@@ -11,12 +11,26 @@
 #include <new>
 #include <exception>
 #ifdef KNF
-#include <lmmintrin.h>
-#define memalign _mm_malloc
-#define freealign _mm_free
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#undef aligned_malloc
+#undef aligned_free
+#define MAP_FAULTIN     0x80000000 /* fault in backing pages immediately */
+#define MAP_PAGEORDER(n)      (((n) + 1 < 0xf ? (n) + 1 : 0xf) << 24)
+#define MAP_PAGESIZE_4K       MAP_PAGEORDER(0)
+#define MAP_PAGESIZE_64K      MAP_PAGEORDER(4)
+#define MAP_PAGESIZE_2M       MAP_PAGEORDER(9)
+#define aligned_malloc(size,alignment) \
+  mmap(NULL, size, PROT_READ | PROT_WRITE, \
+       MAP_PAGESIZE_4K | MAP_ANON | MAP_FAULTIN, -1, 0);
+#define aligned_free(addr) munmap(addr, 0);
 #else
 #include <malloc.h>
-#define freealign free
+#undef aligned_malloc
+#undef aligned_free
+#define aligned_malloc(size, alignment) memalign(alignment, size)
+#define aligned_free(addr) free(addr)
 #endif
 
 /// define number of bytes that should used as alignment
@@ -27,28 +41,28 @@
  *
  * @param size size of object
  */
-void* operator new (size_t size) throw (std::bad_alloc);
+inline void* operator new (size_t size) throw (std::bad_alloc);
 
 /**
  * Overrides normal new[]
  *
  * @param size size of object
  */
-void* operator new[] (size_t size) throw (std::bad_alloc);
+inline void* operator new[] (size_t size) throw (std::bad_alloc);
 
 /**
  * Overrides normal delete
  *
  * @param p pointer to data to free
  */
-void operator delete (void *p) throw();
+inline void operator delete (void *p) throw();
 
 /**
  * Overrides normal delete[]
  *
  * @param p pointer to data to free
  */
-void operator delete[] (void *p) throw();
+inline void operator delete[] (void *p) throw();
 
 #endif /* ALIGNEDMEMORY_HPP */
 
