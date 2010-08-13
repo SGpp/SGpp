@@ -25,6 +25,7 @@
 #include "algorithm/datadriven/DMSystemMatrixAVXIdentity.hpp"
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/HullWhiteODESolverSystem.hpp"
 #include "algorithm/pde/BlackScholesODESolverSystemParallelOMP.hpp"
 #include "algorithm/pde/HeatEquationODESolverSystem.hpp"
 
