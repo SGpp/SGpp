@@ -44,14 +44,14 @@ LFLAGS_GCC_OMP=-Wall -pedantic -ansi -O3 -pthread -fopenmp
 CFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -fopenmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -Isrc/sgpp/
 LFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -O3 -fopenmp
 
-CFLAGS_ICC=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSEICCINTRINSICS
+CFLAGS_ICC=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSEICCINTRINSICS -axSSE3
 LFLAGS_ICC=-Wall -ansi -O3 -static-intel
-CFLAGS_ICC_TRONE=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSETRONE -DUSEICCINTRINSICS -std=c++0x
+CFLAGS_ICC_TRONE=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSETRONE -DUSEICCINTRINSICS -std=c++0x -axSSE3
 LFLAGS_ICC_TRONE=-Wall -ansi -O3 -static-intel
 
-CFLAGS_ICC_OMP=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS
+CFLAGS_ICC_OMP=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -axSSE3
 LFLAGS_ICC_OMP=-Wall -ansi -O3 -static-intel -openmp -openmp-link static
-CFLAGS_ICC_OMP_TRONE=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -DUSEICCINTRINSICS -std=c++0x
+CFLAGS_ICC_OMP_TRONE=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -DUSEICCINTRINSICS -std=c++0x -axSSE3
 LFLAGS_ICC_OMP_TRONE=-Wall -ansi -O3 -static-intel -openmp -openmp-link static
 
 CFLAGS_XLC=-O3 -qstrict -qtune=auto -qarch=auto -qansialias -c -I$(SRCDIR) -DAIX_XLC -DUSETRONE

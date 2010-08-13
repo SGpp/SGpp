@@ -130,6 +130,10 @@ void DataMatrix::transpose()
 
 	for (size_t i = 0; i < nrows; i++)
 	{
+#ifdef __ICC
+		#pragma ivdep
+		#pragma vector aligned
+#endif
 		for (size_t j = 0; j < ncols; j++)
 		{
 			newData[(j*nrows)+i] = data[(i*ncols)+j];
@@ -157,6 +161,10 @@ size_t DataMatrix::appendRow(DataVector& vec) {
 
 void DataMatrix::setAll(double value) {
 	size_t n = nrows * ncols;
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] = value;
 	}
@@ -185,6 +193,10 @@ void DataMatrix::setRow(size_t row, DataVector& vec) {
 		throw new sg::data_exception(
 				"DataMatrix::setRow : Dimensions do not match");
 	}
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < this->ncols; i++) {
 		this->data[row * ncols + i] = vec[i];
 	}
@@ -195,6 +207,10 @@ void DataMatrix::getColumn(size_t col, DataVector& vec) {
 		throw new sg::data_exception(
 				"DataMatrix::getColumn : Dimensions do not match");
 	}
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t j = 0; j < this->nrows; j++) {
 		vec[j] = data[j * ncols + col];
 	}
@@ -205,6 +221,10 @@ void DataMatrix::setColumn(size_t col, DataVector& vec) {
 		throw new sg::data_exception(
 				"DataMatrix::setColumn : Dimensions do not match");
 	}
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t j = 0; j < this->nrows; j++) {
 		data[j * ncols + col] = vec[j];
 	}
@@ -273,7 +293,10 @@ void DataMatrix::add(DataMatrix &matr) {
 				"DataMatrix::add : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
-
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] += matr.data[i];
 	}
@@ -286,6 +309,10 @@ void DataMatrix::sub(DataMatrix& matr) {
 	}
 	size_t n = nrows * ncols;
 
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] -= matr.data[i];
 	}
@@ -297,6 +324,11 @@ void DataMatrix::componentwise_mult(DataMatrix& matr) {
 				"DataMatrix::componentwise_mult : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
+
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] *= matr.data[i];
 	}
@@ -308,6 +340,11 @@ void DataMatrix::componentwise_div(DataMatrix& matr) {
 				"DataMatrix::componentwise_div : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
+
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] /= matr.data[i];
 	}
@@ -343,6 +380,10 @@ void DataMatrix::componentwise_div(DataMatrix& matr) {
 void DataMatrix::mult(double scalar) {
 	size_t n = nrows * ncols;
 
+#ifdef __ICC
+	#pragma ivdep
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] *= scalar;
 	}
@@ -351,6 +392,9 @@ void DataMatrix::mult(double scalar) {
 void DataMatrix::sqr() {
 	size_t n = nrows * ncols;
 
+#ifdef __ICC
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] = data[i] * data[i];
 	}
@@ -359,6 +403,9 @@ void DataMatrix::sqr() {
 void DataMatrix::sqrt() {
 	size_t n = nrows * ncols;
 
+#ifdef __ICC
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] = std::sqrt(data[i]);
 	}
@@ -367,6 +414,9 @@ void DataMatrix::sqrt() {
 void DataMatrix::abs() {
 	size_t n = nrows * ncols;
 
+#ifdef __ICC
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] = std::abs(data[i]);
 	}
@@ -375,6 +425,10 @@ void DataMatrix::abs() {
 double DataMatrix::sum() {
 	size_t n = nrows * ncols;
 	double result = 0.0;
+
+#ifdef __ICC
+	#pragma vector aligned
+#endif
 	for (size_t i = 0; i < n; i++) {
 		result += data[i];
 	}
@@ -430,11 +484,18 @@ void DataMatrix::normalizeDimension(size_t d, double border) {
 
 	double delta = (xmax - xmin)/(1-2*border);
 	if (delta == 0.0) {
+
+#ifdef __ICC
+		#pragma vector aligned
+#endif
 		for (size_t i = d; i < n; i += ncols) {
 			data[i] = 0.5;
 		}
 	}
 	else {
+#ifdef __ICC
+		#pragma vector aligned
+#endif
 		for (size_t i = d; i < n; i += ncols) {
 			data[i] = (data[i] - xmin) / delta + border;
 		}
