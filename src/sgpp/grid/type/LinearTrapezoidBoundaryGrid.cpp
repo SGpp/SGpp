@@ -19,6 +19,10 @@
 #include "basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.hpp"
 
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
@@ -105,6 +109,26 @@ OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchis
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
 {
 	return new OperationLTwoDotProductLinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLB()
+{
+	return new OperationLBLinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLD()
+{
+	return new OperationLDLinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLE()
+{
+	return new OperationLELinearBoundary(this->storage);
+}
+
+OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLF()
+{
+	return new OperationLFLinearBoundary(this->storage);
 }
 
 // @todo (heinecke) removed this when done

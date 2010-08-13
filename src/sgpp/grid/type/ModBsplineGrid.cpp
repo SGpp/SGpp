@@ -99,7 +99,25 @@ OperationMatrix* ModBsplineGrid::createOperationLTwoDotProduct()
 {
 	throw factory_exception("Unsupported operation");
 }
+OperationMatrix*  ModBsplineGrid::createOperationLB()
+{
+	throw factory_exception("Unsupported operation");
+}
 
+OperationMatrix*  ModBsplineGrid::createOperationLD()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix*  ModBsplineGrid::createOperationLE()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix*  ModBsplineGrid::createOperationLF()
+{
+	throw factory_exception("Unsupported operation");
+}
 OperationMatrix* ModBsplineGrid::createOperationUpDownTest()
 {
 	throw factory_exception("Unsupported operation");

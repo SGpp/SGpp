@@ -53,6 +53,10 @@ public:
 	virtual OperationTest* createOperationTest();
 	virtual OperationHierarchisation* createOperationHierarchisation();
 	virtual OperationMatrix* createOperationLTwoDotProduct();
+	virtual OperationMatrix* createOperationLB();
+	virtual OperationMatrix* createOperationLD();
+	virtual OperationMatrix* createOperationLE();
+	virtual OperationMatrix* createOperationLF();
 
 	// @todo (heinecke) remove this when done
 	virtual OperationMatrix* createOperationUpDownTest();

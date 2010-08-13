@@ -101,6 +101,26 @@ OperationMatrix* ModPolyGrid::createOperationLTwoDotProduct()
 	throw factory_exception("Unsupported operation");
 }
 
+OperationMatrix*  ModPolyGrid::createOperationLB()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix*  ModPolyGrid::createOperationLD()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix*  ModPolyGrid::createOperationLE()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+OperationMatrix*  ModPolyGrid::createOperationLF()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 // @todo (heinecke) removed this when done
 OperationMatrix* ModPolyGrid::createOperationUpDownTest()
 {
