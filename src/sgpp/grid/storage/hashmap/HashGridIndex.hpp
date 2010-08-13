@@ -366,7 +366,7 @@ public:
 		return true;
     }
 
-#ifdef LARRABEENATIVE
+#ifdef KNF
     /**
      * checks whether this gridpoints is identical to another one
 	 *
@@ -649,7 +649,7 @@ private:
 	size_t hash_value;
 };
 
-#ifndef LARRABEENATIVE
+#ifndef KNF
 template<class LT, class IT>
 struct hash<HashGridIndex<LT, IT>* > {
     size_t operator()(HashGridIndex<LT, IT>* index) const {
@@ -665,7 +665,7 @@ struct eqIndex<HashGridIndex<LT, IT>* > {
 };
 #endif
 
-#ifdef LARRABEENATIVE
+#ifdef KNF
 #include <ext/hash_map>
 
 /**

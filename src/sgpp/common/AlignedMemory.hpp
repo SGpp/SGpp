@@ -10,7 +10,7 @@
 
 #include <new>
 #include <exception>
-#ifdef LARRABEENATIVE
+#ifdef KNF
 #include <lmmintrin.h>
 #define memalign _mm_malloc
 #define freealign _mm_free

@@ -229,8 +229,8 @@ void OperationBIterativeSSELinear::multVectorized(DataVector& alpha, DataMatrix&
 					{
 						double curSupport = ptrSource[i];
 #ifdef __ICC
-						#pragma ivdep
-						#pragma vector aligned
+						//#pragma ivdep
+						//#pragma vector aligned
 #endif
 						for (size_t d = 0; d < dims; d++)
 						{
@@ -432,8 +432,8 @@ void OperationBIterativeSSELinear::multTransposeVectorized(DataVector& alpha, Da
 					{
 						double curSupport = ptrAlpha[j];
 #ifdef __ICC
-						#pragma ivdep
-						#pragma vector aligned
+						//#pragma ivdep
+						//#pragma vector aligned
 #endif
 						for (size_t d = 0; d < dims; d++)
 						{

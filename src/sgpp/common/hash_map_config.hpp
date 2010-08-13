@@ -9,7 +9,7 @@
 #define HASH_MAP_CONFIG
 
 // use the MS hashmap (TR1 is not supported, yet) on Larrabee
-#ifdef LARRABEENATIVE
+#ifdef KNF
 #include <ext/hash_map>
 namespace sg {
 	template<class key>
@@ -18,7 +18,7 @@ namespace sg {
 #endif
 
 // backward compatible: able to use the  standard gnu hashmap of linux (SGI/STLPort)
-#ifndef LARRABEENATIVE
+#ifndef KNF
 #ifndef USETRONE
 #include <ext/hash_map>
 namespace std {
@@ -56,7 +56,7 @@ namespace std {
 #endif
 
 // forward declaration of hash function and hash comparison function
-#ifndef LARRABEENATIVE
+#ifndef KNF
 namespace sg {
 	template<class key>
 	struct hash { };
