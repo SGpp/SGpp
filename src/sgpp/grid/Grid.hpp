@@ -207,6 +207,10 @@ public:
 	 * @return pointer to OperationLTwoDotProduct object
 	 */
 	virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
+	virtual OperationMatrix* createOperationLB() = 0;
+	virtual OperationMatrix* createOperationLD() = 0;
+	virtual OperationMatrix* createOperationLE() = 0;
+	virtual OperationMatrix* createOperationLF() = 0;
 
 	/**
 	 * (heinecke) temporal function
