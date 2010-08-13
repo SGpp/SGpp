@@ -10,15 +10,19 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #define DATAFILE "DR5_nowarnings_less05_train.arff"
 //#define DATAFILE "twospirals.wieland.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 
+#define GRIDFILE "Grid.txt"
+
 #define LEVELS 3
-#define REFINEMENTS 3
-#define CG_IMAX 10000
+#define REFINEMENTS 0
+#define CG_IMAX 400
 #define CG_EPS 0.00001
 #define LAMBDA 0.000001
 #define REFINE_THRESHOLD 0.0
@@ -44,12 +48,27 @@ void adaptRegressionTest()
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
 
 	// Create Grid
-	sg::Grid* myGrid = new sg::LinearGrid(nDim);
+	sg::Grid* myGrid;
 
+//#ifndef KNF
+	myGrid = new sg::LinearGrid(nDim);
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(LEVELS);
 	delete myGenerator;
+
+//	std::ofstream file;
+//	file.open(GRIDFILE);
+//	file << myGrid->serialize();
+//	file.close();
+//#else
+//	std::stringstream gridDef;
+//	std::ifstream file;
+//	file.open(GRIDFILE);
+//	gridDef << file.rdbuf();
+//	file.close();
+//	myGrid = sg::Grid::unserialize(gridDef);
+//#endif
 
 	// Read data from file
 	DataMatrix data(nInstancesNo, nDim);
@@ -103,7 +122,7 @@ void adaptRegressionTest()
     	DataVector b(alpha.getSize());
     	mySystem->generateb(classes, b);
 
-    	myCG->solve(*mySystem, alpha, b, false, false, 0.0);
+    	myCG->solve(*mySystem, alpha, b, true, true, 0.0);
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
@@ -113,10 +132,11 @@ void adaptRegressionTest()
 //        correct = myTest->test(alpha, data, testclasses);
 //        delete myTest;
     }
-    execTime = myStopwatch->stop();
-    delete myStopwatch;
 
     std::cout << "Finished Learning!" << std::endl;
+
+    execTime = myStopwatch->stop();
+    delete myStopwatch;
 
 //    sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
 //    myPrinter->printGrid(alpha, "VTuneTest_Result.gnuplot", 50);
