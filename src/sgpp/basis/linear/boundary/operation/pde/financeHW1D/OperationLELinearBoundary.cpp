@@ -5,10 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/linear/boundary/operation/pde/OperationLELinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
 
-#include "basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.hpp"
-#include "basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.hpp"
+//#include "basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.hpp"
+//#include "basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.hpp"
+
+#include "basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.hpp"
+#include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
@@ -26,19 +29,15 @@ OperationLELinearBoundary::~OperationLELinearBoundary()
 void OperationLELinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Dphi * dphi
-	detail::DPhidPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::DPhidPhiUpBBLinearBoundary> s(func, this->storage);
-
-	s.sweep1D_Boundary(alpha, result, dim);
+	UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+	myUp(alpha, result, dim);
 }
 
 void OperationLELinearBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Dphi * dphi
-	detail::DPhidPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::DPhidPhiDownBBLinearBoundary> s(func, this->storage);
-
-	s.sweep1D_Boundary(alpha, result, dim);
+	DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+	myDown(alpha, result, dim);
 }
 
 }
