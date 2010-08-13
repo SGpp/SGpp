@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/linear/noboundary/operation/pde/OperationLELinear.hpp"
+#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLELinear.hpp"
 
-#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
-
+//#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp"
+//#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
+#include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 #include "algorithm/common/sweep.hpp"
 
 namespace sg
@@ -25,20 +25,14 @@ OperationLELinear::~OperationLELinear()
 
 void OperationLELinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
-	// Dphi * dphi
-	detail::DPhidPhiUpBBLinear func(this->storage);
-	sweep<detail::DPhidPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D(alpha, result, dim);
 }
 
 void OperationLELinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Dphi * dphi
-	detail::DPhidPhiDownBBLinear func(this->storage);
-	sweep<detail::DPhidPhiDownBBLinear> s(func, this->storage);
-
-	s.sweep1D(alpha, result, dim);
+	DowndPhidPhiBBIterativeLinear myDown(this->storage);
+	myDown(alpha, result, dim);
 }
 
 }

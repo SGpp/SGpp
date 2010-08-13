@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/linear/noboundary/operation/pde/OperationLBLinear.hpp"
+#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLBLinear.hpp"
 
 #include "basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.hpp"
 #include "basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
