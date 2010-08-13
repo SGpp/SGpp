@@ -10,15 +10,12 @@
 
 #include <string>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 
 #define DATAFILE "DR5_nowarnings_less05_train.arff"
 //#define DATAFILE "twospirals.wieland.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
-
-#define GRIDFILE "Grid.txt"
+//#define GRIDFILE "Grid.txt"
 
 #define LEVELS 3
 #define REFINEMENTS 0
@@ -50,25 +47,11 @@ void adaptRegressionTest()
 	// Create Grid
 	sg::Grid* myGrid;
 
-//#ifndef KNF
 	myGrid = new sg::LinearGrid(nDim);
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(LEVELS);
 	delete myGenerator;
-
-//	std::ofstream file;
-//	file.open(GRIDFILE);
-//	file << myGrid->serialize();
-//	file.close();
-//#else
-//	std::stringstream gridDef;
-//	std::ifstream file;
-//	file.open(GRIDFILE);
-//	gridDef << file.rdbuf();
-//	file.close();
-//	myGrid = sg::Grid::unserialize(gridDef);
-//#endif
 
 	// Read data from file
 	DataMatrix data(nInstancesNo, nDim);
