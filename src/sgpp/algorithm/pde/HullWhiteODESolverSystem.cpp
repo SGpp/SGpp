@@ -183,7 +183,7 @@ void HullWhiteODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector
 	// Apply the gamma method
 	this->OpGammaInner->mult(alpha, temp);
 	result.sub(temp);*/
-	if (this->theta != 0.0)
+	    if (this->theta != 0.0)
 			{
 				this->OpBInner->mult(alpha, temp);
 				result.axpy(1.0*this->theta, temp);
@@ -231,18 +231,33 @@ void HullWhiteODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVecto
 }
 
 void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
-{/*
+{
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
+	/*for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+	        coordsStream >> tmp;
+		        if (this->tmp != 0.0)
+		        		{
+		        			if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
+		        			{
+		        			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->tmp*this->TimestepSize))));
+		        			}
+		        		}
+		        			}
 	// Adjust the boundaries with the riskfree rate
-	if (this->r != 0.0)
+	/*if (this->r != 0.0)
 	{
 		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
-	}
+	}*/
+
+
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
@@ -270,7 +285,7 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 
 		// rebuild the inner grid + coefficients
 		this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-	}*/
+	}
 }
 
 void HullWhiteODESolverSystem::startTimestep()
