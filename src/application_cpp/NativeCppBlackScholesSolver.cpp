@@ -1068,7 +1068,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 //	{
 //		oldGridSize = newGridSize;
 //		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level+3);
+//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level);
 //		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 //		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 //		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
@@ -1077,19 +1077,29 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 //	} while (addedGridPoint > 0);
 //	std::cout << std::endl << std::endl << std::endl;
 
+//	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+//	{
+//		std::cout << "Refining Grid..." << std::endl;
+//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level);
+//		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+//	}
+//	std::cout << std::endl << std::endl << std::endl;
+
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
 		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
-		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
-		// Write interpolation error into a file
-		myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
-		if (isLogSolve == true)
-		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
-		}
+	}
+	myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+	myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+	// Write interpolation error into a file
+	myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+	if (isLogSolve == true)
+	{
+		myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
+		myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 	}
 
 	// Gridpoints @Money
@@ -1128,13 +1138,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
 		myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
-		myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
-		if (isLogSolve == true)
-		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
-		}
+	}
+	myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+	myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+	if (isLogSolve == true)
+	{
+		myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
+		myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
 	}
 
 	std::vector<double> point;
