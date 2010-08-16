@@ -10,8 +10,16 @@
 
 #include <new>
 #include <exception>
+
 #ifdef KNF
 #include <lmmintrin.h>
+#undef aligned_malloc
+#undef aligned_free
+#define aligned_malloc(size, alignment) _mm_malloc(size, alignment)
+#define aligned_free(addr) _mm_free(addr)
+#else
+#ifdef WINDOWS
+#include <pmmintrin.h>
 #undef aligned_malloc
 #undef aligned_free
 #define aligned_malloc(size, alignment) _mm_malloc(size, alignment)
@@ -22,6 +30,7 @@
 #undef aligned_free
 #define aligned_malloc(size, alignment) memalign(alignment, size)
 #define aligned_free(addr) free(addr)
+#endif
 #endif
 
 /// define number of bytes that should used as alignment

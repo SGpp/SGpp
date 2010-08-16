@@ -99,7 +99,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 			chunksize++;
 		}
     	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min(start+chunksize, source_size);
+    	size_t end = std::min<size_t>(start+chunksize, source_size);
 
     	DataVector myResult(result.getSize());
     	myResult.setAll(0.0);
@@ -109,13 +109,13 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
     	size_t end = source_size;
     	double* ptrResult = result.getPointer();
 #endif
-		for(size_t c = start; c < end; c+=std::min((size_t)CHUNKDATAPOINTS_AVX, (end-c)))
+		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_AVX, (end-c)))
 		{
-			size_t data_end = std::min((size_t)CHUNKDATAPOINTS_AVX+c, end);
+			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_AVX+c, end);
 
-			for (size_t m = 0; m < storageSize; m+=std::min((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m)))
+			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m)))
 			{
-				size_t grid_end = std::min((size_t)CHUNKGRIDPOINTS_AVX+m, storageSize);
+				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX+m, storageSize);
 #ifdef USEICCINTRINSICS
 				if ((data_end-c) == CHUNKDATAPOINTS_AVX && (grid_end-m) == CHUNKGRIDPOINTS_AVX)
 				{
@@ -221,7 +221,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 								double index_calc = eval - (ptrIndex[(j*dims)+d]);
 								double abs = fabs(index_calc);
 								double last = 1.0 - abs;
-								double localSupport = std::max(last, 0.0);
+								double localSupport = std::max<double>(last, 0.0);
 								curSupport *= localSupport;
 							}
 
@@ -245,7 +245,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 							double index_calc = eval - (ptrIndex[(j*dims)+d]);
 							double abs = fabs(index_calc);
 							double last = 1.0 - abs;
-							double localSupport = std::max(last, 0.0);
+							double localSupport = std::max<double>(last, 0.0);
 							curSupport *= localSupport;
 						}
 
@@ -292,14 +292,14 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 			chunksize++;
 		}
     	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min(start+chunksize, result_size);
+    	size_t end = std::min<size_t>(start+chunksize, result_size);
 #else
     	size_t start = 0;
     	size_t end = result_size;
 #endif
-		for(size_t c = start; c < end; c+=std::min((size_t)CHUNKDATAPOINTS_AVX, (end-c)))
+		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_AVX, (end-c)))
 		{
-			size_t data_end = std::min((size_t)CHUNKDATAPOINTS_AVX+c, end);
+			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_AVX+c, end);
 
 #ifdef __ICC
 			#pragma ivdep
@@ -310,9 +310,9 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 				ptrResult[i] = 0.0;
 			}
 
-			for (size_t m = 0; m < storageSize; m+=std::min((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m)))
+			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m)))
 			{
-				size_t grid_end = std::min((size_t)CHUNKGRIDPOINTS_AVX+m, storageSize);
+				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX+m, storageSize);
 #ifdef USEICCINTRINSICS
 				if ((data_end-c) == CHUNKDATAPOINTS_AVX && (grid_end-m) == CHUNKGRIDPOINTS_AVX)
 				{
@@ -424,7 +424,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 								double index_calc = eval - (ptrIndex[(j*dims)+d]);
 								double abs = fabs(index_calc);
 								double last = 1.0 - abs;
-								double localSupport = std::max(last, 0.0);
+								double localSupport = std::max<double>(last, 0.0);
 								curSupport *= localSupport;
 							}
 
@@ -448,7 +448,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 							double index_calc = eval - (ptrIndex[(j*dims)+d]);
 							double abs = fabs(index_calc);
 							double last = 1.0 - abs;
-							double localSupport = std::max(last, 0.0);
+							double localSupport = std::max<double>(last, 0.0);
 							curSupport *= localSupport;
 						}
 

@@ -242,11 +242,11 @@ void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::
 
 			if (payoffType == "std_euro_call")
 			{
-				alpha[i] = std::max((dblFuncValues-strike), 0.0);
+				alpha[i] = std::max<double>((dblFuncValues-strike), 0.0);
 			}
 			else if (payoffType == "std_euro_put")
 			{
-				alpha[i] = std::max(strike-dblFuncValues, 0.0);
+				alpha[i] = std::max<double>(strike-dblFuncValues, 0.0);
 			}*/
 	        double* dblFuncValues = new double[1];
 
@@ -264,7 +264,7 @@ void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::
 	        				{
 	        					tmp += dblFuncValues[j];
 	        				}
-	        				alpha[i] = std::max(((tmp)-strike), 0.0);
+	        				alpha[i] = std::max<double>(((tmp)-strike), 0.0);
 	        			}
 	        			else if (payoffType == "std_euro_put")
 	        			{
@@ -273,7 +273,7 @@ void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::
 	        				{
 	        					tmp += dblFuncValues[j];
 	        				}
-	        				alpha[i] = std::max(strike-((tmp)), 0.0);
+	        				alpha[i] = std::max<double>(strike-((tmp)), 0.0);
 	        			}
 			else
 			{

@@ -17,7 +17,7 @@ ScreenOutput::ScreenOutput()
 	first_run = true;
 }
 
-void ScreenOutput::update(int progress, std::string status)
+void ScreenOutput::update(size_t progress, std::string status)
 {
 	int i;
 	GetConsoleScreenBufferInfo(hCon,&info);
