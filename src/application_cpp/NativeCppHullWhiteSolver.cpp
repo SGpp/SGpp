@@ -204,7 +204,7 @@ void writeHelp()
 
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "5 0 0.01 0.1 bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "0.5 " <<"0.3 "<<std::endl;
+	mySStream << "5 0.006 0.01 0.1 bound.data " << " std_euro_call "<< "3.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "1.0 " <<"0.3 "<<std::endl;
 	mySStream << std::endl;
 
 	mySStream << std::endl << std::endl;
