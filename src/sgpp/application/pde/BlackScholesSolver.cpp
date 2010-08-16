@@ -682,7 +682,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(DataVector& alpha, double s
 				{
 					tmp += dblFuncValues[j];
 				}
-				alpha[i] = std::max(((tmp/static_cast<double>(dim))-strike), 0.0);
+				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
 			else if (payoffType == "std_euro_put")
 			{
@@ -691,7 +691,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(DataVector& alpha, double s
 				{
 					tmp += dblFuncValues[j];
 				}
-				alpha[i] = std::max(strike-((tmp/static_cast<double>(dim))), 0.0);
+				alpha[i] = std::max<double>(strike-((tmp/static_cast<double>(dim))), 0.0);
 			}
 			else
 			{
@@ -737,7 +737,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(DataVector& alpha, dou
 				{
 					tmp += exp(dblFuncValues[j]);
 				}
-				alpha[i] = std::max(((tmp/static_cast<double>(dim))-strike), 0.0);
+				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
 			else if (payoffType == "std_euro_put")
 			{
@@ -746,7 +746,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(DataVector& alpha, dou
 				{
 					tmp += exp(dblFuncValues[j]);
 				}
-				alpha[i] = std::max(strike-((tmp/static_cast<double>(dim))), 0.0);
+				alpha[i] = std::max<double>(strike-((tmp/static_cast<double>(dim))), 0.0);
 			}
 			else
 			{

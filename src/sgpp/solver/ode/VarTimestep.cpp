@@ -84,7 +84,7 @@ void VarTimestep::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem&
 
 		YkImEul.add(*System.getGridCoefficients());
 
-	    double epsilon = pow(10,-4);
+	    double epsilon = 0.0001;
 	    YkImEul.sub(YkAdBas);
 	    double tmp  = sqrt(YkImEul.dotProduct(YkImEul));
 	    double deltaY = tmp/(3.0*(1.0+tmp_timestepsize/tmp_timestepsize_old));
@@ -153,7 +153,7 @@ void VarTimestep::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem&
 				tmp_timestepsize = tmp_timestepsize_new;
 			}
 
-			tmp_timestepsize = std::min(tmp_timestepsize,maxTimestep-time);
+			tmp_timestepsize = std::min<double>(tmp_timestepsize,maxTimestep-time);
 
 	    }
 
