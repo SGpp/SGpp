@@ -196,6 +196,51 @@ endif
 endif
 
 ###################################################################
+# Builds a Hull White combine Black Scholes Solver
+###################################################################	
+BSHWSolver: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/BSHWSolver_gcc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSHWSolver_GCC"
+else
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSHWSolver_GCC"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSHWSolver_GCC"
+else
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSHWSolver_GCC"
+endif
+endif
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/BSHWSolver_icc
+ifeq ($(OMP),0)
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSHWSolver_ICC"
+else
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSHWSolver_ICC"
+endif
+else
+ifeq ($(TR1),0)
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSHWSolver_ICC"
+else	
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSHWSolver_ICC"
+endif	
+endif
+endif
+ifeq ($(CC),xlc++_r)
+	mkdir -p tmp/build_native/BSHWSolver_xlc
+ifeq ($(OMP),0)
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSHWSolver_XLC"
+else
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSHWSolver_XLC"
+endif
+endif
+
+###################################################################
 # Builds a simple Heat Equation Solver
 ###################################################################	
 HESolver: default
