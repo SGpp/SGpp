@@ -30,7 +30,7 @@ default: $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppVTuneTest.obj $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)VTuneTest.exe
 	
-NativeCppVTuneTest.o : $(SRCDIR)NativeCppVTuneTest.cpp
+NativeCppVTuneTest.obj : $(SRCDIR)NativeCppVTuneTest.cpp
 	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppVTuneTest.obj $(SRCDIR)NativeCppVTuneTest.cpp
 			
 clean:
