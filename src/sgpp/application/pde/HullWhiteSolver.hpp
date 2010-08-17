@@ -187,7 +187,7 @@ public:
 	 *
 	 * @return the algorithmic dimensions
 	 */
-	//std::vector<size_t> getAlgorithmicDimensions();
+	std::vector<size_t> getAlgorithmicDimensions();
 
 	/**
 	 * sets the algorithmic dimensions (the dimensions in which the Up Down
@@ -195,7 +195,7 @@ public:
 	 *
 	 * @param algoDims std::vector containing the algorithmic dimensions
 	 */
-	//void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
+	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 
 	/**
 	 *	enables coarsening of grid during solving the Black Scholes
