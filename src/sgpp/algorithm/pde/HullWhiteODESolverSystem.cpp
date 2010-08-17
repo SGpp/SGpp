@@ -8,6 +8,7 @@
 #include "algorithm/pde/HullWhiteODESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
+#include "grid/Grid.hpp"
 #include <cmath>
 
 namespace sg
@@ -142,7 +143,7 @@ void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVec
 	if (this->sigma != 0.0)
 		{
 			this->OpEBound->mult(alpha, temp);
-			result.axpy((-1.0/2.0)*pow((this->theta),2), temp);
+			result.axpy((-1.0/2.0)*pow((this->sigma),2), temp);
 		}
 
 	if (this->a != 0.0)
@@ -192,7 +193,7 @@ void HullWhiteODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector
 		if (this->sigma != 0.0)
 			{
 				this->OpEInner->mult(alpha, temp);
-				result.axpy((-1.0/2.0)*pow((this->theta),2), temp);
+				result.axpy((-1.0/2.0)*pow((this->sigma),2), temp);
 			}
 
 		if (this->a != 0.0)
@@ -235,7 +236,18 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
-	/*for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+	/*this->levels = level;
+
+	this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
+
+	GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+	myGenerator->regular(this->levels);
+	delete myGenerator;
+
+	this->myBoundingBox = this->myGrid->getBoundingBox();
+
+
+	 for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 		{
 			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 			std::stringstream coordsStream(coords);
@@ -244,10 +256,11 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 		        		{
 		        			if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		        			{
-		        			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->tmp*this->TimestepSize))));
+		        			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete[i], exp(((-1.0)*(this->tmp*this->TimestepSize))));
 		        			}
 		        		}
 		        			}
+
 	// Adjust the boundaries with the riskfree rate
 	/*if (this->r != 0.0)
 	{
