@@ -345,18 +345,18 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 	fileout.close();
 }
 */
-/*
-std::vector<size_t> BlackScholesSolver::getAlgorithmicDimensions()
+
+std::vector<size_t> HullWhiteSolver::getAlgorithmicDimensions()
 {
 	return this->myGrid->getAlgorithmicDimensions();
-}*/
+}
 
-/*
-void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
+
+void HullWhiteSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
 {
 	this->myGrid->setAlgorithmicDimensions(newAlgoDims);
 }
-*/
+
 void HullWhiteSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
