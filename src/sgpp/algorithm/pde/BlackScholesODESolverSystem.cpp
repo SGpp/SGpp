@@ -22,11 +22,8 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
 
-	this->alpha_complete_old = new DataVector(this->alpha_complete->getSize());
-	this->alpha_complete_old->setAll(0.0);
-	this->alpha_complete_tmp = new DataVector(this->alpha_complete->getSize());
-	this->alpha_complete_tmp->setAll(0.0);
-	this->alpha_complete_tmp->add(*this->alpha_complete);
+	this->alpha_complete_old = new DataVector(*this->alpha_complete);
+	this->alpha_complete_tmp = new DataVector(*this->alpha_complete);
 
 	this->InnerGrid = NULL;
 	this->alpha_inner = NULL;
@@ -115,6 +112,8 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 	{
 		delete this->rhs;
 	}
+	delete this->alpha_complete_old;
+	delete this->alpha_complete_tmp;
 }
 
 void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)

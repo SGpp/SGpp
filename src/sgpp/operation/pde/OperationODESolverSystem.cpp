@@ -225,16 +225,13 @@ void OperationODESolverSystem::setTimestepSize(double newTimestepSize)
 
 void OperationODESolverSystem::abortTimestep()
 {
-	this->alpha_complete->setAll(0.0);
-	this->alpha_complete->add(*this->alpha_complete_tmp);
+	*(this->alpha_complete) = *(this->alpha_complete_tmp);
 }
 
 void OperationODESolverSystem::saveAlpha()
 {
-	this->alpha_complete_old->setAll(0.0);
-	this->alpha_complete_old->add(*this->alpha_complete_tmp);
-	this->alpha_complete_tmp->setAll(0.0);
-	this->alpha_complete_tmp->add(*this->alpha_complete);
+	*(this->alpha_complete_old) = *(this->alpha_complete_tmp);
+	*(this->alpha_complete_tmp) = *(this->alpha_complete);
 }
 
 size_t OperationODESolverSystem::getSumGridPointsComplete()
