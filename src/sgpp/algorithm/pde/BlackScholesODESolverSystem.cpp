@@ -17,7 +17,7 @@ namespace sg
 BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold)
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -83,6 +83,8 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->refineThreshold = refineThreshold;
 	this->adaptSolveMode = adaptSolveMode;
 	this->numCoarsenPoints = numCoarsenPoints;
+	this->refineMode = refineMode;
+	this->refineMaxLevel = refineMaxLevel;
 
 	// init Number of AverageGridPoins
 	this->numSumGridpointsInner = 0;
@@ -214,13 +216,23 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 		// Coarsen the grid
 		GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
+		//std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
+		//std::cout << "Grid Size: " << originalGridSize << std::endl;
+
 		if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine")
 		{
 			size_t numRefines = myGenerator->getNumberOfRefinablePoints();
 			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
-			//myGenerator->refineMaxLevel(myRefineFunc, this->numExecCoarsen);
-			myGenerator->refine(myRefineFunc);
-			this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+			if (this->refineMode == "maxLevel")
+			{
+				myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+				this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+			}
+			if (this->refineMode == "classic")
+			{
+				myGenerator->refine(myRefineFunc);
+				this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+			}
 			delete myRefineFunc;
 		}
 

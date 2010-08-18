@@ -60,12 +60,16 @@ private:
 	double coarsenThreshold;
 	/// Threshold used to decide if a grid point should be refined
 	double refineThreshold;
-	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
+	/// adaptive mode during solving Black Scholes Equation: none, coarsen, refine, coarsenNrefine
 	std::string adaptSolveMode;
+	/// refine mode during solving Black Scholes Equation: classic or maxLevel
+	std::string refineMode;
 	/// number of points the are coarsened in each coarsening-step
 	int numCoarsenPoints;
 	/// identifies if the Black Scholes Equation should be solved on a log-transformed grid
 	bool useLogTransform;
+	/// max. level for refinement during solving
+	size_t refineMaxLevel;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -225,11 +229,13 @@ public:
 	 *	enable coarsening.
 	 *
 	 *	@param coarsenThreshold Threshold needed to determine if a grid point should be removed
+	 *	@param refineMode the Mode used for refining the grid: classic or maxLevel
+	 *	@param refineMaxLevel max. level for refinement during solving
 	 *	@param adaptSolveMode adaptive mode during solving equation: coarsen, refine, coarsenNrefine
 	 *	@param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
 	 *	@param refineThreshold Threshold needed to determine if a grid point should be refined
 	 */
-	void setEnableCoarseningData(std::string adaptSolveMode, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+	void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
 	/**
 	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding

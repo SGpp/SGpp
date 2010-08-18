@@ -57,6 +57,10 @@ protected:
 	double coarsenThreshold;
 	/// Threshold used to decide if a grid point should be refined
 	double refineThreshold;
+	/// refine mode during solving Black Scholes Equation: classic or maxLevel
+	std::string refineMode;
+	/// maxLevel max. Level of refinement
+	size_t refineMaxLevel;
 
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
@@ -117,11 +121,13 @@ public:
 	 * @param adaptSolveMode adaptive mode during solving: coarsen, refine, coarsenNrefine
 	 * @param numCoarsenPoints number of point that should be coarsened in one coarsening step !CURRENTLY UNUSED PARAMETER!
 	 * @param refineThreshold Threshold to decide, if a grid point should be refined
+	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
+	 * @param refineMaxLevel max. level of refinement during solving
 	 */
 	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
 			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
-			int numCoarsenPoints = -1, double refineThreshold = 0.0);
+			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor
