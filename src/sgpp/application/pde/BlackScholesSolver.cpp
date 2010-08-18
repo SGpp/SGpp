@@ -531,7 +531,7 @@ void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDim
 void BlackScholesSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
-	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.4.0", "TUM (C) 2009-2010, by Alexander Heinecke");
+	this->myScreen->writeTitle("SGpp - Black Scholes Solver, 1.5.0", "TUM (C) 2009-2010, by Alexander Heinecke");
 	this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
