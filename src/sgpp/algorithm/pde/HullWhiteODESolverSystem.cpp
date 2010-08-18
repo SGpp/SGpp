@@ -236,41 +236,12 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
-	/*this->levels = level;
-
-	this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
-
-	GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-	myGenerator->regular(this->levels);
-	delete myGenerator;
-
-	this->myBoundingBox = this->myGrid->getBoundingBox();
-
-
-	 for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-		{
-			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-			std::stringstream coordsStream(coords);
-	        coordsStream >> tmp;
-		        if (this->tmp != 0.0)
-		        		{
-		        			if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
-		        			{
-		        			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete[i], exp(((-1.0)*(this->tmp*this->TimestepSize))));
-		        			}
-		        		}
-		        			}
-
 	// Adjust the boundaries with the riskfree rate
-	/*if (this->r != 0.0)
-	{
+
 		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
-			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
+			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,this->TimestepSize);
 		}
-	}*/
-
-
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
@@ -302,15 +273,13 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 }
 
 void HullWhiteODESolverSystem::startTimestep()
-{/*
+{
 	// Adjust the boundaries with the riskfree rate
-	if (this->r != 0.0)
-	{
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
-			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
+			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,this->TimestepSize);
 		}
-	}*/
+
 }
 /*
 void BlackScholesODESolverSystem::buildGammaCoefficients()
