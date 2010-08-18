@@ -28,7 +28,7 @@ union doubleAbsMaskAVX
    doubleAbsMaskAVX() : i(0x7FFFFFFFFFFFFFFF) {}
 };
 
-_MM_ALIGN16 const doubleAbsMaskAVX absMaskAVX;
+__declspec(align(32)) const doubleAbsMaskAVX absMaskAVX;
 
 static const __m256d abs2MaskAVX = _mm256_broadcast_sd( &(absMaskAVX.d) );
 
@@ -81,7 +81,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
     double* ptrLevel = this->Level->getPointer();
     double* ptrIndex = this->Index->getPointer();
 
-    if (data.getNcols() % 2 != 0 || source_size != data.getNcols())
+    if (data.getNcols() % 4 != 0 || source_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     	return;
@@ -94,9 +94,11 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 	{
 		size_t chunksize = (source_size/omp_get_num_threads())+1;
 		// assure that every subarray is 16-byte aligned
-		if (chunksize % 2 != 0)
+		if (chunksize % 4 != 0)
 		{
-			chunksize++;
+			size_t remainder = chunksize % 4;
+			size_t patch = 4 - remainder;
+			chunksize += patch;
 		}
     	size_t start = chunksize*omp_get_thread_num();
     	size_t end = std::min<size_t>(start+chunksize, source_size);
@@ -276,7 +278,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
     double* ptrLevel = this->Level->getPointer();
     double* ptrIndex = this->Index->getPointer();
 
-    if (data.getNcols() % 2 != 0 || result_size != data.getNcols())
+    if (data.getNcols() % 4 != 0 || result_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     	return;
@@ -287,9 +289,11 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 	{
 		size_t chunksize = (result_size/omp_get_num_threads())+1;
 		// assure that every subarray is 16-byte aligned
-		if (chunksize % 2 != 0)
+		if (chunksize % 4 != 0)
 		{
-			chunksize++;
+			size_t remainder = chunksize % 4;
+			size_t patch = 4 - remainder;
+			chunksize += patch;
 		}
     	size_t start = chunksize*omp_get_thread_num();
     	size_t end = std::min<size_t>(start+chunksize, result_size);

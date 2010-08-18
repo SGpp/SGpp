@@ -22,12 +22,18 @@ DMSystemMatrixAVXIdentity::DMSystemMatrixAVXIdentity(Grid& SparseGrid, DataMatri
 	numTrainingInstances = data->getNrows();
 
 	// Assure that data has a even number of instances -> padding might be needed
-	if (data->getNrows() % 2 != 0)
+	size_t remainder = data->getNrows() % 4;
+	size_t loopCount = 4 - remainder;
+
+	if (loopCount != 4)
 	{
 		DataVector lastRow(data->getNcols());
-		data->getRow(data->getNrows()-1, lastRow);
-		data->resize(data->getNrows()+1);
-		data->setRow(data->getNrows()-1, lastRow);
+		for (size_t i = 0; i < loopCount; i++)
+		{
+			data->getRow(data->getNrows()-1, lastRow);
+			data->resize(data->getNrows()+1);
+			data->setRow(data->getNrows()-1, lastRow);
+		}
 	}
 	data->transpose();
 }
@@ -47,7 +53,10 @@ void DMSystemMatrixAVXIdentity::mult(DataVector& alpha, DataVector& result)
     // patch result -> set additional entries zero
     if (numTrainingInstances != temp.getSize())
     {
-    	temp.set(temp.getSize()-1, 0.0);
+    	for (size_t i = 0; i < (temp.getSize()-numTrainingInstances); i++)
+    	{
+    		temp.set(temp.getSize()-(i+1), 0.0);
+    	}
     }
     this->B->multVectorized(temp, (*data), result);
 
