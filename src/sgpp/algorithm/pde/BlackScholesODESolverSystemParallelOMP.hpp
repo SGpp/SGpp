@@ -48,15 +48,14 @@ public:
 	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
 	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
-	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
-	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
-	 *
-	 * @todo (heinecke) remove MPIRank variable
+	 * @param adaptSolveMode adaptive mode during solving: coarsen, refine, coarsenNrefine
+	 * @param numCoarsenPoints number of point that should be coarsened in one coarsening step !CURRENTLY UNUSED PARAMETER!
+	 * @param refineThreshold Threshold to decide, if a grid point should be refined
 	 */
 	BlackScholesODESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
 			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
-			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, double coarsenPercent = 0.0,
-			size_t numExecCoarsen = 0);
+			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
+			int numCoarsenPoints = -1, double refineThreshold = 0.0);
 
 	/**
 	 * Std-Destructor

@@ -58,10 +58,12 @@ private:
 	bool useCoarsen;
 	/// Threshold used to decide if a grid point should be deleted
 	double coarsenThreshold;
-	/// Percent how many of the removable points should be tested for deletion
-	double coarsenPercent;
-	/// denotes the number of coarsening procedures within one timestep
-	size_t numExecCoarsen;
+	/// Threshold used to decide if a grid point should be refined
+	double refineThreshold;
+	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
+	std::string adaptSolveMode;
+	/// number of points the are coarsened in each coarsening-step
+	int numCoarsenPoints;
 	/// identifies if the Black Scholes Equation should be solved on a log-transformed grid
 	bool useLogTransform;
 
@@ -223,10 +225,11 @@ public:
 	 *	enable coarsening.
 	 *
 	 *	@param coarsenThreshold Threshold needed to determine if a grid point should be removed
-	 *	@param coarsenPercent Percent of removable grid points that should be tested for deletion
-	 *	@param numExecCoarsen denotes the number coarsening procedures within one timestep
+	 *	@param adaptSolveMode adaptive mode during solving equation: coarsen, refine, coarsenNrefine
+	 *	@param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
+	 *	@param refineThreshold Threshold needed to determine if a grid point should be refined
 	 */
-	void setEnableCoarseningData(double coarsenThreshold, double coarsenPercent, size_t numExecCoarsen);
+	void setEnableCoarseningData(std::string adaptSolveMode, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
 	/**
 	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding

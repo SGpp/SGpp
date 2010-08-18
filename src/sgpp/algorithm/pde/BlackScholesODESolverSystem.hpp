@@ -49,12 +49,14 @@ protected:
 	DataMatrix* gammaCoef;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
+	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
+	std::string adaptSolveMode;
+	/// number of points the are coarsened in each coarsening-step !CURRENTLY UNUSED PARAMETER!
+	int numCoarsenPoints;
 	/// Threshold used to decide if a grid point should be deleted
 	double coarsenThreshold;
-	/// Percent how many of the removable points should be tested for deletion
-	double coarsenPercent;
-	/// denotes the number of complete coarsen procedures per timestep
-	size_t numExecCoarsen;
+	/// Threshold used to decide if a grid point should be refined
+	double refineThreshold;
 
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
@@ -112,13 +114,14 @@ public:
 	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
 	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
-	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
-	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
+	 * @param adaptSolveMode adaptive mode during solving: coarsen, refine, coarsenNrefine
+	 * @param numCoarsenPoints number of point that should be coarsened in one coarsening step !CURRENTLY UNUSED PARAMETER!
+	 * @param refineThreshold Threshold to decide, if a grid point should be refined
 	 */
 	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
 			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
-			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, double coarsenPercent = 0.0,
-			size_t numExecCoarsen = 0);
+			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
+			int numCoarsenPoints = -1, double refineThreshold = 0.0);
 
 	/**
 	 * Std-Destructor
