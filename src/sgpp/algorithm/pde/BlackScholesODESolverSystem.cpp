@@ -16,8 +16,8 @@ namespace sg
 
 BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
-			bool bLogTransform, bool useCoarsen, double coarsenThreshold, double coarsenPercent,
-			size_t numExecCoarsen)
+			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
+			int numCoarsenPoints, double refineThreshold)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -80,8 +80,9 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	// set coarsen settings
 	this->useCoarsen = useCoarsen;
 	this->coarsenThreshold = coarsenThreshold;
-	this->coarsenPercent = coarsenPercent;
-	this->numExecCoarsen = numExecCoarsen;
+	this->refineThreshold = refineThreshold;
+	this->adaptSolveMode = adaptSolveMode;
+	this->numCoarsenPoints = numCoarsenPoints;
 
 	// init Number of AverageGridPoins
 	this->numSumGridpointsInner = 0;
@@ -204,46 +205,34 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 
 	if (this->useCoarsen == true && isLastTimestep == false)
 	{
-		size_t numCoarsen;
-
-		// Coarsen the grid
-		GridGenerator* myGeneratorCoarsen = this->BoundGrid->createGridGenerator();
-
-		numCoarsen = myGeneratorCoarsen->getNumberOfRemoveablePoints();
-		numCoarsen = static_cast<size_t>(((double)numCoarsen)*(this->coarsenPercent)/100.0);
-
-		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
-
-		for (size_t i = 0; i < this->numExecCoarsen; i++)
-		{
-			myGeneratorCoarsen->coarsen(myCoarsenFunctor, this->alpha_complete);
-		}
-
-		delete myGeneratorCoarsen;
-		delete myCoarsenFunctor;
-
 		///////////////////////////////////////////////////
 		// Start integrated refinement & coarsening
 		///////////////////////////////////////////////////
 
-//		size_t originalGridSize = this->BoundGrid->getStorage()->size();
-//
-//		// Coarsen the grid
-//		GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
-//
-//		size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-//		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->coarsenThreshold);
-//		//myGenerator->refineMaxLevel(myRefineFunc, this->numExecCoarsen);
-//		myGenerator->refine(myRefineFunc);
-//		this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
-//		delete myRefineFunc;
-//
-//		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
-//		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, (this->coarsenThreshold/((double)this->numExecCoarsen)));
-//		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
-//		delete myCoarsenFunctor;
-//
-//		delete myGenerator;
+		size_t originalGridSize = this->BoundGrid->getStorage()->size();
+
+		// Coarsen the grid
+		GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+
+		if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine")
+		{
+			size_t numRefines = myGenerator->getNumberOfRefinablePoints();
+			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
+			//myGenerator->refineMaxLevel(myRefineFunc, this->numExecCoarsen);
+			myGenerator->refine(myRefineFunc);
+			this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+			delete myRefineFunc;
+		}
+
+		if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
+		{
+			size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+			SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
+			myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
+			delete myCoarsenFunctor;
+		}
+
+		delete myGenerator;
 
 		///////////////////////////////////////////////////
 		// End integrated refinement & coarsening

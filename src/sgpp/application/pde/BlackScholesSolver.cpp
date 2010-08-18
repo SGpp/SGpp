@@ -29,8 +29,8 @@ BlackScholesSolver::BlackScholesSolver(bool useLogTransform) : ParabolicPDESolve
 	this->myScreen = NULL;
 	this->useCoarsen = false;
 	this->coarsenThreshold = 0.0;
-	this->coarsenPercent = 0.0;
-	this->numExecCoarsen = 0;
+	this->adaptSolveMode = "none";
+	this->numCoarsenPoints = -1;
 	this->useLogTransform = useLogTransform;
 }
 
@@ -246,9 +246,9 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
@@ -288,9 +288,9 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
@@ -329,9 +329,9 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	{
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
@@ -393,9 +393,9 @@ void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timeste
 		AdamsBashforth* myAdamsBashforth = new AdamsBashforth(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
@@ -429,9 +429,9 @@ void BlackScholesSolver::solveVarTimestep(size_t numTimesteps, double timestepsi
 		VarTimestep* myVarTimestep = new VarTimestep(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
@@ -535,12 +535,13 @@ void BlackScholesSolver::initScreen()
 	this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
 }
 
-void BlackScholesSolver::setEnableCoarseningData(double coarsenThreshold, double coarsenPercent, size_t numExecCoarsen)
+void BlackScholesSolver::setEnableCoarseningData(std::string adaptSolveMode, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
 {
 	this->useCoarsen = true;
 	this->coarsenThreshold = coarsenThreshold;
-	this->coarsenPercent = coarsenPercent;
-	this->numExecCoarsen = numExecCoarsen;
+	this->refineThreshold = refineThreshold;
+	this->adaptSolveMode = adaptSolveMode;
+	this->numCoarsenPoints = numCoarsenPoints;
 }
 
 void BlackScholesSolver::printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike)
