@@ -1384,6 +1384,7 @@ void writeHelp()
 	mySStream << "-----------------------------------------------------" << std::endl;
 	mySStream << "solveND" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
@@ -1396,10 +1397,9 @@ void writeHelp()
 	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 cart" << std::endl;
+	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1411,6 +1411,7 @@ void writeHelp()
 
 	mySStream << "solveNDanalyze" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level_start: number of levels within the Sparse Grid (start)" << std::endl;
 	mySStream << "	level_end: number of levels within the Sparse Grid (end)" << std::endl;
@@ -1425,10 +1426,9 @@ void writeHelp()
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	file_analyze: file containing the analyzing options" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 2 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data cart" << std::endl;
+	mySStream << "cart 3 2 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1496,10 +1496,9 @@ void writeHelp()
 	mySStream << "	Coarsening Percent: Percent of gird point that should be removed" << std::endl;
 	mySStream << "	Num Coarsenings: Number of coarsenings per timestep" << std::endl;
 	mySStream << "	Coarsening Threshold: Threshold of point's surplus to remove point" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5 80 2 1e-6 cart" << std::endl;
+	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 5 0.5 80 2 1e-6" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1512,6 +1511,7 @@ void writeHelp()
 
 	mySStream << "solveNDadaptSurplus" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
@@ -1524,13 +1524,13 @@ void writeHelp()
 	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	Adapt-Refinement Percent: Percent of grid points that should be refined" << std::endl;
+	mySStream << "	RefinementMode: classic or maxLevel" << std::endl;
+	mySStream << "	MaxRefinement Level: Max. Level for refinement" << std::endl;
 	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
 	mySStream << "	refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50 10 1e-10 cart" << std::endl;
+	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 classic 0 5 1e-10" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1542,6 +1542,7 @@ void writeHelp()
 
 	mySStream << "solveNDadaptSurplusFull" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
@@ -1554,16 +1555,16 @@ void writeHelp()
 	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	Adapt-Refinement Percent: Percent of grid points that should be refined" << std::endl;
+	mySStream << "	RefinementMode: classic or maxLevel" << std::endl;
+	mySStream << "	MaxRefinement Level: Max. Level for refinement" << std::endl;
 	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
 	mySStream << "	refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
 	mySStream << "	Coarsening Percent: Percent of gird point that should be removed" << std::endl;
 	mySStream << "	Num Coarsenings: Number of coarsenings per timestep" << std::endl;
 	mySStream << "	Coarsening Threshold: Threshold of point's surplus to remove point" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 50 10 1e-10 80 2 1e-6 cart" << std::endl;
+	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 classic 0 5 1e-10 80 2 1e-6" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1627,15 +1628,15 @@ int main(int argc, char *argv[])
 			std::string solver;
 			std::string payoff;
 
-			fileStoch.assign(argv[5]);
-			fileBound.assign(argv[4]);
-			dStrike = atof(argv[6]);
-			payoff.assign(argv[7]);
-			solver.assign(argv[11]);
+			fileStoch.assign(argv[6]);
+			fileBound.assign(argv[5]);
+			dStrike = atof(argv[7]);
+			payoff.assign(argv[8]);
+			solver.assign(argv[12]);
 
 			std::string coordsType;
 			bool coords = false;
-			coordsType.assign(argv[14]);
+			coordsType.assign(argv[2]);
 			if (coordsType == "cart")
 			{
 				coords = false;
@@ -1651,7 +1652,7 @@ int main(int argc, char *argv[])
 				writeHelp();
 			}
 
-			testNUnderlyings(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, coords);
+			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coords);
 		}
 	}
 	else if (option == "solveNDanalyze")
@@ -1670,16 +1671,16 @@ int main(int argc, char *argv[])
 			std::string solver;
 			std::string payoff;
 
-			fileStoch.assign(argv[6]);
-			fileBound.assign(argv[5]);
-			dStrike = atof(argv[7]);
-			fileAnalyze.assign(argv[15]);
-			payoff.assign(argv[8]);
-			solver.assign(argv[12]);
+			fileStoch.assign(argv[7]);
+			fileBound.assign(argv[6]);
+			dStrike = atof(argv[8]);
+			fileAnalyze.assign(argv[16]);
+			payoff.assign(argv[9]);
+			solver.assign(argv[13]);
 
 			std::string coordsType;
 			bool coords = false;
-			coordsType.assign(argv[16]);
+			coordsType.assign(argv[2]);
 			if (coordsType == "cart")
 			{
 				coords = false;
@@ -1696,7 +1697,7 @@ int main(int argc, char *argv[])
 			}
 
 
-			testNUnderlyingsAnalyze(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, fileAnalyze, coords);
+			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coords);
 		}
 	}
 	else if (option == "solveNDadapt")
@@ -1757,16 +1758,16 @@ int main(int argc, char *argv[])
 			std::string payoff;
 			std::string refinementMode;
 
-			fileStoch.assign(argv[5]);
-			fileBound.assign(argv[4]);
-			dStrike = atof(argv[6]);
-			payoff.assign(argv[7]);
-			solver.assign(argv[11]);
-			refinementMode.assign(argv[13]);
+			fileStoch.assign(argv[6]);
+			fileBound.assign(argv[5]);
+			dStrike = atof(argv[7]);
+			payoff.assign(argv[8]);
+			solver.assign(argv[12]);
+			refinementMode.assign(argv[15]);
 
 			std::string coordsType;
 			bool coords = false;
-			coordsType.assign(argv[18]);
+			coordsType.assign(argv[2]);
 			if (coordsType == "cart")
 			{
 				coords = false;
@@ -1782,12 +1783,12 @@ int main(int argc, char *argv[])
 				writeHelp();
 			}
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, refinementMode, -1, atoi(argv[15]), atoi(argv[16]), atof(argv[17]), false, 0.0, 0, 0.0, coords);
+			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), false, 0.0, 0, 0.0, coords);
 		}
 	}
 	else if (option == "solveNDadaptFull")
 	{
-		if (argc != 20)
+		if (argc != 19)
 		{
 			writeHelp();
 		}
@@ -1806,25 +1807,25 @@ int main(int argc, char *argv[])
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
 
-			std::string coordsType;
-			bool coords = false;
-			coordsType.assign(argv[19]);
-			if (coordsType == "cart")
-			{
-				coords = false;
-			}
-			else if (coordsType == "log")
-			{
-				coords = true;
-			}
-			else
-			{
-				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
-				std::cout << std::endl << std::endl;
-				writeHelp();
-			}
+//			std::string coordsType;
+//			bool coords = false;
+//			coordsType.assign(argv[19]);
+//			if (coordsType == "cart")
+//			{
+//				coords = false;
+//			}
+//			else if (coordsType == "log")
+//			{
+//				coords = true;
+//			}
+//			else
+//			{
+//				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
+//				std::cout << std::endl << std::endl;
+//				writeHelp();
+//			}
 
-			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]), true, atof(argv[16]), atoi(argv[17]), atof(argv[18]), coords);
+			testNUnderlyingsAdapt(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atof(argv[15]), true, atof(argv[16]), atoi(argv[17]), atof(argv[18]), false);
 		}
 	}
 	else if (option == "solveNDadaptSurplusFull")
@@ -1843,16 +1844,16 @@ int main(int argc, char *argv[])
 			std::string payoff;
 			std::string refinementMode;
 
-			fileStoch.assign(argv[5]);
-			fileBound.assign(argv[4]);
-			dStrike = atof(argv[6]);
-			payoff.assign(argv[7]);
-			solver.assign(argv[11]);
-			refinementMode.assign(argv[13]);
+			fileStoch.assign(argv[6]);
+			fileBound.assign(argv[5]);
+			dStrike = atof(argv[7]);
+			payoff.assign(argv[8]);
+			solver.assign(argv[12]);
+			refinementMode.assign(argv[15]);
 
 			std::string coordsType;
 			bool coords = false;
-			coordsType.assign(argv[21]);
+			coordsType.assign(argv[2]);
 			if (coordsType == "cart")
 			{
 				coords = false;
@@ -1868,7 +1869,7 @@ int main(int argc, char *argv[])
 				writeHelp();
 			}
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, refinementMode, -1, atoi(argv[15]), atoi(argv[16]), atof(argv[17]), true, atof(argv[18]), atoi(argv[19]), atof(argv[20]), coords);
+			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), true, atof(argv[19]), atoi(argv[20]), atof(argv[21]), coords);
 		}
 	}
 	else if (option == "solveBonn")
