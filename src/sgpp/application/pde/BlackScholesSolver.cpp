@@ -543,26 +543,6 @@ void BlackScholesSolver::setEnableCoarseningData(double coarsenThreshold, double
 	this->numExecCoarsen = numExecCoarsen;
 }
 
-void BlackScholesSolver::refineSurplusToMaxLevel(DataVector& alpha, double dThreshold, unsigned int maxLevel)
-{
-	size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
-
-	if (bGridConstructed)
-	{
-		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
-
-		myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
-
-		delete myRefineFunc;
-
-		alpha.resize(myGridStorage->size());
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::refineIntialGridSurplus : The grid wasn't initialized before!");
-	}
-}
-
 void BlackScholesSolver::printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike)
 {
 	if (this->useLogTransform == false)

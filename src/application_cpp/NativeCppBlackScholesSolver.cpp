@@ -978,7 +978,9 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
- * @param refinePercent percantage of points that should be refined before Black Scholes Equation is solved
+ * @param refinementMode the mode selected for surplus refinement: available: classic, maxLevel
+ * @param maxRefineLevel ignored for refinement mode classic, in maxLevel: max. level to which the grid is refined
+ * @param numRefinePoints number of points that should be refined in each refine iteration before Black Scholes Equation is solved: -1 try to refine all points steered by threshold
  * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  * @param dRefineThreshold Threshold for a point's surplus for refining this point
  * @param useCoarsen specifies if the grid should be coarsened between timesteps
@@ -990,7 +992,7 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
  */
 void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike,
 		std::string payoffType, double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps,
-		std::string Solver, double refinePercent, size_t nIterAdaptSteps, double dRefineThreshold,
+		std::string Solver, std::string refinementMode, int numRefinePoints, size_t maxRefineLevel, size_t nIterAdaptSteps, double dRefineThreshold,
 		bool useCoarsen, double coarsenPercent, size_t numExecCoarsen, double coarsenThreshold, bool isLogSolve)
 {
 	size_t dim = d;
@@ -1051,41 +1053,47 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// refine the grid to approximate the singularity in the start solution better
-	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+
+	if (refinementMode == "classic")
 	{
-		std::cout << "Refining Grid..." << std::endl;
-		myBSSolver->refineInitialGridSurplus(*alpha, refinePercent, dRefineThreshold);
-		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+		{
+			std::cout << "Refining Grid..." << std::endl;
+			myBSSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+			myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+			std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+			std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+		}
+
+	}
+	else if (refinementMode == "maxLevel")
+	{
+		size_t oldGridSize = 0;
+		size_t newGridSize = myBSSolver->getNumberGridPoints();
+		size_t addedGridPoint = 0;
+		size_t stepCounter = 0;
+		if (nIterAdaptSteps > 0)
+		{
+			do
+			{
+				oldGridSize = newGridSize;
+				std::cout << "Refining Grid..." << std::endl;
+				myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, level);
+				myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+				std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+				std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+				newGridSize = myBSSolver->getNumberGridPoints();
+				addedGridPoint = newGridSize - oldGridSize;
+				stepCounter++;
+			} while ((addedGridPoint > 0) && (stepCounter < nIterAdaptSteps));
+		}
+	}
+	else
+	{
+		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+		std::cout << "Skipping initial grid refinement!" << std::endl;
 	}
 	std::cout << std::endl << std::endl << std::endl;
-
-//	size_t oldGridSize = 0;
-//	size_t newGridSize = myBSSolver->getNumberGridPoints();
-//	size_t addedGridPoint = 0;
-//	do
-//	{
-//		oldGridSize = newGridSize;
-//		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level);
-//		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-//		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-//		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-//		newGridSize = myBSSolver->getNumberGridPoints();
-//		addedGridPoint = newGridSize - oldGridSize;
-//	} while (addedGridPoint > 0);
-//	std::cout << std::endl << std::endl << std::endl;
-
-//	for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-//	{
-//		std::cout << "Refining Grid..." << std::endl;
-//		myBSSolver->refineSurplusToMaxLevel(*alpha, dRefineThreshold, level);
-//		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-//		std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-//		std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-//	}
-//	std::cout << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -1735,7 +1743,7 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "solveNDadaptSurplus")
 	{
-		if (argc != 18)
+		if (argc != 19)
 		{
 			writeHelp();
 		}
@@ -1747,16 +1755,18 @@ int main(int argc, char *argv[])
 			std::string ani;
 			std::string solver;
 			std::string payoff;
+			std::string refinementMode;
 
 			fileStoch.assign(argv[5]);
 			fileBound.assign(argv[4]);
 			dStrike = atof(argv[6]);
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
+			refinementMode.assign(argv[13]);
 
 			std::string coordsType;
 			bool coords = false;
-			coordsType.assign(argv[17]);
+			coordsType.assign(argv[18]);
 			if (coordsType == "cart")
 			{
 				coords = false;
@@ -1772,7 +1782,7 @@ int main(int argc, char *argv[])
 				writeHelp();
 			}
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]), atof(argv[16]), false, 0.0, 0, 0.0, coords);
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, refinementMode, -1, atoi(argv[15]), atoi(argv[16]), atof(argv[17]), false, 0.0, 0, 0.0, coords);
 		}
 	}
 	else if (option == "solveNDadaptFull")
@@ -1819,7 +1829,7 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "solveNDadaptSurplusFull")
 	{
-		if (argc != 21)
+		if (argc != 22)
 		{
 			writeHelp();
 		}
@@ -1831,16 +1841,18 @@ int main(int argc, char *argv[])
 			std::string ani;
 			std::string solver;
 			std::string payoff;
+			std::string refinementMode;
 
 			fileStoch.assign(argv[5]);
 			fileBound.assign(argv[4]);
 			dStrike = atof(argv[6]);
 			payoff.assign(argv[7]);
 			solver.assign(argv[11]);
+			refinementMode.assign(argv[13]);
 
 			std::string coordsType;
 			bool coords = false;
-			coordsType.assign(argv[20]);
+			coordsType.assign(argv[21]);
 			if (coordsType == "cart")
 			{
 				coords = false;
@@ -1856,7 +1868,7 @@ int main(int argc, char *argv[])
 				writeHelp();
 			}
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, atoi(argv[14]), atoi(argv[15]), atof(argv[16]), true, atof(argv[17]), atoi(argv[18]), atof(argv[19]), coords);
+			testNUnderlyingsAdaptSurplus(atoi(argv[2]), atoi(argv[3]), fileStoch, fileBound, dStrike, payoff, atof(argv[8]), (size_t)(atof(argv[9])/atof(argv[10])), atof(argv[10]), atoi(argv[12]), atof(argv[13]), solver, refinementMode, -1, atoi(argv[15]), atoi(argv[16]), atof(argv[17]), true, atof(argv[18]), atoi(argv[19]), atof(argv[20]), coords);
 		}
 	}
 	else if (option == "solveBonn")

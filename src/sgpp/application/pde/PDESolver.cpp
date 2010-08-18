@@ -84,9 +84,18 @@ std::string PDESolver::getGrid()
 	return gridSer;
 }
 
-void PDESolver::refineInitialGridSurplus(DataVector& alpha, double dPercentage, double dThreshold)
+void PDESolver::refineInitialGridSurplus(DataVector& alpha, int numRefinePoints, double dThreshold)
 {
-	size_t nRefinements = static_cast<size_t>(static_cast<double>(myGrid->createGridGenerator()->getNumberOfRefinablePoints())*(dPercentage/100.0));
+	size_t nRefinements;
+
+	if (numRefinePoints < 0)
+	{
+		nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePoints();
+	}
+	else
+	{
+		nRefinements = numRefinePoints;
+	}
 
 	if (bGridConstructed)
 	{
@@ -101,6 +110,26 @@ void PDESolver::refineInitialGridSurplus(DataVector& alpha, double dPercentage, 
 	else
 	{
 		throw new application_exception("PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
+	}
+}
+
+void PDESolver::refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dThreshold, size_t maxLevel)
+{
+	size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
+
+	if (bGridConstructed)
+	{
+		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
+
+		myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+
+		delete myRefineFunc;
+
+		alpha.resize(myGridStorage->size());
+	}
+	else
+	{
+		throw new application_exception("PDESolver::refineInitialGridSurplusToMaxLevel : The grid wasn't initialized before!");
 	}
 }
 
