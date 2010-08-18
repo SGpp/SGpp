@@ -11,13 +11,13 @@
 #include <string>
 #include <iostream>
 
-//#define DATAFILE "DR5_nowarnings_less05_train.arff"
-#define DATAFILE "twospirals.wieland.arff"
+#define DATAFILE "DR5_nowarnings_less05_train.arff"
+//#define DATAFILE "twospirals.wieland.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define GRIDFILE "Grid.txt"
 
-#define LEVELS 7
+#define LEVELS 3
 #define REFINEMENTS 3
 #define CG_IMAX 400
 #define CG_EPS 0.00001
@@ -121,9 +121,9 @@ void adaptRegressionTest()
     execTime = myStopwatch->stop();
     delete myStopwatch;
 
-    sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
-    myPrinter->printGrid(alpha, "VTuneTest_Result.gnuplot", 100);
-    delete myPrinter;
+//    sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
+//    myPrinter->printGrid(alpha, "VTuneTest_Result.gnuplot", 100);
+//    delete myPrinter;
 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
