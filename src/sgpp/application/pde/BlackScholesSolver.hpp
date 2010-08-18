@@ -229,18 +229,6 @@ public:
 	void setEnableCoarseningData(double coarsenThreshold, double coarsenPercent, size_t numExecCoarsen);
 
 	/**
-	 * Refines a grid by taking the grid's coefficients into account. This refinement method
-	 * refines the grid based on the surplus by refining grid points with big surpluses
-	 * first.
-	 * The grid is refined to max. Level!
-	 *
-	 * @param alpha a DataVector containing the grids coefficients
-	 * @param dThreshold Threshold for a point's surplus for refining this point
-	 * @param maxLevel maxLevel of refinement
-	 */
-	void refineSurplusToMaxLevel(DataVector& alpha, double dThreshold, unsigned int maxLevel);
-
-	/**
 	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding
 	 * box [0,x] X [0,y] is assumed.
 	 *

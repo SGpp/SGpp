@@ -85,14 +85,25 @@ public:
 	/**
 	 * Refines a grid by taking the grid's coefficients into account. This refinement method
 	 * refines the grid based on the surplus by refining grid points with big surpluses
-	 * first. The number of grid points to refine is specified by a max. percentage
-	 * of all grid points.
+	 * first. The number of grid points to refine may be specified by the numRefinePoints parameter.
 	 *
 	 * @param alpha a DataVector containing the grids coefficients
-	 * @param dPercentage percentage of number the give the number of grid points that should be refined
+	 * @param numRefinePoints the number of grid points that should be refined; if this smaller than zero -> all refineable points will be refined
 	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 */
-	void refineInitialGridSurplus(DataVector& alpha, double dPercentage, double dThreshold);
+	void refineInitialGridSurplus(DataVector& alpha, int numRefinePoints, double dThreshold);
+
+	/**
+	 * Refines a grid by taking the grid's coefficients into account. This refinement method
+	 * refines the grid based on the surplus by refining grid points with big surpluses
+	 * first.
+	 * The grid is refined to max. Level!
+	 *
+	 * @param alpha a DataVector containing the grids coefficients
+	 * @param dThreshold Threshold for a point's surplus for refining this point
+	 * @param maxLevel maxLevel of refinement
+	 */
+	void refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dThreshold, size_t maxLevel);
 
 	/**
 	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
