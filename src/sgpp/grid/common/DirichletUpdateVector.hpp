@@ -73,7 +73,7 @@ public:
 	 * @param updateVector the vector that should be updated
 	 */
 	void setInnerPointsToZero(DataVector& updateVector);
-
+	void multiplyBoundaryHullWhite(DataVector& updateVector,double T);
 	/**
 	 * Multiplies the values on the boundary with a constant value
 	 *

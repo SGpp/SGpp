@@ -66,4 +66,21 @@ void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double va
 	}
 }
 
+void DirichletUpdateVector::multiplyBoundaryHullWhite(DataVector& updateVector,double T)
+{
+	double tmp;
+	for (size_t i = 0; i < storage->size(); i++)
+	{
+		std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
+		std::stringstream coordsStream(coords);
+		coordsStream >> tmp;
+		GridIndex* curPoint = (*storage)[i];
+		if (curPoint->isInnerPoint() == false)
+		{
+			updateVector.set(i, updateVector.get(i)*exp((1.0)*tmp*T));
+		}
+	}
+}
+
+
 }
