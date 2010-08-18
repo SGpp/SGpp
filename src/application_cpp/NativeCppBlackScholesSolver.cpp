@@ -1028,7 +1028,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	// Enable Coarsening
 	if (useCoarsen == true)
 	{
-		myBSSolver->setEnableCoarseningData(adaptSolvingMode, -1, coarsenThreshold, dRefineThreshold);
+		myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
 	}
 
 	// init the basis functions' coefficient vector
@@ -1066,7 +1066,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			{
 				oldGridSize = newGridSize;
 				std::cout << "Refining Grid..." << std::endl;
-				myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, level);
+				myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, maxRefineLevel);
 				myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 				std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 				std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
@@ -1203,6 +1203,14 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 		// Printing norms
 		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+
+		// reprint data with prefix -> can be easily grep-ed
+		std::cout << std::endl << std::endl;
+		std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
+		std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
+		std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
+		std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+		std::cout << std::endl << std::endl;
 	}
 	else
 	{
@@ -1326,11 +1334,12 @@ void writeHelp()
 	mySStream << "  solveNDanalyze      same as solveND, but the option is" << std::endl;
 	mySStream << "                      solved for several regular grids with" << std::endl;
 	mySStream << "                      different numbers of levels" << std::endl << std::endl;
-	mySStream << "  solveNDadapt        Solves an European Call/Put option" << std::endl;
+	mySStream << "  solveNDadaptDist    Solves an European Call/Put option" << std::endl;
 	mySStream << "                      on an initial refined grid (based on a" << std::endl;
-	mySStream << "                      regular grid) by analyzing the payoff" << std::endl << std::endl;
+	mySStream << "                      regular grid) by analyzing the payoff" << std::endl;
+	mySStream << "                      NOT ON LOG GRIDS!" << std::endl << std::endl;
 	mySStream << "  solveNDadaptSurplus Solves an European Call/Up option" << std::endl;
-	mySStream << "                      on an initial refined grid based on" << std::endl;
+	mySStream << "                      on a refined grid based on" << std::endl;
 	mySStream << "                      the hierarchical surplus" << std::endl << std::endl;
 	mySStream << "  solveBonn  Solves an option delivered in Bonn's format" << std::endl << std::endl << std::endl;
 
@@ -1431,7 +1440,7 @@ void writeHelp()
 	mySStream << "		for the highest leveled grid." << std::endl;
 	mySStream << std::endl << std::endl;
 
-	mySStream << "solveNDadapt" << std::endl << "------" << std::endl;
+	mySStream << "solveNDadaptDist" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
@@ -1481,38 +1490,7 @@ void writeHelp()
 	mySStream << "	MaxRefinement Level: Max. Level for refinement" << std::endl;
 	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
 	mySStream << "	refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 classic 0 5 1e-10" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
-	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
-	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
-	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
-	mySStream << std::endl << std::endl;
-
-	mySStream << "solveNDadaptSurplusFull" << std::endl << "------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
-	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	Strike: the strike" << std::endl;
-	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
-	mySStream << "	r: the riskfree rate" << std::endl;
-	mySStream << "	T: time to maturity" << std::endl;
-	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	RefinementMode: classic or maxLevel" << std::endl;
-	mySStream << "	MaxRefinement Level: Max. Level for refinement" << std::endl;
-	mySStream << "	numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
-	mySStream << "	refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
-	mySStream << "	adapt-mode during solving: coarsen, refine, coarsenNrefine" << std::endl;
+	mySStream << "	adapt-mode during solving: none, coarsen, refine, coarsenNrefine" << std::endl;
 	mySStream << "	Coarsening Threshold: Threshold of point's surplus to remove point" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
@@ -1652,7 +1630,7 @@ int main(int argc, char *argv[])
 			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coords);
 		}
 	}
-	else if (option == "solveNDadapt")
+	else if (option == "solveNDadaptDist")
 	{
 		if (argc != 16)
 		{
@@ -1696,50 +1674,6 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "solveNDadaptSurplus")
 	{
-		if (argc != 19)
-		{
-			writeHelp();
-		}
-		else
-		{
-			std::string fileStoch;
-			std::string fileBound;
-			double dStrike;
-			std::string ani;
-			std::string solver;
-			std::string payoff;
-			std::string refinementMode;
-
-			fileStoch.assign(argv[6]);
-			fileBound.assign(argv[5]);
-			dStrike = atof(argv[7]);
-			payoff.assign(argv[8]);
-			solver.assign(argv[12]);
-			refinementMode.assign(argv[15]);
-
-			std::string coordsType;
-			bool coords = false;
-			coordsType.assign(argv[2]);
-			if (coordsType == "cart")
-			{
-				coords = false;
-			}
-			else if (coordsType == "log")
-			{
-				coords = true;
-			}
-			else
-			{
-				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
-				std::cout << std::endl << std::endl;
-				writeHelp();
-			}
-
-			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), false, "none", 0.0, coords);
-		}
-	}
-	else if (option == "solveNDadaptSurplusFull")
-	{
 		if (argc != 21)
 		{
 			writeHelp();
@@ -1779,9 +1713,35 @@ int main(int argc, char *argv[])
 				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
 				std::cout << std::endl << std::endl;
 				writeHelp();
+				return 0;
 			}
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), true, adaptSolveMode, atoi(argv[20]), coords);
+			if (refinementMode != "maxLevel" && refinementMode != "classic")
+			{
+				std::cout << "Unsupported refinement type! classic or maxLevel are supported!" << std::endl;
+				std::cout << std::endl << std::endl;
+				writeHelp();
+				return 0;
+			}
+
+			bool useAdaptSolve = false;
+			if (adaptSolveMode == "coarsen" || adaptSolveMode == "refine" || adaptSolveMode == "coarsenNrefine")
+			{
+				useAdaptSolve = true;
+			}
+			else if (adaptSolveMode == "none")
+			{
+				useAdaptSolve = false;
+			}
+			else
+			{
+				std::cout << "Unsupported adapt solve mode! none, coarsen, refine or coarsenNrefine are supported!" << std::endl;
+				std::cout << std::endl << std::endl;
+				writeHelp();
+				return 0;
+			}
+
+			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode, atof(argv[20]), coords);
 		}
 	}
 	else if (option == "solveBonn")
