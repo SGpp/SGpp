@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef DMSYSTEMMATRIXSSEIDENTITY_HPP
-#define DMSYSTEMMATRIXSSEIDENTITY_HPP
+#ifndef DMSYSTEMMATRIXSPSSEIDENTITY_HPP
+#define DMSYSTEMMATRIXSPSSEIDENTITY_HPP
 
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
+#include "data/DataVectorSP.hpp"
+#include "data/DataMatrixSP.hpp"
 #include "grid/Grid.hpp"
-#include "operation/datadriven/OperationBVectorized.hpp"
-#include "operation/common/OperationMatrix.hpp"
+#include "operation/datadriven/OperationBVectorizedSP.hpp"
+#include "operation/common/OperationMatrixSP.hpp"
 
 namespace sg
 {
@@ -23,17 +23,19 @@ namespace sg
  *
  * The Identity matrix is used as regularization operator.
  *
- * For Operation B an instance of OperationBVectorizedSSE is used!
+ * For Operation B an instance of OperationBVectorizedSPSSE is used!
+ *
+ * This class implemented using single precision floating point numbers!
  */
-class DMSystemMatrixSSEIdentity : public OperationMatrix
+class DMSystemMatrixSPSSEIdentity : public OperationMatrixSP
 {
 private:
 	/// the lambda, the regularisation parameter
-	double lamb;
+	float lamb;
 	/// OperationB for calculating the data matrix
-	OperationBVectorized* B;
+	OperationBVectorizedSP* B;
 	/// Pointer to the data vector
-	DataMatrix* data;
+	DataMatrixSP* data;
 	/// Number of orignal training instances
 	size_t numTrainingInstances;
 
@@ -42,18 +44,18 @@ public:
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
-	 * @param trainData reference to DataMatrix that contains the training data
+	 * @param trainData reference to DataMatrixSP that contains the training data
 	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
 	 */
-	DMSystemMatrixSSEIdentity(Grid& SparseGrid, DataMatrix& trainData, double lambda);
+	DMSystemMatrixSPSSEIdentity(Grid& SparseGrid, DataMatrix& trainData, float lambda);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~DMSystemMatrixSSEIdentity();
+	virtual ~DMSystemMatrixSPSSEIdentity();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(DataVectorSP& alpha, DataVectorSP& result);
 
 	/**
 	 * Generates the right hand side of the classification equation
@@ -61,7 +63,7 @@ public:
 	 * @param classes the class information of the training data
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
-	void generateb(DataVector& classes, DataVector& b);
+	void generateb(DataVectorSP& classes, DataVectorSP& b);
 
 	/**
 	 * rebuilds the DataMatrix for Level and Index
@@ -71,4 +73,4 @@ public:
 
 }
 
-#endif /* DMSYSTEMMATRIXSSEIDENTITY_HPP */
+#endif /* DMSYSTEMMATRIXSPSSEIDENTITY_HPP */
