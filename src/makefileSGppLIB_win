@@ -56,7 +56,8 @@ OBJS = DataVector.obj Grid.obj LinearBoundaryGrid.obj LinearTrapezoidBoundaryGri
 	SurplusCoarseningFunctor.obj AlignedMemory.obj DataMatrix.obj BlackScholesODESolverSystemParallelOMP.obj\
 	OperationBIterativeSSELinear.obj DMSystemMatrixSSEIdentity.obj OperationDeltaLogLinear.obj\
 	OperationGammaLogLinear.obj DowndPhidPhiBBIterativeLinear.obj DowndPhidPhiBBIterativeLinearBoundary.obj\
-	UpdPhidPhiBBIterativeLinearBoundary.obj OperationBIterativeAVXLinear.obj DMSystemMatrixAVXIdentity.obj
+	UpdPhidPhiBBIterativeLinearBoundary.obj OperationBIterativeAVXLinear.obj DMSystemMatrixAVXIdentity.obj\
+	DataVectorSP.obj DataMatrixSP.obj ConjugateGradientsSP.obj
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -71,6 +72,12 @@ AlignedMemory.obj : $(SRCDIR)common/AlignedMemory.cpp
 
 DataMatrix.obj : $(SRCDIR)data/DataMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrix.obj $(SRCDIR)data/DataMatrix.cpp
+	
+DataVectorSP.obj : $(SRCDIR)data/DataVectorSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataVectorSP.obj $(SRCDIR)data/DataVectorSP.cpp
+	
+DataMatrixSP.obj : $(SRCDIR)data/DataMatrixSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrixSP.obj $(SRCDIR)data/DataMatrixSP.cpp
 
 Grid.obj : $(SRCDIR)grid/Grid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)Grid.obj $(SRCDIR)grid/Grid.cpp
@@ -416,6 +423,9 @@ DMSystemMatrixAVXIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixAVXI
 	
 ConjugateGradients.obj : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.obj $(SRCDIR)solver/sle/ConjugateGradients.cpp
+	
+ConjugateGradientsSP.obj : $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsSP.obj $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
 
 BiCGStab.obj : $(SRCDIR)solver/sle/BiCGStab.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStab.obj $(SRCDIR)solver/sle/BiCGStab.cpp

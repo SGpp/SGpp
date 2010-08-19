@@ -14,7 +14,9 @@ namespace sg
 {
 
 /**
- * Multiplication with a Laplace matrix on sparse grids
+ * Abstract definition of a matrix operator interface.
+ * Everytime you need to apply a matrix to the ansatzfunction's
+ * coefficients derive a class from OperationMatrix
  */
 class OperationMatrix
 {
