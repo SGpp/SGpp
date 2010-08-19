@@ -160,13 +160,13 @@ void VarTimestep::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem&
 	}
 	fileout.close();
 
-
-
 	// write some empty lines to console
     if (myScreen != NULL)
 	{
     	myScreen->writeEmptyLines(2);
 	}
+
+    this->nIterations = allIter;
 }
 
 }

@@ -70,6 +70,16 @@ private:
 	bool useLogTransform;
 	/// max. level for refinement during solving
 	size_t refineMaxLevel;
+	/// variable to store needed solving iterations
+	size_t nNeededIterations;
+	/// variable to store the solving time
+	double dNeededTime;
+	/// variable to store start grid size (Inner Grid)
+	size_t staInnerGridSize;
+	/// variable to store final grid size (Inner Grid)
+	size_t finInnerGridSize;
+	/// variable to store average grid size (Inner Grid)
+	size_t avgInnerGridSize;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -262,6 +272,41 @@ public:
 	 * @param number of gridpoints @money
 	 */
 	size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+
+	/**
+	 * gets the number needed iterations to solve Black Scholes Equation
+	 *
+	 * @return number of iterations needed to solve Black Scholes Equation, if called before solving 0 is returned
+	 */
+	size_t getNeededIterationsToSolve();
+
+	/**
+	 * gets needed time in seconds to solve Black Scholes Equation
+	 *
+	 * @return needed time in seconds to solve Black Scholes Equation, if called before solving 0 is returned
+	 */
+	double getNeededTimeToSolve();
+
+	/**
+	 * gets the number of points in start grid
+	 *
+	 * @returns the number of points in start grid, if called before constructing grid, 0 is returned
+	 */
+	size_t getStartInnerGridSize();
+
+	/**
+	 * gets the number of points in final grid
+	 *
+	 * @returns the number of points in final grid, if called before solving, 0 is returned
+	 */
+	size_t getFinalInnerGridSize();
+
+	/**
+	 * gets the number of average gridpoints
+	 *
+	 * @returns the number of average gridpoints, if called before solving, 0 is returned
+	 */
+	size_t getAverageInnerGridSize();
 };
 
 }
