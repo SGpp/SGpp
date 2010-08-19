@@ -34,6 +34,11 @@ BlackScholesSolver::BlackScholesSolver(bool useLogTransform) : ParabolicPDESolve
 	this->numCoarsenPoints = -1;
 	this->useLogTransform = useLogTransform;
 	this->refineMaxLevel = 0;
+	this->nNeededIterations = 0;
+	this->dNeededTime = 0.0;
+	this->staInnerGridSize = 0;
+	this->finInnerGridSize = 0;
+	this->avgInnerGridSize = 0;
 }
 
 BlackScholesSolver::~BlackScholesSolver()
@@ -253,12 +258,12 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
-		double execTime;
+		this->staInnerGridSize = getNumberInnerGridPoints();
 
 		std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
-		execTime = myStopwatch->stop();
+		this->dNeededTime = myStopwatch->stop();
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
@@ -268,9 +273,13 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 
 		if (this->myScreen != NULL)
 		{
-			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
 			this->myScreen->writeEmptyLines(2);
 		}
+
+		this->finInnerGridSize = getNumberInnerGridPoints();
+		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
+		this->nNeededIterations = myEuler->getNumberIterations();
 
 		delete myBSSystem;
 		delete myCG;
@@ -295,12 +304,12 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
-		double execTime;
+		this->staInnerGridSize = getNumberInnerGridPoints();
 
 		std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
-		execTime = myStopwatch->stop();
+		this->dNeededTime = myStopwatch->stop();
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
@@ -310,9 +319,13 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 
 		if (this->myScreen != NULL)
 		{
-			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
 			this->myScreen->writeEmptyLines(2);
 		}
+
+		this->finInnerGridSize = getNumberInnerGridPoints();
+		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
+		this->nNeededIterations = myEuler->getNumberIterations();
 
 		delete myBSSystem;
 		delete myCG;
@@ -336,7 +349,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
-		double execTime;
+		this->staInnerGridSize = getNumberInnerGridPoints();
 
 		size_t numCNSteps;
 		size_t numIESteps;
@@ -361,7 +374,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		myBSSystem->setODESolver("CrNic");
 		std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
 		myCN->solve(*myCG, *myBSSystem, true, false);
-		execTime = myStopwatch->stop();
+		this->dNeededTime = myStopwatch->stop();
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
 		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
@@ -371,9 +384,13 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 
 		if (this->myScreen != NULL)
 		{
-			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
 			this->myScreen->writeEmptyLines(2);
 		}
+
+		this->finInnerGridSize = getNumberInnerGridPoints();
+		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
+		this->nNeededIterations = myEuler->getNumberIterations() + myCN->getNumberIterations();
 
 		delete myBSSystem;
 		delete myCG;
@@ -400,17 +417,21 @@ void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timeste
 		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
-
-		double execTime;
+		this->staInnerGridSize = getNumberInnerGridPoints();
 
 		myStopwatch->start();
 		myAdamsBashforth->solve(*myCG, *myBSSystem, false, verbose);
-		execTime = myStopwatch->stop();
+		this->dNeededTime = myStopwatch->stop();
+
 		if (this->myScreen != NULL)
 		{
-			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
 			this->myScreen->writeEmptyLines(2);
 		}
+
+		this->finInnerGridSize = getNumberInnerGridPoints();
+		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
+		this->nNeededIterations = myAdamsBashforth->getNumberIterations();
 
 		delete myBSSystem;
 		delete myCG;
@@ -436,17 +457,21 @@ void BlackScholesSolver::solveVarTimestep(size_t numTimesteps, double timestepsi
 		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
-
-		double execTime;
+		this->staInnerGridSize = getNumberInnerGridPoints();
 
 		myStopwatch->start();
 		myVarTimestep->solve(*myCG, *myBSSystem, false, verbose);
-		execTime = myStopwatch->stop();
+		this->dNeededTime = myStopwatch->stop();
+
 		if (this->myScreen != NULL)
 		{
-			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
+			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
 			this->myScreen->writeEmptyLines(2);
 		}
+
+		this->finInnerGridSize = getNumberInnerGridPoints();
+		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
+		this->nNeededIterations = myVarTimestep->getNumberIterations();
 
 		delete myBSSystem;
 		delete myCG;
@@ -794,6 +819,31 @@ void BlackScholesSolver::initGridWithPayoffBSHW(DataVector& alpha, double strike
 	{
 		throw new application_exception("BlackScholesSolver::initGridWithPayoffBSHW : A grid wasn't constructed before!");
 	}
+}
+
+size_t BlackScholesSolver::getNeededIterationsToSolve()
+{
+	return this->nNeededIterations;
+}
+
+double BlackScholesSolver::getNeededTimeToSolve()
+{
+	return this->dNeededTime;
+}
+
+size_t BlackScholesSolver::getStartInnerGridSize()
+{
+	return this->staInnerGridSize;
+}
+
+size_t BlackScholesSolver::getFinalInnerGridSize()
+{
+	return this->finInnerGridSize;
+}
+
+size_t BlackScholesSolver::getAverageInnerGridSize()
+{
+	return this->avgInnerGridSize;
 }
 
 }

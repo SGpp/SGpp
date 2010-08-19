@@ -79,6 +79,8 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver, OperationODESolverSyste
 	{
     	myScreen->writeEmptyLines(2);
 	}
+
+    this->nIterations = allIter;
 }
 
 }

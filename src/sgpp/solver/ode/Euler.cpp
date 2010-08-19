@@ -111,6 +111,8 @@ void Euler::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& Syste
 	{
     	myScreen->writeEmptyLines(2);
 	}
+
+    this->nIterations = allIter;
 }
 
 }

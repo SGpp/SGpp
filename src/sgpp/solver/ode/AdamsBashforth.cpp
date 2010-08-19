@@ -108,6 +108,8 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationODESolverSyst
 	{
     	myScreen->writeEmptyLines(2);
 	}
+
+    this->nIterations = allIter;
 }
 
 }
