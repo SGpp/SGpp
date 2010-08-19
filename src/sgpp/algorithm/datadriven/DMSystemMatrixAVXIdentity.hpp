@@ -41,7 +41,7 @@ public:
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
-	 * @param trainData reference to DataVector that contains the training data
+	 * @param trainData reference to DataMatrix that contains the training data
 	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
 	 */
