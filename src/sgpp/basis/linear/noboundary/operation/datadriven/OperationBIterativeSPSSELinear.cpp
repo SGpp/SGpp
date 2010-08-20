@@ -65,7 +65,7 @@ void OperationBIterativeSPSSELinear::rebuildLevelAndIndex()
 	storage->getLevelIndexArraysForEval(*Level, *Index);
 }
 
-void OperationBIterativeSPSSELinear::multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
+void OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)
 {
 	size_t source_size = alpha.getSize();
     size_t dims = storage->dim();
@@ -95,7 +95,7 @@ void OperationBIterativeSPSSELinear::multVectorized(DataVector& alpha, DataMatri
     	size_t start = chunksize*omp_get_thread_num();
     	size_t end = std::min<size_t>(start+chunksize, source_size);
 
-    	DataVector myResult(result.getSize());
+    	DataVectorSP myResult(result.getSize());
     	myResult.setAll(0.0);
     	float* ptrResult = myResult.getPointer();
 #else
@@ -258,7 +258,7 @@ void OperationBIterativeSPSSELinear::multVectorized(DataVector& alpha, DataMatri
 #endif
 }
 
-void OperationBIterativeSPSSELinear::multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
+void OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();

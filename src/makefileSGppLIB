@@ -56,7 +56,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationBIterativeSSELinear.o DMSystemMatrixSSEIdentity.o OperationDeltaLogLinear.o\
 	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
 	UpdPhidPhiBBIterativeLinearBoundary.o OperationBIterativeAVXLinear.o DMSystemMatrixAVXIdentity.o\
-	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o
+	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o DMSystemMatrixSPSSEIdentity.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -150,6 +150,9 @@ OperationBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/Opera
 	
 OperationBIterativeSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
+	
+OperationBIterativeSPSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeSPSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.cpp
 	
 OperationBIterativeAVXLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeAVXLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.cpp
@@ -417,6 +420,9 @@ DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	
 DMSystemMatrixSSEIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSSEIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
+	
+DMSystemMatrixSPSSEIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPSSEIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPSSEIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPSSEIdentity.cpp
 	
 DMSystemMatrixAVXIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixAVXIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixAVXIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixAVXIdentity.cpp

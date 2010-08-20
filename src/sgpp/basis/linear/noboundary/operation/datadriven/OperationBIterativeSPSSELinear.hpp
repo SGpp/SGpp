@@ -46,9 +46,9 @@ public:
 	 */
 	virtual ~OperationBIterativeSPSSELinear();
 
-	virtual void multVectorizedSP(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result);
+	virtual void multVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result);
 
-	virtual void multTransposeVectorizedSP(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result);
+	virtual void multTransposeVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result);
 
 	virtual void rebuildLevelAndIndex();
 

@@ -24,7 +24,7 @@ DMSystemMatrixSPSSEIdentity::DMSystemMatrixSPSSEIdentity(Grid& SparseGrid, DataM
 	// Assure that data has a even number of instances -> padding might be needed
 	if (data->getNrows() % 2 != 0)
 	{
-		DataVector lastRow(data->getNcols());
+		DataVectorSP lastRow(data->getNcols());
 		data->getRow(data->getNrows()-1, lastRow);
 		data->resize(data->getNrows()+1);
 		data->setRow(data->getNrows()-1, lastRow);

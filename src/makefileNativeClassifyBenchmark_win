@@ -24,14 +24,14 @@ SRCDIR = ./../../../src/application_cpp/
 BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
-OBJS = NativeCppVTuneTest.o
+OBJS = NativeCppClassifyBenchmark.obj
 
 default: $(OBJS)
-	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppVTuneTest.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
-	cp $(BINDIR)$(BINNAME) $(BINDIR)VTuneTest
+	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifyBenchmark.obj $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
+	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmark.exe
 	
-NativeCppVTuneTest.o : $(SRCDIR)NativeCppVTuneTest.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppVTuneTest.o $(SRCDIR)NativeCppVTuneTest.cpp
+NativeCppClassifyBenchmark.obj : $(SRCDIR)NativeCppClassifyBenchmark.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppClassifyBenchmark.obj $(SRCDIR)NativeCppClassifyBenchmark.cpp
 			
 clean:
 	rm *

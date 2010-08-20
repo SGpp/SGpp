@@ -52,7 +52,7 @@ public:
 	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual void multVectorizedSP(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result) = 0;
+	virtual void multVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result) = 0;
 
 	/**
 	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
@@ -66,7 +66,7 @@ public:
 	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual void multTransposeVectorizedSP(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result) = 0;
+	virtual void multTransposeVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result) = 0;
 
 	/**
 	 * rebuilds the DataMatrix for Level and Index in Derivatives

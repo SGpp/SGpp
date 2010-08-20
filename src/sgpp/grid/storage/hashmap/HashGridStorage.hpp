@@ -19,6 +19,7 @@
 #include "grid/common/BoundingBox.hpp"
 
 #include "data/DataMatrix.hpp"
+#include "data/DataMatrixSP.hpp"
 
 #include <memory>
 #include <vector>
@@ -704,6 +705,38 @@ public:
 					(list[i])->get(current_dim, curLevel, curIndex);
 					level.set(i, current_dim, static_cast<double>(1<<curLevel));
 					index.set(i, current_dim, static_cast<double>(curIndex));
+				}
+			}
+#ifdef USEOMP
+		}
+#endif
+	}
+
+	/**
+	 * Converts this storage from AOS (array of structures) to SOA (structure of array)
+	 * with modification to speed up iterative function evaluation. The Level
+	 * array won't contain the levels, it contains the level to the power of two
+	 *
+	 * @param level DataMatrix to store the grid's level to the power of two
+	 * @param index DataMatrix to store the grid's indices
+	 */
+	void getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index)
+	{
+		typename index_type::level_type curLevel;
+		typename index_type::level_type curIndex;
+
+#ifdef USEOMP
+		#pragma omp parallel
+		{
+			#pragma omp for schedule (static) private(curLevel, curIndex)
+#endif
+			for(size_t i = 0; i < list.size(); i++)
+			{
+				for (size_t current_dim = 0; current_dim < DIM; current_dim++)
+				{
+					(list[i])->get(current_dim, curLevel, curIndex);
+					level.set(i, current_dim, static_cast<float>(1<<curLevel));
+					index.set(i, current_dim, static_cast<float>(curIndex));
 				}
 			}
 #ifdef USEOMP
