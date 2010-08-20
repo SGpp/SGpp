@@ -143,7 +143,7 @@ void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVec
 	if (this->sigma != 0.0)
 		{
 			this->OpEBound->mult(alpha, temp);
-			result.axpy((-1.0/2.0)*pow((this->sigma),2), temp);
+			result.axpy((-1.0/2.0)*pow((this->sigma),2.0), temp);
 		}
 
 	if (this->a != 0.0)
@@ -193,7 +193,7 @@ void HullWhiteODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector
 		if (this->sigma != 0.0)
 			{
 				this->OpEInner->mult(alpha, temp);
-				result.axpy((-1.0/2.0)*pow((this->sigma),2), temp);
+				result.axpy((-1.0/2.0)*pow((this->sigma),2.0), temp);
 			}
 
 		if (this->a != 0.0)
