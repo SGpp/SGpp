@@ -18,7 +18,7 @@ ConjugateGradientsSP::~ConjugateGradientsSP()
 {
 }
 
-void ConjugateGradientsSP::solveSP(OperationMatrixSP& SystemMatrix, DataVectorSP& alpha, DataVectorSP& b, bool reuse, bool verbose, float max_threshold)
+void ConjugateGradientsSP::solve(OperationMatrixSP& SystemMatrix, DataVectorSP& alpha, DataVectorSP& b, bool reuse, bool verbose, float max_threshold)
 {
 	if (verbose == true)
 	{

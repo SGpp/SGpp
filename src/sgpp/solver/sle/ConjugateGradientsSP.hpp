@@ -50,7 +50,7 @@ public:
 	 * @param verbose prints information during execution of the solver
 	 * @param max_threshold additional abort criteria for solver
 	 */
-	void solveSP(OperationMatrixSP& SystemMatrix, DataVectorSP& alpha, DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = -1.0);
+	void solve(OperationMatrixSP& SystemMatrix, DataVectorSP& alpha, DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = -1.0);
 
 	/**
 	 * function that returns the number of needed solve steps
