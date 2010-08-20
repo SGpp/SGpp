@@ -331,47 +331,47 @@ endif
 endif
 
 ###################################################################
-# Builds a VTuneTest Application
+# Builds a ClassifyBenchmark Application
 ###################################################################	
-VTuneTest: default
+ClassifyBenchmark: default
 ifeq ($(CC),g++)
-	mkdir -p tmp/build_native/VTuneTest_gcc
+	mkdir -p tmp/build_native/ClassifyBenchmark_gcc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=VTuneTest_GCC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC)" "LFLAGS=$(LFLAGS_GCC)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC"
 else
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=VTuneTest_GCC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_TRONE)" "LFLAGS=$(LFLAGS_GCC_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=VTuneTest_GCC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP)" "LFLAGS=$(LFLAGS_GCC_OMP)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC"
 else
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=VTuneTest_GCC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS_GCC_OMP_TRONE)" "LFLAGS=$(LFLAGS_GCC_OMP_TRONE)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC"
 endif
 endif
 endif
 ifeq ($(CC),icpc)
-	mkdir -p tmp/build_native/VTuneTest_icc
+	mkdir -p tmp/build_native/ClassifyBenchmark_icc
 ifeq ($(OMP),0)
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=VTuneTest_ICC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC"
 else
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=VTuneTest_ICC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_TRONE)" "LFLAGS=$(LFLAGS_ICC_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC"
 endif
 else
 ifeq ($(TR1),0)
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)" "LIBNAME=libsgpp_icc.a" "BINNAME=VTuneTest_ICC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP)" "LFLAGS=$(LFLAGS_ICC_OMP)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC"
 else	
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=VTuneTest_ICC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC"
 endif	
 endif
 endif
 ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/VTuneTest_xlc
+	mkdir -p tmp/build_native/ClassifyBenchmark_xlc
 ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=VTuneTest_XLC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=ClassifyBenchmark_XLC"
 else
-	make -f ./../../../src/makefileNativeVTuneTest --directory=./tmp/build_native/VTuneTest_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=VTuneTest_XLC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=ClassifyBenchmark_XLC"
 endif
 endif
 

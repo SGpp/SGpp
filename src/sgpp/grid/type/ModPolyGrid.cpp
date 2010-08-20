@@ -76,6 +76,11 @@ OperationBVectorized* ModPolyGrid::createOperationBVectorized(const std::string&
 	throw factory_exception("Unsupported operation");
 }
 
+OperationBVectorizedSP* ModPolyGrid::createOperationBVectorizedSP(const std::string& VecType)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationMatrix* ModPolyGrid::createOperationLaplace()
 {
 	throw factory_exception("Unsupported operation");

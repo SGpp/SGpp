@@ -12,6 +12,7 @@
 
 #include "operation/datadriven/OperationB.hpp"
 #include "operation/datadriven/OperationBVectorized.hpp"
+#include "operation/datadriven/OperationBVectorizedSP.hpp"
 #include "operation/datadriven/OperationTest.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "operation/common/OperationHierarchisation.hpp"
@@ -172,6 +173,15 @@ public:
 	 * @return pointer to the OperationB object
 	 */
 	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType) = 0;
+
+	/**
+	 * gets a pointer to OperationBVectorizedSP object
+	 *
+	 * @param VecType Type of Vectorization used: Currently supported: SSE, AVX
+	 *
+	 * @return pointer to the OperationBSP object
+	 */
+	virtual OperationBVectorizedSP* createOperationBVectorizedSP(const std::string& VecType) = 0;
 
 	/**
 	 * gets a pointer to OperationEval object

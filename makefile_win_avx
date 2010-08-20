@@ -55,11 +55,11 @@ HESolver: default
 	make -f ./../../../src/makefileNativeHeatEquationSolver_win --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC.exe"
 
 ###################################################################
-# Builds a VTuneTest Application
+# Builds a ClassifyBenchmark Application
 ###################################################################	
-VTuneTest: default
-	mkdir -p tmp/build_native/VTuneTest_icc
-	make -f ./../../../src/makefileNativeVTuneTest_win --directory=./tmp/build_native/VTuneTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=VTuneTest_ICC.exe"
+ClassifyBenchmark: default
+	mkdir -p tmp/build_native/ClassifyBenchmark_icc
+	make -f ./../../../src/makefileNativeClassifyBenchmark_win --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC)" "LFLAGS=$(LFLAGS_ICC)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC.exe"
 		
 clean:
 	rm -rdfv tmp/build_native

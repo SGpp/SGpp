@@ -48,7 +48,7 @@ public:
 	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
 	 */
-	DMSystemMatrixSPSSEIdentity(Grid& SparseGrid, DataMatrix& trainData, float lambda);
+	DMSystemMatrixSPSSEIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda);
 
 	/**
 	 * Std-Destructor

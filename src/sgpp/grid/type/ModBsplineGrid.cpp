@@ -75,6 +75,11 @@ OperationBVectorized* ModBsplineGrid::createOperationBVectorized(const std::stri
 	throw factory_exception("Unsupported operation");
 }
 
+OperationBVectorizedSP* ModBsplineGrid::createOperationBVectorizedSP(const std::string& VecType)
+{
+	throw factory_exception("Unsupported operation");
+}
+
 OperationMatrix* ModBsplineGrid::createOperationLaplace()
 {
 	throw factory_exception("Unsupported operation");
