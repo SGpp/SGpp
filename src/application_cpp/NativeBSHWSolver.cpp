@@ -8,11 +8,45 @@
 #include "sgpp.hpp"
 #include <iostream>
 #include <string>
+#include <vector>
 #include <stdlib.h>
 #include <fstream>
 #include <iomanip>
 
 #define CRNIC_IMEUL_STEPS 3
+
+int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigmabs, DataMatrix& rho)
+{
+	std::fstream file;
+	double cur_mu;
+	double cur_sigmabs;
+	double cur_rho;
+
+	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
+
+	for (size_t i = 0; i < numAssests; i++)
+	{
+		file >> cur_mu;
+		file >> cur_sigmabs;
+		mu.set(i, cur_mu);
+		sigmabs.set(i, cur_sigmabs);
+		for (size_t j = 0; j < numAssests; j++)
+		{
+			file >> cur_rho;
+			rho.set(i,j, cur_rho);
+		}
+	}
+
+	file.close();
+
+	return 0;
+}
 
 int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
 {
@@ -57,7 +91,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
-void testBSHW(size_t d,size_t l, double theta, double sigmahw,double sigmabs, double a, std::string fileBound, std::string payoffType,
+void testBSHW(size_t d,size_t l, double theta, double sigmahw, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
 		size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double T,double dStrike, bool isLogSolve)
 {
 	    size_t dim = d;
@@ -66,7 +100,14 @@ void testBSHW(size_t d,size_t l, double theta, double sigmahw,double sigmabs, do
 		double stepsize = dt;
 		size_t CGiterations = CGIt;
 		double CGepsilon = CGeps;
+		DataVector mu(1);
+		DataVector sigmabs(1);
+		DataMatrix rho(1,1);
 
+		if (readStochasticData(fileStoch, 1, mu, sigmabs, rho) != 0)
+			{
+				return;
+			}
 
 		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
 		if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
@@ -113,22 +154,28 @@ void testBSHW(size_t d,size_t l, double theta, double sigmahw,double sigmabs, do
 			myBSSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.gnuplot", true);
 			myBSSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.gnuplot", false);
 
+		//	sg::HullWhiteSolver* myHWSolver = new sg::HullWhiteSolver();
+
+			std::vector<size_t> algoDims(1);
+			myBSSolver->setAlgorithmicDimensions(algoDims);
 
 		// Set stochastic data
-		//myBSSolver->setStochasticData(mu, sigma, rho, r);
+			myBSSolver->setStochasticData(mu, sigmabs, rho, 0.04);
+
+		//myBSSolver->setStochasticData(0, sigmabs, 0, 0.04);
 
 		// Start solving the Black Scholes Equation
-		/*if (Solver == "ExEul")
+		if (Solver == "ExEul")
 		{
-			myHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+			myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 		}
 		else if (Solver == "ImEul")
 		{
-			myHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+			myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 		}
 		else if (Solver == "CrNic")
 		{
-			myHWSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 		}
 		else
 		{
@@ -139,9 +186,9 @@ void testBSHW(size_t d,size_t l, double theta, double sigmahw,double sigmabs, do
 		{
 
 				// Print the solved Black Scholes Equation into a gnuplot file
-				myHWSolver->printGrid(*alpha, 20, "solvedHW.gnuplot");
-				myHWSolver->printSparseGrid(*alpha, "solvedHW_surplus.grid.gnuplot", true);
-				myHWSolver->printSparseGrid(*alpha, "solvedHW_nodal.grid.gnuplot", false);
+				myBSSolver->printGrid(*alpha, 20, "solvedBSHW.gnuplot");
+				myBSSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.gnuplot", true);
+				myBSSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.gnuplot", false);
 
 
 		}
@@ -153,11 +200,12 @@ void testBSHW(size_t d,size_t l, double theta, double sigmahw,double sigmabs, do
 			point.push_back(1.0);
 		}
 		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		*/
 
 		delete alpha;
-		delete myHWSolver;
+		delete myBSSolver;
 		delete myBoundingBox;
-*/
+
 	std::cout << "Nothing has been implemented so far " << std::endl;
 
 
@@ -192,10 +240,9 @@ void writeHelp()
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	value of Theta: theta function" << std::endl;
 	mySStream << "	value of sigmahw: sigma value-determine overall level of volatility for hull white" << std::endl;
-	mySStream << "	value of sigmahw: sigma value-determine overall level of volatility for hull white" << std::endl;
     mySStream << "	value of a: a" << std::endl;
+    mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
     mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-	//mySStream << "	r: the interest rate" << std::endl;
 	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
@@ -207,7 +254,7 @@ void writeHelp()
 
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "2 5 0.006 0.01 0.4 0.1 bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ExEul " <<"0.3 cart"<<std::endl;
+	mySStream << "2 5 0.006 0.01 0.1 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ExEul " <<"0.3 cart"<<std::endl;
 	mySStream << std::endl;
 
 	mySStream << std::endl << std::endl;
@@ -246,16 +293,16 @@ int main(int argc, char *argv[])
 			std::string payoff;
 			double theta;
 			double sigmahw;
-			double sigmabs;
 			double a;
 			double dStrike;
+			std::string fileStoch;
 			std::string fileBound;
 
 
 			theta = atof(argv[4]);
 			sigmahw = atof(argv[5]);
-			sigmabs = atof(argv[6]);
-			a = atof(argv[7]);
+			a = atof(argv[6]);
+			fileStoch.assign(argv[7]);
 			fileBound.assign(argv[8]);
 			payoff.assign(argv[9]);
 			solver.assign(argv[14]);
@@ -279,7 +326,7 @@ int main(int argc, char *argv[])
 				}
 			//testHullWhite(size_t l, double theta, double signma, double a, std::string fileBound, std::string payoffType,
 				//	size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T)
-			testBSHW(atoi(argv[2]),atoi(argv[3]), theta, sigmahw,sigmabs, a, fileBound, payoff, (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[12]), atof(argv[13]), solver,atof(argv[10]),dStrike,coords);
+			testBSHW(atoi(argv[2]),atoi(argv[3]), theta, sigmahw, a, fileStoch, fileBound, payoff, (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[12]), atof(argv[13]), solver,atof(argv[10]),dStrike,coords);
 		}
 	}
 
