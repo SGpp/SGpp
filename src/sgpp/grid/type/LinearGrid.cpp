@@ -15,6 +15,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationEvalLinear.hpp"
 #include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
@@ -107,8 +108,7 @@ OperationBVectorizedSP* LinearGrid::createOperationBVectorizedSP(const std::stri
 	}
 	else if (VecType == "AVX")
 	{
-		//return new OperationBIterativeSPAVXLinear(this->storage);
-		throw factory_exception("Unsupported vectorization type");
+		return new OperationBIterativeSPAVXLinear(this->storage);
 	}
 	else
 	{
