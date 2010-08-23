@@ -57,7 +57,8 @@ OBJS = DataVector.obj Grid.obj LinearBoundaryGrid.obj LinearTrapezoidBoundaryGri
 	OperationBIterativeSSELinear.obj DMSystemMatrixSSEIdentity.obj OperationDeltaLogLinear.obj\
 	OperationGammaLogLinear.obj DowndPhidPhiBBIterativeLinear.obj DowndPhidPhiBBIterativeLinearBoundary.obj\
 	UpdPhidPhiBBIterativeLinearBoundary.obj OperationBIterativeAVXLinear.obj DMSystemMatrixAVXIdentity.obj\
-	DataVectorSP.obj DataMatrixSP.obj ConjugateGradientsSP.obj
+	DataVectorSP.obj DataMatrixSP.obj ConjugateGradientsSP.obj OperationBIterativeSPSSELinear.obj DMSystemMatrixSPSSEIdentity.obj\
+	OperationBIterativeSPAVXLinear.obj DMSystemMatrixSPAVXIdentity.obj
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -151,8 +152,14 @@ OperationBLinear.obj : $(SRCDIR)basis/linear/noboundary/operation/datadriven/Ope
 OperationBIterativeSSELinear.obj : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeSSELinear.obj $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
 	
+OperationBIterativeSPSSELinear.obj : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeSPSSELinear.obj $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.cpp
+	
 OperationBIterativeAVXLinear.obj : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeAVXLinear.obj $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.cpp
+	
+OperationBIterativeSPAVXLinear.obj : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBIterativeSPAVXLinear.obj $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.cpp
 
 OperationTestLinear.obj : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.obj $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
@@ -418,8 +425,14 @@ DMSystemMatrix.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 DMSystemMatrixSSEIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSSEIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
 	
+DMSystemMatrixSPSSEIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPSSEIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPSSEIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPSSEIdentity.cpp
+	
 DMSystemMatrixAVXIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixAVXIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixAVXIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixAVXIdentity.cpp
+	
+DMSystemMatrixSPAVXIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPAVXIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPAVXIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPAVXIdentity.cpp
 	
 ConjugateGradients.obj : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.obj $(SRCDIR)solver/sle/ConjugateGradients.cpp

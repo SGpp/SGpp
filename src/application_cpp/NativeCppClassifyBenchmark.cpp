@@ -9,6 +9,7 @@
 #include "data/DataVectorSP.hpp"
 #include "data/DataMatrixSP.hpp"
 #include "algorithm/datadriven/DMSystemMatrixSPSSEIdentity.hpp"
+#include "algorithm/datadriven/DMSystemMatrixSPAVXIdentity.hpp"
 #include "solver/sle/ConjugateGradientsSP.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
 
@@ -45,8 +46,8 @@
 #define GNUPLOT
 #define GRDIRESOLUTION 50
 
-// at least one has to be defined
-//#define USE_SSE
+// at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
+#define USE_SSE
 //#define USE_AVX
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or great),
@@ -298,7 +299,7 @@ void adaptClassificationTestSP()
     sg::DMSystemMatrixSPSSEIdentity* mySystem = new sg::DMSystemMatrixSPSSEIdentity(*myGrid, dataSP, LAMBDA);
 #endif
 #ifdef USE_AVX
-    //sg::DMSystemMatrixSPAVXIdentity* mySystem = new sg::DMSystemMatrixSPAVXIdentity(*myGrid, data, LAMBDA);
+    sg::DMSystemMatrixSPAVXIdentity* mySystem = new sg::DMSystemMatrixSPAVXIdentity(*myGrid, dataSP, LAMBDA);
 #endif
 #else
     sg::DMSystemMatrixSPSSEIdentity* mySystem = new sg::DMSystemMatrixSPSSEIdentity(*myGrid, dataSP, LAMBDA);
