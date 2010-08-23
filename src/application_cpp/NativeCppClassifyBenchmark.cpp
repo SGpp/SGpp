@@ -17,26 +17,26 @@
 
 //#define DATAFILE "DR5_nowarnings_less05_train.arff"
 //#define DATAFILE "twospirals.wieland.arff"
-//#define DATAFILE "liver-disorders_normalized.arff"
-#define DATAFILE "ripleyGarcke.train.arff"
+#define DATAFILE "liver-disorders_normalized.arff"
+//#define DATAFILE "ripleyGarcke.train.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define TESTFILE "twospirals.wieland.arff"
-//#define TESTFILE "liver-disorders_normalized.arff"
-#define TESTFILE "ripleyGarcke.test.arff"
+#define TESTFILE "liver-disorders_normalized.arff"
+//#define TESTFILE "ripleyGarcke.test.arff"
 
 // grid generation settings
 #define LEVELS 3
-#define REFINEMENTS 2
+#define REFINEMENTS 8
 #define REFINE_THRESHOLD 0.0
-#define REFINE_NUM_POINTS 3
+#define REFINE_NUM_POINTS 10
 
 // solving settings
 #define CG_IMAX 10000
 #define CG_EPS 0.00001
 
 // regularization fector
-#define LAMBDA 0.000001
+#define LAMBDA 0.00001
 
 // tests learned grid with test data
 #define TESTRESULT
@@ -46,7 +46,7 @@
 #define GRDIRESOLUTION 50
 
 // at least one has to be defined
-#define USE_SSE
+//#define USE_SSE
 //#define USE_AVX
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or great),
@@ -101,11 +101,15 @@ void convertDataVectorSPToDataVector(DataVectorSP& src, DataVector& dest)
 	}
 }
 
-void adaptRegressionTest()
+void adaptClassificationTest()
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-    std::cout << "Regression/Classification Test App (Double Precision)" << std::endl;
+#if defined(USE_SSE) || defined(USE_AVX)
+    std::cout << "Classification Test App (Double Precision)" << std::endl;
+#else
+    std::cout << "Classification Test App (Double Precision, recursive)" << std::endl;
+#endif
     std::cout << "===============================================================" << std::endl << std::endl;
 
 	double execTime = 0.0;
@@ -184,7 +188,7 @@ void adaptRegressionTest()
     	DataVector b(alpha.getSize());
     	mySystem->generateb(classes, b);
 
-    	myCG->solve(*mySystem, alpha, b, true, true, 0.0);
+    	myCG->solve(*mySystem, alpha, b, true, false, 0.0);
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
@@ -213,7 +217,11 @@ void adaptRegressionTest()
 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
+#if defined(USE_SSE) || defined(USE_AVX)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
+#else
+    std::cout << "Needed time: " << execTime << " seconds (Double Precision, recursive)" << std::endl;
+#endif
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
@@ -228,11 +236,11 @@ void adaptRegressionTest()
 }
 
 
-void adaptRegressionTestSP()
+void adaptClassificationTestSP()
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-    std::cout << "Regression/Classification Test App (Single Precision)" << std::endl;
+    std::cout << "Classification Test App (Single Precision)" << std::endl;
     std::cout << "===============================================================" << std::endl << std::endl;
 
 	double execTime = 0.0;
@@ -324,7 +332,7 @@ void adaptRegressionTestSP()
     	DataVectorSP bSP(alphaSP.getSize());
     	mySystem->generateb(classesSP, bSP);
 
-    	myCG->solve(*mySystem, alphaSP, bSP, true, true, 0.0);
+    	myCG->solve(*mySystem, alphaSP, bSP, true, false, 0.0);
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
@@ -372,9 +380,9 @@ void adaptRegressionTestSP()
 int main(int argc, char *argv[])
 {
 #ifdef USEFLOAT
-	adaptRegressionTestSP();
+	adaptClassificationTestSP();
 #else
-	adaptRegressionTest();
+	adaptClassificationTest();
 #endif
 	return 0;
 }

@@ -93,7 +93,7 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
     #pragma omp parallel
 	{
 		size_t chunksize = (source_size/omp_get_num_threads())+1;
-		// assure that every subarray is 16-byte aligned
+		// assure that every subarray is 32-byte aligned
 		if (chunksize % 4 != 0)
 		{
 			size_t remainder = chunksize % 4;
@@ -288,7 +288,7 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
     #pragma omp parallel
 	{
 		size_t chunksize = (result_size/omp_get_num_threads())+1;
-		// assure that every subarray is 16-byte aligned
+		// assure that every subarray is 32-byte aligned
 		if (chunksize % 4 != 0)
 		{
 			size_t remainder = chunksize % 4;
