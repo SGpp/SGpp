@@ -43,6 +43,8 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+	// Pass algorithmic dimensions to inner grid
+	this->InnerGrid->setAlgorithmicDimensions(this->BoundGrid->getAlgorithmicDimensions());
 
 	if (bLogTransform == false)
 	{
