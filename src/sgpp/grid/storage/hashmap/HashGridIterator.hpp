@@ -304,6 +304,11 @@ public:
 		return seq_;
 	}
 
+	std::string toString()
+	{
+		return index.toString();
+	}
+
 
 private:
 	/// Pointer the the hashmap that stores the gridpoints

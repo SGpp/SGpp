@@ -23,6 +23,9 @@ PhiPhiDownBBLinear::~PhiPhiDownBBLinear()
 
 void PhiPhiDownBBLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 {
+	//std::cout << dim << std::endl;
+	//std::cout << index.toString() << std::endl;
+
 	double q = this->boundingBox->getIntervalWidth(dim);
 	double t = this->boundingBox->getIntervalOffset(dim);
 
