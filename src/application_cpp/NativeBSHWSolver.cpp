@@ -114,7 +114,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
-void testBSHW(size_t d,size_t l, double theta, double sigmahw, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
+void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
 		size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double T,double dStrike, bool isLogSolve)
 {
 	    size_t dim = d;
@@ -287,7 +287,7 @@ void writeHelp()
 		mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 		mySStream << "	value of Theta: theta function" << std::endl;
-		mySStream << "	value of sigmahw: sigma value-determine overall level of volatility for hull white" << std::endl;
+		mySStream << "	value of sigma: sigma value-determine overall level of volatility for hull white" << std::endl;
 	    mySStream << "	value of a: a" << std::endl;
 	    mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
 	    mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
@@ -340,7 +340,7 @@ void writeHelp()
 				std::string solver;
 				std::string payoff;
 				double theta;
-				double sigmahw;
+				double sigma;
 				double a;
 				double dStrike;
 				std::string fileStoch;
@@ -348,7 +348,7 @@ void writeHelp()
 
 
 				theta = atof(argv[4]);
-				sigmahw = atof(argv[5]);
+				sigma = atof(argv[5]);
 				a = atof(argv[6]);
 				fileStoch.assign(argv[7]);
 				fileBound.assign(argv[8]);
@@ -374,7 +374,7 @@ void writeHelp()
 					}
 				//testHullWhite(size_t l, double theta, double signma, double a, std::string fileBound, std::string payoffType,
 					//	size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T)
-				testBSHW(atoi(argv[2]),atoi(argv[3]), theta, sigmahw, a, fileStoch, fileBound, payoff, (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[12]), atof(argv[13]), solver,atof(argv[10]),dStrike,coords);
+				testBSHW(atoi(argv[2]),atoi(argv[3]), theta, sigma, a, fileStoch, fileBound, payoff, (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[12]), atof(argv[13]), solver,atof(argv[10]),dStrike,coords);
 			}
 		}
 
