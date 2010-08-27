@@ -71,6 +71,13 @@ public:
 	 * @param result DataVector into which the result of the space discretization operation is stored
 	 */
 	virtual void mult(DataVector& alpha, DataVector& result);
+
+	/**
+	 * generates the right hand side of the system, parallel
+	 *
+	 * @return returns the rhs
+	 */
+	virtual DataVector* generateRHS();
 };
 
 }

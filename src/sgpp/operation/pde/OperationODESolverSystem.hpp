@@ -127,7 +127,7 @@ public:
 	 *
 	 * @return returns the rhs
 	 */
-	DataVector* generateRHS();
+	virtual DataVector* generateRHS();
 
 	/**
 	 * performs some action that might be needed after a timestep has be finished in the ODE
