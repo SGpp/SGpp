@@ -35,7 +35,8 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 	result.setAll(0.0);
 
 #ifdef USEOMPTHREE
-	size_t nDims = this->InnerGrid->getStorage()->dim();
+	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+	size_t nDims = algoDims.size();
 	omp_lock_t DeltaMutex;
 	omp_lock_t GammaMutex;
 	omp_init_lock(&DeltaMutex);
@@ -66,7 +67,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 			DataVector myResult(result.getSize());
 
 			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, i);
+			((UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
 			omp_set_lock(&DeltaMutex);
@@ -88,7 +89,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 					DataVector myResult(result.getSize());
 
 					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, i, j);
+					((UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
 					// semaphore
 					omp_set_lock(&GammaMutex);
@@ -132,7 +133,8 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 	result.setAll(0.0);
 
 #ifdef USEOMPTHREE
-	size_t nDims = this->InnerGrid->getStorage()->dim();
+	std::vector<size_t> algoDims = this->BoundGrid->getStorage()->getAlgorithmicDimensions();
+	size_t nDims = algoDims.size();
 	omp_lock_t DeltaMutex;
 	omp_lock_t GammaMutex;
 	omp_init_lock(&DeltaMutex);
@@ -140,74 +142,63 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 	DataVector DeltaResult(result);
 	DataVector GammaResult(result);
 
-	#pragma omp parallel shared(DeltaMutex, GammaMutex, DeltaResult, GammaResult, alpha, result)
+	// Apply the riskfree rate
+	#pragma omp task shared(alpha, result)
 	{
-	#ifndef AIX_XLC
-		#pragma omp single nowait
-	#endif
-	#ifdef AIX_XLC
-		#pragma omp single
-	#endif
+		if (this->r != 0.0)
 		{
-			// Apply the riskfree rate
-			#pragma omp task shared(alpha, result)
-			{
-				if (this->r != 0.0)
-				{
-					DataVector myResult(result.getSize());
+			DataVector myResult(result.getSize());
 
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
+			/// @todo (heinecke) discuss methods in order to avoid this cast
+			((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
 
-					// no semaphore needed
-					result.axpy((-1.0)*this->r, myResult);
-				}
-			}
-
-			// Apply the delta method
-			for (size_t i = 0; i < nDims; i++)
-			{
-				#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult)
-				{
-					DataVector myResult(result.getSize());
-
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, i);
-
-					// semaphore
-					omp_set_lock(&DeltaMutex);
-					DeltaResult.add(myResult);
-					omp_unset_lock(&DeltaMutex);
-				}
-			}
-
-			// Apply the gamma method
-			for (size_t i = 0; i < nDims; i++)
-			{
-				for (size_t j = 0; j < nDims; j++)
-				{
-					// symmetric
-					if (j <= i)
-					{
-						#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult)
-						{
-							DataVector myResult(result.getSize());
-
-							/// @todo (heinecke) discuss methods in order to avoid this cast
-							((UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, i, j);
-
-							// semaphore
-							omp_set_lock(&GammaMutex);
-							GammaResult.add(myResult);
-							omp_unset_lock(&GammaMutex);
-						}
-					}
-				}
-			}
-
-			#pragma omp taskwait
+			// no semaphore needed
+			result.axpy((-1.0)*this->r, myResult);
 		}
 	}
+
+	// Apply the delta method
+	for (size_t i = 0; i < nDims; i++)
+	{
+		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult)
+		{
+			DataVector myResult(result.getSize());
+
+			/// @todo (heinecke) discuss methods in order to avoid this cast
+			((UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+
+			// semaphore
+			omp_set_lock(&DeltaMutex);
+			DeltaResult.add(myResult);
+			omp_unset_lock(&DeltaMutex);
+		}
+	}
+
+	// Apply the gamma method
+	for (size_t i = 0; i < nDims; i++)
+	{
+		for (size_t j = 0; j < nDims; j++)
+		{
+			// symmetric
+			if (j <= i)
+			{
+				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult)
+				{
+					DataVector myResult(result.getSize());
+
+					/// @todo (heinecke) discuss methods in order to avoid this cast
+					((UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
+
+					// semaphore
+					omp_set_lock(&GammaMutex);
+					GammaResult.add(myResult);
+					omp_unset_lock(&GammaMutex);
+				}
+			}
+		}
+	}
+
+	#pragma omp taskwait
 
 	omp_destroy_lock(&GammaMutex);
 	omp_destroy_lock(&DeltaMutex);
@@ -269,8 +260,8 @@ void BlackScholesODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 	{
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
-		DataVector temp2(alpha.getSize());
+		DataVector temp(result.getSize());
+		DataVector temp2(result.getSize());
 
 #ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha, result)
@@ -307,8 +298,8 @@ void BlackScholesODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 	{
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
-		DataVector temp2(alpha.getSize());
+		DataVector temp(result.getSize());
+		DataVector temp2(result.getSize());
 
 #ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha, result)
@@ -351,6 +342,268 @@ void BlackScholesODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 	{
 		throw new algorithm_exception(" HeatEquationTimestepMatrix::mult : An unknown operation mode was specified!");
 	}
+}
+
+DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
+{
+	DataVector rhs_complete(this->alpha_complete->getSize());
+
+	if (this->tOperationMode == "ExEul")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(rhs_complete.getSize());
+		DataVector temp2(rhs_complete.getSize());
+
+#ifdef USEOMPTHREE
+		#pragma omp parallel shared(rhs_complete, temp, temp2)
+		{
+		#ifndef AIX_XLC
+			#pragma omp single nowait
+		#endif
+		#ifdef AIX_XLC
+			#pragma omp single
+		#endif
+			{
+				#pragma omp task shared (temp)
+				{
+					applyMassMatrixComplete(*this->alpha_complete, temp);
+				}
+
+				#pragma omp task shared (temp2)
+				{
+					applyLOperatorComplete(*this->alpha_complete, temp2);
+				}
+
+				#pragma omp taskwait
+			}
+		}
+#else
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		applyLOperatorComplete(*this->alpha_complete, temp2);
+#endif
+
+		rhs_complete.add(temp);
+		rhs_complete.axpy(this->TimestepSize, temp2);
+	}
+	else if (this->tOperationMode == "ImEul")
+	{
+		rhs_complete.setAll(0.0);
+
+		applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
+	}
+	else if (this->tOperationMode == "CrNic")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(rhs_complete.getSize());
+		DataVector temp2(rhs_complete.getSize());
+
+#ifdef USEOMPTHREE
+		#pragma omp parallel shared(rhs_complete, temp, temp2)
+		{
+		#ifndef AIX_XLC
+			#pragma omp single nowait
+		#endif
+		#ifdef AIX_XLC
+			#pragma omp single
+		#endif
+			{
+				#pragma omp task shared (temp)
+				{
+					applyMassMatrixComplete(*this->alpha_complete, temp);
+				}
+
+				#pragma omp task shared (temp2)
+				{
+					applyLOperatorComplete(*this->alpha_complete, temp2);
+				}
+
+				#pragma omp taskwait
+			}
+		}
+#else
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		applyLOperatorComplete(*this->alpha_complete, temp2);
+#endif
+
+		rhs_complete.add(temp);
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp2);
+	}
+	else if (this->tOperationMode == "AdBas")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+
+#ifdef USEOMPTHREE
+		#pragma omp parallel shared(rhs_complete, temp)
+		{
+		#ifndef AIX_XLC
+			#pragma omp single nowait
+		#endif
+		#ifdef AIX_XLC
+			#pragma omp single
+		#endif
+			{
+				#pragma omp task shared (temp)
+				{
+					applyLOperatorComplete(*this->alpha_complete, temp);
+				}
+
+				#pragma omp taskwait
+			}
+		}
+#else
+		applyLOperatorComplete(*this->alpha_complete, temp);
+#endif
+
+		rhs_complete.add(temp);
+		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
+
+		DataVector temp_old(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
+
+#ifdef USEOMPTHREE
+		#pragma omp parallel shared(rhs_complete, temp_old)
+		{
+		#ifndef AIX_XLC
+			#pragma omp single nowait
+		#endif
+		#ifdef AIX_XLC
+			#pragma omp single
+		#endif
+			{
+				#pragma omp task shared (temp_old)
+				{
+					applyLOperatorComplete(*this->alpha_complete_old, temp_old);
+				}
+
+				#pragma omp taskwait
+			}
+		}
+#else
+		applyLOperatorComplete(*this->alpha_complete_old, temp_old);
+#endif
+
+		temp_old.mult(this->TimestepSize/this->TimestepSize_old);
+		temp.sub(temp_old);
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+	}
+	else
+	{
+		throw new algorithm_exception("HeatEquationTimestepMatrix::generateRHS : An unknown operation mode was specified!");
+	}
+
+	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
+	this->startTimestep();
+
+	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
+	DataVector result_complete(this->alpha_complete->getSize());
+	DataVector alpha_bound(*this->alpha_complete);
+
+	result_complete.setAll(0.0);
+
+	this->BoundaryUpdate->setInnerPointsToZero(alpha_bound);
+
+	// apply CG Matrix
+	if (this->tOperationMode == "ExEul")
+	{
+		applyMassMatrixComplete(alpha_bound, result_complete);
+	}
+	else if (this->tOperationMode == "ImEul")
+	{
+		DataVector temp(alpha_bound.getSize());
+		DataVector temp2(alpha_bound.getSize());
+
+#ifdef USEOMPTHREE
+		#pragma omp parallel shared(alpha_bound, temp, temp2)
+		{
+		#ifndef AIX_XLC
+			#pragma omp single nowait
+		#endif
+		#ifdef AIX_XLC
+			#pragma omp single
+		#endif
+			{
+				#pragma omp task shared (alpha_bound, temp)
+				{
+					applyMassMatrixComplete(alpha_bound, temp);
+				}
+
+				#pragma omp task shared (alpha_bound, temp2)
+				{
+					applyLOperatorComplete(alpha_bound, temp2);
+				}
+
+				#pragma omp taskwait
+			}
+		}
+#else
+		applyMassMatrixComplete(alpha_bound, temp);
+		applyLOperatorComplete(alpha_bound, temp2);
+#endif
+		result_complete.add(temp);
+		result_complete.axpy((-1.0)*this->TimestepSize, temp2);
+	}
+	else if (this->tOperationMode == "CrNic")
+	{
+		DataVector temp(alpha_bound.getSize());
+		DataVector temp2(alpha_bound.getSize());
+
+#ifdef USEOMPTHREE
+		#pragma omp parallel shared(alpha_bound, temp, temp2)
+		{
+		#ifndef AIX_XLC
+			#pragma omp single nowait
+		#endif
+		#ifdef AIX_XLC
+			#pragma omp single
+		#endif
+			{
+				#pragma omp task shared (alpha_bound, temp)
+				{
+					applyMassMatrixComplete(alpha_bound, temp);
+				}
+
+				#pragma omp task shared (alpha_bound, temp2)
+				{
+					applyLOperatorComplete(alpha_bound, temp2);
+				}
+
+				#pragma omp taskwait
+			}
+		}
+#else
+		applyMassMatrixComplete(alpha_bound, temp);
+		applyLOperatorComplete(alpha_bound, temp2);
+#endif
+		result_complete.add(temp);
+		result_complete.axpy((-0.5)*this->TimestepSize, temp2);
+	}
+	else if (this->tOperationMode == "AdBas")
+	{
+		applyMassMatrixComplete(alpha_bound, result_complete);
+	}
+	else
+	{
+		throw new algorithm_exception("BlackScholesODESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
+	}
+
+	rhs_complete.sub(result_complete);
+
+	if (this->rhs != NULL)
+	{
+		delete this->rhs;
+	}
+
+	this->rhs = new DataVector(this->alpha_inner->getSize());
+	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
+
+	return this->rhs;
 }
 
 }
