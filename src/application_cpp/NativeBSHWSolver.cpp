@@ -137,38 +137,37 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 		{
 			return;
 		}
-
-		sg::BlackScholesSolver* myBSSolver;
-			if (isLogSolve == true)
+		//std::cout << "Nothing has been implemented so far " << std::endl;
+		sg::BlackScholesHullWhiteSolver* myBSHWSolver;
+		if (isLogSolve == true)
 			{
-				myBSSolver = new sg::BlackScholesSolver(true);
+				myBSHWSolver = new sg::BlackScholesHullWhiteSolver(true);
 			}
 			else
 			{
-				myBSSolver = new sg::BlackScholesSolver(false);
+				myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
 			}
-
 		sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 		delete[] myBoundaries;
 
 		// init Screen Object
-		myBSSolver->initScreen();
+		myBSHWSolver->initScreen();
 
 		// Construct a grid
-		myBSSolver->constructGrid(*myBoundingBox, level);
+		myBSHWSolver->constructGrid(*myBoundingBox, level);
 
 		// init the basis functions' coefficient vector
-		DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+		DataVector* alpha = new DataVector(myBSHWSolver->getNumberGridPoints());
 
 		std::cout << "Grid has " << level << " Levels" << std::endl;
-		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+		std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Initial Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// Init the grid with on payoff function
-	myBSSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType);
+	myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType);
 
 	// Gridpoints @Money
-	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+	std::cout << "Gridpoints @Money: " << myBSHWSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
@@ -184,43 +183,41 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 			}
 			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
 
-			myBSSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
+			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
 
 			delete[] myAreaBoundaries;
 			delete myGridArea;
 		}
-		myBSSolver->printGrid(*alpha, 20, "payoffBSHW.gnuplot");
-		myBSSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.gnuplot", false);
-		myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+		myBSHWSolver->printGrid(*alpha, 20, "payoffBSHW.gnuplot");
+		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.gnuplot", true);
+		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.gnuplot", false);
+		//myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
 		if (isLogSolve == true)
 		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_nodal_cart.grid.gnuplot", false);
+			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_surplus_cart.grid.gnuplot", true);
+			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_nodal_cart.grid.gnuplot", false);
 		}
 	}
 
 	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigmabs, rho, 0.05);
+	myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0);
 
-	std::vector<size_t> newAlgoDimsBS(1);
-	newAlgoDimsBS[0]=0;
-	myBSSolver->setAlgorithmicDimensions(newAlgoDimsBS);
+	//std::vector<size_t> newAlgoDimsBS(1);
+	//newAlgoDimsBS[0]=0;
+	//myBSSolver->setAlgorithmicDimensions(newAlgoDimsBS);
 	//std::vector<size_t> xdim(1);
 	//xdim=myBSSolver->getAlgorithmicDimensions();
 	//std::cout << "current dimension is " << xdim[0] << std::endl;
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
 	{
-		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		for (int i=0; i<100; i++)
+		myBSHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 	}
 	else if (Solver == "ImEul")
 	{
-		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	}
-	else if (Solver == "CrNic")
-	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+		for (int i=0; i<100; i++)
+		myBSHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 	}
 	else
 	{
@@ -230,14 +227,14 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 20, "solvedBSHW.gnuplot");
-		myBSSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.gnuplot", false);
-		if (isLogSolve == true)
+		myBSHWSolver->printGrid(*alpha, 20, "solvedBSHW.gnuplot");
+		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.gnuplot", true);
+		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.gnuplot", false);
+		/*if (isLogSolve == true)
 		{
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBSHW_surplus_cart.grid.gnuplot", true);
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBSHW_nodal_cart.grid.gnuplot", false);
-		}
+		}*/
 	}
 
 	// Test call @ the money
@@ -253,10 +250,10 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 			point.push_back(1.0);
 		}
 	}
-	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at testpoint: " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
-	delete myBSSolver;
+	delete myBSHWSolver;
 	delete myBoundingBox;
 }
 
@@ -292,17 +289,18 @@ void writeHelp()
 	    mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
 	    mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 		mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
-		mySStream << "	T: time to maturity" << std::endl;
+		mySStream << "	simeSt: number of time steps" << std::endl;
 		mySStream << "	dT: timestep size" << std::endl;
 		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+		mySStream << "	T: time to maturity" << std::endl;
 		mySStream << "	Strike: the strike" << std::endl;
 		mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
 
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "2 5 0.006 0.01 0.1 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ExEul " <<"0.3 cart"<<std::endl;
+		mySStream << "2 5 0.006 0.01 0.1 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ExEul " << "1 " <<"0.3 cart"<<std::endl;
 		mySStream << std::endl;
 
 		mySStream << std::endl << std::endl;
@@ -331,7 +329,7 @@ void writeHelp()
 
 		if (option == "solveND")
 		{
-			if (argc != 17)
+			if (argc != 18)
 			{
 				writeHelp();
 			}
@@ -354,10 +352,10 @@ void writeHelp()
 				fileBound.assign(argv[8]);
 				payoff.assign(argv[9]);
 				solver.assign(argv[14]);
-				dStrike = atof(argv[15]);
+				dStrike = atof(argv[16]);
 				std::string coordsType;
 				bool coords = false;
-				coordsType.assign(argv[16]);
+				coordsType.assign(argv[17]);
 			    if (coordsType == "cart")
 				    {
 						coords = false;
@@ -374,7 +372,7 @@ void writeHelp()
 					}
 				//testHullWhite(size_t l, double theta, double signma, double a, std::string fileBound, std::string payoffType,
 					//	size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T)
-				testBSHW(atoi(argv[2]),atoi(argv[3]), theta, sigma, a, fileStoch, fileBound, payoff, (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[12]), atof(argv[13]), solver,atof(argv[10]),dStrike,coords);
+				testBSHW(atoi(argv[2]),atoi(argv[3]), theta, sigma, a, fileStoch, fileBound, payoff, atof(argv[10]), atof(argv[11]), atoi(argv[12]), atof(argv[13]), solver,atof(argv[15]),dStrike,coords);
 			}
 		}
 
