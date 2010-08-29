@@ -31,6 +31,7 @@
 
 #include "application/pde/BlackScholesSolver.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
+#include "application/pde/BlackScholesHullWhiteSolver.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 
 #include "basis/basis.hpp"
