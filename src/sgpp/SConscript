@@ -184,6 +184,7 @@ application/pde/PDESolver.cpp
 application/pde/ParabolicPDESolver.cpp
 application/pde/BlackScholesSolver.cpp
 application/pde/HullWhiteSolver.cpp
+application/pde/BlackScholesHullWhiteSolver.cpp
 application/pde/HeatEquationSolver.cpp
 
 solver/sle/ConjugateGradients.cpp
