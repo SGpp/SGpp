@@ -160,7 +160,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 	// Apply the delta method
 	for (size_t i = 0; i < nDims; i++)
 	{
-		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult)
+		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result)
 		{
 			DataVector myResult(result.getSize());
 
@@ -182,7 +182,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 			// symmetric
 			if (j <= i)
 			{
-				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult)
+				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result)
 				{
 					DataVector myResult(result.getSize());
 
