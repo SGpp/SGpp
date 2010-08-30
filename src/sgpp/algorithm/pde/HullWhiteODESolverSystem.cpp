@@ -119,6 +119,8 @@ HullWhiteODESolverSystem::~HullWhiteODESolverSystem()
 	{
 		delete this->rhs;
 	}
+	delete this->alpha_complete_old;
+	delete this->alpha_complete_tmp;
 }
 
 void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
