@@ -315,6 +315,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	double stepsize = dt;
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
+	double maxStock;
 
 	DataVector mu(dim);
 	DataVector sigma(dim);
@@ -343,6 +344,10 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		myBSSolver = new sg::BlackScholesSolver(false);
 	}
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	if (dim == 1)
+	{
+		maxStock = myBoundaries[0].rightBoundary;
+	}
 	delete[] myBoundaries;
 
 	// init Screen Object
@@ -361,12 +366,23 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	// Init the grid with on payoff function
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
+	// Set stochastic data
+	myBSSolver->setStochasticData(mu, sigma, rho, r);
+
 	// Gridpoints @Money
 	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
+		// Calculate analytic solution if current option is an 1D option
+		if (dim == 1)
+		{
+			std::vector< std::pair<double, double> > prems;
+			myBSSolver->solve1DAnalytic(prems, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize);
+			myBSSolver->print1DAnalytic(prems, "analyticBS.gnuplot");
+		}
+
 		if (dim == 2)
 		{
 			sg::DimensionBoundary* myAreaBoundaries = new sg::DimensionBoundary[dim];
@@ -383,7 +399,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 			delete[] myAreaBoundaries;
 			delete myGridArea;
 		}
-		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+		myBSSolver->printGrid(*alpha, 50, "payoff.gnuplot");
 		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
 		myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
@@ -393,9 +409,6 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 		}
 	}
-
-	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
@@ -426,7 +439,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+		myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
 		myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
 		if (isLogSolve == true)
