@@ -62,7 +62,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 	// Apply the delta method
 	for (size_t i = 0; i < nDims; i++)
 	{
-		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result)
+		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
 		{
 			DataVector myResult(result.getSize());
 
@@ -84,7 +84,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 			// symmetric
 			if (j <= i)
 			{
-				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result)
+				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
 				{
 					DataVector myResult(result.getSize());
 
@@ -160,7 +160,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 	// Apply the delta method
 	for (size_t i = 0; i < nDims; i++)
 	{
-		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result)
+		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
 		{
 			DataVector myResult(result.getSize());
 
@@ -182,7 +182,7 @@ void BlackScholesODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 			// symmetric
 			if (j <= i)
 			{
-				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result)
+				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
 				{
 					DataVector myResult(result.getSize());
 
@@ -354,9 +354,10 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 
 		DataVector temp(rhs_complete.getSize());
 		DataVector temp2(rhs_complete.getSize());
+		DataVector myAlpha(*this->alpha_complete);
 
 #ifdef USEOMPTHREE
-		#pragma omp parallel shared(rhs_complete, temp, temp2)
+		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
 		#ifndef AIX_XLC
 			#pragma omp single nowait
@@ -365,14 +366,14 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 			#pragma omp single
 		#endif
 			{
-				#pragma omp task shared (temp)
+				#pragma omp task shared (myAlpha, temp)
 				{
-					applyMassMatrixComplete(*this->alpha_complete, temp);
+					applyMassMatrixComplete(myAlpha, temp);
 				}
 
-				#pragma omp task shared (temp2)
+				#pragma omp task shared (myAlpha, temp2)
 				{
-					applyLOperatorComplete(*this->alpha_complete, temp2);
+					applyLOperatorComplete(myAlpha, temp2);
 				}
 
 				#pragma omp taskwait
@@ -398,9 +399,10 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 
 		DataVector temp(rhs_complete.getSize());
 		DataVector temp2(rhs_complete.getSize());
+		DataVector myAlpha(*this->alpha_complete);
 
 #ifdef USEOMPTHREE
-		#pragma omp parallel shared(rhs_complete, temp, temp2)
+		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
 		#ifndef AIX_XLC
 			#pragma omp single nowait
@@ -409,14 +411,14 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 			#pragma omp single
 		#endif
 			{
-				#pragma omp task shared (temp)
+				#pragma omp task shared (myAlpha, temp)
 				{
-					applyMassMatrixComplete(*this->alpha_complete, temp);
+					applyMassMatrixComplete(myAlpha, temp);
 				}
 
-				#pragma omp task shared (temp2)
+				#pragma omp task shared (myAlpha, temp2)
 				{
-					applyLOperatorComplete(*this->alpha_complete, temp2);
+					applyLOperatorComplete(myAlpha, temp2);
 				}
 
 				#pragma omp taskwait
@@ -435,11 +437,13 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 		rhs_complete.setAll(0.0);
 
 		DataVector temp(this->alpha_complete->getSize());
+		DataVector myAlpha(*this->alpha_complete);
+		DataVector myOldAlpha(*this->alpha_complete_old);
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 
 #ifdef USEOMPTHREE
-		#pragma omp parallel shared(rhs_complete, temp)
+		#pragma omp parallel shared(myAlpha, temp)
 		{
 		#ifndef AIX_XLC
 			#pragma omp single nowait
@@ -448,9 +452,9 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 			#pragma omp single
 		#endif
 			{
-				#pragma omp task shared (temp)
+				#pragma omp task shared (myAlpha, temp)
 				{
-					applyLOperatorComplete(*this->alpha_complete, temp);
+					applyLOperatorComplete(myAlpha, temp);
 				}
 
 				#pragma omp taskwait
@@ -468,7 +472,7 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
 #ifdef USEOMPTHREE
-		#pragma omp parallel shared(rhs_complete, temp_old)
+		#pragma omp parallel shared(myOldAlpha, temp_old)
 		{
 		#ifndef AIX_XLC
 			#pragma omp single nowait
@@ -477,9 +481,9 @@ DataVector* BlackScholesODESolverSystemParallelOMP::generateRHS()
 			#pragma omp single
 		#endif
 			{
-				#pragma omp task shared (temp_old)
+				#pragma omp task shared (myOldAlpha, temp_old)
 				{
-					applyLOperatorComplete(*this->alpha_complete_old, temp_old);
+					applyLOperatorComplete(myOldAlpha, temp_old);
 				}
 
 				#pragma omp taskwait
