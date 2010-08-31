@@ -140,22 +140,24 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
 		std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 
-		//std::vector<size_t> newAlgoDimsBS(1);
-		//std::vector<size_t> newAlgoDimsHW(1);
-		//newAlgoDimsBS[0]=0;
-	    //setAlgorithmicDimensions(newAlgoDimsBS);
+		std::vector<size_t> newAlgoDimsBS(1);
+		newAlgoDimsBS[0]=0;
+		setAlgorithmicDimensions(newAlgoDimsBS);
+		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
-		//newAlgoDimsHW[0]=1;
-	    //setAlgorithmicDimensions(newAlgoDimsHW);
+		//std::cout << alpha.toString() << std::endl;
+
+		std::vector<size_t> newAlgoDimsHW(1);
+		newAlgoDimsHW[0]=1;
+		setAlgorithmicDimensions(newAlgoDimsHW);
+		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
 		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 
 		this->dNeededTime = myStopwatch->stop();
