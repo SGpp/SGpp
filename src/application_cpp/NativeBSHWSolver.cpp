@@ -200,7 +200,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	}
 
 	// Set stochastic data
-	myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0);
+	myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0);
 
 	//std::vector<size_t> newAlgoDimsBS(1);
 	//newAlgoDimsBS[0]=0;
@@ -300,7 +300,7 @@ void writeHelp()
 
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "2 5 0.006 0.01 0.1 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ExEul " << "1 " <<"0.3 cart"<<std::endl;
+		mySStream << "2 5 0.006 0.01 0.1 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ExEul " << "1.0 " <<"0.3 cart"<<std::endl;
 		mySStream << std::endl;
 
 		mySStream << std::endl << std::endl;
