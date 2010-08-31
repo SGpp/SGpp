@@ -61,6 +61,8 @@ protected:
 	std::string refineMode;
 	/// maxLevel max. Level of refinement
 	size_t refineMaxLevel;
+	/// the algorithmic dimensions used in this system
+	std::vector<size_t> BSalgoDims;
 
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
