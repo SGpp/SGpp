@@ -59,6 +59,8 @@ protected:
 	/// denotes the number of complete coarsen procedures per timestep
 	size_t numExecCoarsen;
 
+	std::vector<size_t> HWalgoDims;
+
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
 	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
