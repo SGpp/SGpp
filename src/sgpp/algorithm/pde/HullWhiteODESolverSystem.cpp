@@ -44,8 +44,12 @@ HullWhiteODESolverSystem::HullWhiteODESolverSystem(Grid& SparseGrid, DataVector&
 	//this->deltaCoef = new DataVector(SparseGrid.getStorage()->dim());
 
 	// create the inner grid
+	//this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+	this->HWalgoDims = this->BoundGrid->getAlgorithmicDimensions();
+	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-
+	// Pass algorithmic dimensions to inner grid
+	this->InnerGrid->setAlgorithmicDimensions(this->HWalgoDims);
 
 	//	buildDeltaCoefficients();
 	//	buildGammaCoefficients();
@@ -119,8 +123,8 @@ HullWhiteODESolverSystem::~HullWhiteODESolverSystem()
 	{
 		delete this->rhs;
 	}
-	delete this->alpha_complete_old;
-	delete this->alpha_complete_tmp;
+	//delete this->alpha_complete_old;
+	//delete this->alpha_complete_tmp;
 }
 
 void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
