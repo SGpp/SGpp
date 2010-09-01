@@ -195,6 +195,7 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
+#ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
 	{
@@ -203,6 +204,7 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
 	}
+#endif
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
@@ -260,6 +262,7 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 
 void BlackScholesODESolverSystem::startTimestep()
 {
+#ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
 	{
@@ -268,6 +271,7 @@ void BlackScholesODESolverSystem::startTimestep()
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
 	}
+#endif
 }
 
 void BlackScholesODESolverSystem::buildGammaCoefficients()
