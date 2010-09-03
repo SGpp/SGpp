@@ -42,19 +42,11 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->gammaCoef = new DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
 	this->deltaCoef = new DataVector(this->BSalgoDims.size());
 
-	// create the inner grid
-	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-	// Pass algorithmic dimensions to inner grid
-	this->InnerGrid->setAlgorithmicDimensions(this->BSalgoDims);
-
 	if (bLogTransform == false)
 	{
 		buildDeltaCoefficients();
 		buildGammaCoefficients();
 
-		//Create needed operations, on inner grid
-		this->OpDeltaInner = this->InnerGrid->createOperationDelta(*this->deltaCoef);
-		this->OpGammaInner = this->InnerGrid->createOperationGamma(*this->gammaCoef);
 		// Create needed operations, on boundary grid
 		this->OpDeltaBound = this->BoundGrid->createOperationDelta(*this->deltaCoef);
 		this->OpGammaBound = this->BoundGrid->createOperationGamma(*this->gammaCoef);
@@ -68,13 +60,8 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 		// operations on boundary grid
 		this->OpDeltaBound = this->BoundGrid->createOperationDeltaLog(*this->deltaCoef);
 		this->OpGammaBound = this->BoundGrid->createOperationGammaLog(*this->gammaCoef);
-		//operations on inner grid
-		this->OpDeltaInner = this->InnerGrid->createOperationDeltaLog(*this->deltaCoef);
-		this->OpGammaInner = this->InnerGrid->createOperationGammaLog(*this->gammaCoef);
 	}
 
-	// Create operations, independent bLogTransform
-	this->OpLTwoInner = this->InnerGrid->createOperationLTwoDotProduct();
 	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
 
 	// right hand side if System
@@ -99,9 +86,6 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 	delete this->OpDeltaBound;
 	delete this->OpGammaBound;
 	delete this->OpLTwoBound;
-	delete this->OpDeltaInner;
-	delete this->OpGammaInner;
-	delete this->OpLTwoInner;
 	delete this->gammaCoef;
 	delete this->deltaCoef;
 	delete this->BoundaryUpdate;
@@ -146,24 +130,7 @@ void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, Data
 
 void BlackScholesODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
-	DataVector temp(alpha.getSize());
-
-	result.setAll(0.0);
-
-	// Apply the riskfree rate
-	if (this->r != 0.0)
-	{
-		this->OpLTwoInner->mult(alpha, temp);
-		result.axpy((-1.0)*this->r, temp);
-	}
-
-	// Apply the delta method
-	this->OpDeltaInner->mult(alpha, temp);
-	result.add(temp);
-
-	// Apply the gamma method
-	this->OpGammaInner->mult(alpha, temp);
-	result.sub(temp);
+	applyLOperatorComplete(alpha, result);
 }
 
 void BlackScholesODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
@@ -180,21 +147,11 @@ void BlackScholesODESolverSystem::applyMassMatrixComplete(DataVector& alpha, Dat
 
 void BlackScholesODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVector& result)
 {
-	DataVector temp(alpha.getSize());
-
-	result.setAll(0.0);
-
-	// Apply the mass matrix
-	this->OpLTwoInner->mult(alpha, temp);
-
-	result.add(temp);
+	applyMassMatrixComplete(alpha, result);
 }
 
 void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 {
-	// Replace the inner coefficients on the boundary grid
-	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
-
 #ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
 	if (this->r != 0.0)
@@ -207,7 +164,7 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 #endif
 
 	// add number of Gridpoints
-	this->numSumGridpointsInner += this->InnerGrid->getSize();
+	this->numSumGridpointsInner += 0;
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
 
 	if (this->useCoarsen == true && isLastTimestep == false)
@@ -254,9 +211,6 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 		///////////////////////////////////////////////////
 		// End integrated refinement & coarsening
 		///////////////////////////////////////////////////
-
-		// rebuild the inner grid + coefficients
-		this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 	}
 }
 
@@ -348,6 +302,84 @@ void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
 	{
 		this->deltaCoef->set(i, this->mus->get(this->BSalgoDims[i])-(0.5*(this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[i]))));
 	}
+}
+
+DataVector* BlackScholesODESolverSystem::generateRHS()
+{
+	DataVector rhs_complete(this->alpha_complete->getSize());
+
+	if (this->tOperationMode == "ExEul")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		rhs_complete.add(temp);
+
+		applyLOperatorComplete(*this->alpha_complete, temp);
+		rhs_complete.axpy(this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "ImEul")
+	{
+		rhs_complete.setAll(0.0);
+
+		applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
+	}
+	else if (this->tOperationMode == "CrNic")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		rhs_complete.add(temp);
+
+		applyLOperatorComplete(*this->alpha_complete, temp);
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "AdBas")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		rhs_complete.add(temp);
+
+		applyLOperatorComplete(*this->alpha_complete, temp);
+
+		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
+
+		DataVector temp_old(this->alpha_complete->getSize());
+		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
+		applyLOperatorComplete(*this->alpha_complete_old, temp_old);
+		temp_old.mult(this->TimestepSize/this->TimestepSize_old);
+		temp.sub(temp_old);
+
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+	}
+	else
+	{
+		throw new algorithm_exception("BlackScholesODESolverSystem::generateRHS : An unknown operation mode was specified!");
+	}
+
+	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
+	this->startTimestep();
+
+	if (this->rhs != NULL)
+	{
+		delete this->rhs;
+	}
+
+	this->rhs = new DataVector(rhs_complete);
+
+	return this->rhs;
+}
+
+DataVector* BlackScholesODESolverSystem::getGridCoefficientsForCG()
+{
+	return this->alpha_complete;
 }
 
 }

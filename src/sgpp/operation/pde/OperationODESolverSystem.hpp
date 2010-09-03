@@ -156,7 +156,7 @@ public:
 	 *
 	 * @return alpha vector for CG method
 	 */
-	DataVector* getGridCoefficientsForCG();
+	virtual DataVector* getGridCoefficientsForCG();
 
 	/**
 	 * gets a pointer to the sparse grids coefficients with evtl. boundaries
