@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Jï¿½rg Blank (blankj@in.tum.de)
 
 %module(directors="1") pysgpp
 
@@ -81,6 +81,8 @@ namespace std {
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesODESolverSystem.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationODESolverSystem.hpp"
 
 %include "src/sgpp/application/common/ScreenOutput.hpp"

@@ -26,7 +26,8 @@
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteODESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystemParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"
 #include "algorithm/pde/HeatEquationODESolverSystem.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"

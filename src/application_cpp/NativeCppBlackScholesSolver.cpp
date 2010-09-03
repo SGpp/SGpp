@@ -315,7 +315,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	double stepsize = dt;
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
-	double maxStock;
+	double maxStock = 0.0;
 
 	DataVector mu(dim);
 	DataVector sigma(dim);
@@ -337,11 +337,11 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	sg::BlackScholesSolver* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolver(true);
+		myBSSolver = new sg::BlackScholesSolver(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolver(false);
+		myBSSolver = new sg::BlackScholesSolver(false, "European");
 	}
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	if (dim == 1)
@@ -529,11 +529,11 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	sg::BlackScholesSolver* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolver(true);
+		myBSSolver = new sg::BlackScholesSolver(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolver(false);
+		myBSSolver = new sg::BlackScholesSolver(false, "European");
 	}
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator(*myBoundingBox, dim);
@@ -765,11 +765,11 @@ void testNUnderlyingsAdapt(size_t d, size_t l, std::string fileStoch, std::strin
 	sg::BlackScholesSolver* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolver(true);
+		myBSSolver = new sg::BlackScholesSolver(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolver(false);
+		myBSSolver = new sg::BlackScholesSolver(false, "European");
 	}
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
@@ -1023,11 +1023,11 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	sg::BlackScholesSolver* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolver(true);
+		myBSSolver = new sg::BlackScholesSolver(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolver(false);
+		myBSSolver = new sg::BlackScholesSolver(false, "European");
 	}
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
@@ -1270,7 +1270,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 
 	double r = riskfree;
 
-	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver(false, "European");
 	DataVector* alpha = new DataVector(0);
 
 	// init Screen Object

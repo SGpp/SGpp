@@ -39,9 +39,9 @@ LFLAGS_GCC=-Wall -pedantic -ansi -O3
 CFLAGS_GCC_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -DUSETRONE -std=c++0x
 LFLAGS_GCC_TRONE=-Wall -pedantic -ansi -O3
 
-CFLAGS_GCC_OMP=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -fopenmp -DUSEOMP -DUSEOMPTHREE
+CFLAGS_GCC_OMP=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR)
 LFLAGS_GCC_OMP=-Wall -pedantic -ansi -O3 -pthread -fopenmp
-CFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -fopenmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -Isrc/sgpp/
+CFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -DUSETRONE -Isrc/sgpp/
 LFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -O3 -fopenmp
 
 CFLAGS_ICC=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSEICCINTRINSICS -axSSE3

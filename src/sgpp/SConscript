@@ -173,7 +173,8 @@ algorithm/datadriven/DMSystemMatrixSPAVXIdentity.cpp
 
 algorithm/pde/BlackScholesODESolverSystem.cpp
 algorithm/pde/HullWhiteODESolverSystem.cpp
-algorithm/pde/BlackScholesODESolverSystemParallelOMP.cpp
+algorithm/pde/BlackScholesODESolverSystemEuropean.cpp
+algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
 algorithm/pde/HeatEquationODESolverSystem.cpp
 algorithm/pde/StdUpDown.cpp
 algorithm/pde/UpDownOneOpDim.cpp

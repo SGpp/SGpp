@@ -6,7 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystemParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -22,7 +23,7 @@
 namespace sg
 {
 
-BlackScholesSolver::BlackScholesSolver(bool useLogTransform) : ParabolicPDESolver()
+BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionType) : ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -39,6 +40,14 @@ BlackScholesSolver::BlackScholesSolver(bool useLogTransform) : ParabolicPDESolve
 	this->staInnerGridSize = 0;
 	this->finInnerGridSize = 0;
 	this->avgInnerGridSize = 0;
+	if (OptionType == "all" || OptionType == "European")
+	{
+		this->tOptionType = OptionType;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::BlackScholesSolver : An unsupported option type has been chosen! all & European are supported!");
+	}
 }
 
 BlackScholesSolver::~BlackScholesSolver()
@@ -252,11 +261,21 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		OperationODESolverSystem* myBSSystem = NULL;
+
+		if (this->tOptionType == "European")
+		{
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
+		}
+		else
+		{
+			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		}
+
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
@@ -298,11 +317,21 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		OperationODESolverSystem* myBSSystem = NULL;
+
+		if (this->tOptionType == "European")
+		{
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
+		}
+		else
+		{
+			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		}
+
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
@@ -343,11 +372,21 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		OperationODESolverSystem* myBSSystem = NULL;
+
+		if (this->tOptionType == "European")
+		{
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
+		}
+		else
+		{
+			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		}
+
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
@@ -408,14 +447,23 @@ void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timeste
 {
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
-
 		AdamsBashforth* myAdamsBashforth = new AdamsBashforth(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		OperationODESolverSystem* myBSSystem = NULL;
+
+		if (this->tOptionType == "European")
+		{
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
+		}
+		else
+		{
+			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		}
+
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
@@ -448,14 +496,23 @@ void BlackScholesSolver::solveVarTimestep(size_t numTimesteps, double timestepsi
 {
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
-
 		VarTimestep* myVarTimestep = new VarTimestep(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		OperationODESolverSystem* myBSSystem = NULL;
+
+		if (this->tOptionType == "European")
+		{
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
+		}
+		else
+		{
+			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		}
+
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
@@ -552,7 +609,14 @@ std::vector<size_t> BlackScholesSolver::getAlgorithmicDimensions()
 
 void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
 {
-	this->myGrid->setAlgorithmicDimensions(newAlgoDims);
+	if (tOptionType == "all")
+	{
+		this->myGrid->setAlgorithmicDimensions(newAlgoDims);
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only supported when choosing option type all!");
+	}
 }
 
 void BlackScholesSolver::initScreen()
