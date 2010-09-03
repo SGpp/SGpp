@@ -31,12 +31,6 @@ protected:
 	OperationMatrix* OpGammaBound;
 	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
 	OperationMatrix* OpLTwoBound;
-	/// the delta Operation, on Inner grid
-	OperationMatrix* OpDeltaInner;
-	/// the Gamma Operation, on Inner grid
-	OperationMatrix* OpGammaInner;
-	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-	OperationMatrix* OpLTwoInner;
 	/// Pointer to the mus
 	DataVector* mus;
 	/// Pointer to the sigmas
@@ -139,6 +133,21 @@ public:
 	void finishTimestep(bool isLastTimestep = false);
 
 	void startTimestep();
+
+	/**
+	 * generates the right hand side of the system
+	 *
+	 * @return returns the rhs
+	 */
+	virtual DataVector* generateRHS();
+
+	/**
+	 * gets a pointer to the sparse grids coefficients used in the CG method to solve
+	 * one timestep. Here: The boundary grid's coefficients are returned
+	 *
+	 * @return alpha vector for CG method
+	 */
+	virtual DataVector* getGridCoefficientsForCG();
 };
 
 }

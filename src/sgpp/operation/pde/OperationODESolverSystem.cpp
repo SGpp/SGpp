@@ -59,7 +59,7 @@ void OperationODESolverSystem::mult(DataVector& alpha, DataVector& result)
 	}
 	else
 	{
-		throw new algorithm_exception(" HeatEquationTimestepMatrix::mult : An unknown operation mode was specified!");
+		throw new algorithm_exception("OperationODESolverSystem::mult : An unknown operation mode was specified!");
 	}
 }
 
@@ -120,7 +120,7 @@ DataVector* OperationODESolverSystem::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationTimestepMatrix::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("OperationODESolverSystem::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
