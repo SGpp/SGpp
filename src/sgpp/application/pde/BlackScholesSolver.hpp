@@ -80,6 +80,8 @@ private:
 	size_t finInnerGridSize;
 	/// variable to store average grid size (Inner Grid)
 	size_t avgInnerGridSize;
+	/// Type of the Option to solve
+	std::string tOptionType;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -114,8 +116,11 @@ private:
 public:
 	/**
 	 * Std-Constructor of the solver
+	 *
+	 * @param useLogTransform speciefies if a log transformed formulation should be used for solving BlackScholes Equation
+	 * @param OptionType possible values "all" and "European", if "European" is choose a solver with fix Dirichlet boundaries is selected
 	 */
-	BlackScholesSolver(bool useLogTransform = false);
+	BlackScholesSolver(bool useLogTransform = false, std::string OptionType = "all");
 
 	/**
 	 * Std-Destructor of the solver

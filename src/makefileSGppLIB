@@ -52,12 +52,12 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
 	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
-	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemParallelOMP.o\
+	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemEuropeanParallelOMP.o\
 	OperationBIterativeSSELinear.o DMSystemMatrixSSEIdentity.o OperationDeltaLogLinear.o\
 	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
 	UpdPhidPhiBBIterativeLinearBoundary.o OperationBIterativeAVXLinear.o DMSystemMatrixAVXIdentity.o\
 	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o DMSystemMatrixSPSSEIdentity.o\
-	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPAVXIdentity.o
+	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPAVXIdentity.o BlackScholesODESolverSystemEuropean.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -410,11 +410,14 @@ UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/Up
 BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 
+BlackScholesODESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropean.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropean.cpp
+
 HullWhiteODESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteODESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteODESolverSystem.cpp
 
-BlackScholesODESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemParallelOMP.cpp
+BlackScholesODESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystemEuropeanParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
 
 HeatEquationODESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationODESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp

@@ -7,7 +7,6 @@
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteODESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystemParallelOMP.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
 #include "solver/ode/Euler.hpp"

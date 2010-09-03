@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BLACKSCHOLESODESOLVERSYSTEMPARALLELOMP_HPP
-#define BLACKSCHOLESODESOLVERSYSTEMPARALLELOMP_HPP
+#ifndef BLACKSCHOLESODESOLVERSYSTEMEUROPEANPARALLELOMP_HPP
+#define BLACKSCHOLESODESOLVERSYSTEMEUROPEANPARALLELOMP_HPP
 
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
 
 namespace sg
 {
@@ -17,11 +17,14 @@ namespace sg
  * This class implements the ODESolverSystem for the BlackScholes
  * Equation.
  *
- * It's derived from the existing BlackScholesODESolverSystem but uses
+ *
+ * Here a European Option with fix Dirichlet boundaries is solved.
+ *
+ * It's derived from the existing BlackScholesODESolverSystemEuropean but uses
  * the OMP task concept to enable further parallelization possibilities
  * in the calculation of the space-discretization operator (L)
  */
-class BlackScholesODESolverSystemParallelOMP : public BlackScholesODESolverSystem
+class BlackScholesODESolverSystemEuropeanParallelOMP : public BlackScholesODESolverSystemEuropean
 {
 protected:
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
@@ -54,7 +57,7 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level for refinement during solving
 	 */
-	BlackScholesODESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
+	BlackScholesODESolverSystemEuropeanParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
 			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
@@ -62,7 +65,7 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BlackScholesODESolverSystemParallelOMP();
+	virtual ~BlackScholesODESolverSystemEuropeanParallelOMP();
 
 	/**
 	 * Multiplicates a vector with the matrix, parallel
@@ -82,4 +85,4 @@ public:
 
 }
 
-#endif /* BLACKSCHOLESODESOLVERSYSTEMPARALLELOMP_HPP */
+#endif /* BLACKSCHOLESODESOLVERSYSTEMEUROPEANPARALLELOMP_HPP */
