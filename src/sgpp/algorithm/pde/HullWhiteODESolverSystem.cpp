@@ -244,10 +244,10 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 
 	// Adjust the boundaries with the riskfree rate
 
-		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
+		/*if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
 			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,this->TimestepSize);
-		}
+		}*/
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
@@ -281,10 +281,10 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 void HullWhiteODESolverSystem::startTimestep()
 {
 	// Adjust the boundaries with the riskfree rate
-		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
+		/*if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
 			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,this->TimestepSize);
-		}
+		}*/
 
 }
 /*
