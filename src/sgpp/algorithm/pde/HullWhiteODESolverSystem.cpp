@@ -281,88 +281,10 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 void HullWhiteODESolverSystem::startTimestep()
 {
 	// Adjust the boundaries with the riskfree rate
-		/*if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
+		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
 			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,this->TimestepSize);
-		}*/
-
-}
-/*
-void BlackScholesODESolverSystem::buildGammaCoefficients()
-{
-	size_t dim = this->BoundGrid->getStorage()->dim();
-
-	for (size_t i = 0; i < dim; i++)
-	{
-		for (size_t j = 0; j < dim; j++)
-		{
-			// handle diagonal
-			if (i == j)
-			{
-			  this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
-			}
-			else
-			{
-			  this->gammaCoef->set(i, j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
-			}
 		}
-	}
+
 }
-
-
-void BlackScholesODESolverSystem::buildDeltaCoefficients()
-{
-	size_t dim = this->BoundGrid->getStorage()->dim();
-	double covar_sum = 0.0;
-
-	for (size_t i = 0; i < dim; i++)
-	{
-		covar_sum = 0.0;
-		for (size_t j = 0; j < dim; j++)
-		{
-			// handle diagonal
-			if (i == j)
-			{
-				covar_sum += ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j));
-			}
-			else
-			{
-				covar_sum += (0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
-			}
-		}
-		this->deltaCoef->set(i, this->mus->get(i)-covar_sum);
-	}
-}
-
-void BlackScholesODESolverSystem::buildGammaCoefficientsLogTransform()
-{
-	size_t dim = this->BoundGrid->getStorage()->dim();
-
-	for (size_t i = 0; i < dim; i++)
-	{
-		for (size_t j = 0; j < dim; j++)
-		{
-			// handle diagonal
-			if (i == j)
-			{
-			  this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
-			}
-			else
-			{
-			  this->gammaCoef->set(i, j, ((this->sigmas->get(i)*this->sigmas->get(j))*this->rhos->get(i,j)));
-			}
-		}
-	}
-}
-
-void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
-{
-	size_t dim = this->BoundGrid->getStorage()->dim();
-
-	for (size_t i = 0; i < dim; i++)
-	{
-		this->deltaCoef->set(i, this->mus->get(i)-(0.5*(this->sigmas->get(i)*this->sigmas->get(i))));
-	}
-}
-*/
 }
