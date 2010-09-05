@@ -62,7 +62,11 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME)
+ifeq ($(CC),icpc)
+	xiar rc $(BINDIR)$(LIBNAME) $(OBJS)
+else
 	ar rc $(BINDIR)$(LIBNAME) $(OBJS)
+endif
 	ranlib $(BINDIR)$(LIBNAME)
 
 DataVector.o : $(SRCDIR)data/DataVector.cpp
