@@ -197,8 +197,9 @@ public:
 	 * @param StockInc the increase of the stockprice in one step
 	 * @param strike the strike price of the Option
 	 * @param t time to maturity
+	 * @param isCall set this to true to calculate call, false calculates put
 	 */
-	void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t);
+	void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t, bool isCall);
 
 	/**
 	 * Writes the premiums into a file that can be easily plot with gnuplot
