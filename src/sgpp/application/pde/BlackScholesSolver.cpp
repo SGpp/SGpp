@@ -564,7 +564,7 @@ double BlackScholesSolver::get1DEuroCallPayoffValue(double assetValue, double st
 	}
 }
 
-void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t)
+void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t, bool isCall)
 {
 	if (bStochasticDataAlloc)
 	{
@@ -576,8 +576,15 @@ void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> 
 		{
 			double dOne = (log((stock/strike)) + ((this->r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
 			double dTwo = dOne - (vola*sqrt(t));
-			double prem = (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*this->r*t)));
-
+			double prem;
+			if (isCall)
+			{
+				prem = (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*this->r*t)));
+			}
+			else
+			{
+				prem = (strike*myStdNDis->getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*this->r*t))) - (stock*myStdNDis->getCumulativeDensity(dOne*(-1.0)));
+			}
 			premiums.push_back(std::make_pair(stock, prem));
 		}
 
