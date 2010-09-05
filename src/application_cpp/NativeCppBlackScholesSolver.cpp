@@ -688,6 +688,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			std::cout << std::endl << "and " << points << " test-points in a range of " << std::endl;
 			std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
 
+			double oldMaxNorm = 0.0;
+			double oldTwoNorm = 0.0;
+
 			// Calculate relative errors and some norms
 			for (size_t j = 0; j < i-start_l; j++)
 			{
@@ -707,7 +710,10 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				twoNorm = relError.twoNorm();
 
 				// Printing norms
-				std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+				std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/twoNorm) << std::endl;
+
+				oldMaxNorm = maxNorm;
+				oldTwoNorm = twoNorm;
 			}
 		}
 		std::cout << std::endl << std::endl;
