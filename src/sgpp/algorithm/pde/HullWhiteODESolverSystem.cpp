@@ -279,12 +279,15 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 }
 
 void HullWhiteODESolverSystem::startTimestep()
-{
+{/*
+	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
+	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
+
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
-			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,this->TimestepSize);
+			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,*factor);
 		}
-
+		*/
 }
 }
