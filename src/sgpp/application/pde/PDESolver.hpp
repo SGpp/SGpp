@@ -10,7 +10,6 @@
 
 #include "grid/Grid.hpp"
 #include "grid/common/BoundingBox.hpp"
-#include "grid/generation/SurplusRefinementFunctor.hpp"
 
 #include "data/DataVector.hpp"
 
@@ -152,6 +151,16 @@ public:
 	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
 	void refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+
+	/**
+	 * Coarsens a grid by taking the grid's coefficients into account. This coarsen method
+	 * coarsens the grid based on the surplus by coarsening grid points with small surpluses
+	 * first.
+	 *
+	 * @param alpha a DataVector containing the grids coefficients
+	 * @param dThreshold Threshold for a point's surplus for coarsening this point
+	 */
+	void coarsenInitialGridSurplus(DataVector& alpha, double dThreshold);
 
 	/**
 	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
