@@ -64,6 +64,43 @@ BlackScholesSolver::~BlackScholesSolver()
 	}
 }
 
+void BlackScholesSolver::getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+{
+	if (this->bGridConstructed)
+	{
+		double tmp;
+		double value;
+		StdNormalDistribution myNormDistr;
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
+			std::stringstream coordsStream(coords);
+
+			value = 1.0;
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				if (this->useLogTransform == false)
+				{
+					value *= myNormDistr.getDensity(tmp, norm_mu[j], norm_sigma[j]);
+				}
+				else
+				{
+					value *= myNormDistr.getDensity(exp(tmp), norm_mu[j], norm_sigma[j]);
+				}
+			}
+
+			alpha[i] = value;
+		}
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::getGridNormalDistribution : The grid wasn't initialized before!");
+	}
+}
+
 void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 {
 	this->dim = BoundingBox.getDimensions();
@@ -104,7 +141,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double s
 
 				for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 				{
-					std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+					std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
 					std::stringstream coordsStream(coords);
 
 					for (size_t j = 0; j < this->dim; j++)

@@ -8,6 +8,7 @@
 #include "application/pde/PDESolver.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "tools/common/StdNormalDistribution.hpp"
 #include <sstream>
 #include <iostream>
 #include <string>
@@ -28,6 +29,36 @@ PDESolver::~PDESolver()
 	if (bGridConstructed)
 	{
 		delete myGrid;
+	}
+}
+
+void PDESolver::getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+{
+	if (bGridConstructed)
+	{
+		double tmp;
+		double value;
+		StdNormalDistribution myNormDistr;
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
+			std::stringstream coordsStream(coords);
+
+			value = 1.0;
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				value *= myNormDistr.getDensity(tmp, norm_mu[j], norm_sigma[j]);
+			}
+
+			alpha[i] = value;
+		}
+	}
+	else
+	{
+		throw new application_exception("PDESolver::getGridNormalDistribution : The grid wasn't initialized before!");
 	}
 }
 
@@ -113,6 +144,43 @@ void PDESolver::refineInitialGridSurplus(DataVector& alpha, int numRefinePoints,
 	}
 }
 
+void PDESolver::refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefinePoints, double dThreshold, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+{
+	size_t nRefinements;
+
+	if (numRefinePoints < 0)
+	{
+		nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePoints();
+	}
+	else
+	{
+		nRefinements = numRefinePoints;
+	}
+
+	if (bGridConstructed)
+	{
+		DataVector stdNormDist(alpha.getSize());
+
+		// calculate multidimensional normal distribution and apply to alpha on it
+		this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
+		printSparseGrid(stdNormDist, "normalDistribution.grid.gnuplot", true);
+		stdNormDist.componentwise_mult(alpha);
+		printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
+
+		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
+
+		myGrid->createGridGenerator()->refine(myRefineFunc);
+
+		delete myRefineFunc;
+
+		alpha.resize(myGridStorage->size());
+	}
+	else
+	{
+		throw new application_exception("PDESolver::refineIntialGridSurplusSubDomain : The grid wasn't initialized before!");
+	}
+}
+
 void PDESolver::refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dThreshold, size_t maxLevel)
 {
 	size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
@@ -130,6 +198,34 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dTh
 	else
 	{
 		throw new application_exception("PDESolver::refineInitialGridSurplusToMaxLevel : The grid wasn't initialized before!");
+	}
+}
+
+void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+{
+	size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
+
+	if (bGridConstructed)
+	{
+		DataVector stdNormDist(alpha.getSize());
+
+		// calculate multidimensional normal distribution and apply to alpha on it
+		this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
+		printSparseGrid(stdNormDist, "normalDistribution.grid.gnuplot", true);
+		stdNormDist.componentwise_mult(alpha);
+		printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
+
+		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
+
+		myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+
+		delete myRefineFunc;
+
+		alpha.resize(myGridStorage->size());
+	}
+	else
+	{
+		throw new application_exception("PDESolver::refineInitialGridSurplusToMaxLevelSubDomain : The grid wasn't initialized before!");
 	}
 }
 
