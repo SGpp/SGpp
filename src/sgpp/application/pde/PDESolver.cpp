@@ -9,6 +9,9 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "tools/common/StdNormalDistribution.hpp"
+#include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "grid/generation/SurplusCoarseningFunctor.hpp"
+
 #include <sstream>
 #include <iostream>
 #include <string>
@@ -183,10 +186,10 @@ void PDESolver::refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefi
 
 void PDESolver::refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dThreshold, size_t maxLevel)
 {
-	size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
-
 	if (bGridConstructed)
 	{
+		size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
+
 		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
 
 		myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
@@ -203,10 +206,10 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dTh
 
 void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
 {
-	size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
-
 	if (bGridConstructed)
 	{
+		size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
+
 		DataVector stdNormDist(alpha.getSize());
 
 		// calculate multidimensional normal distribution and apply to alpha on it
@@ -226,6 +229,26 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, d
 	else
 	{
 		throw new application_exception("PDESolver::refineInitialGridSurplusToMaxLevelSubDomain : The grid wasn't initialized before!");
+	}
+}
+
+void PDESolver::coarsenInitialGridSurplus(DataVector& alpha, double dThreshold)
+{
+	if (bGridConstructed)
+	{
+		GridGenerator* myGenerator =  myGrid->createGridGenerator();
+		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+		size_t originalGridSize = myGrid->getStorage()->size();
+		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(&alpha, numCoarsen, dThreshold);
+
+		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, &alpha, originalGridSize);
+
+		delete myCoarsenFunctor;
+		delete myGenerator;
+	}
+	else
+	{
+		throw new application_exception("PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");
 	}
 }
 
