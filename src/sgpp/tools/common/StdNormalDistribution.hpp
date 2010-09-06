@@ -13,6 +13,12 @@
 namespace sg
 {
 
+/**
+ * This provides an implementation of the standradized normal
+ * distribution.
+ *
+ * Also a density function for the normal distribution is provided!
+ */
 class StdNormalDistribution
 {
 public:
@@ -45,6 +51,17 @@ public:
 	 * @param x the value for which the density value should be calculated
 	 */
 	double getDensity(const double x);
+
+	/*
+	 * Calculates the Density values of the normal distribution
+	 *
+	 * taken from http://www.richelbilderbeek.nl/CppGetDensityNormal.htm
+	 *
+	 * @param x the value for which the density value should be calculated
+	 * @param mu the expected value of the normal distribution
+	 * @param sigma the standard deviation of the normal distribution
+	 */
+	double getDensity(const double x, const double mu, const double sigma);
 };
 
 }

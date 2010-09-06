@@ -17,13 +17,15 @@
 #include "tools/finance/IOToolBonnSG.hpp"
 #include "tools/common/GridPrinter.hpp"
 
+#include <vector>
+
 namespace sg
 {
 
 /**
  * This class provides defines a implements basic task and tools which are
  * useful while solving PDEs. E.g. grid construction, simple grid evaluation tools
- * grid printing, etc.
+ * grid printing, initial grid refinement etc.
  *
  * @version $HEAD$
  */
@@ -42,6 +44,17 @@ protected:
 	BoundingBox* myBoundingBox;
 	/// Stores Pointer to the Girs's Storage
 	GridStorage* myGridStorage;
+
+	/**
+	 * This function calculates for every grid point the value
+	 * of a normal distribution given by norm_mu and norm_sigma.
+	 * The result is stored dehierarchized in alpha.
+	 *
+	 * @param alpha contains dehierarchized sparse grid coefficients containing the values of the multi dimensional normal distribution after call
+	 * @param std_mu the expected values of the normal distribution for every grid dimension
+	 * @param std_sigma the standard deviation of the normal distribution for every grid dimension
+	 */
+	virtual void getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 public:
 	/**
@@ -104,6 +117,41 @@ public:
 	 * @param maxLevel maxLevel of refinement
 	 */
 	void refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dThreshold, size_t maxLevel);
+
+	/**
+	 * Refines a grid by taking the grid's coefficients into account. This refinement method
+	 * refines the grid based on the surplus by refining grid points with big surpluses
+	 * first. The number of grid points to refine may be specified by the numRefinePoints parameter.
+	 *
+	 * This functions refines the grid only in subdomain specified by a multi-dimensional
+	 * normal distribution. The normal distribution is given by the parameters norm_mu
+	 * and norm_sigma which are d-dimensional vectors.
+	 *
+	 * @param alpha a DataVector containing the grids coefficients
+	 * @param numRefinePoints the number of grid points that should be refined; if this smaller than zero -> all refineable points will be refined
+	 * @param dThreshold Threshold for a point's surplus for refining this point
+	 * @param norm_mu the expected values of the normal distribution for every grid dimension
+	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
+	 */
+	void refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefinePoints, double dThreshold, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+
+	/**
+	 * Refines a grid by taking the grid's coefficients into account. This refinement method
+	 * refines the grid based on the surplus by refining grid points with big surpluses
+	 * first.
+	 * The grid is refined to max. Level!
+	 *
+	 * This functions refines the grid only in subdomain specified by a multi-dimensional
+	 * normal distribution. The normal distribution is given by the parameters norm_mu
+	 * and norm_sigma which are d-dimensional vectors.
+	 *
+	 * @param alpha a DataVector containing the grids coefficients
+	 * @param dThreshold Threshold for a point's surplus for refining this point
+	 * @param maxLevel maxLevel of refinement
+	 * @param norm_mu the expected values of the normal distribution for every grid dimension
+	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
+	 */
+	void refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 	/**
 	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation

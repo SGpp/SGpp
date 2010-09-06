@@ -21,6 +21,8 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 #define CRNIC_IMEUL_STEPS 3
 /// default value for epsilon in gridpoints @money
 #define DFLT_EPS_AT_MONEY 0.0
+/// Use normal distribution the refine only at evaluation point
+#define USE_NORMDIST_REFINE
 
 /**
  * reads the values of mu, sigma and rho of all assets from
@@ -1068,14 +1070,28 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	// Init the grid with on payoff function
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
-	// refine the grid to approximate the singularity in the start solution better
+#ifdef USE_NORMDIST_REFINE
+	std::vector<double> norm_mu;
+	std::vector<double> norm_sigma;
 
+	for (size_t i = 0; i < d; i++)
+	{
+		norm_mu.push_back(1.0);
+		norm_sigma.push_back(0.2);
+	}
+#endif
+
+	// refine the grid to approximate the singularity in the start solution better
 	if (refinementMode == "classic")
 	{
 		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 		{
 			std::cout << "Refining Grid..." << std::endl;
+#ifdef USE_NORMDIST_REFINE
+			myBSSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
+#else
 			myBSSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+#endif
 			myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 			std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 			std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
@@ -1094,7 +1110,11 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			{
 				oldGridSize = newGridSize;
 				std::cout << "Refining Grid..." << std::endl;
+#ifdef USE_NORMDIST_REFINE
+				myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha, dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
+#else
 				myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, maxRefineLevel);
+#endif
 				myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 				std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 				std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;

@@ -113,6 +113,19 @@ private:
 	 */
 	void initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
 
+	/**
+	 * This function calculates for every grid point the value
+	 * of a normal distribution given by norm_mu and norm_sigma.
+	 * The result is stored dehierarchized in alpha.
+	 *
+	 * This method is overwritten in order to support grids with logarithmic coordinates.
+	 *
+	 * @param alpha contains dehierarchized sparse grid coefficients containing the values of the multi dimensional normal distribution after call
+	 * @param std_mu the expected values of the normal distribution for every grid dimension
+	 * @param std_sigma the standard deviation of the normal distribution for every grid dimension
+	 */
+	virtual void getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+
 public:
 	/**
 	 * Std-Constructor of the solver
