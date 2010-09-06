@@ -65,20 +65,6 @@ HullWhiteODESolverSystem::HullWhiteODESolverSystem(Grid& SparseGrid, DataVector&
 		this->OpEBound = this->BoundGrid->createOperationLE();
 		this->OpFBound = this->BoundGrid->createOperationLF();
 
-	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
-	/*else
-	{
-		buildDeltaCoefficientsLogTransform();
-		buildGammaCoefficientsLogTransform();
-
-		// operations on boundary grid
-		this->OpDeltaBound = this->BoundGrid->createOperationDeltaLog(*this->deltaCoef);
-		this->OpGammaBound = this->BoundGrid->createOperationGammaLog(*this->gammaCoef);
-		//operations on inner grid
-		this->OpDeltaInner = this->InnerGrid->createOperationDeltaLog(*this->deltaCoef);
-		this->OpGammaInner = this->InnerGrid->createOperationGammaLog(*this->gammaCoef);
-	}*/
-
 	// Create operations, independent bLogTransform
 	this->OpLTwoInner = this->InnerGrid->createOperationLTwoDotProduct();
 	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
@@ -123,8 +109,8 @@ HullWhiteODESolverSystem::~HullWhiteODESolverSystem()
 	{
 		delete this->rhs;
 	}
-	//delete this->alpha_complete_old;
-	//delete this->alpha_complete_tmp;
+	delete this->alpha_complete_old;
+	delete this->alpha_complete_tmp;
 }
 
 void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
@@ -132,13 +118,6 @@ void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVec
 	DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
-
-	// Apply the riskfree rate
-	/*if (this->r != 0.0)
-	{
-		this->OpLTwoBound->mult(alpha, temp);
-		result.axpy((-1.0)*this->r, temp);
-	}*/
 
 	if (this->theta != 0.0)
 		{
@@ -161,35 +140,12 @@ void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVec
 
 	this->OpDBound->mult(alpha, temp);
 	result.sub(temp);
-	// Apply the delta method
-	/*this->OpDeltaBound->mult(alpha, temp);
-	result.add(temp);
-
-	// Apply the gamma method
-	this->OpGammaBound->mult(alpha, temp);
-	result.sub(temp);*/
 }
 
 void HullWhiteODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
-
 	result.setAll(0.0);
-
-	// Apply the riskfree rate
-	/*if (this->r != 0.0)
-	{
-		this->OpLTwoInner->mult(alpha, temp);
-		result.axpy((-1.0)*this->r, temp);
-	}
-
-	// Apply the delta method
-	this->OpDeltaInner->mult(alpha, temp);
-	result.add(temp);
-
-	// Apply the gamma method
-	this->OpGammaInner->mult(alpha, temp);
-	result.sub(temp);*/
 	    if (this->theta != 0.0)
 			{
 				this->OpBInner->mult(alpha, temp);
@@ -211,6 +167,8 @@ void HullWhiteODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector
 
 		this->OpDInner->mult(alpha, temp);
 		result.sub(temp);
+
+	//applyLOperatorComplete(alpha, result);
 }
 
 void HullWhiteODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
@@ -235,6 +193,7 @@ void HullWhiteODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVecto
 	this->OpLTwoInner->mult(alpha, temp);
 
 	result.add(temp);
+	//applyMassMatrixComplete(alpha, result);
 }
 
 void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
@@ -279,7 +238,7 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 }
 
 void HullWhiteODESolverSystem::startTimestep()
-{
+{/*
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
 	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
@@ -287,7 +246,7 @@ void HullWhiteODESolverSystem::startTimestep()
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
 			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,*factor);
-		}
+		}*/
 
 }
 }
