@@ -1032,6 +1032,14 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		// reprint data with prefix -> can be easily grep-ed
 		std::cout << std::endl << std::endl;
 		std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
+		if (useNormalDist == true)
+		{
+			std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
+		}
+		else
+		{
+			std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
+		}
 		std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
 		std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
 		std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize() << std::endl;
