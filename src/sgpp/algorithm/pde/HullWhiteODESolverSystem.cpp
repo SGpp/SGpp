@@ -38,18 +38,14 @@ HullWhiteODESolverSystem::HullWhiteODESolverSystem(Grid& SparseGrid, DataVector&
 	this->a = a;
 	this->theta = theta;
 	this->sigma = sigma;
-
-	// build the coefficient vectors for the operations
-	//this->gammaCoef = new DataMatrix(SparseGrid.getStorage()->dim(), SparseGrid.getStorage()->dim());
-	//this->deltaCoef = new DataVector(SparseGrid.getStorage()->dim());
+	this->HWalgoDims = this->BoundGrid->getAlgorithmicDimensions();
+	// create the inner grid
+	//this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
 	// create the inner grid
 	//this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-	this->HWalgoDims = this->BoundGrid->getAlgorithmicDimensions();
-	// create the inner grid
-	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 	// Pass algorithmic dimensions to inner grid
-	this->InnerGrid->setAlgorithmicDimensions(this->HWalgoDims);
+	//this->InnerGrid->setAlgorithmicDimensions(this->HWalgoDims);
 
 	//	buildDeltaCoefficients();
 	//	buildGammaCoefficients();
@@ -165,10 +161,11 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 		}
 
 	// add number of Gridpoints
-	this->numSumGridpointsInner += this->InnerGrid->getSize();
-	this->numSumGridpointsComplete += this->BoundGrid->getSize();
+		this->numSumGridpointsInner += 0;
+		this->numSumGridpointsComplete += this->BoundGrid->getSize();
 
-	if (this->useCoarsen == true && isLastTimestep == false)
+
+	/*if (this->useCoarsen == true && isLastTimestep == false)
 	{
 		size_t numCoarsen;
 
@@ -190,7 +187,7 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 
 		// rebuild the inner grid + coefficients
 		this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-	}
+	}*/
 }
 
 void HullWhiteODESolverSystem::startTimestep()
