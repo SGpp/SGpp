@@ -80,12 +80,15 @@ void BlackScholesHullWhiteSolver::constructGrid(BoundingBox& BoundingBox, size_t
 }
 
 
-void BlackScholesHullWhiteSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r)
+void BlackScholesHullWhiteSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r, double theta, double sigma, double a)
 {
 	this->mus = new DataVector(mus);
 	this->sigmas = new DataVector(sigmas);
 	this->rhos = new DataMatrix(rhos);
 	this->r = r;
+	this->theta = theta;
+	this->sigma = sigma;
+	this->a = a;
 
 	bStochasticDataAlloc = true;
 }
