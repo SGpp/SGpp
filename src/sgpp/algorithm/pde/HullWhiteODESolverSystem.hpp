@@ -36,20 +36,6 @@ protected:
 	OperationMatrix* OpFBound;
 	/// the LTwoDotProduct Operation (Mass Matrix A), on boundary grid
 	OperationMatrix* OpLTwoBound;
-	/// the B matrix Operation, on Inner grid
-	OperationMatrix* OpBInner;
-	/// the D matrix Operation, on Inner grid
-	OperationMatrix* OpDInner;
-	/// the E matrix Operation, on Inner grid
-	OperationMatrix* OpEInner;
-	/// the F matrix Operation, on Inner grid
-	OperationMatrix* OpFInner;
-	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-	OperationMatrix* OpLTwoInner;
-	/// Pointer to the coefficients of operation Delta
-	//DataVector* deltaCoef;
-	/// Pointer to the coefficients ot operation Gamma
-	//DataMatrix* gammaCoef;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// Threshold used to decide if a grid point should be deleted
