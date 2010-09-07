@@ -421,7 +421,7 @@ double DataVector::maxNorm() {
     return max;
 }
 
-double DataVector::twoNorm()
+double DataVector::LtwoNorm()
 {
 	double twoNorm;
 	DataVector temp(*this);
@@ -429,6 +429,18 @@ double DataVector::twoNorm()
 	temp.componentwise_mult(temp);
 	twoNorm = temp.sum();
 	twoNorm /= static_cast<double>(temp.getSize());
+	twoNorm = std::sqrt(twoNorm);
+
+    return twoNorm;
+}
+
+double DataVector::twoNorm()
+{
+	double twoNorm;
+	DataVector temp(*this);
+
+	temp.componentwise_mult(temp);
+	twoNorm = temp.sum();
 	twoNorm = std::sqrt(twoNorm);
 
     return twoNorm;

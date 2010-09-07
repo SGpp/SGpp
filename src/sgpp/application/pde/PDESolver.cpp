@@ -166,9 +166,9 @@ void PDESolver::refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefi
 
 		// calculate multidimensional normal distribution and apply to alpha on it
 		this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
-		printSparseGrid(stdNormDist, "normalDistribution.grid.gnuplot", true);
+		//printSparseGrid(stdNormDist, "normalDistribution.grid.gnuplot", true);
 		stdNormDist.componentwise_mult(alpha);
-		printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
+		//printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
 		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
 
@@ -214,9 +214,9 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, d
 
 		// calculate multidimensional normal distribution and apply to alpha on it
 		this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
-		printSparseGrid(stdNormDist, "normalDistribution.grid.gnuplot", true);
+		//printSparseGrid(stdNormDist, "normalDistribution.grid.gnuplot", true);
 		stdNormDist.componentwise_mult(alpha);
-		printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
+		//printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
 		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
 

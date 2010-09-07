@@ -251,6 +251,14 @@ public:
 	float maxNorm();
 
 	/**
+	 * calculates the vectors L two norm
+	 * function based two norm
+	 *
+	 * @return the vector's L two norm
+	 */
+	float LtwoNorm();
+
+	/**
 	 * calculates the vectors two norm
 	 *
 	 * @return the vector's two norm
