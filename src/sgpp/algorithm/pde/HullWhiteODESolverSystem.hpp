@@ -132,6 +132,10 @@ public:
 
 	void finishTimestep(bool isLastTimestep = false);
 
+	virtual DataVector* generateRHS();
+
+	virtual DataVector* getGridCoefficientsForCG();
+
 	void startTimestep();
 };
 

@@ -54,11 +54,6 @@ HullWhiteODESolverSystem::HullWhiteODESolverSystem(Grid& SparseGrid, DataVector&
 	//	buildDeltaCoefficients();
 	//	buildGammaCoefficients();
 
-		//Create needed operations, on inner grid
-		this->OpBInner = this->InnerGrid->createOperationLB();
-		this->OpDInner = this->InnerGrid->createOperationLD();
-		this->OpEInner = this->InnerGrid->createOperationLE();
-	    this->OpFInner = this->InnerGrid->createOperationLF();
 		// Create needed operations, on boundary grid
 		this->OpBBound = this->BoundGrid->createOperationLB();
 		this->OpDBound = this->BoundGrid->createOperationLD();
@@ -66,7 +61,6 @@ HullWhiteODESolverSystem::HullWhiteODESolverSystem(Grid& SparseGrid, DataVector&
 		this->OpFBound = this->BoundGrid->createOperationLF();
 
 	// Create operations, independent bLogTransform
-	this->OpLTwoInner = this->InnerGrid->createOperationLTwoDotProduct();
 	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
 
 	// right hand side if System
@@ -90,11 +84,6 @@ HullWhiteODESolverSystem::~HullWhiteODESolverSystem()
 	delete this->OpEBound;
 	delete this->OpFBound;
 	delete this->OpLTwoBound;
-	delete this->OpBInner;
-	delete this->OpDInner;
-	delete this->OpEInner;
-	delete this->OpFInner;
-	delete this->OpLTwoInner;
 	delete this->BoundaryUpdate;
 	delete this->GridConverter;
 	if (this->InnerGrid != NULL)
@@ -144,31 +133,7 @@ void HullWhiteODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVec
 
 void HullWhiteODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
-	DataVector temp(alpha.getSize());
-	result.setAll(0.0);
-	    if (this->theta != 0.0)
-			{
-				this->OpBInner->mult(alpha, temp);
-				result.axpy(1.0*this->theta, temp);
-			}
-
-		if (this->sigma != 0.0)
-			{
-				this->OpEInner->mult(alpha, temp);
-				result.axpy((-1.0/2.0)*pow((this->sigma),2.0), temp);
-			}
-
-		if (this->a != 0.0)
-			{
-				this->OpFInner->mult(alpha, temp);
-				result.axpy((-1.0)*this->a, temp);
-			}
-
-
-		this->OpDInner->mult(alpha, temp);
-		result.sub(temp);
-
-	//applyLOperatorComplete(alpha, result);
+    applyLOperatorComplete(alpha, result);
 }
 
 void HullWhiteODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
@@ -185,28 +150,19 @@ void HullWhiteODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVe
 
 void HullWhiteODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVector& result)
 {
-	DataVector temp(alpha.getSize());
-
-	result.setAll(0.0);
-
-	// Apply the mass matrix
-	this->OpLTwoInner->mult(alpha, temp);
-
-	result.add(temp);
-	//applyMassMatrixComplete(alpha, result);
+    applyMassMatrixComplete(alpha, result);
 }
 
 void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 {
-	// Replace the inner coefficients on the boundary grid
-	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
-
+	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
+	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
 
-		/*if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
+		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
-			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,this->TimestepSize);
-		}*/
+			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,*factor);
+		}
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
@@ -246,7 +202,85 @@ void HullWhiteODESolverSystem::startTimestep()
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
 			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,*factor);
-		}*/
-
+		}
+*/
 }
+DataVector* HullWhiteODESolverSystem::generateRHS()
+{
+	DataVector rhs_complete(this->alpha_complete->getSize());
+
+	if (this->tOperationMode == "ExEul")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		rhs_complete.add(temp);
+
+		applyLOperatorComplete(*this->alpha_complete, temp);
+		rhs_complete.axpy(this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "ImEul")
+	{
+		rhs_complete.setAll(0.0);
+
+		applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
+	}
+	else if (this->tOperationMode == "CrNic")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		rhs_complete.add(temp);
+
+		applyLOperatorComplete(*this->alpha_complete, temp);
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "AdBas")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrixComplete(*this->alpha_complete, temp);
+		rhs_complete.add(temp);
+
+		applyLOperatorComplete(*this->alpha_complete, temp);
+
+		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
+
+		DataVector temp_old(this->alpha_complete->getSize());
+		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
+		applyLOperatorComplete(*this->alpha_complete_old, temp_old);
+		temp_old.mult(this->TimestepSize/this->TimestepSize_old);
+		temp.sub(temp_old);
+
+		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+	}
+	else
+	{
+		throw new algorithm_exception("HullWhiteODESolverSystem::generateRHS : An unknown operation mode was specified!");
+	}
+
+	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
+	this->startTimestep();
+
+	if (this->rhs != NULL)
+	{
+		delete this->rhs;
+	}
+
+	this->rhs = new DataVector(rhs_complete);
+
+	return this->rhs;
+}
+
+DataVector* HullWhiteODESolverSystem::getGridCoefficientsForCG()
+{
+	return this->alpha_complete;
+}
+
 }
