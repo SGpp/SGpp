@@ -305,7 +305,7 @@ float DataVectorSP::maxNorm() {
     return max;
 }
 
-float DataVectorSP::twoNorm()
+float DataVectorSP::LtwoNorm()
 {
 	float twoNorm;
 	DataVectorSP temp(*this);
@@ -313,6 +313,18 @@ float DataVectorSP::twoNorm()
 	temp.componentwise_mult(temp);
 	twoNorm = temp.sum();
 	twoNorm /= static_cast<float>(temp.getSize());
+	twoNorm = std::sqrt(twoNorm);
+
+    return twoNorm;
+}
+
+float DataVectorSP::twoNorm()
+{
+	float twoNorm;
+	DataVectorSP temp(*this);
+
+	temp.componentwise_mult(temp);
+	twoNorm = temp.sum();
 	twoNorm = std::sqrt(twoNorm);
 
     return twoNorm;

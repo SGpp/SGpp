@@ -464,14 +464,14 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	{
 		if (isLogSolve == true)
 		{
-			point.push_back(log(1.0));
+			point.push_back(log(dStrike));
 		}
 		else
 		{
-			point.push_back(1.0);
+			point.push_back(dStrike);
 		}
 	}
-	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSSolver;
@@ -654,14 +654,14 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			if (isLogSolve == true)
 			{
-				point.push_back(log(1.0));
+				point.push_back(log(dStrike));
 			}
 			else
 			{
-				point.push_back(1.0);
+				point.push_back(dStrike);
 			}
 		}
-		std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 		// Evaluate Cuboid
 		DataVector Prices(EvalPoints.getNrows());
@@ -707,7 +707,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				maxNorm = relError.maxNorm();
 
 				// calculate two norm of relative error
-				twoNorm = relError.twoNorm();
+				twoNorm = relError.LtwoNorm();
 
 				// Printing norms
 				std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/twoNorm) << std::endl;
@@ -980,7 +980,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			point.push_back(dStrike);
 		}
 	}
-	std::cout << "Optionprice at testpoint: " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	// calculate relative errors
 	////////////////////////////
@@ -1024,7 +1024,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
-		twoNorm = relError.twoNorm();
+		twoNorm = relError.LtwoNorm();
 
 		// Printing norms
 		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
