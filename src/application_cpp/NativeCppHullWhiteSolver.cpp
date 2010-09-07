@@ -106,7 +106,7 @@ void testHullWhite(size_t l, double theta, double sigma, double a, std::string f
 
 
 		// Set stochastic data
-		//myBSSolver->setStochasticData(mu, sigma, rho, r);
+		myHWSolver->setStochasticData(theta, sigma, a);
 
 		// Start solving the Black Scholes Equation
 		if (Solver == "ExEul")

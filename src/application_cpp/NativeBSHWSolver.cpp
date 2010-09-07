@@ -200,7 +200,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	}
 
 	// Set stochastic data
-	myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0);
+	myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 
 	//std::vector<size_t> newAlgoDimsBS(1);
 	//newAlgoDimsBS[0]=0;
