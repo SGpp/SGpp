@@ -23,7 +23,7 @@ namespace sg
 
 HullWhiteSolver::HullWhiteSolver() : ParabolicPDESolver()
 {
-	//this->bStochasticDataAlloc = false;
+	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
 	this->myScreen = NULL;
 	this->useCoarsen = false;
@@ -68,19 +68,18 @@ void HullWhiteSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	this->bGridConstructed = true;
 }
 
-/*void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataVector& rhos, double r)
+void HullWhiteSolver::setStochasticData(double theta, double sigma, double a)
 {
-	this->mus = new DataVector(mus);
-	this->sigmas = new DataVector(sigmas);
-	this->rhos = new DataVector(rhos);
-	this->r = r;
+	this->theta = theta;
+	this->sigma = sigma;
+	this->a = a;
 
 	bStochasticDataAlloc = true;
-}*/
+}
 
 void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	if (this->bGridConstructed)
+	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
@@ -123,7 +122,7 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 
 void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	if (this->bGridConstructed)
+	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
