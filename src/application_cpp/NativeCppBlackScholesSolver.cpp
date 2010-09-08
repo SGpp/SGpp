@@ -21,6 +21,8 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 #define CRNIC_IMEUL_STEPS 3
 /// default value for epsilon in gridpoints @money
 #define DFLT_EPS_AT_MONEY 0.0
+/// default value for sigma of refinement normal distribution
+#define DFLT_SIGMA_REFINE_NORMDIST 0.1
 
 /**
  * reads the values of mu, sigma and rho of all assets from
@@ -176,6 +178,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 	while (!file.eof())
 	{
 		DataVector line(dim);
+		line.setAll(0.0);
 		for (size_t d = 0; d < dim; d++)
 		{
 			file >> cur_coord;
@@ -817,13 +820,34 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	std::vector<double> norm_mu;
 	std::vector<double> norm_sigma;
+	double refineSigma = DFLT_SIGMA_REFINE_NORMDIST;
+
+	// estimate refine sigma from evaluation cuboid
+	// read Evaluation cuboid
+	DataMatrix EvalCuboid(1, dim);
+	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+
+	// read reference values for evaluation cuboid
+	DataVector EvalCuboidValues(1);
+	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+
+	if (EvalCuboid.getNrows() != EvalCuboidValues.getSize())
+	{
+		retCuboid = 1;
+		retCuboidValues = 1;
+	}
+
+	if (retCuboid == 0 && retCuboidValues == 0)
+	{
+		refineSigma = EvalCuboid.max(0) - EvalCuboid.min(0);
+	}
 
 	if (useNormalDist == true)
 	{
 		for (size_t i = 0; i < d; i++)
 		{
 			norm_mu.push_back(dStrike);
-			norm_sigma.push_back(0.25);
+			norm_sigma.push_back(refineSigma);
 		}
 	}
 
@@ -984,14 +1008,8 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	// calculate relative errors
 	////////////////////////////
-
-	// read Evaluation cuboid
-	DataMatrix EvalCuboid(1, dim);
-	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
-
-	// read reference values for evaluation cuboid
-	DataVector EvalCuboidValues(1);
-	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+	double maxNorm = 0.0;
+	double twoNorm = 0.0;
 
 	if (retCuboid == 0 && retCuboidValues == 0)
 	{
@@ -1013,8 +1031,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
 		DataVector relError(Prices);
-		double maxNorm = 0.0;
-		double twoNorm = 0.0;
 
 		// calculate relative error
 		relError.sub(EvalCuboidValues);
@@ -1031,33 +1047,42 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 		// reprint data with prefix -> can be easily grep-ed
 		std::cout << std::endl << std::endl;
-		std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
-		if (useNormalDist == true)
-		{
-			std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
-		}
-		else
-		{
-			std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
-		}
-		std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
-		std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
-		std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize() << std::endl;
-		std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize() << std::endl;
-		std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
-		std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
-		std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
-		std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
-			<< ";" << dRefineThreshold << ";" << adaptSolvingMode << ";" << coarsenThreshold
-			<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
-			<< ";" << myBSSolver->getAverageInnerGridSize() << ";" << myBSSolver->getNeededIterationsToSolve()
-			<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << twoNorm << std::endl;
-		std::cout << std::endl << std::endl;
 	}
 	else
 	{
 		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
 	}
+
+	std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
+	std::string normDistrefine;
+	if (useNormalDist == true)
+	{
+		std::stringstream normDistRefineStream;
+		normDistRefineStream << "solveNDadaptSurplusSubDomain;" << dStrike << ";" << refineSigma;
+		normDistrefine = normDistRefineStream.str();
+		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
+		std::cout << "$ Refine mu = " << dStrike << "; Refine sigma = " << refineSigma << std::endl;
+	}
+	else
+	{
+		normDistrefine = "solveNDadaptSurplus;-1.0;1.0";
+		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
+	}
+
+	std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
+	std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
+	std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize() << std::endl;
+	std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize() << std::endl;
+	std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
+	std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
+	std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+	std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl;
+	std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
+		<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
+		<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
+		<< ";" << myBSSolver->getAverageInnerGridSize() << ";" << myBSSolver->getNeededIterationsToSolve()
+		<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << twoNorm << std::endl;
+	std::cout << std::endl << std::endl;
 
 	delete myBSSolver;
 	delete myBoundingBox;
