@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Chao qi (qic@in.tum.de)
 
 #include "sgpp.hpp"
 #include <iostream>
@@ -200,14 +200,8 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	}
 
 	// Set stochastic data
-	myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
+	//myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 
-	//std::vector<size_t> newAlgoDimsBS(1);
-	//newAlgoDimsBS[0]=0;
-	//myBSSolver->setAlgorithmicDimensions(newAlgoDimsBS);
-	//std::vector<size_t> xdim(1);
-	//xdim=myBSSolver->getAlgorithmicDimensions();
-	//std::cout << "current dimension is " << xdim[0] << std::endl;
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
 	{
@@ -216,8 +210,14 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	}
 	else if (Solver == "ImEul")
 	{
+		int count=0;
 		for (int i=0; i<100; i++)
+		{
+		theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 		myBSHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		count=count+1;
+	}
 	}
 	else
 	{
@@ -283,14 +283,14 @@ void writeHelp()
 		mySStream << "the following options must be specified:" << std::endl;
 		mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-		mySStream << "	value of Theta: theta function" << std::endl;
+		mySStream << "	value of Theta: theta value" << std::endl;
 		mySStream << "	value of sigma: sigma value-determine overall level of volatility for hull white" << std::endl;
 	    mySStream << "	value of a: a" << std::endl;
 	    mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
 	    mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 		mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
 		mySStream << "	simeSt: number of time steps" << std::endl;
-		mySStream << "	dT: timestep size" << std::endl;
+		mySStream << "	dt: timestep size" << std::endl;
 		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
@@ -300,7 +300,7 @@ void writeHelp()
 
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "2 5 0.006 0.01 0.1 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ExEul " << "1.0 " <<"0.3 cart"<<std::endl;
+		mySStream << "2 5 0.004 0.01 0.000000001 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "1.0 " <<"0.3 " << "cart "<<std::endl;
 		mySStream << std::endl;
 
 		mySStream << std::endl << std::endl;
