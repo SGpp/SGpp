@@ -122,7 +122,7 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
 	double mse = 0;
 
 #ifdef USEOMP
-	#pragma omp parallel shared(correct)
+	#pragma omp parallel shared(result)
 	{
 		size_t size = data.getNrows();
 		std::vector<double> point;
