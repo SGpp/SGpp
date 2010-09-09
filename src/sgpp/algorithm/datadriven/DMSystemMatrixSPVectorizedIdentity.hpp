@@ -5,26 +5,34 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef DMSYSTEMMATRIXSPAVXIDENTITY_HPP
-#define DMSYSTEMMATRIXSPAVXIDENTITY_HPP
+#ifndef DMSYSTEMMATRIXSPVECTORIZEDIDENTITY_HPP
+#define DMSYSTEMMATRIXSPVECTORIZEDIDENTITY_HPP
 
 #include "data/DataVectorSP.hpp"
 #include "grid/Grid.hpp"
 #include "operation/datadriven/OperationBVectorizedSP.hpp"
 #include "operation/common/OperationMatrixSP.hpp"
 
+#include <string>
+
 namespace sg
 {
 
 /**
- * Class that implements the virtual class OperationMatrixSP for the
+ * Class that implements the virtual class OperationMatrix for the
  * application of classification for the Systemmatrix
  *
  * The Identity matrix is used as regularization operator.
  *
- * For Operation B an instance of OperationBVectorizedSPAVX is used!
+ * For the Operation B's mult and mutlTransposed functions
+ * vectorized formulations in SSE, AVX, OpenCL or Intel Array Building Blocks
+ * are used.
+ *
+ * OpenCL and Intel Array Building Blocks aren't supported, yet!
+ *
+ * In this class single precision DataVectors are used.
  */
-class DMSystemMatrixSPAVXIdentity : public OperationMatrixSP
+class DMSystemMatrixSPVectorizedIdentity : public OperationMatrixSP
 {
 private:
 	/// the lambda, the regularisation parameter
@@ -35,6 +43,10 @@ private:
 	DataMatrixSP* data;
 	/// Number of orignal training instances
 	size_t numTrainingInstances;
+	/// vectorization mode, possible values are SSE, AVX, OCL, ArBB
+	std::string vecMode;
+	/// vector width, class internal variable to enable padding and patching of vectors
+	size_t vecWidth;
 
 public:
 	/**
@@ -44,13 +56,14 @@ public:
 	 * @param trainData reference to DataMatrix that contains the training data
 	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
+	 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	 */
-	DMSystemMatrixSPAVXIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda);
+	DMSystemMatrixSPVectorizedIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda, std::string vecMode);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~DMSystemMatrixSPAVXIdentity();
+	virtual ~DMSystemMatrixSPVectorizedIdentity();
 
 	virtual void mult(DataVectorSP& alpha, DataVectorSP& result);
 
@@ -70,4 +83,4 @@ public:
 
 }
 
-#endif /* DMSYSTEMMATRIXSPAVXIDENTITY_HPP */
+#endif /* DMSYSTEMMATRIXSPVECTORIZEDIDENTITY_HPP */

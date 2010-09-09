@@ -5,29 +5,49 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/datadriven/DMSystemMatrixSPSSEIdentity.hpp"
+#include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
 #include "exception/operation_exception.hpp"
-
 
 namespace sg
 {
 
-DMSystemMatrixSPSSEIdentity::DMSystemMatrixSPSSEIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda)
+DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseGrid, DataMatrix& trainData, double lambda, std::string vecMode)
 {
+	// handle unsupported vector extensions
+	if (vecMode != "SSE" && vecMode != "AVX")
+	{
+		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX are supported vector extensions!");
+	}
+
 	// create the operations needed in ApplyMatrix
-	this->B = SparseGrid.createOperationBVectorizedSP("SSE");
+	this->vecMode = vecMode;
 	this->lamb = lambda;
-	this->data = new DataMatrixSP(trainData);
+	this->B = SparseGrid.createOperationBVectorized(this->vecMode);
+	this->data = new DataMatrix(trainData);
+
+	if (this->vecMode == "SSE")
+	{
+		this->vecWidth = 2;
+	}
+	else if (this->vecMode == "AVX")
+	{
+		this->vecWidth = 4;
+	}
+	// should not happen because this exception should have been thrown some lines upwards!
+	else
+	{
+		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX are supported vector extensions!");
+	}
 
 	numTrainingInstances = data->getNrows();
 
 	// Assure that data has a even number of instances -> padding might be needed
-	size_t remainder = data->getNrows() % 4;
-	size_t loopCount = 4 - remainder;
+	size_t remainder = data->getNrows() % this->vecWidth;
+	size_t loopCount = this->vecWidth - remainder;
 
-	if (loopCount != 4)
+	if (loopCount != this->vecWidth)
 	{
-		DataVectorSP lastRow(data->getNcols());
+		DataVector lastRow(data->getNcols());
 		for (size_t i = 0; i < loopCount; i++)
 		{
 			data->getRow(data->getNrows()-1, lastRow);
@@ -38,15 +58,15 @@ DMSystemMatrixSPSSEIdentity::DMSystemMatrixSPSSEIdentity(Grid& SparseGrid, DataM
 	data->transpose();
 }
 
-DMSystemMatrixSPSSEIdentity::~DMSystemMatrixSPSSEIdentity()
+DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity()
 {
 	delete this->B;
 	delete this->data;
 }
 
-void DMSystemMatrixSPSSEIdentity::mult(DataVectorSP& alpha, DataVectorSP& result)
+void DMSystemMatrixVectorizedIdentity::mult(DataVector& alpha, DataVector& result)
 {
-	DataVectorSP temp((*data).getNcols());
+	DataVector temp((*data).getNcols());
 
     // Operation B
     this->B->multTransposeVectorized(alpha, (*data), temp);
@@ -63,9 +83,9 @@ void DMSystemMatrixSPSSEIdentity::mult(DataVectorSP& alpha, DataVectorSP& result
     result.axpy(numTrainingInstances*this->lamb, alpha);
 }
 
-void DMSystemMatrixSPSSEIdentity::generateb(DataVectorSP& classes, DataVectorSP& b)
+void DMSystemMatrixVectorizedIdentity::generateb(DataVector& classes, DataVector& b)
 {
-	DataVectorSP myClasses(classes);
+	DataVector myClasses(classes);
 
 	// Apply padding
 	size_t numCols = (*data).getNcols();
@@ -73,11 +93,10 @@ void DMSystemMatrixSPSSEIdentity::generateb(DataVectorSP& classes, DataVectorSP&
 	{
 		myClasses.resizeZero(numCols);
 	}
-
 	this->B->multVectorized(myClasses, (*data), b);
 }
 
-void DMSystemMatrixSPSSEIdentity::rebuildLevelAndIndex()
+void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex()
 {
 	this->B->rebuildLevelAndIndex();
 }

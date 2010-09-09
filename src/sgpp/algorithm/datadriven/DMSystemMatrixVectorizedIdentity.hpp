@@ -5,14 +5,15 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef DMSYSTEMMATRIXSSEIDENTITY_HPP
-#define DMSYSTEMMATRIXSSEIDENTITY_HPP
+#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITY_HPP
+#define DMSYSTEMMATRIXVECTORIZEDIDENTITY_HPP
 
 #include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 #include "grid/Grid.hpp"
 #include "operation/datadriven/OperationBVectorized.hpp"
 #include "operation/common/OperationMatrix.hpp"
+
+#include <string>
 
 namespace sg
 {
@@ -23,9 +24,13 @@ namespace sg
  *
  * The Identity matrix is used as regularization operator.
  *
- * For Operation B an instance of OperationBVectorizedSSE is used!
+ * For the Operation B's mult and mutlTransposed functions
+ * vectorized formulations in SSE, AVX, OpenCL or Intel Array Building Blocks
+ * are used.
+ *
+ * OpenCL and Intel Array Building Blocks aren't supported, yet!
  */
-class DMSystemMatrixSSEIdentity : public OperationMatrix
+class DMSystemMatrixVectorizedIdentity : public OperationMatrix
 {
 private:
 	/// the lambda, the regularisation parameter
@@ -36,6 +41,10 @@ private:
 	DataMatrix* data;
 	/// Number of orignal training instances
 	size_t numTrainingInstances;
+	/// vectorization mode, possible values are SSE, AVX, OCL, ArBB
+	std::string vecMode;
+	/// vector width, class internal variable to enable padding and patching of vectors
+	size_t vecWidth;
 
 public:
 	/**
@@ -45,13 +54,14 @@ public:
 	 * @param trainData reference to DataMatrix that contains the training data
 	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
+	 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	 */
-	DMSystemMatrixSSEIdentity(Grid& SparseGrid, DataMatrix& trainData, double lambda);
+	DMSystemMatrixVectorizedIdentity(Grid& SparseGrid, DataMatrix& trainData, double lambda, std::string vecMode);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~DMSystemMatrixSSEIdentity();
+	virtual ~DMSystemMatrixVectorizedIdentity();
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
@@ -71,4 +81,4 @@ public:
 
 }
 
-#endif /* DMSYSTEMMATRIXSSEIDENTITY_HPP */
+#endif /* DMSYSTEMMATRIXVECTORIZEDIDENTITY_HPP */

@@ -54,11 +54,11 @@ OBJS = DataVector.obj Grid.obj LinearBoundaryGrid.obj LinearTrapezoidBoundaryGri
 	DPhiPhiDownBBLinear.obj DPhiPhiUpBBLinear.obj PhidPhiDownBBLinear.obj PhidPhiUpBBLinear.obj PDESolver.obj ParabolicPDESolver.obj\
 	EvalCuboidGenerator.obj OperationODESolverSystem.obj AdamsBashforth.obj VarTimestep.obj SurplusRefinementFunctor.obj\
 	SurplusCoarseningFunctor.obj AlignedMemory.obj DataMatrix.obj BlackScholesODESolverSystemEuropeanParallelOMP.obj\
-	OperationBIterativeSSELinear.obj DMSystemMatrixSSEIdentity.obj OperationDeltaLogLinear.obj\
+	OperationBIterativeSSELinear.obj OperationDeltaLogLinear.obj\
 	OperationGammaLogLinear.obj DowndPhidPhiBBIterativeLinear.obj DowndPhidPhiBBIterativeLinearBoundary.obj\
-	UpdPhidPhiBBIterativeLinearBoundary.obj OperationBIterativeAVXLinear.obj DMSystemMatrixAVXIdentity.obj\
-	DataVectorSP.obj DataMatrixSP.obj ConjugateGradientsSP.obj OperationBIterativeSPSSELinear.obj DMSystemMatrixSPSSEIdentity.obj\
-	OperationBIterativeSPAVXLinear.obj DMSystemMatrixSPAVXIdentity.obj BlackScholesODESolverSystemEuropean.obj
+	UpdPhidPhiBBIterativeLinearBoundary.obj OperationBIterativeAVXLinear.obj DMSystemMatrixVectorizedIdentity.obj\
+	DataVectorSP.obj DataMatrixSP.obj ConjugateGradientsSP.obj OperationBIterativeSPSSELinear.obj\
+	OperationBIterativeSPAVXLinear.obj DMSystemMatrixSPVectorizedIdentity.obj BlackScholesODESolverSystemEuropean.obj
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -425,17 +425,11 @@ HeatEquationODESolverSystem.obj : $(SRCDIR)algorithm/pde/HeatEquationODESolverSy
 DMSystemMatrix.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	
-DMSystemMatrixSSEIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSSEIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
+DMSystemMatrixVectorizedIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
 	
-DMSystemMatrixSPSSEIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPSSEIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPSSEIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPSSEIdentity.cpp
-	
-DMSystemMatrixAVXIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixAVXIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixAVXIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixAVXIdentity.cpp
-	
-DMSystemMatrixSPAVXIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPAVXIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPAVXIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPAVXIdentity.cpp
+DMSystemMatrixSPVectorizedIdentity.obj : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentity.obj $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
 	
 ConjugateGradients.obj : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.obj $(SRCDIR)solver/sle/ConjugateGradients.cpp

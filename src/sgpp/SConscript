@@ -166,10 +166,8 @@ basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 operation/pde/OperationODESolverSystem.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
-algorithm/datadriven/DMSystemMatrixSSEIdentity.cpp
-algorithm/datadriven/DMSystemMatrixSPSSEIdentity.cpp
-algorithm/datadriven/DMSystemMatrixAVXIdentity.cpp
-algorithm/datadriven/DMSystemMatrixSPAVXIdentity.cpp
+algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
+algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
 
 algorithm/pde/BlackScholesODESolverSystem.cpp
 algorithm/pde/HullWhiteODESolverSystem.cpp
