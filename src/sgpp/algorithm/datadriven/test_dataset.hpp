@@ -172,9 +172,8 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
 
 	result.sub(refValues);
 	result.sqr();
-
 	mse = result.sum();
-	mse = sqrt(mse);
+	mse /= static_cast<double>(result.getSize());
 
 	return mse;
 }
