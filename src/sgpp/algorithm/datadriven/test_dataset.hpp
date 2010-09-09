@@ -117,8 +117,7 @@ template<class BASIS>
 double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& refValues)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
-	DataVector result(alpha.getSize());
-
+	DataVector result(refValues.getSize());
 	double mse = 0;
 
 #ifdef USEOMP
@@ -144,7 +143,7 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
 				res += iter->second * alpha[iter->first];
 			}
 
-			result.set(i, res);
+			result[i] = res;
 		}
 	}
 #else
@@ -167,7 +166,7 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
 			res += iter->second * alpha[iter->first];
 		}
 
-		result.set(i, res);
+		result[i] = res;
 	}
 #endif
 

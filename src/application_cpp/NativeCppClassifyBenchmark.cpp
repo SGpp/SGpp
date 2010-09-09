@@ -16,21 +16,21 @@
 #include <string>
 #include <iostream>
 
-//#define DATAFILE "DR5_nowarnings_less05_train.arff"
+#define DATAFILE "DR5_nowarnings_less05_train.arff"
 //#define DATAFILE "twospirals.wieland.arff"
-#define DATAFILE "liver-disorders_normalized.arff"
+//#define DATAFILE "liver-disorders_normalized.arff"
 //#define DATAFILE "ripleyGarcke.train.arff"
 
-//#define TESTFILE "DR5_nowarnings_less05_test.arff"
+#define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define TESTFILE "twospirals.wieland.arff"
-#define TESTFILE "liver-disorders_normalized.arff"
+//#define TESTFILE "liver-disorders_normalized.arff"
 //#define TESTFILE "ripleyGarcke.test.arff"
 
 // grid generation settings
 #define LEVELS 3
-#define REFINEMENTS 8
+#define REFINEMENTS 3
 #define REFINE_THRESHOLD 0.0
-#define REFINE_NUM_POINTS 10
+#define REFINE_NUM_POINTS 100
 
 // solving settings
 #define CG_IMAX 10000
@@ -52,7 +52,7 @@
 //#define USEFLOAT
 
 // define this if you want to execute a regression
-//#define EXEC_REGRESSION
+#define EXEC_REGRESSION
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
@@ -124,8 +124,8 @@ void adaptClassificationTest(bool isRegression)
 
 	// Create Grid
 	sg::Grid* myGrid;
-
 	myGrid = new sg::LinearGrid(nDim);
+
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(LEVELS);
@@ -148,6 +148,9 @@ void adaptClassificationTest(bool isRegression)
     result.setAll(0.0);
     alpha.setAll(0.0);
 
+    // Variable to save MSE/Acc from former iteration
+    double oldAcc = 0.0;
+
     // Generate CG to solve System
     sg::ConjugateGradients* myCG = new sg::ConjugateGradients(CG_IMAX, CG_EPS);
 #if defined(USE_SSE) || defined(USE_AVX)
@@ -169,7 +172,7 @@ void adaptClassificationTest(bool isRegression)
     myStopwatch->start();
     for (size_t i = 0; i < REFINEMENTS+1; i++)
     {
-    	std::cout << "Doing refinement :" << i << std::endl;
+    	std::cout << std::endl << "Doing refinement :" << i << std::endl;
 
     	// Do Refinements
     	if (i > 0)
@@ -195,18 +198,42 @@ void adaptClassificationTest(bool isRegression)
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
 		// Do tests on test data
-		sg::OperationTest* myTest = myGrid->createOperationTest();
     	if (isRegression)
     	{
-			double mse = myTest->testMSE(alpha, testData, testclasses);
-			std::cout << "MSE: " << mse << std::endl;
+    		sg::OperationTest* myTest = myGrid->createOperationTest();
+			double mse = myTest->testMSE(alpha, data, classes);
+			std::cout << "MSE (train): " << mse << std::endl;
+			double mseTest = myTest->testMSE(alpha, testData, testclasses);
+			std::cout << "MSE (test): " << mseTest << std::endl;
+			delete myTest;
+
+			if ((i > 0) && (oldAcc < mseTest))
+			{
+				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+				break;
+			}
+
+			oldAcc = mseTest;
     	}
     	else
     	{
-			double correct = myTest->test(alpha, testData, testclasses);
-			std::cout << "Final test acc.: " << correct/static_cast<double>(testclasses.getSize()) << std::endl;
+    		sg::OperationTest* myTest = myGrid->createOperationTest();
+			double acc = myTest->test(alpha, data, classes);
+			acc /= static_cast<double>(classes.getSize());
+			std::cout << "train acc.: " << acc << std::endl;
+			double accTest = myTest->test(alpha, testData, testclasses);
+			accTest /= static_cast<double>(testclasses.getSize());
+			std::cout << "test acc.: " << accTest << std::endl;
+			delete myTest;
+
+			if ((i > 0) && (oldAcc < accTest))
+			{
+				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+				break;
+			}
+
+			oldAcc = accTest;
     	}
-    	delete myTest;
     }
 
     execTime = myStopwatch->stop();
@@ -261,8 +288,8 @@ void adaptClassificationTestSP(bool isRegression)
 
 	// Create Grid
 	sg::Grid* myGrid;
-
 	myGrid = new sg::LinearGrid(nDim);
+
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(LEVELS);
@@ -297,6 +324,9 @@ void adaptClassificationTestSP(bool isRegression)
     convertDataVectorToDataVectorSP(result, resultSP);
     convertDataVectorToDataVectorSP(alpha, alphaSP);
 
+    // Variable to save MSE/Acc from former iteration
+    double oldAcc = 0.0;
+
     // Generate CG to solve System
     sg::ConjugateGradientsSP* myCG = new sg::ConjugateGradientsSP(CG_IMAX, CG_EPS);
 
@@ -317,7 +347,7 @@ void adaptClassificationTestSP(bool isRegression)
     myStopwatch->start();
     for (size_t i = 0; i < REFINEMENTS+1; i++)
     {
-    	std::cout << "Doing refinement :" << i << std::endl;
+    	std::cout << std::endl << "Doing refinement :" << i << std::endl;
 
     	// Do Refinements
     	if (i > 0)
@@ -346,18 +376,42 @@ void adaptClassificationTestSP(bool isRegression)
 
     	// Do tests on test data
     	convertDataVectorSPToDataVector(alphaSP, alpha);
-    	sg::OperationTest* myTest = myGrid->createOperationTest();
     	if (isRegression)
     	{
-			double mse = myTest->testMSE(alpha, testData, testclasses);
-			std::cout << "MSE: " << mse << std::endl;
+    		sg::OperationTest* myTest = myGrid->createOperationTest();
+			double mse = myTest->testMSE(alpha, data, classes);
+			std::cout << "MSE (train): " << mse << std::endl;
+			double mseTest = myTest->testMSE(alpha, testData, testclasses);
+			std::cout << "MSE (test): " << mseTest << std::endl;
+			delete myTest;
+
+			if ((i > 0) && (oldAcc < mseTest))
+			{
+				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+				break;
+			}
+
+			oldAcc = mseTest;
     	}
     	else
     	{
-			double correct = myTest->test(alpha, testData, testclasses);
-			std::cout << "Final test acc.: " << correct/static_cast<double>(testclasses.getSize()) << std::endl;
+    		sg::OperationTest* myTest = myGrid->createOperationTest();
+			double acc = myTest->test(alpha, data, classes);
+			acc /= static_cast<double>(classes.getSize());
+			std::cout << "train acc.: " << acc << std::endl;
+			double accTest = myTest->test(alpha, testData, testclasses);
+			accTest /= static_cast<double>(testclasses.getSize());
+			std::cout << "test acc.: " << accTest << std::endl;
+			delete myTest;
+
+			if ((i > 0) && (oldAcc < accTest))
+			{
+				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+				break;
+			}
+
+			oldAcc = accTest;
     	}
-    	delete myTest;
     }
 
     execTime = myStopwatch->stop();
