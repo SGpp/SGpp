@@ -36,6 +36,7 @@ public:
 	virtual ~OperationTestLinearBoundary() {}
 
 	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes);
+	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues);
 	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers);
 
 protected:

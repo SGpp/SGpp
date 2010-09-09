@@ -28,7 +28,7 @@ namespace sg {
  * @param basis reference to class that implements to current basis
  * @param alpha the coefficients of the grid points
  * @param data the data the should be tested
- * @param classes the classes computed by the sparse grid's classification algorithm
+ * @param classes the reference classes
  */
 template<class BASIS>
 double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& classes)
@@ -105,13 +105,89 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 }
 
 /**
+ * Returns the MSE for given functions values at the evaluation points
+ *
+ * @param storage GridStorage object that contains the grid points
+ * @param basis reference to class that implements to current basis
+ * @param alpha the coefficients of the grid points
+ * @param data the data the should be tested
+ * @param refValues the function values at the evaluation points
+ */
+template<class BASIS>
+double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& refValues)
+{
+	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+	DataVector result(alpha.getSize());
+
+	double mse = 0;
+
+#ifdef USEOMP
+	#pragma omp parallel shared(correct)
+	{
+		size_t size = data.getNrows();
+		std::vector<double> point;
+		GetAffectedBasisFunctions<BASIS> ga(storage);
+
+		#pragma omp for schedule(static)
+		for(size_t i = 0; i < size; i++)
+		{
+
+			IndexValVector vec;
+			double res = 0;
+
+			data.getRow(i, point);
+
+			ga(basis, point, vec);
+
+			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+			{
+				res += iter->second * alpha[iter->first];
+			}
+
+			result.set(i, res);
+		}
+	}
+#else
+	size_t size = data.getNrows();
+	std::vector<double> point;
+	GetAffectedBasisFunctions<BASIS> ga(storage);
+
+	for(size_t i = 0; i < size; i++)
+	{
+
+		IndexValVector vec;
+		double res = 0;
+
+		data.getRow(i, point);
+
+		ga(basis, point, vec);
+
+		for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
+		{
+			res += iter->second * alpha[iter->first];
+		}
+
+		result.set(i, res);
+	}
+#endif
+
+	result.sub(refValues);
+	result.sqr();
+
+	mse = result.sum();
+	mse = sqrt(mse);
+
+	return mse;
+}
+
+/**
  * Returns the number of correctly classified instances in data without boundaries
  *
  * @param storage GridStorage object that contains the grid points
  * @param basis reference to class that implements to current basis
  * @param alpha the coefficients of the grid points
  * @param data the data the should be tested
- * @param classes the classes computed by the sparse grid's classification algorithm
+ * @param classes the reference classes
  * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
  */
 template<class BASIS>

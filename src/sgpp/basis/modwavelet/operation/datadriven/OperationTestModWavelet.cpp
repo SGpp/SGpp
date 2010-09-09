@@ -23,6 +23,12 @@ double OperationTestModWavelet::test(DataVector& alpha, DataMatrix& data, DataVe
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
+double OperationTestModWavelet::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+{
+	modified_wavelet_base<unsigned int, unsigned int> base;
+	return test_dataset_mse(this->storage, base, alpha, data, refValues);
+}
+
 double OperationTestModWavelet::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
 {
 	modified_wavelet_base<unsigned int, unsigned int> base;
