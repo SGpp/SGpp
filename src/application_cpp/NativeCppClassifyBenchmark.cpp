@@ -102,6 +102,38 @@ void convertDataVectorSPToDataVector(DataVectorSP& src, DataVector& dest)
 	}
 }
 
+void printSettings()
+{
+	std::cout << std::endl;
+	std::cout << "Train dataset: " << DATAFILE << std::endl;
+	std::cout << "Test dataset: " << TESTFILE << std::endl;
+	std::cout << "Startlevel: " << LEVELS << std::endl << std::endl;
+
+	std::cout << "Num. Refinements: " << REFINEMENTS << std::endl;
+	std::cout << "Refine Threshold: " << REFINE_THRESHOLD << std::endl;
+	std::cout << "Refine number points: " << REFINE_NUM_POINTS << std::endl << std::endl;
+
+	std::cout << "Max. CG Iterations: " << CG_IMAX << std::endl;
+	std::cout << "CG epsilon: " << CG_EPS << std::endl << std::endl;
+
+	std::cout << "Lambda: " << LAMBDA << std::endl;
+
+#ifdef USE_SSE
+	std::cout << "Vectorized: SSE" << std::endl << std::endl;
+#endif
+#ifdef USE_AVX
+	std::cout << "Vectorized: AVX" << std::endl << std::endl;
+#endif
+
+#ifdef EXEC_REGRESSION
+	std::cout << "Mode: Regression" << std::endl;
+#else
+	std::cout << "Mode: Classification" << std::endl;
+#endif
+
+	std::cout << std::endl;
+}
+
 void adaptClassificationTest(bool isRegression)
 {
     std::cout << std::endl;
@@ -113,7 +145,9 @@ void adaptClassificationTest(bool isRegression)
 #endif
     std::cout << "===============================================================" << std::endl << std::endl;
 
-	double execTime = 0.0;
+    printSettings();
+
+    double execTime = 0.0;
 	sg::ARFFTools ARFFTool;
 	std::string tfileTrain = DATAFILE;
 	std::string tfileTest = TESTFILE;
@@ -276,6 +310,8 @@ void adaptClassificationTestSP(bool isRegression)
     std::cout << "===============================================================" << std::endl;
     std::cout << "Classification Test App (Single Precision)" << std::endl;
     std::cout << "===============================================================" << std::endl << std::endl;
+
+    printSettings();
 
 	double execTime = 0.0;
 	sg::ARFFTools ARFFTool;
