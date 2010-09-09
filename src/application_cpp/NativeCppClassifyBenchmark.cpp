@@ -8,8 +8,7 @@
 #include "sgpp.hpp"
 #include "data/DataVectorSP.hpp"
 #include "data/DataMatrixSP.hpp"
-#include "algorithm/datadriven/DMSystemMatrixSPSSEIdentity.hpp"
-#include "algorithm/datadriven/DMSystemMatrixSPAVXIdentity.hpp"
+#include "algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.hpp"
 #include "solver/sle/ConjugateGradientsSP.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
 
@@ -49,7 +48,7 @@
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
-//#define USEFLOAT
+#define USEFLOAT
 
 // define this if you want to execute a regression
 #define EXEC_REGRESSION
@@ -189,10 +188,10 @@ void adaptClassificationTest(bool isRegression)
     sg::ConjugateGradients* myCG = new sg::ConjugateGradients(CG_IMAX, CG_EPS);
 #if defined(USE_SSE) || defined(USE_AVX)
 #ifdef USE_SSE
-    sg::DMSystemMatrixSSEIdentity* mySystem = new sg::DMSystemMatrixSSEIdentity(*myGrid, data, LAMBDA);
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "SSE");
 #endif
 #ifdef USE_AVX
-    sg::DMSystemMatrixAVXIdentity* mySystem = new sg::DMSystemMatrixAVXIdentity(*myGrid, data, LAMBDA);
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "AVX");
 #endif
 #else
     sg::OperationMatrix* myC = myGrid->createOperationIdentity();
@@ -368,13 +367,13 @@ void adaptClassificationTestSP(bool isRegression)
 
 #if defined(USE_SSE) || defined(USE_AVX)
 #ifdef USE_SSE
-    sg::DMSystemMatrixSPSSEIdentity* mySystem = new sg::DMSystemMatrixSPSSEIdentity(*myGrid, dataSP, LAMBDA);
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "SSE");
 #endif
 #ifdef USE_AVX
-    sg::DMSystemMatrixSPAVXIdentity* mySystem = new sg::DMSystemMatrixSPAVXIdentity(*myGrid, dataSP, LAMBDA);
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "AVX");
 #endif
 #else
-    sg::DMSystemMatrixSPSSEIdentity* mySystem = new sg::DMSystemMatrixSPSSEIdentity(*myGrid, dataSP, LAMBDA);
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "SSE");
 #endif
 
     std::cout << "Starting Learning...." << std::endl;
