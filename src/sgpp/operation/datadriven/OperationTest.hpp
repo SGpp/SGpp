@@ -43,9 +43,21 @@ public:
 	 *
 	 * @param alpha the coefficients of the sparse grid's base functions
 	 * @param data the coordinates of the evaluation points
-	 * @param classes DataVector the holds the class information
+	 * @param classes DataVector holding the class information
 	 */
 	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes) = 0;
+
+	/**
+	 * Computes the regression accuracy on some test data.
+	 *
+	 * The function is evaluated at the given points. Calculates the MSE between
+	 * between the given values and the values evaluated on the sparse grid.
+	 *
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param data the coordinates of the evaluation points
+	 * @param refValues DataVector holding the reference function values
+	 */
+	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues) = 0;
 
 	/**
 	 * Computes the classification accuracy on some test data.

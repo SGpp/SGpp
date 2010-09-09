@@ -22,6 +22,12 @@ double OperationTestLinear::test(DataVector& alpha, DataMatrix& data, DataVector
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
+double OperationTestLinear::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+{
+	linear_base<unsigned int, unsigned int> base;
+	return test_dataset_mse(this->storage, base, alpha, data, refValues);
+}
+
 double OperationTestLinear::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
 {
 	linear_base<unsigned int, unsigned int> base;

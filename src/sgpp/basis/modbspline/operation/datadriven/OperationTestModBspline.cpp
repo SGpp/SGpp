@@ -22,6 +22,11 @@ double OperationTestModBspline::test(DataVector& alpha, DataMatrix& data, DataVe
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
+double OperationTestModBspline::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+{
+	return test_dataset_mse(this->storage, base, alpha, data, refValues);
+}
+
 double OperationTestModBspline::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
 {
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

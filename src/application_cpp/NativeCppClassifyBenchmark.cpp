@@ -39,9 +39,6 @@
 // regularization fector
 #define LAMBDA 0.00001
 
-// tests learned grid with test data
-#define TESTRESULT
-
 // print grid in gnuplot readable format (1D and 2D only)
 #define GNUPLOT
 #define GRDIRESOLUTION 50
@@ -53,6 +50,9 @@
 // define if you want to use single precision floats (may deliver speed-up of 2 or great),
 // BUT: CG method may not converge because of bad system matrix condition.
 //#define USEFLOAT
+
+// define this if you want to execute a regression
+//#define EXEC_REGRESSION
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
@@ -102,7 +102,7 @@ void convertDataVectorSPToDataVector(DataVectorSP& src, DataVector& dest)
 	}
 }
 
-void adaptClassificationTest()
+void adaptClassificationTest(bool isRegression)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -194,13 +194,19 @@ void adaptClassificationTest()
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
-#ifdef TESTRESULT
-    	// Do tests on test data
-        sg::OperationTest* myTest = myGrid->createOperationTest();
-        double correct = myTest->test(alpha, testData, testclasses);
-        std::cout << "Final test acc.: " << correct/static_cast<double>(testclasses.getSize()) << std::endl;
-        delete myTest;
-#endif
+		// Do tests on test data
+		sg::OperationTest* myTest = myGrid->createOperationTest();
+    	if (isRegression)
+    	{
+			double mse = myTest->testMSE(alpha, testData, testclasses);
+			std::cout << "MSE: " << mse << std::endl;
+    	}
+    	else
+    	{
+			double correct = myTest->test(alpha, testData, testclasses);
+			std::cout << "Final test acc.: " << correct/static_cast<double>(testclasses.getSize()) << std::endl;
+    	}
+    	delete myTest;
     }
 
     execTime = myStopwatch->stop();
@@ -237,7 +243,7 @@ void adaptClassificationTest()
 }
 
 
-void adaptClassificationTestSP()
+void adaptClassificationTestSP(bool isRegression)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -338,14 +344,20 @@ void adaptClassificationTestSP()
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
-#ifdef TESTRESULT
     	// Do tests on test data
     	convertDataVectorSPToDataVector(alphaSP, alpha);
-        sg::OperationTest* myTest = myGrid->createOperationTest();
-        double correct = myTest->test(alpha, testData, testclasses);
-        std::cout << "Final test acc.: " << correct/static_cast<double>(testclasses.getSize()) << std::endl;
-        delete myTest;
-#endif
+    	sg::OperationTest* myTest = myGrid->createOperationTest();
+    	if (isRegression)
+    	{
+			double mse = myTest->testMSE(alpha, testData, testclasses);
+			std::cout << "MSE: " << mse << std::endl;
+    	}
+    	else
+    	{
+			double correct = myTest->test(alpha, testData, testclasses);
+			std::cout << "Final test acc.: " << correct/static_cast<double>(testclasses.getSize()) << std::endl;
+    	}
+    	delete myTest;
     }
 
     execTime = myStopwatch->stop();
@@ -381,9 +393,17 @@ void adaptClassificationTestSP()
 int main(int argc, char *argv[])
 {
 #ifdef USEFLOAT
-	adaptClassificationTestSP();
+#ifdef EXEC_REGRESSION
+	adaptClassificationTestSP(true);
 #else
-	adaptClassificationTest();
+	adaptClassificationTestSP(false);
+#endif
+#else
+#ifdef EXEC_REGRESSION
+	adaptClassificationTest(true);
+#else
+	adaptClassificationTest(false);
+#endif
 #endif
 	return 0;
 }

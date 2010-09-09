@@ -22,6 +22,11 @@ double OperationTestModPoly::test(DataVector& alpha, DataMatrix& data, DataVecto
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
+double OperationTestModPoly::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+{
+	return test_dataset_mse(this->storage, base, alpha, data, refValues);
+}
+
 double OperationTestModPoly::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
 {
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

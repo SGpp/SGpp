@@ -22,6 +22,12 @@ double OperationTestLinearBoundary::test(DataVector& alpha, DataMatrix& data, Da
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
+double OperationTestLinearBoundary::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+{
+	linearboundaryBase<unsigned int, unsigned int> base;
+	return test_dataset_mse(this->storage, base, alpha, data, refValues);
+}
+
 double OperationTestLinearBoundary::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
