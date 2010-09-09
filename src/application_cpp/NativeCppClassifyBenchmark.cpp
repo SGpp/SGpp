@@ -34,10 +34,10 @@
 
 // solving settings
 #define CG_IMAX 10000
-#define CG_EPS 0.00001
+#define CG_EPS 0.0001
 
 // regularization fector
-#define LAMBDA 0.00001
+#define LAMBDA 0.0001
 
 // print grid in gnuplot readable format (1D and 2D only)
 #define GNUPLOT
@@ -47,7 +47,7 @@
 #define USE_SSE
 //#define USE_AVX
 
-// define if you want to use single precision floats (may deliver speed-up of 2 or great),
+// define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
 //#define USEFLOAT
 
