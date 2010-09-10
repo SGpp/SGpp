@@ -19,17 +19,19 @@
 //#define DATAFILE "twospirals.wieland.arff"
 //#define DATAFILE "liver-disorders_normalized.arff"
 //#define DATAFILE "ripleyGarcke.train.arff"
-#define DATAFILE "chess_02D_tr.dat.arff"
+//#define DATAFILE "chess_02D_tr.dat.arff"
+#define DATAFILE "chess_05D_tr.dat.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define TESTFILE "twospirals.wieland.arff"
 //#define TESTFILE "liver-disorders_normalized.arff"
 //#define TESTFILE "ripleyGarcke.test.arff"
-#define TESTFILE "chess_02D_te.dat.arff"
+//#define TESTFILE "chess_02D_te.dat.arff"
+#define TESTFILE "chess_05D_te.dat.arff"
 
 // grid generation settings
 #define LEVELS 1
-#define REFINEMENTS 10
+#define REFINEMENTS 4
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
 
@@ -50,7 +52,7 @@
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
-//#define USEFLOAT
+#define USEFLOAT
 
 // define this if you want to execute a regression
 //#define EXEC_REGRESSION
