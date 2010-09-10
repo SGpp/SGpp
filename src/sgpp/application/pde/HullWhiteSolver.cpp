@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Chao qi (qic@in.tum.de)
 
 #include "algorithm/pde/HullWhiteODESolverSystem.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
@@ -83,11 +83,7 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-//#ifdef USEOMPTHREE
-//		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-//#else
 		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-//#endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -126,11 +122,7 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-//#ifdef USEOMPTHREE
-//		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-//#else
 		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul",  this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-//#endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -236,17 +228,6 @@ void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::
 			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 			std::stringstream coordsStream(coords);
 	        coordsStream >> tmp;
-           /* double	dblFuncValues= exp((0.04*(t-T)) + 0.04*(1-exp(-a*(T-t)))/a - 1/(4*pow(a,3)) * pow(sigma,2)*pow((exp(-a*T)-exp(-a*t)),2)*(exp(2*a*t)-1)- tmp/a * (1-exp(-a*(T-t))));
-
-
-			if (payoffType == "std_euro_call")
-			{
-				alpha[i] = std::max<double>((dblFuncValues-strike), 0.0);
-			}
-			else if (payoffType == "std_euro_put")
-			{
-				alpha[i] = std::max<double>(strike-dblFuncValues, 0.0);
-			}*/
 	        double* dblFuncValues = new double[1];
 
 	        			for (size_t j = 0; j < 1; j++)

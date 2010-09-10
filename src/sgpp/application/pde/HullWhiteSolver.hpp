@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Chao qi (qic@in.tum.de)
 
 #ifndef HULLWHITESOLVER_HPP
 #define HULLWHITESOLVER_HPP
@@ -15,9 +15,6 @@
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/common/BoundingBox.hpp"
-
-//#include "tools/common/StdNormalDistribution.hpp"
-
 #include "application/common/ScreenOutput.hpp"
 
 #include <iostream>
@@ -44,11 +41,11 @@ namespace sg
 class HullWhiteSolver : public ParabolicPDESolver
 {
 private:
-	///
+	///  the theta value
 	double theta;
-	/// the standard deviations
+	/// the sigma value
 	double sigma;
-	///
+	/// the a value
 	double a;
 	/// the current time
 	//double t;
@@ -89,47 +86,6 @@ public:
 
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
-	/**
-	 * This function tries to refine the grid such that
-	 * most of the grid points are used for interpolation of the singularity. So this grid
-	 * is able to approximate the start solution better.
-	 *
-	 * After refining the grid the payoff function is applied to the grid.
-	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param strike containing the option's strike
-	 * @param payoffType the type of payoff Function used ONLY supported: avgM
-	 * @param dRateDistance the max. distance from "at the money" a point is allowed to have in order to get refined
-	 */
-//	void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dRateDistance);
-
-	/**
-	 * This function tries to refine the grid such that
-	 * most of the grid points are used for interpolation of the singularity. So this grid
-	 * is able to approximate the start solution better. Refining is done only if the max
-	 * refinement level hasn't be reached.
-	 *
-	 * After refining the grid the payoff function is applied to the grid.
-	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param strike containing the option's strike
-	 * @param payoffType the type of payoff Function used ONLY supported: avgM
-	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
-	 * @param maxLevel maximum level of refinement
-	 */
-
-//	void refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
-
-	/**
-	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
-	 * some statistical data about the underlying (assets' weight, standard deviation
-	 * and the correlation between them). This function allows you to set this data.
-	 *
-	 * @param mus a DataVector that contains the underlyings' weight
-	 * @param sigmas a DataVector that contains the underlyings' standard deviations
-	 * @param rhos a DataVector that contains the correlations between the underlyings
-	 * @param r the riskfree rate used in the market model
-	 */
 	void setStochasticData(double theta, double sigma, double a);
 
 
@@ -173,6 +129,10 @@ public:
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 * @param sigma the sigma value in HullWhite model
+	 * @param a the value of a in HullWhite model
+	 * @param t the current time
+	 * @param T the maturity time
 	 */
 	void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType,double sigma, double a, double t, double T);
 
