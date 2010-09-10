@@ -12,6 +12,10 @@
 
 // Include all operations on the linear boundary grid
 #include "basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.hpp"
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
@@ -83,12 +87,34 @@ OperationB* LinearTrapezoidBoundaryGrid::createOperationB()
 
 OperationBVectorized* LinearTrapezoidBoundaryGrid::createOperationBVectorized(const std::string& VecType)
 {
-	throw factory_exception("Unsupported operation");
+	if (VecType == "SSE")
+	{
+		return new OperationBIterativeSSELinear(this->storage);
+	}
+	else if (VecType == "AVX")
+	{
+		return new OperationBIterativeAVXLinear(this->storage);
+	}
+	else
+	{
+		throw factory_exception("Unsupported vectorization type");
+	}
 }
 
 OperationBVectorizedSP* LinearTrapezoidBoundaryGrid::createOperationBVectorizedSP(const std::string& VecType)
 {
-	throw factory_exception("Unsupported operation");
+	if (VecType == "SSE")
+	{
+		return new OperationBIterativeSPSSELinear(this->storage);
+	}
+	else if (VecType == "AVX")
+	{
+		return new OperationBIterativeSPAVXLinear(this->storage);
+	}
+	else
+	{
+		throw factory_exception("Unsupported vectorization type");
+	}
 }
 
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
