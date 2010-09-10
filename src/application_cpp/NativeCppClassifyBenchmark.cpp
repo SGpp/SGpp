@@ -47,12 +47,12 @@
 #define GRDIRESOLUTION 50
 
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
-#define USE_SSE
+//#define USE_SSE
 //#define USE_AVX
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
-#define USEFLOAT
+//#define USEFLOAT
 
 // define this if you want to execute a regression
 //#define EXEC_REGRESSION
@@ -302,9 +302,6 @@ void adaptClassificationTest(bool isRegression)
     printSettings();
 #if defined(USE_SSE) || defined(USE_AVX)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
-#else
-    std::cout << "Needed time: " << execTime << " seconds (Double Precision, recursive)" << std::endl;
-#endif
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
     mySystem->getTimers(completeMult, computeMult, completeMultTrans, computeMultTrans);
@@ -312,6 +309,9 @@ void adaptClassificationTest(bool isRegression)
     std::cout << "         mult (compute) : " << computeMult << " seconds" << std::endl;
     std::cout << "  mult trans. (complete): " << completeMultTrans << " seconds" << std::endl;
     std::cout << "  mult trans. (compute) : " << computeMultTrans << " seconds" << std::endl;
+#else
+    std::cout << "Needed time: " << execTime << " seconds (Double Precision, recursive)" << std::endl;
+#endif
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
