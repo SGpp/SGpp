@@ -19,15 +19,17 @@
 //#define DATAFILE "twospirals.wieland.arff"
 //#define DATAFILE "liver-disorders_normalized.arff"
 //#define DATAFILE "ripleyGarcke.train.arff"
+//#define DATAFILE "chess_02D_tr.dat.arff"
 
 #define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define TESTFILE "twospirals.wieland.arff"
 //#define TESTFILE "liver-disorders_normalized.arff"
 //#define TESTFILE "ripleyGarcke.test.arff"
+//#define TESTFILE "chess_02D_te.dat.arff"
 
 // grid generation settings
 #define LEVELS 3
-#define REFINEMENTS 3
+#define REFINEMENTS 10
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
 
@@ -48,10 +50,13 @@
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
-#define USEFLOAT
+//#define USEFLOAT
 
 // define this if you want to execute a regression
-#define EXEC_REGRESSION
+//#define EXEC_REGRESSION
+
+// define this if you want to use grids with Neumann boundaries.
+//#define USE_BOUNDARIES
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
@@ -125,12 +130,16 @@ void printSettings()
 #endif
 
 #ifdef EXEC_REGRESSION
-	std::cout << "Mode: Regression" << std::endl;
+	std::cout << "Mode: Regression" << std::endl << std::endl;
 #else
-	std::cout << "Mode: Classification" << std::endl;
+	std::cout << "Mode: Classification" << std::endl << std::endl;
 #endif
 
-	std::cout << std::endl;
+#ifdef USE_BOUNDARIES
+	std::cout << "Boundary-Mode: Neumann" << std::endl << std::endl;
+#else
+	std::cout << "Boundary-Mode: Dirichlet-0" << std::endl << std::endl;
+#endif
 }
 
 void adaptClassificationTest(bool isRegression)
@@ -157,7 +166,11 @@ void adaptClassificationTest(bool isRegression)
 
 	// Create Grid
 	sg::Grid* myGrid;
+#ifdef USE_BOUNDARIES
+	myGrid = new sg::LinearTrapezoidBoundaryGrid(nDim);
+#else
 	myGrid = new sg::LinearGrid(nDim);
+#endif
 
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
@@ -240,7 +253,7 @@ void adaptClassificationTest(bool isRegression)
 			std::cout << "MSE (test): " << mseTest << std::endl;
 			delete myTest;
 
-			if ((i > 0) && (oldAcc < mseTest))
+			if (((i > 0) && (oldAcc <= mseTest)) || mseTest == 0.0)
 			{
 				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 				break;
@@ -259,7 +272,7 @@ void adaptClassificationTest(bool isRegression)
 			std::cout << "test acc.: " << accTest << std::endl;
 			delete myTest;
 
-			if ((i > 0) && (oldAcc < accTest))
+			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
 				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 				break;
@@ -323,7 +336,11 @@ void adaptClassificationTestSP(bool isRegression)
 
 	// Create Grid
 	sg::Grid* myGrid;
+#ifdef USE_BOUNDARIES
+	myGrid = new sg::LinearTrapezoidBoundaryGrid(nDim);
+#else
 	myGrid = new sg::LinearGrid(nDim);
+#endif
 
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
@@ -420,7 +437,7 @@ void adaptClassificationTestSP(bool isRegression)
 			std::cout << "MSE (test): " << mseTest << std::endl;
 			delete myTest;
 
-			if ((i > 0) && (oldAcc < mseTest))
+			if (((i > 0) && (oldAcc <= mseTest)) || mseTest == 0.0)
 			{
 				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 				break;
@@ -439,7 +456,7 @@ void adaptClassificationTestSP(bool isRegression)
 			std::cout << "test acc.: " << accTest << std::endl;
 			delete myTest;
 
-			if ((i > 0) && (oldAcc < accTest))
+			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
 				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 				break;
