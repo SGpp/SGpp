@@ -19,6 +19,8 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseG
 		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX are supported vector extensions!");
 	}
 
+	resetTimers();
+
 	// create the operations needed in ApplyMatrix
 	this->vecMode = vecMode;
 	this->lamb = lambda;
@@ -56,12 +58,15 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseG
 		}
 	}
 	data->transpose();
+
+	this->myTimer = new SGppStopwatch();
 }
 
 DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity()
 {
 	delete this->B;
 	delete this->data;
+	delete this->myTimer;
 }
 
 void DMSystemMatrixVectorizedIdentity::mult(DataVector& alpha, DataVector& result)
@@ -69,7 +74,9 @@ void DMSystemMatrixVectorizedIdentity::mult(DataVector& alpha, DataVector& resul
 	DataVector temp((*data).getNcols());
 
     // Operation B
-    this->B->multTransposeVectorized(alpha, (*data), temp);
+	this->myTimer->start();
+	this->computeTimeMultTrans += this->B->multTransposeVectorized(alpha, (*data), temp);
+    this->completeTimeMultTrans += this->myTimer->stop();
     // patch result -> set additional entries zero
     if (numTrainingInstances != temp.getSize())
     {
@@ -78,7 +85,9 @@ void DMSystemMatrixVectorizedIdentity::mult(DataVector& alpha, DataVector& resul
     		temp.set(temp.getSize()-(i+1), 0.0);
     	}
     }
-    this->B->multVectorized(temp, (*data), result);
+    this->myTimer->start();
+    this->computeTimeMult += this->B->multVectorized(temp, (*data), result);
+    this->completeTimeMult += this->myTimer->stop();
 
     result.axpy(numTrainingInstances*this->lamb, alpha);
 }
@@ -93,12 +102,30 @@ void DMSystemMatrixVectorizedIdentity::generateb(DataVector& classes, DataVector
 	{
 		myClasses.resizeZero(numCols);
 	}
-	this->B->multVectorized(myClasses, (*data), b);
+	this->myTimer->start();
+	this->computeTimeMult += this->B->multVectorized(myClasses, (*data), b);
+	this->completeTimeMult += this->myTimer->stop();
 }
 
 void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex()
 {
 	this->B->rebuildLevelAndIndex();
+}
+
+void DMSystemMatrixVectorizedIdentity::resetTimers()
+{
+	this->completeTimeMult = 0.0;
+	this->computeTimeMult = 0.0;
+	this->completeTimeMultTrans = 0.0;
+	this->computeTimeMultTrans = 0.0;
+}
+
+void DMSystemMatrixVectorizedIdentity::getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans)
+{
+	timeMult = this->completeTimeMult;
+	computeMult = this->computeTimeMult;
+	timeMultTrans = this->completeTimeMultTrans;
+	computeMultTrans = this->computeTimeMultTrans;
 }
 
 }

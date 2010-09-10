@@ -15,20 +15,20 @@
 #include <string>
 #include <iostream>
 
-#define DATAFILE "DR5_nowarnings_less05_train.arff"
+//#define DATAFILE "DR5_nowarnings_less05_train.arff"
 //#define DATAFILE "twospirals.wieland.arff"
 //#define DATAFILE "liver-disorders_normalized.arff"
 //#define DATAFILE "ripleyGarcke.train.arff"
-//#define DATAFILE "chess_02D_tr.dat.arff"
+#define DATAFILE "chess_02D_tr.dat.arff"
 
-#define TESTFILE "DR5_nowarnings_less05_test.arff"
+//#define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define TESTFILE "twospirals.wieland.arff"
 //#define TESTFILE "liver-disorders_normalized.arff"
 //#define TESTFILE "ripleyGarcke.test.arff"
-//#define TESTFILE "chess_02D_te.dat.arff"
+#define TESTFILE "chess_02D_te.dat.arff"
 
 // grid generation settings
-#define LEVELS 3
+#define LEVELS 1
 #define REFINEMENTS 10
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
@@ -56,7 +56,7 @@
 //#define EXEC_REGRESSION
 
 // define this if you want to use grids with Neumann boundaries.
-//#define USE_BOUNDARIES
+#define USE_BOUNDARIES
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
@@ -297,11 +297,19 @@ void adaptClassificationTest(bool isRegression)
 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
+    printSettings();
 #if defined(USE_SSE) || defined(USE_AVX)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
 #else
     std::cout << "Needed time: " << execTime << " seconds (Double Precision, recursive)" << std::endl;
 #endif
+    std::cout << std::endl << "Timing Details:" << std::endl;
+    double computeMult, completeMult, computeMultTrans, completeMultTrans;
+    mySystem->getTimers(completeMult, computeMult, completeMultTrans, computeMultTrans);
+    std::cout << "         mult (complete): " << completeMult << " seconds" << std::endl;
+    std::cout << "         mult (compute) : " << computeMult << " seconds" << std::endl;
+    std::cout << "  mult trans. (complete): " << completeMultTrans << " seconds" << std::endl;
+    std::cout << "  mult trans. (compute) : " << computeMultTrans << " seconds" << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
@@ -483,7 +491,15 @@ void adaptClassificationTestSP(bool isRegression)
 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
+    printSettings();
     std::cout << "Needed time: " << execTime << " seconds (Single Precision)" << std::endl;
+    std::cout << std::endl << "Timing Details:" << std::endl;
+    double computeMult, completeMult, computeMultTrans, completeMultTrans;
+    mySystem->getTimers(completeMult, computeMult, completeMultTrans, computeMultTrans);
+    std::cout << "         mult (complete): " << completeMult << " seconds" << std::endl;
+    std::cout << "         mult (compute) : " << computeMult << " seconds" << std::endl;
+    std::cout << "  mult trans. (complete): " << completeMultTrans << " seconds" << std::endl;
+    std::cout << "  mult trans. (compute) : " << computeMultTrans << " seconds" << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 

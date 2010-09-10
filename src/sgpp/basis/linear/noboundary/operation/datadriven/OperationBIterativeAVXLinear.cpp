@@ -52,12 +52,15 @@ OperationBIterativeAVXLinear::OperationBIterativeAVXLinear(GridStorage* storage)
 	Index = new DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*Level, *Index);
+
+	myTimer = new SGppStopwatch();
 }
 
 OperationBIterativeAVXLinear::~OperationBIterativeAVXLinear()
 {
 	delete Level;
 	delete Index;
+	delete myTimer;
 }
 
 void OperationBIterativeAVXLinear::rebuildLevelAndIndex()
@@ -71,7 +74,7 @@ void OperationBIterativeAVXLinear::rebuildLevelAndIndex()
 	storage->getLevelIndexArraysForEval(*Level, *Index);
 }
 
-void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
+double OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	size_t source_size = alpha.getSize();
     size_t dims = storage->dim();
@@ -84,8 +87,9 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
     if (data.getNcols() % 4 != 0 || source_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
-    	return;
     }
+
+    myTimer->start();
 
     result.setAll(0.0);
 
@@ -265,9 +269,11 @@ void OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatrix&
 		}
 	}
 #endif
+
+	return myTimer->stop();
 }
 
-void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
+double OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -281,8 +287,9 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
     if (data.getNcols() % 4 != 0 || result_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
-    	return;
     }
+
+    myTimer->start();
 
 #ifdef USEOMP
     #pragma omp parallel
@@ -465,6 +472,8 @@ void OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, Da
 #ifdef USEOMP
 	}
 #endif
+
+	return myTimer->stop();
 }
 
 }

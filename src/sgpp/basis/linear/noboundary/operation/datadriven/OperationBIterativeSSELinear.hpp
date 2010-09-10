@@ -10,6 +10,7 @@
 
 #include "operation/datadriven/OperationBVectorized.hpp"
 #include "grid/GridStorage.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 namespace sg
 {
@@ -46,9 +47,9 @@ public:
 	 */
 	virtual ~OperationBIterativeSSELinear();
 
-	virtual void multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result);
+	virtual double multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result);
 
-	virtual void multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result);
+	virtual double multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result);
 
 	virtual void rebuildLevelAndIndex();
 
@@ -59,6 +60,8 @@ protected:
 	DataMatrix* Level;
 	/// DataMatrix that contains the indices of all grid points
 	DataMatrix* Index;
+	/// Timer object to handle time measurements
+	SGppStopwatch* myTimer;
 };
 
 }
