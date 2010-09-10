@@ -48,8 +48,10 @@ public:
 	 * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
 	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
+	 *
+	 * @return time needed to execute call
 	 */
-	virtual void multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual double multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
 
 	/**
 	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
@@ -62,8 +64,10 @@ public:
 	 * @param alpha vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
 	 * @param data vector, providing the data points x row-wise
 	 * @param result the result vector of the matrix vector multiplication
+	 *
+	 * @return time needed to execute call
 	 */
-	virtual void multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual double multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
 
 	/**
 	 * rebuilds the DataMatrix for Level and Index in Derivatives

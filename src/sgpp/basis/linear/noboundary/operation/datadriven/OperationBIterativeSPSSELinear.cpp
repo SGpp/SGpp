@@ -46,12 +46,15 @@ OperationBIterativeSPSSELinear::OperationBIterativeSPSSELinear(GridStorage* stor
 	Index = new DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*Level, *Index);
+
+	myTimer = new SGppStopwatch();
 }
 
 OperationBIterativeSPSSELinear::~OperationBIterativeSPSSELinear()
 {
 	delete Level;
 	delete Index;
+	delete myTimer;
 }
 
 void OperationBIterativeSPSSELinear::rebuildLevelAndIndex()
@@ -65,7 +68,7 @@ void OperationBIterativeSPSSELinear::rebuildLevelAndIndex()
 	storage->getLevelIndexArraysForEval(*Level, *Index);
 }
 
-void OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)
+double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)
 {
 	size_t source_size = alpha.getSize();
     size_t dims = storage->dim();
@@ -78,8 +81,9 @@ void OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataMat
     if (data.getNcols() % 4 != 0 || source_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
-    	return;
     }
+
+    myTimer->start();
 
     result.setAll(0.0);
 
@@ -259,9 +263,11 @@ void OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataMat
 		}
 	}
 #endif
+
+	return myTimer->stop();
 }
 
-void OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)
+double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -275,8 +281,9 @@ void OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alpha
     if (data.getNcols() % 4 != 0 || result_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
-    	return;
     }
+
+    myTimer->start();
 
 #ifdef USEOMP
     #pragma omp parallel
@@ -459,6 +466,8 @@ void OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alpha
 #ifdef USEOMP
 	}
 #endif
+
+	return myTimer->stop();
 }
 
 }

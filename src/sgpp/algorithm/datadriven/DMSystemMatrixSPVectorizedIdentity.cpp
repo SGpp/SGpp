@@ -56,12 +56,15 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 		}
 	}
 	data->transpose();
+
+	this->myTimer = new SGppStopwatch();
 }
 
 DMSystemMatrixSPVectorizedIdentity::~DMSystemMatrixSPVectorizedIdentity()
 {
 	delete this->B;
 	delete this->data;
+	delete this->myTimer;
 }
 
 void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP& result)
@@ -69,7 +72,9 @@ void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP&
 	DataVectorSP temp((*data).getNcols());
 
     // Operation B
-    this->B->multTransposeVectorized(alpha, (*data), temp);
+	this->myTimer->start();
+	this->computeTimeMultTrans += this->B->multTransposeVectorized(alpha, (*data), temp);
+    this->completeTimeMultTrans += this->myTimer->stop();
     // patch result -> set additional entries zero
     if (numTrainingInstances != temp.getSize())
     {
@@ -78,7 +83,9 @@ void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP&
     		temp.set(temp.getSize()-(i+1), 0.0);
     	}
     }
-    this->B->multVectorized(temp, (*data), result);
+    this->myTimer->start();
+    this->computeTimeMult += this->B->multVectorized(temp, (*data), result);
+    this->completeTimeMult += this->myTimer->stop();
 
     result.axpy(numTrainingInstances*this->lamb, alpha);
 }
@@ -93,12 +100,30 @@ void DMSystemMatrixSPVectorizedIdentity::generateb(DataVectorSP& classes, DataVe
 	{
 		myClasses.resizeZero(numCols);
 	}
-	this->B->multVectorized(myClasses, (*data), b);
+	this->myTimer->start();
+	this->computeTimeMult += this->B->multVectorized(myClasses, (*data), b);
+	this->completeTimeMult += this->myTimer->stop();
 }
 
 void DMSystemMatrixSPVectorizedIdentity::rebuildLevelAndIndex()
 {
 	this->B->rebuildLevelAndIndex();
+}
+
+void DMSystemMatrixSPVectorizedIdentity::resetTimers()
+{
+	this->completeTimeMult = 0.0;
+	this->computeTimeMult = 0.0;
+	this->completeTimeMultTrans = 0.0;
+	this->computeTimeMultTrans = 0.0;
+}
+
+void DMSystemMatrixSPVectorizedIdentity::getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans)
+{
+	timeMult = this->completeTimeMult;
+	computeMult = this->computeTimeMult;
+	timeMultTrans = this->completeTimeMultTrans;
+	computeMultTrans = this->computeTimeMultTrans;
 }
 
 }
