@@ -376,45 +376,33 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
 	// Print the payoff function into a gnuplot file
+	// Calculate analytic solution if current option is an 1D option
+	if (dim == 1)
+	{
+		if (payoffType == "std_euro_call")
+		{
+			std::vector< std::pair<double, double> > prems;
+			myBSSolver->solve1DAnalytic(prems, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, true);
+			myBSSolver->print1DAnalytic(prems, "analyticBS.gnuplot");
+		}
+		if (payoffType == "std_euro_put")
+		{
+			std::vector< std::pair<double, double> > prems;
+			myBSSolver->solve1DAnalytic(prems, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, false);
+			myBSSolver->print1DAnalytic(prems, "analyticBS.gnuplot");
+		}
+	}
+
 	if (dim < 3)
 	{
-		// Calculate analytic solution if current option is an 1D option
-		if (dim == 1)
-		{
-			if (payoffType == "std_euro_call")
-			{
-				std::vector< std::pair<double, double> > prems;
-				myBSSolver->solve1DAnalytic(prems, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, true);
-				myBSSolver->print1DAnalytic(prems, "analyticBS.gnuplot");
-			}
-			if (payoffType == "std_euro_put")
-			{
-				std::vector< std::pair<double, double> > prems;
-				myBSSolver->solve1DAnalytic(prems, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, false);
-				myBSSolver->print1DAnalytic(prems, "analyticBS.gnuplot");
-			}
-		}
-
-		if (dim == 2)
-		{
-			sg::DimensionBoundary* myAreaBoundaries = new sg::DimensionBoundary[dim];
-
-			for (size_t i = 0; i < 2; i++)
-			{
-				myAreaBoundaries[i].leftBoundary = 0.9;
-				myAreaBoundaries[i].rightBoundary = 1.1;
-			}
-			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
-
-			myBSSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
-
-			delete[] myAreaBoundaries;
-			delete myGridArea;
-		}
 		myBSSolver->printGrid(*alpha, 50, "payoff.gnuplot");
+	}
+
+	if (dim < 4)
+	{
 		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
-		myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+
 		if (isLogSolve == true)
 		{
 			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
@@ -452,8 +440,12 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
 		myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
+	}
+	if (dim < 4)
+	{
 		myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+
 		if (isLogSolve == true)
 		{
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
@@ -598,10 +590,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		if (dim < 3)
 		{
 			myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+		}
+		if (dim < 4)
+		{
 			myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 			myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
-			// Write interpolation error into a file
-			myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+
 			if (isLogSolve == true)
 			{
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
@@ -642,8 +636,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			// Print the solved Black Scholes Equation into a gnuplot file
 			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+		}
+		if (dim < 4)
+		{
 			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
 			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+
 			if (isLogSolve == true)
 			{
 				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
@@ -935,8 +933,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
-		// Write interpolation error into a file
-		myBSSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+
 		if (isLogSolve == true)
 		{
 			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
@@ -985,6 +982,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
 		myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+
 		if (isLogSolve == true)
 		{
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
@@ -1267,9 +1265,6 @@ void writeHelp()
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
 	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
-	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
-	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
 	mySStream << std::endl << std::endl;
 
 	mySStream << "solveNDanalyze" << std::endl << "------" << std::endl;
@@ -1296,9 +1291,6 @@ void writeHelp()
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
 	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
-	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
-	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
 	mySStream << "For all cases following files are generated:" << std::endl;
 	mySStream << "	EvalCuboidPoints.data: containing the evaluation" << std::endl;
 	mySStream << "		cuboid" << std::endl;
@@ -1334,9 +1326,6 @@ void writeHelp()
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
 	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
-	mySStream << "And for dim>2 Bonn formated Sparse Grid files:" << std::endl;
-	mySStream << "	payoff_Nd.bonn: the start condition" << std::endl;
-	mySStream << "	solvedBS_Nd.bonn: the numerical solution" << std::endl;
 	mySStream << std::endl << std::endl;
 
 	mySStream << "solveBonn" << std::endl << "---------" << std::endl;
