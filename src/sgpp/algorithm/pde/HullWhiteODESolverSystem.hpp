@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Chao qi (qic@in.tum.de)
 
 #ifndef HULLWHITEODESOLVERSYSTEM_HPP
 #define HULLWHITEODESOLVERSYSTEM_HPP
@@ -55,52 +55,18 @@ protected:
 
 	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
 
-	/**
-	 * Build the coefficients for the Gamma Operation, which
-	 * are the assets' covariance matrix multiplied by 0.5
-	 *
-	 * this routine handles also the symmtrie of the
-	 * gamma operation
-	 */
-	//void buildGammaCoefficients();
-
-	/**
-	 * Build the coefficients for the combined Delta Operation
-	 */
-	//void buildDeltaCoefficients();
-
-	/**
-	 * Build the coefficients for the Gamma Operation, which
-	 * are the assets' covariance matrix multiplied by 0.5
-	 *
-	 * this routine handles also the symmtrie of the
-	 * gamma operation
-	 *
-	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
-	 */
-	//void buildGammaCoefficientsLogTransform();
-
-	/**
-	 * Build the coefficients for the combined Delta Operation
-	 *
-	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
-	 */
-	//void buildDeltaCoefficientsLogTransform();
-
 public:
 	/**
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
 	 * @param alpha the ansatzfunctions' coefficients
-	 * @param mu reference to the mus
-	 * @param sigma reference to the sigmas
-	 * @param rho reference to the rhos
-	 * @param r the riskfree interest rate
+	 * @param theta reference to the theta
+	 * @param sigma reference to the sigma
+	 * @param a reference to the a
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
-	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
 	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
 	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
@@ -118,8 +84,20 @@ public:
 
 	void finishTimestep(bool isLastTimestep = false);
 
+	/**
+	 * generates the right hand side of the system
+	 *
+	 * @return returns the rhs
+	 */
+
 	virtual DataVector* generateRHS();
 
+	/**
+	 * gets a pointer to the sparse grids coefficients used in the CG method to solve
+	 * one timestep. Here: The boundary grid's coefficients are returned
+	 *
+	 * @return alpha vector for CG method
+	 */
 	virtual DataVector* getGridCoefficientsForCG();
 
 	void startTimestep();
@@ -127,4 +105,4 @@ public:
 
 }
 
-#endif /* BLACKSCHOLESODESOLVERSYSTEM_HPP */
+#endif /* HULLWHITEODESOLVERSYSTEM_HPP */
