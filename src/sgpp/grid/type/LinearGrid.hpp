@@ -55,10 +55,6 @@ public:
 	virtual OperationTest* createOperationTest();
 	virtual OperationHierarchisation* createOperationHierarchisation();
 	virtual OperationMatrix* createOperationLTwoDotProduct();
-	virtual OperationMatrix* createOperationLE();
-	virtual OperationMatrix* createOperationLB();
-	virtual OperationMatrix* createOperationLF();
-	virtual OperationMatrix* createOperationLD();
 
 
 	// @todo (heinecke) remove this when done
@@ -69,6 +65,12 @@ public:
 	virtual OperationMatrix* createOperationGamma(DataMatrix& coef);
 	virtual OperationMatrix* createOperationDeltaLog(DataVector& coef);
 	virtual OperationMatrix* createOperationGammaLog(DataMatrix& coef);
+
+	// finance operations for hull-white 1D
+	virtual OperationMatrix* createOperationLE();
+	virtual OperationMatrix* createOperationLB();
+	virtual OperationMatrix* createOperationLF();
+	virtual OperationMatrix* createOperationLD();
 
 	static Grid* unserialize(std::istream& istr);
 };
