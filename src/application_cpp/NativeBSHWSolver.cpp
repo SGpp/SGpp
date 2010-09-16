@@ -188,7 +188,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 			delete[] myAreaBoundaries;
 			delete myGridArea;
 		}
-		myBSHWSolver->printGrid(*alpha, 20, "payoffBSHW.gnuplot");
+		myBSHWSolver->printGrid(*alpha, 30, "payoffBSHW.gnuplot");
 		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.gnuplot", true);
 		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.gnuplot", false);
 		//myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
@@ -211,7 +211,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	else if (Solver == "ImEul")
 	{
 		int count=0;
-		for (int i=0; i<100; i++)
+		for (int i=0; i<T/stepsize; i++)
 		{
 		theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
 		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
@@ -227,7 +227,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSHWSolver->printGrid(*alpha, 20, "solvedBSHW.gnuplot");
+		myBSHWSolver->printGrid(*alpha, 30, "solvedBSHW.gnuplot");
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.gnuplot", true);
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.gnuplot", false);
 		/*if (isLogSolve == true)
