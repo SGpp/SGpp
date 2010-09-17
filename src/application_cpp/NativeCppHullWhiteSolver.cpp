@@ -111,12 +111,19 @@ void testHullWhite(size_t l, double theta, double sigma, double a, std::string f
 		// Start solving the Black Scholes Equation
 		if (Solver == "ExEul")
 		{
-			myHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+			int count=0;
+			for (int i=0; i<T/stepsize; i++)
+			{
+			   theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+			   myHWSolver->setStochasticData(theta, sigma, a);
+			   myHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+			   count=count+1;
+		    }
 		}
 		else if (Solver == "ImEul")
 		{
 			int count=0;
-			for (int i=0; i<100; i++)
+			for (int i=0; i<T/stepsize; i++)
 			{
 			   theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
 			   myHWSolver->setStochasticData(theta, sigma, a);

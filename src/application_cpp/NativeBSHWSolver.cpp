@@ -205,8 +205,14 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
 	{
-		for (int i=0; i<100; i++)
+		int count=0;
+		for (int i=0; i<T/stepsize; i++)
+		{
+		theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 		myBSHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		count=count+1;
+	    }
 	}
 	else if (Solver == "ImEul")
 	{
@@ -217,7 +223,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 		myBSHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 		count=count+1;
-	}
+	    }
 	}
 	else
 	{
