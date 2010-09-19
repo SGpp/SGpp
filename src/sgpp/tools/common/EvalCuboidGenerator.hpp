@@ -25,8 +25,6 @@ namespace sg
 class EvalCuboidGenerator
 {
 private:
-	/// the gris's bounding box
-	BoundingBox* myBoundingBox;
 	/// number of dimensions
 	size_t numDimensions;
 
@@ -35,19 +33,17 @@ private:
 	 *
 	 * @param evalPoints vector of dynamic size into which the points are "submitted" during calculation
 	 * @param curPoint a current point in the d-dimensional space which which is adjusted during this recursive calculations
-	 * @param center the center of the cuboid
-	 * @param size the precentage of the whole array the cuboid will cover in a every dimension
+	 * @param myBoundingBox the bounding box of the cuboid
 	 * @param points number of points used in every dimension
+	 * @param curDim current dimension in recursive cuboid construction
 	 */
-	void getCuboidEvalPoints(std::vector<DataVector>& evalPoints, DataVector& curPoint, std::vector<double>& center, double size, size_t points, size_t curDim);
+	void getCuboidEvalPoints(std::vector<DataVector>& evalPoints, DataVector& curPoint, BoundingBox& myBoundingBox, size_t points, size_t curDim);
 
 public:
 	/**
 	 * Constructor
-	 *
-	 * @param BB the grid's bounding box
 	 */
-	EvalCuboidGenerator(BoundingBox& BB, size_t numDims);
+	EvalCuboidGenerator();
 
 	/**
 	 * Destructor
@@ -57,17 +53,14 @@ public:
 	/**
 	 * This function builds an cuboid which will be stored into the EvaluationPoint
 	 * variable of this function.
-	 * This is by done by building a cuboid around a given center. The size
-	 * of the cuboid is determined in every dimension by a fix percent size of the interval in that dimension.
-	 * In addition there is a fix number of EvalutionPoints in every dimension. Be aware that this
-	 * function returns point to the power of d points.
+	 * This is by done by building a cuboid around a bounding box. Be aware that this
+	 * function returns points to the power of d points.
 	 *
 	 * @param EvaluationPoints DataMatrix that will contain the evaluation points afterwards
-	 * @param center the center of the cuboid
-	 * @param size the precentage of the whole array the cuboid will cover in a every dimension
+	 * @param SubDomain the bounding box of the evaluation cuboid
 	 * @param points number of points used in every dimension
 	 */
-	void getEvaluationCuboid(DataMatrix& EvaluationPoints, std::vector<double>& center, double size, size_t points);
+	void getEvaluationCuboid(DataMatrix& EvaluationPoints, BoundingBox& SubDomain, size_t points);
 };
 
 }

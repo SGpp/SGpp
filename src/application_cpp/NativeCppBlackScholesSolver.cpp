@@ -113,16 +113,16 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
  *
  * @param tFile the file that contains the analyze data
  * @param numAssests the number of assets
- * @param percent variable to store size of cuboid in every dimension
+ * @param BoundaryArray Pointer to the Bounding Box array
  * @param points variable to store the number of points in every dimension
- * @param center vector to store the center of the evaluation cuboid
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readAnalyzeData(std::string tFile, size_t numAssests, double& percent, size_t& points, std::vector<double>& center)
+int readAnalyzeData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray, size_t& points)
 {
 	std::fstream file;
-	double cur_coord;
+	double cur_right;
+	double cur_left;
 
 	file.open(tFile.c_str());
 
@@ -132,14 +132,17 @@ int readAnalyzeData(std::string tFile, size_t numAssests, double& percent, size_
 		return -1;
 	}
 
-	center.empty();
 	for (size_t i = 0; i < numAssests; i++)
 	{
-		file >> cur_coord;
-		center.push_back(cur_coord);
+		file >> cur_left;
+		file >> cur_right;
+
+		BoundaryArray[i].leftBoundary = cur_left;
+		BoundaryArray[i].rightBoundary = cur_right;
+		BoundaryArray[i].bDirichletLeft = true;
+		BoundaryArray[i].bDirichletRight = true;
 	}
 
-	file >> percent;
 	file >> points;
 
 	file.close();
@@ -174,7 +177,22 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 		return -1;
 	}
 
+	// Get number of lines and resize DataMatrix
 	size_t i = 0;
+	while (!file.eof())
+	{
+		for (size_t d = 0; d < dim; d++)
+		{
+			file >> cur_coord;
+		}
+		i++;
+	}
+	file.close();
+	cuboid.resize(i);
+
+	// Read data from file
+	file.open(tFile.c_str());
+	i = 0;
 	while (!file.eof())
 	{
 		DataVector line(dim);
@@ -184,11 +202,9 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 			file >> cur_coord;
 			line.set(d, cur_coord);
 		}
-		cuboid.resize(i+1);
 		cuboid.setRow(i, line);
 		i++;
 	}
-
 	file.close();
 
 	return 0;
@@ -214,15 +230,25 @@ int readOptionsValues(DataVector& values, std::string tFile)
 		return -1;
 	}
 
+	// Count number of lines
 	size_t i = 0;
 	while (!file.eof())
 	{
 		file >> cur_value;
-		values.resize(i+1);
+		i++;
+	}
+	values.resize(i);
+	file.close();
+
+	// Read data from File
+	file.open(tFile.c_str());
+	i = 0;
+	while (!file.eof())
+	{
+		file >> cur_value;
 		values.set(i, cur_value);
 		i++;
 	}
-
 	file.close();
 
 	return 0;
@@ -522,10 +548,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		return;
 	}
 
-	double cuboidSize = 0.0;
 	size_t points = 0;
- 	std::vector<double> center;
-	if (readAnalyzeData(fileAnalyze, dim, cuboidSize, points, center) != 0)
+ 	sg::DimensionBoundary* myEvalBoundaries = new sg::DimensionBoundary[dim];
+ 	if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0)
 	{
 		return;
 	}
@@ -539,9 +564,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	{
 		myBSSolver = new sg::BlackScholesSolver(false, "European");
 	}
+
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator(*myBoundingBox, dim);
+	sg::BoundingBox* myEvalBoundingBox = new sg::BoundingBox(dim, myEvalBoundaries);
+	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
 	delete[] myBoundaries;
+	delete[] myEvalBoundaries;
 
 	// init Screen Object
 	myBSSolver->initScreen();
@@ -556,7 +584,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// in the first iteration -> calculate the evaluation points
 		if (i == start_l)
 		{
-			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, center, cuboidSize, points);
+			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
 
 			writeDataMatrix(EvalPoints, tFileEvalCuboid);
 
@@ -681,13 +709,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			std::cout << "=====================================================================" << std::endl << std::endl;
 			std::cout << "Calculating norms of relative errors to a grid" << std::endl;
 			std::cout << "with " << i << " levels and testing-coboid" << std::endl;
-			std::cout << "with the center:" << std::endl;
+			std::cout << "with the bounding box:" << std::endl;
 			for (size_t j = 0; j < d; j++)
 			{
-				std::cout << center[j] << " ";
+				std::cout << myEvalBoundingBox->getBoundary(j).leftBoundary << " " << myEvalBoundingBox->getBoundary(j).rightBoundary << std::endl;
 			}
-			std::cout << std::endl << "and " << points << " test-points in a range of " << std::endl;
-			std::cout << cuboidSize*200.0 << "% per dimension:" << std::endl << std::endl;
+			std::cout << std::endl << std::endl;
 
 			double oldMaxNorm = 0.0;
 			double oldTwoNorm = 0.0;
@@ -725,6 +752,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::cout << std::endl;
 	}
 
+	delete myEvalBoundingBox;
 	delete myEvalCuboidGen;
 	delete myBSSolver;
 	delete myBoundingBox;
@@ -1229,17 +1257,16 @@ void writeHelp()
 
 	mySStream << "file_analyze:     this file contains the options for" << std::endl;
 	mySStream << "                  the analyzing runs. This file contains" << std::endl;
-	mySStream << "                  two lines: The first lines is the center" << std::endl;
-	mySStream << "                  of the evaluation cuboid. The second one" << std::endl;
-	mySStream << "                  contains two values: The first one is the" << std::endl;
-	mySStream << "                  the evaluations cuboid's expansion in percent" << std::endl;
-	mySStream << "                  around the former specified center. The " << std::endl;
-	mySStream << "                  second one is the number of points" << std::endl;
+	mySStream << "                  two parts: The first lines is the " << std::endl;
+	mySStream << "                  evaluation cuboid as bounding box. " << std::endl;
+	mySStream << "                  The second one is the number of points" << std::endl;
 	mySStream << "                  in every dimension in the evaluation" << std::endl;
 	mySStream << "                  cuboid." << std::endl;
 	mySStream << "Example (3 dimensions):" << std::endl;
-	mySStream << "                  1.0 1.0 1.0" << std::endl;
-	mySStream << "                  0.05 20" << std::endl << std::endl << std::endl;
+	mySStream << "                  0.0 1.0" << std::endl;
+	mySStream << "                  0.0 1.0" << std::endl;
+	mySStream << "                  0.0 1.0" << std::endl;
+	mySStream << "                  20" << std::endl << std::endl << std::endl;
 
 	mySStream << "Execution modes descriptions:" << std::endl;
 	mySStream << "-----------------------------------------------------" << std::endl;
