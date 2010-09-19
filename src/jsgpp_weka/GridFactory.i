@@ -74,7 +74,7 @@ public:
 	virtual OperationMatrix* createOperationUpDownTest() = 0;
 	
 	virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
-	virtual OperationMatrix* createOperationGamma(DataVector& coef) = 0;
+	virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
 	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
