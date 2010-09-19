@@ -59,11 +59,10 @@ namespace std {
 %include "GridFactory.i"
 
 // the Bad
-
-%include "DataVector.i"
+%include "src/sgpp/data/DataVector.hpp"
+%include "src/sgpp/data/DataMatrix.hpp"
 
 // and the rest
-
 %include "src/sgpp/sgpp.hpp"
 
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
