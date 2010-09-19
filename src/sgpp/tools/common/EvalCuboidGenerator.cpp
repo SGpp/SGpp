@@ -10,18 +10,15 @@
 namespace sg
 {
 
-EvalCuboidGenerator::EvalCuboidGenerator(BoundingBox& BB, size_t numDims)
+EvalCuboidGenerator::EvalCuboidGenerator()
 {
-	myBoundingBox = new BoundingBox(BB);
-	numDimensions = numDims;
 }
 
 EvalCuboidGenerator::~EvalCuboidGenerator()
 {
-	delete myBoundingBox;
 }
 
-void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>& evalPoints, DataVector& curPoint, std::vector<double>& center, double size, size_t points, size_t curDim)
+void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>& evalPoints, DataVector& curPoint, BoundingBox& myBoundingBox, size_t points, size_t curDim)
 {
 	if (curDim == 0)
 	{
@@ -29,17 +26,16 @@ void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>& evalPoint
 		{
 			for (size_t i = 0; i < points; i++)
 			{
-				curPoint.set(curDim, std::min(std::max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
-						((myBoundingBox->getIntervalWidth(curDim)*size*2/(points-1))*static_cast<double>(i)),
-						myBoundingBox->getIntervalOffset(curDim)),
-						myBoundingBox->getIntervalOffset(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+				double inc = (myBoundingBox.getBoundary(curDim).rightBoundary - myBoundingBox.getBoundary(curDim).leftBoundary)/static_cast<double>(points-1);
+
+				curPoint.set(curDim, myBoundingBox.getBoundary(curDim).leftBoundary + (inc*static_cast<double>(i)));
 
 				evalPoints.push_back(curPoint);
 			}
 		}
 		else
 		{
-			curPoint.set(curDim, center[curDim]);
+			curPoint.set(curDim, (myBoundingBox.getBoundary(curDim).leftBoundary + myBoundingBox.getBoundary(curDim).rightBoundary)/2.0 );
 
 			evalPoints.push_back(curPoint);
 		}
@@ -50,29 +46,28 @@ void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>& evalPoint
 		{
 			for (size_t i = 0; i < points; i++)
 			{
-				curPoint.set(curDim, std::min(std::max(center[curDim]-(myBoundingBox->getIntervalWidth(curDim)*size)+
-						((myBoundingBox->getIntervalWidth(curDim)*size*2/(points-1))*static_cast<double>(i)),
-						myBoundingBox->getIntervalOffset(curDim)),
-						myBoundingBox->getIntervalOffset(curDim)+myBoundingBox->getIntervalWidth(curDim)));
+				double inc = (myBoundingBox.getBoundary(curDim).rightBoundary - myBoundingBox.getBoundary(curDim).leftBoundary)/static_cast<double>(points-1);
 
-				getCuboidEvalPoints(evalPoints, curPoint, center, size, points, curDim-1);
+				curPoint.set(curDim, myBoundingBox.getBoundary(curDim).leftBoundary + (inc*static_cast<double>(i)));
+
+				getCuboidEvalPoints(evalPoints, curPoint, myBoundingBox, points, curDim-1);
 			}
 		}
 		else
 		{
-			curPoint.set(curDim, center[curDim]);
+			curPoint.set(curDim, (myBoundingBox.getBoundary(curDim).leftBoundary + myBoundingBox.getBoundary(curDim).rightBoundary)/2.0 );
 
-			getCuboidEvalPoints(evalPoints, curPoint, center, size, points, curDim-1);
+			getCuboidEvalPoints(evalPoints, curPoint, myBoundingBox, points, curDim-1);
 		}
 	}
 }
 
-void EvalCuboidGenerator::getEvaluationCuboid(DataMatrix& EvaluationPoints, std::vector<double>& center, double size, size_t points)
+void EvalCuboidGenerator::getEvaluationCuboid(DataMatrix& EvaluationPoints, BoundingBox& SubDomain, size_t points)
 {
 	std::vector<DataVector> evalPoints;
-	DataVector curPoint(numDimensions);
+	DataVector curPoint(SubDomain.getDimensions());
 
-	getCuboidEvalPoints(evalPoints, curPoint, center, size, points, numDimensions-1);
+	getCuboidEvalPoints(evalPoints, curPoint, SubDomain, points, SubDomain.getDimensions()-1);
 
 	size_t numEvalPoints = evalPoints.size();
 	EvaluationPoints.resize(numEvalPoints);
