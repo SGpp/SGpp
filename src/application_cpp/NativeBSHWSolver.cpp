@@ -137,7 +137,8 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 		{
 			return;
 		}
-		//std::cout << "Nothing has been implemented so far " << std::endl;
+        //std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
+        //std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
 		sg::BlackScholesHullWhiteSolver* myBSHWSolver;
 		if (isLogSolve == true)
 			{
@@ -149,7 +150,6 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 			}
 		sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 		delete[] myBoundaries;
-
 		// init Screen Object
 		myBSHWSolver->initScreen();
 
