@@ -148,6 +148,25 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 
+		//sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[2];
+		BoundingBox* t = this->myGrid->getBoundingBox();
+
+		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+
+		myBoundaries[0].leftBoundary = t->getIntervalOffset(0);
+		myBoundaries[0].rightBoundary = t->getIntervalOffset(0) + t->getIntervalWidth(0);
+		myBoundaries[1].leftBoundary = t->getIntervalOffset(1);
+		myBoundaries[1].rightBoundary = t->getIntervalOffset(1) + t->getIntervalWidth(1);
+
+		myBoundaries[0].bDirichletLeft = true;
+		myBoundaries[0].bDirichletRight = true;
+		myBoundaries[1].bDirichletLeft = false;
+		myBoundaries[1].bDirichletRight = false;
+
+		t->setBoundary(0,myBoundaries[0]);
+		t->setBoundary(1,myBoundaries[1]);
+		//this->myGrid->setBoundingBox(*t);*/
+
 		std::vector<size_t> newAlgoDimsBS(1);
 		newAlgoDimsBS[0]=0;
 		setAlgorithmicDimensions(newAlgoDimsBS);
@@ -155,6 +174,15 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 		//std::cout << alpha.toString() << std::endl;
+		myBoundaries[0].bDirichletLeft = false;
+		myBoundaries[0].bDirichletRight = false;
+		myBoundaries[1].bDirichletLeft = true;
+		myBoundaries[1].bDirichletRight = true;
+
+		t->setBoundary(0,myBoundaries[0]);
+		t->setBoundary(1,myBoundaries[1]);
+
+		//this->myGrid->setBoundingBox(*t);*/
 
 		std::vector<size_t> newAlgoDimsHW(1);
 		newAlgoDimsHW[0]=1;
@@ -188,7 +216,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
+		throw new application_exception("BlackScholesHullWhiteSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}
 }
 
