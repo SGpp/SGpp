@@ -79,12 +79,12 @@ void DirichletUpdateVector::getfactor(DataVector& factor, double T)
 			coordsStream >> tmp;
 			dblFuncValues[j] = tmp;
 		}
-		std::cout<<dblFuncValues[1]<<std::endl;
+		//std::cout<<dblFuncValues[1]<<std::endl;
 		factor.set(i, exp((-1.0)*dblFuncValues[1]*T));
 	}
 }
 
-void DirichletUpdateVector::multiplyBoundaryHullWhite(DataVector& updateVector,DataVector& factor)
+void DirichletUpdateVector::multiplyBoundaryVector(DataVector& updateVector,DataVector& factor)
 {
 	for (size_t i = 0; i < storage->size(); i++)
 	{
@@ -93,6 +93,24 @@ void DirichletUpdateVector::multiplyBoundaryHullWhite(DataVector& updateVector,D
 		{
 			updateVector.set(i, updateVector.get(i)* factor.get(i));
 		}
+	}
+}
+
+void DirichletUpdateVector::multiplyrBSHW(DataVector& updateVector)
+{
+	double tmp;
+	for (size_t i = 0; i < storage->size(); i++)
+	{
+		std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
+		std::stringstream coordsStream(coords);
+		double* dblFuncValues = new double[2];
+        for (size_t j = 0; j < 2; j++)
+			{
+			    coordsStream >> tmp;
+                dblFuncValues[j] = tmp;
+			}
+       // std::cout<< dblFuncValues[1]<< std::endl;
+		updateVector.set(i, updateVector.get(i)* dblFuncValues[1]);
 	}
 }
 }
