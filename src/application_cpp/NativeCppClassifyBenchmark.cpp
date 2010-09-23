@@ -19,19 +19,19 @@
 //#define DATAFILE "twospirals.wieland.arff"
 //#define DATAFILE "liver-disorders_normalized.arff"
 //#define DATAFILE "ripleyGarcke.train.arff"
-//#define DATAFILE "chess_02D_tr.dat.arff"
-#define DATAFILE "chess_05D_tr.dat.arff"
+#define DATAFILE "chess_02D_tr.dat.arff"
+//#define DATAFILE "chess_05D_tr.dat.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define TESTFILE "twospirals.wieland.arff"
 //#define TESTFILE "liver-disorders_normalized.arff"
 //#define TESTFILE "ripleyGarcke.test.arff"
-//#define TESTFILE "chess_02D_te.dat.arff"
-#define TESTFILE "chess_05D_te.dat.arff"
+#define TESTFILE "chess_02D_te.dat.arff"
+//#define TESTFILE "chess_05D_te.dat.arff"
 
-// grid generation settings
-#define LEVELS 1
-#define REFINEMENTS 4
+// grid generation settingsd
+#define LEVELS 8
+#define REFINEMENTS 0
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
 
@@ -49,6 +49,7 @@
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
 //#define USE_SSE
 //#define USE_AVX
+#define USE_OCL
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
@@ -130,6 +131,9 @@ void printSettings()
 #ifdef USE_AVX
 	std::cout << "Vectorized: AVX" << std::endl << std::endl;
 #endif
+#ifdef USE_OCL
+	std::cout << "Vectorized: OCL (LRBni)" << std::endl << std::endl;
+#endif
 
 #ifdef EXEC_REGRESSION
 	std::cout << "Mode: Regression" << std::endl << std::endl;
@@ -148,7 +152,7 @@ void adaptClassificationTest(bool isRegression)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-#if defined(USE_SSE) || defined(USE_AVX)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL)
     std::cout << "Classification Test App (Double Precision)" << std::endl;
 #else
     std::cout << "Classification Test App (Double Precision, recursive)" << std::endl;
@@ -201,12 +205,15 @@ void adaptClassificationTest(bool isRegression)
 
     // Generate CG to solve System
     sg::ConjugateGradients* myCG = new sg::ConjugateGradients(CG_IMAX, CG_EPS);
-#if defined(USE_SSE) || defined(USE_AVX)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL)
 #ifdef USE_SSE
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "SSE");
 #endif
 #ifdef USE_AVX
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "AVX");
+#endif
+#ifdef USE_OCL
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "OCL");
 #endif
 #else
     sg::OperationMatrix* myC = myGrid->createOperationIdentity();
@@ -229,18 +236,22 @@ void adaptClassificationTest(bool isRegression)
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_SSE) || defined(USE_AVX)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL)
     		mySystem->rebuildLevelAndIndex();
 #endif
 
     		std::cout << "New Grid Size: " << myGrid->getStorage()->size() << std::endl;
     		alpha.resizeZero(myGrid->getStorage()->size());
     	}
+    	else
+    	{
+    		std::cout << "Grid Size: " << myGrid->getStorage()->size() << std::endl;
+    	}
 
     	DataVector b(alpha.getSize());
     	mySystem->generateb(classes, b);
 
-    	myCG->solve(*mySystem, alpha, b, true, false, 0.0);
+    	myCG->solve(*mySystem, alpha, b, true, true, 0.0);
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
@@ -300,7 +311,7 @@ void adaptClassificationTest(bool isRegression)
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings();
-#if defined(USE_SSE) || defined(USE_AVX)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
@@ -317,7 +328,9 @@ void adaptClassificationTest(bool isRegression)
 
 #ifndef USE_SSE
 #ifndef USE_AVX
+#ifndef USE_OCL
     delete myC;
+#endif
 #endif
 #endif
     delete myCG;
@@ -392,12 +405,15 @@ void adaptClassificationTestSP(bool isRegression)
     // Generate CG to solve System
     sg::ConjugateGradientsSP* myCG = new sg::ConjugateGradientsSP(CG_IMAX, CG_EPS);
 
-#if defined(USE_SSE) || defined(USE_AVX)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL)
 #ifdef USE_SSE
     sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "SSE");
 #endif
 #ifdef USE_AVX
     sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "AVX");
+#endif
+#ifdef USE_OCL
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "OCL");
 #endif
 #else
     sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "SSE");
@@ -419,7 +435,7 @@ void adaptClassificationTestSP(bool isRegression)
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_SSE) || defined(USE_AVX)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL)
     		mySystem->rebuildLevelAndIndex();
 #endif
 
@@ -427,11 +443,15 @@ void adaptClassificationTestSP(bool isRegression)
     		alpha.resizeZero(myGrid->getStorage()->size());
     		alphaSP.resizeZero(myGrid->getStorage()->size());
     	}
+    	else
+    	{
+    		std::cout << "Grid Size: " << myGrid->getStorage()->size() << std::endl;
+    	}
 
     	DataVectorSP bSP(alphaSP.getSize());
     	mySystem->generateb(classesSP, bSP);
 
-    	myCG->solve(*mySystem, alphaSP, bSP, true, false, 0.0);
+    	myCG->solve(*mySystem, alphaSP, bSP, true, true, 0.0);
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;

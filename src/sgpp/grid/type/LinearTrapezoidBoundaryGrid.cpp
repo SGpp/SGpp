@@ -22,6 +22,11 @@
 // @todo (heinecke) removed this when done
 #include "basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.hpp"
 
+#ifdef USEOCL
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.hpp"
+#endif
+
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.hpp"
@@ -95,6 +100,12 @@ OperationBVectorized* LinearTrapezoidBoundaryGrid::createOperationBVectorized(co
 	{
 		return new OperationBIterativeAVXLinear(this->storage);
 	}
+#ifdef USEOCL
+	else if (VecType == "OCL")
+	{
+		return new OperationBIterativeOCLLinear(this->storage);
+	}
+#endif
 	else
 	{
 		throw factory_exception("Unsupported vectorization type");
@@ -111,6 +122,12 @@ OperationBVectorizedSP* LinearTrapezoidBoundaryGrid::createOperationBVectorizedS
 	{
 		return new OperationBIterativeSPAVXLinear(this->storage);
 	}
+#ifdef USEOCL
+	else if (VecType == "OCL")
+	{
+		return new OperationBIterativeSPOCLLinear(this->storage);
+	}
+#endif
 	else
 	{
 		throw factory_exception("Unsupported vectorization type");
