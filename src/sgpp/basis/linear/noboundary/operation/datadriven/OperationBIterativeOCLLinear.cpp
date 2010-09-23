@@ -75,6 +75,8 @@ double OperationBIterativeOCLLinear::multTransposeVectorized(DataVector& alpha, 
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
 
+    result.setAll(0.0);
+
     double* ptrAlpha = alpha.getPointer();
     double* ptrData = data.getPointer();
     double* ptrResult = result.getPointer();
