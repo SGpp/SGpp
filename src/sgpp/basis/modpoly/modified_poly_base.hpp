@@ -39,10 +39,10 @@ public:
 	 */
 	modified_poly_base(size_t degree) : polynoms(NULL), degree(degree)
 	{
-		if(degree < 0)
-		{
-			throw factory_exception("poly_base: degree < 0");
-		}
+		//if(degree < 0)
+		//{
+		//	throw factory_exception("poly_base: degree < 0");
+		//}
 
 		int polycount = (1 << (degree+1)) - 1;
 		std::vector<double> x;
