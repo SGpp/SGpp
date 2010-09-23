@@ -28,15 +28,8 @@ cl_uint num_devices;
 cl_context context;
 cl_command_queue command_queue;
 
-//cl_platform_id platform_id_two;
-//cl_device_id device_id_two;
-//cl_uint num_platforms_two;
-//cl_uint num_devices_two;
-//cl_context context_two;
-//cl_command_queue command_queue_two;
-
 cl_mem clDataSP, clLevelSP, clIndexSP;
-//cl_mem clDataSP_two, clLevelSP_two, clIndexSP_two;
+
 cl_kernel kernel_multTransSP;
 cl_program program_multTransSP;
 
@@ -50,7 +43,6 @@ OCLKernels::OCLKernels()
 	if (err != CL_SUCCESS)
 	{
 		std::cout << "Unable to get Platform ID. Error Code: " << err << std::endl;
-		//return 0.0;
 	}
 
 	// Find out how many devices there are
@@ -58,12 +50,10 @@ OCLKernels::OCLKernels()
     if (err != CL_SUCCESS)
     {
     	std::cout << "Unable to get Device ID. Error Code: " << err << std::endl;
-    	//return 0.0;
     }
     else if (num_devices == 0)
     {
     	std::cout << "NO GPU OpenCL devices have been found!" << std::endl;
-    	//return 0.0;
     }
 
     // Create GPU context
@@ -71,7 +61,6 @@ OCLKernels::OCLKernels()
     if (err != CL_SUCCESS)
 	{
     	std::cout << "Failed to create OpenCL context! Error Code: " << err << std::endl;
-    	//return 0.0;
 	}
 
     // Creating the command queue
@@ -79,24 +68,7 @@ OCLKernels::OCLKernels()
     if (err != CL_SUCCESS)
 	{
     	std::cout << "Failed to create command queue! Error Code: " << err << std::endl;
-    	//return 0.0;
 	}
-
-//    // Create GPU context
-//    context_two = clCreateContext(0, num_devices_two, &device_id_two, NULL, NULL, &err);
-//    if (err != CL_SUCCESS)
-//	{
-//    	std::cout << "Failed to create OpenCL context! Error Code: " << err << std::endl;
-//    	//return 0.0;
-//	}
-//
-//    // Creating the command queue
-//    command_queue_two = clCreateCommandQueue(context_two, device_id_two, 0, &err);
-//    if (err != CL_SUCCESS)
-//	{
-//    	std::cout << "Failed to create command queue! Error Code: " << err << std::endl;
-//    	//return 0.0;
-//	}
 
     isFirstTimeMultTransSP = true;
     isFirstTimeMultSP = true;
