@@ -132,7 +132,7 @@ void printSettings()
 	std::cout << "Vectorized: AVX" << std::endl << std::endl;
 #endif
 #ifdef USE_OCL
-	std::cout << "Vectorized: OCL (LRBni)" << std::endl << std::endl;
+	std::cout << "Vectorized: OpenCL (nVidia Fermi tested)" << std::endl << std::endl;
 #endif
 
 #ifdef EXEC_REGRESSION
