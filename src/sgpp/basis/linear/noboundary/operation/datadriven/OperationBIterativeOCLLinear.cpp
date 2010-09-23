@@ -7,7 +7,6 @@
 
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OCLKernels.hpp"
 #include "exception/operation_exception.hpp"
 
 #ifdef USEOMP
@@ -25,6 +24,7 @@ OperationBIterativeOCLLinear::OperationBIterativeOCLLinear(GridStorage* storage)
 	storage->getLevelIndexArraysForEval(*Level, *Index);
 
 	myTimer = new SGppStopwatch();
+	myOCLKernels = new OCLKernels();
 }
 
 OperationBIterativeOCLLinear::~OperationBIterativeOCLLinear()
@@ -32,6 +32,7 @@ OperationBIterativeOCLLinear::~OperationBIterativeOCLLinear()
 	delete Level;
 	delete Index;
 	delete myTimer;
+	delete myOCLKernels;
 }
 
 void OperationBIterativeOCLLinear::rebuildLevelAndIndex()
@@ -64,7 +65,7 @@ double OperationBIterativeOCLLinear::multVectorized(DataVector& alpha, DataMatri
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = multOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, sourceSize, storageSize, dims);
+    double time = myOCLKernels->multOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, sourceSize, storageSize, dims);
 
 	return time;
 }
@@ -88,7 +89,7 @@ double OperationBIterativeOCLLinear::multTransposeVectorized(DataVector& alpha, 
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = multTransOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims);
+    double time = myOCLKernels->multTransOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims);
 
    	return time;
 }
