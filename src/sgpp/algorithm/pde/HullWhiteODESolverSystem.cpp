@@ -157,7 +157,7 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 
 		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
-			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,*factor);
+			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
 		}
 
 	// add number of Gridpoints
@@ -198,7 +198,7 @@ void HullWhiteODESolverSystem::startTimestep()
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
-			this->BoundaryUpdate->multiplyBoundaryHullWhite(*this->alpha_complete,*factor);
+			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
 		}
 
 }

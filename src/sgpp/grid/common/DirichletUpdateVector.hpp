@@ -73,8 +73,20 @@ public:
 	 * @param updateVector the vector that should be updated
 	 */
 	void setInnerPointsToZero(DataVector& updateVector);
-	void multiplyBoundaryHullWhite(DataVector& updateVector,DataVector& factor);
+	/**
+	 * Multiplies the values on the boundary with vector
+	 * @param updateVector the vector that should be updated
+	 * @param factor the vector contains corresponding values
+	 */
+	void multiplyBoundaryVector(DataVector& updateVector,DataVector& factor);
+	/**
+	 * get a vector which contains all the factors needed to multiply with another vector
+	 *@param factor the vector that should be calculated to multiply with another vector
+	 *@param T timestepsize
+	 */
 	void getfactor(DataVector& factor, double T);
+
+	void multiplyrBSHW(DataVector& updateVector);
 	/**
 	 * Multiplies the values on the boundary with a constant value
 	 *
