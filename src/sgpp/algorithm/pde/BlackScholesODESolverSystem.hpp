@@ -57,6 +57,7 @@ protected:
 	size_t refineMaxLevel;
 	/// the algorithmic dimensions used in this system
 	std::vector<size_t> BSalgoDims;
+	OperationMatrix* OpFBound;
 
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
