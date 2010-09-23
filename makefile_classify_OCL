@@ -76,7 +76,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 
 CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -DUSEOCL -axSSE3
 LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEOCL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL
 
 ###################################################################
 # Builds a ClassifyBenchmark Application

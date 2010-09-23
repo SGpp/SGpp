@@ -9,6 +9,7 @@
 #define OPERATIONBITERATIVESPOCLLINEAR_HPP
 
 #include "operation/datadriven/OperationBVectorizedSP.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OCLKernels.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 
@@ -62,6 +63,8 @@ protected:
 	DataMatrixSP* Index;
 	/// Timer object to handle time measurements
 	SGppStopwatch* myTimer;
+	/// Object to access the OCL Kernel
+	OCLKernels* myOCLKernels;
 };
 
 }
