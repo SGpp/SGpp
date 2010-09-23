@@ -44,6 +44,8 @@ void OperationBIterativeSPOCLLinear::rebuildLevelAndIndex()
 	Index = new DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*Level, *Index);
+
+	myOCLKernels->resetKernels();
 }
 
 double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)

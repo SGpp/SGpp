@@ -30,8 +30,8 @@
 //#define TESTFILE "chess_05D_te.dat.arff"
 
 // grid generation settingsd
-#define LEVELS 8
-#define REFINEMENTS 0
+#define LEVELS 3
+#define REFINEMENTS 10
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
 
@@ -47,9 +47,9 @@
 #define GRDIRESOLUTION 50
 
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
-//#define USE_SSE
+#define USE_SSE
 //#define USE_AVX
-#define USE_OCL
+//#define USE_OCL
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
