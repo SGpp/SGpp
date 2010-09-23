@@ -26,10 +26,13 @@
 
 # compiler: icpc (Intel Offload Compiler) 
 CC=icpc
+OCLCC=g++
 
 SRCDIR = ./../../../src/sgpp/
 SRCDIREXE = ./../../../src/application_cpp/
 BINDIR = ./../../../bin/
+OCLINCLUDES = /opt/cuda/include
+
 OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
 	ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
 	OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o\
@@ -71,8 +74,9 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 # Compiler Flags
 ###################################################################	
 
-CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -DUSEOCL -axSSE3
-LFLAGS=-Wall -ansi -O3 -openmp
+CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -DUSEOCL -axSSE3
+LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEOCL
 
 ###################################################################
 # Builds a ClassifyBenchmark Application
@@ -186,7 +190,7 @@ OperationBIterativeSPOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/da
 	$(CC) $(CFLAGS) -o OperationBIterativeSPOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.cpp
 	
 OCLKernels.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
-	$(CC) $(CFLAGS) -o OCLKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
+	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
 
 OperationTestLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 	$(CC) $(CFLAGS) -o OperationTestLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
