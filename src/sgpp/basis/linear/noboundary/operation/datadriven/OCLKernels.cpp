@@ -66,27 +66,6 @@ OCLKernels::OCLKernels()
     	//return 0.0;
     }
 
-//	// Check for OCL Platforms
-//	err = clGetPlatformIDs(1, &platform_id_two, &num_platforms_two);
-//	if (err != CL_SUCCESS)
-//	{
-//		std::cout << "Unable to get Platform ID. Error Code: " << err << std::endl;
-//		//return 0.0;
-//	}
-//
-//	// Find out how many devices there are
-//	err = clGetDeviceIDs(platform_id_two, CL_DEVICE_TYPE_GPU, 1, &device_id_two, &num_devices_two);
-//    if (err != CL_SUCCESS)
-//    {
-//    	std::cout << "Unable to get Device ID. Error Code: " << err << std::endl;
-//    	//return 0.0;
-//    }
-//    else if (num_devices == 0)
-//    {
-//    	std::cout << "NO GPU OpenCL devices have been found!" << std::endl;
-//    	//return 0.0;
-//    }
-
     // Create GPU context
     context = clCreateContext(0, num_devices, &device_id, NULL, NULL, &err);
     if (err != CL_SUCCESS)
@@ -127,26 +106,21 @@ OCLKernels::~OCLKernels()
 {
 	if (!isFirstTimeMultTransSP)
 	{
-		clReleaseMemObject(clDataSP);
-		clReleaseMemObject(clLevelSP);
-		clReleaseMemObject(clIndexSP);
 	    clReleaseProgram(program_multTransSP);
 	    clReleaseKernel(kernel_multTransSP);
 	}
 
 	if (!isFirstTimeMultSP)
 	{
-//		clReleaseMemObject(clDataSP_two);
-//		clReleaseMemObject(clLevelSP_two);
-//		clReleaseMemObject(clIndexSP_two);
+		clReleaseMemObject(clDataSP);
+		clReleaseMemObject(clLevelSP);
+		clReleaseMemObject(clIndexSP);
 	    clReleaseProgram(program_multSP);
 	    clReleaseKernel(kernel_multSP);
 	}
 
     clReleaseCommandQueue(command_queue);
     clReleaseContext(context);
-//    clReleaseCommandQueue(command_queue_two);
-//    clReleaseContext(context_two);
 }
 
 double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims)
@@ -495,6 +469,27 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 //	}
 
 	return time;
+}
+
+void OCLKernels::resetKernels()
+{
+	if (!isFirstTimeMultTransSP)
+	{
+	    clReleaseProgram(program_multTransSP);
+	    clReleaseKernel(kernel_multTransSP);
+	}
+
+	if (!isFirstTimeMultSP)
+	{
+		clReleaseMemObject(clDataSP);
+		clReleaseMemObject(clLevelSP);
+		clReleaseMemObject(clIndexSP);
+	    clReleaseProgram(program_multSP);
+	    clReleaseKernel(kernel_multSP);
+	}
+
+	isFirstTimeMultSP = true;
+	isFirstTimeMultTransSP = true;
 }
 
 }
