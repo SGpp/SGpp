@@ -53,7 +53,7 @@
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
-//#define USEFLOAT
+#define USEFLOAT
 
 // define this if you want to execute a regression
 //#define EXEC_REGRESSION
