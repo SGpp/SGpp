@@ -71,14 +71,14 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 # Compiler Flags
 ###################################################################	
 
-CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -axSSE3
+CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -DUSEOCL -axSSE3
 LFLAGS=-Wall -ansi -O3 -openmp
 
 ###################################################################
 # Builds a ClassifyBenchmark Application
 ###################################################################	
 default: $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) -o $(BINDIR)ClassifyBenchmark_KNFOffload
+	$(CC) $(LFLAGS) $(OBJS) -o $(BINDIR)ClassifyBenchmark_OCL_NVOffload
 	
 NativeCppClassifyBenchmark.o : $(SRCDIREXE)NativeCppClassifyBenchmark.cpp
 	$(CC) $(CFLAGS) -o NativeCppClassifyBenchmark.o $(SRCDIREXE)NativeCppClassifyBenchmark.cpp
@@ -87,7 +87,7 @@ DataVector.o : $(SRCDIR)data/DataVector.cpp
 	$(CC) $(CFLAGS) -o DataVector.o $(SRCDIR)data/DataVector.cpp
 	
 AlignedMemory.o : $(SRCDIR)common/AlignedMemory.cpp
-	$(CC) $(CFLAGS_OFFLOAD) -o AlignedMemory.o $(SRCDIR)common/AlignedMemory.cpp
+	$(CC) $(CFLAGS) -o AlignedMemory.o $(SRCDIR)common/AlignedMemory.cpp
 
 DataMatrix.o : $(SRCDIR)data/DataMatrix.cpp
 	$(CC) $(CFLAGS) -o DataMatrix.o $(SRCDIR)data/DataMatrix.cpp

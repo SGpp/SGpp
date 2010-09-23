@@ -14,7 +14,7 @@ namespace sg
 DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda, std::string vecMode)
 {
 	// handle unsupported vector extensions
-	if (vecMode != "SSE" && vecMode != "AVX")
+	if (vecMode != "SSE" && vecMode != "AVX" && vecMode != "MIC")
 	{
 		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX are supported vector extensions!");
 	}
@@ -33,10 +33,14 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	{
 		this->vecWidth = 8;
 	}
+	else if (this->vecMode == "OCL")
+	{
+		this->vecWidth = 16;
+	}
 	// should not happen because this exception should have been thrown some lines upwards!
 	else
 	{
-		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX are supported vector extensions!");
+		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL are supported vector extensions!");
 	}
 
 	numTrainingInstances = data->getNrows();
