@@ -36,7 +36,7 @@
 #define REFINE_NUM_POINTS 100
 
 // solving settings
-#define CG_IMAX 200
+#define CG_IMAX 1000
 #define CG_EPS 0.0001
 
 // regularization fector
