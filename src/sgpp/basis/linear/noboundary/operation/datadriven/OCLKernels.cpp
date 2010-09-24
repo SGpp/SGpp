@@ -199,7 +199,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multSP, 0, NULL, NULL, NULL, NULL);
+	    err = clBuildProgram(program_multSP, 0, NULL, "-cl-mad-enable -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
@@ -346,7 +346,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multTransSP, 0, NULL, NULL, NULL, NULL);
+	    err = clBuildProgram(program_multTransSP, 0, NULL,  "-cl-mad-enable -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
