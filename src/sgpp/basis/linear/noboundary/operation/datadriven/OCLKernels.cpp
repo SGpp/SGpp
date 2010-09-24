@@ -14,6 +14,8 @@
 #include <string>
 #include <sstream>
 
+#define DIMUNROLLING
+
 // include OpenCL
 #include "CL/cl.h"
 
@@ -171,16 +173,28 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		stream_program_src << "	for(int i = 0; i < sourceSize; i++)" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		stream_program_src << "		float curSupport = ptrSource[i];" << std::endl << std::endl;
+#ifdef DIMUNROLLING
 		for (size_t d = 0; d < dims; d++)
 		{
-			stream_program_src << "		eval = ((ptrLevel[(globalIdx*" << dims << ")+" << d << "]) * (ptrData[(" << d << "*" << sourceSize << ")+i]));" << std::endl;
-			stream_program_src << "		index_calc = eval - (ptrIndex[(globalIdx*" << dims << ")+" << d << "]);" << std::endl;
-			stream_program_src << "		abs = fabs(index_calc);" << std::endl;
-			stream_program_src << "		last = 1.0 - abs;" << std::endl;
-			stream_program_src << "		localSupport = fmax(last, 0.0);" << std::endl;
-			stream_program_src << "		curSupport *= localSupport;" << std::endl << std::endl;
+			stream_program_src << "			eval = ((ptrLevel[(globalIdx*" << dims << ")+" << d << "]) * (ptrData[(" << d << "*" << sourceSize << ")+i]));" << std::endl;
+			stream_program_src << "			index_calc = eval - (ptrIndex[(globalIdx*" << dims << ")+" << d << "]);" << std::endl;
+#else
+			stream_program_src << "		for (int d = 0; d < " << dims << "; d++)" << std::endl;
+			stream_program_src << "		{" << std::endl;
+			stream_program_src << "			eval = ((ptrLevel[(globalIdx*" << dims << ")+d]) * (ptrData[(d*" << sourceSize << ")+i]));" << std::endl;
+			stream_program_src << "			index_calc = eval - (ptrIndex[(globalIdx*" << dims << ")+ d]);" << std::endl;
+
+#endif
+			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
+			stream_program_src << "			last = 1.0 - abs;" << std::endl;
+			stream_program_src << "			localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "			curSupport *= localSupport;" << std::endl;
+#ifdef DIMUNROLLING
 		}
-		stream_program_src << "		myResult += curSupport;" << std::endl;
+#else
+		stream_program_src << "		}" << std::endl;
+#endif
+		stream_program_src << std::endl << "		myResult += curSupport;" << std::endl;
 		stream_program_src << "	}" << std::endl;
 		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
@@ -318,16 +332,27 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		stream_program_src << "	for(int j = 0; j < storageSize; j++)" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		stream_program_src << "		float curSupport = ptrAlpha[j];" << std::endl << std::endl;
+#ifdef DIMUNROLLING
 		for (size_t d = 0; d < dims; d++)
 		{
-			stream_program_src << "		eval = ((ptrLevel[(j*" << dims << ")+" << d << "]) * (ptrData[(" << d << "*" << result_size << ")+globalIdx]));" << std::endl;
-			stream_program_src << "		index_calc = eval - (ptrIndex[(j*" << dims << ")+" << d << "]);" << std::endl;
-			stream_program_src << "		abs = fabs(index_calc);" << std::endl;
-			stream_program_src << "		last = 1.0 - abs;" << std::endl;
-			stream_program_src << "		localSupport = fmax(last, 0.0);" << std::endl;
-			stream_program_src << "		curSupport *= localSupport;" << std::endl << std::endl;
+			stream_program_src << "			eval = ((ptrLevel[(j*" << dims << ")+" << d << "]) * (ptrData[(" << d << "*" << result_size << ")+globalIdx]));" << std::endl;
+			stream_program_src << "			index_calc = eval - (ptrIndex[(j*" << dims << ")+" << d << "]);" << std::endl;
+#else
+			stream_program_src << "		for (int d = 0; d < " << dims << "; d++)" << std::endl;
+			stream_program_src << "		{" << std::endl;
+				stream_program_src << "			eval = ((ptrLevel[(j*" << dims << ")+d]) * (ptrData[(d*" << result_size << ")+globalIdx]));" << std::endl;
+				stream_program_src << "			index_calc = eval - (ptrIndex[(j*" << dims << ")+d]);" << std::endl;
+#endif
+			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
+			stream_program_src << "			last = 1.0 - abs;" << std::endl;
+			stream_program_src << "			localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "			curSupport *= localSupport;" << std::endl;
+#ifdef DIMUNROLLING
 		}
-		stream_program_src << "		myResult += curSupport;" << std::endl;
+#else
+		stream_program_src << "		}" << std::endl;
+#endif
+		stream_program_src << std::endl << "		myResult += curSupport;" << std::endl;
 		stream_program_src << "	}" << std::endl;
 		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
