@@ -22,7 +22,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 /// default value for epsilon in gridpoints @money
 #define DFLT_EPS_AT_MONEY 0.0
 /// default value for sigma of refinement normal distribution
-#define DFLT_SIGMA_REFINE_NORMDIST 0.1
+#define DFLT_SIGMA_REFINE_NORMDIST 0.15
 
 /**
  * reads the values of mu, sigma and rho of all assets from
