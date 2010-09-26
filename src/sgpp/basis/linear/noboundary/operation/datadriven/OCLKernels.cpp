@@ -15,6 +15,7 @@
 #include <sstream>
 
 #define DIMUNROLLING
+#define OCL_MULT_BLOCKSIZE 128
 
 // include OpenCL
 #include "CL/cl.h"
@@ -168,7 +169,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		stream_program_src << "{" << std::endl;
 		stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl << std::endl;
 		stream_program_src << "	float eval, index_calc, abs, last, localSupport;" << std::endl << std::endl;
-		stream_program_src << "	float myResult = 0.0;" << std::endl << std::endl;
+		stream_program_src << "	float myResult = 0.0f;" << std::endl << std::endl;
 		stream_program_src << "	// Iterate over all grid points" << std::endl;
 		stream_program_src << "	for(int i = 0; i < sourceSize; i++)" << std::endl;
 		stream_program_src << "	{" << std::endl;
@@ -176,6 +177,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 #ifdef DIMUNROLLING
 		for (size_t d = 0; d < dims; d++)
 		{
+			//stream_program_src << "			prefetch(&ptrData[(" << d << "*" << sourceSize << ")+(i+20)], 1);" << std::endl;
 			stream_program_src << "			eval = ((ptrLevel[(globalIdx*" << dims << ")+" << d << "]) * (ptrData[(" << d << "*" << sourceSize << ")+i]));" << std::endl;
 			stream_program_src << "			index_calc = eval - (ptrIndex[(globalIdx*" << dims << ")+" << d << "]);" << std::endl;
 #else
@@ -186,8 +188,8 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 
 #endif
 			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
-			stream_program_src << "			last = 1.0 - abs;" << std::endl;
-			stream_program_src << "			localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "			last = 1.0f - abs;" << std::endl;
+			stream_program_src << "			localSupport = fmax(last, 0.0f);" << std::endl;
 			stream_program_src << "			curSupport *= localSupport;" << std::endl;
 #ifdef DIMUNROLLING
 		}
@@ -262,9 +264,9 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		return 0.0;
 	}
 
-    // determine best fit devideable by 128
-	size_t numWGs = storageSize/128;
-    size_t global = numWGs*128;
+    // determine best fit devideable by OCL_MULT_BLOCKSIZE
+	size_t numWGs = storageSize/OCL_MULT_BLOCKSIZE;
+    size_t global = numWGs*OCL_MULT_BLOCKSIZE;
     if (global == 0)
     {
     	global = storageSize;
@@ -282,7 +284,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     clFinish(command_queue);
 
     // read data back
-    err = clEnqueueReadBuffer(command_queue, clResult, CL_TRUE, 0, sizeof(float)*storageSize, ptrGlobalResult, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(command_queue, clResult, CL_TRUE, 0, sizeof(float)*global, ptrGlobalResult, 0, NULL, NULL);
     if (err != CL_SUCCESS)
 	{
     	std::cout << "Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
@@ -338,11 +340,13 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		stream_program_src << "{" << std::endl;
 		stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl << std::endl;
 		stream_program_src << "	float eval, index_calc, abs, last, localSupport;" << std::endl << std::endl;
-		stream_program_src << "	float myResult = 0.0;" << std::endl << std::endl;
+		stream_program_src << "	float myResult = 0.0f;" << std::endl << std::endl;
 		stream_program_src << "	// Iterate over all grid points" << std::endl;
 		stream_program_src << "	for(int j = 0; j < storageSize; j++)" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		stream_program_src << "		float curSupport = ptrAlpha[j];" << std::endl << std::endl;
+		//stream_program_src << "		prefetch(&ptrLevel[((j+20)*" << dims << ")], " << dims << ");" << std::endl;
+		//stream_program_src << "		prefetch(&ptrIndex[((j+20)*" << dims << ")], " << dims << ");" << std::endl << std::endl;
 #ifdef DIMUNROLLING
 		for (size_t d = 0; d < dims; d++)
 		{
@@ -355,8 +359,8 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 				stream_program_src << "			index_calc = eval - (ptrIndex[(j*" << dims << ")+d]);" << std::endl;
 #endif
 			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
-			stream_program_src << "			last = 1.0 - abs;" << std::endl;
-			stream_program_src << "			localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "			last = 1.0f - abs;" << std::endl;
+			stream_program_src << "			localSupport = fmax(last, 0.0f);" << std::endl;
 			stream_program_src << "			curSupport *= localSupport;" << std::endl;
 #ifdef DIMUNROLLING
 		}
