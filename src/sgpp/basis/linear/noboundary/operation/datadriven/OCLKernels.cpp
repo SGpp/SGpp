@@ -214,6 +214,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 
 	    // compiling the program
 	    err = clBuildProgram(program_multSP, 0, NULL, "-cl-mad-enable -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+	    //err = clBuildProgram(program_multSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
@@ -261,7 +262,14 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		return 0.0;
 	}
 
-    size_t global = storageSize;
+    // determine best fit devideable by 128
+	size_t numWGs = storageSize/128;
+    size_t global = numWGs*128;
+    if (global == 0)
+    {
+    	global = storageSize;
+    }
+    //size_t global = storageSize;
     // enqueue kernel
     err = clEnqueueNDRangeKernel(command_queue, kernel_multSP, 1, NULL, &global, NULL, 0, NULL, NULL);
     if (err != CL_SUCCESS)
@@ -287,25 +295,28 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 
     isFirstTimeMultSP = false;
 
-//    for (size_t i = 0; i < sourceSize; i++)
-//	{
-//		for (size_t j = 0; j < storageSize; j++)
-//		{
-//			float curSupport = ptrSource[i];
-//
-//			for (size_t d = 0; d < dims; d++)
-//			{
-//				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*sourceSize)+i]));
-//				float index_calc = eval - (ptrIndex[(j*dims)+d]);
-//				float abs = fabs(index_calc);
-//				float last = 1.0 - abs;
-//				float localSupport = std::max<float>(last, 0.0);
-//				curSupport *= localSupport;
-//			}
-//
-//			ptrGlobalResult[j] += curSupport;
-//		}
-//	}
+    // do the rest...
+	for (size_t j = global; j < storageSize; j++)
+	{
+		ptrGlobalResult[j] = 0.0;
+
+		for (size_t i = 0; i < sourceSize; i++)
+		{
+			float curSupport = ptrSource[i];
+
+			for (size_t d = 0; d < dims; d++)
+			{
+				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*sourceSize)+i]));
+				float index_calc = eval - (ptrIndex[(j*dims)+d]);
+				float abs = fabs(index_calc);
+				float last = 1.0 - abs;
+				float localSupport = std::max<float>(last, 0.0);
+				curSupport *= localSupport;
+			}
+
+			ptrGlobalResult[j] += curSupport;
+		}
+	}
 
 	return time;
 }
@@ -372,6 +383,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 
 	    // compiling the program
 	    err = clBuildProgram(program_multTransSP, 0, NULL,  "-cl-mad-enable -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+	    //err = clBuildProgram(program_multTransSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
