@@ -19,7 +19,7 @@ double f(double x0, double x1) {
 int main() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
+  Grid* grid = Grid::createLinearTrapezoidBoundaryGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
   cout << "dimensionality:         " << gridStorage->dim() << endl;
 

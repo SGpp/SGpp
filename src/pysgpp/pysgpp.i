@@ -57,10 +57,16 @@ namespace std {
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.hpp"
+%include "src/sgpp/grid/generation/TruncatedTrapezoidGridGenerator.hpp"
+%include "src/sgpp/grid/generation/SquareRootGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
 %include "GridFactory.i"
+
+%include "FullGrid.i"
+%include "src/sgpp/grid/combination/FullGridSet.hpp"
+%include "FullGridSet.i"
 
 // the Bad
 

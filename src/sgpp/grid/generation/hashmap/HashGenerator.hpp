@@ -123,6 +123,60 @@ public:
 			this->boundaries_rec(storage, index, storage->dim()-1, 0, level);
 		}
 	}
+/**
+	 * Generates a regular square root grid of level level with boundaries
+	 *
+	 *
+	 * @param storage Hashmap, that stores the grid points
+	 * @param level maximum level of the square root  grid
+	 */
+	void squareRoot(GridStorage* storage, int level)
+		{
+			if(storage->size() > 0)
+			{
+				throw generation_exception("storage not empty");
+			}
+
+			index_type index(storage->dim());
+			for(size_t d = 0; d < storage->dim(); d++)
+		  	{
+		  					index.push(d, 0, 0, false);
+		  				}
+			/**
+			 * Change here to the following code to take the [n/2]+1 grid as small level for odd numbers(and also change FullGridSet getSquare method)
+			 * int small_level=ceil(level/2);
+             * if (level%2==0) level--;
+			 * */
+            int small_level=level/2;
+		  	this->square_rec(storage, index, storage->dim()-1,  level,small_level,false,0);
+
+		}
+	/**
+	 * Generates a truncated trapezoid boundary grid containing all gridpoints with li<l-k and |l|<l+(dim-1)*k
+	 *
+	 *
+	 * @param storage Hashmap, that stores the grid points
+	 * @param level maximum level of the square root  grid
+	 * @param k the parameter which determines the maximum level of the gridpoints for every dimension
+	 */
+	void truncated(GridStorage* storage, int level,int k)
+		{
+			if(storage->size() > 0)
+			{
+				throw generation_exception("storage not empty");
+			}
+
+			index_type index(storage->dim());
+
+			for(size_t d = 0; d < storage->dim(); d++)
+			{
+				index.push(d, 0, 0, false);
+			}
+
+			size_t mydim = storage->dim();
+			index.setLeaf(true);
+			trunc_rec(storage, index, (mydim - 1), mydim*k, (level + k*(mydim - 1)),k);
+		}
 
 protected:
 	/**
@@ -414,6 +468,206 @@ protected:
 
 		index.push(current_dim, source_level, source_index);
 	}
+/**
+		 * recursive construction of a square root grid with boundaries
+		 *
+		 * @param storage hashmap that stores the grid points
+		 * @param index point's index
+		 * @param current_dim current working dimension
+		 * @param level maximum level of the square root grid
+		 * @param tail true if there is a level of the index>level/2
+		 */
+	void square_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t level,level_t small_level,bool tail,size_t sum)
+		{
+			index_t source_index;
+			level_t source_level;
+
+			index.get(current_dim, source_level, source_index);
+	        bool newtail=tail||(source_level>small_level);
+				// d-1 recursion
+				if (source_level == 0)
+				{
+					if (current_dim == 0)
+					{
+						index.setLeaf(false);
+						index.push(0, 0, 0);
+						storage->insert(index);
+						index.push(0, 0, 1);
+						storage->insert(index);
+
+						index.push(current_dim, source_level, source_index);
+					}
+					else
+					{
+						//we want all nodes, so we initialize the unassigned levels to start from 0
+						for (size_t d=0;d<current_dim;d++)
+												  index.push(d, 0, 0);
+						index.push(current_dim, 0, 0);
+						this->square_rec(storage, index, current_dim-1, level,small_level,newtail,sum);
+
+
+						for (size_t d=0;d<current_dim;d++)
+												  index.push(d, 0, 0);
+						index.push(current_dim, 0, 1);
+
+						this->square_rec(storage, index, current_dim-1, level,small_level,newtail,sum);
+
+						index.push(current_dim, source_level, source_index);
+					}
+				}
+				else
+				{
+					if (current_dim == 0)
+					{
+						/**
+						 * If a level of the node equals level, and all the others equal small_level, the node is a leaf
+						 * This is equivalent to saying the sum of levels equals small_level*(dim-1)+level
+						 * */
+						if (sum==(small_level*(storage->dim()-1)+level)) index.setLeaf(true);
+						else index.setLeaf(false);
+						storage->insert(index);
+					}
+					else
+					{
+
+						for (size_t d=0;d<current_dim;d++)
+												  index.push(d, 0, 0);
+						this->square_rec(storage, index, current_dim-1,  level,small_level,newtail,sum);
+					}
+				}
+			/**If the level of the node is smaller than small_level or we didn't have yet a level greater than small_level(!tail) and the level is smaller then level then
+			we can then proceed to the next level on this dimension, otherwise we reached the maximum possible level*
+			*/
+			if((source_level < small_level)||((!tail)&&(source_level<level)))
+			{
+				if (source_level == 0 && source_index == 0)
+				{
+					index.push(current_dim, source_level + 1, 1);
+					this->square_rec(storage, index, current_dim,  level,small_level,tail,sum+1);
+				}
+				else
+				{
+					index.push(current_dim, source_level + 1, 2*source_index - 1);
+					this->square_rec(storage, index, current_dim,  level,small_level,tail,sum+1);
+
+					index.push(current_dim, source_level + 1, 2*source_index + 1);
+					this->square_rec(storage, index, current_dim,  level,small_level,tail,sum+1);
+				}
+			}
+
+	}
+	/**
+			 * recursive construction of a super trapezoid grid with boundaries
+			 *
+			 * @param storage hashmap that stores the grid points
+			 * @param index point's index
+			 * @param current_dim current working dimension
+			 * @param current_level the current level of the gridpoint so far, starts from minlevel*dim
+			 * @param level the maximum level of the gridpoint
+			 * @param minlevel the level limit given by the user(tells us which fullgrids won't be present in the construction of the sparse grid)
+			 * @param tail true if there is a level of the index>level/2
+			 */
+	void trunc_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level,size_t minlevel)
+		{
+			index_t source_index;
+			level_t source_level;
+
+			index.get(current_dim, source_level, source_index);
+			bool bSaveLeafProperty = index.isLeaf();
+			if(current_level <= level)
+			{
+				// set Leaf option of index
+
+				bool bLeafProperty = bSaveLeafProperty;
+				if (source_level<minlevel)
+				{
+					bLeafProperty = false;
+				}
+
+				// d-1 recursion
+				if (source_level == 0)
+				{
+					if (current_dim == 0)
+					{
+						if (current_level<level) bLeafProperty=false;
+						index.push(0, 0, 0, bLeafProperty);
+						storage->insert(index);
+						index.push(0, 0, 1, bLeafProperty);
+						storage->insert(index);
+
+						index.push(current_dim, source_level, source_index, bSaveLeafProperty);
+					}
+					else
+					{
+						index.push(current_dim, 0, 0, bLeafProperty);
+						trunc_rec(storage, index, current_dim-1, current_level, level,minlevel);
+
+						index.push(current_dim, 0, 1, bLeafProperty);
+						trunc_rec(storage, index, current_dim-1, current_level, level,minlevel);
+
+						index.push(current_dim, source_level, source_index, bSaveLeafProperty);
+					}
+				}
+				else
+				{
+					if (current_dim == 0)
+					{
+						if (current_level<level) bLeafProperty=false;
+						index.setLeaf(bLeafProperty);
+						storage->insert(index);
+					}
+					else
+					{
+						index.setLeaf(bLeafProperty);
+						trunc_rec(storage, index, current_dim-1, current_level, level,minlevel);
+					}
+					index.setLeaf(bSaveLeafProperty);
+				}
+			}
+
+	        if (source_level<minlevel){
+	        	/**
+	        	 * If the source level of the node is smaller than minlevel we don't increase the variable current_level(since we started with minlevel*dim)
+	        	 * This trick makes it possible to introduce all nodes with source_level<minlevel without a separate treatment
+	        	 * */
+	        	if (source_level == 0 && source_index == 0)
+	        				{
+	        					index.push(current_dim, source_level + 1, 1);
+	        					trunc_rec(storage, index, current_dim, current_level, level,minlevel);
+	        				}
+	        				else
+	        				{
+	        					index.push(current_dim, source_level + 1, 2*source_index - 1);
+	        					trunc_rec(storage, index, current_dim, current_level, level,minlevel);
+
+	        					index.push(current_dim, source_level + 1, 2*source_index + 1);
+	        					trunc_rec(storage, index, current_dim, current_level , level,minlevel);
+	        				}
+
+	          }
+	        else
+	        	if(current_level < level)
+			    {
+	        		/**
+	        		 * if the source_level is already >=minlevel we can proceed naturally and increase the current_level which represents the sum of levels so far
+	        		 * */
+				if (source_level == 0 && source_index == 0)
+				{
+					index.push(current_dim, source_level + 1, 1);
+					trunc_rec(storage, index, current_dim, current_level + 1, level,minlevel);
+				}
+				else
+				{
+					index.push(current_dim, source_level + 1, 2*source_index - 1);
+					trunc_rec(storage, index, current_dim, current_level + 1, level,minlevel);
+
+					index.push(current_dim, source_level + 1, 2*source_index + 1);
+					trunc_rec(storage, index, current_dim, current_level + 1, level,minlevel);
+				}
+			}
+
+			index.push(current_dim, source_level, source_index,bSaveLeafProperty);
+		}
 };
 
 }
