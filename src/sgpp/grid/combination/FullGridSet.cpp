@@ -214,7 +214,7 @@ void FullGridSet::generate(size_t dim, size_t* levels, size_t* l_user)
 		size_t n=levels[0];
 		size_t i,q;
 		size_t max=l_user[0];
-		vector<level_t> *v;
+		vector<level_t> v(0);
 		size=0;
 		int combi,oldsize;
 		double* ratio=new double[dim];
@@ -233,7 +233,7 @@ void FullGridSet::generate(size_t dim, size_t* levels, size_t* l_user)
 					combi=combination(dim-1,q);
 					oldsize=size;
 					if (q%2!=0) combi=-combi;
-					 getTrapezoidsums(v,dim,n-q,1,ratio);
+					 getTrapezoidsums(&v,dim,n-q,l_user,ratio);
 					 for (i=oldsize;i<size;i++)
 							coefs.push_back(combi);
 			  }
@@ -290,6 +290,7 @@ void FullGridSet::getsums(vector<level_t> *v,size_t dim,size_t sum)
  				getsums(v,dim-1,sum-i);
 				v->pop_back();
 			}
+
 		
 	}
 void FullGridSet::getInnersums(vector<level_t> *v,size_t dim,size_t sum)
@@ -409,7 +410,7 @@ void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,int l_u
 			}
 
 	}
-void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,int* l_user,double* ratio)
+void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,size_t* l_user,double* ratio)
 	{
 	/**
 	 * Takes recursively every possible combination of numbers which add up to sum creating a linear boundary grid for each one

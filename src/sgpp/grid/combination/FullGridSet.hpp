@@ -313,7 +313,7 @@ protected:
     * We use the same method for all types of grids with boundary(except the squareRoot grid)
     * */
    void getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,int l_user,double* ratio);
-   void getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,int* l_user,double* ratio);
+   void getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,size_t* l_user,double* ratio);
    void getInnersums(vector<level_t> *v,size_t dim,int sum,double* ratio);
    /**
    	 * Computes the combination C(n,k)
