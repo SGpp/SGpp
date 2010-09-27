@@ -30,7 +30,7 @@ LinearFullGrid(size_t indim, vector<level_t> *inlevel): FullGrid(indim){
  *@param index the indexes of the gridpoint in every direction
  *@return acces to the gridpoint value in the data vector
  */
-double& at(index_t *index){
+virtual double& at(index_t *index){
     size_t ind=0;
     for (int i=dim-1;i>=0;i--)
     	    	ind=(powOfTwo[level[i]]-1)*ind+index[i];
