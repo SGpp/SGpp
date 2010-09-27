@@ -156,7 +156,7 @@ double eval(DataVector& p)
 
    	 value = 0.0;
    	 size_t d=dim;
-   	 for (ii=0;ii<dim;ii++)
+   	 for (ii=0;ii < (int)dim;ii++)
    		 if (level[ii]==1)
    			 d--;
    	 nr=1<<d;
@@ -196,7 +196,7 @@ double eval(DataVector& p)
    	            		  baseVal*=(intersect[2*jj+vv]-1);
    	              }
    	              else
-   	               if (aindex[jj]==this->length(jj)){
+   	               if (aindex[jj]== (int)this->length(jj)){
    	            	 i = i*this->length(jj)+aindex[jj]-1;
    	            	 if (vv==0)
    	            	   	  baseVal*= (intersect[2*jj+vv]-1);

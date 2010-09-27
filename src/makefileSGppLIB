@@ -24,7 +24,8 @@ SRCDIR = ./../../../src/sgpp/
 OUTDIR = ./
 BINDIR = ./../../../lib/sgpp/
 OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
-	ModPolyGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
+	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
+	TruncatedTrapezoidGridGenerator.o SquareRootGridGenerator.o\
 	OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o\
 	OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
 	OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
@@ -107,12 +108,24 @@ ModBsplineGrid.o : $(SRCDIR)grid/type/ModBsplineGrid.cpp
 
 ModPolyGrid.o : $(SRCDIR)grid/type/ModPolyGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModPolyGrid.o $(SRCDIR)grid/type/ModPolyGrid.cpp
-
+	
+SquareRootGrid.o : $(SRCDIR)grid/type/SquareRootGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SquareRootGrid.o $(SRCDIR)grid/type/SquareRootGrid.cpp
+	
+TruncatedTrapezoidGrid.o : $(SRCDIR)grid/type/TruncatedTrapezoidGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TruncatedTrapezoidGrid.o $(SRCDIR)grid/type/TruncatedTrapezoidGrid.cpp
+	
 PolyGrid.o : $(SRCDIR)grid/type/PolyGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PolyGrid.o $(SRCDIR)grid/type/PolyGrid.cpp
 	
 StandardGridGenerator.o : $(SRCDIR)grid/generation/StandardGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StandardGridGenerator.o $(SRCDIR)grid/generation/StandardGridGenerator.cpp
+	
+SquareRootGridGenerator.o : $(SRCDIR)grid/generation/SquareRootGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SquareRootGridGenerator.o $(SRCDIR)grid/generation/SquareRootGridGenerator.cpp
+	
+TruncatedTrapezoidGridGenerator.o : $(SRCDIR)grid/generation/TruncatedTrapezoidGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TruncatedTrapezoidGridGenerator.o $(SRCDIR)grid/generation/TruncatedTrapezoidGridGenerator.cpp
 	
 BoundaryGridGenerator.o : $(SRCDIR)grid/generation/BoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundaryGridGenerator.o $(SRCDIR)grid/generation/BoundaryGridGenerator.cpp
