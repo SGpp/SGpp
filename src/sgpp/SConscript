@@ -38,6 +38,8 @@ grid/Grid.cpp
 grid/common/BoundingBox.cpp
 grid/common/DirichletUpdateVector.cpp
 grid/common/DirichletGridConverter.cpp
+grid/combination/FullGrid.cpp
+grid/combination/FullGridSet.cpp
 
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp
@@ -47,10 +49,14 @@ grid/type/PolyGrid.cpp
 grid/type/ModPolyGrid.cpp
 grid/type/ModWaveletGrid.cpp
 grid/type/ModBsplineGrid.cpp
+grid/type/SquareRootGrid.cpp
+grid/type/TruncatedTrapezoidGrid.cpp
 
 grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
 grid/generation/TrapezoidBoundaryGridGenerator.cpp
+grid/generation/SquareRootGridGenerator.cpp
+grid/generation/TruncatedTrapezoidGridGenerator.cpp
 grid/generation/SurplusRefinementFunctor.cpp
 grid/generation/SurplusCoarseningFunctor.cpp
 

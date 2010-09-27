@@ -52,6 +52,8 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 #include "grid/generation/BoundaryGridGenerator.hpp"
 #include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
+#include "grid/generation/SquareRootGridGenerator.hpp"
+#include "grid/generation/TruncatedTrapezoidGridGenerator.hpp"
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/generation/hashmap/HashGenerator.hpp"
 #include "grid/generation/hashmap/HashRefinement.hpp"
@@ -60,6 +62,11 @@
 #include "grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
+
+#include "grid/combination/FullGrid.hpp"
+#include "grid/combination/FullGridSet.hpp"
+#include "grid/combination/LinearFullGrid.hpp"
+#include "grid/combination/OptiCom.hpp"
 
 #include "solver/sle/ConjugateGradients.hpp"
 #include "solver/sle/BiCGStab.hpp"

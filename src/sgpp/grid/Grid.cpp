@@ -14,6 +14,8 @@
 #include "grid/type/ModPolyGrid.hpp"
 #include "grid/type/ModWaveletGrid.hpp"
 #include "grid/type/ModBsplineGrid.hpp"
+#include "grid/type/SquareRootGrid.hpp"
+#include "grid/type/TruncatedTrapezoidGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "operation/common/OperationIdentity.hpp"
@@ -59,6 +61,17 @@ Grid* Grid::createModWaveletGrid(size_t dim)
 Grid* Grid::createModBsplineGrid(size_t dim, size_t degree)
 {
     return new ModBsplineGrid(dim, degree);
+}
+
+Grid* Grid::createSquareRootGrid(size_t dim)
+{
+    return new SquareRootGrid(dim);
+}
+
+
+Grid* Grid::createTruncatedTrapezoidGrid(size_t dim)
+{
+    return new TruncatedTrapezoidGrid(dim);
 }
 
 OperationMatrix* Grid::createOperationIdentity()

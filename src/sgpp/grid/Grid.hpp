@@ -99,6 +99,21 @@ public:
 	 *
 	 * @param istr string that contains the grid information
 	 */
+	/**
+	* creates a square root grid(h-grid)
+	* @param dim the grid's dimension
+	* */
+	static Grid* createSquareRootGrid(size_t dim);
+	/**
+	* creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have |l|<level and li>=l_user
+	* @param dim the grid's dimension
+	* */
+	static Grid* createTruncatedTrapezoidGrid(size_t dim);
+	/**
+  	 * reads a grid out of a string
+  	 *
+  	 * @param istr string that contains the grid information
+  	 */
 	static Grid* unserialize(const std::string& istr);
 
 	/**
