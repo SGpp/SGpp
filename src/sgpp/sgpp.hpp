@@ -24,6 +24,7 @@
 #include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/ModifiedBlackScholesODESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteODESolverSystem.hpp"
 #include "algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
 #include "algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"

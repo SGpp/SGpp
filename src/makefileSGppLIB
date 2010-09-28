@@ -58,7 +58,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
 	UpdPhidPhiBBIterativeLinearBoundary.o OperationBIterativeAVXLinear.o\
 	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o\
-	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o BlackScholesODESolverSystemEuropean.o
+	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesODESolverSystem.o BlackScholesODESolverSystemEuropean.o 
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -423,7 +423,10 @@ DowndPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/
 	
 UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp	
-		
+	
+ModifiedBlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/ModifiedBlackScholesODESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModifiedBlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/ModifiedBlackScholesODESolverSystem.cpp
+	
 BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
 

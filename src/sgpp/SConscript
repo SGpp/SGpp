@@ -176,6 +176,7 @@ algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
 algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
 
 algorithm/pde/BlackScholesODESolverSystem.cpp
+algorithm/pde/ModifiedBlackScholesODESolverSystem.cpp
 algorithm/pde/HullWhiteODESolverSystem.cpp
 algorithm/pde/BlackScholesODESolverSystemEuropean.cpp
 algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
