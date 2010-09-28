@@ -32,7 +32,6 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->TimestepSize_old = TimestepSize;
 	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
 	this->GridConverter = new DirichletGridConverter();
-	//this->modifier = new PDESolver();
 	this->r = r;
 	this->mus = &mu;
 	this->sigmas = &sigma;
@@ -64,7 +63,7 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	}
 
 	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
-	this->OpFBound = this->BoundGrid->createOperationLF();
+
 	// right hand side if System
 	this->rhs = NULL;
 
@@ -91,7 +90,6 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 	delete this->deltaCoef;
 	delete this->BoundaryUpdate;
 	delete this->GridConverter;
-	delete this->OpFBound;
 	if (this->InnerGrid != NULL)
 	{
 		delete this->InnerGrid;
@@ -128,13 +126,6 @@ void BlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, Data
 	// Apply the gamma method
 	this->OpGammaBound->mult(alpha, temp);
 	result.sub(temp);
-
-	//this->OpFBound->mult(alpha, temp);
-	//result.axpy(0.06, temp);
-	this->OpFBound->mult(alpha, temp);
-	this->BoundaryUpdate->multiplyrBSHW(temp);
-	//this->modifier->multiplyrBSHW(temp);
-	result.add(temp);
 }
 
 void BlackScholesODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
@@ -161,14 +152,17 @@ void BlackScholesODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVe
 
 void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 {
-	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
+#ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
-
+	if (this->r != 0.0)
+	{
 		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
-			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
+			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
+	}
+#endif
+
 	// add number of Gridpoints
 	this->numSumGridpointsInner += 0;
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
@@ -222,14 +216,16 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 
 void BlackScholesODESolverSystem::startTimestep()
 {
-	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
+#ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
-
+	if (this->r != 0.0)
+	{
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
-			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
+			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 		}
+	}
+#endif
 }
 
 void BlackScholesODESolverSystem::buildGammaCoefficients()

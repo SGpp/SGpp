@@ -3,10 +3,10 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Chao qi (qic@in.tum.de)
 
 #include "algorithm/pde/BlackScholesODESolverSystem.hpp"
-//#include "algorithm/pde/ModifiedBlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/ModifiedBlackScholesODESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteODESolverSystem.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
@@ -171,10 +171,11 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		std::vector<size_t> newAlgoDimsBS(1);
 		newAlgoDimsBS[0]=0;
 		setAlgorithmicDimensions(newAlgoDimsBS);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		ModifiedBlackScholesODESolverSystem* myBSSystem = new ModifiedBlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
-		//std::cout << alpha.toString() << std::endl;
+
+	//std::cout << alpha.toString() << std::endl;
 		myBoundaries[0].bDirichletLeft = false;
 		myBoundaries[0].bDirichletRight = false;
 		myBoundaries[1].bDirichletLeft = true;
@@ -188,9 +189,10 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		std::vector<size_t> newAlgoDimsHW(1);
 		newAlgoDimsHW[0]=1;
 		setAlgorithmicDimensions(newAlgoDimsHW);
-		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 
+		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+
+		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
@@ -204,11 +206,9 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
 			this->myScreen->writeEmptyLines(2);
 		}
-
 		this->finInnerGridSize = getNumberInnerGridPoints();
 		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
 		this->nNeededIterations = myEuler->getNumberIterations();
-
 		delete myBSSystem;
 		delete myHWSystem;
 		delete myCG;
@@ -219,6 +219,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 	{
 		throw new application_exception("BlackScholesHullWhiteSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}
+
 }
 
 void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
