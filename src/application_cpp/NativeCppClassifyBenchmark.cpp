@@ -29,14 +29,14 @@
 #define TESTFILE "chess_02D_te.dat.arff"
 //#define TESTFILE "chess_05D_te.dat.arff"
 
-// grid generation settingsd
+// grid generation settings
 #define LEVELS 3
 #define REFINEMENTS 10
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
 
 // solving settings
-#define CG_IMAX 1000
+#define CG_IMAX 200
 #define CG_EPS 0.0001
 
 // regularization fector
@@ -132,7 +132,7 @@ void printSettings()
 	std::cout << "Vectorized: AVX" << std::endl << std::endl;
 #endif
 #ifdef USE_OCL
-	std::cout << "Vectorized: OpenCL (nVidia Fermi tested)" << std::endl << std::endl;
+	std::cout << "Vectorized: OpenCL (nVidia Fermi)" << std::endl << std::endl;
 #endif
 
 #ifdef EXEC_REGRESSION
@@ -251,7 +251,7 @@ void adaptClassificationTest(bool isRegression)
     	DataVector b(alpha.getSize());
     	mySystem->generateb(classes, b);
 
-    	myCG->solve(*mySystem, alpha, b, true, true, 0.0);
+    	myCG->solve(*mySystem, alpha, b, true, false, 0.0);
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
@@ -451,7 +451,7 @@ void adaptClassificationTestSP(bool isRegression)
     	DataVectorSP bSP(alphaSP.getSize());
     	mySystem->generateb(classesSP, bSP);
 
-    	myCG->solve(*mySystem, alphaSP, bSP, true, true, 0.0);
+    	myCG->solve(*mySystem, alphaSP, bSP, true, false, 0.0);
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;

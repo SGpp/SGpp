@@ -35,7 +35,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	}
 	else if (this->vecMode == "OCL")
 	{
-		this->vecWidth = 16;
+		this->vecWidth = 32;
 	}
 	// should not happen because this exception should have been thrown some lines upwards!
 	else
@@ -59,7 +59,13 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 			data->setRow(data->getNrows()-1, lastRow);
 		}
 	}
-	data->transpose();
+
+	numPatchedTrainingInstances = data->getNrows();
+
+	if (this->vecMode != "OCL")
+	{
+		data->transpose();
+	}
 
 	this->myTimer = new SGppStopwatch();
 }
@@ -73,12 +79,13 @@ DMSystemMatrixSPVectorizedIdentity::~DMSystemMatrixSPVectorizedIdentity()
 
 void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP& result)
 {
-	DataVectorSP temp((*data).getNcols());
+	DataVectorSP temp(numPatchedTrainingInstances);
 
     // Operation B
 	this->myTimer->start();
 	this->computeTimeMultTrans += this->B->multTransposeVectorized(alpha, (*data), temp);
     this->completeTimeMultTrans += this->myTimer->stop();
+
     // patch result -> set additional entries zero
     if (numTrainingInstances != temp.getSize())
     {
@@ -87,6 +94,7 @@ void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP&
     		temp.set(temp.getSize()-(i+1), 0.0);
     	}
     }
+
     this->myTimer->start();
     this->computeTimeMult += this->B->multVectorized(temp, (*data), result);
     this->completeTimeMult += this->myTimer->stop();
@@ -99,11 +107,11 @@ void DMSystemMatrixSPVectorizedIdentity::generateb(DataVectorSP& classes, DataVe
 	DataVectorSP myClasses(classes);
 
 	// Apply padding
-	size_t numCols = (*data).getNcols();
-	if (numCols != myClasses.getSize())
+	if (numPatchedTrainingInstances != myClasses.getSize())
 	{
-		myClasses.resizeZero(numCols);
+		myClasses.resizeZero(numPatchedTrainingInstances);
 	}
+
 	this->myTimer->start();
 	this->computeTimeMult += this->B->multVectorized(myClasses, (*data), b);
 	this->completeTimeMult += this->myTimer->stop();

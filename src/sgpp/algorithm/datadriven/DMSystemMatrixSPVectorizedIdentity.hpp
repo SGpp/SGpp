@@ -40,10 +40,12 @@ private:
 	float lamb;
 	/// OperationB for calculating the data matrix
 	OperationBVectorizedSP* B;
-	/// Pointer to the data vector
+	/// Pointer to the data matrix
 	DataMatrixSP* data;
-	/// Number of orignal training instances
+	/// Number of original training instances
 	size_t numTrainingInstances;
+	/// Number of patched and used training instances
+	size_t numPatchedTrainingInstances;
 	/// vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	std::string vecMode;
 	/// vector width, class internal variable to enable padding and patching of vectors
