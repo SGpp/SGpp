@@ -99,7 +99,7 @@ void DataVectorSP::resizeZero(size_t size) {
 
     // set new elements to zero
     for (size_t i = std::min(this->size, size); i < size; i++) {
-        newdata[i] = 0.0;
+        newdata[i] = 0.0f;
     }
 
     delete[] this->data;
@@ -282,7 +282,7 @@ void DataVectorSP::abs() {
 }
 
 float DataVectorSP::sum() {
-    float result = 0.0;
+    float result = 0.0f;
 
 #ifdef __ICC
 	#pragma vector aligned
@@ -294,7 +294,7 @@ float DataVectorSP::sum() {
 }
 
 float DataVectorSP::maxNorm() {
-    float max = 0.0;
+    float max = 0.0f;
     for (size_t i = 0; i < size; i++)
     {
         if (max < fabs(data[i]))
@@ -354,7 +354,7 @@ void DataVectorSP::axpy(float a, DataVectorSP& x) {
 }
 
 void DataVectorSP::normalize() {
-    normalize(0.0);
+    normalize(0.0f);
 }
 
 void DataVectorSP::normalize(float border) {
@@ -436,7 +436,7 @@ size_t DataVectorSP::getNumberNonZero()
 
     for (size_t i = 0; i < size; i++)
     {
-        if (fabs(data[i]) > 0.0)
+        if (fabs(data[i]) > 0.0f)
         {
             nonZero++;
         }

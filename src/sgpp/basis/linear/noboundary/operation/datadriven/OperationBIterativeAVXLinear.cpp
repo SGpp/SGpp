@@ -241,6 +241,7 @@ double OperationBIterativeAVXLinear::multVectorized(DataVector& alpha, DataMatri
 					for (size_t j = m; j < grid_end; j++)
 					{
 						double curSupport = ptrSource[i];
+
 #ifdef __ICC
 						#pragma ivdep
 						#pragma vector aligned
@@ -449,6 +450,7 @@ double OperationBIterativeAVXLinear::multTransposeVectorized(DataVector& alpha, 
 					for (size_t j = m; j < grid_end; j++)
 					{
 						double curSupport = ptrAlpha[j];
+
 #ifdef __ICC
 						#pragma ivdep
 						#pragma vector aligned

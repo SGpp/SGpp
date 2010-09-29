@@ -54,7 +54,7 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
 
-    result.setAll(0.0);
+    result.setAll(0.0f);
 
     float* ptrSource = alpha.getPointer();
     float* ptrData = data.getPointer();
@@ -78,7 +78,7 @@ double OperationBIterativeSPOCLLinear::multTransposeVectorized(DataVectorSP& alp
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
 
-    result.setAll(0.0);
+    result.setAll(0.0f);
 
     float* ptrAlpha = alpha.getPointer();
     float* ptrData = data.getPointer();

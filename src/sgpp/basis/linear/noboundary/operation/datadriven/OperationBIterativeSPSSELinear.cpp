@@ -102,7 +102,7 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
     	size_t end = std::min<size_t>(start+chunksize, source_size);
 
     	DataVectorSP myResult(result.getSize());
-    	myResult.setAll(0.0);
+    	myResult.setAll(0.0f);
     	float* ptrResult = myResult.getPointer();
 #else
     	size_t start = 0;
@@ -130,8 +130,8 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 							__m128 support_4 = _mm_load_ps(&(ptrSource[i+16]));
 							__m128 support_5 = _mm_load_ps(&(ptrSource[i+20]));
 
-							__m128 one = _mm_set1_ps(1.0);
-							__m128 zero = _mm_set1_ps(0.0);
+							__m128 one = _mm_set1_ps(1.0f);
+							__m128 zero = _mm_set1_ps(0.0f);
 
 							for (size_t d = 0; d < dims; d++)
 							{
@@ -220,8 +220,8 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 								float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
 								float index_calc = eval - (ptrIndex[(j*dims)+d]);
 								float abs = fabs(index_calc);
-								float last = 1.0 - abs;
-								float localSupport = std::max<float>(last, 0.0);
+								float last = 1.0f - abs;
+								float localSupport = std::max<float>(last, 0.0f);
 								curSupport *= localSupport;
 							}
 
@@ -244,8 +244,8 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
 							float index_calc = eval - (ptrIndex[(j*dims)+d]);
 							float abs = fabs(index_calc);
-							float last = 1.0 - abs;
-							float localSupport = std::max<float>(last, 0.0);
+							float last = 1.0f - abs;
+							float localSupport = std::max<float>(last, 0.0f);
 							curSupport *= localSupport;
 						}
 
@@ -264,6 +264,29 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 	}
 #endif
 
+//    float* ptrResult = result.getPointer();
+//
+//	#pragma omp parallel for
+//	for (size_t j = 0; j < storageSize; j++)
+//	{
+//		for (size_t i = 0; i < source_size; i++)
+//		{
+//			float curSupport = ptrSource[i];
+//
+//			for (size_t d = 0; d < dims; d++)
+//			{
+//				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
+//				float index_calc = eval - (ptrIndex[(j*dims)+d]);
+//				float abs = fabs(index_calc);
+//				float last = 1.0f - abs;
+//				float localSupport = std::max<float>(last, 0.0f);
+//				curSupport *= localSupport;
+//			}
+//
+//			ptrResult[j] += curSupport;
+//		}
+//	}
+
 	return myTimer->stop();
 }
 
@@ -272,6 +295,7 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
+    result.setAll(0.0);
     float* ptrAlpha = alpha.getPointer();
     float* ptrData = data.getPointer();
     float* ptrResult = result.getPointer();
@@ -312,7 +336,7 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 #endif
 			for (size_t i = c; i < data_end; i++)
 			{
-				ptrResult[i] = 0.0;
+				ptrResult[i] = 0.0f;
 			}
 
 			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m)))
@@ -332,8 +356,8 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 							__m128 support_4 = _mm_load1_ps(&(ptrAlpha[j]));
 							__m128 support_5 = _mm_load1_ps(&(ptrAlpha[j]));
 
-							__m128 one = _mm_set1_ps(1.0);
-							__m128 zero = _mm_set1_ps(0.0);
+							__m128 one = _mm_set1_ps(1.0f);
+							__m128 zero = _mm_set1_ps(0.0f);
 
 							for (size_t d = 0; d < dims; d++)
 							{
@@ -428,8 +452,8 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 								float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
 								float index_calc = eval - (ptrIndex[(j*dims)+d]);
 								float abs = fabs(index_calc);
-								float last = 1.0 - abs;
-								float localSupport = std::max<float>(last, 0.0);
+								float last = 1.0f - abs;
+								float localSupport = std::max<float>(last, 0.0f);
 								curSupport *= localSupport;
 							}
 
@@ -452,8 +476,8 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
 							float index_calc = eval - (ptrIndex[(j*dims)+d]);
 							float abs = fabs(index_calc);
-							float last = 1.0 - abs;
-							float localSupport = std::max<float>(last, 0.0);
+							float last = 1.0f - abs;
+							float localSupport = std::max<float>(last, 0.0f);
 							curSupport *= localSupport;
 						}
 
@@ -466,6 +490,27 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 #ifdef USEOMP
 	}
 #endif
+
+//	#pragma omp parallel for
+//	for (size_t i = 0; i < result_size; i++)
+//	{
+//		for (size_t j = 0; j < storageSize; j++)
+//		{
+//			float curSupport = ptrAlpha[j];
+//
+//			for (size_t d = 0; d < dims; d++)
+//			{
+//				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
+//				float index_calc = eval - (ptrIndex[(j*dims)+d]);
+//				float abs = fabs(index_calc);
+//				float last = 1.0f - abs;
+//				float localSupport = std::max<float>(last, 0.0f);
+//				curSupport *= localSupport;
+//			}
+//
+//			ptrResult[i] += curSupport;
+//		}
+//	}
 
 	return myTimer->stop();
 }

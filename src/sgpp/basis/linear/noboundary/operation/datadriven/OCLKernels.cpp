@@ -202,7 +202,8 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multSP, 0, NULL, "-cl-mad-enable -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+	    err = clBuildProgram(program_multSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+	    //err = clBuildProgram(program_multSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
 	    //err = clBuildProgram(program_multSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
@@ -287,7 +288,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     // do the rest...
 	for (size_t j = global; j < storageSize; j++)
 	{
-		ptrGlobalResult[j] = 0.0;
+		ptrGlobalResult[j] = 0.0f;
 
 		for (size_t i = 0; i < sourceSize; i++)
 		{
@@ -298,8 +299,8 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 				float index_calc = eval - (ptrIndex[(j*dims)+d]);
 				float abs = fabs(index_calc);
-				float last = 1.0 - abs;
-				float localSupport = std::max<float>(last, 0.0);
+				float last = 1.0f - abs;
+				float localSupport = std::max<float>(last, 0.0f);
 				curSupport *= localSupport;
 			}
 
@@ -369,7 +370,8 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multTransSP, 0, NULL,  "-cl-mad-enable -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+	    err = clBuildProgram(program_multTransSP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+	    //err = clBuildProgram(program_multTransSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
 	    //err = clBuildProgram(program_multTransSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
@@ -448,15 +450,15 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 //	{
 //		for (size_t j = 0; j < storageSize; j++)
 //		{
-//			double curSupport = ptrAlpha[j];
+//			float curSupport = ptrAlpha[j];
 //
 //			for (size_t d = 0; d < dims; d++)
 //			{
-//				double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
-//				double index_calc = eval - (ptrIndex[(j*dims)+d]);
-//				double abs = fabs(index_calc);
-//				double last = 1.0 - abs;
-//				double localSupport = std::max<double>(last, 0.0);
+//				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
+//				float index_calc = eval - (ptrIndex[(j*dims)+d]);
+//				float abs = fabs(index_calc);
+//				float last = 1.0f - abs;
+//				float localSupport = std::max<float>(last, 0.0f);
 //				curSupport *= localSupport;
 //			}
 //
