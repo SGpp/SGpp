@@ -19,6 +19,8 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL are supported vector extensions!");
 	}
 
+	resetTimers();
+
 	// create the operations needed in ApplyMatrix
 	this->vecMode = vecMode;
 	this->lamb = lambda;

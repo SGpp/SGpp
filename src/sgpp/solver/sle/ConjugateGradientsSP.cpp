@@ -35,11 +35,11 @@ void ConjugateGradientsSP::solve(OperationMatrixSP& SystemMatrix, DataVectorSP& 
 	DataVectorSP q(alpha.getSize());
 	DataVectorSP r(b);
 
-	float delta_0 = 0.0;
-	float delta_old = 0.0;
-	float delta_new = 0.0;
-	float beta = 0.0;
-	float a = 0.0;
+	float delta_0 = 0.0f;
+	float delta_old = 0.0f;
+	float delta_new = 0.0f;
+	float beta = 0.0f;
+	float a = 0.0f;
 
 	if (verbose == true)
 	{
@@ -48,14 +48,14 @@ void ConjugateGradientsSP::solve(OperationMatrixSP& SystemMatrix, DataVectorSP& 
 
 	if (reuse == true)
 	{
-		q.setAll(0.0);
+		q.setAll(0.0f);
 		SystemMatrix.mult(q, temp);
 		r.sub(temp);
 		delta_0 = r.dotProduct(r)*epsilonSquared;
 	}
 	else
 	{
-		alpha.setAll(0.0);
+		alpha.setAll(0.0f);
 	}
 
 	// calculate the starting residuum
@@ -64,7 +64,7 @@ void ConjugateGradientsSP::solve(OperationMatrixSP& SystemMatrix, DataVectorSP& 
 
 	DataVectorSP d(r);
 
-	delta_old = 0.0;
+	delta_old = 0.0f;
 	delta_new = r.dotProduct(r);
 
 	if (reuse == false)
