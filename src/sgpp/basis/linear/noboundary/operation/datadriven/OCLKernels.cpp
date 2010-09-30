@@ -67,7 +67,7 @@ OCLKernels::OCLKernels()
 	}
 
     // Creating the command queue
-    command_queue = clCreateCommandQueue(context, device_id, 0, &err);
+    command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &err);
     if (err != CL_SUCCESS)
 	{
     	std::cout << "Failed to create command queue! Error Code: " << err << std::endl;
@@ -281,9 +281,10 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     	global = storageSize;
     }
 
+    cl_event clTimings;
     size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
     // enqueue kernel
-    err = clEnqueueNDRangeKernel(command_queue, kernel_multSP, 1, NULL, &global, &local, 0, NULL, NULL);
+    err = clEnqueueNDRangeKernel(command_queue, kernel_multSP, 1, NULL, &global, &local, 0, NULL, &clTimings);
     if (err != CL_SUCCESS)
 	{
     	std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -292,6 +293,22 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 
     // wait for command to finish
     clFinish(command_queue);
+
+    // determine kernel execution time
+    cl_ulong startTime, endTime;
+    err = clGetEventProfilingInfo(clTimings, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+    if (err != CL_SUCCESS)
+	{
+    	std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+	}
+    err = clGetEventProfilingInfo(clTimings, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
+    if (err != CL_SUCCESS)
+	{
+    	std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+	}
+
+    time = (double)(endTime - startTime);
+    time *= 1e-9;
 
     // read data back
     err = clEnqueueReadBuffer(command_queue, clResult, CL_TRUE, 0, sizeof(float)*global, ptrGlobalResult, 0, NULL, NULL);
@@ -481,10 +498,11 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		return 0.0;
 	}
 
+	cl_event clTimings;
     size_t global = result_size;
     size_t local = OCL_DATAPREFETCH_SIZE;
     // enqueue kernel
-    err = clEnqueueNDRangeKernel(command_queue, kernel_multTransSP, 1, NULL, &global, &local, 0, NULL, NULL);
+    err = clEnqueueNDRangeKernel(command_queue, kernel_multTransSP, 1, NULL, &global, &local, 0, NULL, &clTimings);
     if (err != CL_SUCCESS)
 	{
     	std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -493,6 +511,22 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 
     // wait for command to finish
     clFinish(command_queue);
+
+    // determine kernel execution time
+    cl_ulong startTime, endTime;
+    err = clGetEventProfilingInfo(clTimings, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+    if (err != CL_SUCCESS)
+	{
+    	std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+	}
+    err = clGetEventProfilingInfo(clTimings, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
+    if (err != CL_SUCCESS)
+	{
+    	std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+	}
+
+    time = (double)(endTime - startTime);
+    time *= 1e-9;
 
     // read data back
     err = clEnqueueReadBuffer(command_queue, clResult, CL_TRUE, 0, sizeof(float)*result_size, ptrResult, 0, NULL, NULL);
