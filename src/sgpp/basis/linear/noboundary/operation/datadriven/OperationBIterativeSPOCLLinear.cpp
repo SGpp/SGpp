@@ -62,7 +62,7 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
     float* ptrIndex = this->Index->getPointer();
     float* ptrGlobalResult = result.getPointer();
 
-    if (data.getNrows() % 32 != 0 || source_size != data.getNrows())
+    if (data.getNrows() % 64 != 0 || source_size != data.getNrows())
     {
     	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
@@ -86,7 +86,7 @@ double OperationBIterativeSPOCLLinear::multTransposeVectorized(DataVectorSP& alp
     float* ptrLevel = this->Level->getPointer();
     float* ptrIndex = this->Index->getPointer();
 
-    if (data.getNrows() % 32 != 0 || result_size != data.getNrows())
+    if (data.getNrows() % 64 != 0 || result_size != data.getNrows())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }

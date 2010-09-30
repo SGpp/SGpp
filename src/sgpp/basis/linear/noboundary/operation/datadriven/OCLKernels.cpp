@@ -15,6 +15,7 @@
 #include <sstream>
 
 #define OCL_MULT_BLOCKSIZE 32
+#define OCL_MULTTRANS_BLOCKSIZE 64
 
 // include OpenCL
 #include "CL/cl.h"
@@ -324,10 +325,16 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		stream_program_src << "						__global float* ptrLevel," << std::endl;
 		stream_program_src << "						__global float* ptrIndex," << std::endl;
 		stream_program_src << "						__global float* ptrResult," << std::endl;
+		stream_program_src << "						uint fastStorageSize," << std::endl;
 		stream_program_src << "						uint storageSize)" << std::endl;
 		stream_program_src << "{" << std::endl;
-		stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl << std::endl;
-		stream_program_src << "	float eval, index_calc, abs, last, localSupport;" << std::endl << std::endl;
+		stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl;
+		stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	__local float locLevel[" << dims * OCL_MULTTRANS_BLOCKSIZE << "];" << std::endl;
+		stream_program_src << "	__local float locIndex[" << dims * OCL_MULTTRANS_BLOCKSIZE << "];" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	float eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	float myResult = 0.0f;" << std::endl << std::endl;
 		stream_program_src << "	// Create registers for the data" << std::endl;
 		for (size_t d = 0; d < dims; d++)
@@ -335,24 +342,50 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 			stream_program_src << "	float data_" << d << " = ptrData[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
 		}
 		stream_program_src << std::endl;
-		stream_program_src << "	// Iterate over all grid points" << std::endl;
-		stream_program_src << "	for(int j = 0; j < storageSize; j++)" << std::endl;
+		stream_program_src << "	// Iterate over all grid points (fast ones, with cache)" << std::endl;
+		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_MULTTRANS_BLOCKSIZE << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
-		stream_program_src << "		float curSupport = ptrAlpha[j];" << std::endl << std::endl;
-		//stream_program_src << "		prefetch(&ptrLevel[((j+20)*" << dims << ")], " << dims << ");" << std::endl;
-		//stream_program_src << "		prefetch(&ptrIndex[((j+20)*" << dims << ")], " << dims << ");" << std::endl << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
-			//stream_program_src << "			eval = ((ptrLevel[(j*" << dims << ")+" << d << "]) * (ptrData[(globalIdx*" << dims << ")+" << d << "]));" << std::endl;
-			stream_program_src << "			eval = ((ptrLevel[(j*" << dims << ")+" << d << "]) * (data_" << d << "));" << std::endl;
-			stream_program_src << "			index_calc = eval - (ptrIndex[(j*" << dims << ")+" << d << "]);" << std::endl;
+			stream_program_src << "		locLevel[(localIdx*" << dims << ")+"<< d << "] = ptrLevel[((j+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+			stream_program_src << "		locIndex[(localIdx*" << dims << ")+"<< d << "] = ptrIndex[((j+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+		}
+		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_MULTTRANS_BLOCKSIZE << "; k++)" << std::endl;
+		stream_program_src << "		{" << std::endl;
+		stream_program_src << "			curSupport = ptrAlpha[j+k];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "			eval = ((locLevel[(k*" << dims << ")+" << d << "]) * (data_" << d << "));" << std::endl;
+			stream_program_src << "			index_calc = eval - (locIndex[(k*" << dims << ")+" << d << "]);" << std::endl;
 			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
 			stream_program_src << "			last = 1.0f - abs;" << std::endl;
 			stream_program_src << "			localSupport = fmax(last, 0.0f);" << std::endl;
-			stream_program_src << "			curSupport *= localSupport;" << std::endl;
+			stream_program_src << "			curSupport *= localSupport;" << std::endl << std::endl;
 		}
-		stream_program_src << std::endl << "		myResult += curSupport;" << std::endl;
+		stream_program_src << "			myResult += curSupport;" << std::endl;
+		stream_program_src << "		}" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
 		stream_program_src << "	}" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	// Iterate over all grid points (slow ones, without cache)" << std::endl;
+		stream_program_src << "	for(int m = fastStorageSize; m < storageSize; m++)" << std::endl;
+		stream_program_src << "	{" << std::endl;
+		stream_program_src << "		curSupport = ptrAlpha[m];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "		eval = ((ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << "));" << std::endl;
+			stream_program_src << "		index_calc = eval - (ptrIndex[(m*" << dims << ")+" << d << "]);" << std::endl;
+			stream_program_src << "		abs = fabs(index_calc);" << std::endl;
+			stream_program_src << "		last = 1.0f - abs;" << std::endl;
+			stream_program_src << "		localSupport = fmax(last, 0.0f);" << std::endl;
+			stream_program_src << "		curSupport *= localSupport;" << std::endl << std::endl;
+		}
+		stream_program_src << "		myResult += curSupport;" << std::endl;
+		stream_program_src << "	}" << std::endl;
+		stream_program_src << std::endl;
 		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
 
@@ -407,22 +440,28 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
     clAlpha = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*storageSize, ptrAlpha, NULL);
     clResult = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float)*result_size, NULL, NULL);
 
-    cl_uint clStorageSize = (cl_uint)storageSize;
+    size_t oclStorageSize = storageSize/OCL_MULTTRANS_BLOCKSIZE;
+    oclStorageSize *= OCL_MULTTRANS_BLOCKSIZE;
+    cl_uint clFastStorageSize = (cl_uint)(oclStorageSize);
+    cl_uint clStorageSize = (cl_uint)(storageSize);
+
 	// set kernel arguments
 	if ( clSetKernelArg(kernel_multTransSP, 0, sizeof(cl_mem), &clAlpha) ||
 			clSetKernelArg(kernel_multTransSP, 1, sizeof(cl_mem), &clDataSP) ||
 			clSetKernelArg(kernel_multTransSP, 2, sizeof(cl_mem), &clLevelSP) ||
 			clSetKernelArg(kernel_multTransSP, 3, sizeof(cl_mem), &clIndexSP) ||
 			clSetKernelArg(kernel_multTransSP, 4, sizeof(cl_mem), &clResult) ||
-			clSetKernelArg(kernel_multTransSP, 5, sizeof(cl_uint), &clStorageSize) != CL_SUCCESS)
+			clSetKernelArg(kernel_multTransSP, 5, sizeof(cl_uint), &clFastStorageSize) ||
+			clSetKernelArg(kernel_multTransSP, 6, sizeof(cl_uint), &clStorageSize) != CL_SUCCESS)
 	{
 		std::cout << "Failed to create kernel Args!" << std::endl;
 		return 0.0;
 	}
 
     size_t global = result_size;
+    size_t local = OCL_MULTTRANS_BLOCKSIZE;
     // enqueue kernel
-    err = clEnqueueNDRangeKernel(command_queue, kernel_multTransSP, 1, NULL, &global, NULL, 0, NULL, NULL);
+    err = clEnqueueNDRangeKernel(command_queue, kernel_multTransSP, 1, NULL, &global, &local, 0, NULL, NULL);
     if (err != CL_SUCCESS)
 	{
     	std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;

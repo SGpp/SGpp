@@ -37,7 +37,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	}
 	else if (this->vecMode == "OCL")
 	{
-		this->vecWidth = 32;
+		this->vecWidth = 64;
 	}
 	// should not happen because this exception should have been thrown some lines upwards!
 	else
