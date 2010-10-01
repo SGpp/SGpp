@@ -75,6 +75,7 @@ OCLKernels::OCLKernels()
 
     isFirstTimeMultTransSP = true;
     isFirstTimeMultSP = true;
+    isVeryFirstTimeSP = true;
 }
 
 OCLKernels::~OCLKernels()
@@ -92,6 +93,11 @@ OCLKernels::~OCLKernels()
 		clReleaseMemObject(clIndexSP);
 	    clReleaseProgram(program_multSP);
 	    clReleaseKernel(kernel_multSP);
+	}
+
+	if (!isVeryFirstTimeSP)
+	{
+		clReleaseMemObject(clDataSP);
 	}
 
     clReleaseCommandQueue(command_queue);
@@ -251,9 +257,14 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 
 	if (isFirstTimeMultSP && isFirstTimeMultTransSP)
 	{
-		clDataSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*sourceSize, ptrData, NULL);
 		clLevelSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*storageSize, ptrLevel, NULL);
 		clIndexSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*storageSize, ptrIndex, NULL);
+	}
+
+	if (isVeryFirstTimeSP)
+	{
+		clDataSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*sourceSize, ptrData, NULL);
+		isVeryFirstTimeSP = false;
 	}
 
 	cl_mem clSource, clResult;
@@ -471,9 +482,14 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 
 	if (isFirstTimeMultSP && isFirstTimeMultTransSP)
 	{
-		clDataSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*result_size, ptrData, NULL);
 		clLevelSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*storageSize, ptrLevel, NULL);
 		clIndexSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*storageSize, ptrIndex, NULL);
+	}
+
+	if (isVeryFirstTimeSP)
+	{
+		clDataSP = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*dims*result_size, ptrData, NULL);
+		isVeryFirstTimeSP = false;
 	}
 
 	cl_mem clAlpha, clResult;
@@ -571,19 +587,29 @@ void OCLKernels::resetKernels()
 	{
 	    clReleaseProgram(program_multTransSP);
 	    clReleaseKernel(kernel_multTransSP);
+
+	    isFirstTimeMultTransSP = true;
 	}
 
 	if (!isFirstTimeMultSP)
 	{
-		clReleaseMemObject(clDataSP);
 		clReleaseMemObject(clLevelSP);
 		clReleaseMemObject(clIndexSP);
 	    clReleaseProgram(program_multSP);
 	    clReleaseKernel(kernel_multSP);
-	}
 
-	isFirstTimeMultSP = true;
-	isFirstTimeMultTransSP = true;
+	    isFirstTimeMultSP = true;
+	}
+}
+
+void OCLKernels::resetData()
+{
+	if (!isVeryFirstTimeSP)
+	{
+		clReleaseMemObject(clDataSP);
+
+		isVeryFirstTimeSP = true;
+	}
 }
 
 }

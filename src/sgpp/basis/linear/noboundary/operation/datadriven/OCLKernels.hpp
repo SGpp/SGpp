@@ -18,6 +18,7 @@ class OCLKernels
 private:
 	bool isFirstTimeMultTransSP;
 	bool isFirstTimeMultSP;
+	bool isVeryFirstTimeSP;
 
 public:
 	OCLKernels();
@@ -25,6 +26,8 @@ public:
 	~OCLKernels();
 
 	void resetKernels();
+
+	void resetData();
 
 	double multOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
 
