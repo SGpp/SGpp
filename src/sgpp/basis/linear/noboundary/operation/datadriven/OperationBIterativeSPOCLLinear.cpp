@@ -69,6 +69,38 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
 
     double time = myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims);
 
+    // do the rest...
+	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
+    size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
+    if (global == 0)
+    {
+    	global = storageSize;
+    }
+#ifdef USEOMP
+	#pragma omp parallel for
+#endif
+	for (size_t j = global; j < storageSize; j++)
+	{
+		ptrGlobalResult[j] = 0.0f;
+
+		for (size_t i = 0; i < source_size; i++)
+		{
+			float curSupport = ptrSource[i];
+
+			for (size_t d = 0; d < dims; d++)
+			{
+				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
+				float index_calc = eval - (ptrIndex[(j*dims)+d]);
+				float abs = fabs(index_calc);
+				float last = 1.0f - abs;
+				float localSupport = std::max<float>(last, 0.0f);
+				curSupport *= localSupport;
+			}
+
+			ptrGlobalResult[j] += curSupport;
+		}
+	}
+
 	return time;
 }
 

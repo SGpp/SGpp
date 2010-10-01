@@ -10,6 +10,9 @@
 
 #include <cstdlib>
 
+#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE 32 // must divide vec-length with no reminder
+#define OCL_DATAPREFETCH_SIZE 64 // must divide vec-length with no reminder
+
 namespace sg
 {
 
