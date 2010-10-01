@@ -330,7 +330,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
 				DataVector coords(this->dim);
 				this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
 
-				if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+				if (payoffType == "std_euro_call" || payoffType == "GMIB")
 				{
 					for (size_t d = 0; d < this->dim; d++)
 					{
@@ -362,9 +362,11 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
 }
 
 
-void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, double strike, std::string payoffType)
+void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, double strike, std::string payoffType, double a, double sigma)
 {
 	double tmp;
+	int timeT=12;
+	int endtime=32;
 
 	if (this->bGridConstructed)
 	{
@@ -385,9 +387,16 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 			{
 				alpha[i] = std::max<double>(dblFuncValues[0]-strike, 0.0);
 			}
-			else if (payoffType == "std_euro_put")
+			else if (payoffType == "GMIB")
 			{
-				alpha[i] = std::max<double>(strike-dblFuncValues[0], 0.0);
+				double PB=0;
+				double PT=0;
+				for(int k=(timeT+1); k<=endtime;k++)
+				{
+					PT=exp(0.04*(timeT-k)+ 0.04*(1-exp(-a*(k-timeT)))/a - pow(sigma,2.0)*pow((exp(-a*k)-exp(-a*timeT)),2.0)*(exp(2*a*timeT)-1)/(4*pow(a,3.0))-(1-exp(-a*(k-timeT)))*dblFuncValues[1]/a);
+					PB=PB+0.06*PT;
+				}
+				alpha[i] = std::max<double>(PB-dblFuncValues[0], 0.0);
 			}
 			else
 			{

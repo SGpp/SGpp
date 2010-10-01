@@ -164,7 +164,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 		std::cout << "Initial Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// Init the grid with on payoff function
-	myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType);
+	myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType, a, sigma);
 
 	// Gridpoints @Money
 	std::cout << "Gridpoints @Money: " << myBSHWSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
