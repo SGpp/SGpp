@@ -14,9 +14,6 @@
 #include <string>
 #include <sstream>
 
-#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE 32 // must divide vec-length with no reminder
-#define OCL_DATAPREFETCH_SIZE 64 // must divide vec-length with no reminder
-
 // include OpenCL
 #include "CL/cl.h"
 
@@ -88,7 +85,6 @@ OCLKernels::~OCLKernels()
 
 	if (!isFirstTimeMultSP)
 	{
-		clReleaseMemObject(clDataSP);
 		clReleaseMemObject(clLevelSP);
 		clReleaseMemObject(clIndexSP);
 	    clReleaseProgram(program_multSP);
@@ -335,28 +331,28 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 
     isFirstTimeMultSP = false;
 
-    // do the rest...
-	for (size_t j = global; j < storageSize; j++)
-	{
-		ptrGlobalResult[j] = 0.0f;
-
-		for (size_t i = 0; i < sourceSize; i++)
-		{
-			float curSupport = ptrSource[i];
-
-			for (size_t d = 0; d < dims; d++)
-			{
-				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
-				float index_calc = eval - (ptrIndex[(j*dims)+d]);
-				float abs = fabs(index_calc);
-				float last = 1.0f - abs;
-				float localSupport = std::max<float>(last, 0.0f);
-				curSupport *= localSupport;
-			}
-
-			ptrGlobalResult[j] += curSupport;
-		}
-	}
+//    // do the rest...
+//	for (size_t j = global; j < storageSize; j++)
+//	{
+//		ptrGlobalResult[j] = 0.0f;
+//
+//		for (size_t i = 0; i < sourceSize; i++)
+//		{
+//			float curSupport = ptrSource[i];
+//
+//			for (size_t d = 0; d < dims; d++)
+//			{
+//				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
+//				float index_calc = eval - (ptrIndex[(j*dims)+d]);
+//				float abs = fabs(index_calc);
+//				float last = 1.0f - abs;
+//				float localSupport = std::max<float>(last, 0.0f);
+//				curSupport *= localSupport;
+//			}
+//
+//			ptrGlobalResult[j] += curSupport;
+//		}
+//	}
 
 	return time;
 }
