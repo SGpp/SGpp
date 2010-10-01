@@ -215,7 +215,7 @@ public:
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	//void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
-	void initGridWithPayoffBSHW(DataVector& alpha, double strike, std::string payoffType);
+	void initGridWithPayoffBSHW(DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
 	/**
 	 * Inits the screen object
 	 */
