@@ -46,8 +46,12 @@ OCLKernels::OCLKernels()
 	}
 
 	// Find out how many devices there are
+#ifdef USEOCL_CPU
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, &device_id, &num_devices);
+#else
 	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, &num_devices);
-    if (err != CL_SUCCESS)
+#endif
+	if (err != CL_SUCCESS)
     {
     	std::cout << "Unable to get Device ID. Error Code: " << err << std::endl;
     }
