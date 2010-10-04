@@ -25,6 +25,11 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.hpp"
 #endif
 
+#ifdef USEARBB
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeArBBLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPArBBLinear.hpp"
+#endif
+
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
@@ -99,6 +104,12 @@ OperationBVectorized* LinearBoundaryGrid::createOperationBVectorized(const std::
 		return new OperationBIterativeOCLLinear(this->storage);
 	}
 #endif
+#ifdef USEARBB
+	else if (VecType == "ArBB")
+	{
+		return new OperationBIterativeArBBLinear(this->storage);
+	}
+#endif
 	else
 	{
 		throw factory_exception("Unsupported vectorization type");
@@ -119,6 +130,12 @@ OperationBVectorizedSP* LinearBoundaryGrid::createOperationBVectorizedSP(const s
 	else if (VecType == "OCL")
 	{
 		return new OperationBIterativeSPOCLLinear(this->storage);
+	}
+#endif
+#ifdef USEARBB
+	else if (VecType == "ArBB")
+	{
+		return new OperationBIterativeSPArBBLinear(this->storage);
 	}
 #endif
 	else
