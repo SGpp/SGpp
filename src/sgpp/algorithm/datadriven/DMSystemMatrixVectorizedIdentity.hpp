@@ -42,6 +42,8 @@ private:
 	DataMatrix* data;
 	/// Number of orignal training instances
 	size_t numTrainingInstances;
+	/// Number of patched and used training instances
+	size_t numPatchedTrainingInstances;
 	/// vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	std::string vecMode;
 	/// vector width, class internal variable to enable padding and patching of vectors
