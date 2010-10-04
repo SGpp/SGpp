@@ -16,6 +16,10 @@ namespace sg
 class ArBBKernels
 {
 private:
+	bool isMultTransSPfirst;
+	bool isMultSPfirst;
+	bool isMultTransfirst;
+	bool isMultfirst;
 
 public:
 	ArBBKernels();
@@ -29,6 +33,8 @@ public:
 	double multSPArBB(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
 
 	double multTransSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims);
+
+	void resetKernels();
 };
 
 }

@@ -40,6 +40,8 @@ void OperationBIterativeArBBLinear::rebuildLevelAndIndex()
 	Index = new DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*Level, *Index);
+
+	myArBBKernels->resetKernels();
 }
 
 double OperationBIterativeArBBLinear::multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
@@ -56,7 +58,7 @@ double OperationBIterativeArBBLinear::multVectorized(DataVector& alpha, DataMatr
     double* ptrIndex = this->Index->getPointer();
     double* ptrGlobalResult = result.getPointer();
 
-    if (data.getNcols() % 16 != 0 || sourceSize != data.getNrows())
+    if (data.getNrows() % 16 != 0 || sourceSize != data.getNrows())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -80,7 +82,7 @@ double OperationBIterativeArBBLinear::multTransposeVectorized(DataVector& alpha,
     double* ptrLevel = this->Level->getPointer();
     double* ptrIndex = this->Index->getPointer();
 
-    if (data.getNcols() % 16 != 0 || result_size != data.getNrows())
+    if (data.getNrows() % 16 != 0 || result_size != data.getNrows())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }

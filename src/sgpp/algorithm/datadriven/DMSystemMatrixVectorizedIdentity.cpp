@@ -14,7 +14,7 @@ namespace sg
 DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseGrid, DataMatrix& trainData, double lambda, std::string vecMode)
 {
 	// handle unsupported vector extensions
-	if (vecMode != "SSE" && vecMode != "AVX" && vecMode != "OCL" && vecMode != "OCL")
+	if (vecMode != "SSE" && vecMode != "AVX" && vecMode != "OCL" && vecMode != "OCL" && vecMode != "ArBB")
 	{
 		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB are supported vector extensions!");
 	}
@@ -65,7 +65,13 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseG
 			data->setRow(data->getNrows()-1, lastRow);
 		}
 	}
-	data->transpose();
+
+	numPatchedTrainingInstances = data->getNrows();
+
+	if (this->vecMode != "OCL" && this->vecMode != "ArBB")
+	{
+		data->transpose();
+	}
 
 	this->myTimer = new SGppStopwatch();
 }
@@ -79,20 +85,22 @@ DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity()
 
 void DMSystemMatrixVectorizedIdentity::mult(DataVector& alpha, DataVector& result)
 {
-	DataVector temp((*data).getNcols());
+	DataVector temp(numPatchedTrainingInstances);
 
     // Operation B
 	this->myTimer->start();
 	this->computeTimeMultTrans += this->B->multTransposeVectorized(alpha, (*data), temp);
     this->completeTimeMultTrans += this->myTimer->stop();
+
     // patch result -> set additional entries zero
     if (numTrainingInstances != temp.getSize())
     {
     	for (size_t i = 0; i < (temp.getSize()-numTrainingInstances); i++)
     	{
-    		temp.set(temp.getSize()-(i+1), 0.0);
+    		temp.set(temp.getSize()-(i+1), 0.0f);
     	}
     }
+
     this->myTimer->start();
     this->computeTimeMult += this->B->multVectorized(temp, (*data), result);
     this->completeTimeMult += this->myTimer->stop();
@@ -105,11 +113,11 @@ void DMSystemMatrixVectorizedIdentity::generateb(DataVector& classes, DataVector
 	DataVector myClasses(classes);
 
 	// Apply padding
-	size_t numCols = (*data).getNcols();
-	if (numCols != myClasses.getSize())
+	if (numPatchedTrainingInstances != myClasses.getSize())
 	{
-		myClasses.resizeZero(numCols);
+		myClasses.resizeZero(numPatchedTrainingInstances);
 	}
+
 	this->myTimer->start();
 	this->computeTimeMult += this->B->multVectorized(myClasses, (*data), b);
 	this->completeTimeMult += this->myTimer->stop();

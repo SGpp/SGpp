@@ -97,7 +97,7 @@ void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP&
     {
     	for (size_t i = 0; i < (temp.getSize()-numTrainingInstances); i++)
     	{
-    		temp.set(temp.getSize()-(i+1), 0.0);
+    		temp.set(temp.getSize()-(i+1), 0.0f);
     	}
     }
 

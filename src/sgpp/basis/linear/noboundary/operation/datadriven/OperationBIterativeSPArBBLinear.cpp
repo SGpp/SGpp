@@ -40,6 +40,8 @@ void OperationBIterativeSPArBBLinear::rebuildLevelAndIndex()
 	Index = new DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*Level, *Index);
+
+	myArBBKernels->resetKernels();
 }
 
 double OperationBIterativeSPArBBLinear::multVectorized(DataVectorSP& alpha, DataMatrixSP& data, DataVectorSP& result)
