@@ -35,7 +35,7 @@
 
 // grid generation settings
 #define LEVELS 3
-#define REFINEMENTS 10
+#define REFINEMENTS 5
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
 
