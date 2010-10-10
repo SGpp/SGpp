@@ -37,7 +37,7 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseG
 	}
 	else if (this->vecMode == "OCL")
 	{
-		this->vecWidth = 8;
+		this->vecWidth = 128;
 	}
 	else if (this->vecMode == "ArBB")
 	{

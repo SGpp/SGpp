@@ -37,7 +37,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	}
 	else if (this->vecMode == "OCL")
 	{
-		this->vecWidth = 64;
+		this->vecWidth = 128;
 	}
 	else if (this->vecMode == "ArBB")
 	{
