@@ -20,14 +20,18 @@
 //#define DATAFILE "liver-disorders_normalized.arff"
 //#define DATAFILE "ripleyGarcke.train.arff"
 #define DATAFILE "chess_02D_tr.dat.arff"
-//#define DATAFILE "chess_05D_tr.dat.arff"
+//#define DATAFILE "chess_05D_3fields_tr.dat.arff"
+//#define DATAFILE "chess_07D_3fields_tr.dat.arff"
+//#define DATAFILE "chess_10D_3fields_tr.dat.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
 //#define TESTFILE "twospirals.wieland.arff"
 //#define TESTFILE "liver-disorders_normalized.arff"
 //#define TESTFILE "ripleyGarcke.test.arff"
 #define TESTFILE "chess_02D_te.dat.arff"
-//#define TESTFILE "chess_05D_te.dat.arff"
+//#define TESTFILE "chess_05D_3fields_te.dat.arff"
+//#define TESTFILE "chess_07D_3fields_te.dat.arff"
+//#define TESTFILE "chess_10D_3fields_te.dat.arff"
 
 // grid generation settings
 #define LEVELS 3
@@ -36,7 +40,7 @@
 #define REFINE_NUM_POINTS 100
 
 // solving settings
-#define CG_IMAX 1000
+#define CG_IMAX 200
 #define CG_EPS 0.0001
 
 // regularization fector
@@ -133,7 +137,7 @@ void printSettings()
 	std::cout << "Vectorized: AVX" << std::endl << std::endl;
 #endif
 #ifdef USE_OCL
-	std::cout << "Vectorized: OpenCL (NVIDIA Fermi)" << std::endl << std::endl;
+	std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
 #endif
 #ifdef USE_ARBB
 	std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
