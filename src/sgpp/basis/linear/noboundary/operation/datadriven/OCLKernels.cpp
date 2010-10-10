@@ -220,8 +220,8 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		stream_program_src << std::endl;
 		stream_program_src << "	float eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	float myResult = 0.0f;" << std::endl << std::endl;
-		stream_program_src << "	__local float locData[" << dims*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE << "];" << std::endl;
-		stream_program_src << "	__local float locSource[" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE << "];" << std::endl << std::endl;
+		stream_program_src << "	__local float locData[" << dims*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << "];" << std::endl;
+		stream_program_src << "	__local float locSource[" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << "];" << std::endl << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
 			stream_program_src << "	float level_" << d << " = ptrLevel[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
@@ -229,7 +229,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		}
 		stream_program_src << std::endl;
 		stream_program_src << "	// Iterate over all grid points" << std::endl;
-		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE << ")" << std::endl;
+		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
@@ -237,7 +237,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		}
 		stream_program_src << "		locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
-		stream_program_src << "		for(int k = 0; k < " << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE << "; k++)" << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << "; k++)" << std::endl;
 		stream_program_src << "		{" << std::endl;
 
 		stream_program_src << "			curSupport = locSource[k];" << std::endl << std::endl;
@@ -329,9 +329,9 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
 
     // determine best fit
-	size_t numWGs = storageSize/(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE*num_devices);
-    size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
-    size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
+	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
+    size_t global = numWGs*(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/num_devices);
+    size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2;
     size_t offset = 0;
 
     // if there is not enough workload for GPUs
