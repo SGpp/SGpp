@@ -72,10 +72,12 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
     // do the rest...
 	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
     size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
+
     if (global == 0)
     {
     	global = storageSize;
     }
+
 #ifdef USEOMP
 	#pragma omp parallel for
 #endif

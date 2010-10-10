@@ -11,7 +11,7 @@
 #include <cstdlib>
 
 #define MAX_OCL_DEVICE_COUNT 2 // Number of maximum used GPUs; must be 2 or 1
-#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE 32 // must divide vec-length with no reminder
+#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE 128 // must divide vec-length with no reminder, max. half of vec-length
 #define OCL_DATAPREFETCH_SIZE 64 // must be have of vec-length
 
 namespace sg
