@@ -50,6 +50,20 @@ void arbb_evalGridPoint(const arbb::dense<fp_Type>& dataPoint, const arbb::dense
 }
 
 template <typename fp_Type>
+void arbb_evalGridPoint_oneDim(const arbb::dense<fp_Type>& dataPointDim, const fp_Type& levelPoint, const fp_Type& indexPoint, const fp_Type& a, arbb::dense<fp_Type>& result)
+{
+	arbb::dense<fp_Type> zero = arbb::fill(static_cast<fp_Type>(0), result.length());
+	arbb::dense<fp_Type> one = arbb::fill(static_cast<fp_Type>(1), result.length());
+	arbb::dense<fp_Type> index = arbb::fill(indexPoint, result.length());
+
+	result = levelPoint * dataPointDim;
+	result = result - index;
+	result = arbb::abs(result);
+	result = one - result;
+	result = arbb::max(result, zero);
+}
+
+template <typename fp_Type>
 void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& source, arbb::dense<fp_Type>& result)
 {
 	arbb::usize source_size = Data.num_rows();
@@ -73,23 +87,30 @@ void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2
 template <typename fp_Type>
 void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& alpha, arbb::dense<fp_Type>& result)
 {
+	arbb::usize dims = Level.num_cols();
 	arbb::usize result_size = Data.num_rows();
 	arbb::usize storage_size = Level.num_rows();
 
-	_for (arbb::usize i = 0, i < result_size, i++)
+	_for (arbb::usize j = 0, j < storage_size, j++)
 	{
-		fp_Type lastResult = result[i];
+		arbb::dense<fp_Type> curLevel = Level.row(j);
+		arbb::dense<fp_Type> curIndex = Index.row(j);
+		fp_Type a = alpha[j];
 
-		_for (arbb::usize j = 0, j < storage_size, j++)
+		arbb::dense<fp_Type> temp_result = arbb::fill(a, result_size);
+		arbb::dense<fp_Type> temp = arbb::fill(static_cast<fp_Type>(0), result_size);
+
+		_for (arbb::usize d = 0, d < dims, d++)
 		{
-			fp_Type curResult = alpha[j];
+			fp_Type l = curLevel[d];
+			fp_Type i = curIndex[d];
 
-			arbb_evalGridPoint(Data.row(i), Level.row(j), Index.row(j), curResult);
+			arbb_evalGridPoint_oneDim(Data.col(d), l, i, a, temp);
 
-			lastResult += curResult;
+			temp_result *= temp;
 		} _end_for;
 
-		result[i] = lastResult;
+		result += temp_result;
 	} _end_for;
 }
 
