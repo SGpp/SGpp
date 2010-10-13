@@ -28,6 +28,7 @@ arbb::dense<arbb::f64, 2> ArBB_Data;
 arbb::dense<arbb::f64, 2> ArBB_Level;
 arbb::dense<arbb::f64, 2> ArBB_Index;
 
+#ifdef OLD_ARBB_IMPL
 template <typename fp_Type>
 void arbb_evalGridPoint(const arbb::dense<fp_Type>& dataPoint, const arbb::dense<fp_Type>& levelPoint, const arbb::dense<fp_Type>& indexPoint, fp_Type& result)
 {
@@ -50,6 +51,7 @@ void arbb_evalGridPoint(const arbb::dense<fp_Type>& dataPoint, const arbb::dense
 		result *= localSupport;
 	} _end_for;
 }
+#endif
 
 template <typename fp_Type>
 void arbb_evalGridPoint_oneDim(const arbb::dense<fp_Type>& dataPointsDim, const fp_Type& levelPoint, const fp_Type& indexPoint, arbb::dense<fp_Type>& result)
