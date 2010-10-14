@@ -15,8 +15,6 @@
 
 #include <arbb.hpp>
 
-//#define OLD_ARBB_IMPL
-
 namespace sg
 {
 
@@ -28,38 +26,9 @@ arbb::dense<arbb::f64, 2> ArBB_Data;
 arbb::dense<arbb::f64, 2> ArBB_Level;
 arbb::dense<arbb::f64, 2> ArBB_Index;
 
-#ifdef OLD_ARBB_IMPL
 template <typename fp_Type>
-void arbb_evalGridPoint(const arbb::dense<fp_Type>& dataPoint, const arbb::dense<fp_Type>& levelPoint, const arbb::dense<fp_Type>& indexPoint, fp_Type& result)
+void arbb_evalGridPoint_oneDim(const arbb::dense<fp_Type>& dataPointsDim, const fp_Type& levelPoint, const arbb::dense<fp_Type>& index, arbb::dense<fp_Type>& result, const arbb::dense<fp_Type>& zero, const arbb::dense<fp_Type>& one)
 {
-	fp_Type eval;
-	fp_Type index_calc;
-	fp_Type abs;
-	fp_Type last;
-	fp_Type localSupport;
-	fp_Type one = 1.0;
-	fp_Type zero = 0.0;
-	arbb::usize dims = dataPoint.num_cols();
-
-	_for (arbb::usize i = 0, i < dims, i++)
-	{
-		eval = levelPoint[i]*dataPoint[i];
-		index_calc = eval - indexPoint[i];
-		abs = arbb::abs(index_calc);
-		last = one - abs;
-		localSupport = arbb::max(last, zero);
-		result *= localSupport;
-	} _end_for;
-}
-#endif
-
-template <typename fp_Type>
-void arbb_evalGridPoint_oneDim(const arbb::dense<fp_Type>& dataPointsDim, const fp_Type& levelPoint, const fp_Type& indexPoint, arbb::dense<fp_Type>& result)
-{
-	arbb::dense<fp_Type> zero = arbb::fill(static_cast<fp_Type>(0), result.length());
-	arbb::dense<fp_Type> one = arbb::fill(static_cast<fp_Type>(1), result.length());
-	arbb::dense<fp_Type> index = arbb::fill(indexPoint, result.length());
-
 	result = levelPoint * dataPointsDim;
 	result = result - index;
 	result = arbb::abs(result);
@@ -68,11 +37,8 @@ void arbb_evalGridPoint_oneDim(const arbb::dense<fp_Type>& dataPointsDim, const 
 }
 
 template <typename fp_Type>
-void arbb_evalTransGridPoint_oneDim(const fp_Type& dataPointDim, const arbb::dense<fp_Type>& level, const arbb::dense<fp_Type>& index, arbb::dense<fp_Type>& result)
+void arbb_evalTransGridPoint_oneDim(const fp_Type& dataPointDim, const arbb::dense<fp_Type>& level, const arbb::dense<fp_Type>& index, arbb::dense<fp_Type>& result, const arbb::dense<fp_Type>& zero, const arbb::dense<fp_Type>& one)
 {
-	arbb::dense<fp_Type> zero = arbb::fill(static_cast<fp_Type>(0), result.length());
-	arbb::dense<fp_Type> one = arbb::fill(static_cast<fp_Type>(1), result.length());
-
 	result = level * dataPointDim;
 	result = result - index;
 	result = arbb::abs(result);
@@ -83,27 +49,15 @@ void arbb_evalTransGridPoint_oneDim(const fp_Type& dataPointDim, const arbb::den
 template <typename fp_Type>
 void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& source, arbb::dense<fp_Type>& result)
 {
-#ifdef OLD_ARBB_IMPL
-	arbb::usize source_size = Data.num_rows();
-	arbb::usize storage_size = Level.num_rows();
-
-	_for (arbb::usize i = 0, i < source_size, i++)
-	{
-		_for (arbb::usize j = 0, j < storage_size, j++)
-		{
-			fp_Type curResult = source[i];
-			fp_Type lastResult = result[j];
-
-			arbb_evalGridPoint(Data.row(i), Level.row(j), Index.row(j), curResult);
-
-			lastResult += curResult;
-			result[j] = lastResult;
-		} _end_for;
-	} _end_for;
-#else
 	arbb::usize dims = Level.num_cols();
 	arbb::usize source_size = Data.num_rows();
 	arbb::usize storage_size = Level.num_rows();
+
+	arbb::dense<fp_Type> zero = arbb::fill(static_cast<fp_Type>(0), storage_size);
+	arbb::dense<fp_Type> one = arbb::fill(static_cast<fp_Type>(1), storage_size);
+
+	//arbb::dense<fp_Type, 2> LevelTrans = arbb::transpose(Level);
+	//arbb::dense<fp_Type, 2> IndexTrans = arbb::transpose(Index);
 
 	_for (arbb::usize i = 0, i < source_size, i++)
 	{
@@ -117,41 +71,27 @@ void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2
 		{
 			fp_Type dataDim = curDataPoint[d];
 
-			arbb_evalTransGridPoint_oneDim(dataDim, Level.col(d), Index.col(d), temp);
+			arbb_evalTransGridPoint_oneDim(dataDim, Level.col(d), Index.col(d), temp, zero, one);
+			//arbb_evalTransGridPoint_oneDim(dataDim, LevelTrans.row(d), IndexTrans.row(d), temp, zero, one);
 
 			temp_result *= temp;
 		} _end_for;
 
 		result += temp_result;
 	} _end_for;
-
-#endif
 }
 
 template <typename fp_Type>
 void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& alpha, arbb::dense<fp_Type>& result)
 {
-#ifdef OLD_ARBB_IMPL
-	arbb::usize result_size = Data.num_rows();
-	arbb::usize storage_size = Level.num_rows();
-
-	_for (arbb::usize i = 0, i < result_size, i++)
-	{
-		fp_Type lastResult = result[i];
-
-		_for (arbb::usize j = 0, j < storage_size, j++)
-		{
-			fp_Type curResult = alpha[j];
-			arbb_evalGridPoint(Data.row(i), Level.row(j), Index.row(j), curResult);
-			lastResult += curResult;
-		} _end_for;
-
-		result[i] = lastResult;
-	} _end_for;
-#else
 	arbb::usize dims = Level.num_cols();
-	arbb::usize result_size = Data.num_rows();
+	arbb::usize result_size = result.length();
 	arbb::usize storage_size = Level.num_rows();
+
+	arbb::dense<fp_Type> zero = arbb::fill(static_cast<fp_Type>(0), result_size);
+	arbb::dense<fp_Type> one = arbb::fill(static_cast<fp_Type>(1), result_size);
+
+	//arbb::dense<fp_Type, 2> DataTrans = arbb::transpose(Data);
 
 	_for (arbb::usize j = 0, j < storage_size, j++)
 	{
@@ -167,14 +107,16 @@ void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Ty
 			fp_Type l = curLevel[d];
 			fp_Type i = curIndex[d];
 
-			arbb_evalGridPoint_oneDim(Data.col(d), l, i, temp);
+			arbb::dense<fp_Type> index = arbb::fill(i, result_size);
+
+			arbb_evalGridPoint_oneDim(Data.col(d), l, index, temp, zero, one);
+			//arbb_evalGridPoint_oneDim(DataTrans.row(d), l, index, temp, zero, one);
 
 			temp_result *= temp;
 		} _end_for;
 
 		result += temp_result;
 	} _end_for;
-#endif
 }
 
 ArBBKernels::ArBBKernels()

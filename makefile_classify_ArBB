@@ -26,6 +26,7 @@
 
 # compiler: icpc (Intel Compiler) 
 CC=icpc
+#CC=g++
 
 SRCDIR = ./../../../src/sgpp/
 SRCDIREXE = ./../../../src/application_cpp/
@@ -76,6 +77,9 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 ###################################################################	
 
 CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -I$(ARBBINCLUDES) -DUSEICCINTRINSICS -DUSEARBB -axSSE3
+# Flags for g++
+#CFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(ARBBINCLUDES) -DUSEARBB
+
 LFLAGS=-Wall -ansi -O3 -L$(ARBBLIBS) -larbb -ltbb
 
 ###################################################################
