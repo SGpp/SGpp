@@ -15,6 +15,8 @@
 
 #include <arbb.hpp>
 
+#define ARBB_TRANSPOSE
+
 namespace sg
 {
 
@@ -56,8 +58,10 @@ void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2
 	arbb::dense<fp_Type> zero = arbb::fill(static_cast<fp_Type>(0), storage_size);
 	arbb::dense<fp_Type> one = arbb::fill(static_cast<fp_Type>(1), storage_size);
 
-	//arbb::dense<fp_Type, 2> LevelTrans = arbb::transpose(Level);
-	//arbb::dense<fp_Type, 2> IndexTrans = arbb::transpose(Index);
+#ifdef ARBB_TRANSPOSE
+	arbb::dense<fp_Type, 2> LevelTrans = arbb::transpose(Level);
+	arbb::dense<fp_Type, 2> IndexTrans = arbb::transpose(Index);
+#endif
 
 	_for (arbb::usize i = 0, i < source_size, i++)
 	{
@@ -71,8 +75,11 @@ void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2
 		{
 			fp_Type dataDim = curDataPoint[d];
 
+#ifdef ARBB_TRANSPOSE
+			arbb_evalTransGridPoint_oneDim(dataDim, LevelTrans.row(d), IndexTrans.row(d), temp, zero, one);
+#else
 			arbb_evalTransGridPoint_oneDim(dataDim, Level.col(d), Index.col(d), temp, zero, one);
-			//arbb_evalTransGridPoint_oneDim(dataDim, LevelTrans.row(d), IndexTrans.row(d), temp, zero, one);
+#endif
 
 			temp_result *= temp;
 		} _end_for;
@@ -91,7 +98,9 @@ void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Ty
 	arbb::dense<fp_Type> zero = arbb::fill(static_cast<fp_Type>(0), result_size);
 	arbb::dense<fp_Type> one = arbb::fill(static_cast<fp_Type>(1), result_size);
 
-	//arbb::dense<fp_Type, 2> DataTrans = arbb::transpose(Data);
+#ifdef ARBB_TRANSPOSE
+	arbb::dense<fp_Type, 2> DataTrans = arbb::transpose(Data);
+#endif
 
 	_for (arbb::usize j = 0, j < storage_size, j++)
 	{
@@ -109,8 +118,11 @@ void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Ty
 
 			arbb::dense<fp_Type> index = arbb::fill(i, result_size);
 
+#ifdef ARBB_TRANSPOSE
+			arbb_evalGridPoint_oneDim(DataTrans.row(d), l, index, temp, zero, one);
+#else
 			arbb_evalGridPoint_oneDim(Data.col(d), l, index, temp, zero, one);
-			//arbb_evalGridPoint_oneDim(DataTrans.row(d), l, index, temp, zero, one);
+#endif
 
 			temp_result *= temp;
 		} _end_for;
