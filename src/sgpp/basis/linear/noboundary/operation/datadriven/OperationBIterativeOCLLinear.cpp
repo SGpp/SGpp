@@ -44,11 +44,13 @@ void OperationBIterativeOCLLinear::rebuildLevelAndIndex()
 	Index = new DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*Level, *Index);
+
+	myOCLKernels->resetKernels();
 }
 
 double OperationBIterativeOCLLinear::multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result)
 {
-	size_t sourceSize = alpha.getSize();
+	size_t source_size = alpha.getSize();
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
 
@@ -60,12 +62,46 @@ double OperationBIterativeOCLLinear::multVectorized(DataVector& alpha, DataMatri
     double* ptrIndex = this->Index->getPointer();
     double* ptrGlobalResult = result.getPointer();
 
-    if (data.getNcols() % 8 != 0 || sourceSize != data.getNcols())
+    if (data.getNrows() % 128 != 0 || source_size != data.getNrows())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, sourceSize, storageSize, dims);
+    double time = myOCLKernels->multOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims);
+
+    // do the rest...
+	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
+    size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
+
+    if (global == 0)
+    {
+    	global = storageSize;
+    }
+
+#ifdef USEOMP
+	#pragma omp parallel for
+#endif
+	for (size_t j = global; j < storageSize; j++)
+	{
+		ptrGlobalResult[j] = 0.0f;
+
+		for (size_t i = 0; i < source_size; i++)
+		{
+			double curSupport = ptrSource[i];
+
+			for (size_t d = 0; d < dims; d++)
+			{
+				double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
+				double index_calc = eval - (ptrIndex[(j*dims)+d]);
+				double abs = fabs(index_calc);
+				double last = 1.0 - abs;
+				double localSupport = std::max<double>(last, 0.0);
+				curSupport *= localSupport;
+			}
+
+			ptrGlobalResult[j] += curSupport;
+		}
+	}
 
 	return time;
 }
@@ -84,7 +120,7 @@ double OperationBIterativeOCLLinear::multTransposeVectorized(DataVector& alpha, 
     double* ptrLevel = this->Level->getPointer();
     double* ptrIndex = this->Index->getPointer();
 
-    if (data.getNcols() % 8 != 0 || result_size != data.getNcols())
+    if (data.getNrows() % 128 != 0 || result_size != data.getNrows())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
