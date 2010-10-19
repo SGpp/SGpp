@@ -62,7 +62,7 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
     float* ptrIndex = this->Index->getPointer();
     float* ptrGlobalResult = result.getPointer();
 
-    if (data.getNrows() % 64 != 0 || source_size != data.getNrows())
+    if (data.getNrows() % 128 != 0 || source_size != data.getNrows())
     {
     	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
@@ -70,8 +70,8 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
     double time = myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims);
 
     // do the rest...
-	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
-    size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
+	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
+    size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
 
     if (global == 0)
     {
@@ -120,7 +120,7 @@ double OperationBIterativeSPOCLLinear::multTransposeVectorized(DataVectorSP& alp
     float* ptrLevel = this->Level->getPointer();
     float* ptrIndex = this->Index->getPointer();
 
-    if (data.getNrows() % 64 != 0 || result_size != data.getNrows())
+    if (data.getNrows() % 128 != 0 || result_size != data.getNrows())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }

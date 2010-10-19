@@ -28,6 +28,14 @@ cl_uint num_devices;
 cl_context context;
 cl_command_queue command_queue[MAX_OCL_DEVICE_COUNT];
 
+cl_mem clDataDP[MAX_OCL_DEVICE_COUNT], clLevelDP[MAX_OCL_DEVICE_COUNT], clIndexDP[MAX_OCL_DEVICE_COUNT];
+
+cl_kernel kernel_multTransDP[MAX_OCL_DEVICE_COUNT];
+cl_program program_multTransDP;
+
+cl_kernel kernel_multDP[MAX_OCL_DEVICE_COUNT];
+cl_program program_multDP;
+
 cl_mem clDataSP[MAX_OCL_DEVICE_COUNT], clLevelSP[MAX_OCL_DEVICE_COUNT], clIndexSP[MAX_OCL_DEVICE_COUNT];
 
 cl_kernel kernel_multTransSP[MAX_OCL_DEVICE_COUNT];
@@ -103,6 +111,10 @@ OCLKernels::OCLKernels()
     isFirstTimeMultTransSP = true;
     isFirstTimeMultSP = true;
     isVeryFirstTimeSP = true;
+
+    isFirstTimeMultTransDP = true;
+    isFirstTimeMultDP = true;
+    isVeryFirstTimeDP = true;
 }
 
 OCLKernels::~OCLKernels()
@@ -116,6 +128,15 @@ OCLKernels::~OCLKernels()
 	    clReleaseProgram(program_multTransSP);
 	}
 
+	if (!isFirstTimeMultTransDP)
+	{
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseKernel(kernel_multTransDP[i]);
+	    }
+	    clReleaseProgram(program_multTransDP);
+	}
+
 	if (!isFirstTimeMultSP)
 	{
 	    for (size_t i = 0; i < num_devices; i++)
@@ -127,11 +148,30 @@ OCLKernels::~OCLKernels()
 	    clReleaseProgram(program_multSP);
 	}
 
+	if (!isFirstTimeMultDP)
+	{
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseMemObject(clLevelDP[i]);
+	    	clReleaseMemObject(clIndexDP[i]);
+	    	clReleaseKernel(kernel_multDP[i]);
+	    }
+	    clReleaseProgram(program_multDP);
+	}
+
 	if (!isVeryFirstTimeSP)
 	{
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
 	    	clReleaseMemObject(clDataSP[i]);
+	    }
+	}
+
+	if (!isVeryFirstTimeDP)
+	{
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseMemObject(clDataDP[i]);
 	    }
 	}
 
@@ -148,25 +188,247 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 {
 	double time = 0.0;
 
-   	for (size_t i = 0; i < sourceSize; i++)
+	if (isFirstTimeMultDP)
 	{
-		for (size_t j = 0; j < storageSize; j++)
+		std::stringstream stream_program_src;
+
+		stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+		stream_program_src << "__kernel void multOCL(__global double* ptrSource," << std::endl;
+		stream_program_src << "						__global double* ptrData," << std::endl;
+		stream_program_src << "						__global double* ptrLevel," << std::endl;
+		stream_program_src << "						__global double* ptrIndex," << std::endl;
+		stream_program_src << "						__global double* ptrResult," << std::endl;
+		stream_program_src << "						uint sourceSize," << std::endl;
+		stream_program_src << "						uint offset)" << std::endl;
+		stream_program_src << "{" << std::endl;
+		stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl;
+		stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
+		stream_program_src << "	globalIdx = globalIdx + offset;" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	double eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
+		stream_program_src << "	double myResult = 0.0f;" << std::endl << std::endl;
+		stream_program_src << "	__local double locData[" << dims*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << "];" << std::endl;
+		stream_program_src << "	__local double locSource[" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << "];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
 		{
-			double curSupport = ptrSource[i];
+			stream_program_src << "	double level_" << d << " = ptrLevel[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
+			stream_program_src << "	double index_" << d << " = ptrIndex[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
+		}
+		stream_program_src << std::endl;
+		stream_program_src << "	// Iterate over all grid points" << std::endl;
+		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << ")" << std::endl;
+		stream_program_src << "	{" << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "		locData[(localIdx*" << dims << ")+" << d << "] = ptrData[((i+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+		}
+		stream_program_src << "		locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
+		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << "; k++)" << std::endl;
+		stream_program_src << "		{" << std::endl;
 
-			for (size_t d = 0; d < dims; d++)
+		stream_program_src << "			curSupport = locSource[k];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "			eval = ((level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]));" << std::endl;
+			stream_program_src << "			index_calc = eval - (index_" << d << ");" << std::endl;
+			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
+			stream_program_src << "			last = 1.0 - abs;" << std::endl;
+			stream_program_src << "			localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "			curSupport *= localSupport;" << std::endl;
+		}
+		stream_program_src << std::endl << "		myResult += curSupport;" << std::endl;
+		stream_program_src << "		}" << std::endl << std::endl;
+		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+		stream_program_src << "	}" << std::endl;
+		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
+		stream_program_src << "}" << std::endl;
+
+		std::string program_src = stream_program_src.str();
+
+		//std::cout << program_src << std::endl;
+
+	    // setting the program
+	    const char* kernel_src = program_src.c_str();
+	    program_multDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
+	    if (err != CL_SUCCESS)
+		{
+	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
+	    	return 0.0;
+		}
+
+	    // compiling the program
+	    err = clBuildProgram(program_multDP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+
+	    if (err != CL_SUCCESS)
+	    {
+	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
+
+	    	size_t len;
+	    	char buffer[2048];
+
+	    	// get the build log
+	    	clGetProgramBuildInfo(program_multDP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+
+	    	std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
+	    	return 0.0;
+	    }
+
+	    // creating the kernel
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+			kernel_multDP[i] = clCreateKernel(program_multDP, "multOCL", &err);
+			if (err != CL_SUCCESS)
 			{
-				double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*sourceSize)+i]));
-				double index_calc = eval - (ptrIndex[(j*dims)+d]);
-				double abs = fabs(index_calc);
-				double last = 1.0 - abs;
-				double localSupport = std::max<double>(last, 0.0);
-				curSupport *= localSupport;
+				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
+				return 0.0;
 			}
+	    }
+	}
 
-			ptrGlobalResult[j] += curSupport;
+	if (isFirstTimeMultDP && isFirstTimeMultTransDP)
+	{
+		for (size_t i = 0; i < num_devices; i++)
+		{
+			clLevelDP[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*dims*storageSize, ptrLevel, NULL);
+			clIndexDP[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*dims*storageSize, ptrIndex, NULL);
 		}
 	}
+
+	if (isVeryFirstTimeDP)
+	{
+		for (size_t i = 0; i < num_devices; i++)
+		{
+			clDataDP[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*dims*sourceSize, ptrData, NULL);
+		}
+		isVeryFirstTimeDP = false;
+	}
+
+	cl_mem clSource[MAX_OCL_DEVICE_COUNT], clResult[MAX_OCL_DEVICE_COUNT];
+	for (size_t i = 0; i < num_devices; i++)
+	{
+		clSource[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*sourceSize, ptrSource, NULL);
+		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(double)*storageSize, NULL, NULL);
+	}
+
+    cl_uint clSourceSize = (cl_uint)sourceSize;
+    cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
+
+    // determine best fit
+	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
+    size_t global = numWGs*(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/num_devices);
+    size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2;
+    size_t offset = 0;
+
+    // if there is not enough workload for GPUs
+    if (global == 0)
+    {
+    	return 0.0;
+    }
+
+    // set kernel arguments
+    for (size_t i = 0; i < num_devices; i++)
+    {
+    	clOffsets[i] = (cl_uint)offset;
+		if ( clSetKernelArg(kernel_multDP[i], 0, sizeof(cl_mem), &clSource[i]) ||
+				clSetKernelArg(kernel_multDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
+				clSetKernelArg(kernel_multDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
+				clSetKernelArg(kernel_multDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
+				clSetKernelArg(kernel_multDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+				clSetKernelArg(kernel_multDP[i], 5, sizeof(cl_uint), &clSourceSize) ||
+				clSetKernelArg(kernel_multDP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+		{
+			std::cout << "Failed to create kernel Args for kernel " << i << "!" << std::endl;
+			return 0.0;
+		}
+
+		offset += global;
+    }
+
+    cl_event clTimings[MAX_OCL_DEVICE_COUNT];
+    cl_event GPUDone[MAX_OCL_DEVICE_COUNT];
+
+    // enqueue kernels
+    for (size_t i = 0; i < num_devices; i++)
+    {
+		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multDP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+			return 0.0;
+		}
+    }
+
+	// read data back
+    offset = 0;
+    for (size_t i = 0; i < num_devices; i++)
+    {
+    	err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global, &ptrGlobalResult[offset], 0, NULL, &GPUDone[i]);
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
+			return 0.0;
+		}
+		offset += global;
+    }
+
+    // sync GPUs
+    clWaitForEvents(num_devices, GPUDone);
+
+	// determine kernel execution time
+    for (size_t i = 0; i < num_devices; i++)
+	{
+    	double tmpTime;
+		cl_ulong startTime, endTime;
+		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+		}
+
+		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+		}
+
+		tmpTime = (double)(endTime - startTime);
+		tmpTime *= 1e-9;
+
+		if (tmpTime > time)
+		{
+			time = tmpTime;
+		}
+	}
+
+    // clean up
+    for (size_t i = 0; i < num_devices; i++)
+    {
+    	clReleaseMemObject(clSource[i]);
+    	clReleaseMemObject(clResult[i]);
+    }
+
+    isFirstTimeMultDP = false;
+
+//   	for (size_t i = 0; i < sourceSize; i++)
+//	{
+//		for (size_t j = 0; j < storageSize; j++)
+//		{
+//			double curSupport = ptrSource[i];
+//
+//			for (size_t d = 0; d < dims; d++)
+//			{
+//				double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*sourceSize)+i]));
+//				double index_calc = eval - (ptrIndex[(j*dims)+d]);
+//				double abs = fabs(index_calc);
+//				double last = 1.0 - abs;
+//				double localSupport = std::max<double>(last, 0.0);
+//				curSupport *= localSupport;
+//			}
+//
+//			ptrGlobalResult[j] += curSupport;
+//		}
+//	}
 
 	return time;
 }
@@ -175,25 +437,266 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 {
 	double time = 0.0;
 
-	for (size_t i = 0; i < result_size; i++)
+	if (isFirstTimeMultTransDP)
 	{
-		for (size_t j = 0; j < storageSize; j++)
+		std::stringstream stream_program_src;
+
+		stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+		stream_program_src << "__kernel void multTransOCL(__global double* ptrAlpha," << std::endl;
+		stream_program_src << "						__global double* ptrData," << std::endl;
+		stream_program_src << "						__global double* ptrLevel," << std::endl;
+		stream_program_src << "						__global double* ptrIndex," << std::endl;
+		stream_program_src << "						__global double* ptrResult," << std::endl;
+		stream_program_src << "						uint fastStorageSize," << std::endl;
+		stream_program_src << "						uint storageSize," << std::endl;
+		stream_program_src << "						uint offset)" << std::endl;
+		stream_program_src << "{" << std::endl;
+		stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl;
+		stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
+		stream_program_src << "	globalIdx = globalIdx + offset;" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	__local double locLevel[" << dims * OCL_DATAPREFETCH_SIZE_DP << "];" << std::endl;
+		stream_program_src << "	__local double locIndex[" << dims * OCL_DATAPREFETCH_SIZE_DP << "];" << std::endl;
+		stream_program_src << "	__local double locAlpha[" << OCL_DATAPREFETCH_SIZE_DP << "];" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	double eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
+		stream_program_src << "	double myResult = 0.0;" << std::endl << std::endl;
+		stream_program_src << "	// Create registers for the data" << std::endl;
+		for (size_t d = 0; d < dims; d++)
 		{
-			double curSupport = ptrAlpha[j];
+			stream_program_src << "	double data_" << d << " = ptrData[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
+		}
+		stream_program_src << std::endl;
+		stream_program_src << "	// Iterate over all grid points (fast ones, with cache)" << std::endl;
+		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_DATAPREFETCH_SIZE_DP << ")" << std::endl;
+		stream_program_src << "	{" << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "		locLevel[(localIdx*" << dims << ")+"<< d << "] = ptrLevel[((j+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+			stream_program_src << "		locIndex[(localIdx*" << dims << ")+"<< d << "] = ptrIndex[((j+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+		}
+		stream_program_src << "		locAlpha[localIdx] = ptrAlpha[j+localIdx];" << std::endl;
+		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_DATAPREFETCH_SIZE_DP << "; k++)" << std::endl;
+		stream_program_src << "		{" << std::endl;
+		stream_program_src << "			curSupport = locAlpha[k];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "			eval = ((locLevel[(k*" << dims << ")+" << d << "]) * (data_" << d << "));" << std::endl;
+			stream_program_src << "			index_calc = eval - (locIndex[(k*" << dims << ")+" << d << "]);" << std::endl;
+			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
+			stream_program_src << "			last = 1.0 - abs;" << std::endl;
+			stream_program_src << "			localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "			curSupport *= localSupport;" << std::endl << std::endl;
+		}
+		stream_program_src << "			myResult += curSupport;" << std::endl;
+		stream_program_src << "		}" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+		stream_program_src << "	}" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	// Iterate over all grid points (slow ones, without cache)" << std::endl;
+		stream_program_src << "	for(int m = fastStorageSize; m < storageSize; m++)" << std::endl;
+		stream_program_src << "	{" << std::endl;
+		stream_program_src << "		curSupport = ptrAlpha[m];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "		eval = ((ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << "));" << std::endl;
+			stream_program_src << "		index_calc = eval - (ptrIndex[(m*" << dims << ")+" << d << "]);" << std::endl;
+			stream_program_src << "		abs = fabs(index_calc);" << std::endl;
+			stream_program_src << "		last = 1.0 - abs;" << std::endl;
+			stream_program_src << "		localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "		curSupport *= localSupport;" << std::endl << std::endl;
+		}
+		stream_program_src << "		myResult += curSupport;" << std::endl;
+		stream_program_src << "	}" << std::endl;
+		stream_program_src << std::endl;
+		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
+		stream_program_src << "}" << std::endl;
 
-			for (size_t d = 0; d < dims; d++)
+		std::string program_src = stream_program_src.str();
+
+		//std::cout << program_src << std::endl;
+
+	    // setting the program
+	    const char* kernel_src = program_src.c_str();
+	    program_multTransDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
+	    if (err != CL_SUCCESS)
+		{
+	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
+	    	return 0.0;
+		}
+
+	    // compiling the program
+	    err = clBuildProgram(program_multTransDP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+
+	    if (err != CL_SUCCESS)
+	    {
+	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
+
+	    	size_t len;
+	    	char buffer[2048];
+
+	    	// get the build log
+	    	clGetProgramBuildInfo(program_multTransDP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+
+	    	std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
+	    	return 0.0;
+	    }
+
+	    // creating the kernels
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+			kernel_multTransDP[i] = clCreateKernel(program_multTransDP, "multTransOCL", &err);
+			if (err != CL_SUCCESS)
 			{
-				double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
-				double index_calc = eval - (ptrIndex[(j*dims)+d]);
-				double abs = fabs(index_calc);
-				double last = 1.0 - abs;
-				double localSupport = std::max<double>(last, 0.0);
-				curSupport *= localSupport;
+				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
+				return 0.0;
 			}
+	    }
+	}
 
-			ptrResult[i] += curSupport;
+	if (isFirstTimeMultDP && isFirstTimeMultTransDP)
+	{
+		for (size_t i = 0; i < num_devices; i++)
+		{
+			clLevelDP[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*dims*storageSize, ptrLevel, NULL);
+			clIndexDP[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*dims*storageSize, ptrIndex, NULL);
 		}
 	}
+
+	if (isVeryFirstTimeDP)
+	{
+		for (size_t i = 0; i < num_devices; i++)
+		{
+			clDataDP[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*dims*result_size, ptrData, NULL);
+		}
+		isVeryFirstTimeDP = false;
+	}
+
+	cl_mem clAlpha[MAX_OCL_DEVICE_COUNT], clResult[MAX_OCL_DEVICE_COUNT];
+
+	for(size_t i = 0; i < num_devices; i++)
+	{
+		clAlpha[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*storageSize, ptrAlpha, NULL);
+		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(double)*result_size, NULL, NULL);
+	}
+
+	size_t global = result_size/num_devices;
+    size_t local = OCL_DATAPREFETCH_SIZE_DP;
+    size_t offset = 0;
+
+	size_t oclStorageSize = storageSize/OCL_DATAPREFETCH_SIZE_DP;
+    oclStorageSize *= OCL_DATAPREFETCH_SIZE_DP;
+
+    cl_uint clFastStorageSize = (cl_uint)(oclStorageSize);
+    cl_uint clStorageSize = (cl_uint)(storageSize);
+    cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
+
+    for (size_t i = 0; i < num_devices; i++)
+    {
+    	clOffsets[i] = (cl_uint)offset;
+		// set kernel arguments
+		if ( clSetKernelArg(kernel_multTransDP[i], 0, sizeof(cl_mem), &clAlpha[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
+				clSetKernelArg(kernel_multTransDP[i], 6, sizeof(cl_uint), &clStorageSize) ||
+				clSetKernelArg(kernel_multTransDP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+		{
+			std::cout << "Failed to create kernel Args!" << std::endl;
+			return 0.0;
+		}
+		offset += global;
+    }
+
+    cl_event clTimings[MAX_OCL_DEVICE_COUNT];
+    cl_event GPUDone[MAX_OCL_DEVICE_COUNT];
+
+    // enqueue kernel
+    for (size_t i = 0; i < num_devices; i++)
+    {
+		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransDP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+			return 0.0;
+		}
+    }
+
+    // read data back
+    offset = 0;
+    for (size_t i = 0; i < num_devices; i++)
+    {
+		err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global, &(ptrResult[offset]), 0, NULL, &(GPUDone[i]));
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
+			return 0.0;
+		}
+		offset += global;
+    }
+
+    // sync GPUs
+    clWaitForEvents(num_devices, GPUDone);
+
+	// determine kernel execution time
+    for (size_t i = 0; i < num_devices; i++)
+	{
+    	double tmpTime;
+		cl_ulong startTime, endTime;
+		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+		}
+
+		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
+		if (err != CL_SUCCESS)
+		{
+			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+		}
+
+		tmpTime = (double)(endTime - startTime);
+		tmpTime *= 1e-9;
+
+		if (tmpTime > time)
+		{
+			time = tmpTime;
+		}
+	}
+
+    // clean up
+    for (size_t i = 0; i < num_devices; i++)
+    {
+    	clReleaseMemObject(clAlpha[i]);
+    	clReleaseMemObject(clResult[i]);
+    }
+
+    isFirstTimeMultTransDP = false;
+
+//	for (size_t i = 0; i < result_size; i++)
+//	{
+//		for (size_t j = 0; j < storageSize; j++)
+//		{
+//			double curSupport = ptrAlpha[j];
+//
+//			for (size_t d = 0; d < dims; d++)
+//			{
+//				double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
+//				double index_calc = eval - (ptrIndex[(j*dims)+d]);
+//				double abs = fabs(index_calc);
+//				double last = 1.0 - abs;
+//				double localSupport = std::max<double>(last, 0.0);
+//				curSupport *= localSupport;
+//			}
+//
+//			ptrResult[i] += curSupport;
+//		}
+//	}
 
 	return time;
 }
@@ -220,8 +723,8 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		stream_program_src << std::endl;
 		stream_program_src << "	float eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	float myResult = 0.0f;" << std::endl << std::endl;
-		stream_program_src << "	__local float locData[" << dims*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << "];" << std::endl;
-		stream_program_src << "	__local float locSource[" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << "];" << std::endl << std::endl;
+		stream_program_src << "	__local float locData[" << dims*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/2 << "];" << std::endl;
+		stream_program_src << "	__local float locSource[" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/2 << "];" << std::endl << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
 			stream_program_src << "	float level_" << d << " = ptrLevel[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
@@ -229,7 +732,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		}
 		stream_program_src << std::endl;
 		stream_program_src << "	// Iterate over all grid points" << std::endl;
-		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << ")" << std::endl;
+		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/2 << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
@@ -237,7 +740,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		}
 		stream_program_src << "		locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
-		stream_program_src << "		for(int k = 0; k < " << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2 << "; k++)" << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/2 << "; k++)" << std::endl;
 		stream_program_src << "		{" << std::endl;
 
 		stream_program_src << "			curSupport = locSource[k];" << std::endl << std::endl;
@@ -329,9 +832,9 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
 
     // determine best fit
-	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE;
-    size_t global = numWGs*(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/num_devices);
-    size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE/2;
+	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
+    size_t global = numWGs*(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/num_devices);
+    size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/2;
     size_t offset = 0;
 
     // if there is not enough workload for GPUs
@@ -471,9 +974,9 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
 		stream_program_src << "	globalIdx = globalIdx + offset;" << std::endl;
 		stream_program_src << std::endl;
-		stream_program_src << "	__local float locLevel[" << dims * OCL_DATAPREFETCH_SIZE << "];" << std::endl;
-		stream_program_src << "	__local float locIndex[" << dims * OCL_DATAPREFETCH_SIZE << "];" << std::endl;
-		stream_program_src << "	__local float locAlpha[" << OCL_DATAPREFETCH_SIZE << "];" << std::endl;
+		stream_program_src << "	__local float locLevel[" << dims * OCL_DATAPREFETCH_SIZE_SP << "];" << std::endl;
+		stream_program_src << "	__local float locIndex[" << dims * OCL_DATAPREFETCH_SIZE_SP << "];" << std::endl;
+		stream_program_src << "	__local float locAlpha[" << OCL_DATAPREFETCH_SIZE_SP << "];" << std::endl;
 		stream_program_src << std::endl;
 		stream_program_src << "	float eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	float myResult = 0.0f;" << std::endl << std::endl;
@@ -484,7 +987,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		}
 		stream_program_src << std::endl;
 		stream_program_src << "	// Iterate over all grid points (fast ones, with cache)" << std::endl;
-		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_DATAPREFETCH_SIZE << ")" << std::endl;
+		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_DATAPREFETCH_SIZE_SP << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
@@ -494,7 +997,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		stream_program_src << "		locAlpha[localIdx] = ptrAlpha[j+localIdx];" << std::endl;
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
 		stream_program_src << std::endl;
-		stream_program_src << "		for(int k = 0; k < " << OCL_DATAPREFETCH_SIZE << "; k++)" << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_DATAPREFETCH_SIZE_SP << "; k++)" << std::endl;
 		stream_program_src << "		{" << std::endl;
 		stream_program_src << "			curSupport = locAlpha[k];" << std::endl << std::endl;
 		for (size_t d = 0; d < dims; d++)
@@ -601,11 +1104,11 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 	}
 
 	size_t global = result_size/num_devices;
-    size_t local = OCL_DATAPREFETCH_SIZE;
+    size_t local = OCL_DATAPREFETCH_SIZE_SP;
     size_t offset = 0;
 
-	size_t oclStorageSize = storageSize/OCL_DATAPREFETCH_SIZE;
-    oclStorageSize *= OCL_DATAPREFETCH_SIZE;
+	size_t oclStorageSize = storageSize/OCL_DATAPREFETCH_SIZE_SP;
+    oclStorageSize *= OCL_DATAPREFETCH_SIZE_SP;
 
     cl_uint clFastStorageSize = (cl_uint)(oclStorageSize);
     cl_uint clStorageSize = (cl_uint)(storageSize);
@@ -743,6 +1246,30 @@ void OCLKernels::resetKernels()
 
 	    isFirstTimeMultSP = true;
 	}
+
+	if (!isFirstTimeMultTransDP)
+	{
+	    clReleaseProgram(program_multTransDP);
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseKernel(kernel_multTransDP[i]);
+	    }
+
+	    isFirstTimeMultTransDP = true;
+	}
+
+	if (!isFirstTimeMultDP)
+	{
+	    clReleaseProgram(program_multDP);
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseMemObject(clLevelDP[i]);
+	    	clReleaseMemObject(clIndexDP[i]);
+	    	clReleaseKernel(kernel_multDP[i]);
+	    }
+
+	    isFirstTimeMultDP = true;
+	}
 }
 
 void OCLKernels::resetData()
@@ -755,6 +1282,16 @@ void OCLKernels::resetData()
 		}
 
 		isVeryFirstTimeSP = true;
+	}
+
+	if (!isVeryFirstTimeDP)
+	{
+		for (size_t i = 0; i < num_devices; i++)
+		{
+			clReleaseMemObject(clDataDP[i]);
+		}
+
+		isVeryFirstTimeDP = true;
 	}
 }
 
