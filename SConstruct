@@ -46,6 +46,12 @@ env = Environment(variables = vars, ENV = os.environ)
 # lib: /lrz/sys/intel/icc_110_074/lib/ia64/
 # bin: /lrz/sys/intel/icc_110_074/bin/ia64/
 
+
+# scons usually adds double quotes around the command-line arguments containing 
+# white spaces  this whould produce compilation error, therefore replace string 
+# with corresponding list of parameters
+env['CPPFLAGS'] = Split(env['CPPFLAGS'])
+
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
     env.Append(CPPFLAGS=['-std=c++0x'])
