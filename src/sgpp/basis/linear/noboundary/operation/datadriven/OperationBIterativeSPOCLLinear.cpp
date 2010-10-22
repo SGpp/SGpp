@@ -125,7 +125,7 @@ double OperationBIterativeSPOCLLinear::multTransposeVectorized(DataVectorSP& alp
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multTransSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims);
+    double time = myOCLKernels->multTransSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, result_size);
 
    	return time;
 }

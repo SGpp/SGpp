@@ -14,9 +14,9 @@ namespace sg
 DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda, std::string vecMode)
 {
 	// handle unsupported vector extensions
-	if (vecMode != "SSE" && vecMode != "AVX" && vecMode != "OCL" && vecMode != "ArBB")
+	if (vecMode != "SSE" && vecMode != "AVX" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_SSE_OCL")
 	{
-		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB are supported vector extensions!");
+		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
 	}
 
 	resetTimers();
@@ -39,6 +39,10 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	{
 		this->vecWidth = 128;
 	}
+	else if (this->vecMode == "HYBRID_SSE_OCL")
+	{
+		this->vecWidth = 128;
+	}
 	else if (this->vecMode == "ArBB")
 	{
 		this->vecWidth = 16;
@@ -46,7 +50,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	// should not happen because this exception should have been thrown some lines upwards!
 	else
 	{
-		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB are supported vector extensions!");
+		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
 	}
 
 	numTrainingInstances = data->getNrows();
@@ -68,7 +72,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 
 	numPatchedTrainingInstances = data->getNrows();
 
-	if (this->vecMode != "OCL" && this->vecMode != "ArBB")
+	if (this->vecMode != "OCL" && this->vecMode != "ArBB" && this->vecMode != "HYBRID_SSE_OCL")
 	{
 		data->transpose();
 	}
