@@ -23,6 +23,7 @@
 #ifdef USEOCL
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPHybridSSEOCLLinear.hpp"
 #endif
 
 #ifdef USEARBB
@@ -130,6 +131,10 @@ OperationBVectorizedSP* LinearBoundaryGrid::createOperationBVectorizedSP(const s
 	else if (VecType == "OCL")
 	{
 		return new OperationBIterativeSPOCLLinear(this->storage);
+	}
+	else if (VecType == "HYBRID_SSE_OCL")
+	{
+		return new OperationBIterativeSPHybridSSEOCLLinear(this->storage);
 	}
 #endif
 #ifdef USEARBB

@@ -72,7 +72,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	UpdPhidPhiBBIterativeLinearBoundary.o OperationBIterativeAVXLinear.o\
 	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o\
 	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o BlackScholesODESolverSystemEuropean.o NativeCppClassifyBenchmark.o\
-	OperationBIterativeOCLLinear.o OperationBIterativeSPOCLLinear.o ModifiedBlackScholesODESolverSystem.o OCLKernels.o
+	OperationBIterativeOCLLinear.o OperationBIterativeSPOCLLinear.o ModifiedBlackScholesODESolverSystem.o OCLKernels.o\
+	OperationBIterativeSPHybridSSEOCLLinear.o
 
 ###################################################################
 # Compiler Flags
@@ -208,6 +209,9 @@ OperationBIterativeOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/data
 
 OperationBIterativeSPOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.cpp
 	$(CC) $(CFLAGS) -o OperationBIterativeSPOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.cpp
+	
+OperationBIterativeSPHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPHybridSSEOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationBIterativeSPHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPHybridSSEOCLLinear.cpp	
 	
 OCLKernels.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
 	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp

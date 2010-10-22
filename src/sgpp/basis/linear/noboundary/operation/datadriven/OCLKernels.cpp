@@ -953,7 +953,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 	return time;
 }
 
-double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims)
+double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
@@ -1100,10 +1100,10 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 	for(size_t i = 0; i < num_devices; i++)
 	{
 		clAlpha[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*storageSize, ptrAlpha, NULL);
-		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float)*result_size, NULL, NULL);
+		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float)*gpu_partition, NULL, NULL);
 	}
 
-	size_t global = result_size/num_devices;
+	size_t global = gpu_partition/num_devices;
     size_t local = OCL_DATAPREFETCH_SIZE_SP;
     size_t offset = 0;
 

@@ -55,6 +55,7 @@
 //#define USE_AVX
 //#define USE_OCL
 //#define USE_ARBB
+//#define USE_HYBRID_SSE_OCL
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
@@ -139,6 +140,9 @@ void printSettings()
 #ifdef USE_OCL
 	std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
 #endif
+#ifdef USE_HYBRID_SSE_OCL
+	std::cout << "Vectorized: Hybrid, SSE and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
+#endif
 #ifdef USE_ARBB
 	std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
 #endif
@@ -160,7 +164,7 @@ void adaptClassificationTest(bool isRegression)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_ARBB)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
     std::cout << "Classification Test App (Double Precision)" << std::endl;
 #else
     std::cout << "Classification Test App (Double Precision, recursive)" << std::endl;
@@ -213,7 +217,7 @@ void adaptClassificationTest(bool isRegression)
 
     // Generate CG to solve System
     sg::ConjugateGradients* myCG = new sg::ConjugateGradients(CG_IMAX, CG_EPS);
-#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_ARBB)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_SSE
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "SSE");
 #endif
@@ -221,6 +225,9 @@ void adaptClassificationTest(bool isRegression)
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "AVX");
 #endif
 #ifdef USE_OCL
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "OCL");
+#endif
+#ifdef USE_HYBRID_SSE_OCL
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "OCL");
 #endif
 #ifdef USE_ARBB
@@ -247,7 +254,7 @@ void adaptClassificationTest(bool isRegression)
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_ARBB)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
     		mySystem->rebuildLevelAndIndex();
 #endif
 
@@ -322,7 +329,7 @@ void adaptClassificationTest(bool isRegression)
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings();
-#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_ARBB)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
@@ -340,8 +347,10 @@ void adaptClassificationTest(bool isRegression)
 #ifndef USE_SSE
 #ifndef USE_AVX
 #ifndef USE_OCL
+#ifndef USE_HYBRID_SSE_OCL
 #ifndef USE_ARBB
     delete myC;
+#endif
 #endif
 #endif
 #endif
@@ -418,7 +427,7 @@ void adaptClassificationTestSP(bool isRegression)
     // Generate CG to solve System
     sg::ConjugateGradientsSP* myCG = new sg::ConjugateGradientsSP(CG_IMAX, CG_EPS);
 
-#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_ARBB)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_SSE
     sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "SSE");
 #endif
@@ -427,6 +436,9 @@ void adaptClassificationTestSP(bool isRegression)
 #endif
 #ifdef USE_OCL
     sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "OCL");
+#endif
+#ifdef USE_HYBRID_SSE_OCL
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "HYBRID_SSE_OCL");
 #endif
 #ifdef USE_ARBB
     sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "ArBB");
@@ -451,7 +463,7 @@ void adaptClassificationTestSP(bool isRegression)
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_ARBB)
+#if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
     		mySystem->rebuildLevelAndIndex();
 #endif
 
