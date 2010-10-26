@@ -54,7 +54,12 @@ public:
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel);
-
+	/**
+	 * Multiplies the corresponding r coordinates with the whole grid value
+	 *
+	 * @param updateVector the vector that should be updated
+	 */
+   	void multiplyrBSHW(DataVector& updateVector);
 	/**
 	 * Std-Destructor
 	 */

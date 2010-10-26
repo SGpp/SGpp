@@ -95,22 +95,4 @@ void DirichletUpdateVector::multiplyBoundaryVector(DataVector& updateVector,Data
 		}
 	}
 }
-
-void DirichletUpdateVector::multiplyrBSHW(DataVector& updateVector)
-{
-	double tmp;
-	for (size_t i = 0; i < storage->size(); i++)
-	{
-		std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
-		std::stringstream coordsStream(coords);
-		double* dblFuncValues = new double[2];
-        for (size_t j = 0; j < 2; j++)
-			{
-			    coordsStream >> tmp;
-                dblFuncValues[j] = tmp;
-			}
-       // std::cout<< dblFuncValues[1]<< std::endl;
-		updateVector.set(i, updateVector.get(i)* dblFuncValues[1]);
-	}
-}
 }
