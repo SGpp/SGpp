@@ -39,6 +39,25 @@ ModifiedBlackScholesODESolverSystem::ModifiedBlackScholesODESolverSystem(Grid& S
 	this->OpFBound = this->BoundGrid->createOperationLF();
 }
 
+void ModifiedBlackScholesODESolverSystem::multiplyrBSHW(DataVector& updateVector)
+{
+	double tmp;
+	for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
+	{
+		//std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
+		std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*this->BoundGrid->getBoundingBox());
+		std::stringstream coordsStream(coords);
+		double* dblFuncValues = new double[2];
+        for (size_t j = 0; j < 2; j++)
+			{
+			    coordsStream >> tmp;
+                dblFuncValues[j] = tmp;
+			}
+       // std::cout<< dblFuncValues[1]<< std::endl;
+		updateVector.set(i, updateVector.get(i)* dblFuncValues[1]);
+	}
+}
+
 ModifiedBlackScholesODESolverSystem::~ModifiedBlackScholesODESolverSystem()
 {
 	delete this->OpFBound;
@@ -65,11 +84,8 @@ void ModifiedBlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alp
 	this->OpGammaBound->mult(alpha, temp);
 	result.sub(temp);
 
-	//this->OpFBound->mult(alpha, temp);
-	//result.axpy(0.06, temp);
 	this->OpFBound->mult(alpha, temp);
-	this->BoundaryUpdate->multiplyrBSHW(temp);
-	//this->modifier->multiplyrBSHW(temp);
+	this->multiplyrBSHW(temp);
 	result.add(temp);
 }
 void ModifiedBlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
