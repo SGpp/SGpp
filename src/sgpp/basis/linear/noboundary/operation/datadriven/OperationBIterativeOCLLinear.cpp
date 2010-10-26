@@ -67,7 +67,7 @@ double OperationBIterativeOCLLinear::multVectorized(DataVector& alpha, DataMatri
     	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims);
+    double time = myOCLKernels->multOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
 
     // do the rest...
 	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
@@ -125,7 +125,7 @@ double OperationBIterativeOCLLinear::multTransposeVectorized(DataVector& alpha, 
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multTransOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims);
+    double time = myOCLKernels->multTransOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, result_size);
 
    	return time;
 }

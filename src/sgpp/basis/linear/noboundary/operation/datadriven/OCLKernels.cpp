@@ -184,7 +184,7 @@ OCLKernels::~OCLKernels()
     delete[] device_ids;
 }
 
-double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims)
+double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
@@ -308,14 +308,14 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 	for (size_t i = 0; i < num_devices; i++)
 	{
 		clSource[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*sourceSize, ptrSource, NULL);
-		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(double)*storageSize, NULL, NULL);
+		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(double)*gpu_partition, NULL, NULL);
 	}
 
     cl_uint clSourceSize = (cl_uint)sourceSize;
     cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
 
     // determine best fit
-	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
+	size_t numWGs = gpu_partition/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
     size_t global = numWGs*(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/num_devices);
     size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2;
     size_t offset = 0;
@@ -433,7 +433,7 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 	return time;
 }
 
-double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims)
+double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
@@ -580,10 +580,10 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 	for(size_t i = 0; i < num_devices; i++)
 	{
 		clAlpha[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double)*storageSize, ptrAlpha, NULL);
-		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(double)*result_size, NULL, NULL);
+		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(double)*gpu_partition, NULL, NULL);
 	}
 
-	size_t global = result_size/num_devices;
+	size_t global = gpu_partition/num_devices;
     size_t local = OCL_DATAPREFETCH_SIZE_DP;
     size_t offset = 0;
 
