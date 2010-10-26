@@ -44,6 +44,11 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
 	return 0;
 }
 
+double calculatetheta(double a, double sigma, double T, int count, double stepsize)
+{
+	double theta=0;
+	return theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+}
 /**
  * Do a Hull White solver test with n assets (ND Sparse Grid) European call option
  *
@@ -115,7 +120,7 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 			int count=0;
 			for (int i=0; i<T/stepsize; i++)
 			{
-			   theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+			   theta=calculatetheta(a, sigma, T, count,stepsize);
 			   myHWSolver->setStochasticData(theta, sigma, a);
 			   myHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 			   count=count+1;
@@ -127,7 +132,7 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 			int count=0;
 			for (int i=0; i<T/stepsize; i++)
 			{
-			   theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+			   theta=calculatetheta(a, sigma, T, count,stepsize);
 			   myHWSolver->setStochasticData(theta, sigma, a);
 			   myHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 			   count=count+1;
