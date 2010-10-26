@@ -58,7 +58,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
-void testHullWhite(size_t l, double theta, double sigma, double a, std::string fileBound, std::string payoffType,
+void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std::string payoffType,
 		size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T,double dStrike)
 {
 		size_t level = l;
@@ -111,6 +111,7 @@ void testHullWhite(size_t l, double theta, double sigma, double a, std::string f
 		// Start solving the Black Scholes Equation
 		if (Solver == "ExEul")
 		{
+			double theta=0;
 			int count=0;
 			for (int i=0; i<T/stepsize; i++)
 			{
@@ -122,6 +123,7 @@ void testHullWhite(size_t l, double theta, double sigma, double a, std::string f
 		}
 		else if (Solver == "ImEul")
 		{
+			double theta=0;
 			int count=0;
 			for (int i=0; i<T/stepsize; i++)
 			{
@@ -186,20 +188,17 @@ void writeHelp()
 	mySStream << "Some instructions for the use of 1D Hull White Solver:" << std::endl;
 	mySStream << "------------------------------------------------------" << std::endl << std::endl;
 	mySStream << "Available execution modes are:" << std::endl;
-	mySStream << "  solveND             Solves an European Call/Put option" << std::endl;
-	mySStream << "                      for N assets on a regular sparse grid" << std::endl << std::endl;
-
+	mySStream << "  solve1DHullWhite" << std::endl;
 	mySStream << "Execution modes descriptions:" << std::endl;
 	mySStream << "-----------------------------------------------------" << std::endl;
-	mySStream << "solveND" << std::endl << "------" << std::endl;
+	mySStream << "solve1DHullWhite" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-	mySStream << "	value of Theta: theta value" << std::endl;
 	mySStream << "	value of sigma: sigma value-determine overall level of volatility" << std::endl;
     mySStream << "	value of a: a" << std::endl;
     mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
-	mySStream << "  simeSt: number of time steps" << std::endl;
+	mySStream << "	simeSt: number of time steps of doing HW, default: 1, the total time steps is defined by T/dT" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
@@ -210,7 +209,7 @@ void writeHelp()
 
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "5 0.004 0.01 0.1 bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "0.2 " <<"1.0 "<<"0.6 "<<std::endl;
+	mySStream << "5 0.01 0.1 bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "0.2 " <<"1.0 "<<"0.6 "<<std::endl;
 	mySStream << std::endl;
 
 	mySStream << std::endl << std::endl;
@@ -237,9 +236,9 @@ int main(int argc, char *argv[])
 
 	option.assign(argv[1]);
 
-	if (option == "solveND")
+	if (option == "solve1DHullWhite")
 	{
-		if (argc != 16)
+		if (argc != 15)
 		{
 			writeHelp();
 		}
@@ -247,22 +246,18 @@ int main(int argc, char *argv[])
 		{
 			std::string solver;
 			std::string payoff;
-			double theta;
 			double sigma;
 			double a;
 			double dStrike;
 			std::string fileBound;
+			sigma = atof(argv[3]);
+			a = atof(argv[4]);
+			fileBound.assign(argv[5]);
+			payoff.assign(argv[6]);
+			solver.assign(argv[11]);
+			dStrike = atof(argv[14]);
 
-
-			theta = atof(argv[3]);
-			sigma = atof(argv[4]);
-			a = atof(argv[5]);
-			fileBound.assign(argv[6]);
-			payoff.assign(argv[7]);
-			solver.assign(argv[12]);
-			dStrike = atof(argv[15]);
-
-			testHullWhite(atoi(argv[2]), theta, sigma, a, fileBound, payoff, atof(argv[8]), atof(argv[9]), atoi(argv[10]), atof(argv[11]), solver,atof(argv[13]),atof(argv[14]),dStrike);
+			testHullWhite(atoi(argv[2]), sigma, a, fileBound, payoff, atof(argv[7]), atof(argv[8]), atoi(argv[9]), atof(argv[10]), solver,atof(argv[12]),atof(argv[13]),dStrike);
 		}
 	}
 
