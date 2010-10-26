@@ -29,7 +29,10 @@ namespace std {
 	%template(DoubleVector) vector<double>;
 	%template(IndexValPair) pair<size_t, double>;
 	%template(IndexValVector) vector<pair<size_t, double> >;
+	%template(SizeTVector) vector<size_t>;
 }
+
+
 
 // This should include all necessary header files
 %{

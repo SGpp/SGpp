@@ -40,8 +40,6 @@
 //%apply std::string *OUTPUT { std::string& ostr };
 //%apply std::string *INPUT { std::string& istr };
 
-
-
 //void getMemento();
 
 
@@ -96,7 +94,8 @@ public:
 	double eval(DataVector& alpha, DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	int getSize();
-	
+	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);	
+	std::vector<size_t> getAlgorithmicDimensions();
 };
 
 
