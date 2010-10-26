@@ -15,7 +15,7 @@
 #endif
 
 // This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
-#define PERCENT_CPUS 12
+#define PERCENT_CPUS 8
 
 #ifdef USEICCINTRINSICS
 // include SSE3 intrinsics
@@ -87,16 +87,144 @@ double OperationBIterativeSPHybridSSEOCLLinear::multVectorized(DataVectorSP& alp
     	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims);
+#ifdef USEOMPTHREE
+    // split result into GPU and CPU partition
+    size_t gpu_partition = (storageSize * (100-PERCENT_CPUS))/100;
+    size_t gpu_pad = gpu_partition % 128;
+    gpu_partition -= gpu_pad;
+
+    // Do on-demand transpose
+	float* ptrTransData = new float[dims*source_size];
+
+	#pragma omp parallel
+    {
+		#pragma omp single nowait
+    	{
+			#pragma omp task
+    		{
+    			myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+    		}
+
+			#pragma omp task
+    		{
+#ifdef USEICCINTRINSICS
+    			for (size_t n = 0; n < source_size; n++)
+    			{
+    				for(size_t d = 0; d < dims; d++)
+    				{
+    					ptrTransData[(d*source_size)+n] = ptrData[(n*dims)+d];
+    				}
+    			}
+
+    			for (size_t j = gpu_partition; j < storageSize; j++)
+				{
+					#pragma omp task firstprivate(j)
+					{
+						__m128 res = _mm_set1_ps(0.0f);
+
+						for (size_t i = 0; i < source_size; i+=16)
+						{
+							__m128 support_0 = _mm_load_ps(&(ptrSource[i+0]));
+							__m128 support_1 = _mm_load_ps(&(ptrSource[i+4]));
+							__m128 support_2 = _mm_load_ps(&(ptrSource[i+8]));
+							__m128 support_3 = _mm_load_ps(&(ptrSource[i+12]));
+
+							__m128 one = _mm_set1_ps(1.0f);
+							__m128 zero = _mm_set1_ps(0.0f);
+
+							for (size_t d = 0; d < dims; d++)
+							{
+								__m128 eval_0 = _mm_load_ps(&(ptrTransData[(d*source_size)+i]));
+								__m128 eval_1 = _mm_load_ps(&(ptrTransData[(d*source_size)+i+4]));
+								__m128 eval_2 = _mm_load_ps(&(ptrTransData[(d*source_size)+i+8]));
+								__m128 eval_3 = _mm_load_ps(&(ptrTransData[(d*source_size)+i+12]));;
+
+								__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
+								__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
+
+								eval_0 = _mm_mul_ps(eval_0, level);
+								eval_1 = _mm_mul_ps(eval_1, level);
+								eval_2 = _mm_mul_ps(eval_2, level);
+								eval_3 = _mm_mul_ps(eval_3, level);
+
+								eval_0 = _mm_sub_ps(eval_0, index);
+								eval_1 = _mm_sub_ps(eval_1, index);
+								eval_2 = _mm_sub_ps(eval_2, index);
+								eval_3 = _mm_sub_ps(eval_3, index);
+
+								eval_0 = _mm_and_ps(abs2MaskHybrid, eval_0);
+								eval_1 = _mm_and_ps(abs2MaskHybrid, eval_1);
+								eval_2 = _mm_and_ps(abs2MaskHybrid, eval_2);
+								eval_3 = _mm_and_ps(abs2MaskHybrid, eval_3);
+
+								eval_0 = _mm_sub_ps(one, eval_0);
+								eval_1 = _mm_sub_ps(one, eval_1);
+								eval_2 = _mm_sub_ps(one, eval_2);
+								eval_3 = _mm_sub_ps(one, eval_3);
+
+								eval_0 = _mm_max_ps(zero, eval_0);
+								eval_1 = _mm_max_ps(zero, eval_1);
+								eval_2 = _mm_max_ps(zero, eval_2);
+								eval_3 = _mm_max_ps(zero, eval_3);
+
+								support_0 = _mm_mul_ps(support_0, eval_0);
+								support_1 = _mm_mul_ps(support_1, eval_1);
+								support_2 = _mm_mul_ps(support_2, eval_2);
+								support_3 = _mm_mul_ps(support_3, eval_3);
+							}
+
+							support_0 = _mm_add_ps(support_0, support_1);
+							support_2 = _mm_add_ps(support_2, support_3);
+							support_0 = _mm_add_ps(support_0, support_2);
+
+							res = _mm_add_ps(res, support_0);
+						}
+
+						res = _mm_hadd_ps(res, res);
+						res = _mm_hadd_ps(res, res);
+
+						_mm_store_ss(&(ptrGlobalResult[j]), res);
+					}
+				}
+#else
+				for (size_t j = gpu_partition; j < storageSize; j++)
+				{
+					#pragma omp task firstprivate(j)
+					{
+						ptrGlobalResult[j] = 0.0f;
+
+						for (size_t i = 0; i < source_size; i++)
+						{
+							float curSupport = ptrSource[i];
+
+							for (size_t d = 0; d < dims; d++)
+							{
+								float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
+								float index_calc = eval - (ptrIndex[(j*dims)+d]);
+								float abs = fabs(index_calc);
+								float last = 1.0f - abs;
+								float localSupport = std::max<double>(last, 0.0f);
+								curSupport *= localSupport;
+							}
+
+							ptrGlobalResult[j] += curSupport;
+						}
+					}
+				}
+#endif
+    		}
+    	}
+    }
+
+    double time = 0.0;
+    //cleanup
+    delete[] ptrTransData;
+#else
+    double time = myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
 
     // do the rest...
 	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
     size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
-
-    if (global == 0)
-    {
-    	global = storageSize;
-    }
 
 #ifdef USEOMP
 	#pragma omp parallel for
@@ -122,6 +250,7 @@ double OperationBIterativeSPHybridSSEOCLLinear::multVectorized(DataVectorSP& alp
 			ptrGlobalResult[j] += curSupport;
 		}
 	}
+#endif
 
 	return time;
 }

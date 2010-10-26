@@ -701,7 +701,7 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 	return time;
 }
 
-double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims)
+double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
@@ -825,14 +825,14 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 	for (size_t i = 0; i < num_devices; i++)
 	{
 		clSource[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*sourceSize, ptrSource, NULL);
-		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float)*storageSize, NULL, NULL);
+		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float)*gpu_partition, NULL, NULL);
 	}
 
     cl_uint clSourceSize = (cl_uint)sourceSize;
     cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
 
     // determine best fit
-	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
+	size_t numWGs = gpu_partition/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
     size_t global = numWGs*(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/num_devices);
     size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP/2;
     size_t offset = 0;

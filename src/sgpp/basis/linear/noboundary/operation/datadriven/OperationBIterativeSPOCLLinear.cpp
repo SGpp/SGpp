@@ -67,7 +67,7 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
     	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims);
+    double time = myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
 
     // do the rest...
 	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
