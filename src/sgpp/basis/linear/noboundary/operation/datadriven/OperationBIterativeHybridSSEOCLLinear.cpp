@@ -16,6 +16,7 @@
 
 // This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
 #define PERCENT_CPUS 32
+#define PERCENT_CPUS_MULT 20
 
 #ifdef USEICCINTRINSICS
 // include SSE3 intrinsics
@@ -92,7 +93,7 @@ double OperationBIterativeHybridSSEOCLLinear::multVectorized(DataVector& alpha, 
     size_t gpu_partition;
     if (storageSize < 40000)
     {
-    	gpu_partition = (storageSize * (100-(PERCENT_CPUS/2)))/100;
+    	gpu_partition = (storageSize * (100-(PERCENT_CPUS_MULT)))/100;
     }
     else
     {
