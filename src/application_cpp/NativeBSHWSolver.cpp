@@ -114,7 +114,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
-void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
+void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
 		size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double T,double dStrike, bool isLogSolve)
 {
 	    size_t dim = d;
@@ -205,6 +205,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
 	{
+		double theta=0;
 		int count=0;
 		for (int i=0; i<T/stepsize; i++)
 		{
@@ -216,6 +217,7 @@ void testBSHW(size_t d,size_t l, double theta, double sigma, double a, std::stri
 	}
 	else if (Solver == "ImEul")
 	{
+		double theta=0;
 		int count=0;
 		for (int i=0; i<T/stepsize; i++)
 		{
@@ -280,33 +282,31 @@ void writeHelp()
 	mySStream << "Some instructions for the use of combing Hull White and Black Scholes Solver:" << std::endl;
 		mySStream << "------------------------------------------------------" << std::endl << std::endl;
 		mySStream << "Available execution modes are:" << std::endl;
-		mySStream << "  solveND             Solves an European Call/Put option" << std::endl;
-		mySStream << "                      for N assets on a regular sparse grid" << std::endl << std::endl;
+		mySStream << "  CombineBSHW" << std::endl;
 
 		mySStream << "Execution modes descriptions:" << std::endl;
 		mySStream << "-----------------------------------------------------" << std::endl;
-		mySStream << "solveND" << std::endl << "------" << std::endl;
+		mySStream << "Combine Hull-White and Black-Scholes" << std::endl << "------" << std::endl;
 		mySStream << "the following options must be specified:" << std::endl;
 		mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 		mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-		mySStream << "	value of Theta: theta value" << std::endl;
 		mySStream << "	value of sigma: sigma value-determine overall level of volatility for hull white" << std::endl;
 	    mySStream << "	value of a: a" << std::endl;
 	    mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
 	    mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
 		mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
-		mySStream << "	simeSt: number of time steps" << std::endl;
+		mySStream << "	simeSt: number of time steps of doing HW and BS when calling allternatively, default: 1" << std::endl;
 		mySStream << "	dt: timestep size" << std::endl;
 		mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 		mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 		mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
 		mySStream << "	T: time to maturity" << std::endl;
 		mySStream << "	Strike: the strike" << std::endl;
-		mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
+		mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords, this is only related to Black-Scholes" << std::endl;
 
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "2 5 0.004 0.01 0.000000001 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "1.0 " <<"0.3 " << "cart "<<std::endl;
+		mySStream << "2 5 0.01 0.000000001 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "1.0 " <<"0.3 " << "cart "<<std::endl;
 		mySStream << std::endl;
 
 		mySStream << std::endl << std::endl;
@@ -333,9 +333,9 @@ void writeHelp()
 
 		option.assign(argv[1]);
 
-		if (option == "solveND")
+		if (option == "CombineBSHW")
 		{
-			if (argc != 18)
+			if (argc != 17)
 			{
 				writeHelp();
 			}
@@ -343,25 +343,21 @@ void writeHelp()
 			{
 				std::string solver;
 				std::string payoff;
-				double theta;
 				double sigma;
 				double a;
 				double dStrike;
 				std::string fileStoch;
 				std::string fileBound;
-
-
-				theta = atof(argv[4]);
-				sigma = atof(argv[5]);
-				a = atof(argv[6]);
-				fileStoch.assign(argv[7]);
-				fileBound.assign(argv[8]);
-				payoff.assign(argv[9]);
-				solver.assign(argv[14]);
-				dStrike = atof(argv[16]);
+				sigma = atof(argv[4]);
+				a = atof(argv[5]);
+				fileStoch.assign(argv[6]);
+				fileBound.assign(argv[7]);
+				payoff.assign(argv[8]);
+				solver.assign(argv[13]);
+				dStrike = atof(argv[15]);
 				std::string coordsType;
 				bool coords = false;
-				coordsType.assign(argv[17]);
+				coordsType.assign(argv[16]);
 			    if (coordsType == "cart")
 				    {
 						coords = false;
@@ -378,7 +374,7 @@ void writeHelp()
 					}
 				//testHullWhite(size_t l, double theta, double signma, double a, std::string fileBound, std::string payoffType,
 					//	size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T)
-				testBSHW(atoi(argv[2]),atoi(argv[3]), theta, sigma, a, fileStoch, fileBound, payoff, atof(argv[10]), atof(argv[11]), atoi(argv[12]), atof(argv[13]), solver,atof(argv[15]),dStrike,coords);
+				testBSHW(atoi(argv[2]),atoi(argv[3]),sigma, a, fileStoch, fileBound, payoff, atof(argv[9]), atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver,atof(argv[14]),dStrike,coords);
 			}
 		}
 
