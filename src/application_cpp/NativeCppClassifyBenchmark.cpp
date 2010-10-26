@@ -228,7 +228,7 @@ void adaptClassificationTest(bool isRegression)
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "OCL");
 #endif
 #ifdef USE_HYBRID_SSE_OCL
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "OCL");
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "HYBRID_SSE_OCL");
 #endif
 #ifdef USE_ARBB
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "ArBB");

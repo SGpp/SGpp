@@ -24,6 +24,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPHybridSSEOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeHybridSSEOCLLinear.hpp"
 #endif
 
 #ifdef USEARBB
@@ -109,6 +110,10 @@ OperationBVectorized* LinearGrid::createOperationBVectorized(const std::string& 
 	else if (VecType == "OCL")
 	{
 		return new OperationBIterativeOCLLinear(this->storage);
+	}
+	else if (VecType == "HYBRID_SSE_OCL")
+	{
+		return new OperationBIterativeHybridSSEOCLLinear(this->storage);
 	}
 #endif
 #ifdef USEARBB
