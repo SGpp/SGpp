@@ -38,6 +38,12 @@ BlackScholesODESolverSystemEuropean::BlackScholesODESolverSystemEuropean(Grid& S
 	this->rhos = &rho;
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
+	// throw exception if grid dimensions not equal algorithmic dimensions
+	if (this->BSalgoDims.size() != this->BoundGrid->getStorage()->dim())
+	{
+		throw algorithm_exception("BlackScholesODESolverSystemEuropean::BlackScholesODESolverSystemEuropean : Number of algorithmic dimensions is not equal to the number of grid dimensions.");
+	}
+
 	// build the coefficient vectors for the operations
 	this->gammaCoef = new DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
 	this->deltaCoef = new DataVector(this->BSalgoDims.size());
