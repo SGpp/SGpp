@@ -38,6 +38,52 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->rhos = &rho;
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
+	// throw exception if grid dimensions not equal algorithmic dimensions
+	if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim())
+	{
+		throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystemn : Number of algorithmic dimensions higher than the number of grid's dimensions.");
+	}
+
+	// test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
+	if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize())
+	{
+		throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : Dimension of mu and sigma parameters don't match the grid's dimensions!");
+	}
+
+	// test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
+	if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols())
+	{
+		throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : Row or col of rho parameter don't match the grid's dimensions!");
+	}
+
+	// test if all algorithmic dimensions are inside the grid's dimensions
+	for (size_t i = 0; i < this->BSalgoDims.size(); i++)
+	{
+		if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim())
+		{
+			throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : Minimum one algorithmic dimension is not inside the grid's dimensions!");
+		}
+	}
+
+	// test if there are double algorithmic dimensions
+	std::vector<size_t> tempAlgoDims(this->BSalgoDims);
+	for (size_t i = 0; i < this->BSalgoDims.size(); i++)
+	{
+		size_t dimCount = 0;
+		for (size_t j = 0; j < tempAlgoDims.size(); j++)
+		{
+			if (this->BSalgoDims[i] == tempAlgoDims[j])
+			{
+				dimCount++;
+			}
+		}
+
+		if (dimCount > 1)
+		{
+			throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : There is minimum one doubled algorithmic dimension!");
+		}
+	}
+
 	// build the coefficient vectors for the operations
 	this->gammaCoef = new DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
 	this->deltaCoef = new DataVector(this->BSalgoDims.size());
