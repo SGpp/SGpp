@@ -50,7 +50,7 @@ public:
 	 * @param alpha The coefficients of the sparse grid's basis functions
 	 * @param point The coordinates of the evaluation point
 	 */
-	virtual double eval(DataVector& alpha, DataVector& point)
+	double eval(DataVector& alpha, DataVector& point)
 	{
 		std::vector<double> p;
 		for(size_t i = 0; i < point.getSize(); i++)
