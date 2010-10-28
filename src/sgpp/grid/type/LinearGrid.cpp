@@ -233,4 +233,9 @@ OperationMatrix* LinearGrid::createOperationGammaLog(DataMatrix& coef)
 	return new OperationGammaLogLinear(this->storage, coef);
 }
 
+OperationConvert* LinearGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

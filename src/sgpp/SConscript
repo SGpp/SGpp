@@ -51,6 +51,7 @@ grid/type/ModWaveletGrid.cpp
 grid/type/ModBsplineGrid.cpp
 grid/type/SquareRootGrid.cpp
 grid/type/TruncatedTrapezoidGrid.cpp
+grid/type/PrewaveletGrid.cpp
 
 grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
@@ -59,6 +60,7 @@ grid/generation/SquareRootGridGenerator.cpp
 grid/generation/TruncatedTrapezoidGridGenerator.cpp
 grid/generation/SurplusRefinementFunctor.cpp
 grid/generation/SurplusCoarseningFunctor.cpp
+grid/generation/PrewaveletGridGenerator.cpp
 
 basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
@@ -169,6 +171,15 @@ basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 basis/modbspline/operation/common/OperationEvalModBspline.cpp
 basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 
+
+basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
+basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
+basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
+basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
+basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
+
+
+
 operation/pde/OperationODESolverSystem.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
@@ -184,6 +195,7 @@ algorithm/pde/HeatEquationODESolverSystem.cpp
 algorithm/pde/StdUpDown.cpp
 algorithm/pde/UpDownOneOpDim.cpp
 algorithm/pde/UpDownTwoOpDims.cpp
+algorithm/pde/UpDownOneOpDimWithShadow.cpp
 
 application/common/ScreenOutput.cpp
 application/pde/PDESolver.cpp

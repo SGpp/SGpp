@@ -144,4 +144,9 @@ OperationMatrix* ModLinearGrid::createOperationGammaLog(DataMatrix& coef)
 	throw factory_exception("Unsupported operation");
 }
 
+OperationConvert* ModLinearGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

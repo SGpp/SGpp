@@ -56,9 +56,11 @@ namespace std {
 %include "src/sgpp/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
+%include "src/sgpp/grid/generation/PrewaveletGridGenerator.hpp"
 %include "src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/TruncatedTrapezoidGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SquareRootGridGenerator.hpp"
+%include "src/sgpp/grid/generation/PrewaveletGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
@@ -105,6 +107,7 @@ namespace std {
 %include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
 %include "src/sgpp/basis/modwavelet/modified_wavelet_base.hpp"
 %include "src/sgpp/basis/modbspline/modified_bspline_base.hpp"
+%include "src/sgpp/basis/prewavelet/prewavelet_base.hpp"
 
 %include "src/sgpp/solver/SGSolver.hpp"
 %include "src/sgpp/solver/SLESolver.hpp"
@@ -129,6 +132,7 @@ namespace std {
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
 %template(SModWaveletBase) sg::modified_wavelet_base<unsigned int, unsigned int>;
 %template(SModBsplineBase) sg::modified_bspline_base<unsigned int, unsigned int>;
+%template(SPrewaveletBase) sg::prewavelet_base<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 

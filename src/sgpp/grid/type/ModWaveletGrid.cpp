@@ -146,4 +146,10 @@ OperationMatrix* ModWaveletGrid::createOperationGammaLog(DataMatrix& coef)
 	throw factory_exception("Unsupported operation");
 }
 
+OperationConvert* ModWaveletGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+
 }

@@ -55,6 +55,7 @@ public:
 	virtual OperationTest* createOperationTest(){return 0;};
 	virtual OperationHierarchisation* createOperationHierarchisation();
 	virtual OperationMatrix* createOperationLTwoDotProduct(){return 0;};
+	virtual OperationConvert* createOperationConvert();
 
 	// @todo (heinecke) remove this when done
 	virtual OperationMatrix* createOperationUpDownTest(){return 0;};

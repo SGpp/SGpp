@@ -61,6 +61,13 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
+class OperationConvert
+{
+public:
+	virtual void doConvertToLinear(DataVector& alpha) = 0;
+	virtual void doConvertFromLinear(DataVector& alpha) = 0;
+};
+
 class OperationODESolverSystem : public OperationMatrix
 {
 protected:

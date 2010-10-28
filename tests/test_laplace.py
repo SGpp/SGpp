@@ -26,7 +26,7 @@ def generateLaplaceMatrix(factory, level, verbose=False):
     for i in xrange(storage.size()):
         # apply unit vectors
         alpha.setAll(0)
-        alpha[i] = 1
+        alpha[i] = 1.0
         laplace.mult(alpha, erg)
         if verbose:
             print erg, erg.sum()
@@ -58,7 +58,7 @@ def readReferenceMatrix(self, storage, filename):
     for i in xrange(len(dat)):
         for j in xrange(len(dat[0])):
             m_ref.set(i, j, float(dat[i][j]))
-
+    
     return m_ref
 
 ##
@@ -117,7 +117,7 @@ def compareStiffnessMatrices(testCaseClass, m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Col sum %f != %f" % (values[i], values_ref[i]))
+        testCaseClass.assertAlmostEqual(values[i], values_ref[i], msg="Col sum %f != %f in Col %f" % (values[i], values_ref[i], i))
 
 
 
@@ -245,6 +245,8 @@ class TestOperationLaplaceLinearTrapezoidBoundary(unittest.TestCase):
         # compare
         compareStiffnessMatrices(self, m, m_ref)
         
+    
+        
                 
 class TestOperationLaplaceLinearBoundary(unittest.TestCase):
     ##
@@ -302,6 +304,90 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
         # compare
         compareStiffnessMatrices(self, m, m_ref)    
         
+        
+class TestOperationLaplacePrewavelet(unittest.TestCase):
+    ##
+    # Test laplace for regular sparse grid in 1d using linear hat functions
+    def testPrewavelet1D_one(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(1)
+
+        m = generateLaplaceMatrix(factory, 4)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_prewavelet_dim_1_nopsgrid_15_float.dat.gz')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref) 
+        
+    def testPrewavelet1D_two(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(1)
+
+        m = generateLaplaceMatrix(factory, 5)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_prewavelet_dim_1_nopsgrid_31_float.dat.gz')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref)
+        
+    def testPrewaveletdD_two(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(3)
+
+        m = generateLaplaceMatrix(factory, 3)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_prewavelet_dim_3_nopsgrid_31_float.dat.gz')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref)
+        
+    def testPrewaveletdD_two(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(3)
+
+        m = generateLaplaceMatrix(factory, 4)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_prewavelet_dim_3_nopsgrid_111_float.dat.gz')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref)
+        
+    def testPrewaveletAdaptivedD_two(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor, DataMatrix
+        
+        factory = Grid.createPrewaveletGrid(4)
+        level = 2
+        gen = factory.createGridGenerator()
+        gen.regular(level)
+        
+        alpha = DataVector(factory.getStorage().size())
+        for i in xrange(factory.getStorage().size()):
+            alpha[i]=i+1
+        gen.refine(SurplusRefinementFunctor(alpha,1));
+
+
+        storage = factory.getStorage()
+    
+        laplace = factory.createOperationLaplace()
+    
+    # create vector
+        alpha = DataVector(storage.size())
+        erg = DataVector(storage.size())
+
+    # create stiffness matrix
+        m = DataMatrix(storage.size(), storage.size())
+        m.setAll(0)
+        for i in xrange(storage.size()):
+        # apply unit vectors
+            alpha.setAll(0)
+            alpha[i] = 1.0
+            laplace.mult(alpha, erg)
+            m.setColumn(i, erg)
+
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_prewavelet_dim_4_nopsgrid_17_adapt_float.dat.gz')
+
+        # compare
+        compareStiffnessMatrices(self, m, m_ref)
                  
         
 # Run tests for this file if executed as application 
