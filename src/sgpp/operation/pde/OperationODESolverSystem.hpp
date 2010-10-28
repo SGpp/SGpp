@@ -22,7 +22,7 @@ namespace sg
  * differential equations. So an instance of this class has to pass to
  * any ODE Solver used in SGpp.
  *
- * \f$\A \dot{u} = L \vec{u}\f$
+ * \f$A \dot{u} = L \vec{u}\f$
  *
  * A: mass matrix
  * L: space discretization (L-Operator)

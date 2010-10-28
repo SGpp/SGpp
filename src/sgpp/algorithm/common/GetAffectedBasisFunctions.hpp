@@ -13,6 +13,8 @@
 #include "basis/modwavelet/modified_wavelet_base.hpp"
 #include "basis/modbspline/modified_bspline_base.hpp"
 #include "basis/linear/boundary/linearboundaryBase.hpp"
+#include "basis/prewavelet/prewavelet_base.hpp"
+
 
 #include <vector>
 #include <utility>
@@ -796,6 +798,132 @@ protected:
 		}
 
 		working.left_levelzero(current_dim);
+	}
+
+};
+
+
+/**
+ * Template Specialization for prewavelet basis.
+ */
+template<>
+class GetAffectedBasisFunctions<prewavelet_base<unsigned int, unsigned int> >
+{
+
+	typedef prewavelet_base<unsigned int, unsigned int> SPrewaveletBase;
+public:
+	GetAffectedBasisFunctions(GridStorage* storage) :
+		storage(storage)
+	{
+	}
+
+	~GetAffectedBasisFunctions()
+	{
+	}
+
+	/**
+	 * Returns evaluations of all basis functions that are non-zero at a given evaluation point.
+	 * For a given evaluation point \f$x\f$, it stores tuples (std::pair) of
+	 * \f$(i,\phi_i(x))\f$ in the result vector for all basis functions that are non-zero.
+	 * If one wants to evaluate \f$f_N(x)\f$, one only has to compute
+	 * \f[ \sum_{r\in\mathbf{result}} \alpha[r\rightarrow\mathbf{first}] \cdot r\rightarrow\mathbf{second}. \f]
+	 *
+	 * @param basis a sparse grid basis
+	 * @param point evaluation point within the domain
+	 * @param result a vector to store the results in
+	 */
+	void operator()(SPrewaveletBase& basis, std::vector<double>& point,
+			std::vector<std::pair<size_t, double> >& result)
+	{
+
+		GridStorage::grid_iterator iter(storage);
+		result.clear();
+		rec(basis, point, 0, iter, result);
+
+
+	}
+
+
+protected:
+	GridStorage* storage;
+	typedef GridStorage::index_type::level_type level_type;
+	typedef GridStorage::index_type::index_type index_type;
+
+	/**
+	 * Recursive traversal of the "tree" of basis functions for evaluation, used in operator().
+	 * For a given evaluation point \f$x\f$, it stores tuples (std::pair) of
+	 * \f$(i,\phi_i(x))\f$ in the result vector for all basis functions that are non-zero.
+	 *
+	 * @param basis a sparse grid basis
+	 * @param point evaluation point within the domain
+	 * @param current_dim the dimension currently looked at (recursion parameter)
+	 * @param value the value of the evaluation of the current basis function up to (excluding) dimension current_dim (product of the evaluations of the one-dimensional ones)
+	 * @param working iterator working on the GridStorage of the basis
+	 * @param source array of indices for each dimension (identifying the indices of the current grid point)
+	 * @param result a vector to store the results in
+	 */
+
+	void rec(SPrewaveletBase& basis, std::vector<double>& point,
+			size_t current_dim, GridStorage::grid_iterator& iter, std::vector<
+					std::pair<size_t, double> >& result)
+	{
+
+		//First, save this point
+		double value = 1.0;
+
+		for (size_t d = 0; d < storage->dim(); ++d)
+		{
+			index_type current_index;
+			level_type current_level;
+			iter.get(d, current_level, current_index);
+			value *= basis.eval(current_level, current_index, point[d]);
+		}
+
+		result.push_back(std::make_pair(iter.seq(), value));
+
+		for (size_t d = current_dim; d < storage->dim(); d++)
+		{
+			index_type save_index;
+			level_type save_level;
+			iter.get(d, save_level, save_index); //Save current index
+
+			if (iter.hint_left(d))
+			{
+				//Handle left Child in dimension d
+				iter.left_child(d);
+				index_type current_index;
+				level_type current_level;
+				iter.get(d, current_level, current_index);
+				//Check if current index is still in the area of the point
+				int int_index = current_index; // needed to avoid overrun with index-3
+				if ((1.0 / (1 << current_level)) * (int_index - 3) < point[d]
+						&& (1.0 / (1 << current_level)) * (int_index + 3)
+								> point[d])
+				{
+					rec(basis, point, d, iter, result);
+				}
+			}
+			iter.set(d, save_level, save_index); //reset index
+
+			if (iter.hint_right(d))
+			{
+				//Handle left Child in dimension d
+				iter.right_child(d);
+				index_type current_index;
+				level_type current_level;
+				iter.get(d, current_level, current_index);
+				//Check if current index is still in the area of the point
+				int int_index = current_index; // needed to avoid overrun with index-3
+				if ((1.0 / (1 << current_level)) * (int_index - 3) < point[d]
+						&& (1.0 / (1 << current_level)) * (int_index + 3)
+								> point[d])
+				{
+					rec(basis, point, d, iter, result);
+				}
+			}
+			iter.set(d, save_level, save_index); //reset index
+		}
+
 	}
 
 };

@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+ * Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef HASHGRIDITERATOR_HPP
@@ -44,9 +44,10 @@ public:
 	 *
 	 * @param storage pointer the hashmap that stores the grid points
 	 */
-	HashGridIterator(HashGridStorage<GIT>* storage) : storage(storage), index(storage->dim())
+	HashGridIterator(HashGridStorage<GIT>* storage) :
+		storage(storage), index(storage->dim())
 	{
-		for(size_t i = 0; i < storage->dim(); i++)
+		for (size_t i = 0; i < storage->dim(); i++)
 		{
 			index.push(i, 1, 1);
 		}
@@ -59,12 +60,13 @@ public:
 	 *
 	 * @param copy a HashGridIterator object that is used to build this instance
 	 */
-	HashGridIterator(HashGridIterator<GIT>& copy) : storage(copy.storage), index(copy.storage->dim())
+	HashGridIterator(HashGridIterator<GIT>& copy) :
+		storage(copy.storage), index(copy.storage->dim())
 	{
 		typename index_type::level_type l;
 		typename index_type::index_type i;
 
-		for(size_t dim = 0; dim < storage->dim(); dim++)
+		for (size_t dim = 0; dim < storage->dim(); dim++)
 		{
 			copy.get(dim, l, i);
 			index.push(dim, l, i);
@@ -78,7 +80,7 @@ public:
 	 */
 	void resetToLevelZero()
 	{
-		for(size_t i = 0; i < storage->dim(); i++)
+		for (size_t i = 0; i < storage->dim(); i++)
 		{
 			index.push(i, 0, 0);
 		}
@@ -167,40 +169,40 @@ public:
 		this->seq_ = storage->seq(&index);
 	}
 
-    /**
-     * step left in direction dim
-     *
-     * @param d the moving direction
-     */
-     void step_left(size_t d)
-     {
-        typename index_type::level_type l;
-        typename index_type::index_type i;
-        index.get(d, l, i);
-        index.set(d, l, i - 2);
-        this->seq_ = storage->seq(&index);
+	/**
+	 * step left in direction dim
+	 *
+	 * @param d the moving direction
+	 */
+	void step_left(size_t d)
+	{
+		typename index_type::level_type l;
+		typename index_type::index_type i;
+		index.get(d, l, i);
+		index.set(d, l, i - 2);
+		this->seq_ = storage->seq(&index);
 
-     }
+	}
 
 	/**
 	 * step right in direction dim
 	 *
 	 * @param d the moving direction
 	 */
-	 void step_right(size_t d)
-	 {
+	void step_right(size_t d)
+	{
 		typename index_type::level_type l;
 		typename index_type::index_type i;
 		index.get(d, l, i);
 		index.set(d, l, i + 2);
 		this->seq_ = storage->seq(&index);
 
-	 }
+	}
 
-	 bool isInnerPoint()
-	 {
-		 return index.isInnerPoint();
-	 }
+	bool isInnerPoint()
+	{
+		return index.isInnerPoint();
+	}
 
 	/**
 	 * returns true if there are no more childs in any dimension
@@ -263,7 +265,8 @@ public:
 	 * @param l the ansatzfunction's level
 	 * @param i the ansartfunction's index
 	 */
-	void get(size_t d, typename index_type::level_type &l, typename index_type::index_type &i) const
+	void get(size_t d, typename index_type::level_type &l,
+			typename index_type::index_type &i) const
 	{
 		index.get(d, l, i);
 	}
@@ -277,9 +280,11 @@ public:
 	 *
 	 * @todo (pflueged) What is set and get useful for in the Iterator? Check and remove.
 	 */
-	void set(size_t d, typename index_type::level_type l, typename index_type::index_type i)
+	void set(size_t d, typename index_type::level_type l,
+			typename index_type::index_type i)
 	{
 		index.set(d, l, i);
+		this->seq_ = storage->seq(&index);
 	}
 
 	/**
@@ -289,7 +294,8 @@ public:
 	 * @param l the ansatzfunction's level
 	 * @param i the ansartfunction's index
 	 */
-	void push(size_t d, typename index_type::level_type l, typename index_type::index_type i)
+	void push(size_t d, typename index_type::level_type l,
+			typename index_type::index_type i)
 	{
 		index.push(d, l, i);
 	}
@@ -304,11 +310,81 @@ public:
 		return seq_;
 	}
 
+	/**
+	 * Returns the the maximal level of the grid in the given dimension.
+	 *
+	 * @param dim the dimension
+	 */
+	level_t getGridDepth(size_t dim)
+	{
+
+		typename index_type::level_type depth = 1;
+		typename index_type::level_type orig_level, cur_level;
+		typename index_type::index_type orig_index, cur_index;
+
+		index.get(dim, orig_level, orig_index);
+
+		while (true)
+		{
+			if (this->hint_left(dim))
+			{
+				depth++;
+				this->left_child(dim);
+			}
+			else if (this->hint_right(dim))
+			{
+				depth++;
+				this->right_child(dim);
+			}
+			else
+			{
+
+				index.get(dim, cur_level, cur_index);
+
+				bool hasFound = false; //Was a next index found?
+
+				//Ok, we have no more childs left. Now we slide from left to right in the dim on
+				//the same level, to see, if there are adaptive refinements
+				for (size_t i = cur_index + 2; i
+						< (unsigned int) (1 << (depth)); i = i + 2)
+				{
+					this->set(dim, cur_level, i);
+					//does this index exist?
+					if (!storage->end(this->seq()))
+					{
+						if (this->hint_left(dim))
+						{
+							depth++;
+							this->left_child(dim);
+							hasFound = true;
+							break;
+						}
+						else if (this->hint_right(dim))
+						{
+							depth++;
+							this->right_child(dim);
+							hasFound = true;
+							break;
+						}
+					}
+				}
+
+				if (!hasFound)
+				{
+					break;
+				}
+
+			}
+		}
+
+		this->set(dim, orig_level, orig_index);
+		return depth;
+	}
+
 	std::string toString()
 	{
 		return index.toString();
 	}
-
 
 private:
 	/// Pointer the the hashmap that stores the gridpoints

@@ -152,4 +152,9 @@ OperationMatrix* PolyGrid::createOperationGammaLog(DataMatrix& coef)
 	throw factory_exception("Unsupported operation");
 }
 
+OperationConvert* PolyGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

@@ -150,4 +150,9 @@ OperationMatrix* ModBsplineGrid::createOperationGammaLog(DataMatrix& coef)
 	throw factory_exception("Unsupported operation");
 }
 
+OperationConvert* ModBsplineGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }

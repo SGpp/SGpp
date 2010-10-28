@@ -89,7 +89,25 @@ class TestGridFactory(unittest.TestCase):
         newfac = Grid.unserialize(str)
         self.failIfEqual(newfac, None)
         
-        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
+        
+    def testSerializationPrewavelet(self):
+        """Uses Linear grid for tests"""
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(2)
+        self.failIfEqual(factory, None)
+
+        gen = factory.createGridGenerator()
+        gen.regular(3)
+
+        str = factory.serialize()
+        self.assert_(len(str) > 0)
+        
+        newfac = Grid.unserialize(str)
+        self.failIfEqual(newfac, None)
+        
+        self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
 #    def testSerializationPoly(self):
 #        from pysgpp import Grid

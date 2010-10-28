@@ -341,7 +341,95 @@ class TestOperationBBTLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
+        
+        
+class TestOperationBBTPrewavelet(unittest.TestCase):
+    ##
+    # Test laplace for regular sparse grid in 1d using linear hat functions
+    def testPrewavelet1D_one(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(1)
+        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        level = 3
+        gen = factory.createGridGenerator()
+        gen.regular(level)
+
+        m = generateBBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_prewavelet_dim_1_nopsgrid_7_float.dat.gz')
+
+        # compare
+        compareBBTMatrices(self, m, m_ref)
+        
+        
+    def testPrewavelet1D_two(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(1)
+        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        level = 5
+        gen = factory.createGridGenerator()
+        gen.regular(level)
+
+        m = generateBBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_prewavelet_dim_1_nopsgrid_31_float.dat.gz')
+
+        # compare
+        compareBBTMatrices(self, m, m_ref)
+        
+
+    def testPrewaveletdD_one(self):  
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(3)
+        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        level = 3
+        gen = factory.createGridGenerator()
+        gen.regular(level)
+
+        m = generateBBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_prewavelet_dim_3_nopsgrid_31_float.dat.gz')
+
+        # compare
+        compareBBTMatrices(self, m, m_ref)
+        
+        
+    def testPrewaveletdD_two(self):
+        from pysgpp import Grid
+        
+        factory = Grid.createPrewaveletGrid(3)
+        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        level = 4
+        gen = factory.createGridGenerator()
+        gen.regular(level)
+
+        m = generateBBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_prewavelet_dim_3_nopsgrid_111_float.dat.gz')
+
+        # compare
+        compareBBTMatrices(self, m, m_ref)
+        
+        
+    def testPrewaveletAdaptivedD_two(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
+        
+        factory = Grid.createPrewaveletGrid(4)
+        training = buildTrainingVector(readDataVector('data/data_dim_4_nops_4096_float.arff.gz'))
+        level = 2
+        gen = factory.createGridGenerator()
+        gen.regular(level)
+        
+        alpha = DataVector(factory.getStorage().size())
+        for i in xrange(factory.getStorage().size()):
+            alpha[i]=i+1
+        gen.refine(SurplusRefinementFunctor(alpha,1));
+
+        m = generateBBTMatrix(factory, training)
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_prewavelet_dim_4_nopsgrid_17_adapt_float.dat.gz')
+
+        # compare
+        compareBBTMatrices(self, m, m_ref)
              
 
 class TestOperationBBTLinearBoundary(unittest.TestCase):

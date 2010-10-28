@@ -69,5 +69,10 @@ OperationEval* SquareRootGrid::createOperationEval()
 	return new OperationEvalLinearBoundary(this->storage);
 }
 
+OperationConvert* SquareRootGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }
 

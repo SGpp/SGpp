@@ -234,4 +234,10 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaLog(DataMatrix
 	return new OperationGammaLogLinearBoundary(this->storage, coef);
 }
 
+OperationConvert* LinearTrapezoidBoundaryGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
+
 }

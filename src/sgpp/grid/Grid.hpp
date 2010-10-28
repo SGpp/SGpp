@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+ * Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef GRID_HPP
@@ -17,6 +17,7 @@
 #include "operation/common/OperationEval.hpp"
 #include "operation/common/OperationHierarchisation.hpp"
 #include "operation/common/OperationMatrix.hpp"
+#include "operation/common/OperationConvert.hpp"
 
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/common/BoundingBox.hpp"
@@ -80,40 +81,47 @@ public:
 	 */
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 
-    /**
-     * creates a mod wavelet grid
-     *
-     * @param dim the grid's dimension
-     */
-    static Grid* createModWaveletGrid(size_t dim);
+	/**
+	 * creates a mod wavelet grid
+	 *
+	 * @param dim the grid's dimension
+	 */
+	static Grid* createModWaveletGrid(size_t dim);
 
-    /**
-     * creates a mod-Bspline grid
-     *
-     * @param dim the grid's dimension
-     */
-    static Grid* createModBsplineGrid(size_t dim, size_t degree);
+	/**
+	 * creates a mod-Bspline grid
+	 *
+	 * @param dim the grid's dimension
+	 */
+	static Grid* createModBsplineGrid(size_t dim, size_t degree);
 
-    /**
+	/**
+	 * creates a prewavelet grid
+	 *
+	 * @param dim the grid's dimension
+	 */
+	static Grid* createPrewaveletGrid(size_t dim);
+
+	/**
 	 * reads a grid out of a string
 	 *
 	 * @param istr string that contains the grid information
 	 */
 	/**
-	* creates a square root grid(h-grid)
-	* @param dim the grid's dimension
-	* */
+	 * creates a square root grid(h-grid)
+	 * @param dim the grid's dimension
+	 * */
 	static Grid* createSquareRootGrid(size_t dim);
 	/**
-	* creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have |l|<level and li>=l_user
-	* @param dim the grid's dimension
-	* */
+	 * creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have |l|<level and li>=l_user
+	 * @param dim the grid's dimension
+	 * */
 	static Grid* createTruncatedTrapezoidGrid(size_t dim);
 	/**
-  	 * reads a grid out of a string
-  	 *
-  	 * @param istr string that contains the grid information
-  	 */
+	 * reads a grid out of a string
+	 *
+	 * @param istr string that contains the grid information
+	 */
 	static Grid* unserialize(const std::string& istr);
 
 	/**
@@ -122,7 +130,6 @@ public:
 	 * @param istr inputstream that contains the grid information
 	 */
 	static Grid* unserialize(std::istream& istr);
-
 
 protected:
 	/**
@@ -187,7 +194,8 @@ public:
 	 *
 	 * @return pointer to the OperationB object
 	 */
-	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType) = 0;
+	virtual OperationBVectorized* createOperationBVectorized(
+			const std::string& VecType) = 0;
 
 	/**
 	 * gets a pointer to OperationBVectorizedSP object
@@ -196,7 +204,15 @@ public:
 	 *
 	 * @return pointer to the OperationBSP object
 	 */
-	virtual OperationBVectorizedSP* createOperationBVectorizedSP(const std::string& VecType) = 0;
+	virtual OperationBVectorizedSP* createOperationBVectorizedSP(
+			const std::string& VecType) = 0;
+
+	/**
+	 * gets a pointer to OperationConvert object
+	 *
+	 * @return pointer to the OperationConvert object
+	 */
+	virtual OperationConvert* createOperationConvert() = 0;
 
 	/**
 	 * gets a pointer to OperationEval object
@@ -348,7 +364,8 @@ public:
 	 * @param indices array with indices of the point
 	 * @param isLeaf indicator whether the point is a leaf
 	 */
-	void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf);
+	void insertPoint(size_t dim, unsigned int levels[], unsigned int indices[],
+			bool isLeaf);
 
 	/**
 	 * Returns the number of points on the grid
@@ -392,7 +409,6 @@ private:
 	//pointer to the Operation Eval used in Grid.eval()
 	static OperationEval* evalOp;
 };
-
 
 }
 

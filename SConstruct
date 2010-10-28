@@ -11,7 +11,7 @@ import distutils.sysconfig
 vars = Variables("custom.py")
 
 # define the flags 
-vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','')
+vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','-Wno-deprecated')
 vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 
 # define the target

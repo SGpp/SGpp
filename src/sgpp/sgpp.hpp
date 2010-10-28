@@ -56,6 +56,7 @@
 #include "grid/generation/SquareRootGridGenerator.hpp"
 #include "grid/generation/TruncatedTrapezoidGridGenerator.hpp"
 #include "grid/generation/GridGenerator.hpp"
+#include "grid/generation/PrewaveletGridGenerator.hpp"
 #include "grid/generation/hashmap/HashGenerator.hpp"
 #include "grid/generation/hashmap/HashRefinement.hpp"
 #include "grid/generation/hashmap/HashCoarsening.hpp"
@@ -91,6 +92,7 @@ typedef poly_base<unsigned int, unsigned int> SPolyBase;
 typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
 typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
 typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
+typedef prewavelet_base<unsigned int, unsigned int> SPrewaveletBase;
 
 typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
 typedef AlgorithmMultipleEvaluation<SLinearBase> SGridOperationNewB;

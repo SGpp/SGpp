@@ -267,6 +267,29 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         grid = Grid.createLinearBoundaryGrid(dim)
         testHierarchisationDehierarchisation(self, grid, level, function)
 
+class TestHierarchisationPrewavelet(unittest.TestCase):
+    ##
+    # Test hierarchisation for 1D
+    def testHierarchisation1D(self):
+        from pysgpp import Grid
+        
+        dim = 1
+        level = 5
+        function = buildParable(dim)
+        grid = Grid.createPrewaveletGrid(dim)
+        testHierarchisationDehierarchisation(self, grid, level, function)
+
+  
+    ##
+    # Test regular sparse grid dD, normal hat basis functions.
+    def testHierarchisationD(self):
+        from pysgpp import Grid
+        
+        dim = 3
+        level = 5
+        function = buildParable(dim)
+        grid = Grid.createPrewaveletGrid(dim)
+        testHierarchisationDehierarchisation(self, grid, level, function)
         
 # Run tests for this file if executed as application 
 if __name__=='__main__':

@@ -69,5 +69,10 @@ OperationEval* TruncatedTrapezoidGrid::createOperationEval()
 	return new OperationEvalLinearBoundary(this->storage);
 }
 
+OperationConvert* TruncatedTrapezoidGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }
 

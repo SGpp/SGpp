@@ -16,6 +16,7 @@
 #include "grid/type/ModBsplineGrid.hpp"
 #include "grid/type/SquareRootGrid.hpp"
 #include "grid/type/TruncatedTrapezoidGrid.hpp"
+#include "grid/type/PrewaveletGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "operation/common/OperationIdentity.hpp"
@@ -68,6 +69,10 @@ Grid* Grid::createSquareRootGrid(size_t dim)
     return new SquareRootGrid(dim);
 }
 
+Grid* Grid::createPrewaveletGrid(size_t dim)
+{
+    return new PrewaveletGrid(dim);
+}
 
 Grid* Grid::createTruncatedTrapezoidGrid(size_t dim)
 {
@@ -129,6 +134,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
         tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
         tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
+        tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
 	}
 
 	return *tMap;

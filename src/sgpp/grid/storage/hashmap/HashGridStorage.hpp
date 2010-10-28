@@ -400,6 +400,21 @@ public:
 		return (map[insert] = this->seq() - 1);
 	}
 
+
+	/**
+	 * This methods removes the gridpoint added last. Use with coution, only needed for
+	 * expanding the grid because of the shadow-storage of prewavelets. Please refer to the
+	 * Prewavelet grid for further description of the shadow storage.
+	 *
+	 */
+	void deleteLast()
+	{
+		index_pointer del = list.back();
+		map.erase(del);
+		list.pop_back();
+		delete del;
+	}
+
 	/**
 	 * creates a pointer to index from a reference to index by creating
 	 * a new instance of a index object

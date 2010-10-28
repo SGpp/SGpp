@@ -16,6 +16,7 @@
 %newobject sg::Grid::createModBsplineGrid(size_t dim, size_t degree);
 %newobject sg::Grid::createTruncatedTrapezoidGrid(size_t dim);
 %newobject sg::Grid::createSquareRootGrid(size_t dim);
+%newobject sg::Grid::createPrewaveletGrid(size_t dim);
 
 %newobject sg::Grid::unserialize(std::string& istr);
 
@@ -26,6 +27,7 @@
 %newobject sg::Grid::createOperationEval();
 %newobject sg::Grid::createOperationTest();
 %newobject sg::Grid::createOperationHierarchisation();
+%newobject sg::Grid::createOperationConvert();
 
 %include "stl.i"
 %include "typemaps.i"
@@ -52,9 +54,10 @@ public:
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 	static Grid* createModWaveletGrid(size_t dim);
 	static Grid* createModBsplineGrid(size_t dim, size_t degree);
-        static Grid* createSquareRootGrid(size_t dim);
+    static Grid* createSquareRootGrid(size_t dim);
 	static Grid* createTruncatedTrapezoidGrid(size_t dim);
-
+	static Grid* createPrewaveletGrid(size_t dim);
+	
 	static Grid* unserialize(std::string& istr);
 	
 protected:
@@ -73,6 +76,7 @@ public:
 	virtual OperationMatrix* createOperationLaplace() = 0;
 	virtual OperationMatrix* createOperationIdentity() = 0;
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
+	virtual OperationConvert* createOperationConvert() = 0;
 	
 	// @todo remove this when done
 	virtual OperationMatrix* createOperationUpDownTest() = 0;

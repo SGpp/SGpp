@@ -15,5 +15,6 @@
 #include "basis/modpoly/modified_poly_base.hpp"
 #include "basis/modwavelet/modified_wavelet_base.hpp"
 #include "basis/modbspline/modified_bspline_base.hpp"
+#include "basis/prewavelet/prewavelet_base.hpp"
 
 #endif /* BASIS_HPP */

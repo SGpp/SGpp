@@ -227,4 +227,9 @@ OperationMatrix* LinearBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
 	return new OperationGammaLogLinearBoundary(this->storage, coef);
 }
 
+OperationConvert* LinearBoundaryGrid::createOperationConvert()
+{
+	throw factory_exception("Unsupported operation");
+}
+
 }
