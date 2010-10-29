@@ -32,9 +32,9 @@ SRCDIR = ./../../../src/sgpp/
 SRCDIREXE = ./../../../src/application_cpp/
 BINDIR = ./../../../bin/
 # for NVIDIA OpenCL
-OCLINCLUDES = /opt/cuda/include
+#OCLINCLUDES = /opt/cuda/include
 # for AMD Stream SDK OpenCL
-#OCLINCLUDES = /opt/ati-stream-sdk-v2.2-lnx64/include
+OCLINCLUDES = /opt/ati-stream-sdk-v2.2-lnx64/include
 
 OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
 	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
@@ -73,7 +73,10 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o\
 	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o BlackScholesODESolverSystemEuropean.o NativeCppClassifyBenchmark.o\
 	OperationBIterativeOCLLinear.o OperationBIterativeSPOCLLinear.o ModifiedBlackScholesODESolverSystem.o OCLKernels.o\
-	OperationBIterativeSPHybridSSEOCLLinear.o OperationBIterativeHybridSSEOCLLinear.o
+	OperationBIterativeSPHybridSSEOCLLinear.o OperationBIterativeHybridSSEOCLLinear.o\
+	PrewaveletGrid.o PrewaveletGridGenerator.o OperationBPrewavelet.o OperationTestPrewavelet.o\
+	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
+	UpDownOneOpDimWithShadow.o
 
 ###################################################################
 # Compiler Flags
@@ -81,11 +84,11 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 
 CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -DUSEOCL -axSSE3
 # for NVIDIA OpenCL implementation
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL
-LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
+#OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL
+#LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
 # for AMD stream SDK, CPU OpenCL Impelmentation
-#OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL -DUSEOCL_CPU
-#LFLAGS=-Wall -ansi -O3 -openmp -L/opt/ati-stream-sdk-v2.2-lnx64/lib/x86_64 -lOpenCL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL -DUSEOCL_CPU
+LFLAGS=-Wall -ansi -O3 -openmp -L/opt/ati-stream-sdk-v2.2-lnx64/lib/x86_64 -lOpenCL
 
 ###################################################################
 # Builds a ClassifyBenchmark Application
@@ -144,6 +147,9 @@ TruncatedTrapezoidGrid.o : $(SRCDIR)grid/type/TruncatedTrapezoidGrid.cpp
 PolyGrid.o : $(SRCDIR)grid/type/PolyGrid.cpp
 	$(CC) $(CFLAGS) -o PolyGrid.o $(SRCDIR)grid/type/PolyGrid.cpp
 	
+PrewaveletGrid.o : $(SRCDIR)grid/type/PrewaveletGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGrid.o $(SRCDIR)grid/type/PrewaveletGrid.cpp
+	
 StandardGridGenerator.o : $(SRCDIR)grid/generation/StandardGridGenerator.cpp
 	$(CC) $(CFLAGS) -o StandardGridGenerator.o $(SRCDIR)grid/generation/StandardGridGenerator.cpp
 
@@ -164,6 +170,9 @@ SurplusCoarseningFunctor.o : $(SRCDIR)grid/generation/SurplusCoarseningFunctor.c
 
 TrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o TrapezoidBoundaryGridGenerator.o $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
+	
+PrewaveletGridGenerator.o : $(SRCDIR)grid/generation/PrewaveletGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGridGenerator.o $(SRCDIR)grid/generation/PrewaveletGridGenerator.cpp
 
 OperationTestModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
 	$(CC) $(CFLAGS) -o OperationTestModWavelet.o $(SRCDIR)basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
@@ -177,6 +186,21 @@ OperationBModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/Operatio
 OperationHierarchisationModWavelet.o : $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 	$(CC) $(CFLAGS) -o OperationHierarchisationModWavelet.o $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 
+OperationTestPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
+
+OperationEvalPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
+
+OperationBPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
+
+OperationHierarchisationPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
+
+OperationConvertPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationConvertPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
+	
 OperationTestModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 	$(CC) $(CFLAGS) -o OperationTestModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 
@@ -569,6 +593,9 @@ UpDownOneOpDim.o : $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
 
 UpDownTwoOpDims.o : $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
 	$(CC) $(CFLAGS) -o UpDownTwoOpDims.o $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
+	
+UpDownOneOpDimWithShadow.o : $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimWithShadow.o $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
 	
 OperationODESolverSystem.o : $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o OperationODESolverSystem.o $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
