@@ -77,8 +77,9 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
     float* ptrData = data.getPointer();
     float* ptrLevel = this->Level->getPointer();
     float* ptrIndex = this->Index->getPointer();
+    float* ptrResult = result.getPointer();
 
-    if (data.getNcols() % 4 != 0 || source_size != data.getNcols())
+    if (data.getNcols() % 24 != 0 || source_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -90,177 +91,128 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 #ifdef USEOMP
     #pragma omp parallel
 	{
-		size_t chunksize = (source_size/omp_get_num_threads())+1;
-		// assure that every subarray is 16-byte aligned
-		if (chunksize % 4 != 0)
-		{
-			size_t remainder = chunksize % 4;
-			size_t patch = 4 - remainder;
-			chunksize += patch;
-		}
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, source_size);
+		size_t chunksize = (storageSize/omp_get_num_threads())+1;
 
-    	DataVectorSP myResult(result.getSize());
-    	myResult.setAll(0.0f);
-    	float* ptrResult = myResult.getPointer();
+    	size_t start = chunksize*omp_get_thread_num();
+    	size_t end = std::min<size_t>(start+chunksize, storageSize);
 #else
     	size_t start = 0;
-    	size_t end = source_size;
-    	float* ptrResult = result.getPointer();
+    	size_t end = storageSize;
 #endif
-		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS, (end-c)))
+
+		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS, (end-k)))
 		{
-			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS+c, end);
+			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (end-k));
 
-			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m)))
+			for (size_t i = 0; i < source_size; i+=std::min<size_t>((size_t)CHUNKDATAPOINTS, (source_size-i)))
 			{
-				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS+m, storageSize);
 #ifdef USEICCINTRINSICS
-				if ((data_end-c) == CHUNKDATAPOINTS && (grid_end-m) == CHUNKGRIDPOINTS)
+				for (size_t j = k; j < k+grid_inc; j++)
 				{
-					for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=24)
+					__m128 support_0 = _mm_load_ps(&(ptrSource[i]));
+					__m128 support_1 = _mm_load_ps(&(ptrSource[i+4]));
+					__m128 support_2 = _mm_load_ps(&(ptrSource[i+8]));
+					__m128 support_3 = _mm_load_ps(&(ptrSource[i+12]));
+					__m128 support_4 = _mm_load_ps(&(ptrSource[i+16]));
+					__m128 support_5 = _mm_load_ps(&(ptrSource[i+20]));
+
+					__m128 one = _mm_set1_ps(1.0f);
+					__m128 zero = _mm_set1_ps(0.0f);
+
+					for (size_t d = 0; d < dims; d++)
 					{
-						for (size_t j = m; j < m+CHUNKGRIDPOINTS; j++)
-						{
-							__m128 support_0 = _mm_load_ps(&(ptrSource[i]));
-							__m128 support_1 = _mm_load_ps(&(ptrSource[i+4]));
-							__m128 support_2 = _mm_load_ps(&(ptrSource[i+8]));
-							__m128 support_3 = _mm_load_ps(&(ptrSource[i+12]));
-							__m128 support_4 = _mm_load_ps(&(ptrSource[i+16]));
-							__m128 support_5 = _mm_load_ps(&(ptrSource[i+20]));
+						__m128 eval_0 = _mm_load_ps(&(ptrData[(d*source_size)+i]));
+						__m128 eval_1 = _mm_load_ps(&(ptrData[(d*source_size)+i+4]));
+						__m128 eval_2 = _mm_load_ps(&(ptrData[(d*source_size)+i+8]));
+						__m128 eval_3 = _mm_load_ps(&(ptrData[(d*source_size)+i+12]));
+						__m128 eval_4 = _mm_load_ps(&(ptrData[(d*source_size)+i+16]));
+						__m128 eval_5 = _mm_load_ps(&(ptrData[(d*source_size)+i+20]));
 
-							__m128 one = _mm_set1_ps(1.0f);
-							__m128 zero = _mm_set1_ps(0.0f);
+						__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
+						__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
 
-							for (size_t d = 0; d < dims; d++)
-							{
-								__m128 eval_0 = _mm_load_ps(&(ptrData[(d*source_size)+i]));
-								__m128 eval_1 = _mm_load_ps(&(ptrData[(d*source_size)+i+4]));
-								__m128 eval_2 = _mm_load_ps(&(ptrData[(d*source_size)+i+8]));
-								__m128 eval_3 = _mm_load_ps(&(ptrData[(d*source_size)+i+12]));
-								__m128 eval_4 = _mm_load_ps(&(ptrData[(d*source_size)+i+16]));
-								__m128 eval_5 = _mm_load_ps(&(ptrData[(d*source_size)+i+20]));
+						eval_0 = _mm_mul_ps(eval_0, level);
+						eval_1 = _mm_mul_ps(eval_1, level);
+						eval_2 = _mm_mul_ps(eval_2, level);
+						eval_3 = _mm_mul_ps(eval_3, level);
+						eval_4 = _mm_mul_ps(eval_4, level);
+						eval_5 = _mm_mul_ps(eval_5, level);
 
-								__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
-								__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
+						eval_0 = _mm_sub_ps(eval_0, index);
+						eval_1 = _mm_sub_ps(eval_1, index);
+						eval_2 = _mm_sub_ps(eval_2, index);
+						eval_3 = _mm_sub_ps(eval_3, index);
+						eval_4 = _mm_sub_ps(eval_4, index);
+						eval_5 = _mm_sub_ps(eval_5, index);
 
-								eval_0 = _mm_mul_ps(eval_0, level);
-								eval_1 = _mm_mul_ps(eval_1, level);
-								eval_2 = _mm_mul_ps(eval_2, level);
-								eval_3 = _mm_mul_ps(eval_3, level);
-								eval_4 = _mm_mul_ps(eval_4, level);
-								eval_5 = _mm_mul_ps(eval_5, level);
+						eval_0 = _mm_abs_ps(eval_0);
+						eval_1 = _mm_abs_ps(eval_1);
+						eval_2 = _mm_abs_ps(eval_2);
+						eval_3 = _mm_abs_ps(eval_3);
+						eval_4 = _mm_abs_ps(eval_4);
+						eval_5 = _mm_abs_ps(eval_5);
 
-								eval_0 = _mm_sub_ps(eval_0, index);
-								eval_1 = _mm_sub_ps(eval_1, index);
-								eval_2 = _mm_sub_ps(eval_2, index);
-								eval_3 = _mm_sub_ps(eval_3, index);
-								eval_4 = _mm_sub_ps(eval_4, index);
-								eval_5 = _mm_sub_ps(eval_5, index);
+						eval_0 = _mm_sub_ps(one, eval_0);
+						eval_1 = _mm_sub_ps(one, eval_1);
+						eval_2 = _mm_sub_ps(one, eval_2);
+						eval_3 = _mm_sub_ps(one, eval_3);
+						eval_4 = _mm_sub_ps(one, eval_4);
+						eval_5 = _mm_sub_ps(one, eval_5);
 
-								eval_0 = _mm_abs_ps(eval_0);
-								eval_1 = _mm_abs_ps(eval_1);
-								eval_2 = _mm_abs_ps(eval_2);
-								eval_3 = _mm_abs_ps(eval_3);
-								eval_4 = _mm_abs_ps(eval_4);
-								eval_5 = _mm_abs_ps(eval_5);
+						eval_0 = _mm_max_ps(zero, eval_0);
+						eval_1 = _mm_max_ps(zero, eval_1);
+						eval_2 = _mm_max_ps(zero, eval_2);
+						eval_3 = _mm_max_ps(zero, eval_3);
+						eval_4 = _mm_max_ps(zero, eval_4);
+						eval_5 = _mm_max_ps(zero, eval_5);
 
-								eval_0 = _mm_sub_ps(one, eval_0);
-								eval_1 = _mm_sub_ps(one, eval_1);
-								eval_2 = _mm_sub_ps(one, eval_2);
-								eval_3 = _mm_sub_ps(one, eval_3);
-								eval_4 = _mm_sub_ps(one, eval_4);
-								eval_5 = _mm_sub_ps(one, eval_5);
-
-								eval_0 = _mm_max_ps(zero, eval_0);
-								eval_1 = _mm_max_ps(zero, eval_1);
-								eval_2 = _mm_max_ps(zero, eval_2);
-								eval_3 = _mm_max_ps(zero, eval_3);
-								eval_4 = _mm_max_ps(zero, eval_4);
-								eval_5 = _mm_max_ps(zero, eval_5);
-
-								support_0 = _mm_mul_ps(support_0, eval_0);
-								support_1 = _mm_mul_ps(support_1, eval_1);
-								support_2 = _mm_mul_ps(support_2, eval_2);
-								support_3 = _mm_mul_ps(support_3, eval_3);
-								support_4 = _mm_mul_ps(support_4, eval_4);
-								support_5 = _mm_mul_ps(support_5, eval_5);
-							}
-
-							__m128 res_0 = _mm_setzero_ps();
-							res_0 = _mm_load_ss(&(ptrResult[j]));
-
-							support_0 = _mm_add_ps(support_0, support_1);
-							support_2 = _mm_add_ps(support_2, support_3);
-							support_4 = _mm_add_ps(support_4, support_5);
-							support_0 = _mm_add_ps(support_0, support_2);
-							support_0 = _mm_add_ps(support_0, support_4);
-
-							support_0 = _mm_hadd_ps(support_0, support_0);
-							support_0 = _mm_hadd_ps(support_0, support_0);
-							res_0 = _mm_add_ss(res_0, support_0);
-
-							_mm_store_ss(&(ptrResult[j]), res_0);
-						}
+						support_0 = _mm_mul_ps(support_0, eval_0);
+						support_1 = _mm_mul_ps(support_1, eval_1);
+						support_2 = _mm_mul_ps(support_2, eval_2);
+						support_3 = _mm_mul_ps(support_3, eval_3);
+						support_4 = _mm_mul_ps(support_4, eval_4);
+						support_5 = _mm_mul_ps(support_5, eval_5);
 					}
-				}
-				else
-				{
-					for (size_t i = c; i < data_end; i++)
-					{
-						for (size_t j = m; j < grid_end; j++)
-						{
-							float curSupport = ptrSource[i];
 
-							#pragma ivdep
-							#pragma vector aligned
-							for (size_t d = 0; d < dims; d++)
-							{
-								float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
-								float index_calc = eval - (ptrIndex[(j*dims)+d]);
-								float abs = fabs(index_calc);
-								float last = 1.0f - abs;
-								float localSupport = std::max<float>(last, 0.0f);
-								curSupport *= localSupport;
-							}
+					__m128 res_0 = _mm_setzero_ps();
+					res_0 = _mm_load_ss(&(ptrResult[j]));
 
-							ptrResult[j] += curSupport;
-						}
-					}
+					support_0 = _mm_add_ps(support_0, support_1);
+					support_2 = _mm_add_ps(support_2, support_3);
+					support_4 = _mm_add_ps(support_4, support_5);
+					support_0 = _mm_add_ps(support_0, support_2);
+					support_0 = _mm_add_ps(support_0, support_4);
+
+					support_0 = _mm_hadd_ps(support_0, support_0);
+					support_0 = _mm_hadd_ps(support_0, support_0);
+					res_0 = _mm_add_ss(res_0, support_0);
+
+					_mm_store_ss(&(ptrResult[j]), res_0);
 				}
 #else
-				for (size_t i = c; i < data_end; i++)
+				for (size_t j = k; j < grid_inc; j++)
 				{
-					for (size_t j = m; j < grid_end; j++)
-					{
-						float curSupport = ptrSource[i];
+					float curSupport = ptrSource[i];
 #ifdef __ICC
-						#pragma ivdep
-						#pragma vector aligned
+					#pragma ivdep
+					#pragma vector aligned
 #endif
-						for (size_t d = 0; d < dims; d++)
-						{
-							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
-							float index_calc = eval - (ptrIndex[(j*dims)+d]);
-							float abs = fabs(index_calc);
-							float last = 1.0f - abs;
-							float localSupport = std::max<float>(last, 0.0f);
-							curSupport *= localSupport;
-						}
-
-						ptrResult[j] += curSupport;
+					for (size_t d = 0; d < dims; d++)
+					{
+						float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
+						float index_calc = eval - (ptrIndex[(j*dims)+d]);
+						float abs = fabs(index_calc);
+						float last = 1.0f - abs;
+						float localSupport = std::max<float>(last, 0.0f);
+						curSupport *= localSupport;
 					}
+
+					ptrResult[j] += curSupport;
 				}
 #endif
 	        }
 		}
 #ifdef USEOMP
-		// sum private result vectors
-		#pragma omp critical
-		{
-			result.add(myResult);
-		}
 	}
 #endif
 
@@ -302,7 +254,7 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
     float* ptrLevel = this->Level->getPointer();
     float* ptrIndex = this->Index->getPointer();
 
-    if (data.getNcols() % 4 != 0 || result_size != data.getNcols())
+    if (data.getNcols() % 24 != 0 || result_size != data.getNcols())
     {
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -314,10 +266,10 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 	{
 		size_t chunksize = (result_size/omp_get_num_threads())+1;
 		// assure that every subarray is 16-byte aligned
-		if (chunksize % 4 != 0)
+		if (chunksize % 24 != 0)
 		{
-			size_t remainder = chunksize % 4;
-			size_t patch = 4 - remainder;
+			size_t remainder = chunksize % 24;
+			size_t patch = 24 - remainder;
 			chunksize += patch;
 		}
     	size_t start = chunksize*omp_get_thread_num();

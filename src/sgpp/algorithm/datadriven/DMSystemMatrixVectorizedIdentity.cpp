@@ -29,11 +29,11 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseG
 
 	if (this->vecMode == "SSE")
 	{
-		this->vecWidth = 2;
+		this->vecWidth = 12;
 	}
 	else if (this->vecMode == "AVX")
 	{
-		this->vecWidth = 4;
+		this->vecWidth = 24;
 	}
 	else if (this->vecMode == "OCL")
 	{
