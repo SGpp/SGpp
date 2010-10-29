@@ -16,22 +16,12 @@
 #include <iostream>
 
 //#define DATAFILE "DR5_nowarnings_less05_train.arff"
-//#define DATAFILE "twospirals.wieland.arff"
-//#define DATAFILE "liver-disorders_normalized.arff"
-//#define DATAFILE "ripleyGarcke.train.arff"
 //#define DATAFILE "chess_02D_tr.dat.arff"
 #define DATAFILE "chess_05D_3fields_tr.dat.arff"
-//#define DATAFILE "chess_07D_3fields_tr.dat.arff"
-//#define DATAFILE "chess_10D_3fields_tr.dat.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
-//#define TESTFILE "twospirals.wieland.arff"
-//#define TESTFILE "liver-disorders_normalized.arff"
-//#define TESTFILE "ripleyGarcke.test.arff"
 //#define TESTFILE "chess_02D_te.dat.arff"
 #define TESTFILE "chess_05D_3fields_te.dat.arff"
-//#define TESTFILE "chess_07D_3fields_te.dat.arff"
-//#define TESTFILE "chess_10D_3fields_te.dat.arff"
 
 // grid generation settings
 #define LEVELS 3
@@ -40,7 +30,7 @@
 #define REFINE_NUM_POINTS 100
 
 // solving settings
-#define CG_IMAX 100
+#define CG_IMAX 250
 #define CG_EPS 0.0001
 
 // regularization fector

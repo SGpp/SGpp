@@ -55,22 +55,17 @@ OCLKernels::OCLKernels()
 
 	// Find out how many devices there are
 #ifdef USEOCL_CPU
-	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, MAX_OCL_DEVICE_COUNT, NULL, &num_devices);
-	if (num_devices == 0)
+	device_ids = new cl_device_id[MAX_OCL_DEVICE_COUNT];
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, MAX_OCL_DEVICE_COUNT, device_ids, &num_devices);
+	if (err != CL_SUCCESS)
     {
-    	std::cout << "NO GPU OpenCL devices have been found!" << std::endl;
+    	std::cout << "Unable to get Device ID. Error Code: " << err << std::endl;
     }
 	// set max number of devices
 	if (num_devices > MAX_OCL_DEVICE_COUNT)
 	{
 		num_devices = MAX_OCL_DEVICE_COUNT;
 	}
-	device_ids = new cl_device_id[num_devices];
-	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, num_devices, device_ids, NULL);
-	if (err != CL_SUCCESS)
-    {
-    	std::cout << "Unable to get Device ID. Error Code: " << err << std::endl;
-    }
 #else
 	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, MAX_OCL_DEVICE_COUNT, NULL, &num_devices);
 	if (num_devices == 0)
