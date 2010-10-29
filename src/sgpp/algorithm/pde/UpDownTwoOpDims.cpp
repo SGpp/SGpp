@@ -127,17 +127,28 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 #endif
 #endif
 #ifndef USEOMP
-	DataVector beta(result.getSize());
-
 	for(size_t i = 0; i < this->algoDims.size(); i++)
 	{
 		for(size_t j = 0; j < this->algoDims.size(); j++)
 		{
+			DataVector beta(result.getSize());
+
 			// use the operator's symmetry
 			if ( j <= i)
 			{
-				this->updown(alpha, beta, this->algoDims.size() - 1, i, j);
+				if (this->coefs != NULL)
+				{
+					if (this->coefs->get(i,j) != 0.0)
+					{
+						this->updown(alpha, beta, this->algoDims.size() - 1, i, j);
+					}
+				}
+				else
+				{
+					this->updown(alpha, beta, this->algoDims.size() - 1, i, j);
+				}
 			}
+
 			// Calculate the "diagonal" of the operation
 			if (j <= i)
 			{
@@ -311,7 +322,7 @@ void UpDownTwoOpDims::specialOpOneAndOpTwo(DataVector& alpha, DataVector& result
 	else
 	{
 		// Terminates dimension recursion
-		upOpDimOneAndOpDimTwo(alpha, result, dim);
+		upOpDimOneAndOpDimTwo(alpha, result, this->algoDims[dim]);
 
 		DataVector temp(alpha.getSize());
 		downOpDimOneAndOpDimTwo(alpha, temp, this->algoDims[dim]);
