@@ -58,7 +58,10 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
 	UpdPhidPhiBBIterativeLinearBoundary.o OperationBIterativeAVXLinear.o\
 	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o\
-	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesODESolverSystem.o BlackScholesODESolverSystemEuropean.o 
+	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesODESolverSystem.o BlackScholesODESolverSystemEuropean.o\
+	PrewaveletGrid.o PrewaveletGridGenerator.o OperationBPrewavelet.o OperationTestPrewavelet.o\
+	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
+	UpDownOneOpDimWithShadow.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -103,6 +106,9 @@ ModLinearGrid.o : $(SRCDIR)grid/type/ModLinearGrid.cpp
 ModWaveletGrid.o : $(SRCDIR)grid/type/ModWaveletGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModWaveletGrid.o $(SRCDIR)grid/type/ModWaveletGrid.cpp
 	
+PrewaveletGrid.o : $(SRCDIR)grid/type/PrewaveletGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGrid.o $(SRCDIR)grid/type/PrewaveletGrid.cpp
+	
 ModBsplineGrid.o : $(SRCDIR)grid/type/ModBsplineGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModBsplineGrid.o $(SRCDIR)grid/type/ModBsplineGrid.cpp
 
@@ -138,6 +144,9 @@ SurplusCoarseningFunctor.o : $(SRCDIR)grid/generation/SurplusCoarseningFunctor.c
 
 TrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TrapezoidBoundaryGridGenerator.o $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
+	
+PrewaveletGridGenerator.o : $(SRCDIR)grid/generation/PrewaveletGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGridGenerator.o $(SRCDIR)grid/generation/PrewaveletGridGenerator.cpp
 
 OperationTestModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModWavelet.o $(SRCDIR)basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
@@ -150,6 +159,21 @@ OperationBModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/Operatio
 
 OperationHierarchisationModWavelet.o : $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModWavelet.o $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
+	
+OperationTestPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
+
+OperationEvalPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
+
+OperationBPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
+
+OperationHierarchisationPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
+
+OperationConvertPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationConvertPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
 
 OperationTestModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
@@ -528,6 +552,9 @@ UpDownOneOpDim.o : $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
 
 UpDownTwoOpDims.o : $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownTwoOpDims.o $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
+	
+UpDownOneOpDimWithShadow.o : $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimWithShadow.o $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
 	
 OperationODESolverSystem.o : $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationODESolverSystem.o $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
