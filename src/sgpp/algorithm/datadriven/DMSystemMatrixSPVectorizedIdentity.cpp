@@ -29,11 +29,11 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 
 	if (this->vecMode == "SSE")
 	{
-		this->vecWidth = 4;
+		this->vecWidth = 24;
 	}
 	else if (this->vecMode == "AVX")
 	{
-		this->vecWidth = 8;
+		this->vecWidth = 48;
 	}
 	else if (this->vecMode == "OCL")
 	{
