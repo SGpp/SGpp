@@ -93,8 +93,13 @@ LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
 ###################################################################
 # Builds a ClassifyBenchmark Application
 ###################################################################	
+# for NIVIDA
 default: $(OBJS)
 	$(CC) $(LFLAGS) $(OBJS) -o $(BINDIR)ClassifyBenchmark_OCL_NVOffload
+
+# for AMD/ATI Stream SDK
+#default: $(OBJS)
+#	$(CC) $(LFLAGS) $(OBJS) -o $(BINDIR)ClassifyBenchmark_OCL_AMD-CPU
 	
 NativeCppClassifyBenchmark.o : $(SRCDIREXE)NativeCppClassifyBenchmark.cpp
 	$(CC) $(CFLAGS) -o NativeCppClassifyBenchmark.o $(SRCDIREXE)NativeCppClassifyBenchmark.cpp
