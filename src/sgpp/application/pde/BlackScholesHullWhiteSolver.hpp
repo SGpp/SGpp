@@ -89,35 +89,6 @@ private:
 	double sigma;
 	///
 	double a;
-	/**
-	 * returns the option value (payoff value) for an European call option
-	 *
-	 * @param assetValue the current asset's value
-	 * @param strike the strike price of the option
-	 *
-	 * @return the call premium
-	 */
-	//double get1DEuroCallPayoffValue(double assetValue, double strike);
-
-	/**
-	 * Inits the alpha vector with a payoff function of an European call option or put option.
-	 * The grid is initialized based on Cartesian coordinates!
-	 *
-	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
-	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
-	 */
-	//void initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
-
-	/**
-	 * Inits the alpha vector with a payoff function of an European call option or put option
-	 * The grid is initialized based on log-transformed coordinates!
-	 *
-	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
-	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
-	 */
-	//void initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
 
 public:
 	/**
@@ -133,43 +104,9 @@ public:
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
 	/**
-	 * This function tries to refine the grid such that
-	 * most of the grid points are used for interpolation of the singularity. So this grid
-	 * is able to approximate the start solution better.
-	 *
-	 * After refining the grid the payoff function is applied to the grid.
-	 *
-	 * Only on Cartesian grids!
-	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param strike containing the option's strike
-	 * @param payoffType the type of payoff Function used ONLY supported: avgM
-	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
-	 */
-	//void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
-
-	/**
-	 * This function tries to refine the grid such that
-	 * most of the grid points are used for interpolation of the singularity. So this grid
-	 * is able to approximate the start solution better. Refining is done only if the max
-	 * refinement level hasn't be reached.
-	 *
-	 * After refining the grid the payoff function is applied to the grid.
-	 *
-	 * Only on Cartesian grids!
-	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param strike containing the option's strike
-	 * @param payoffType the type of payoff Function used ONLY supported: avgM
-	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
-	 * @param maxLevel maximum level of refinement
-	 */
-	//void refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
-
-	/**
-	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
+	 * In order to combine the Black Scholes Equation with the Hull White Equation you have to provided
 	 * some statistical data about the underlying (assets' weight, standard deviation
-	 * and the correlation between them). This function allows you to set this data.
+	 * and the correlation between them). This function allows you to set this data for Black-Scholes.
 	 *
 	 * @param mus a DataVector that contains the underlyings' weight
 	 * @param sigmas a DataVector that contains the underlyings' standard deviations
@@ -185,36 +122,14 @@ public:
 	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
 
 	/**
-	 * Solves the closed form of the Black Scholes equation, the Black Scholes
-	 * formular. It evaluates the Black Scholes formular in a Stock Price Range
-	 * from 0.0 to maxStock, by increasing the stock price in every step by
-	 * a given (small) values, so the analytical solution of the PDE can
-	 * be determined and compared.
-	 *
-	 * @param premiums the result vector, here the combinations of stock price and premium are stored
-	 * @param maxStock the maximum stock regarded in these calculations
-	 * @param StockInc the increase of the stockprice in one step
-	 * @param strike the strike price of the Option
-	 * @param t time to maturity
-	 */
-	//void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t);
-
-	/**
-	 * Writes the premiums into a file that can be easily plot with gnuplot
-	 *
-	 * @param premiums the result vector, here the combinations of stock price and premium are stored
-	 * @param tfilename absolute path to file into which the grid's evaluation is written
-	 */
-//	void print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename);
-
-	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 * @param a is the mean reversion rate
+	 * @sigma is the volatility
 	 */
-	//void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
 	void initGridWithPayoffBSHW(DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
 	/**
 	 * Inits the screen object
@@ -252,20 +167,7 @@ public:
 	void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
 	/**
-	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding
-	 * box [0,x] X [0,y] is assumed.
-	 *
-	 * Only on Cartesian grids!
-	 *
-	 * @param alpha the sparse grid's coefficients
-	 * @param tFilename the name of file contain the interpolation error
-	 * @param numTestpoints Number of equal distribute testpoints @money
-	 * @param strike the option's strike
-	 */
-	//void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
-
-	/**
-	 * gets the number of gridpoints @money
+	 * gets the number of gridpoints at the money
 	 *
 	 * Only on Cartesian grids!
 	 *
@@ -315,4 +217,4 @@ public:
 
 }
 
-#endif /* BLACKSCHOLESSOLVER_HPP */
+#endif /* BLACKSCHOLESHULLWHITESOLVER_HPP */
