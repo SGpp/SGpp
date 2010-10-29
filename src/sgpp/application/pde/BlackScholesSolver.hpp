@@ -266,7 +266,7 @@ public:
 	void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
 	/**
-	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding
+	 * prints the 2D interpolation error at money into a file. This file is plotable via gnuplot. A bounding
 	 * box [0,x] X [0,y] is assumed.
 	 *
 	 * Only on Cartesian grids!
@@ -279,15 +279,15 @@ public:
 	void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
 
 	/**
-	 * gets the number of gridpoints @money
+	 * gets the number of gridpoints at money
 	 *
 	 * Only on Cartesian grids!
 	 *
 	 * @param payoffType the payoff type
 	 * @param strike the option's strike
-	 * @param eps epsilon to determine the gridpoints, use if @money is not exactly on grid
+	 * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
 	 *
-	 * @param number of gridpoints @money
+	 * @param number of gridpoints at money
 	 */
 	size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
