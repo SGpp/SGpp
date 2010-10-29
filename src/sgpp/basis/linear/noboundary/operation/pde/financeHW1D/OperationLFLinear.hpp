@@ -14,7 +14,7 @@ namespace sg
 {
 
 /**
- * Implements the $(x\phi_i(x),d\phi_j(x))$ operator on linear grids (no boundaries)
+ * Implements the \f$(x\phi_i(x),d\phi_j(x))\f$ operator on linear grids (no boundaries)
  *
  * @version $HEAD$
  */
