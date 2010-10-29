@@ -16,12 +16,12 @@
 #include <iostream>
 
 //#define DATAFILE "DR5_nowarnings_less05_train.arff"
-#define DATAFILE "chess_02D_tr.dat.arff"
-//#define DATAFILE "chess_05D_3fields_tr.dat.arff"
+//#define DATAFILE "chess_02D_tr.dat.arff"
+#define DATAFILE "chess_05D_3fields_tr.dat.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
-#define TESTFILE "chess_02D_te.dat.arff"
-//#define TESTFILE "chess_05D_3fields_te.dat.arff"
+//#define TESTFILE "chess_02D_te.dat.arff"
+#define TESTFILE "chess_05D_3fields_te.dat.arff"
 
 // grid generation settings
 #define LEVELS 3
