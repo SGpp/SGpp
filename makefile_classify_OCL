@@ -32,9 +32,9 @@ SRCDIR = ./../../../src/sgpp/
 SRCDIREXE = ./../../../src/application_cpp/
 BINDIR = ./../../../bin/
 # for NVIDIA OpenCL
-#OCLINCLUDES = /opt/cuda/include
+OCLINCLUDES = /opt/cuda/include
 # for AMD Stream SDK OpenCL
-OCLINCLUDES = /opt/ati-stream-sdk-v2.2-lnx64/include
+#OCLINCLUDES = /opt/ati-stream-sdk-v2.2-lnx64/include
 
 OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
 	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
@@ -84,11 +84,11 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 
 CFLAGS=-Wall -ansi -c -fno-strict-aliasing -fno-alias -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -DUSEOCL -axSSE3
 # for NVIDIA OpenCL implementation
-#OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL
-#LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL
+LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
 # for AMD stream SDK, CPU OpenCL Impelmentation
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL -DUSEOCL_CPU
-LFLAGS=-Wall -ansi -O3 -openmp -L/opt/ati-stream-sdk-v2.2-lnx64/lib/x86_64 -lOpenCL
+#OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL -DUSEOCL_CPU
+#LFLAGS=-Wall -ansi -O3 -openmp -L/opt/ati-stream-sdk-v2.2-lnx64/lib/x86_64 -lOpenCL
 
 ###################################################################
 # Builds a ClassifyBenchmark Application
