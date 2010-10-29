@@ -101,13 +101,24 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
 	return 0;
 }
 
+/**
+ * calculate the theta value for the Hull White model
+ *
+ * @param a is the mean reversion rate
+ * @param sigma is the volatility
+ * @param T is the maturity
+ * @param count*stepsize is the current time
+ *
+ * @return returns 0 if the file was successfully read, otherwise -1
+ */
+
 double calculatetheta(double a, double sigma, double T, int count, double stepsize)
 {
 	double theta=0;
 	return theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
 }
 /**
- * Combine Hull White solver and Black Scholes solver test with n assets (ND Sparse Grid) European call option
+ * Combine Hull White solver and Black Scholes solver with European call option
  *
  * @param l the number of levels used in the Sparse Grid
  * @param the stochastic data (theta, sigmahw, sigmabs, a)
@@ -207,7 +218,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	// Set stochastic data
 	//myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 
-	// Start solving the Black Scholes Equation
+	// Start combining the Black Scholes and Hull White Equation
 	if (Solver == "ExEul")
 	{
 		double theta=0;
@@ -240,7 +251,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSHWSolver->printGrid(*alpha, 30, "solvedBSHW.gnuplot");
+		myBSHWSolver->printGrid(*alpha, 42, "solvedBSHW.gnuplot");
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.gnuplot", true);
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.gnuplot", false);
 		/*if (isLogSolve == true)
@@ -277,7 +288,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 
 
 /**
- * Calls the writeHelp method in the BlackScholesSolver Object
+ * Calls the writeHelp method in the BlackScholesHullWhiteSolver Object
  * after creating a screen.
  */
 void writeHelp()
@@ -311,7 +322,7 @@ void writeHelp()
 
 		mySStream << std::endl;
 		mySStream << "Example:" << std::endl;
-		mySStream << "2 5 0.01 0.000000001 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "1.0 " <<"0.3 " << "cart "<<std::endl;
+		mySStream << "2 5 0.01 0.1 stoch.data  bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "1.0 " <<"0.3 " << "cart "<<std::endl;
 		mySStream << std::endl;
 
 		mySStream << std::endl << std::endl;
