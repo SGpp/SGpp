@@ -25,7 +25,7 @@
 
 // grid generation settings
 #define LEVELS 3
-#define REFINEMENTS 5
+#define REFINEMENTS 6
 #define REFINE_THRESHOLD 0.0
 #define REFINE_NUM_POINTS 100
 
@@ -56,6 +56,9 @@
 
 // define this if you want to use grids with Neumann boundaries.
 #define USE_BOUNDARIES
+
+// do Test only after last refinement
+#define TEST_LAST_ONLY
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
@@ -264,6 +267,7 @@ void adaptClassificationTest(bool isRegression)
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
+#ifndef TEST_LAST_ONLY
 		// Do tests on test data
     	if (isRegression)
     	{
@@ -301,10 +305,36 @@ void adaptClassificationTest(bool isRegression)
 
 			oldAcc = accTest;
     	}
+#endif
     }
 
     execTime = myStopwatch->stop();
     delete myStopwatch;
+
+#ifdef TEST_LAST_ONLY
+    std::cout << std::endl << std::endl;
+    if (isRegression)
+	{
+		sg::OperationTest* myTest = myGrid->createOperationTest();
+		double mse = myTest->testMSE(alpha, data, classes);
+		std::cout << "MSE (train): " << mse << std::endl;
+		double mseTest = myTest->testMSE(alpha, testData, testclasses);
+		std::cout << "MSE (test): " << mseTest << std::endl;
+		delete myTest;
+	}
+	else
+	{
+		sg::OperationTest* myTest = myGrid->createOperationTest();
+		double acc = myTest->test(alpha, data, classes);
+		acc /= static_cast<double>(classes.getSize());
+		std::cout << "train acc.: " << acc << std::endl;
+		double accTest = myTest->test(alpha, testData, testclasses);
+		accTest /= static_cast<double>(testclasses.getSize());
+		std::cout << "test acc.: " << accTest << std::endl;
+		delete myTest;
+	}
+
+#endif
 
     std::cout << "Finished Learning!" << std::endl;
 #ifdef GNUPLOT
@@ -475,6 +505,7 @@ void adaptClassificationTestSP(bool isRegression)
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
     	// Do tests on test data
+#ifndef TEST_LAST_ONLY
     	convertDataVectorSPToDataVector(alphaSP, alpha);
     	if (isRegression)
     	{
@@ -512,10 +543,36 @@ void adaptClassificationTestSP(bool isRegression)
 
 			oldAcc = accTest;
     	}
+#endif
     }
 
     execTime = myStopwatch->stop();
     delete myStopwatch;
+
+#ifdef TEST_LAST_ONLY
+	convertDataVectorSPToDataVector(alphaSP, alpha);
+	std::cout << std::endl << std::endl;
+	if (isRegression)
+	{
+		sg::OperationTest* myTest = myGrid->createOperationTest();
+		double mse = myTest->testMSE(alpha, data, classes);
+		std::cout << "MSE (train): " << mse << std::endl;
+		double mseTest = myTest->testMSE(alpha, testData, testclasses);
+		std::cout << "MSE (test): " << mseTest << std::endl;
+		delete myTest;
+	}
+	else
+	{
+		sg::OperationTest* myTest = myGrid->createOperationTest();
+		double acc = myTest->test(alpha, data, classes);
+		acc /= static_cast<double>(classes.getSize());
+		std::cout << "train acc.: " << acc << std::endl;
+		double accTest = myTest->test(alpha, testData, testclasses);
+		accTest /= static_cast<double>(testclasses.getSize());
+		std::cout << "test acc.: " << accTest << std::endl;
+		delete myTest;
+	}
+#endif
 
     std::cout << "Finished Learning!" << std::endl;
 
