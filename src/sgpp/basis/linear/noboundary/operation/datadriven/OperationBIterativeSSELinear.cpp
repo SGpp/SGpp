@@ -103,9 +103,9 @@ double OperationBIterativeSSELinear::multVectorized(DataVector& alpha, DataMatri
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (end-k));
 
-			for (size_t i = 0; i < source_size; i+=std::min<size_t>((size_t)CHUNKDATAPOINTS, (source_size-i)))
-			{
 #ifdef USEICCINTRINSICS
+			for (size_t i = 0; i < source_size; i+=CHUNKDATAPOINTS)
+			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{
 					__m128d support_0 = _mm_load_pd(&(ptrSource[i]));
@@ -187,8 +187,11 @@ double OperationBIterativeSSELinear::multVectorized(DataVector& alpha, DataMatri
 
 					_mm_storel_pd(&(ptrResult[j]), res_0);
 				}
+			}
 #else
-				for (size_t j = k; j < grid_inc; j++)
+			for (size_t i = 0; i < source_size; i++)
+			{
+				for (size_t j = k; j < k+grid_inc; j++)
 				{
 					double curSupport = ptrSource[i];
 
@@ -208,8 +211,8 @@ double OperationBIterativeSSELinear::multVectorized(DataVector& alpha, DataMatri
 
 					ptrResult[j] += curSupport;
 				}
+			}
 #endif
-	        }
 		}
 #ifdef USEOMP
 	}

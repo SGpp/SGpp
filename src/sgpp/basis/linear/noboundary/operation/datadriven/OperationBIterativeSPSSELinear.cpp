@@ -98,14 +98,13 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
     	size_t start = 0;
     	size_t end = storageSize;
 #endif
-
 		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS, (end-k)))
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (end-k));
 
-			for (size_t i = 0; i < source_size; i+=std::min<size_t>((size_t)CHUNKDATAPOINTS, (source_size-i)))
-			{
 #ifdef USEICCINTRINSICS
+			for (size_t i = 0; i < source_size; i+=CHUNKDATAPOINTS)
+			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{
 					__m128 support_0 = _mm_load_ps(&(ptrSource[i]));
@@ -188,8 +187,11 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 
 					_mm_store_ss(&(ptrResult[j]), res_0);
 				}
+			}
 #else
-				for (size_t j = k; j < grid_inc; j++)
+			for (size_t i = 0; i < source_size; i++)
+			{
+				for (size_t j = k; j < k+grid_inc; j++)
 				{
 					float curSupport = ptrSource[i];
 #ifdef __ICC
@@ -208,8 +210,8 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 
 					ptrResult[j] += curSupport;
 				}
+			}
 #endif
-	        }
 		}
 #ifdef USEOMP
 	}
