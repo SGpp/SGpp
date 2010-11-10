@@ -29,14 +29,14 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
  * a file and stores them into three separated DataVectors
  *
  * @param tFile the file that contains the stochastic data
- * @param numAssests the of Assets stored in the file
+ * @param numAssets the of Assets stored in the file
  * @param mu DataVector for the exspected values
  * @param sigma DataVector for standard deviation
  * @param rho DataMatrix for the correlations
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigma, DataMatrix& rho)
+int readStochasticData(std::string tFile, size_t numAssets, DataVector& mu, DataVector& sigma, DataMatrix& rho)
 {
 	std::fstream file;
 	double cur_mu;
@@ -50,14 +50,29 @@ int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, Dat
 		std::cout << "Error cannot read file: " << tFile << std::endl;
 		return -1;
 	}
+	// Get number of elements in stoch file, must be numAssests*(numAssests+2)
+	size_t t = 0;
+	double test;
+	do
+	{
+		file >> test;
+		t++;
+	} while (!file.eof());
+	file.close();
+	if (t < (numAssets*(numAssets+2))+1)
+	{
+		std::cout << "Invalid stoch file: " << tFile << " Last Value:" << test << std::endl;
+		return -1;
+	}
 
-	for (size_t i = 0; i < numAssests; i++)
+	file.open(tFile.c_str());
+	for (size_t i = 0; i < numAssets; i++)
 	{
 		file >> cur_mu;
 		file >> cur_sigma;
 		mu.set(i, cur_mu);
 		sigma.set(i, cur_sigma);
-		for (size_t j = 0; j < numAssests; j++)
+		for (size_t j = 0; j < numAssets; j++)
 		{
 			file >> cur_rho;
 			rho.set(i,j, cur_rho);
@@ -73,12 +88,12 @@ int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, Dat
  * reads the values of the Bounding Box
  *
  * @param tFile the file that contains the stochastic data
- * @param numAssests the of Assets stored in the file
+ * @param numAssets the of Assets stored in the file
  * @param BoundaryArray Pointer to the Bounding Box array
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
+int readBoudingBoxData(std::string tFile, size_t numAssets, sg::DimensionBoundary* BoundaryArray)
 {
 	std::fstream file;
 	double cur_right;
@@ -92,7 +107,23 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
 		return -1;
 	}
 
-	for (size_t i = 0; i < numAssests; i++)
+	// Get number of elements in bound file, must be 2*numAssests
+	size_t j = 0;
+	double test;
+	do
+	{
+		file >> test;
+		j++;
+	} while (!file.eof());
+	file.close();
+	if (j < (numAssets*2)+1)
+	{
+		std::cout << "Invalid boundary file: " << tFile << " Last Value:" << test << std::endl;
+		return -1;
+	}
+
+	file.open(tFile.c_str());
+	for (size_t i = 0; i < numAssets; i++)
 	{
 		file >> cur_left;
 		file >> cur_right;
@@ -112,13 +143,13 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBounda
  * reads the analyze configuration from a file
  *
  * @param tFile the file that contains the analyze data
- * @param numAssests the number of assets
+ * @param numAssets the number of assets
  * @param BoundaryArray Pointer to the Bounding Box array
  * @param points variable to store the number of points in every dimension
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readAnalyzeData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray, size_t& points)
+int readAnalyzeData(std::string tFile, size_t numAssets, sg::DimensionBoundary* BoundaryArray, size_t& points)
 {
 	std::fstream file;
 	double cur_right;
@@ -132,7 +163,24 @@ int readAnalyzeData(std::string tFile, size_t numAssests, sg::DimensionBoundary*
 		return -1;
 	}
 
-	for (size_t i = 0; i < numAssests; i++)
+	// Get number of elements in analyze file, must be 2*numAssests+1
+	size_t j = 0;
+	double test;
+	do
+	{
+		file >> test;
+		j++;
+	} while (!file.eof());
+	file.close();
+	if (j < ((numAssets*2)+1)+1)
+	{
+		std::cout << "Invalid analyze file: " << tFile << " Last Value:" << test << std::endl;
+		return -1;
+	}
+	file.open(tFile.c_str());
+
+
+	for (size_t i = 0; i < numAssets; i++)
 	{
 		file >> cur_left;
 		file >> cur_right;
