@@ -47,11 +47,14 @@ def generateBBTSSEMatrix(factory, training, verbose=False):
     erg = DataVector(len(alpha))
     
     #padding
-    if training.getNrows() % 2 != 0:
+    remainder = training.getNrows() % 12
+    loopCount = 12 - remainder
+    if loopCount != 12:
         lastRow = DataVector(training.getNcols())
-        training.getRow(training.getNrows()-1)
-        training.resize(training.getNrows()+1)
-        training.setRow(training.getNrows()-1, lastRow)
+        for i in range(0, loopCount):
+            training.getRow(training.getNrows()-1, lastRow)
+            training.resize(training.getNrows()+1)
+            training.setRow(training.getNrows()-1, lastRow)
 
     training.transpose()
     
