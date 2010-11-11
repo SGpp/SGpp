@@ -73,30 +73,25 @@ elif env['TARGETCPU'] == 'ia64ICC':
     print "Using icc 11.0 for Itanium systems"
     # ICC doesn't know '-pedantic'
     # ICC has different options on ia64
-    env.Append(CPPFLAGS = ['-O3', '-fno-fnalias', '-funroll-loops', '-no-alias-const', 
+    env.Append(CPPFLAGS = ['-O3', '-funroll-loops', 
                            '-no-alias', '-i-static', '-gcc-version=400', 
                            '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
                            '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp']) 
 elif env['TARGETCPU'] == 'opteronICC':
-    print "Using icc 11.x for Opteron systems"
-    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
-                           '-no-alias-const', '-fno-alias', '-Wall', '-ansi', '-wd981', 
+    print "Using icc 11.x/12.0 for Opteron systems"
+    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
+                           '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp'])
 elif env['TARGETCPU'] == 'core2ICC':
-    print "Using icc 11.x for Core2 systems"
-    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
-                           '-no-alias-const', '-fno-alias', '-Wall', '-ansi', '-wd981', 
+    print "Using icc 11.x/12.0 for Core2 systems"
+    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
+                           '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp'])
 elif env['TARGETCPU'] == 'nehalemICC':
-    print "Using icc 11.x for Nehalem/Westmere systems"
-    env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
-                           '-no-alias-const', '-fno-alias', '-ansi-alias', '-Wall', '-ansi', '-wd981', 
+    print "Using icc 11.x/12.0 for Nehalem/Westmere systems"
+    env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
+                           '-Wall', '-ansi', '-wd981', 
                            '-fno-strict-aliasing', '-openmp'])
-elif env['TARGETCPU'] == 'nehalemICC':
-    print "Using icc 11.x for Nehalem/Westmere systems"
-    env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-fno-fnalias', 
-                           '-no-alias-const', '-fno-alias', '-ansi-alias', '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing', '-openmp', '-pthread'])
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"
