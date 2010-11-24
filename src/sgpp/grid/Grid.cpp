@@ -109,7 +109,14 @@ Grid* Grid::unserialize(std::istream& istr)
 	}
 	else
 	{
-		throw factory_exception("factory_exeception unserialize: unkown gridtype");
+	  // compose error message and throw factory_exception
+	  std::string errMsg = "factory_exeception unserialize: unkown gridtype.\n";
+	  errMsg += "Got: '" + gridtype + "'; possible choices: ";
+	  factoryMap::iterator it;
+	  for (it = typeMap().begin(); it != typeMap().end(); it++) {
+	    errMsg += "'" + (*it).first + "' ";
+	  }
+	  throw factory_exception(errMsg.c_str());
 	}
 
 	return NULL;
@@ -132,9 +139,9 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
-        tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
-        tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
-        tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
+		tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
+		tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
+		tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
 	}
 
 	return *tMap;

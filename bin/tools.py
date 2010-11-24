@@ -18,8 +18,6 @@ ARFF = 1
 SIMPLE = 0
 NOTAFILE = -1
 
-
-
 #-------------------------------------------------------------------------------
 ## @brief A value pair is added to a dictionary's value entry. 
 #
@@ -101,7 +99,9 @@ def isARFFFile(filename):
 
 #-------------------------------------------------------------------------------
 ## @brief Writes String to File and checks if file existant
-#
+# @param s some text
+# @param filename filename (including relative or absolute path)
+# @param check (optional) set to False to overwrite without checking for existance
 def writeStringToFile(s, filename, check=True):
     if check and os.path.exists(filename):
         i = raw_input("File <%s> exists. Overwrite [y/n]? " % (filename))
@@ -113,103 +113,58 @@ def writeStringToFile(s, filename, check=True):
         f = gzOpen(filename, 'w')
         f.write(s)
         f.close()
-    
-#-------------------------------------------------------------------------------
-## @brief Converts a python "dataset"-structure into two object of type DataVector (X,Y)
-#
-def createDataVectorFromDataset(dataset):
-    dim = len(dataset["data"])
-    entries = len(dataset["data"][0])
-    data = dataset["data"]
-    
-    x = DataVector(entries, dim)
-    y = None
 
-    for d in xrange(dim):    
-        for i in xrange(entries):
-            x[i*dim + d] = data[d][i]
-            
-    if dataset.has_key("classes"):
-        classes = dataset["classes"]
-        y = DataVector(entries)
-        for i in xrange(entries):
-            y[i] = classes[i]
-            
-    return (x,y)
 
 #-------------------------------------------------------------------------------
-## @brief Converts one or two (data + optionally classes) objects of type DataVector
-# to a python "dataset"-structure.
-def createDatasetFromDataVector(data, classes=None):
-    dataset = {}
-    dataset['data'] = []
-    for j in range(data.getDim()):
-        column = [data.get(i,j) for i in range(data.getSize())]
-        dataset['data'].append(column)
-
-    if classes:
-        dataset['classes'] = [classes[i] for i in range(len(classes))]
-    
-    return dataset
-
-## @brief Reads in a whitespace separated data file. 
+## @brief Reads in (multidimensional) data from a delimiter separated data file. 
 #
-# Last column is assumend to be class, if <tt>hasclass=True</tt>.
-# The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
-# [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
+# Last column is assumend to contain class values, if <tt>hasclass=True</tt>.
+# The data is stored in a dictionary, thus either
+# {"data": DataMatrix, "classes": DataVector, "filename": filename} or
+# {"data": DataMatrix, "filename": filename}
 #
 # @param filename the file's filename that should be read
-# @param delim (optional) separator between columns. Default: space
+# @param delim (optional) separator between columns. Default: whitespaces
 # @param hasclass (optional) sets, whether last column contains class attribute. Default: True
-# @return returns a set of a array with the data (named data), a array with the classes (named classes) and the filename named as filename
-def readDataTrivial(filename, delim = "", hasclass = True):
+# @return returns the data
+def readDataTrivial(filename, delim = None, hasclass = True):
     fin = gzOpen(filename, "r")
     data = []
     classes = []
     for line in fin:
         sline = line.strip()
+        # skip empty lines and comments
         if sline.startswith("#") or len(sline) == 0:
             continue
-        
-        values = []
-        
-        if len(delim) == 0:
-            values = sline.split()
-        else:
-            values = sline.split(delim)
-            values = map(lambda x: x.strip(), values)
-            values = filter(lambda x: len(x) > 0, values)
-            
-        if len(data) == 0:
-            if hasclass:
-                data = [[] for i in range(len(values) - 1)] 
-            else:
-                data = [[] for i in range(len(values))] 
+
+        # split and convert 
+        values = sline.split(delim)
+        values = map(lambda x: x.strip(), values)
+        values = filter(lambda x: len(x) > 0, values)
+        values = map(lambda x: float(x), values)
         
         if hasclass:
-            for i in xrange(len(values)-1):
-                data[i].append(float(values[i]))
-                
-            classes.append(float(values[-1]))
+            data.append(values[:-1])
+            classes.append(values[-1])
         else:
-            for i in xrange(len(values)):
-                data[i].append(float(values[i]))
+            data.append(values)
 
-
+    # cleaning up and return
     fin.close()
-    
     if hasclass:
-        return {"data":data, "classes":classes, "filename":filename}
+        return {"data": DataMatrix(data), "classes": DataVector(classes), "filename":filename}
     else:
-        return {"data":data, "filename":filename}
+        return {"data": DataMatrix(data), "filename":filename}
 
-## @brief Reads in an ARFF file
+#-------------------------------------------------------------------------------
+## @brief Reads in (multidimensional) data from an ARFF file.
 #
-# The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
-# [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
+# The data is stored in a dictionary, thus either
+# {"data": DataMatrix, "classes": DataVector, "filename": filename} or
+# {"data": DataMatrix, "filename": filename}, depending whether one of the attributes is called "class[es]"
 #
-# @param filename the file's filename that should be read
-# @return returns a set of a array with the data (named data), a array with the classes (named classes) and the filename named as filename
+# @param filename the file's filename that should be red
+# @return returns the data
 def readDataARFF(filename):
     fin = gzOpen(filename, "r")
     data = []
@@ -219,6 +174,7 @@ def readDataARFF(filename):
     # get the different section of ARFF-File
     for line in fin:
         sline = line.strip().lower()
+        # skip comments and empty lines
         if sline.startswith("%") or len(sline) == 0:
             continue
 
@@ -229,29 +185,38 @@ def readDataARFF(filename):
             value = sline.split()
             if value[1].startswith("class"):
                 hasclass = True
-            else:
-                data.append([])
     
     #read in the data stored in the ARFF file
     for line in fin:
         sline = line.strip()
+        # skip comments and empty lines
         if sline.startswith("%") or len(sline) == 0:
             continue
 
+        # split and convert 
         values = sline.split(",")
+        values = map(lambda x: x.strip(), values)
+        values = filter(lambda x: len(x) > 0, values)
+        values = map(lambda x: float(x), values)
+        
         if hasclass:
-            classes.append(float(values[-1]))
-            values = values[:-1]
-        for i in xrange(len(values)):
-            data[i].append(float(values[i]))
+            data.append(values[:-1])
+            classes.append(values[-1])
+        else:
+            data.append(values)
             
     # cleaning up and return
     fin.close()
-    return {"data":data, "classes":classes, "filename":filename}
+    if hasclass:
+        return {"data": DataMatrix(data), "classes": DataVector(classes), "filename":filename}
+    else:
+        return {"data": DataMatrix(data), "filename":filename}
 
 
 #-------------------------------------------------------------------------------
-## @brief Opens and read the data of an ARFF (or plain whitespace-separated data) file.
+## @brief Opens and read the (multidimensional) data of an ARFF (or plain whitespace-separated data) file.
+# Assumes that class information is available. Format is
+# {"data": DataMatrix, "classes": DataVector, "filename": filename} or
 #
 # @param filename filename of the file
 # @return the data stored in the file as a set of arrays
@@ -272,17 +237,26 @@ def readData(filename):
     return data
 
 #-------------------------------------------------------------------------------
-## @brief Writes gnuplot data of function into file
+## @brief Evaluates function on a full grid in the domain, and writes evaluation points
+# to a file.
+# The output is suitable for Gnuplot.
 #
+# @param filename Filename to which data is written
+# @param grid Grid
+# @param alpha Corresponding coefficient DataVector
+# @param resolution Number of sampling points per dimension
+# @param (optional) mode: {'w'|'a'} to write or append, default 'w'
 def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
-    p = DataVector(1,grid.getStorage().dim())
+    p = DataVector(grid.getStorage().dim())
     fout = gzOpen(filename, mode)
 
+    # evaluate 1d function
     if grid.getStorage().dim() == 1:
         for x in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
                 pc = grid.createOperationEval().eval(alpha, p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
+    # evaluate 2d function
     elif grid.getStorage().dim() == 2:
         for x in xrange(resolution):
             for y in xrange(resolution):
@@ -291,6 +265,7 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
                 pc = grid.createOperationEval().eval(alpha, p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
+    # can't plot anything else
     else:
         sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (grid.getStorage().dim()))
     fout.write("e\n")
@@ -298,18 +273,188 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
     return
 
 #-------------------------------------------------------------------------------
-## @brief Writes gnuplot data of grid into file
-# 
+## @brief Writes coordinates of a grid into a file, suitable for gnuplot.
+#
+# @param filename Filename to which data is written
+# @param grid Grid
 def writeGnuplotGrid(filename, grid):
-    p = DataVector(1,2)
-    fout = file(filename, "w")
-    s = grid.__str__()
-    s = s.split("], [")
-    for gp in s:
-        (l1,i1,l2,i2) = re.search("(\d+)[, ]*(\d+)[, ]*(\d+)[, ]*(\d+)", gp).groups()
-        fout.write("%f %f\n" % (int(i1)*2**(-int(l1)), int(i2)*2**(-int(l2))))
+    dim = grid.getStorage().dim()
+    if dim == 2:
+        p = DataVector(dim)
+        fout = file(filename, "w")
+        for i in range(grid.getStorage().size()):
+            grid.getStorage().get(i).getCoords(p)
+            fout.write("%f %f\n" % (p[0],p[1]))
+    # can't plot anything else
+    else:
+        sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (dim))
+    fout.write("e\n")
     fout.close()
     return
+
+#-------------------------------------------------------------------------------
+# read/write alpha
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+## @brief Writes DataVector to arff file. 
+# If filename ends with ".gz", file is gzip-compressed.
+#
+# @param filename Filename of new file
+# @param alpha The DataVector
+def writeAlphaARFF(filename, alpha):
+    fout = gzOpen(filename, "w")
+    fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % filename)
+    fout.write("@ATTRIBUTE alpha NUMERIC\n")
+    
+    fout.write("\n@DATA\n")
+    
+    for i in xrange(len(alpha)):
+        fout.write("%1.20f\n" % alpha[i])
+    
+    fout.close()
+
+#-------------------------------------------------------------------------------
+## @brief Reads in onedimensional data from an ARFF file.
+#
+# @param filename the file's filename that should be red
+# @return returns the DataVector
+def readAlphaARFF(filename):
+    try:
+        data = readDataARFF(filename)
+    except:
+        print ("An error occured while reading " + filename + "!")
+        sys.exit(1)
+
+    dv = DataVector(data["data"].getNrows())
+    data["data"].getColumn(0, dv)
+    return dv
+
+#-------------------------------------------------------------------------------
+## @brief Reads in onedimensional data from a delimiter separated data file.
+#
+# @param filename the file's filename that should be red
+# @param delim (optional) separator between columns. Default: whitespaces
+# @return returns the DataVector
+def readAlphaTrivial(filename, delim = None):
+    try:
+        data = readDataTrivial(filename, delim, hasclass=False)
+    except:
+        print ("An error occured while reading " + filename + "!")
+        sys.exit(1)
+
+    dv = DataVector(data["data"].getNrows())
+    data["data"].getColumn(0, dv)
+    return dv
+
+#-------------------------------------------------------------------------------
+## @brief Opens and reads the onedimensional data of an ARFF (or plain whitespace-separated data) file.
+#
+# @param filename filename of the file
+# @return the data stored in the file as a set of arrays, DataVector
+def readAlpha(filename):
+    try:
+        if isARFFFile(filename):
+            data = readAlphaARFF(filename)
+        else:
+            data = readAlphaTrivial(filename)
+    except Exception, e:
+        print ("An error occured while reading " + filename + "!")
+        raise e
+
+    return data
+
+#-------------------------------------------------------------------------------
+## @brief Serialize a Grid to a file.
+# If filename ends with ".gz", file is gzip-compressed.
+#
+# @param filename Filename of new file
+# @param grid The Grid
+def writeGrid(filename, grid):
+    text = grid.serialize()
+    fout = gzOpen(filename, "w")
+    fout.write(text)
+    fout.close()
+
+#-------------------------------------------------------------------------------
+## @brief Unserialize a Grid from a file.
+#
+# @param filename Filename of file 
+# @return Grid
+def readGrid(filename):
+    fin = gzOpen(filename, "r")
+    text = fin.read()
+    fin.close()
+    
+    return Grid.unserialize(text)
+
+#-------------------------------------------------------------------------------
+## @brief Write whole checkpoint data to file.
+# This writes two files containing grid and coefficient (alpha) vector.
+# Optionally, two additional parameters can be specified, influencing the filename.
+# The filename has the following form: FILENAME[.aADAPTATION][.fFOLD].{alpha.arff.gz|grid.gz}
+#
+# @param filename Filename prefix
+# @param grid Grid file
+# @param alpha Coefficient DataVector
+# @param adaptation (optional) number of adaptive step for refinement
+# @param fold (optional) specifying which fold
+def writeCheckpoint(filename, grid, alpha, adaption = None, fold = None):
+    adapt_str = ""
+    fold_str = ""
+    if adaption != None:
+        adapt_str = ".a%d" % (adaption)
+    if fold != None:
+        fold_str = ".f%d" % (fold)
+    writeAlphaARFF("%s%s%s.alpha.arff.gz" % (filename, fold_str, adapt_str), alpha)
+    writeGrid("%s%s%s.grid.gz" % (filename, fold_str, adapt_str), grid)
+    
+
+
+
+
+
+
+
+
+
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#  Following functions have not yet been updated...
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+#-------------------------------------------------------------------------------
+## @brief 
+#
+# @param 
+# @param 
+def writeStats(filename, txt, mode = "a"):
+    writeLockFile(filename + ".stats.gz", txt, mode)
+
+#-------------------------------------------------------------------------------
+## @brief 
+#
+# @param 
+# @param 
+def readCheckpoint(filename):
+    alpha = readAlphaARFF(filename+".alpha.arff")
+    grid = readGrid(filename+".grid")
+    
+    return grid, alpha
+
+
+## @brief (Recursively) creates a directory if not yet existant.
+#
+# @param path Path of directory
+# @param (optional) Tell what is been done
+def makedir(path, verbose=False):
+    if not os.path.isdir(path):
+        os.makedirs(path)
+        if verbose:
+            print "Created directory %s." %(s)
+    else:
+        if verbose:
+            print "Nothing done. Directory %s already existing." %(s)
 
 def writeDataARFF(data, merge=False):
     if len(data) == 0:
@@ -835,15 +980,14 @@ class Matrix:
         return b
     
     def ApplyMatrix(self, alpha, result):
-        temp = DataVector(self.x.getSize())
-        M = self.x.getSize();
+        M = self.x.getNrows();
+        temp = DataVector(M)
     
         self.B.multTranspose(alpha, self.x, temp)
         self.B.mult(temp, self.x, result)
-        
 
         if self.CMode == "laplace":
-            temp = DataVector(alpha.getSize())
+            temp = DataVector(len(alpha))
             self.C.mult(alpha, temp)
             result.axpy(M*self.l, temp)
 
@@ -861,13 +1005,13 @@ class Matrix:
             result[i] = result[i] - M*self.l*alpha[i]
             
         elif self.CMode == "ratio":
-            temp = DataVector(alpha.getSize())
+            temp = DataVector(len(alpha))
             # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
             
         elif self.CMode == "levelsum":
-            temp = DataVector(alpha.getSize())
+            temp = DataVector(len(alpha))
             # fill temp vector with levelsums
             gridStorage = self.grid.getStorage()
             for i in range(gridStorage.size()):
@@ -876,23 +1020,23 @@ class Matrix:
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "energy":
-            temp = DataVector(alpha.getSize())
+            temp = DataVector(len(alpha))
             # @todo: implement
             self.C.applyRatio(alpha, temp)
             result.axpy(M*self.l, temp)
 
         elif self.CMode == "copy":
             # completely inefficient, but sufficient for test purposes
-            temp = DataVector(alpha.getSize())
-            ones = DataVector(alpha.getSize())
+            temp = DataVector(len(alpha))
+            ones = DataVector(len(alpha))
             ones.setAll(1)
             self.C.mult(ones, temp)
-            for i in range(alpha.getSize()):
+            for i in range(len(alpha)):
                 temp[i] = temp[i]*alpha[i]
             result.axpy(M*self.l, temp)
         
         elif self.CMode == "pseudounit":
-            temp = DataVector(alpha.getSize())
+            temp = DataVector(len(alpha))
             # @todo: implement
             self.C.applyRatio(alpha,temp)
             result.axpy(M*self.l,temp)
@@ -902,89 +1046,57 @@ class Matrix:
             sys.exit(1)
 
 
+
+# #-------------------------------------------------------------------------------
+# # saves/restores grid from file
+# # set appropriate modes for automatic destructions
+# #-------------------------------------------------------------------------------
+# 
+# ## @brief
+# def restoreGrid(text):
+#     return Grid.unserialize(text)
+# 
+# 
+# def saveGrid(grid):
+#     return grid.serialize()
+# 
+##-------------------------------------------------------------------------------
+### @brief Converts a python "dataset"-structure into two objects of type DataVector (X,Y).
+##
+#def createDataVectorFromDataset(dataset):
+#    dim = len(dataset["data"])
+#    entries = len(dataset["data"][0])
+#    data = dataset["data"]
+#    
+#    x = DataVector(entries, dim)
+#    y = None
+#
+#    for d in xrange(dim):    
+#        for i in xrange(entries):
+#            x[i*dim + d] = data[d][i]
+#            
+#    if dataset.has_key("classes"):
+#        classes = dataset["classes"]
+#        y = DataVector(entries)
+#        for i in xrange(entries):
+#            y[i] = classes[i]
+#            
+#    return (x,y)
+#
+##-------------------------------------------------------------------------------
+### @brief Converts one or two (data + optionally classes) objects of type DataVector
+## to a python "dataset"-structure.
+#def createDatasetFromDataVector(data, classes=None):
+#    dataset = {}
+#    dataset['data'] = []
+#    for j in range(data.getDim()):
+#        column = [data.get(i,j) for i in range(data.getSize())]
+#        dataset['data'].append(column)
+#
+#    if classes:
+#        dataset['classes'] = [classes[i] for i in range(len(classes))]
+#    
+#    return dataset
+
 #-------------------------------------------------------------------------------
-# saves/restores grid from file
-# set appropriate modes for automatic destructions
-#-------------------------------------------------------------------------------
-
-def restoreGrid(text):
-    #@todo: is there any control of correctness of text?
-    return Grid.unserialize(text)
-
-
-def saveGrid(grid):
-    return grid.serialize()
-
-#-------------------------------------------------------------------------------
-# read/write alpha
-#-------------------------------------------------------------------------------
-
-
-def writeAlphaARFF(filename, alpha):
-    fout = gzOpen(filename, "w")
-    fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % filename)
-    fout.write("@ATTRIBUTE alpha NUMERIC\n")
-    
-    fout.write("\n@DATA\n")
-    
-    for i in xrange(len(alpha)):
-        fout.write("%1.20f\n" % alpha[i])
-    
-    fout.close()
-
-def readAlphaARFF(filename):
-    try:
-        data = readDataARFF(filename)
-    except:
-        print ("An error occured while reading " + filename + "!")
-        sys.exit(1)
-    
-    alpha = DataVector(len(data["data"][0]), 1)
-    
-    for i in xrange(len(data["data"][0])):
-        alpha[i] = data["data"][0][i]
-    
-    return alpha
-
-def writeGrid(filename, grid):
-    text = saveGrid(grid)
-    fout = gzOpen(filename, "w")
-    fout.write(text)
-    fout.close()
-
-def readGrid(filename):
-    fin = gzOpen(filename, "r")
-    text = fin.read()
-    fin.close()
-    
-    return restoreGrid(text)
-
-def writeCheckpoint(filename, grid, alpha, adaption = None, fold = None):
-    adapt_str = ""
-    fold_str = ""
-    if adaption != None:
-        adapt_str = ".a%d" % (adaption)
-    if fold != None:
-        fold_str = ".f%d" % (fold)
-    writeAlphaARFF("%s%s%s.alpha.arff.gz" % (filename, fold_str, adapt_str), alpha)
-    writeGrid("%s%s%s.grid.gz" % (filename, fold_str, adapt_str), grid)
-    
-def writeStats(filename, txt, mode = "a"):
-    writeLockFile(filename + ".stats.gz", txt, mode)
-
-def readCheckpoint(filename):
-    alpha = readAlphaARFF(filename+".alpha.arff")
-    grid = readGrid(filename+".grid")
-    
-    return grid, alpha
-
-
-## Creates directory (recursively) if not existant
-def makedir(s, output=False):
-    if not os.path.isdir(s):
-        os.makedirs(s)
-        if output:
-            print "Created directory %s." %(s)
-    else:
-        if output:
-            print "Nothing done. Directory %s already existing." %(s)
+## @brief Read in an arbitrary grid
