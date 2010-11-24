@@ -44,6 +44,7 @@ class SolverEventController(object):
     ##Returns a string that represents the object.
     #
     # @return A string that represents the object.
+    # @todo (khakhutv) write a test for this method
     def __repr__(self):
         return '{' + self.toString().lstrip("{").rstrip("}\n") + '}'
 

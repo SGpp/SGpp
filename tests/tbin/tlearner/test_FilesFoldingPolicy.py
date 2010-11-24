@@ -60,11 +60,11 @@ class TestFilesFoldingPolicy(unittest.TestCase):
             testPoints = self.points[:step*3] + self.points[step*3+3:]
             values = l.getValues()
             testValues = self.values[:step*3] + self.values[step*3+3:]
-            self.assertEqual(points.getSize(), len(testPoints))
-            self.assertEqual(values.getSize(), len(testValues))
+            self.assertEqual(points.getNrows(), len(testPoints))
+            self.assertEqual(len(values), len(testValues))
                              
             for i in xrange(points.getSize()):
-                self.assertEqual(points[i], testPoints[i])
+                self.assertEqual(points.get(i,0), testPoints[i])
                 self.assertEqual(values[i], testValues[i])
             step += 1
            

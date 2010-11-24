@@ -55,6 +55,7 @@ import types
 # @endcode
 # for help to the console parameters.
 #
+# @todo (khakhutv) implement the test case for terminal controller
 class TerminalController:
  
     ## Initial processing of input parameters
@@ -358,7 +359,7 @@ class TerminalController:
             elif options.mode == 'foldf': builder.withFilesFoldingPolicy()
             if options.seed: builder.withSeed(options.seed)
             if options.level: builder.withLevel(options.level)
-        else: raise Exception('Unknown folding type')
+
             
             
         #Get Results and perform wanted action

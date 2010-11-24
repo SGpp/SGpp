@@ -15,7 +15,7 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
 from bin.data.DataContainer import DataContainer
-from bin.pysgpp import DataVector
+from bin.pysgpp import DataVector, DataMatrix
 
 
 ##
@@ -35,10 +35,10 @@ class TestSequentialFoldingPolicy(unittest.TestCase):
     def setUp(self):
         self.size = 11
         self.level = 10
-        points = DataVector(self.size, 1)
-        values = DataVector(self.size, 1)
+        points = DataMatrix(self.size, 1)
+        values = DataVector(self.size)
         for i in xrange(self.size):
-            points[i] = i
+            points.set(i, 0, i)
             values[i] = i
         self.dataContainer = DataContainer(points, values)
         self.policy = SequentialFoldingPolicy(self.dataContainer, self.level)

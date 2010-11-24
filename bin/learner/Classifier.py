@@ -37,7 +37,7 @@ class Classifier(Learner):
     # @return: percent of correct classified data, 0 if data set is empty
     def evalError(self, data, alpha):
         testOp = self.grid.createOperationTest()
-        size = data.getPoints().getSize()
+        size = data.getPoints().getNrows()
         if size != 0: return testOp.test(alpha, data.getPoints(), data.getValues()) / size
         else: return 0
     

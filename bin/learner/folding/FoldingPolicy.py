@@ -42,7 +42,7 @@ class FoldingPolicy(object):
         self.dataset = dataset
         
         ##Size of dataset
-        self.size = dataset.getPoints().getSize()
+        self.size = dataset.getPoints().getNrows()
         
         ##Number of points in one subset
         self.window = int( math.ceil( float(self.size) / self.level ) ) #number of points in validation set

@@ -29,7 +29,8 @@ from bin.data.DataSpecification import DataSpecification
 import re
 import gzip
 from DataAdapter import DataAdapter
-from bin.pysgpp import DataVector
+from bin.pysgpp import DataVector, DataMatrix
+
 from DataContainer import DataContainer
 
 
@@ -57,8 +58,8 @@ class ARFFAdapter(DataAdapter):
     def save(self, points, values = None, attributes = None):
 
         fout = self.__gzOpen(self.filename, "w")
-        dim = points.getDim()
-        size = points.getSize()
+        dim = points.getNcols()
+        size = points.getNrows()
         point = DataVector(dim)
         
         fout.write("@RELATION \"%s\"\n\n" % self.filename)
@@ -137,16 +138,16 @@ class ARFFAdapter(DataAdapter):
         
         dim = len(data)
         size = len(data[0])
-        dataVector = DataVector(size, dim)
+        dataMatrix = DataMatrix(size, dim)
         tempVector = DataVector(dim)
         valuesVector = DataVector(size)
         for rowIndex in xrange(size):
             for colIndex in xrange(dim):
                 tempVector[colIndex] = data[colIndex][rowIndex]
-            dataVector.setRow(rowIndex, tempVector)
+            dataMatrix.setRow(rowIndex, tempVector)
             valuesVector[rowIndex] = classes[rowIndex]
             
-        return DataContainer(dataVector, valuesVector, name, self.filename)
+        return DataContainer(dataMatrix, valuesVector, name, self.filename)
 
 
     ## Loads attribute specification from file

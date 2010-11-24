@@ -118,7 +118,7 @@ class CheckpointController(LearnerEventController):
         self.title = title
         self.path = path if path != None else '.'
         self.interval = interval if interval != None else 1
-        if not fold == None:
+        if fold != None:
             self.fold = fold
             
     
@@ -135,7 +135,7 @@ class CheckpointController(LearnerEventController):
         else:
             result = self.path + "/" + self.title 
             
-        if not iteration == None:
+        if iteration != None:
             result = result + "." + str(iteration)
         return result
     
@@ -323,6 +323,7 @@ class CheckpointController(LearnerEventController):
     # validation computations. The script can be then lunched using
     # \<code\>qsub -t 1-XXX \<scriptname\>.sge.job
     # @param email String with email-address, the status information from SGE should be sent to
+    # @todo (khakhutv) write a test for this method
     def generateFoldValidationJob(self, email=""):
         
         if not self.learner.iteration == None:

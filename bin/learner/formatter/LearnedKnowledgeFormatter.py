@@ -23,11 +23,10 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-
 from bin.utils.GzipSerializer import GzipSerializer
 
 from bin.learner.LearnedKnowledge import LearnedKnowledge
-from bin.pysgpp import DataVector
+from bin.pysgpp import DataVector, DataMatrix
 
 ## Provides functionality for the runtime serialization of the LearnedKnowledge object
 #
@@ -100,7 +99,7 @@ class LearnedKnowledgeFormatter(GzipSerializer):
     # @return alpha DataVector
     def __readAlphaARFF(self, serializationStream):
         data = self.__readDataARFF(serializationStream)
-        alpha = DataVector(len(data["data"][0]), 1)
+        alpha = DataVector(len(data["data"][0]))
         for i in xrange(len(data["data"][0])):
             alpha[i] = data["data"][0][i]
         return alpha
@@ -111,7 +110,8 @@ class LearnedKnowledgeFormatter(GzipSerializer):
     # @param fout The output stream
     # @param alpha DataVector of alpha
     def __writeAlphaARFF(self, fout, alpha):
-        #fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % filename)
+        if hasattr(fout, "name"):
+            fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % fout.name)
         fout.write("@ATTRIBUTE alpha NUMERIC\n")
         
         fout.write("\n@DATA\n")

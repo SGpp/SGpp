@@ -43,13 +43,13 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
     # Tests the function @link bin.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.deserializeFromFile() LearnedKnowledgeFormatter.deserializeFromFile() @endlink
     def testLoad(self,):
         alphas = self.formatter.deserializeFromFile(self.filename_load)
-        self.assertEqual(alphas.getSize(), 10)
-        self.assertEqual(alphas.getDim(), 1)
+        self.assertEqual(len(alphas), 10)
+        #self.assertEqual(alphas.getDim(), 1)
         a = 0.1
         row = DataVector(1)
         for i in xrange(10):
-            alphas.getRow(i, row)
-            self.assertAlmostEqual(row[0], a)
+            row = alphas[i]
+            self.assertAlmostEqual(row, a)
             a = a + 0.1
     
     
@@ -66,13 +66,13 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
         self.formatter.serializeToFile(knowledge.createMemento(), self.filename_save)
         
         alphas = self.formatter.deserializeFromFile(self.filename_save)
-        self.assertEqual(alphas.getSize(), 10)
-        self.assertEqual(alphas.getDim(), 1)
+        self.assertEqual(len(alphas), 10)
+        #self.assertEqual(alphas.getDim(), 1)
         a = 0.1
         row = DataVector(1)
         for i in xrange(10):
-            alphas.getRow(i, row)
-            self.assertAlmostEqual(row[0], a)
+            row = alphas[i]
+            self.assertAlmostEqual(row, a)
             a = a + 0.1
         
         
