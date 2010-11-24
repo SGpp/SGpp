@@ -21,18 +21,18 @@
 from pysgpp import *
 
 def ApplyA(B, C, alpha, result, x, l):
-    temp = DataVector(x.getSize())
-    M = x.getSize();
+    temp = DataVector(x.getNrows())
+    M = x.getNrows();
 
     B.multBTrans(alpha, x, temp)
     B.multB(temp, x, result)
     
-    temp = DataVector(alpha.getSize())
+    temp = DataVector(len(alpha))
    
 #    C.updown(alpha, temp)
 #    result.axpy(M*l, temp)
     
-    #for i in xrange(alpha.getSize()):
+    #for i in xrange(len(alpha)):
     #    temp[i] = alpha[i]
     
     result.axpy(M*l, alpha)
@@ -42,7 +42,7 @@ def sd(y, alpha, grid, x, imax, epsilon, l):
     B = OpB(grid)
     C = OpLaplace(grid)
     
-    b = DataVector(alpha.getSize())
+    b = DataVector(len(alpha))
     B.multB(y, x, b)
     
     epsilon2 = epsilon*epsilon
@@ -50,7 +50,7 @@ def sd(y, alpha, grid, x, imax, epsilon, l):
     i = 1
     
     # r0 = b - Ax
-    temp = DataVector(alpha.getSize())
+    temp = DataVector(len(alpha))
     ApplyA(B, C, alpha, temp, x, l)
     r = DataVector(b)
     r.sub(temp)
@@ -87,14 +87,14 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
     B = OpB(grid)
     C = OpLaplace(grid)
     
-    b = DataVector(alpha.getSize())
+    b = DataVector(len(alpha))
     B.multB(y, x, b)
     
     epsilon2 = epsilon*epsilon
     
     i = 1
-    temp = DataVector(alpha.getSize())
-    q = DataVector(alpha.getSize())
+    temp = DataVector(len(alpha))
+    q = DataVector(len(alpha))
     
     ApplyA(B, C, alpha, temp, x, l)
     
@@ -153,13 +153,13 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
     
     i = 1
     epsilon2 = epsilon*epsilon
-    #temp = DataVector(alpha.getSize())
+    #temp = DataVector(len(alpha))
     
     # Choose x0
     alpha.setAll(0.0)
     
     # Calculate r0    
-    r = DataVector(alpha.getSize())
+    r = DataVector(len(alpha))
     ApplyMatrix(alpha, r)
     r.sub(b)
     
@@ -175,7 +175,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
     
     rho = r0.dotProduct(r)
     
-    s = DataVector(alpha.getSize())
+    s = DataVector(len(alpha))
     
     while i < imax:
         # s  = Ap
@@ -192,7 +192,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
         w.axpy(-a, s)
         
         #v = Aw
-        v = DataVector(alpha.getSize())
+        v = DataVector(len(alpha))
         ApplyMatrix(w, v)
         
         omega = v.dotProduct(w) / v.dotProduct(v)
@@ -242,15 +242,14 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
         print "Starting Conjugated Gradients"
  
 #    Apply B to y
-#    b = DataVector(alpha.getSize())
+#    b = DataVector(len(alpha))
 #    B.multB(y, x, b)
 
     epsilon2 = epsilon*epsilon
     
     i = 0
-    temp = DataVector(alpha.getSize())
-    q = DataVector(alpha.getSize())
-    
+    temp = DataVector(len(alpha))
+    q = DataVector(len(alpha))
     delta_0 = 0.0
     
     # calculate residuum

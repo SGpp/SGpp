@@ -14,14 +14,44 @@
 %rename(assign) DataVector::operator=;
 %rename(__len__) DataVector::getSize;
 
+
+
 class DataVector
 {
 public:
+
+// typemap allowing to pass sequence of numbers to constructor
+%typemap(in) (double *input, int size)
+{
+  if (!PySequence_Check($input)) {
+    PyErr_SetString(PyExc_ValueError, "Expected a sequence");
+    return NULL;
+  }
+  $2 = PySequence_Size($input);
+  $1 = (double *) malloc(sizeof(double)*$2);
+  for (int i = 0; i < $2; i++) {
+    PyObject *o = PySequence_GetItem($input,i);
+    if (PyNumber_Check(o)) {
+      $1[i] = (double) PyFloat_AsDouble(o);
+    } else {
+      PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");      
+      return NULL;
+    }
+  }
+}
+%typemap(freearg) (double *input, int size)
+{
+  if ($1) free($1);
+}
+%typecheck(SWIG_TYPECHECK_FLOAT) (double *input, int size)
+{
+$1 = PySequence_Check($input) ? 1 : 0;
+}
+        // Construcors
 	DataVector(size_t size);
-//	DataVector(size_t size, size_t dim);
 	DataVector(DataVector& vec);
-	DataVector(double* input, size_t size);
-	
+	DataVector(double *input, int size);
+
 	void resize(size_t size);
 	void resizeZero(size_t size);
 	void addSize(size_t add);
@@ -35,9 +65,7 @@ public:
 	DataVector& operator=(const DataVector& vec);	
 	
 	double get(size_t i) const;
-//	double get(int row, int col) const;
 	void set(size_t i, double value);
-//	void set(int row, int col, double value);
 
 	void add(DataVector& vec);
 	void sub(DataVector& vec);
@@ -56,11 +84,6 @@ public:
 	
 	void axpy(double alpha, DataVector& x);
 	
-//	void getRow(size_t row, DataVector& vec);
-//	void setRow(size_t row, DataVector& vec);
-//	void getColumn(size_t col, DataVector& vec);
-//	void setColumn(size_t col, DataVector& vec);
-	
 	size_t getSize();
 	size_t getUnused();
 	size_t getInc();
@@ -74,3 +97,5 @@ public:
 	std::string toString();
 
 };
+
+

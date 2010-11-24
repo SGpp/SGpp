@@ -221,17 +221,17 @@ def getNumOfPoints(options, grid):
 def doApply():
     # read data
     data = openFile(options.data[0])
-    dim = len(data["data"])
-    numData = len(data["data"][0])
+    dim = data["data"].getNcols()
+    numData = data["data"].getNrows()
     
     # read alpha vector
     alpha = buildTrainingVector(openFile(options.alpha))
     
     # construct corresponding grid
     grid = constructGrid(dim)
-    if(alpha.getSize() != grid.getStorage().size()):
+    if(len(alpha) != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
-        print "alpha size %d, grid size %d" % (alpha.getSize(),grid.getStorage().size())
+        print "alpha size %d, grid size %d" % (len(alpha),grid.getStorage().size())
         sys.exit(1)
     
     # copy data to DataVector
@@ -285,17 +285,17 @@ def doApply():
 def doEval():
     # read data
     data = openFile(options.data[0])
-    dim = len(data["data"])
-    numData = len(data["data"][0])
+    dim = data["data"].getNcols()
+    numData = data["data"].getNrows()
 
     # read alpha vector
     alpha = buildTrainingVector(openFile(options.alpha))
 
     # construct corresponding grid
     grid = constructGrid(dim)
-    if(alpha.getSize() != grid.getStorage().size()):
+    if(len(alpha) != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
-        print "alpha size %d, grid size %d" % (alpha.getSize(),grid.getStorage().size())
+        print "alpha size %d, grid size %d" % (len(alpha),grid.getStorage().size())
         sys.exit(1)
 
     # copy data to DataVector
@@ -372,7 +372,7 @@ def doEvalStdin():
         dim = 0
     grid = constructGrid(dim)
     dim = grid.getDim()
-    if(alpha.getSize() != grid.getStorage().size()):
+    if(len(alpha) != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
         sys.exit(1)
 
@@ -411,12 +411,12 @@ def doEvalStdin():
 def doNormal():
     # read data
     data = openFile(options.data[0])
-    dim = len(data["data"])
-    numData = len(data["data"][0])
+    dim = data["data"].getNcols()
+    numData = data["data"].getNrows()
     
     if options.verbose:
         print "Dimension is:", dim
-        print "Number of datasets is:", numData
+        print "Size of datasets is:", numData
         
     training = buildTrainingVector(data)
     y = buildYVector(data)
@@ -492,7 +492,7 @@ def evaluateError(classes, alpha, m):
     print "MSE: ", mse
 
     # calculate error per basis function
-    errors = DataVector(alpha.getSize())
+    errors = DataVector(len(alpha))
     m.B.mult(error, m.x, errors)
     errors.componentwise_mult(alpha)
     
@@ -510,11 +510,10 @@ def doTest():
 
     training = buildTrainingVector(data)
     y = buildYVector(data)
-
     test_data = buildTrainingVector(test)
     test_classes = buildYVector(test)
 
-    dim = len(data["data"])
+    dim = data["data"].getNcols()
     grid = constructGrid(dim)
     
     te_refine = []
@@ -915,7 +914,7 @@ def performFoldRegression(dvec,cvec):
             meanSqrErrorsTraining.append(temp.sum() / temp.getSize())
 
             # calculate error per base function
-            errors = DataVector(alpha.getSize())
+            errors = DataVector(len(alpha))
             m.B.mult(temp, m.x, errors)
 
             # calculate Mean Square Error for testing set
@@ -1002,19 +1001,21 @@ def assembleTrainingVector(dvecs,cvecs,omit):
 
 #-------------------------------------------------------------------------------
 ## Builds the training data vector
-# 
+#
+# @todo remove!
 # @param data a list of lists that contains the points a the training data set, coordinate-wise
 # @return a instance of a DataVector that stores the training data
 def buildTrainingVector(data):
-    dim = len(data["data"])
-    training = DataVector(len(data["data"][0]), dim)
-    
-    # i iterates over the data points, d over the dimension of one data point
-    for i in xrange(len(data["data"][0])):
-        for d in xrange(dim):
-            training[i*dim + d] = data["data"][d][i]
-    
-    return training
+    return data["data"]
+#    dim = len(data["data"])
+#    training = DataVector(len(data["data"][0]), dim)
+#    
+#    # i iterates over the data points, d over the dimension of one data point
+#    for i in xrange(len(data["data"][0])):
+#        for d in xrange(dim):
+#            training[i*dim + d] = data["data"][d][i]
+#    
+#    return training
 
 #-------------------------------------------------------------------------------
 ## Computes the classification accuracy on some test data. 
@@ -1125,11 +1126,13 @@ def testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues):
 # @param data class information
 # @return DataVector that contains the class information, length of the vector is identical to the length of the data vector
 def buildYVector(data):
-    y = DataVector(len(data["classes"]))
-    for i in xrange(len(data["classes"])):
-        y[i] = data["classes"][i]
-        
-    return y
+    return data["classes"]
+    
+#    y = DataVector(len(data["classes"]))
+#    for i in xrange(len(data["classes"])):
+#        y[i] = data["classes"][i]
+#        
+#    return y
 
 
 

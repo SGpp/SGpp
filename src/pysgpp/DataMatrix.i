@@ -14,14 +14,61 @@
 //%rename(assign) DataMatrix::operator=;
 //%rename(__len__) DataMatrix::getSize;
 
+
+
 class DataMatrix
 {
 public:
+
+// typemap allowing to pass sequence of numbers to constructor
+%typemap(in) (double *input, int nrows, int ncols)
+{
+  if (!PySequence_Check($input)) {
+    PyErr_SetString(PyExc_ValueError, "Expected a sequence");
+    return NULL;
+  }
+  $2 = PySequence_Size($input);
+  $3 = 0;
+  for (int i = 0; i < $2; i++) {
+    PyObject *row = PySequence_GetItem($input,i);
+    if (!PySequence_Check(row)) {
+      PyErr_SetString(PyExc_ValueError, "Expected a sequence of sequences");
+      return NULL;
+    }
+    if ($3 == 0) {
+      $3 = PySequence_Size(row);
+      $1 = (double *) malloc(sizeof(double)*$2*$3);
+    }
+    if ($3 != PySequence_Size(row)) {
+      PyErr_SetString(PyExc_ValueError, "Row dimensions do not match");
+      return NULL;
+    }
+    else {
+      for (int j = 0; j < $3; j++) {
+	PyObject *o = PySequence_GetItem(row,j);
+	if (PyNumber_Check(o)) {
+	  $1[i*$3+j] = (double) PyFloat_AsDouble(o);
+	} else {
+	  PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");      
+	  return NULL;
+	}
+      }
+    }
+  }
+}
+%typemap(freearg) (double *input, int nrows, int ncols)
+{
+  if ($1) free($1);
+}
+%typecheck(SWIG_TYPECHECK_FLOAT) (double *input, int nrows, int ncols)
+{
+$1 = PySequence_Check($input) ? 1 : 0;
+}
+
     // Constructors
     DataMatrix(size_t nrows, size_t ncols);
     DataMatrix(const DataMatrix& matr);
-    //@todo (pflueged) Convert python list to double*
-    DataMatrix(double* INPUT, size_t nrows, size_t ncols);
+    DataMatrix(double* input, int nrows, int ncols);
 
     void resize(size_t size);
     void resizeZero(size_t nrows);
