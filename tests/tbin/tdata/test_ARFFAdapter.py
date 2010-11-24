@@ -16,7 +16,7 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.data.ARFFAdapter import ARFFAdapter
-from bin.pysgpp import DataVector
+from bin.pysgpp import DataVector, DataMatrix
 
 
 ##
@@ -57,7 +57,7 @@ class TestARFFAdapter(unittest.TestCase):
         size = len(testPoints)
         dim = len(testPoints[0])
         point = DataVector(dim)
-        points = DataVector(size, dim)
+        points = DataMatrix(size, dim)
         
         for row in xrange(size):
             for col in xrange(dim):

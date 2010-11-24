@@ -20,9 +20,9 @@ import test_BT
 import test_GridFactory
 import test_DataVector
 
-#import tbin.tlearner.testsuite as learnertests
-#import tbin.tdata.testsuite as datatests
-#import tbin.tcontroller.testsuite as controllertests
+import tbin.tlearner.testsuite as learnertests
+import tbin.tdata.testsuite as datatests
+import tbin.tcontroller.testsuite as controllertests
 
 if __name__ == '__main__':
     sys.stdout.write("Running unit tests. ")
@@ -40,9 +40,9 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_BBT_SSE),
                 unittest.defaultTestLoader.loadTestsFromModule(test_BBT_AVX),
                 unittest.defaultTestLoader.loadTestsFromModule(test_BT),
-                #unittest.defaultTestLoader.suiteClass(learnertests.alltests),
-		#unittest.defaultTestLoader.suiteClass(datatests.alltests),
-                #unittest.defaultTestLoader.suiteClass(controllertests.alltests)
+                unittest.defaultTestLoader.suiteClass(learnertests.alltests),
+                unittest.defaultTestLoader.suiteClass(datatests.alltests),
+                unittest.defaultTestLoader.suiteClass(controllertests.alltests)
                 ])
     
         unittest.TextTestRunner().run(alltests)

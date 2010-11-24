@@ -167,6 +167,7 @@ class LearnerBuilder(object):
 
     ## Start building Regressor
     # @return: LearnerBuilder itself
+    # @todo (khakhutv) implement test for building regressor
     ##         
     def buildRegressor(self):
         self.__learner = Regressor()
@@ -293,6 +294,7 @@ class LearnerBuilder(object):
     #
     # @param filename: Filename where to read the data from
     # @return: LearnerBuilder object itself
+    # @todo (khakhutv) implement test for the method
     def withTestingDataFromARFFFile(self, filename):
         dataContainer = ARFFAdapter(filename).loadData(DataContainer.TEST_CATEGORY)
         if self.__learner.dataContainer != None:

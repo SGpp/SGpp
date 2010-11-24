@@ -1,3 +1,5 @@
+@RELATION "/home/perun/Arbeit/workspace/SGpp/tests/tbin/tlearner/datasets/save.alpha.arff ALPHAFILE"
+
 @ATTRIBUTE alpha NUMERIC
 
 @DATA

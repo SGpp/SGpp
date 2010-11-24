@@ -175,10 +175,10 @@ class Learner(object):
         # if learner is restored from checkpoint, you need to create new B Operator
         if self.specification.getBOperator() == None:
             self.specification.setBOperator(self.grid.createOperationB())
-        size = points.getSize()
-        dim = points.getDim()
+        size = points.getNrows()
+        dim = points.getNcols()
         values = DataVector(size)
-        row = DataVector(1, dim)
+        row = DataVector(dim)
         for i in xrange(size):
             points.getRow(i, row)
             values[i] = self.grid.eval(self.knowledge.getAlphas(), row)

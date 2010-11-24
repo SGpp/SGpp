@@ -82,7 +82,7 @@ class TestClassifier(unittest.TestCase):
         self.classifier.stopPolicy.setAdaptiveIterationLimit(1)
         self.classifier.specification.setAdaptPoints(1)
         alpha = self.classifier.learnDataWithTest(self.classifier.dataContainer.combine(testDataset))
-        self.assertEqual(alpha.getSize(), len(correct))
+        self.assertEqual(len(alpha), len(correct))
         for i in xrange(len(correct)):
             self.assertAlmostEqual(alpha[i], correct[i], 3)
     
@@ -92,14 +92,14 @@ class TestClassifier(unittest.TestCase):
         correct = [0.253400605292, -0.25507958758, 0.0530555506998]
         points = [[0.5, 0.1], [0.3, 0.4], [0.9, 0.7]]
         self.classifier.learnData()
-        data = DataVector(3,2)
+        data = DataMatrix(3,2)
         for i in xrange(3):
             temp = DataVector(2)
             temp[0] = points[i][0]
             temp[1] = points[i][1]
             data.setRow(i, temp)
         val = self.classifier.applyData(data)
-        self.assertEqual(val.getSize(), len(correct))
+        self.assertEqual(len(val), len(correct))
         for i in xrange(len(correct)):
             self.assertAlmostEqual(val[i], correct[i])
 
@@ -113,7 +113,7 @@ class TestClassifier(unittest.TestCase):
                    -0.61865507797281593660]
 
         alpha = self.classifier.learnData()
-        for i in xrange(alpha.getSize()):
+        for i in xrange(len(alpha)):
             self.assertAlmostEqual(correct[i], alpha[i])
 
     ##

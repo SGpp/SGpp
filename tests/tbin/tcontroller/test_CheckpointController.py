@@ -97,9 +97,12 @@ class TestCheckpointController(unittest.TestCase):
         controller.setLearnedKnowledge(learnedKnowledge)
         controller.saveLearnedKnowledge(0)
         
+        sampleLines = list()
         f = gzip.open(pathlocal + "/saveknowledge.0.arff.gz", "r")
         try:
-            sampleLines = f.readlines()[3:8]
+            for line in f.readlines():
+                if len(line)>1 and "@" not in line:
+                    sampleLines.append(float(line))
         finally:
             f.close()
             
@@ -117,9 +120,8 @@ class TestCheckpointController(unittest.TestCase):
                        0.649230972775,
                        0.649230972775,
                       -0.618841896127]
-        
-        self.assertEqual(1, learnedKnowledge.getAlphas().getDim())
-        self.assertEqual(len(testValues), learnedKnowledge.getAlphas().getSize())
+
+        self.assertEqual(len(testValues), len(learnedKnowledge.getAlphas()))
                          
         for i in xrange(len(testValues)):
             self.assertAlmostEqual(testValues[i], learnedKnowledge.getAlphas()[i])

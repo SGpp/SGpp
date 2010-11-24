@@ -29,6 +29,7 @@ from  math import sqrt
 
 ## Subclass of Learner, responsible for regression.
 # The methods specific for regression are implemented here.
+# @todo (khakhutv) implement a test case
 class Regressor(Learner):
     
     ## Errors per basis function
@@ -68,7 +69,7 @@ class Regressor(Learner):
     # @param alpha: DataVector alpha-vector
     # @return: mean square error
     def evalError(self, data, alpha):
-        size = data.getPoints().getSize()
+        size = data.getPoints().getNrows()
         if size == 0: return 0
         
         self.error = DataVector(size)

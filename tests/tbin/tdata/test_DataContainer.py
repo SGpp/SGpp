@@ -46,7 +46,7 @@ class TestDataContainer(unittest.TestCase):
         points = self.container.getPoints()
         self.vectors = []
         for row in xrange(0,self.size):
-            vector = DataVector(1,self.dim)
+            vector = DataVector(self.dim)
             vector.setAll(row)
             self.vectors.append(vector)
             points.setRow(row,vector)
@@ -58,8 +58,10 @@ class TestDataContainer(unittest.TestCase):
     def testNext(self):
         c = 0
         for entry in self.container:
-            self.assertEqual(entry.getPoint()[1], self.vectors[c][1])
-            self.assertEqual(entry.getValue()[0], c)
+            point = entry.getPoint()
+            point.sub(self.vectors[c])
+            self.assertEqual(point.twoNorm(), 0)
+            self.assertEqual(entry.getValue(), c)
             c += 1
         self.assertEqual(c, self.size)
 
@@ -70,8 +72,10 @@ class TestDataContainer(unittest.TestCase):
         c = 0
         trainContainer = self.container.getTrainDataset()
         for entry in trainContainer:
-            self.assertEqual(entry.getPoint()[1], self.vectors[c][1])
-            self.assertEqual(entry.getValue()[0], c)
+            point = entry.getPoint()
+            point.sub(self.vectors[c])
+            self.assertEqual(point.twoNorm(), 0)
+            self.assertEqual(entry.getValue(), c)
             c += 1
 
 
@@ -82,8 +86,10 @@ class TestDataContainer(unittest.TestCase):
         c = 0
         testContainer = container.getTestDataset()
         for entry in testContainer:
-            self.assertEqual(entry.getPoint()[1], self.vectors[c][1])
-            self.assertEqual(entry.getValue()[0], c)
+            point = entry.getPoint()
+            point.sub(self.vectors[c])
+            self.assertEqual(point.twoNorm(), 0)
+            self.assertEqual(entry.getValue(), c)
             c += 1
 
 #    def testLoad(self):

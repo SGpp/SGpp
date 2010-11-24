@@ -15,7 +15,7 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
 from bin.data.DataContainer import DataContainer
-from bin.pysgpp import DataVector
+from bin.pysgpp import DataVector, DataMatrix
 
 
 ##
@@ -35,10 +35,10 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
     def setUp(self):
         self.size = 9
         self.level = 4
-        points = DataVector(self.size, 1)
-        values = DataVector(self.size, 1)
+        points = DataMatrix(self.size, 1)
+        values = DataVector(self.size)
         for i in xrange(self.size):
-            points[i] = i
+            points.set(i, 0, i)
             values[i] = -1 if i < self.size/2 else 1
         self.dataContainer = DataContainer(points, values)
         self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
@@ -56,12 +56,12 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
             validCorrectD = set(validationCorrectData[i])
             trainCorrectD = set(range(self.size)) - validCorrectD
             
-            self.assertEqual(trainPoints.getSize(), len(trainCorrectD))
+            self.assertEqual(trainPoints.getNrows(), len(trainCorrectD))
             self.assertEqual(validationPoints.getSize(), len(validCorrectD))
-            for k in xrange(trainPoints.getSize()):
-                self.assertTrue(trainPoints[k] in trainCorrectD)
+            for k in xrange(trainPoints.getNrows()):
+                self.assertTrue(trainPoints.get(k,0)  in trainCorrectD)
             for k in xrange(validationPoints.getSize()):
-                self.assertTrue(validationPoints[k] in validCorrectD)
+                self.assertTrue(validationPoints.get(k,0) in validCorrectD)
                 
             i += 1
            

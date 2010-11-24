@@ -22,7 +22,7 @@
 
 
 from DataSpecification import DataSpecification
-from bin.pysgpp import DataVector
+from bin.pysgpp import DataVector, DataMatrix
 from DataAdapter import DataAdapter
 from DataEntry import DataEntry
 import ARFFAdapter
@@ -75,7 +75,7 @@ class DataContainer(object):
     def next(self):
         for row in xrange(0,self.size):
             self.points[self.name].getRow(row, self.tempPoint)
-            self.values[self.name].getRow(row, self.tempValue)
+            self.tempValue = self.values[self.name][row]
             yield DataEntry(self.tempPoint, self.tempValue)
         return
     
@@ -103,7 +103,7 @@ class DataContainer(object):
     # @exception if requested category name doesn't exist
     def getDataSubsetByCategory(self, category):
         if self.points.has_key(category) and self.values.has_key(category):
-            result = DataContainer(DataVector(self.points[category]), DataVector(self.values[category]), category)
+            result = DataContainer(DataMatrix(self.points[category]), DataVector(self.values[category]), category)
             return result
         else:
             raise Exception("Requested category name doesn't exist")
@@ -116,7 +116,7 @@ class DataContainer(object):
     # @return: DataContainer with entries from the given list
     def getDataSubsetByIndexList(self, indices, name="train"):
         size = len(indices)
-        subset_points = DataVector(size, self.dim)
+        subset_points = DataMatrix(size, self.dim)
         subset_values = DataVector(size)
         row = DataVector(self.dim)
         points = self.getPoints()
@@ -166,6 +166,7 @@ class DataContainer(object):
         self.specifications = {} 
         try:
             if isinstance(args[0], DataAdapter): #takes (adapter: DataAdapter)
+                # @todo (khakhutv) implement test for this part
                 adapter = args[0]
                 container = adapter.loadData()
                 self.points = container.points
@@ -186,14 +187,14 @@ class DataContainer(object):
                         
                     self.size = args[0]
                     self.dim = args[1]
-                    self.points[self.name] = DataVector(self.size, self.dim)
+                    self.points[self.name] = DataMatrix(self.size, self.dim)
         
                     self.values[self.name] = DataVector(self.size)
                     specification = DataSpecification()
                     specification.createNumericAttributes(self.dim)
                     self.specifications[self.name] = specification
                     
-                elif isinstance(args[0], DataVector): #takes (points: DataVector, values: DataVector, name="train", filename=None)
+                elif isinstance(args[0], DataMatrix): #takes (points: DataVector, values: DataVector, name="train", filename=None)
                     try:
                         if args[2] is None:
                             self.name = self.TRAIN_CATEGORY
@@ -204,8 +205,8 @@ class DataContainer(object):
                     
                     self.points[self.name] = args[0]
                     self.values[self.name] = args[1]
-                    self.size = self.points[self.name].getSize()
-                    self.dim = self.points[self.name].getDim()
+                    self.size = self.points[self.name].getNrows()
+                    self.dim = self.points[self.name].getNcols()
                     
                     specification = DataSpecification()
                     specification.createNumericAttributes(self.dim)
@@ -220,8 +221,8 @@ class DataContainer(object):
                     
                     self.specifications[self.name] = specification
           
-                self.tempPoint = DataVector(1,self.dim)
-                self.tempValue = DataVector(1,1)
+                self.tempPoint = DataVector(self.dim)
+                self.tempValue = DataVector(1)
             
         except IndexError:
             raise Exception('Wrong or no attributes in constructor')
@@ -251,19 +252,21 @@ class DataContainer(object):
         # determine the total number of entries
         size = 0
         for container in containerList:
-            size += container.getValues().getSize()
+            size += len(container.getValues())
             
-        dim = container.getPoints().getDim()
+        dim = container.getPoints().getNcols()
         
         # Copy data to the new DataVector's entry by entry
-        allPoints = DataVector(size, dim)
+        allPoints = DataMatrix(size, dim)
         allValues = DataVector(size) 
+        tmpVector = DataVector(dim)
         i = 0
         for container in containerList:
             points = container.getPoints()
             values = container.getValues()
-            for j in xrange(values.getSize()):
-                allPoints[i] = points[j]
+            for j in xrange(len(values)):
+                points.getRow(j, tmpVector)
+                allPoints.setRow(i, tmpVector)
                 allValues[i] = values[j]
                 i += 1
         
@@ -290,7 +293,7 @@ class DataContainer(object):
     # @param dim: Integer dimension of the DataVector
     # @return: new DataVector with 0 for all entries
     def createNullVector(self, size, dim):
-        vector = DataVector(size, dim)
+        vector = DataMatrix(size, dim)
         vector.setAll(0)
         return vector
     
@@ -339,7 +342,7 @@ class DataContainer(object):
     # @return: Integer size 
     def getSize(self):
         if self.size == None:
-            self.size = self.points[self.name].getSize()
+            self.size = self.points[self.name].getNrows()
         return self.size
     
     
@@ -380,6 +383,7 @@ class DataContainer(object):
         # load data for other categories
         for category, specification in jsonObject.items():
             if not ( category == 'module' or category == 'train') :
+                # @todo (khakhutv) implement test for the branch
                 container = ARFFAdapter.ARFFAdapter(specification['filename']).loadData(category)
                 resultContainer = resultContainer.combine(container)
 
