@@ -24,6 +24,7 @@
 %newobject sg::Grid::createOperationBVectorized(const std::string& VecType);
 %newobject sg::Grid::createGridGenerator();
 %newobject sg::Grid::createOperationLaplace();
+%newobject sg::Grid::createOperationLTwoDotProduct();
 %newobject sg::Grid::createOperationEval();
 %newobject sg::Grid::createOperationTest();
 %newobject sg::Grid::createOperationHierarchisation();
@@ -74,6 +75,7 @@ public:
 	virtual OperationEval* createOperationEval() = 0;
 	virtual OperationTest* createOperationTest() = 0;
 	virtual OperationMatrix* createOperationLaplace() = 0;
+	virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
 	virtual OperationMatrix* createOperationIdentity() = 0;
 	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 	virtual OperationConvert* createOperationConvert() = 0;
