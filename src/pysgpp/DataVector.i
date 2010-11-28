@@ -80,6 +80,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
 	double max();
 	void minmax(double* min, double* max);
 	double maxNorm();
+	double LtwoNorm();
+	double twoNorm();
 	double dotProduct(DataVector& vec);
 	
 	void axpy(double alpha, DataVector& x);
