@@ -2,14 +2,17 @@
 #include "LinearFullGrid.hpp"
 using namespace std;
 namespace sg{
+
     FullGrid* FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel)
     {
         return new LinearFullGrid(dim,inlevel);
     }
+
     FullGrid* FullGrid::createLinearBoundaryFullGrid(size_t dim, vector<level_t> *inlevel)
     {
         return new FullGrid(dim,inlevel);
     }
+
    void FullGrid::getCoords(size_t index,DataVector &v)
     {
         int ind=0;
@@ -32,7 +35,8 @@ namespace sg{
         	 for (size_t i=0;i<dim;i++)
         		 v[i]=v[i]*FullGrid::boundingBox->getIntervalWidth(i)+FullGrid::boundingBox->getIntervalOffset(i);
         }
-     }
+    }
+
    std::string FullGrid::getCoordsString(size_t index)
     {
     	std::stringstream return_stream;
