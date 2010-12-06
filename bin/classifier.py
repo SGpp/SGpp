@@ -1,37 +1,21 @@
-############################################################################
-# This file is part of pysgpp, a program package making use of spatially    #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2007-2010 Dirk Plueger (Dirk.Pflueger@in.tum.de)            #
-# Copyright (C) 2007 Joerg Blank (blankj@in.tum.de)                         #
-# Copyright (C) 2007 Richard Roettger (roettger@in.tum.de)                  #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU Lesser General Public License as published  #
-# by the Free Software Foundation; either version 3 of the License, or      #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU Lesser General Public License  #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
+#!/usr/bin/python
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
 ## @package classifier
 # @ingroup bin
+# @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief Main script to do classification, regression, ...
 # @version $CURR$
 # @todo Join the different modes so that not 100 different versions (checkpointing, ...) exist!
 
 
 from optparse import OptionParser
-import sys
+import sys,os
+
+if os.environ["SGPP"]:
+    sys.path.append(os.path.join(os.environ["SGPP"], "bin"))
 from tools import *
 from pysgpp import *
 from painlesscg import cg,sd,cg_new
@@ -159,7 +143,11 @@ def openFile(filename):
 # @todo Integrate into all modes
 def constructGrid(dim):
     if options.grid == None:
+        # grid points on boundary
         if options.trapezoidboundary == True or options.completeboundary == True:
+            if options.polynom > 1:
+                print "Error. Not implemented yet."
+                sys.exit(1)
             if options.trapezoidboundary == True:
                 if options.verbose:
                     print "LinearTrapezoidBoundaryGrid, l=%s" % (options.level)
@@ -173,6 +161,7 @@ def constructGrid(dim):
                 print "ModWaveletGrid, l=%s" % (options.level)
             grid = Grid.createModWaveletGrid(dim)
         else:
+            # modified boundary functions?
             if options.border:
                 if options.polynom > 1:
                     if options.verbose:
@@ -182,6 +171,24 @@ def constructGrid(dim):
                     if options.verbose:
                         print "ModLinearGrid, l=%s" % (options.level)
                     grid = Grid.createModLinearGrid(dim)
+            # grid points on boundary?
+            elif options.boundary == 1:
+                if options.polynom > 1:
+                    print "Error. Not implemented yet."
+                    sys.exit(1)
+                else:
+                    if options.verbose:
+                        print "LinearTrapezoidBoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+            # more grid points on boundary?
+            elif options.boundary == 2:
+                if options.polynom > 1:
+                    print "Error. Not implemented yet."
+                    sys.exit(1)
+                else:
+                    if options.verbose:
+                        print "LinearBoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearBoundaryGrid(dim)
             else: #no border points
                 if options.polynom > 1:
                     if options.verbose:
@@ -417,6 +424,7 @@ def doNormal():
     if options.verbose:
         print "Dimension is:", dim
         print "Size of datasets is:", numData
+        print "Gridsize is:", grid.getSize()
         
     training = buildTrainingVector(data)
     y = buildYVector(data)
@@ -430,6 +438,8 @@ def doNormal():
 
     if options.outfile:
         writeAlphaARFF(options.outfile, alpha)
+    if options.gridfile:
+        writeGrid(options.gridfile, grid)
     
     if(options.gnuplot != None):
         if(dim != 2):
@@ -482,20 +492,30 @@ def evaluateError(classes, alpha, m):
     error.sub(classes) # error vector
     error.sqr() # entries squared
     # output some statistics
-    err_min = error.min(1)
-    err_max = error.max(1)
-    print "(Min,Max) error: (%f,%f)" % (sqrt(err_min), sqrt(err_max))
+    err_min = error.min()
+    err_max = error.max()
+    print "(Min,Max) error (abs.): (%f,%f)" % (sqrt(err_min), sqrt(err_max))
     # output accuracy
-    err = error.sum()
-    print "L2-norm of error on data: %f" % (sqrt(err))
-    mse = err / error.getSize()
-    print "MSE: ", mse
+    mse = error.sum() / float(len(error))
+    print "MSE: %g on %d data pts" % (mse, len(classes))
+    print "RMSE / L2-norm of error on data: %g" % (sqrt(mse))
+
+    # output functional
+    N = len(alpha)
+    temp = DataVector(N)
+    m.C.mult(alpha, temp)
+    Cnorm = alpha.dotProduct(temp)
+    M = len(classes)
+    temp2 = DataVector(M)
+    m.B.multTranspose(alpha, m.x, temp2)
+    m.B.mult(temp2, m.x, temp)
+    BBTnorm = alpha.dotProduct(temp)
+    print "functional: %g + %g * %g = %g" % (mse, m.l, Cnorm, mse+m.l*Cnorm)
 
     # calculate error per basis function
     errors = DataVector(len(alpha))
     m.B.mult(error, m.x, errors)
     errors.componentwise_mult(alpha)
-    
     return (mse, errors)
 
 
@@ -515,7 +535,12 @@ def doTest():
 
     dim = data["data"].getNcols()
     grid = constructGrid(dim)
-    
+    if options.verbose:
+        print "Dimension is:", dim
+        print "Size of datasets is:", training.getNrows()
+        print "Size of test datasets is:", test_data.getNrows()
+        print "Gridsize is:", grid.getSize()
+
     te_refine = []
     tr_refine = []
     num_refine = []
@@ -550,9 +575,9 @@ def doTest():
             tr_refine.append(tr)
             te_refine.append(te)
         
-        if options.verbose and not options.regression:
-            print "Correct classified on training data: ",tr
-            print "Correct classified on testing data:  ",te
+        if not options.regression:
+            print "Correctly classified on training data: ",tr
+            print "Correctly classified on testing data:  ",te
 
         if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, alpha, (options.adapt_start + adaptStep))
         if options.stats != None: writeStats(options.stats, formTxt([te_refine[-1]], [tr_refine[-1]], [num_refine[-1]], False))
@@ -592,6 +617,11 @@ def doTest():
             break
         
     #--end of while loop
+
+    if options.outfile:
+        writeAlphaARFF(options.outfile, alpha)
+    if options.gridfile:
+        writeGrid(options.gridfile, grid)
 
     if options.stats != None:
         txt = formTxt(te_refine, tr_refine, num_refine)
@@ -907,22 +937,22 @@ def performFoldRegression(dvec,cvec):
             testingCorrect.append(te)
             
             # calculate Mean Square Error for training set
-            temp = DataVector(classes.getSize())
+            temp = DataVector(classes.getNrows())
             m.B.multTranspose(alpha, m.x, temp)
             temp.sub(classes)
             temp.sqr()
-            meanSqrErrorsTraining.append(temp.sum() / temp.getSize())
+            meanSqrErrorsTraining.append(temp.sum() / temp.getNrows())
 
             # calculate error per base function
             errors = DataVector(len(alpha))
             m.B.mult(temp, m.x, errors)
 
             # calculate Mean Square Error for testing set
-            temp = DataVector(cvec[foldSetNumber].getSize())
+            temp = DataVector(cvec[foldSetNumber].getNrows())
             m.B.multTranspose(alpha, dvec[foldSetNumber], temp)
             temp.sub(cvec[foldSetNumber])
             temp.sqr()
-            meanSqrErrorsTesting.append(temp.sum() / temp.getSize())
+            meanSqrErrorsTesting.append(temp.sum() / temp.getNrows())
 
             
             if(adpatStep +1 == options.adaptive):
@@ -973,9 +1003,9 @@ def performFoldRegression(dvec,cvec):
 def assembleTrainingVector(dvecs,cvecs,omit):
     size = 0
     for dataset in dvecs:
-        size = size + dataset.getSize()
+        size = size + dataset.getNrows()
     
-    size = size - dvecs[omit].getSize()
+    size = size - dvecs[omit].getNrows()
     
     training = DataVector(size, dvecs[0].getDim())
     classes = DataVector(size)
@@ -1028,13 +1058,13 @@ def buildTrainingVector(data):
 def testVector(grid,alpha,test,classes):
     p = DataVector(1,test.getDim())
     correct = 0
-    for i in xrange(test.getSize()):
+    for i in xrange(test.getNrows()):
         test.getRow(i,p)
         val = grid.createOperationEval().eval(alpha,p)
         if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
             correct = correct + 1
             
-    return float(correct)/test.getSize()
+    return float(correct)/test.getNrows()
 
 #-------------------------------------------------------------------------------
 ## Computes the classification accuracy on some test data. 
@@ -1046,7 +1076,7 @@ def testVector(grid,alpha,test,classes):
 # @param classes DataVector of correct class values
 # @return classification accuracy
 def testVectorFast(grid, alpha, test, classes):
-    return grid.createOperationTest().test(alpha, test, classes)/float(test.getSize())
+    return grid.createOperationTest().test(alpha, test, classes)/float(test.getNrows())
 
 
 #-------------------------------------------------------------------------------
@@ -1067,21 +1097,21 @@ def testVectorFastWithCharacteristicNumbers(grid, alpha, test, classes):
     print "TN: " + str(charaNum[1])
     print "FP: " + str(charaNum[2])
     print "FN: " + str(charaNum[3]) + " \n"
-    return acc/float(test.getSize())
+    return acc/float(test.getNrows())
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 def testVectorValues(grid,alpha,test,classes,evalValues):
     p = DataVector(1,test.getDim())
     correct = 0
-    for i in xrange(test.getSize()):
+    for i in xrange(test.getNrows()):
         test.getRow(i,p)
         val = grid.EvaluatePoint(p, alpha)
         evalValues.append(val)
         if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
             correct = correct + 1
             
-    return float(correct)/test.getSize()
+    return float(correct)/test.getNrows()
 
 #-------------------------------------------------------------------------------
 ## Tests the classifier with some test data
@@ -1099,7 +1129,7 @@ def testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues):
     TN = 0
     FP = 0
     FN = 0
-    for i in xrange(test.getSize()):
+    for i in xrange(test.getNrows()):
         test.getRow(i,p)
         val = grid.createOperationEval().eval(alpha, p)
         evalValues.append(val)
@@ -1166,11 +1196,13 @@ if __name__=='__main__':
                       help="Proportion (0<=p<=1) of training data to take as validation data (if applicable)")
     parser.add_option("-A", "--alpha", action="store", type="string", dest="alpha", help="Filename for a file containing an alpha-Vector")
     parser.add_option("-o", "--outfile", action="store", type="string", dest="outfile", help="Filename where the calculated alphas are stored")
+    parser.add_option("--gridfile", action="store", type="string", dest="gridfile", help="Filename where the resulting grid is stored")
     parser.add_option("-g", "--gnuplot", action="store", type="string", dest="gnuplot", help="In 2D case, the generated can be stored in a gnuplot readable format.")
     parser.add_option("-R", "--resolution", action="store", type="int",default=50, metavar="RESOLUTION", dest="res", help="Specifies the resolution of the gnuplotfile")
     parser.add_option("-s", "--stats", action="store", type="string", dest="stats", help="In this file the statistics from the test are stored")
     parser.add_option("-p", "--polynom", action="store", type="int", default=0, dest="polynom", help="Sets the maximum degree for high order basis functions. Set to 2 or larger to activate. Works only with 'identity' and 'fold'-modes.")
     parser.add_option("-b", "--border", action="store_true", default=False, dest="border", help="Enables special border base functions")
+    parser.add_option("--boundary", action="store", type="int", default=False, dest="boundary", help="Use basis functions on boundary (trapezoid boundary==1, boundary==2)")
     parser.add_option("--trapezoid-boundary", action="store_true", default=False, dest="trapezoidboundary", help="Enables boundary functions that have a point on the boundary for every inner point (Trapezoid)")
     parser.add_option("--complete-boundary", action="store_true", default=False, dest="completeboundary", help="Enables boundary functions that have more points on the boundary than inner points")
     parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Provides extra output")
