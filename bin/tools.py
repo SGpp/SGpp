@@ -273,6 +273,42 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
     return
 
 #-------------------------------------------------------------------------------
+## @brief Evaluates function on a full grid in the domain, and writes evaluation points
+# to a file.
+# The output is suitable for Gnuplot.
+#
+# @param filename Filename to which data is written
+# @param grid Grid
+# @param alpha Corresponding coefficient DataVector
+# @param resolution Number of sampling points per dimension
+# @param (optional) mode: {'w'|'a'} to write or append, default 'w'
+def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
+    p = DataVector(dim)
+    fout = gzOpen(filename, mode)
+
+    # evaluate 1d function
+    if dim == 1:
+        for x in xrange(resolution):
+                p[0] = float(x) / (resolution - 1)
+                pc = fctn(p)
+                fout.write("%f %f %f\n" % (p[0], p[1], pc))
+    # evaluate 2d function
+    elif dim == 2:
+        for x in xrange(resolution):
+            for y in xrange(resolution):
+                p[0] = float(x) / (resolution - 1)
+                p[1] = float(y) / (resolution - 1)
+                pc = fctn(p)
+                fout.write("%f %f %f\n" % (p[0], p[1], pc))
+            fout.write("\n")
+    # can't plot anything else
+    else:
+        sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (dim))
+    fout.write("e\n")
+    fout.close()
+    return
+
+#-------------------------------------------------------------------------------
 ## @brief Writes coordinates of a grid into a file, suitable for gnuplot.
 #
 # @param filename Filename to which data is written
@@ -913,6 +949,13 @@ def split_DataVectors_by_proportion_stratified(data,
 
     if len(dv1)+len(dv2) <> len(data): raise Exception("data length doesn't match")
     return (dv1, dv2, cv1, cv2)
+
+
+def readGridAlpha(fnamegrid, fnamealpha):
+    grid = readGrid(fnamegrid)
+    grid.getStorage().recalcLeafProperty()
+    alpha = readAlpha(fnamealpha)
+    return (grid, alpha)
 
 
 #-------------------------------------------------------------------------------
