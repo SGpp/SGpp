@@ -26,10 +26,6 @@ HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver()
 
 HeatEquationSolver::~HeatEquationSolver()
 {
-	if (this->bGridConstructed)
-	{
-		delete this->myGrid;
-	}
 	if (this->myScreen != NULL)
 	{
 		delete this->myScreen;
