@@ -31,8 +31,8 @@ CC=icpc
 SRCDIR = ./../../../src/sgpp/
 SRCDIREXE = ./../../../src/application_cpp/
 BINDIR = ./../../../bin/
-ARBBINCLUDES = /opt/intel/arbb/1.0.0.008/include
-ARBBLIBS = /opt/intel/arbb/1.0.0.008/lib/intel64
+ARBBINCLUDES = /opt/intel/arbb/1.0.0.013/include
+ARBBLIBS = /opt/intel/arbb/1.0.0.013/lib/intel64
 
 OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
 	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
