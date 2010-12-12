@@ -101,7 +101,8 @@ class TerminalController:
         parser.add_option("--epochs_limit", action="store", type="int", default="0", dest="epochs_limit", help="Number of refinement iterations (epochs), MSE of test data have to increase, before refinement will stop.")
         parser.add_option("--mse_limit", action="store", type="float", default="0.0", dest="mse_limit", help="If MSE of test data fall below this limit, refinement will stop.")
         parser.add_option("--grid_limit", action="store", type="int", default="0", dest="grid_limit", help="If the number of points on grid exceed grid_limit, refinement will stop.")
-    
+        parser.add_option("--generate", action="store_true", default=False, dest="generate", help="Only generate the code for LearnerBuilder, but don't evaluate it")
+
         # parse options
         (options,args)=parser.parse_args()
         
@@ -109,6 +110,8 @@ class TerminalController:
         if(options.jobfile != None):
             TerminalController.constructObjectsFromFile(options.jobfile)
         #if job defined with arguments:
+        elif options.generate:
+            print TerminalController.generateBuilderCodeFromOptions(options)
         else:
             TerminalController.constructObjectsFromOptions(options)
         
@@ -306,6 +309,8 @@ class TerminalController:
                 # @fixme (khakhutv)the name "NONE" for the border type should be changed to something more meaningful
                 elif options.border: builder.withBorder(BorderTypes.NONE)
             except: raise Exception('Grid configuration arguments incorrect')
+        
+        if options.adapt_start: builder.withStartingIterationNumber(options.adapt_start)
             
         #training specification
         builder = builder.withSpecification()
@@ -405,5 +410,112 @@ class TerminalController:
     
     
 
+    ## Generate LearnerBuilder code according to parameters
+    # You can execute the code with exec command and use builder object in your 
+    # python code
+    #
+    # @param options: OptionParser result object with options
+    @classmethod
+    def generateBuilderCodeFromOptions(cls, options):    
+        #Create builder for specified learner
+        code = "builder = LearnerBuilder()\n"
+        if  options.regression:
+            code += "builder.buildRegressor()\n"
+
+        else:
+            code += "builder.buildClassifier()\n"
+        
+        
+        #dataset options
+        if len(options.data) == 1:
+            #@todo (khakhutv) it may make sense for crossfold validation to separate data set into chunks and then use the same chunks for different instance
+            code += "builder.withTrainingDataFromARFFFile('%s')\n" % options.data[0]
+        elif len(options.data) > 1:
+            fileCounter = 0
+            for filename in options.data:
+                code += "builder.withTrainingDataFromARFFFile('%s', '%s')\n" % (filename, DataContainer.TRAIN_CATEGORY + str(fileCounter))
+                fileCounter += 1
+        else: 
+            raise Exception('Define the path to the training data set')
+            
+        if options.test: code += "builder.withTestingDataFromARFFFile('%s')\n" % options.test
+       
+        
+        #grid options
+        code += "builder = builder.withGrid()\n"
+        if options.grid:
+            code += "builder.fromFile('%s')\n" % options.grid
+        else:
+            try:
+                if options.level: code += "builder.withLevel(%d)\n" % options.level
+                if options.polynom: code += "builder.withPolynomialBase(%d)\n" % options.polynom
+                if options.trapezoidboundary: code += "builder.withBorder(BorderTypes.TRAPEZOIDBOUNDARY)\n"
+                elif options.completeboundary: code += "builder.withBorder(BorderTypes.COMPLETEBOUNDARY)\n"
+                # @fixme (khakhutv)the name "NONE" for the border type should be changed to something more meaningful
+                elif options.border: code += "builder.withBorder(BorderTypes.NONE)\n"
+            except: raise Exception('Grid configuration arguments incorrect')
+            
+            
+        if options.adapt_start: code += "builder.withStartingIterationNumber(%d)\n" % options.adapt_start 
+            
+        #training specification
+        code += "builder = builder.withSpecification()\n"
+        if options.adapt_rate: code += "builder.withAdaptRate(%d)\n" % options.adapt_rate
+        elif options.adapt_points: code += "builder.withAdaptPoints(%d)\n" % options.adapt_points
+                
+        if options.regparam: code += "builder.withLambda(%1.20f)\n" % options.regparam
+        if options.zeh:
+            if options.zeh == 'laplace': code += "builder.withLaplaceOperator()\n"
+            elif options.zeh == 'identity': code += "builder.withIdentityOperator()\n"
+            else: raise Exception('Incorrect regulariation operator type')
+        
+        if options.adapt_threshold: code += "builder.withAdaptThreshold(%f)\n" % options.adapt_threshold
+        
+        
+        #stop policy
+        code += "builder = builder.withStopPolicy()\n"
+        if options.adaptive: code += "builder.withAdaptiveItarationLimit(%d)\n" % options.adaptive
+        if options.grid_limit: code += "builder.withGridSizeLimit(%d)\n" % options.grid_limit
+        if options.mse_limit: code += "builder.withMSELimit(%f)\n" % options.mse_limit
+        if options.grid_limit: code += "builder.withEpochsLimit(%d)\n" % options.grid_limit
+        
+        # linear solver
+        code += "builder = builder.withCGSolver()  \n"      
+        if options.r: code += "builder.withAccuracy(%f)\n" % options.r
+        if options.max_r: code += "builder.withThreshold(%f)\n" % options.max_r
+        if options.imax: code += "builder.withImax(%d)\n" % options.imax
+        
+        #presentor
+        if options.verbose: # print to the screen
+            if options.regression:
+                code += "builder.withProgressPresenter(InfoToScreenRegressor())\n"
+            else:
+                code += "builder.withProgressPresenter(InfoToScreen())\n"
+        if options.stats:
+            # @todo (khakhutv) implement info presenter to output information in the format of old statistic files
+            code += "builder.withProgressPresenter(InfoToFile('%s'))\n" % options.stats
+            
+                    
+        #checkpoint
+        if options.checkpoint:
+            code += "checkpointController = CheckpointController('%s')\n" % options.checkpoint
+                                                                                                      
+            code += "builder.withCheckpointController(checkpointController)\n"
+            
+        # Folding
+        if options.mode in ['fold', 'folds', 'foldstratified', 'foldf', 'foldr'] :
+            if options.mode == 'fold': code += "builder.withRandomFoldingPolicy()\n"
+            elif options.mode == 'folds': code += "builder.withSequentialFoldingPolicy()\n"
+            elif options.mode in ['foldstratified', 'foldr']: code += "builder.withStratifiedFoldingPolicy()\n"
+            elif options.mode == 'foldf': code += "builder.withFilesFoldingPolicy()\n"
+            if options.seed: code += "builder.withSeed(%d)\n" % options.seed
+            if options.level: code += "builder.withLevel(%d)\n" % options.level
+
+            
+        return code
+        
+        
+        
+        
 if __name__=='__main__':
     TerminalController.run()
