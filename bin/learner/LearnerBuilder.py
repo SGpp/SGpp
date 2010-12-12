@@ -312,7 +312,7 @@ class LearnerBuilder(object):
     # @return: LearnerBuilder object itself
     # @todo (khakhutv) implement test for the method
     def withInitialAlphaFromARFFFile(self, filename):
-        alpha = LearnedKnowledgeFormatter.deserializeFromFile(filename)
+        alpha = LearnedKnowledgeFormatter().deserializeFromFile(filename)
         self.__learner.alpha = alpha
         self.__learner.knowledge.setMemento(alpha)
         return self
