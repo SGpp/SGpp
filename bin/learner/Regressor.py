@@ -80,7 +80,7 @@ class Regressor(Learner):
         mse = errorsum / size # MSE
         
         # calculate error per basis function
-        self.errors = DataVector(alpha.getSize())
+        self.errors = DataVector(len(alpha))
         self.specification.getBOperator().mult(self.error, data.getPoints(), self.errors)
         self.errors.componentwise_mult(alpha)
         
