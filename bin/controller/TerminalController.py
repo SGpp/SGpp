@@ -352,7 +352,9 @@ class TerminalController:
                     
         #checkpoint
         if options.checkpoint:
-            checkpointController = CheckpointController(options.checkpoint)
+            title = os.path.basename(options.checkpoint)
+            path = os.path.dirname(options.checkpoint)
+            checkpointController = CheckpointController(title, path)
                                                                                                       
             builder.withCheckpointController(checkpointController)
             
@@ -498,8 +500,9 @@ class TerminalController:
                     
         #checkpoint
         if options.checkpoint:
-            code += "checkpointController = CheckpointController('%s')\n" % options.checkpoint
-                                                                                                      
+            title = os.path.basename(options.checkpoint)
+            path = os.path.dirname(options.checkpoint)
+            code += "checkpointController = CheckpointController('%s', '%s')\n" % (title, path)
             code += "builder.withCheckpointController(checkpointController)\n"
             
         # Folding
