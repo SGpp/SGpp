@@ -276,6 +276,13 @@ class Learner(object):
         return self.iteration
     
     
+    ## Sets the number of current iteration
+    #
+    # @param value: integer new iteration number
+    def setCurrentIterationNumber(self, value):
+        self.iteration = value
+    
+    
     ## Add observer to the list
     #
     # @param observer: LearnerEventController object
@@ -337,12 +344,14 @@ class Learner(object):
         self.solver = solver
         return self
 
+
     ## Setter for learned knowledge
     # @param knowledge: the learned knowledge object
     # @return: leaner itself
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
         return self
+    
     
     ## Setter for folding policy
     # @param policy: the folding policy object

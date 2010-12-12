@@ -216,6 +216,17 @@ class LearnerBuilder(object):
 
 
     ## 
+    #Set the starting iteration number ane return the builder object
+    #
+    # @param iteration: integer starting iteration number
+    # @return: LeanreBuilder
+    ##
+    def withStartingIterationNumber(self, iteration):
+        self.__learner.setCurrentIterationNumber(iteration)
+        return self
+    
+
+    ## 
     # Start description of parameters of stop-policy for learner
     # @return: StopPolicyDescriptor
     ##
