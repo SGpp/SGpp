@@ -54,13 +54,13 @@ class Regressor(Learner):
     ## calculate max error
     # @return: max error
     def getMaxError(self):
-        return sqrt(self.error.max(1))
+        return sqrt(self.error.max())
     
     
     ## calculate min error
     # @return: min error
     def getMinError(self):
-        return sqrt(self.error.min(1))
+        return sqrt(self.error.min())
     
     
     ## Evaluate regression MSE
