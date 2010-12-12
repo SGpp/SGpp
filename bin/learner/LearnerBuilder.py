@@ -40,6 +40,7 @@ from bin.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
 from bin.learner.folding.RandomFoldingPolicy import RandomFoldingPolicy
 from bin.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
 from bin.learner.folding.FilesFoldingPolicy import FilesFoldingPolicy
+from bin.learner.formatter import LearnedKnowledgeFormatter
 
 ## Implement mechanisms to create customized learning system
 #
@@ -301,6 +302,19 @@ class LearnerBuilder(object):
             self.__learner.setDataContainer(self.__learner.dataContainer.combine(dataContainer))
         else:
             self.__learner.setDataContainer(dataContainer)
+        return self
+    
+    
+    ## 
+    # Signals to use initial data for alpha vector from ARFF file
+    #
+    # @param filename: Filename where to read the data from
+    # @return: LearnerBuilder object itself
+    # @todo (khakhutv) implement test for the method
+    def withInitialAlphaFromARFFFile(self, filename):
+        alpha = LearnedKnowledgeFormatter.deserializeFromFile(filename)
+        self.__learner.alpha = alpha
+        self.__learner.knowledge.setMemento(alpha)
         return self
 
 
