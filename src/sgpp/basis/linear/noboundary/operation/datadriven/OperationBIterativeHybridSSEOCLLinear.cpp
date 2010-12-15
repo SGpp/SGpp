@@ -15,8 +15,8 @@
 #endif
 
 // This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
-#define PERCENT_CPUS 32
-#define PERCENT_CPUS_MULT 20
+#define PERCENT_CPUS 16
+#define PERCENT_CPUS_MULT 16
 
 #ifdef USEICCINTRINSICS
 // include SSE3 intrinsics
