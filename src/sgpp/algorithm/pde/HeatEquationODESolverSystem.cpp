@@ -104,4 +104,14 @@ void HeatEquationODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVec
 	result.axpy((-1.0)*this->a,temp);
 }
 
+void HeatEquationODESolverSystem::finishTimestep(bool isLastTimestep)
+{
+	// Replace the inner coefficients on the boundary grid
+	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
+}
+
+void HeatEquationODESolverSystem::startTimestep()
+{
+}
+
 }

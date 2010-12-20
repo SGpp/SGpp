@@ -10,7 +10,7 @@
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/pde/OperationODESolverSystem.hpp"
+#include "operation/pde/OperationODESolverSystemDirichlet.hpp"
 
 namespace sg
 {
@@ -19,7 +19,7 @@ namespace sg
  * This class implements the ODESolverSystem for the
  * Heat Equation.
  */
-class HeatEquationODESolverSystem : public OperationODESolverSystem
+class HeatEquationODESolverSystem : public OperationODESolverSystemDirichlet
 {
 private:
 	/// the heat coefficient
@@ -57,6 +57,10 @@ public:
 	 * Std-Destructor
 	 */
 	virtual ~HeatEquationODESolverSystem();
+
+	void finishTimestep(bool isLastTimestep = false);
+
+	void startTimestep();
 };
 
 }
