@@ -16,12 +16,12 @@
 #include <iostream>
 
 //#define DATAFILE "DR5_nowarnings_less05_train.arff"
-//#define DATAFILE "chess_02D_tr.dat.arff"
-#define DATAFILE "chess_05D_3fields_tr.dat.arff"
+#define DATAFILE "chess_02D_tr.dat.arff"
+//#define DATAFILE "chess_05D_3fields_tr.dat.arff"
 
 //#define TESTFILE "DR5_nowarnings_less05_test.arff"
-//#define TESTFILE "chess_02D_te.dat.arff"
-#define TESTFILE "chess_05D_3fields_te.dat.arff"
+#define TESTFILE "chess_02D_te.dat.arff"
+//#define TESTFILE "chess_05D_3fields_te.dat.arff"
 
 // grid generation settings
 #define LEVELS 3
@@ -41,10 +41,10 @@
 #define GRDIRESOLUTION 50
 
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
-#define USE_SSE
+//#define USE_SSE
 //#define USE_AVX
 //#define USE_OCL
-//#define USE_ARBB
+#define USE_ARBB
 //#define USE_HYBRID_SSE_OCL
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),

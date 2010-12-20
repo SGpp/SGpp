@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2010 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -18,7 +18,7 @@ namespace sg
 {
 
 /**
- * Defines a System that is used to solve parabolic partial
+ * Abstract definition of a System that is used to solve parabolic partial
  * differential equations. So an instance of this class has to pass to
  * any ODE Solver used in SGpp.
  *
@@ -26,22 +26,15 @@ namespace sg
  *
  * A: mass matrix
  * L: space discretization (L-Operator)
- *
- * This class defines an elliptic problem in every timestep which is solved
- * using an iterative SLE solver, that solving step is integrated in the
- * ODE Solver.
  */
 class OperationODESolverSystem : public OperationMatrix
 {
 protected:
 	/// Pointer to the alphas (ansatzfunctions' coefficients)
 	DataVector* alpha_complete;
-	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
-	DataVector* alpha_inner;
-
-
-
+	/// Pointer to the alphas from the last timestep, needed when using variable timestep sizes
 	DataVector* alpha_complete_old;
+	/// Pointer to temporary alphas, needed when using variable timestep sizes
 	DataVector* alpha_complete_tmp;
 
 	/**
@@ -53,55 +46,16 @@ protected:
 	std::string tOperationMode;
 	/// the size of one timestep used in the ODE Solver
 	double TimestepSize;
-
+	/// the size of the last timestep
 	double TimestepSize_old;
 
-	/// Routine to modify the boundaries/inner points of the grid
-	DirichletUpdateVector* BoundaryUpdate;
-	/// Class that allows a simple conversion between a grid with and a without boundary points
-	DirichletGridConverter* GridConverter;
-	/// DateVector to store the right hand side
 	DataVector* rhs;
 	/// Pointer to the grid object
 	Grid* BoundGrid;
-	/// Pointer to the inner grid object
-	Grid* InnerGrid;
 	/// Stores number of average gridpoints, inner grid
 	size_t numSumGridpointsInner;
 	/// Stores number of average gridpoints, complete grid
 	size_t numSumGridpointsComplete;
-
-	/**
-	 * applies the PDE's mass matrix, on complete grid - with boundaries
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
-	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result) = 0;
-
-	/**
-	 * applies the PDE's system matrix, on complete grid - with boundaries
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result) = 0;
-
-	/**
-	 * applies the PDE's mass matrix, on inner grid only
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
-	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result) = 0;
-
-	/**
-	 * applies the PDE's system matrix, on inner grid only
-	 *
-	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
-	 */
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result) = 0;
 
 public:
 	/**
@@ -120,14 +74,14 @@ public:
 	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
 	 * @param result DataVector into which the result of the space discretization operation is stored
 	 */
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 
 	/**
 	 * generates the right hand side of the system
 	 *
 	 * @return returns the rhs
 	 */
-	virtual DataVector* generateRHS();
+	virtual DataVector* generateRHS() = 0;
 
 	/**
 	 * performs some action that might be needed after a timestep has be finished in the ODE
@@ -135,12 +89,12 @@ public:
 	 *
 	 * @param isLastTimestep denotes of this is the clean up for the last time of solving the ODE
 	 */
-	virtual void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep(bool isLastTimestep = false) = 0;
 
 	/**
 	 * Implements some start jobs of every timestep, e.g.discounting boundaries
 	 */
-	virtual void startTimestep();
+	virtual void startTimestep() = 0;
 
 	/**
 	 * get the pointer to the underlying grid object
@@ -156,7 +110,7 @@ public:
 	 *
 	 * @return alpha vector for CG method
 	 */
-	virtual DataVector* getGridCoefficientsForCG();
+	virtual DataVector* getGridCoefficientsForCG() = 0;
 
 	/**
 	 * gets a pointer to the sparse grids coefficients with evtl. boundaries
@@ -195,9 +149,21 @@ public:
 	 */
 	size_t getSumGridPointsInner();
 
-
+	/**
+	 * set the size of the new timestep
+	 *
+	 * @param newTimestepSize the size of the next timestep
+	 */
 	void setTimestepSize(double newTimestepSize);
+
+	/**
+	 * aborts the current timestep execution
+	 */
 	void abortTimestep();
+
+	/**
+	 * stores the current alpha_complete into alpha_complete_old to be available in the next timestep
+	 */
 	void saveAlpha();
 };
 

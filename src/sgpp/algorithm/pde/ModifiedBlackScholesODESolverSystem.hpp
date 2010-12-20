@@ -60,7 +60,8 @@ public:
 	 * @param updateVector the vector that should be updated
 	 */
    	void multiplyrBSHW(DataVector& updateVector);
-	/**
+
+   	/**
 	 * Std-Destructor
 	 */
 	virtual ~ModifiedBlackScholesODESolverSystem();
@@ -68,8 +69,6 @@ public:
 	void finishTimestep(bool isLastTimestep = false);
 
 	void startTimestep();
-
-
 };
 
 }

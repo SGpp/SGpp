@@ -11,7 +11,7 @@
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-#include "operation/pde/OperationODESolverSystem.hpp"
+#include "operation/pde/OperationODESolverSystemDirichlet.hpp"
 
 namespace sg
 {
@@ -22,7 +22,7 @@ namespace sg
  *
  * Here a European Option with fix Dirichlet boundaries is solved.
  */
-class BlackScholesODESolverSystemEuropean : public OperationODESolverSystem
+class BlackScholesODESolverSystemEuropean : public OperationODESolverSystemDirichlet
 {
 protected:
 	/// the riskfree interest rate

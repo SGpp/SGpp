@@ -11,7 +11,8 @@
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-#include "operation/pde/OperationODESolverSystem.hpp"
+#include "grid/common/DirichletUpdateVector.hpp"
+#include "operation/pde/OperationODESolverSystemNeumann.hpp"
 
 namespace sg
 {
@@ -20,7 +21,7 @@ namespace sg
  * This class implements the ODESolverSystem for the HullWhite
  * Equation.
  */
-class HullWhiteODESolverSystem : public OperationODESolverSystem
+class HullWhiteODESolverSystem : public OperationODESolverSystemNeumann
 {
 protected:
 	double theta;
@@ -46,14 +47,12 @@ protected:
 	size_t numExecCoarsen;
 
 	std::vector<size_t> HWalgoDims;
+	/// Routine to modify the boundaries/inner points of the grid
+	DirichletUpdateVector* BoundaryUpdate;
 
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
+	virtual void applyLOperator(DataVector& alpha, DataVector& result);
 
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
-
-	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result);
-
-	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrix(DataVector& alpha, DataVector& result);
 
 public:
 	/**
@@ -83,22 +82,6 @@ public:
 	virtual ~HullWhiteODESolverSystem();
 
 	void finishTimestep(bool isLastTimestep = false);
-
-	/**
-	 * generates the right hand side of the system
-	 *
-	 * @return returns the rhs
-	 */
-
-	virtual DataVector* generateRHS();
-
-	/**
-	 * gets a pointer to the sparse grids coefficients used in the CG method to solve
-	 * one timestep. Here: The boundary grid's coefficients are returned
-	 *
-	 * @return alpha vector for CG method
-	 */
-	virtual DataVector* getGridCoefficientsForCG();
 
 	void startTimestep();
 };

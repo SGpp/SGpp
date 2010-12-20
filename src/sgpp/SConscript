@@ -141,18 +141,15 @@ basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
 basis/modpoly/operation/common/OperationEvalModPoly.cpp
 basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 
-
 basis/modwavelet/operation/datadriven/OperationBModWavelet.cpp
 basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
 basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 
-
 basis/modbspline/operation/datadriven/OperationBModBspline.cpp
 basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 basis/modbspline/operation/common/OperationEvalModBspline.cpp
 basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
-
 
 basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
 basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
@@ -160,8 +157,8 @@ basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
 basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
 basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
 
-
-
+operation/pde/OperationODESolverSystemDirichlet.cpp
+operation/pde/OperationODESolverSystemNeumann.cpp
 operation/pde/OperationODESolverSystem.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
