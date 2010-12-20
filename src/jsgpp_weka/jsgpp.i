@@ -65,6 +65,10 @@ namespace std {
 // and the rest
 %include "src/sgpp/sgpp.hpp"
 
+%include "src/sgpp/operation/pde/OperationODESolverSystem.hpp"
+%include "src/sgpp/operation/pde/OperationODESolverSystemDirichlet.hpp"
+%include "src/sgpp/operation/pde/OperationODESolverSystemNeumann.hpp"
+
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
 %include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
 %include "src/sgpp/algorithm/datadriven/test_dataset.hpp"

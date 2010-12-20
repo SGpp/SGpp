@@ -63,7 +63,7 @@ ModifiedBlackScholesODESolverSystem::~ModifiedBlackScholesODESolverSystem()
 	delete this->OpFBound;
 }
 
-void ModifiedBlackScholesODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void ModifiedBlackScholesODESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 

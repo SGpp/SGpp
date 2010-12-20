@@ -60,14 +60,6 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
-class OperationODESolverSystem : public OperationMatrix
-{
-public:
-	virtual void mult(DataVector& alpha, DataVector& result) = 0;
-	virtual DataVector* generateRHS() = 0;
-	virtual void finishTimestep() = 0;
-};
-
 class OperationEval
 {
 public:

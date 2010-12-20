@@ -26,7 +26,7 @@ protected:
 
 	OperationMatrix* OpFBound;
 
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+	virtual void applyLOperator(DataVector& alpha, DataVector& result);
 
 public:
 	/**
@@ -66,9 +66,9 @@ public:
 	 */
 	virtual ~ModifiedBlackScholesODESolverSystem();
 
-	void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep(bool isLastTimestep = false);
 
-	void startTimestep();
+	virtual void startTimestep();
 };
 
 }
