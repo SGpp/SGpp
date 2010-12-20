@@ -129,9 +129,9 @@ public:
 	 */
 	virtual ~BlackScholesODESolverSystem();
 
-	void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep(bool isLastTimestep = false);
 
-	void startTimestep();
+	virtual void startTimestep();
 };
 
 }
