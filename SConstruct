@@ -35,16 +35,10 @@ env = Environment(variables = vars, ENV = os.environ)
 #   - nehalemICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (nehalem architecture)
 #	- ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
 #
-# Take care that you have defined following env. variables for loading the 
-# shared libraries: LD_LIBRARY_PATH and LIBPATH
-# both must contain the path to the intel shared libs
-# for instance:
-# LD_LIBRARY_PATH = /opt/intel/cce/default/lib:LD_LIBRARY_PATH
-# LIBPATH = /opt/intel/cce/default/lib:LIBPATH
-#
-# FOR LRZ:
-# lib: /lrz/sys/intel/icc_110_074/lib/ia64/
-# bin: /lrz/sys/intel/icc_110_074/bin/ia64/
+# FOR LRZ and when using intel compiler:
+# 
+# execute:
+# export LIBPATH=$LD_LIBRARY_PATH
 
 
 # scons usually adds double quotes around the command-line arguments containing 
