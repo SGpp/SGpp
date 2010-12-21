@@ -25,6 +25,10 @@ vars.Add('JSGPP', 'Build jsgpp if set to True', False)
 vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
 vars.Add('JNI_OS', 'JNI os path', None)
 
+# for compiling on LRZ without errors: omit unit tests
+vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
+
+
 env = Environment(variables = vars, ENV = os.environ)
 
 # Specifying the target
@@ -163,7 +167,8 @@ cpy += Command("#lib/sgpp/libsgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET"
 cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
 
 # Execute Unit Tests
-SConscript('tests/SConscript')
+if not env['NO_UNIT_TESTS']:
+    SConscript('tests/SConscript')
 
 
 # Help Text
