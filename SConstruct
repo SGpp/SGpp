@@ -35,8 +35,12 @@ env = Environment(variables = vars, ENV = os.environ)
 #   - nehalemICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (nehalem architecture)
 #	- ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
 #
+# FOR LRZ please execute:
+# module load python
+# module load gcc/4.5
+#
 # FOR LRZ and when using intel compiler:
-# 
+#
 # execute:
 # export LIBPATH=$LD_LIBRARY_PATH
 
@@ -57,9 +61,10 @@ if env['TARGETCPU'] == 'default':
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
-                         '-fno-strict-aliasing', '-fopenmp', '-O3',
+                         '-fno-strict-aliasing', '-O3',
                          '-funroll-loops', '-ffloat-store'])
     if env['OMP']:
+	env.Append(CPPFLAGS=['-fopenmp'])
     	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
     	
@@ -70,22 +75,22 @@ elif env['TARGETCPU'] == 'ia64ICC':
     env.Append(CPPFLAGS = ['-O3', '-funroll-loops', 
                            '-no-alias', '-i-static', '-gcc-version=400', 
                            '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
-                           '-ansi', '-wd981', '-fno-strict-aliasing', '-openmp']) 
+                           '-ansi', '-wd981', '-fno-strict-aliasing']) 
 elif env['TARGETCPU'] == 'opteronICC':
     print "Using icc 11.x/12.0 for Opteron systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
                            '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing', '-openmp'])
+                           '-fno-strict-aliasing'])
 elif env['TARGETCPU'] == 'core2ICC':
     print "Using icc 11.x/12.0 for Core2 systems"
     env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
                            '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing', '-openmp'])
+                           '-fno-strict-aliasing'])
 elif env['TARGETCPU'] == 'nehalemICC':
     print "Using icc 11.x/12.0 for Nehalem/Westmere systems"
     env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
                            '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing', '-openmp'])
+                           '-fno-strict-aliasing'])
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"
@@ -97,6 +102,7 @@ if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC']:
     env['LINK'] = ('icpc')
     env['CXX'] = ('icpc')	    
     if env['OMP']:
+	env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp']) 
         env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE', 'USEICCINTRINSICS'])
     
