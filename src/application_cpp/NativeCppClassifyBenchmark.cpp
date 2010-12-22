@@ -14,45 +14,22 @@
 
 #include <string>
 #include <iostream>
-
-//#define DATAFILE "DR5_nowarnings_less05_train.arff"
-#define DATAFILE "chess_02D_tr.dat.arff"
-//#define DATAFILE "chess_05D_3fields_tr.dat.arff"
-
-//#define TESTFILE "DR5_nowarnings_less05_test.arff"
-#define TESTFILE "chess_02D_te.dat.arff"
-//#define TESTFILE "chess_05D_3fields_te.dat.arff"
-
-// grid generation settings
-#define LEVELS 3
-#define REFINEMENTS 6
-#define REFINE_THRESHOLD 0.0
-#define REFINE_NUM_POINTS 100
-
-// solving settings
-#define CG_IMAX 250
-#define CG_EPS 0.0001
-
-// regularization fector
-#define LAMBDA 0.000001
+#include <cstdlib>
 
 // print grid in gnuplot readable format (1D and 2D only)
 #define GNUPLOT
 #define GRDIRESOLUTION 50
 
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
-//#define USE_SSE
+#define USE_SSE
 //#define USE_AVX
 //#define USE_OCL
-#define USE_ARBB
+//#define USE_ARBB
 //#define USE_HYBRID_SSE_OCL
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
 #define USEFLOAT
-
-// define this if you want to execute a regression
-//#define EXEC_REGRESSION
 
 // define this if you want to use grids with Neumann boundaries.
 #define USE_BOUNDARIES
@@ -108,21 +85,22 @@ void convertDataVectorSPToDataVector(DataVectorSP& src, DataVector& dest)
 	}
 }
 
-void printSettings()
+void printSettings(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
+		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points)
 {
 	std::cout << std::endl;
-	std::cout << "Train dataset: " << DATAFILE << std::endl;
-	std::cout << "Test dataset: " << TESTFILE << std::endl;
-	std::cout << "Startlevel: " << LEVELS << std::endl << std::endl;
+	std::cout << "Train dataset: " << dataFile << std::endl;
+	std::cout << "Test dataset: " << testFile << std::endl;
+	std::cout << "Startlevel: " << start_level << std::endl << std::endl;
 
-	std::cout << "Num. Refinements: " << REFINEMENTS << std::endl;
-	std::cout << "Refine Threshold: " << REFINE_THRESHOLD << std::endl;
-	std::cout << "Refine number points: " << REFINE_NUM_POINTS << std::endl << std::endl;
+	std::cout << "Num. Refinements: " << refine_count << std::endl;
+	std::cout << "Refine Threshold: " << refine_thresh << std::endl;
+	std::cout << "Refine number points: " << refine_points << std::endl << std::endl;
 
-	std::cout << "Max. CG Iterations: " << CG_IMAX << std::endl;
-	std::cout << "CG epsilon: " << CG_EPS << std::endl << std::endl;
+	std::cout << "Max. CG Iterations: " << cg_max << std::endl;
+	std::cout << "CG epsilon: " << cg_eps << std::endl << std::endl;
 
-	std::cout << "Lambda: " << LAMBDA << std::endl;
+	std::cout << "Lambda: " << lambda << std::endl;
 
 #ifdef USE_SSE
 	std::cout << "Vectorized: SSE" << std::endl << std::endl;
@@ -140,11 +118,14 @@ void printSettings()
 	std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
 #endif
 
-#ifdef EXEC_REGRESSION
-	std::cout << "Mode: Regression" << std::endl << std::endl;
-#else
-	std::cout << "Mode: Classification" << std::endl << std::endl;
-#endif
+	if (isRegression)
+	{
+		std::cout << "Mode: Regression" << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "Mode: Classification" << std::endl << std::endl;
+	}
 
 #ifdef USE_BOUNDARIES
 	std::cout << "Boundary-Mode: Neumann" << std::endl << std::endl;
@@ -153,7 +134,8 @@ void printSettings()
 #endif
 }
 
-void adaptClassificationTest(bool isRegression)
+void adaptClassificationTest(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
+		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -164,12 +146,13 @@ void adaptClassificationTest(bool isRegression)
 #endif
     std::cout << "===============================================================" << std::endl << std::endl;
 
-    printSettings();
+    printSettings(dataFile, testFile, isRegression, start_level,
+			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points);
 
     double execTime = 0.0;
 	sg::ARFFTools ARFFTool;
-	std::string tfileTrain = DATAFILE;
-	std::string tfileTest = TESTFILE;
+	std::string tfileTrain = dataFile;
+	std::string tfileTest = testFile;
 
 	size_t nDim = ARFFTool.getDimension(tfileTrain);
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
@@ -185,7 +168,7 @@ void adaptClassificationTest(bool isRegression)
 
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
-	myGenerator->regular(LEVELS);
+	myGenerator->regular(start_level);
 	delete myGenerator;
 
 	// Define DP data
@@ -206,44 +189,46 @@ void adaptClassificationTest(bool isRegression)
     alpha.setAll(0.0);
 
     // Variable to save MSE/Acc from former iteration
+#ifndef TEST_LAST_ONLY
     double oldAcc = 0.0;
+#endif
 
     // Generate CG to solve System
-    sg::ConjugateGradients* myCG = new sg::ConjugateGradients(CG_IMAX, CG_EPS);
+    sg::ConjugateGradients* myCG = new sg::ConjugateGradients(cg_max, cg_eps);
 #if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_SSE
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "SSE");
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "SSE");
 #endif
 #ifdef USE_AVX
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "AVX");
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "AVX");
 #endif
 #ifdef USE_OCL
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "OCL");
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");
 #endif
 #ifdef USE_HYBRID_SSE_OCL
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "HYBRID_SSE_OCL");
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_SSE_OCL");
 #endif
 #ifdef USE_ARBB
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, LAMBDA, "ArBB");
+    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
 #endif
 #else
     sg::OperationMatrix* myC = myGrid->createOperationIdentity();
     //sg::OperationMatrix* myC = myGrid->createOperationLaplace();
-    sg::DMSystemMatrix* mySystem = new sg::DMSystemMatrix(*myGrid, data, *myC, LAMBDA);
+    sg::DMSystemMatrix* mySystem = new sg::DMSystemMatrix(*myGrid, data, *myC, lambda);
 #endif
 
     std::cout << "Starting Learning...." << std::endl;
     // execute adaptsteps
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
-    for (size_t i = 0; i < REFINEMENTS+1; i++)
+    for (size_t i = 0; i < refine_count+1; i++)
     {
     	std::cout << std::endl << "Doing refinement :" << i << std::endl;
 
     	// Do Refinements
     	if (i > 0)
     	{
-    		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, REFINE_NUM_POINTS, REFINE_THRESHOLD);
+    		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, refine_points, refine_thresh);
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
@@ -348,7 +333,8 @@ void adaptClassificationTest(bool isRegression)
 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-    printSettings();
+    printSettings(dataFile, testFile, isRegression, start_level,
+			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points);
 #if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
@@ -380,20 +366,21 @@ void adaptClassificationTest(bool isRegression)
     delete myGrid;
 }
 
-
-void adaptClassificationTestSP(bool isRegression)
+void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
+		float lambda, size_t cg_max, float cg_eps, size_t refine_count, double refine_thresh, size_t refine_points)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << "Classification Test App (Single Precision)" << std::endl;
     std::cout << "===============================================================" << std::endl << std::endl;
 
-    printSettings();
+    printSettings(dataFile, testFile, isRegression, start_level,
+			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points);
 
 	double execTime = 0.0;
 	sg::ARFFTools ARFFTool;
-	std::string tfileTrain = DATAFILE;
-	std::string tfileTest = TESTFILE;
+	std::string tfileTrain = dataFile;
+	std::string tfileTest = testFile;
 
 	size_t nDim = ARFFTool.getDimension(tfileTrain);
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
@@ -409,7 +396,7 @@ void adaptClassificationTestSP(bool isRegression)
 
 	// Generate regular Grid with LEVELS Levels
 	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
-	myGenerator->regular(LEVELS);
+	myGenerator->regular(start_level);
 	delete myGenerator;
 
 	// Define DP data
@@ -442,36 +429,38 @@ void adaptClassificationTestSP(bool isRegression)
     convertDataVectorToDataVectorSP(alpha, alphaSP);
 
     // Variable to save MSE/Acc from former iteration
+#ifndef TEST_LAST_ONLY
     double oldAcc = 0.0;
+#endif
 
     // Generate CG to solve System
-    sg::ConjugateGradientsSP* myCG = new sg::ConjugateGradientsSP(CG_IMAX, CG_EPS);
+    sg::ConjugateGradientsSP* myCG = new sg::ConjugateGradientsSP(cg_max, cg_eps);
 
 #if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_SSE
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "SSE");
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
 #endif
 #ifdef USE_AVX
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "AVX");
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "AVX");
 #endif
 #ifdef USE_OCL
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "OCL");
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "OCL");
 #endif
 #ifdef USE_HYBRID_SSE_OCL
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "HYBRID_SSE_OCL");
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_SSE_OCL");
 #endif
 #ifdef USE_ARBB
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "ArBB");
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
 #endif
 #else
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, LAMBDA, "SSE");
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
 #endif
 
     std::cout << "Starting Learning...." << std::endl;
     // execute adaptsteps
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
-    for (size_t i = 0; i < REFINEMENTS+1; i++)
+    for (size_t i = 0; i < refine_count+1; i++)
     {
     	std::cout << std::endl << "Doing refinement :" << i << std::endl;
 
@@ -479,7 +468,7 @@ void adaptClassificationTestSP(bool isRegression)
     	if (i > 0)
     	{
     		convertDataVectorSPToDataVector(alphaSP, alpha);
-    		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, REFINE_NUM_POINTS, REFINE_THRESHOLD);
+    		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, refine_points, refine_thresh);
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
@@ -588,7 +577,8 @@ void adaptClassificationTestSP(bool isRegression)
 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-    printSettings();
+    printSettings(dataFile, testFile, isRegression, start_level,
+			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points);
     std::cout << "Needed time: " << execTime << " seconds (Single Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
@@ -611,18 +601,64 @@ void adaptClassificationTestSP(bool isRegression)
  */
 int main(int argc, char *argv[])
 {
+	std::string dataFile;
+	std::string testFile;
+
+	double lambda = 0.0;
+	double cg_eps = 0.0;
+	double refine_thresh = 0.0;
+
+	size_t cg_max = 0.0;
+	size_t refine_count = 0;
+	size_t refine_points = 0;
+	size_t start_level = 0;
+
+	bool regression;
+
+	if (argc != 11)
+	{
+		std::cout << std::endl;
+		std::cout << "Help for classification/regression benchmark" << std::endl << std::endl;
+		std::cout << "Needed parameters:" << std::endl;
+		std::cout << "	Traindata-file" << std::endl;
+		std::cout << "	Testdata-file" << std::endl;
+		std::cout << "	regression (0/1)" << std::endl;
+		std::cout << "	Startlevel" << std::endl;
+		std::cout << "	lambda" << std::endl;
+		std::cout << "	CG max. iterations" << std::endl;
+		std::cout << "	CG threshold" << std::endl;
+		std::cout << "	#refinements" << std::endl;
+		std::cout << "	Refinement threshold" << std::endl;
+		std::cout << "	#points refined" << std::endl << std::endl << std::endl;
+		std::cout << "Example call:" << std::endl;
+		std::cout << "	app.exe     test.data train.data 1 3 0.000001 250 0.0001 6 0.0 100" << std::endl << std::endl << std::endl;
+	}
+	else
+	{
+		dataFile.assign(argv[1]);
+		testFile.assign(argv[2]);
+		regression = false;
+		if (atoi(argv[3]) == 1)
+		{
+			regression = true;
+		}
+		start_level = atoi(argv[4]);
+		lambda = atof(argv[5]);
+		cg_max = atoi(argv[6]);
+		cg_eps = atof(argv[7]);
+		refine_count = atoi(argv[8]);
+		refine_thresh = atof(argv[9]);
+		refine_points = atoi(argv[10]);
+
 #ifdef USEFLOAT
-#ifdef EXEC_REGRESSION
-	adaptClassificationTestSP(true);
+		adaptClassificationTestSP(dataFile, testFile, regression, start_level,
+				(float)lambda, cg_max, (float)cg_eps, refine_count, refine_thresh, refine_points);
+
 #else
-	adaptClassificationTestSP(false);
+		adaptClassificationTest(dataFile, testFile, regression, start_level,
+				lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points);
 #endif
-#else
-#ifdef EXEC_REGRESSION
-	adaptClassificationTest(true);
-#else
-	adaptClassificationTest(false);
-#endif
-#endif
+	}
+
 	return 0;
 }
