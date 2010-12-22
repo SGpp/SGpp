@@ -68,7 +68,7 @@ elif options.friedman == 2:
 elif options.friedman == 3:
     namestring = 'Friedman3, %d data points' % (options.N)
     X = DataMatrix(options.N, 5)
-    p = DataVector(1,5)
+    p = DataVector(5)
     for i in xrange(options.N):
         p[0] = random.uniform(0, 100)
         p[1] = random.uniform(40*math.pi, 560*math.pi)
