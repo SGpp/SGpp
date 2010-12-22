@@ -140,7 +140,7 @@ checkData(data)
 
 # omitt certain attributes?
 if options.omitt:
-    dim = len(data[0]["data"])
+    dim = data[0]["data"].getNcols()
     attribs = range(dim)
     for a in options.omitt:
         attribs.remove(a)
