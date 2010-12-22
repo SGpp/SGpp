@@ -76,7 +76,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationBIterativeSPHybridSSEOCLLinear.o OperationBIterativeHybridSSEOCLLinear.o\
 	PrewaveletGrid.o PrewaveletGridGenerator.o OperationBPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
-	UpDownOneOpDimWithShadow.o
+	UpDownOneOpDimWithShadow.o OperationODESolverSystemDirichlet.o OperationODESolverSystemNeumann.o
 
 ###################################################################
 # Compiler Flags
@@ -605,5 +605,11 @@ UpDownOneOpDimWithShadow.o : $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
 OperationODESolverSystem.o : $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o OperationODESolverSystem.o $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
 
+OperationODESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationODESolverSystemNeumann.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationODESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationODESolverSystemNeumann.cpp
+	
+OperationODESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationODESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationODESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationODESolverSystemDirichlet.cpp
+	
 clean:
 	rm -rdfv tmp/build_native
