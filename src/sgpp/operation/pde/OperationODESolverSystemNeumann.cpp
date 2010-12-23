@@ -57,6 +57,32 @@ void OperationODESolverSystemNeumann::mult(DataVector& alpha, DataVector& result
 
 		applyMassMatrix(alpha, result);
 	}
+	else if (this->tOperationMode == "BDF2")
+	{
+		double tDiff=this->TimestepSize/this->TimestepSize_old;
+		double alpha0 = (2.0*tDiff+1.0)/(tDiff+1.0);
+		result.setAll(0.0);
+
+		DataVector temp(alpha.getSize());
+
+		applyMassMatrix(alpha, temp);
+
+		temp.mult(alpha0);
+		result.add(temp);
+
+		applyLOperator(alpha, temp);
+		result.axpy((-1.0)*this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "F23")
+	{
+		result.setAll(0.0);
+		double tDiff=this->TimestepSize/this->TimestepSize_old;
+		double alpha0 = 1.0/(1.0+tDiff);
+
+		applyMassMatrix(alpha, result);
+		result.mult(alpha0);
+
+	}
 	else
 	{
 		throw new algorithm_exception("OperationODESolverSystemNeumann::mult : An unknown operation mode was specified!");
@@ -117,6 +143,52 @@ DataVector* OperationODESolverSystemNeumann::generateRHS()
 		temp.sub(temp_old);
 
 		rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+	}
+	else if (this->tOperationMode == "BDF2")
+	{
+		rhs_complete.setAll(0.0);
+
+		DataVector temp(this->alpha_complete->getSize());
+
+		applyMassMatrix(*this->alpha_complete, temp);
+
+		double tDiff = this->TimestepSize/this->TimestepSize_old;
+
+		double alpha1 = tDiff +1.0;
+		temp.mult(alpha1);
+		rhs_complete.add(temp);
+
+		DataVector temp_old(this->alpha_complete->getSize());
+		applyMassMatrix(*this->alpha_complete_old, temp_old);
+
+		double alpha2 = tDiff*tDiff/(1.0+tDiff);
+		temp_old.mult(alpha2);
+		rhs_complete.sub(temp_old);
+	}
+	else if (this->tOperationMode == "F23")
+	{
+		rhs_complete.setAll(0.0);
+		double tDiff = this->TimestepSize/this->TimestepSize_old;
+		double alpha0 = (1.0+tDiff);
+		double alpha1 = alpha0*(tDiff -1.0);
+		double alpha2 = -alpha0*(tDiff*tDiff/(tDiff+1.0));
+
+
+		DataVector temp(this->alpha_complete->getSize());
+		DataVector temp_old(this->alpha_complete->getSize());
+
+		applyMassMatrix(*this->alpha_complete, temp);
+		temp.mult(alpha1);
+		rhs_complete.sub(temp);
+
+		applyLOperator(*this->alpha_complete, temp);
+		temp.mult(alpha0*this->TimestepSize);
+
+		applyMassMatrix(*this->alpha_complete_old, temp_old);
+		temp_old.mult(alpha2);
+		rhs_complete.sub(temp_old);
+
+		rhs_complete.add(temp);
 	}
 	else
 	{

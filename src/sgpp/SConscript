@@ -191,6 +191,9 @@ solver/ode/Euler.cpp
 solver/ode/CrankNicolson.cpp
 solver/ode/AdamsBashforth.cpp
 solver/ode/VarTimestep.cpp
+solver/ode/StepsizeControlH.cpp
+solver/ode/StepsizeControlBDF.cpp
+solver/ode/StepsizeControlEJ.cpp
 
 tools/common/StdNormalDistribution.cpp
 tools/common/GridPrinter.cpp

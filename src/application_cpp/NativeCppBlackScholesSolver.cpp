@@ -499,11 +499,23 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	}
 	else if (Solver == "AdBas")
 	{
-		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	}
-	else if (Solver == "VaTim")
+	else if (Solver == "SCAC")
 	{
-		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCH")
+	{
+		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCBDF")
+	{
+		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCEJ")
+	{
+		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 	}
 	else
 	{
@@ -697,11 +709,23 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 		else if (Solver == "AdBas")
 		{
-			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 		}
-		else if (Solver == "VaTim")
+		else if (Solver == "SCAC")
 		{
-			myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+			myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+		}
+		else if (Solver == "SCH")
+		{
+			myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+		}
+		else if (Solver == "SCBDF")
+		{
+			myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+		}
+		else if (Solver == "SCEJ")
+		{
+			myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 		}
 		else
 		{
@@ -1038,11 +1062,23 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	}
 	else if (Solver == "AdBas")
 	{
-		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	}
-	else if (Solver == "VaTim")
+	else if (Solver == "SCAC")
 	{
-		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCH")
+	{
+		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCBDF")
+	{
+		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCEJ")
+	{
+		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 	}
 	else
 	{
@@ -1229,18 +1265,30 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 	}
 	else if (Solver == "AdBas")
 	{
-		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	}
-	else if (Solver == "VaTim")
+	else if (Solver == "SCAC")
 	{
-		myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCH")
+	{
+		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCBDF")
+	{
+		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver == "SCEJ")
+	{
+		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 	}
 	else
 	{
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "VaTim")
+	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "SCAC"  || Solver == "SCH" || Solver == "SCBDF" || Solver == "SCEJ")
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
 		//myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
@@ -1330,7 +1378,7 @@ void writeHelp()
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SCAC, SCH, SCBDF or SCEJ" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << std::endl;
@@ -1411,7 +1459,7 @@ void writeHelp()
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SCAC, SCH, SCBDF or SCEJ" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << std::endl;

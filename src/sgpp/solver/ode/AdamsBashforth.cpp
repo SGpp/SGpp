@@ -17,7 +17,7 @@
 namespace sg
 {
 
-AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, bool generateAnimation, size_t numEvalsAnimation, ScreenOutput* screen) : ODESolver(imax, timestepSize), bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), myScreen(screen)
+AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
 {
 	this->residuum = 0.0;
 
@@ -32,20 +32,20 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationODESolverSyst
 	size_t allIter = 0;
     DataVector* rhs;
 
-    // Do some animation creation exception handling
-    size_t animationStep = this->nMaxIterations/1500;
-    if (animationStep == 0)
-    {
-    	animationStep = 1;
-    }
-
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
+		if(i > 0)
+			System.setODESolver("AdBas");
+		else
+			System.setODESolver("ExEul");
+
 		// generate right hand side
 		rhs = System.generateRHS();
 
+
 		// solve the system of the current timestep
 		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+
 	    allIter += LinearSystemSolver.getNumberIterations();
 	    if (verbose == true)
 	    {
@@ -85,22 +85,6 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationODESolverSyst
 	    }
 	    System.saveAlpha();
 
-
-		// Create pictures of the animation, if specified
-	    if ((this->bAnimation == true) && (i%animationStep == 0))
-		{
-			// Build filename
-			std::string tFilename = "00000000000000000000000000000000";
-			std::stringstream number;
-			number << i;
-			tFilename.append(number.str());
-			tFilename = tFilename.substr(tFilename.length()-14,14);
-			tFilename.append(".gnuplot");
-
-			// Print grid to file
-			GridPrinter myPrinter(*System.getGrid());
-			myPrinter.printGrid(*System.getGridCoefficients(), tFilename, this->evalsAnimation);
-		}
 	}
 
 	// write some empty lines to console

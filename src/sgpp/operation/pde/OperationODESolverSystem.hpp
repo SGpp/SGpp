@@ -165,6 +165,13 @@ public:
 	 * stores the current alpha_complete into alpha_complete_old to be available in the next timestep
 	 */
 	void saveAlpha();
+
+	/**
+	 * stores the values of the (dehierarchized) grid in the DataVector Values used by time step size control methods
+	 *
+	 * @param DataVector in which the values will be stored
+	 */
+	void getGridCoefficientsForSC(DataVector& Values);
 };
 
 }
