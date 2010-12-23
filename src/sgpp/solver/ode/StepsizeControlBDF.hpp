@@ -4,24 +4,25 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 
-#ifndef VARTIMESTEP_HPP
-#define VARTIMESTEP_HPP
+#ifndef STEPSIZECONTROLBDF_HPP
+#define STEPSIZECONTROLBDF_HPP
 
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
-#include <string>
 
 namespace sg
 {
 
 /**
- * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
+ * This class implements a step size control using the midpoint method and BDF2
  * for solving ordinary partial equations
+ *
+ * For solving the system of linear equations the
+ * already implemented CG-method is used
  *
  * @version $HEAD$
  */
-class VarTimestep : public ODESolver
+class StepsizeControlBDF : public ODESolver
 {
 private:
 	/// Pointer to ScreenOutput object
@@ -30,27 +31,25 @@ private:
 	/// epsilon for the step size control
 	double myEps;
 
-
 public:
 	/**
 	 * Std-Constructer
 	 *
-	 * @param Mode the mode of the euler that should be executed, must be ExEul or ImEul
-	 * @param imax number of maximum executed iterations
+	 * @param nTimesteps number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
 	 * @param eps the epsilon for the step size control
 	 * @param screen possible pointer to a ScreenOutput object
 	 */
-	VarTimestep(size_t imax, double timestepSize, double eps, ScreenOutput* screen = NULL);
+	StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps, ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~VarTimestep();
+	virtual ~StepsizeControlBDF();
 
 	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }
 
-#endif /* VARTIMESTEP_HPP */
+#endif /* STEPSIZECONTROLBDF_HPP */

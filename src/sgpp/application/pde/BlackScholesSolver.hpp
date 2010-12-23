@@ -15,6 +15,7 @@
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/common/BoundingBox.hpp"
+#include "solver/ODESolver.hpp"
 
 #include "tools/common/StdNormalDistribution.hpp"
 
@@ -194,9 +195,19 @@ public:
 
 	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
 
-	void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, void *myODESolverV = NULL, std::string Solver = "ImEul");
 
-	void solveVarTimestep(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+
+	void solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+
+	void solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+
+	void solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+
+	void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+
+
 
 	/**
 	 * Solves the closed form of the Black Scholes equation, the Black Scholes

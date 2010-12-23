@@ -68,4 +68,12 @@ size_t OperationODESolverSystem::getSumGridPointsInner()
 	return this->numSumGridpointsInner;
 }
 
+void OperationODESolverSystem::getGridCoefficientsForSC(DataVector& Values)
+{
+	Values = *(this->alpha_complete);
+	OperationHierarchisation* myHierarchisation = BoundGrid->createOperationHierarchisation();
+	myHierarchisation->doDehierarchisation(Values);
+	delete myHierarchisation;
+}
+
 }

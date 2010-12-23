@@ -4,8 +4,8 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 
-#ifndef VARTIMESTEP_HPP
-#define VARTIMESTEP_HPP
+#ifndef STEPSIZECONTROLH_HPP
+#define STEPSIZECONTROLH_HPP
 
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
@@ -16,14 +16,15 @@ namespace sg
 {
 
 /**
- * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
+ * This class implements a step size control using Crank-Nicolson with different step sizes
  * for solving ordinary partial equations
  *
  * @version $HEAD$
  */
-class VarTimestep : public ODESolver
+class StepsizeControlH : public ODESolver
 {
 private:
+
 	/// Pointer to ScreenOutput object
 	ScreenOutput* myScreen;
 
@@ -41,16 +42,16 @@ public:
 	 * @param eps the epsilon for the step size control
 	 * @param screen possible pointer to a ScreenOutput object
 	 */
-	VarTimestep(size_t imax, double timestepSize, double eps, ScreenOutput* screen = NULL);
+	StepsizeControlH(size_t imax, double timestepSize, double eps, ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~VarTimestep();
+	virtual ~StepsizeControlH();
 
 	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }
 
-#endif /* VARTIMESTEP_HPP */
+#endif /* STEPSIZECONTROLH_HPP */

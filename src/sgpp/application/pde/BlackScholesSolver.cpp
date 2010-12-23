@@ -11,6 +11,9 @@
 #include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+#include "solver/ode/StepsizeControlH.hpp"
+#include "solver/ode/StepsizeControlBDF.hpp"
+#include "solver/ode/StepsizeControlEJ.hpp"
 #include "solver/sle/BiCGStab.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
@@ -480,32 +483,67 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
-void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+
+void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
 {
+	ODESolver* myODESolver = new AdamsBashforth(numTimesteps, timestepsize, myScreen);
+	BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "AdBas");
+	delete myODESolver;
+}
+
+void BlackScholesSolver::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+{
+	ODESolver* myODESolver = new VarTimestep(numTimesteps, timestepsize, epsilon, myScreen);
+	BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
+	delete myODESolver;
+}
+
+void BlackScholesSolver::solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+{
+	ODESolver* myODESolver = new StepsizeControlH(numTimesteps, timestepsize, epsilon, myScreen);
+	BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
+	delete myODESolver;
+}
+
+void BlackScholesSolver::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+{
+	ODESolver* myODESolver = new StepsizeControlBDF(numTimesteps, timestepsize, epsilon, myScreen);
+	BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "SCBDF");
+	delete myODESolver;
+}
+
+void BlackScholesSolver::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+{
+	ODESolver* myODESolver = new StepsizeControlEJ(numTimesteps, timestepsize, epsilon, myAlpha,  myScreen);
+	BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "SCEJ");
+	delete myODESolver;
+}
+
+void BlackScholesSolver::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, void *myODESolverV, std::string Solver)
+{
+	ODESolver *myODESolver = (ODESolver *)myODESolverV;
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
-	{
-		AdamsBashforth* myAdamsBashforth = new AdamsBashforth(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
-		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+	{		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 		OperationODESolverSystem* myBSSystem = NULL;
 
 		if (this->tOptionType == "European")
 		{
 #ifdef USEOMPTHREE
-			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		}
 		else
 		{
-			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "AdBas", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
 		myStopwatch->start();
-		myAdamsBashforth->solve(*myCG, *myBSSystem, false, verbose);
+		myODESolver->solve(*myCG, *myBSSystem, false, verbose);
 		this->dNeededTime = myStopwatch->stop();
 
 		if (this->myScreen != NULL)
@@ -516,66 +554,17 @@ void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timeste
 
 		this->finInnerGridSize = getNumberInnerGridPoints();
 		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
-		this->nNeededIterations = myAdamsBashforth->getNumberIterations();
+		this->nNeededIterations = myODESolver->getNumberIterations();
 
 		delete myBSSystem;
 		delete myCG;
-		delete myAdamsBashforth;
 	}
 	else
 	{
-		throw new application_exception("BlackScholesSolver::solveAdamsBashforth : A grid wasn't constructed before or stochastic parameters weren't set!");
+		throw new application_exception("BlackScholesSolver::solveX : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}
 }
 
-
-void BlackScholesSolver::solveVarTimestep(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
-{
-	if (this->bGridConstructed && this->bStochasticDataAlloc)
-	{
-		VarTimestep* myVarTimestep = new VarTimestep(numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
-		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		OperationODESolverSystem* myBSSystem = NULL;
-
-		if (this->tOptionType == "European")
-		{
-#ifdef USEOMPTHREE
-			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-#else
-			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-#endif
-		}
-		else
-		{
-			myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-		}
-
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
-		this->staInnerGridSize = getNumberInnerGridPoints();
-
-		myStopwatch->start();
-		myVarTimestep->solve(*myCG, *myBSSystem, false, verbose);
-		this->dNeededTime = myStopwatch->stop();
-
-		if (this->myScreen != NULL)
-		{
-			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
-		}
-
-		this->finInnerGridSize = getNumberInnerGridPoints();
-		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
-		this->nNeededIterations = myVarTimestep->getNumberIterations();
-
-		delete myBSSystem;
-		delete myCG;
-		delete myVarTimestep;
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::solveVarTimestep : A grid wasn't constructed before or stochastic parameters weren't set!");
-	}
-}
 
 void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
 {
