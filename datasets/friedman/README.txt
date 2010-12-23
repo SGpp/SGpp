@@ -22,7 +22,7 @@ python friedman.py -f 3 -N 90000 -o friedman3_90000_train.arff.gz [--seed 123456
 
 
 # normalization
-python $SGPP/bin/converter.py --noclassnormalization --min 0 --max 100 --min 125.66 --max 1859.3 --min 0 --max 1 --min 1 --max 11 -i friedman2_10000_train.arff.gz -i friedman2_10000_test.arff.gz -i friedman2_90000_train.arff.gz -o friedman2_10000_train_norm.arff.gz -o friedman2_10000_test_norm.arff.gz -o friedman2_90000_train_norm.arff.gz 
+python ../../bin/converter.py --noclassnormalization --min 0 --max 100 --min 125.66 --max 1859.3 --min 0 --max 1 --min 1 --max 11 -i friedman2_10000_train.arff.gz -i friedman2_10000_test.arff.gz -i friedman2_90000_train.arff.gz -o friedman2_10000_train_norm.arff.gz -o friedman2_10000_test_norm.arff.gz -o friedman2_90000_train_norm.arff.gz 
 
-python $SGPP/bin/converter.py --noclassnormalization --min 0 --max 100 --min 125.66 --max 1859.3 --min 0 --max 1 --min 1 --max 11 -i friedman3_10000_train.arff.gz -i friedman3_10000_test.arff.gz -i friedman3_90000_train.arff.gz -o friedman3_10000_train_norm.arff.gz -o friedman3_10000_test_norm.arff.gz -o friedman3_90000_train_norm.arff.gz 
+python ../../bin/converter.py --noclassnormalization --min 0 --max 100 --min 125.66 --max 1859.3 --min 0 --max 1 --min 1 --max 11 -i friedman3_10000_train.arff.gz -i friedman3_10000_test.arff.gz -i friedman3_90000_train.arff.gz -o friedman3_10000_train_norm.arff.gz -o friedman3_10000_test_norm.arff.gz -o friedman3_90000_train_norm.arff.gz 
 
