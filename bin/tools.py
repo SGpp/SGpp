@@ -507,8 +507,8 @@ def writeDataARFF(data, merge=False):
             fout.write("@RELATION \"%s\"\n\n" % dataset["filename"])
             fstring = ""
 
-            if isinstance(dataset["data"], DataVector):
-                dim = dataset["data"].getDim()
+            if isinstance(dataset["data"], DataMatrix):
+                dim = dataset["data"].getNcols()
             else:
                 dim = len(dataset["data"])
                    
@@ -527,12 +527,12 @@ def writeDataARFF(data, merge=False):
             fstring = fstring + "\n"
             fout.write("\n@DATA\n")
         
-        if isinstance(dataset["data"], DataVector):
-            num_rows = dataset["data"].getSize()
+        if isinstance(dataset["data"], DataMatrix):
+            num_rows = dataset["data"].getNrows()
             for row in xrange(num_rows):
                 lout = []
                 for column in xrange(dim):
-                    lout.append(dataset["data"][row*dim+column])
+                    lout.append(dataset["data"].get(row,column))
                 if hasclass:
                     lout.append(dataset["classes"][row])
                 fout.write(fstring % tuple(lout))
@@ -665,8 +665,8 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
     if len(data) == 0:
         raise ValueError, "Wrong or no data."
     if minvals and maxvals:
-        if (len(minvals) <> len(data[0]["data"]) or 
-            len(maxvals) <> len(data[0]["data"])):
+        if (len(minvals) <> data[0]["data"].getNcols() or 
+            len(maxvals) <> data[0]["data"].getNcols()):
             raise ValueError, "Wrong number of min- or max-values."
         lmin = minvals
         lmax = maxvals
@@ -679,11 +679,11 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
             lmax.append(datadim[0])
 
         for dataset in data:
-            for dim in xrange(len(dataset["data"])):
-                cmin = min(dataset["data"][dim])
+            for dim in xrange(dataset["data"].getNcols()):
+                cmin = dataset["data"].min(dim)
                 lmin[dim] = min(cmin, lmin[dim])
 
-                cmax = max(dataset["data"][dim])
+                cmax = dataset["data"].max(dim)
                 lmax[dim] = max(cmax, lmax[dim])
     # output
     if verbose:
@@ -701,13 +701,20 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
         writeNormfile(filename, border, lmin, lmax)
     
     for dataset in data:
-        for dim in xrange(len(dataset["data"])):
+        vec_tmp = DataVector(dataset["data"].getNrows())    
+        for dim in xrange(dataset["data"].getNcols()):
             # special handling for the case that all max==min, i.e. all
             # attribute values are equal: set to 0.5
             if ldelta[dim] == 0:
-                dataset["data"][dim] = map(lambda x: 0.5,dataset["data"][dim])
+		dataset["data"].getColumn(dim, vec_tmp)
+		vec_tmp.setAll(0.5)
+                dataset["data"].setColumn(dim, vec_tmp)
             else:
-                dataset["data"][dim] = map(lambda x: (x-lmin[dim]) / ldelta[dim] + border,dataset["data"][dim])
+		dataset["data"].getColumn(dim, vec_tmp)
+		for j in range(dataset["data"].getNrows()):
+		    vec_tmp[j] = (vec_tmp[j]-lmin[dim]) / ldelta[dim] + border
+                
+                dataset["data"].setColumn(dim, vec_tmp)
     return
 
 
@@ -742,12 +749,12 @@ def checkData(data):
 
     hasClasses = False
     
-    data_len = len(data[0]["data"])
+    data_len = data[0]["data"].getNcols()
     if data[0].has_key("classes"):
     	hasClasses = True
     
     for dataset in data:
-    	if data_len != len(dataset["data"]):
+    	if data_len != dataset["data"].getNcols():
     		print("Error! Can't merge data due to different amount of dimensions!")
     		sys.exit(1)
     	if dataset.has_key("classes") != hasClasses:
