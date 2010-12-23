@@ -76,7 +76,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationBIterativeSPHybridSSEOCLLinear.o OperationBIterativeHybridSSEOCLLinear.o\
 	PrewaveletGrid.o PrewaveletGridGenerator.o OperationBPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
-	UpDownOneOpDimWithShadow.o OperationODESolverSystemDirichlet.o OperationODESolverSystemNeumann.o
+	UpDownOneOpDimWithShadow.o OperationODESolverSystemDirichlet.o OperationODESolverSystemNeumann.o\
+	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o
 
 ###################################################################
 # Compiler Flags
@@ -541,6 +542,15 @@ AdamsBashforth.o : $(SRCDIR)solver/ode/AdamsBashforth.cpp
 
 VarTimestep.o : $(SRCDIR)solver/ode/VarTimestep.cpp
 	$(CC) $(CFLAGS) -o VarTimestep.o $(SRCDIR)solver/ode/VarTimestep.cpp
+	
+StepsizeControlH.o : $(SRCDIR)solver/ode/StepsizeControlH.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlH.o $(SRCDIR)solver/ode/StepsizeControlH.cpp
+	
+StepsizeControlBDF.o : $(SRCDIR)solver/ode/StepsizeControlBDF.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlBDF.o $(SRCDIR)solver/ode/StepsizeControlBDF.cpp
+
+StepsizeControlEJ.o : $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlEJ.o $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
 	
 PDESolver.o : $(SRCDIR)application/pde/PDESolver.cpp
 	$(CC) $(CFLAGS) -o PDESolver.o $(SRCDIR)application/pde/PDESolver.cpp
