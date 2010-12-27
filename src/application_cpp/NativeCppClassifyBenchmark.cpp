@@ -86,7 +86,8 @@ void convertDataVectorSPToDataVector(DataVectorSP& src, DataVector& dest)
 }
 
 void printSettings(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
-		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points)
+		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points,
+		size_t gridsize = 0, double finaltr = 0.0, double finalte = 0.0, double time = 0.0)
 {
 	std::cout << std::endl;
 	std::cout << "Train dataset: " << dataFile << std::endl;
@@ -129,8 +130,20 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 
 #ifdef USE_BOUNDARIES
 	std::cout << "Boundary-Mode: Neumann" << std::endl << std::endl;
+	if (gridsize > 0)
+	{
+		std::cout << "$" << dataFile << ";" << testFile << ";Neumann;" << isRegression << ";" << start_level
+		<< ";" << lambda << ";" << cg_max << ";" << cg_eps << ";" << refine_count << ";"  << refine_thresh
+		<< ";" << refine_points << ";" << gridsize << ";" << finaltr << ";" << finalte << ";" << time << std::endl << std::endl;
+	}
 #else
 	std::cout << "Boundary-Mode: Dirichlet-0" << std::endl << std::endl;
+	if (gridsize > 0)
+	{
+		std::cout << "$" << dataFile << ";" << testFile << ";Dirichlet0;" << isRegression << ";" << start_level
+		<< ";" << lambda << ";" << cg_max << ";" << cg_eps << ";" << refine_count << ";"  << refine_thresh
+		<< ";" << refine_points << ";" << gridsize << ";" << finaltr << ";" << finalte << ";" << time << std::endl << std::endl;
+	}
 #endif
 }
 
@@ -150,6 +163,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points);
 
     double execTime = 0.0;
+    double acc = 0.0;
+    double accTest = 0.0;
 	sg::ARFFTools ARFFTool;
 	std::string tfileTrain = dataFile;
 	std::string tfileTest = testFile;
@@ -257,27 +272,27 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	if (isRegression)
     	{
     		sg::OperationTest* myTest = myGrid->createOperationTest();
-			double mse = myTest->testMSE(alpha, data, classes);
-			std::cout << "MSE (train): " << mse << std::endl;
-			double mseTest = myTest->testMSE(alpha, testData, testclasses);
-			std::cout << "MSE (test): " << mseTest << std::endl;
+			acc = myTest->testMSE(alpha, data, classes);
+			std::cout << "MSE (train): " << acc << std::endl;
+			accTest = myTest->testMSE(alpha, testData, testclasses);
+			std::cout << "MSE (test): " << accTest << std::endl;
 			delete myTest;
 
-			if (((i > 0) && (oldAcc <= mseTest)) || mseTest == 0.0)
+			if (((i > 0) && (oldAcc <= accTest)) || accTest == 0.0)
 			{
 				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 				break;
 			}
 
-			oldAcc = mseTest;
+			oldAcc = accTest;
     	}
     	else
     	{
     		sg::OperationTest* myTest = myGrid->createOperationTest();
-			double acc = myTest->test(alpha, data, classes);
+			acc = myTest->test(alpha, data, classes);
 			acc /= static_cast<double>(classes.getSize());
 			std::cout << "train acc.: " << acc << std::endl;
-			double accTest = myTest->test(alpha, testData, testclasses);
+			accTest = myTest->test(alpha, testData, testclasses);
 			accTest /= static_cast<double>(testclasses.getSize());
 			std::cout << "test acc.: " << accTest << std::endl;
 			delete myTest;
@@ -301,19 +316,19 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     if (isRegression)
 	{
 		sg::OperationTest* myTest = myGrid->createOperationTest();
-		double mse = myTest->testMSE(alpha, data, classes);
-		std::cout << "MSE (train): " << mse << std::endl;
-		double mseTest = myTest->testMSE(alpha, testData, testclasses);
-		std::cout << "MSE (test): " << mseTest << std::endl;
+		acc = myTest->testMSE(alpha, data, classes);
+		std::cout << "MSE (train): " << acc << std::endl;
+		accTest = myTest->testMSE(alpha, testData, testclasses);
+		std::cout << "MSE (test): " << accTest << std::endl;
 		delete myTest;
 	}
 	else
 	{
 		sg::OperationTest* myTest = myGrid->createOperationTest();
-		double acc = myTest->test(alpha, data, classes);
+		acc = myTest->test(alpha, data, classes);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train acc.: " << acc << std::endl;
-		double accTest = myTest->test(alpha, testData, testclasses);
+		accTest = myTest->test(alpha, testData, testclasses);
 		accTest /= static_cast<double>(testclasses.getSize());
 		std::cout << "test acc.: " << accTest << std::endl;
 		delete myTest;
@@ -334,7 +349,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings(dataFile, testFile, isRegression, start_level,
-			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points);
+			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, myGrid->getSize(), acc, accTest, execTime);
 #if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
@@ -378,6 +393,8 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points);
 
 	double execTime = 0.0;
+    double acc = 0.0;
+    double accTest = 0.0;
 	sg::ARFFTools ARFFTool;
 	std::string tfileTrain = dataFile;
 	std::string tfileTest = testFile;
@@ -499,27 +516,27 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	if (isRegression)
     	{
     		sg::OperationTest* myTest = myGrid->createOperationTest();
-			double mse = myTest->testMSE(alpha, data, classes);
-			std::cout << "MSE (train): " << mse << std::endl;
-			double mseTest = myTest->testMSE(alpha, testData, testclasses);
-			std::cout << "MSE (test): " << mseTest << std::endl;
+			acc = myTest->testMSE(alpha, data, classes);
+			std::cout << "MSE (train): " << acc << std::endl;
+			accTest = myTest->testMSE(alpha, testData, testclasses);
+			std::cout << "MSE (test): " << accTest << std::endl;
 			delete myTest;
 
-			if (((i > 0) && (oldAcc <= mseTest)) || mseTest == 0.0)
+			if (((i > 0) && (oldAcc <= accTest)) || accTest == 0.0)
 			{
 				std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 				break;
 			}
 
-			oldAcc = mseTest;
+			oldAcc = accTest;
     	}
     	else
     	{
     		sg::OperationTest* myTest = myGrid->createOperationTest();
-			double acc = myTest->test(alpha, data, classes);
+			acc = myTest->test(alpha, data, classes);
 			acc /= static_cast<double>(classes.getSize());
 			std::cout << "train acc.: " << acc << std::endl;
-			double accTest = myTest->test(alpha, testData, testclasses);
+			accTest = myTest->test(alpha, testData, testclasses);
 			accTest /= static_cast<double>(testclasses.getSize());
 			std::cout << "test acc.: " << accTest << std::endl;
 			delete myTest;
@@ -544,19 +561,19 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	if (isRegression)
 	{
 		sg::OperationTest* myTest = myGrid->createOperationTest();
-		double mse = myTest->testMSE(alpha, data, classes);
-		std::cout << "MSE (train): " << mse << std::endl;
-		double mseTest = myTest->testMSE(alpha, testData, testclasses);
-		std::cout << "MSE (test): " << mseTest << std::endl;
+		acc = myTest->testMSE(alpha, data, classes);
+		std::cout << "MSE (train): " << acc << std::endl;
+		accTest = myTest->testMSE(alpha, testData, testclasses);
+		std::cout << "MSE (test): " << accTest << std::endl;
 		delete myTest;
 	}
 	else
 	{
 		sg::OperationTest* myTest = myGrid->createOperationTest();
-		double acc = myTest->test(alpha, data, classes);
+		acc = myTest->test(alpha, data, classes);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train acc.: " << acc << std::endl;
-		double accTest = myTest->test(alpha, testData, testclasses);
+		accTest = myTest->test(alpha, testData, testclasses);
 		accTest /= static_cast<double>(testclasses.getSize());
 		std::cout << "test acc.: " << accTest << std::endl;
 		delete myTest;
@@ -578,7 +595,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings(dataFile, testFile, isRegression, start_level,
-			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points);
+			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, myGrid->getSize(), acc, accTest, execTime);
     std::cout << "Needed time: " << execTime << " seconds (Single Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
