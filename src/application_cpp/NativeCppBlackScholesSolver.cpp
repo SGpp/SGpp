@@ -449,6 +449,12 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	// Gridpoints @Money
 	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
+	// Print interpolation-error at strike
+	if (dim == 2 && isLogSolve == false)
+	{
+		myBSSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
+	}
+
 	// Print the payoff function into a gnuplot file
 	// Calculate analytic solution if current option is an 1D option
 	if (dim == 1)
@@ -1043,6 +1049,12 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	// Gridpoints @Money
 	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+
+	// Print interpolation-error at strike
+	if (dim == 2 && isLogSolve == false)
+	{
+		myBSSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
+	}
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
