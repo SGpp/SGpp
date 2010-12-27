@@ -116,7 +116,6 @@ void DataMatrixSP::transpose()
 	{
 #ifdef __ICC
 		#pragma ivdep
-		#pragma vector aligned
 #endif
 		for (size_t j = 0; j < ncols; j++)
 		{
@@ -179,7 +178,6 @@ void DataMatrixSP::setRow(size_t row, DataVectorSP& vec) {
 	}
 #ifdef __ICC
 	#pragma ivdep
-	#pragma vector aligned
 #endif
 	for (size_t i = 0; i < this->ncols; i++) {
 		this->data[row * ncols + i] = vec[i];
@@ -193,7 +191,6 @@ void DataMatrixSP::getColumn(size_t col, DataVectorSP& vec) {
 	}
 #ifdef __ICC
 	#pragma ivdep
-	#pragma vector aligned
 #endif
 	for (size_t j = 0; j < this->nrows; j++) {
 		vec[j] = data[j * ncols + col];
@@ -207,7 +204,6 @@ void DataMatrixSP::setColumn(size_t col, DataVectorSP& vec) {
 	}
 #ifdef __ICC
 	#pragma ivdep
-	#pragma vector aligned
 #endif
 	for (size_t j = 0; j < this->nrows; j++) {
 		data[j * ncols + col] = vec[j];
@@ -381,18 +377,11 @@ void DataMatrixSP::normalizeDimension(size_t d, float border) {
 
 	float delta = (xmax - xmin)/(1-2*border);
 	if (delta == 0.0) {
-
-#ifdef __ICC
-		#pragma vector aligned
-#endif
 		for (size_t i = d; i < n; i += ncols) {
 			data[i] = 0.5;
 		}
 	}
 	else {
-#ifdef __ICC
-		#pragma vector aligned
-#endif
 		for (size_t i = d; i < n; i += ncols) {
 			data[i] = (data[i] - xmin) / delta + border;
 		}
