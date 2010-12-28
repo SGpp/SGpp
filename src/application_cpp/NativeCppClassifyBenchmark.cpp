@@ -21,11 +21,11 @@
 #define GRDIRESOLUTION 50
 
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
-#define USE_SSE
+//#define USE_SSE
 //#define USE_AVX
 //#define USE_OCL
 //#define USE_ARBB
-//#define USE_HYBRID_SSE_OCL
+#define USE_HYBRID_SSE_OCL
 
 // define if you want to use single precision floats (may deliver speed-up of 2 or greater),
 // BUT: CG method may not converge because of bad system matrix condition.
@@ -35,7 +35,7 @@
 #define USE_BOUNDARIES
 
 // do Test only after last refinement
-#define TEST_LAST_ONLY
+//#define TEST_LAST_ONLY
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
@@ -172,6 +172,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	size_t nDim = ARFFTool.getDimension(tfileTrain);
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
 	size_t nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
+
+	std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
 	// Create Grid
 	sg::Grid* myGrid;
@@ -402,6 +404,8 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	size_t nDim = ARFFTool.getDimension(tfileTrain);
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
 	size_t nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
+
+	std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
 	// Create Grid
 	sg::Grid* myGrid;
