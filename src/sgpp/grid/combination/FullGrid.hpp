@@ -91,7 +91,7 @@ class FullGrid{
 	      dim=fg.dim;
 	      level=new level_t[dim];
 	      size=fg.size;
-              vec.resize(size,0);              
+          vec.resize(size,0);
 	  }       
       for (size_t i=0;i<dim;i++)		
 			level[i]=fg.level[i];		
@@ -252,57 +252,7 @@ class FullGrid{
      /** Evaluates the value of the function in a given point
       * @param p the coordinates of the point
       * @return the approximation of the function in the point p */
-     virtual double eval(DataVector& p)
-     {
-    	 int ii,i,tmp_val,vv,nr;
-    	 int jj;
-    	 double dist,baseVal,ofs,len;
-    	 double normcoord;
-    	 /**If the boundingBox of the fullgrid is null we consider the default [0,1]^d hypercube*/
-    	 if (boundingBox!=0){
-    		 for ( ii = dim-1 ; ii >=0; ii--){
-    			 ofs=boundingBox->getIntervalOffset(ii);
-				 len=boundingBox->getIntervalWidth(ii);
-    		     // scale to the reference [0,1] interval the intersection point
-    		     normcoord=(p[ii]-ofs)*powOfTwo[level[ii]]/len;
-    		     aindex[ii]=floor(normcoord);
-    		     dist = aindex[ii]+1-normcoord;
-    		     intersect[2*ii] = dist;
-    		     intersect[2*ii+1] = 1- dist;
-    		  }
-    	 }
-    	 else
-    	 {
-			 for ( ii = dim-1 ; ii >=0; ii--){
-			     // scale to the reference [0,1] interval the intersection point
-				 normcoord=p[ii]*powOfTwo[level[ii]];
-				 aindex[ii]=floor(normcoord);
-				 dist = aindex[ii]+1-normcoord;
-				 intersect[2*ii] = dist;
-				 intersect[2*ii+1] = 1 - dist;
-			 }
-    	 }
-    	 value = 0.0;
-    	 nr=powOfTwo[dim];
-    	 for (ii=0; ii < nr; ii++){
-    	        baseVal = 1;//we will store here the coefficient for the next corner point of the cuboid
-    	        i = 0;
-    	        tmp_val = ii;
-    	        vv = 0;
-    	        // compute the "dim" dimensional basis function value(for one node) and the corresponding vector index
-    	        for (jj = dim-1 ; jj >=0; jj--){
-    	              vv = (tmp_val & 1); // tmp % 2 ;
-    	              baseVal = baseVal * intersect[2*jj+vv];
-    	              i = i*this->length(jj)+aindex[jj]+vv;
-    	              tmp_val = tmp_val >> 1; //tmp_val / 2;
-    	        }
-    	        // multiply the basis function value with the coefficient
-    	        //if (baseVal!=0) //todo:
-    	        value += baseVal * vec[i];
-    	  }
-    	  // just return the value
-    	  return value;
-     }
+     virtual double eval(DataVector& p);
 
  	/** Sets a bounding box for the fullgrid
  	 * Is equivalent with a scaling of the axes
