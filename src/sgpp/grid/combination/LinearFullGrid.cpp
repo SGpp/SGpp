@@ -29,19 +29,24 @@ double LinearFullGrid::eval(DataVector& p)
 	    		     normcoord=(p[ii]-ofs)*powOfTwo[level[ii]]/len;
 	    		     aindex[ii]=floor(normcoord-1e-14);
 	    		     dist = aindex[ii]+1-normcoord;
-					 /*if (aindex[ii] == 0){
-						 intersect[2*ii] = 1 + dist;
-						 intersect[2*ii+1] = - dist;
-					 }
-					 else if ( aindex[ii] >= (int)this->length(ii)-1){
-						 intersect[2*ii] = dist - 1;
-						 intersect[2*ii+1] = 2 - dist;
-					 }
-					 else {}*/
 					 intersect[2*ii] = dist;
 					 intersect[2*ii+1] = 1 - dist;
 	    		     aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
 	    		     aindex[ii] = (aindex[ii] >= (int)(this->length(ii))) ? (int)(this->length(ii)) : aindex[ii];
+	    		     // for special case make some adjustment
+		             if (aindex[ii]==0){
+		            	  aindex[ii] = 1;
+		            	  intersect[2*ii] = (intersect[2*ii]+1); //extrapolated basis value
+		            	  intersect[2*ii+1] = (intersect[2*ii+1]-1); //extrapolated basis value
+		              }
+		              else{
+		               // make extrapolation at the last cell (where there is no boundary point)
+		               if (aindex[ii] >= (int)this->length(ii)){
+		                  aindex[ii] = (int)this->length(ii)-1;
+		            	  intersect[2*ii] = (intersect[2*ii]-1); //extrapolated basis value
+		            	  intersect[2*ii+1] = (intersect[2*ii+1]+1);  //extrapolated basis value
+		               }
+		             }
 	    		  }
 	    }
 	    else
@@ -55,6 +60,20 @@ double LinearFullGrid::eval(DataVector& p)
 					 intersect[2*ii+1] = 1 - dist;
 	    		     aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
 	    		     aindex[ii] = (aindex[ii] >= (int)(this->length(ii))) ? (int)(this->length(ii)) : aindex[ii];
+	    		     // for special case make some adjustment
+		             if (aindex[ii]==0){
+		            	  aindex[ii] = 1;
+		            	  intersect[2*ii] = (intersect[2*ii]+1); //extrapolated basis value
+		            	  intersect[2*ii+1] = (intersect[2*ii+1]-1); //extrapolated basis value
+		              }
+		              else{
+		               // make extrapolation at the last cell (where there is no boundary point)
+		               if (aindex[ii] >= (int)this->length(ii)){
+		                  aindex[ii] = (int)this->length(ii)-1;
+		            	  intersect[2*ii] = (intersect[2*ii]-1); //extrapolated basis value
+		            	  intersect[2*ii+1] = (intersect[2*ii+1]+1);  //extrapolated basis value
+		               }
+		             }
 				 }
 	    }
 
@@ -80,29 +99,10 @@ double LinearFullGrid::eval(DataVector& p)
 	           if (this->level[jj]!=1)
 	           {
 	              vv = (tmp_val & 1);
-	              // make extrapolation at the first cell (where there is no boundary point)
-	              if (aindex[jj]==0){
-	            	  i = i*this->length(jj)+vv;
-	            	  if (vv==0)
-	            		  baseVal*= (intersect[2*jj+vv]+1); //extrapolated basis value
-	            	  else
-	            		  baseVal*= (intersect[2*jj+vv]-1); //extrapolated basis value
-	              }
-	              else{
-	               // make extrapolation at the last cell (where there is no boundary point)
-	               if (aindex[jj] >= (int)this->length(jj)){
-	            	 i = i*this->length(jj)+(int)this->length(jj)-2+vv;
-	            	 if (vv==0)
-	            	   	  baseVal*= (intersect[2*jj+vv]-1); //extrapolated basis value
-	            	 else
-	            	   	  baseVal*= (intersect[2*jj+vv]+1);  //extrapolated basis value
-	               }
-	               else {
-	            	 // make interpolation (as in the usual case)
-	            	 i = i*this->length(jj)+aindex[jj]-1+vv;
-	            	 baseVal = baseVal * intersect[2*jj+vv];
-	               }
-	              }
+	              // make interpolation (as in the usual case)
+	              i = i*this->length(jj)+aindex[jj]-1+vv;
+	              baseVal = baseVal * intersect[2*jj+vv];
+	              //
 	              tmp_val = tmp_val >> 1; //tmp_val / 2;
 	           }
 	        }// end for loop
