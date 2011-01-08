@@ -7,6 +7,7 @@ namespace sg{
 
 void FullGridSet::generate(size_t dim,size_t n)
 {
+        gridsWithBonudaryPoints_ = true;
 		vector<level_t> v(0);
 		size=0;
 		int combi,oldsize;
@@ -27,6 +28,7 @@ void FullGridSet::generate(size_t dim,size_t n)
 void FullGridSet::generate(size_t dim,size_t n,const char *type)
 {
 		if (strcmp(type,"linearBoundary")==0){
+		    gridsWithBonudaryPoints_ = true;
 			generate(dim,n);
 		}
         else
@@ -36,6 +38,7 @@ void FullGridSet::generate(size_t dim,size_t n,const char *type)
         		size=0;
         		int combi,oldsize;
         		if (strstr(type,"Trapezoid")!=0){
+            		 gridsWithBonudaryPoints_ = true;
                      n=n+dim-1;///generate fullgrids with norm1 up to level+dim-1 to get all gridpoints	                                
                      for (size_t q=0;q<dim;q++)
                      {
@@ -51,6 +54,7 @@ void FullGridSet::generate(size_t dim,size_t n,const char *type)
                      gridType=2;          
         		}
         		else{
+        			 gridsWithBonudaryPoints_ = false;
                      n=n+dim-1;///generate fullgrids with norm1 up to level+dim-1 to get all gridpoints
                      for (size_t q=0;q<dim;q++)
                      {
@@ -138,7 +142,10 @@ void FullGridSet::generate(size_t dim, size_t* levels, const char *type,size_t l
 						  if (i!=j) v->push_back(levels[j]/2);
 						  else v->push_back(levels[j]);
 					  }
-					  grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+					  if (gridsWithBonudaryPoints_ )
+						{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+					  else
+						{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 					  coefs.push_back(1);
 			}
 			v->clear();
@@ -146,7 +153,10 @@ void FullGridSet::generate(size_t dim, size_t* levels, const char *type,size_t l
 			{
 					  v->push_back(levels[j]/2);
 			}
-			grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+			if (gridsWithBonudaryPoints_ )
+				{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+			else
+				{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 			coefs.push_back(1.0-dim);
 			size=dim+1;
 		}
@@ -164,6 +174,7 @@ void FullGridSet::generate(size_t dim, size_t* levels, const char *type,size_t l
 				ratio[i]=(double)n/levels[i];
 			}
 			if (strcmp(type,"linearBoundary")==0) {
+				        gridsWithBonudaryPoints_ = true;
 						for (q=0;q<dim;q++)
 						{
 					    	combi=combination(dim-1,q);
@@ -177,6 +188,7 @@ void FullGridSet::generate(size_t dim, size_t* levels, const char *type,size_t l
 						removeDuplicates();
 			}
 			else if (strcmp(type,"linearTrapezoidBoundary")==0){
+				         gridsWithBonudaryPoints_ = true;
 					     n=n-1;
 						 for (q=0;q<dim;q++)
 							 {
@@ -191,6 +203,7 @@ void FullGridSet::generate(size_t dim, size_t* levels, const char *type,size_t l
 						 removeDuplicates();
 			}
 			else if (strcmp(type,"modlinearTrapezoidBoundary")==0){
+				      gridsWithBonudaryPoints_ = true;
 					  n=n-l_user;
 					  for (q=0;q<dim;q++)
 					  {
@@ -207,17 +220,18 @@ void FullGridSet::generate(size_t dim, size_t* levels, const char *type,size_t l
 					  removeDuplicates();
 			}
 			else {
+				 gridsWithBonudaryPoints_ = false;
 				 n=n-1;
-					 for (q=0;q<dim;q++)
-					 {
-								combi=combination(dim-1,q);
-								if (q%2!=0) combi=-combi;
-								oldsize=size;
-								getInnersums(v,dim,n-q,ratio);
-								for (i=oldsize;i<size;i++)
-											   coefs.push_back(combi);
-					 }
-					gridType=1;
+				 for (q=0;q<dim;q++)
+				 {
+						combi=combination(dim-1,q);
+						if (q%2!=0) combi=-combi;
+						oldsize=size;
+						getInnersums(v,dim,n-q,ratio);
+						for (i=oldsize;i<size;i++)
+									   coefs.push_back(combi);
+				 }
+				 gridType=1;
 			}
 		}
 		else cout<<"Grid type not supported";
@@ -229,6 +243,9 @@ void FullGridSet::generate(size_t dim, size_t* levels, size_t* l_user)
 		size_t i,q;
 		size_t max=l_user[0];
 		vector<level_t> v(0);
+
+		//std::cout << " FullGridSet::generate boundary:" << gridsWithBonudaryPoints_ << std::endl;
+
 		size=0;
 		int combi,oldsize;
 		double* ratio=new double[dim];
@@ -292,7 +309,10 @@ void FullGridSet::getsums(vector<level_t> *v,size_t dim,size_t sum)
 		if (dim==1)
 		{
 			    v->push_back(sum);
-				grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+			    if (gridsWithBonudaryPoints_ )
+					{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+			    else
+					{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 				size++;
 				v->pop_back();
 		}
@@ -313,7 +333,10 @@ void FullGridSet::getInnersums(vector<level_t> *v,size_t dim,size_t sum)
 		if (dim==1)
 		{
 			    v->push_back(sum);
-			    grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));
+			    if (gridsWithBonudaryPoints_ )
+					{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+			    else
+					{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 				size++;
 				v->pop_back();
 		}
@@ -334,7 +357,10 @@ void FullGridSet::getInnersums(vector<level_t> *v,size_t dim,int sum,double* rat
 		if (dim==1)
 		{
 				v->push_back(sum/ratio[v->size()]+1);
-			    grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));
+			    if (gridsWithBonudaryPoints_ )
+					{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+			    else
+					{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 				size++;
 				v->pop_back();
 		}
@@ -355,7 +381,10 @@ void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,size_t sum,size
 		if (dim==1)
 		{
 			    v->push_back(sum);
-			    grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+			    if (gridsWithBonudaryPoints_ )
+					{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+			    else
+					{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 				size++;
 				v->pop_back();
 		}
@@ -379,7 +408,10 @@ void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,size_t sum,size
 	        if (dim==1)
 			{
 				    v->push_back(sum);
-				    grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+				    if (gridsWithBonudaryPoints_ )
+						{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+				    else
+						{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 					size++;
 					v->pop_back();
 			}
@@ -403,7 +435,10 @@ void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,int l_u
 		if (dim==1)
 		{
 				v->push_back(sum/ratio[v->size()]+l_user);
-			    grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+			    if (gridsWithBonudaryPoints_ )
+					{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+			    else
+					{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 				size++;
 				v->pop_back();
 		}
@@ -425,7 +460,10 @@ void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,size_t*
 			if (dim==1)
 			{
 					v->push_back(sum/ratio[v->size()]+l_user[v->size()]);
-				    grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+				    if (gridsWithBonudaryPoints_ )
+						{grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));}
+				    else
+						{grids.push_back(FullGrid::createLinearFullGrid(v->size(),v));}
 					size++;
 					v->pop_back();
 			}
@@ -455,7 +493,11 @@ void FullGridSet::getSquare(vector<level_t> *v, size_t dim,size_t maxlevel)
 			  if (i!=j) v->push_back(small_level);
 			  else v->push_back(maxlevel);
 		  }
-		  grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+		  // test which kind of grid to create
+		  if (gridsWithBonudaryPoints_ )
+		    { grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v)); }
+		  else
+		    { grids.push_back(FullGrid::createLinearFullGrid(v->size(),v)); }
 		  coefs.push_back(1);
 	}
 	v->clear();
@@ -463,7 +505,11 @@ void FullGridSet::getSquare(vector<level_t> *v, size_t dim,size_t maxlevel)
 	{
 	  v->push_back(small_level);
 	}
-	grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v));
+	// test which kind of grid to create
+	if (gridsWithBonudaryPoints_ )
+	    { grids.push_back(FullGrid::createLinearBoundaryFullGrid(v->size(),v)); }
+	else
+	    { grids.push_back(FullGrid::createLinearFullGrid(v->size(),v)); }
 	coefs.push_back(1.0-dim);
     size=dim+1;
 }

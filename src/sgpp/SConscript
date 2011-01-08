@@ -22,6 +22,7 @@ grid/common/DirichletUpdateVector.cpp
 grid/common/DirichletGridConverter.cpp
 grid/combination/FullGrid.cpp
 grid/combination/FullGridSet.cpp
+grid/combination/LinearFullGrid.cpp
 
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp

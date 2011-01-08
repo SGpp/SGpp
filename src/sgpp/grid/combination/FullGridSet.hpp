@@ -18,7 +18,7 @@ namespace sg{
  * Pointers to the fullgrids are stored in the vector grids, the fullgrids being ordered after first order norm in decreasing order
  * */
 class FullGridSet{
-	  	 
+
 public:
 
 		typedef vector<FullGrid*> FULLGRID;
@@ -33,8 +33,9 @@ public:
 	   * The initial values for the data vectors are 0
 	   * @param dimension the dimension of the sparse grid
 	   * @param n the level of the sparse grid*/
-        FullGridSet(size_t dimension,size_t n)
+        FullGridSet(size_t dimension,size_t n, bool boundaryPoints = true)
         {
+        	gridsWithBonudaryPoints_ = boundaryPoints;
 			generate(dimension,n);
 			dim=dimension;
 			bbox=0;
@@ -46,11 +47,12 @@ public:
        * @param n the level of the sparse grid
        * @param type the type of the sparse grid(Linear,LinearBoundary, LinearTrapezoidBoundary,SquareRoot
        * @note don't use this constructor for super trapezoid sparse grids*/
-        FullGridSet(size_t dimension,size_t n,const char *type)
+        FullGridSet(size_t dimension,size_t n,const char *type , bool boundaryPoints = true)
         {
-               generate(dimension,n,type);
-               dim=dimension;
-               bbox=0;
+        	gridsWithBonudaryPoints_ = boundaryPoints;
+        	generate(dimension,n,type);
+        	dim=dimension;
+        	bbox=0;
         }
 
        /** Constructs a set of FullGrids for a sparsegrid of given dimension and level for truncated trapezoid sparse grids
@@ -58,26 +60,29 @@ public:
     	 * @param dimension the dimension of the sparse grid
     	 * @param n the level of the sparse grid
     	 * @param l_user the number of levels cut off*/
-        FullGridSet(size_t dimension,size_t n,size_t l_user)
+        FullGridSet(size_t dimension,size_t n,size_t l_user , bool boundaryPoints = true )
         {
-               generate(dimension,n,l_user);
-               dim=dimension;
-               bbox=0;
+        	gridsWithBonudaryPoints_ = boundaryPoints;
+        	generate(dimension,n,l_user);
+        	dim=dimension;
+        	bbox=0;
         }
 
-        FullGridSet(size_t dimension,size_t n,size_t *l_user)
+        FullGridSet(size_t dimension,size_t n,size_t *l_user , bool boundaryPoints = true )
      	{
-                    generate(dimension,n,l_user);
-                    dim=dimension;
-                    bbox=0;
+        	gridsWithBonudaryPoints_ = boundaryPoints;
+        	generate(dimension,n,l_user);
+        	dim=dimension;
+        	bbox=0;
         }
 
        /** Constructor for an adaptive set of fullgrids
          * @param dimension the dimension of the grids
          * @param levels the refinement level in every direction
          * @param type the type of the sparse grid the fullgrids add up to*/
-        FullGridSet(size_t dimension, size_t *levels, const char* type)
+        FullGridSet(size_t dimension, size_t *levels, const char* type , bool boundaryPoints = true )
         {
+        	gridsWithBonudaryPoints_ = boundaryPoints;
         	generate(dimension,levels,type,0);
         	dim=dimension;
         	bbox=0;
@@ -87,22 +92,27 @@ public:
 		 * @param dimension the dimension of the grids
 		 * @param levels the refinement level in every direction
 		 * @param type the type of the sparse grid the fullgrids add up to*/
-        FullGridSet(size_t dimension, size_t *levels, size_t l_user)
+        FullGridSet(size_t dimension, size_t *levels, size_t l_user , bool boundaryPoints = true )
         {
-              	generate(dimension,levels,"modlinearTrapezoidBoundary",l_user);
-               	dim=dimension;
-               	bbox=0;
+        	gridsWithBonudaryPoints_ = boundaryPoints;
+        	std::vector<size_t> l_user_vect;
+        	l_user_vect.resize(dimension,l_user);
+        	generate(dimension,levels,&(l_user_vect[0]));
+        	//generate(dimension,levels,"modlinearTrapezoidBoundary",l_user);
+        	dim=dimension;
+        	bbox=0;
         }
 
         /** Ctor for dimension adaptive T-CT, and also for dimension adaptive truncating
          * @param dimensions
          * @param levels level vector
          * @param l_user truncation vector*/
-        FullGridSet(size_t dimension, size_t *levels, size_t* l_user)
+        FullGridSet(size_t dimension, size_t *levels, size_t* l_user , bool boundaryPoints = true )
 		{
-				generate(dimension,levels,l_user);
-				dim=dimension;
-				bbox=0;
+        	gridsWithBonudaryPoints_ = boundaryPoints;
+        	generate(dimension,levels,l_user);
+        	dim=dimension;
+        	bbox=0;
 		}
 
       /** Destructor of the fullgridset*/
@@ -342,6 +352,9 @@ private:
 
     /**The boundingbox of the grids*/
     BoundingBox* bbox;
+
+    /** flag to indicate if the created full grids should be with or wothout boundary points*/
+    bool gridsWithBonudaryPoints_;
 };
 }
 #endif /*FULLGRIDSET_*/

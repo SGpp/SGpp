@@ -6,12 +6,14 @@ namespace sg{
 
     FullGrid* FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel)
     {
+    	//std::cout << " Create FG WITHOUT boundary " << std::endl;
         return new LinearFullGrid(dim,inlevel);
     }
 
 
     FullGrid* FullGrid::createLinearBoundaryFullGrid(size_t dim, vector<level_t> *inlevel)
     {
+    	//std::cout << " Create FG WITH boundary " << std::endl;
         return new FullGrid(dim,inlevel);
     }
 
@@ -111,7 +113,7 @@ namespace sg{
   	              i = i*this->length(jj)+aindex[jj]+vv;
   	              tmp_val = tmp_val >> 1; //tmp_val / 2;
   	              //std::cout << "FullGrid::eval jj:" << jj << " , this->length(jj):" << this->length(jj) << " , i:" << i
-  	            //		  << ", aindex[jj]:" << aindex[jj] << " , vv:" << vv<< std::endl;
+  	              //		  << ", aindex[jj]:" << aindex[jj] << " , vv:" << vv<< std::endl;
   	        }
   	        // multiply the basis function value with the coefficient
   	        //if (baseVal!=0) //todo:
