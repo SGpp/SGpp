@@ -498,7 +498,7 @@ class LearnerBuilder(object):
             if self.__policy.getAdaptiveIterationLimit()==None and \
             self.__policy.getAccuracyLimit() == None and \
             self.__policy.getEpochsLimit() == None and \
-            self.__policy.getGridSize() == None and \
+            self.__policy.getGridSizeLimit() == None and \
             self.__policy.getMSELimit() == None:
                 self.__policy.setAdaptiveIterationLimit(0)
             self.__builder.getLearner().setStopPolicy(self.__policy)
