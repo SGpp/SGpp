@@ -331,7 +331,7 @@ class TerminalController:
         if options.adaptive: builder.withAdaptiveItarationLimit(options.adaptive)
         if options.grid_limit: builder.withGridSizeLimit(options.grid_limit)
         if options.mse_limit: builder.withMSELimit(options.mse_limi)
-        if options.grid_limit: builder.withEpochsLimit(options.grid_limit)
+        if options.epochs_limit: builder.withEpochsLimit(options.epochs_limit)
         
         # linear solver
         builder = builder.withCGSolver()        
@@ -479,7 +479,7 @@ class TerminalController:
         if options.adaptive: code += "builder.withAdaptiveItarationLimit(%d)\n" % options.adaptive
         if options.grid_limit: code += "builder.withGridSizeLimit(%d)\n" % options.grid_limit
         if options.mse_limit: code += "builder.withMSELimit(%f)\n" % options.mse_limit
-        if options.grid_limit: code += "builder.withEpochsLimit(%d)\n" % options.grid_limit
+        if options.epochs_limit: code += "builder.withEpochsLimit(%d)\n" % options.epochs_limit
         
         # linear solver
         code += "builder = builder.withCGSolver()  \n"      
