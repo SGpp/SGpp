@@ -34,7 +34,7 @@ class TrainingStopPolicy(object):
     __epochsLimit = None                #Maximal number of iterations, during which accuracy can decreases
     __MSELimit = None                   #MSE on validation data, that have to be achieved
     __accuracyLimit = None              #accuracy on validation data, that have to be achieved
-    __gridSize = None                   #Maximal grid size
+    __gridSizeLimit = None                   #Maximal grid size
     
     
     ##Contructor
@@ -43,7 +43,7 @@ class TrainingStopPolicy(object):
         self.__epochsLimit = None
         self.__MSELimit = None
         self.__accuracyLimit = None
-        self.__gridSize = None
+        self.__gridSizeLimit = None
 
 
     ## Returns the maximal number of refinement iterations
@@ -72,8 +72,8 @@ class TrainingStopPolicy(object):
 
     ## Returns the maximal grid size
     # @return: maximal grid size
-    def getGridSize(self):
-        return self.__gridSize
+    def getGridSizeLimit(self):
+        return self.__gridSizeLimit
 
     
     
@@ -81,8 +81,12 @@ class TrainingStopPolicy(object):
     # @param learner: Learner object 
     # @return: boolean value, true if learning has to stop, false otherwise
     def isTrainingComplete(self, learner):
-        # @todo (khakhutv) Make it more advanced (low)
-        if self.__adaptiveIterationLimit != None and self.__adaptiveIterationLimit < learner.getCurrentIterationNumber():
+        if (self.__adaptiveIterationLimit == None 
+        or self.__adaptiveIterationLimit < learner.getCurrentIterationNumber()) \
+        and (self.getGridSizeLimit() == None 
+        or self.getGridSizeLimit() > learner.grid.getSize()) \
+        and (self.getMSELimit() == None
+        or self.getMSELimit() < learner.trainingOverall[-1]):
             return True
         return False
 
