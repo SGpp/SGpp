@@ -56,6 +56,7 @@ import types
 # for help to the console parameters.
 #
 # @todo (khakhutv) implement the test case for terminal controller
+# @todo (khakhutv) load initial alpha from file as configuration file parameter
 class TerminalController:
  
     ## Initial processing of input parameters
@@ -280,6 +281,10 @@ class TerminalController:
         else:
             builder.buildClassifier()
         
+        # load alpha file
+        if options.alpha:
+            builder.withInitialAlphaFromARFFFile(options.alpha)
+        
         
         #dataset options
         if len(options.data) == 1:
@@ -426,6 +431,10 @@ class TerminalController:
 
         else:
             code += "builder.buildClassifier()\n"
+            
+        # load alpha file
+        if options.alpha:
+            code += "builder.withInitialAlphaFromARFFFile('%s')\n" % options.alpha
         
         
         #dataset options
