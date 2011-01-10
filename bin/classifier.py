@@ -691,7 +691,10 @@ def doFolds():
     return
 
 #-------------------------------------------------------------------------------
-## Learn a dataset with a stratified n-fold.
+## Learn a data-set with a stratified n-fold.
+# Unlike the method doFoldStratified(), here all folds will run. One can use
+# doFoldStratified() with options.onlyfoldnum == -1 to achieve the same 
+# behaviour.
 def doFoldr():
     data = openFile(options.data[0])
     (dvec, cvec) = split_n_folds_stratified(data, options.f_level, options.seed)
@@ -703,6 +706,8 @@ def doFoldr():
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a stratified n-fold.
+# Unlike the method doFoldr(), doFoldStratified() is able to learn from the 
+# selected fold only defined in options.onlyfoldnum.
 def doFoldStratified():
     data = openFile(options.data[0])
     (dvec, cvec) = split_n_folds_stratified(data, options.f_level, options.seed)
@@ -722,6 +727,7 @@ def doFoldStratified():
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a n-fold from a set of files.
+# In this case folding level is determined by the number of files.
 def doFoldf():
 
     if len(options.data)==1:
@@ -1249,7 +1255,11 @@ if __name__=='__main__':
 
     # check further parameters:
     if options.onlyfoldnum <> -1 and (not options.onlyfoldnum in range(options.f_level)):
-        raise Exception("--onlyfoldnum: Not in range 0,...,--foldlevel -1")
+        parser.error("--onlyfoldnum: Not in range 0,...,--foldlevel -1")
+    
+    # adapt_rate has to be <1
+    if options.adapt_rate <= 0 or options.adapt_rate >= 1:
+        parser.error("--adapt_rate has to be between 0 and 1")
 
 
 
