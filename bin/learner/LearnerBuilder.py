@@ -242,6 +242,10 @@ class LearnerBuilder(object):
     ##
     def andGetResult(self):
         # @todo (khakhutv) construction of default parameters should be done here
+        if self.__gridDescriptor == None:
+            self.__gridDescriptor = LearnerBuilder.GridDescriptor()
+        if self.__specificationDescriptor == None:
+            self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
             self.__learner.specification.setBOperator(self.__learner.grid.createOperationB())
         return self.__learner
