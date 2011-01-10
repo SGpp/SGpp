@@ -1258,7 +1258,7 @@ if __name__=='__main__':
         parser.error("--onlyfoldnum: Not in range 0,...,--foldlevel -1")
     
     # adapt_rate has to be <1
-    if options.adapt_rate <= 0 or options.adapt_rate >= 1:
+    if options.adapt_rate != None and (options.adapt_rate <= 0 or options.adapt_rate >= 1):
         parser.error("--adapt_rate has to be between 0 and 1")
 
 
