@@ -108,7 +108,16 @@ def exec_mode(mode):
 
     # execute action
     modes[mode]['action']()
-    
+
+
+
+#-------------------------------------------------------------------------------
+## Opens and read the alphas of an ARFF (or plain whitespace-separated data) file.
+# Opens a file given by a filename.
+# @param filename filename of the file
+# @return the data stored in the file as a set of arrays
+def openAlphaFile(filename):
+    return readAlpha(filename)    
 
 
 #-------------------------------------------------------------------------------
@@ -232,7 +241,8 @@ def doApply():
     numData = data["data"].getNrows()
     
     # read alpha vector
-    alpha = buildTrainingVector(openFile(options.alpha))
+#    alpha = buildTrainingVector(openAlphaFile(options.alpha))
+    alpha = openAlphaFile(options.alpha)
     
     # construct corresponding grid
     grid = constructGrid(dim)
@@ -242,10 +252,12 @@ def doApply():
         sys.exit(1)
     
     # copy data to DataVector
-    (x,y) = createDataVectorFromDataset(data)
-
+    #(x,y) = createDataVectorFromDataset(data)
+    x = data['data']
+    y = data['classes']
+    
     # evaluate
-    q = DataVector(1,dim)
+    q = DataVector(dim)
     classes = []
     # if test data contains classes, additionally compute accuracy
     if data.has_key("classes"):
@@ -296,7 +308,8 @@ def doEval():
     numData = data["data"].getNrows()
 
     # read alpha vector
-    alpha = buildTrainingVector(openFile(options.alpha))
+#    alpha = buildTrainingVector(openAlphaFile(options.alpha))
+    alpha = openAlphaFile(options.alpha)
 
     # construct corresponding grid
     grid = constructGrid(dim)
@@ -306,10 +319,12 @@ def doEval():
         sys.exit(1)
 
     # copy data to DataVector
-    (x,y) = createDataVectorFromDataset(data)
-
+#    (x,y) = createDataVectorFromDataset(data)
+    x = data['data']
+    y = data['classes']
+    
     # evaluate
-    q = DataVector(1,dim)
+    q = DataVector(dim)
     classes = []
     # if test data contains function values, additionally compute L2-norm of error
     if data.has_key("classes"):
@@ -367,7 +382,8 @@ def doEval():
 # Outputs function values linewise to stdout.
 def doEvalStdin():
     # read alpha vector
-    alpha = buildTrainingVector(openFile(options.alpha))
+#    alpha = buildTrainingVector(openAlphaFile(options.alpha))
+    alpha = openAlphaFile(options.alpha)
 
     # construct corresponding grid
     if not (options.grid or (options.dim and options.level)):
