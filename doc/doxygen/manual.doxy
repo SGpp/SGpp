@@ -7,4 +7,5 @@
 @section manual__overview Overview
 - @subpage installation
 - @subpage code_examples
+- @subpage continued_learning_examples
 */
