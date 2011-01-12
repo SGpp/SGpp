@@ -84,9 +84,9 @@ class TrainingStopPolicy(object):
         if (self.__adaptiveIterationLimit == None 
         or self.__adaptiveIterationLimit < learner.getCurrentIterationNumber()) \
         and (self.getGridSizeLimit() == None 
-        or self.getGridSizeLimit() > learner.grid.getSize()) \
+        or self.getGridSizeLimit() <= learner.grid.getSize()) \
         and (self.getMSELimit() == None
-        or self.getMSELimit() < learner.trainingOverall[-1]):
+        or self.getMSELimit() >= learner.trainingOverall[-1]):
             return True
         return False
 
