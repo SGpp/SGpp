@@ -17,13 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## @package statsfile2gnuplot
-# @ingroup bin
+# @ingroup bin.utils
 # @brief Create gnuplot-plot from statsfile.
 #
 # Plot e.g. accuracy against lambda and number of grid points
 # @version $CURR$
-
-import tools, optparse, sys
+from bin import tools
+import optparse, sys
 
 # parse args
 parser = optparse.OptionParser()
