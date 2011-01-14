@@ -18,6 +18,7 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 from bin.pysgpp import Grid, DataVector
 from bin.learner import LearnedKnowledge
 import bin.learner.LearnerBuilder as LearnerBuilder
+from bin.controller import InfoToScreen
 
 import gzip
 
@@ -140,16 +141,17 @@ class TestCheckpointController(unittest.TestCase):
         # as storing of grid and knowledge is covered with other tests, only the test of learner is relevant and combination is
         classifier = builder.buildClassifier()\
                      .withTrainingDataFromARFFFile(pathlocal + "/traindata.arff")\
-                     .withGrid().withLevel(2)\
-                     .withSpecification().withLambda(0.00001).withAdaptPoints(2)\
+                     .withGrid().withLevel(2).withBorder(100)\
+                     .withSpecification().withIdentityOperator().withLambda(0.00001).withAdaptPoints(2)\
                      .withStopPolicy().withAdaptiveItarationLimit(1)\
                      .withCGSolver().withImax(500)\
                      .withCheckpointController(controller)\
                      .andGetResult()
         classifier.learnData()
-        
+
         controller.setLearner(classifier)
         controller.saveAll(0)
+        
         
         del controller
         
