@@ -118,7 +118,7 @@ class TrainingStopPolicy(object):
     ## Setter for maximal grid size
     # @param limit: integer maximal grid size  
     def setGridSizeLimit(self, limit):
-        self.__gridSize = limit
+        self.__gridSizeLimit = limit
         
         
     ##Returns a string that represents the object.
