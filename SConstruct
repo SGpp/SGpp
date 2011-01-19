@@ -52,7 +52,8 @@ env = Environment(variables = vars, ENV = os.environ)
 # scons usually adds double quotes around the command-line arguments containing 
 # white spaces  this whould produce compilation error, therefore replace string 
 # with corresponding list of parameters
-env['CPPFLAGS'] = Split(env['CPPFLAGS'])
+opt_flags = Split(env['CPPFLAGS'])
+env['CPPFLAGS'] = []
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
@@ -147,6 +148,10 @@ if not env.GetOption('clean'):
 #        Exit(1)
 
     env = config.Finish()
+
+
+# the optional CPPFLAGS at the end will override the previous flags
+env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 
 Export('env')
 
