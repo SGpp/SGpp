@@ -149,7 +149,7 @@ void DirichletGridConverter::calcInnerCoefs(DataVector& BoundaryCoefs, DataVecto
 	}
 	else
 	{
-		throw generation_exception("DirichletGridConverter : calcInnerCoefs : Inner grid  hasn't be created before!");
+		throw generation_exception("DirichletGridConverter : calcInnerCoefs : The inner grid has no gridpoints! Check adaptivity calls and settings!");
 	}
 }
 
@@ -164,7 +164,7 @@ void DirichletGridConverter::updateBoundaryCoefs(DataVector& BoundaryCoefs, Data
 	}
 	else
 	{
-		throw generation_exception("DirichletGridConverter : calcInnerCoefs : Inner grid  hasn't be created before!");
+		throw generation_exception("DirichletGridConverter : updateBoundaryCoefs : The inner grid has no gridpoints! Check adaptivity calls and settings!");
 	}
 }
 
