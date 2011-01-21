@@ -135,109 +135,39 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	}
 }
 
-void HeatEquationSolver::initGridWithSingleHeat(DataVector& alpha, double heat)
-{
-	double tmp;
-	double tmp2;
-
-	if (this->bGridConstructed)
-	{
-		if (this->dim == 1)
-		{
-			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-			{
-				tmp = atof(this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox).c_str());
-
-				if (tmp == 0.5)
-				{
-					alpha[i] = heat;
-				}
-				else
-				{
-					alpha[i] = 0.0;
-				}
-			}
-
-			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
-			myHierarchisation->doHierarchisation(alpha);
-			delete myHierarchisation;
-		}
-		else if (this->dim == 2)
-		{
-			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-			{
-					std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-					std::stringstream coordsStream(coords);
-
-					coordsStream >> tmp;
-					coordsStream >> tmp2;
-
-					if (tmp == 0.5 && tmp2 == 0.5)
-					{
-						alpha[i] = heat;
-					}
-					else
-					{
-						alpha[i] = 0.0;
-					}
-			}
-
-			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
-			myHierarchisation->doHierarchisation(alpha);
-			delete myHierarchisation;
-		}
-		else
-		{
-			throw new application_exception("HeatEquationSolver::initGridWithSingleHeat : The constructed grid has more than two dimensions!");
-		}
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::initGridWithSingleHeat : A grid wasn't constructed before!");
-	}
-}
-
 void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor)
 {
-	double tmp;
-	double tmp2;
-
 	if (this->bGridConstructed)
 	{
-		if (this->dim == 1)
+		double tmp;
+		double* dblFuncValues = new double[this->dim];
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 		{
-			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+
+			for (size_t j = 0; j < this->dim; j++)
 			{
-				tmp = atof(this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox).c_str());
-
-				alpha[i] = factor*(1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma));
-			}
-
-			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
-			myHierarchisation->doHierarchisation(alpha);
-			delete myHierarchisation;
-		}
-		else if (this->dim == 2)
-		{
-			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-			{
-				std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-				std::stringstream coordsStream(coords);
-
 				coordsStream >> tmp;
-				coordsStream >> tmp2;
 
-				alpha[i] = factor*factor*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp-mu)/sigma)*((tmp-mu)/sigma))) * ((1.0/(sigma*2.0*3.145))*exp((-0.5)*((tmp2-mu)/sigma)*((tmp2-mu)/sigma)));
+				dblFuncValues[j] = tmp;
 			}
 
-			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
-			myHierarchisation->doHierarchisation(alpha);
-			delete myHierarchisation;
+			tmp = 1.0;
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				tmp *=  factor*factor*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[j]-mu)/sigma)*((dblFuncValues[j]-mu)/sigma)));
+			}
+
+			alpha[i] = tmp;
 		}
-		else
-		{
-			throw new application_exception("HeatEquationSolver::initGridWithSmoothHeat : The constructed grid has more than two dimensions!");
-		}
+
+		delete[] dblFuncValues;
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
 	}
 	else
 	{
@@ -245,41 +175,10 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 	}
 }
 
-void HeatEquationSolver::initGridWithConstantHeat(DataVector& alpha, double constHeat)
-{
-	double tmp;
-	//double tmp2;
-
-	if (this->bGridConstructed)
-	{
-		if (this->dim == 1)
-		{
-			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-			{
-				tmp = atof(this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox).c_str());
-
-				alpha[i] = constHeat;
-			}
-
-			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
-			myHierarchisation->doHierarchisation(alpha);
-			delete myHierarchisation;
-		}
-		else
-		{
-			throw new application_exception("HeatEquationSolver::initGridWithConstantHeat : The constructed grid has more than one dimension!");
-		}
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::initGridWithConstantHeat : A grid wasn't constructed before!");
-	}
-}
-
 void HeatEquationSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
-	this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2010");
+	this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
 }
 
 }

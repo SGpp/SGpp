@@ -180,10 +180,12 @@ algorithm/pde/UpDownOneOpDimWithShadow.cpp
 application/common/ScreenOutput.cpp
 application/pde/PDESolver.cpp
 application/pde/ParabolicPDESolver.cpp
+application/pde/EllipticPDESolver.cpp
 application/pde/BlackScholesSolver.cpp
 application/pde/HullWhiteSolver.cpp
 application/pde/BlackScholesHullWhiteSolver.cpp
 application/pde/HeatEquationSolver.cpp
+application/pde/PoissonEquationSolver.cpp
 
 solver/sle/ConjugateGradients.cpp
 solver/sle/ConjugateGradientsSP.cpp

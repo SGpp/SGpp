@@ -92,11 +92,15 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 			{
 				dimOne = myGrid->getBoundingBox()->getBoundary(0);
 
-				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=((dimOne.rightBoundary - dimOne.leftBoundary)/PointsPerDimension))
+				double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(PointsPerDimension-1));
+
+				size_t points = (size_t)PointsPerDimension;
+
+				for (size_t i = 0; i < points; i++)
 				{
 					std::vector<double> point;
-					point.push_back(i);
-					fileout << i << " " << myEval->eval(alpha,point) << std::endl;
+					point.push_back((((double)(i))*inc_x));
+					fileout << (((double)(i))*inc_x) << " " << myEval->eval(alpha,point) << std::endl;
 				}
 			}
 			else if (myGrid->getStorage()->dim() == 2)
@@ -104,14 +108,19 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 				dimOne = myGrid->getBoundingBox()->getBoundary(0);
 				dimTwo = myGrid->getBoundingBox()->getBoundary(1);
 
-				for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=((dimOne.rightBoundary - dimOne.leftBoundary)/PointsPerDimension))
+				double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(PointsPerDimension-1));
+				double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary)/(PointsPerDimension-1));
+
+				size_t points = (size_t)PointsPerDimension;
+
+				for (size_t i = 0; i < points; i++)
 				{
-					for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary; j+=((dimTwo.rightBoundary - dimTwo.leftBoundary)/PointsPerDimension))
+					for (size_t j = 0; j < points; j++)
 					{
 						std::vector<double> point;
-						point.push_back(i);
-						point.push_back(j);
-						fileout << i << " " << j << " " << myEval->eval(alpha,point) << std::endl;
+						point.push_back((((double)(i))*inc_x));
+						point.push_back((((double)(j))*inc_y));
+						fileout << (((double)(i))*inc_x) << " " << (((double)(j))*inc_y) << " " << myEval->eval(alpha,point) << std::endl;
 					}
 					fileout << std::endl;
 				}
