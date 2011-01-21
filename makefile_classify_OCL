@@ -77,7 +77,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	PrewaveletGrid.o PrewaveletGridGenerator.o OperationBPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
 	UpDownOneOpDimWithShadow.o OperationODESolverSystemDirichlet.o OperationODESolverSystemNeumann.o\
-	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o
+	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
+	EllipticPDESolver.o
 
 ###################################################################
 # Compiler Flags
@@ -557,6 +558,9 @@ PDESolver.o : $(SRCDIR)application/pde/PDESolver.cpp
 
 ParabolicPDESolver.o : $(SRCDIR)application/pde/ParabolicPDESolver.cpp
 	$(CC) $(CFLAGS) -o ParabolicPDESolver.o $(SRCDIR)application/pde/ParabolicPDESolver.cpp
+	
+EllipticPDESolver.o : $(SRCDIR)application/pde/EllipticPDESolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)EllipticPDESolver.o $(SRCDIR)application/pde/EllipticPDESolver.cpp
 
 BlackScholesSolver.o : $(SRCDIR)application/pde/BlackScholesSolver.cpp
 	$(CC) $(CFLAGS) -o BlackScholesSolver.o $(SRCDIR)application/pde/BlackScholesSolver.cpp
@@ -569,6 +573,9 @@ BlackScholesHullWhiteSolver.o : $(SRCDIR)application/pde/BlackScholesHullWhiteSo
 
 HeatEquationSolver.o : $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	$(CC) $(CFLAGS) -o HeatEquationSolver.o $(SRCDIR)application/pde/HeatEquationSolver.cpp
+	
+PoissonEquationSolver.o : $(SRCDIR)application/pde/PoissonEquationSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolver.o $(SRCDIR)application/pde/PoissonEquationSolver.cpp
 	
 BoundingBox.o : $(SRCDIR)grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) -o BoundingBox.o $(SRCDIR)grid/common/BoundingBox.cpp

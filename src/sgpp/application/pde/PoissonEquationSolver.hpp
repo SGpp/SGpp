@@ -1,16 +1,16 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef HEATEQUATIONSOLVER_HPP
-#define HEATEQUATIONSOLVER_HPP
+#ifndef POISSONEQUATIONSOLVER_HPP
+#define POISSONEQUATIONSOLVER_HPP
 
 #include "sgpp.hpp"
 
-#include "application/pde/ParabolicPDESolver.hpp"
+#include "application/pde/EllipticPDESolver.hpp"
 
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/LinearGrid.hpp"
@@ -31,18 +31,16 @@ namespace sg
 
 /**
  * This class provides a simple-to-use solver of the multi dimensional
- * Heat Equation on Sparse Grids.
+ * Poisson Equation on Sparse Grids.
  *
  * The class's aim is, to hide all complex details of solving the
- * Heat Equation on Sparse Grids!
+ * Poisson Equation on Sparse Grids!
  *
  * @version $HEAD$
  */
-class HeatEquationSolver : public ParabolicPDESolver
+class PoissonEquationSolver : public EllipticPDESolver
 {
 private:
-	/// the heat coefficient
-	double a;
 	/// screen object used in this solver
 	ScreenOutput* myScreen;
 
@@ -50,31 +48,20 @@ public:
 	/**
 	 * Std-Constructor of the solver
 	 */
-	HeatEquationSolver();
+	PoissonEquationSolver();
 
 	/**
 	 * Std-Destructor of the solver
 	 */
-	virtual ~HeatEquationSolver();
+	virtual ~PoissonEquationSolver();
 
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
-
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
-
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	void solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false);
 
 	/**
-	 * This method sets the heat coefficient of the regarded material
-	 *
-	 * @param a the heat coefficient
-	 */
-	void setHeatCoefficient(double a);
-
-	/**
-	 * Inits the grid with an smooth heat distribution based the
-	 * normal distribution formula
+	 * Inits the grid with a smooth heat distribution (based on
+	 * a std-normal distribution) on its boundaries
 	 *
 	 * @param alpha reference to the coefficients vector
 	 * @param mu the exspected value of the normal distribution
@@ -91,4 +78,4 @@ public:
 
 }
 
-#endif /* HEATEQUATIONSOLVER_HPP */
+#endif /* POISSONEQUATIONSOLVER_HPP */
