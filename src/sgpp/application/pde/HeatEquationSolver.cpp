@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/HeatEquationODESolverSystem.hpp"
+#include "algorithm/pde/HeatEquationODESolverSystemParallelOMP.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -59,13 +60,27 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 	if (this->bGridConstructed)
 	{
 		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		double dNeededTime;
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+#ifdef USEOMPTHREE
+		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
+#else
 		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
+#endif
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
+		myStopwatch->start();
 		myEuler->solve(*myCG, *myHESolver, verbose);
+		dNeededTime = myStopwatch->stop();
 
-		delete myHESolver;
+		if (this->myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
+			this->myScreen->writeEmptyLines(2);
+		}
+
+		delete myStopwatch;
 		delete myCG;
 		delete myEuler;
 	}
@@ -80,12 +95,27 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	if (this->bGridConstructed)
 	{
 		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		double dNeededTime;
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+#ifdef USEOMPTHREE
+		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+#else
 		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+#endif
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
+		myStopwatch->start();
 		myEuler->solve(*myCG, *myHESolver, verbose);
+		dNeededTime = myStopwatch->stop();
 
+		if (this->myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
+			this->myScreen->writeEmptyLines(2);
+		}
+
+		delete myStopwatch;
 		delete myHESolver;
 		delete myCG;
 		delete myEuler;
@@ -101,8 +131,14 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 	if (this->bGridConstructed)
 	{
 		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+		double dNeededTime;
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+#ifdef USEOMPTHREE
+		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+#else
 		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+#endif
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		size_t numCNSteps;
 		size_t numIESteps;
@@ -117,13 +153,22 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		Euler* myEuler = new Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
 		CrankNicolson* myCN = new CrankNicolson(numCNSteps, timestepsize);
 
+		myStopwatch->start();
 		if (numIESteps > 0)
 		{
 			myEuler->solve(*myCG, *myHESolver, false);
 		}
 
 		myCN->solve(*myCG, *myHESolver, false);
+		dNeededTime = myStopwatch->stop();
 
+		if (this->myScreen != NULL)
+		{
+			std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
+			this->myScreen->writeEmptyLines(2);
+		}
+
+		delete myStopwatch;
 		delete myHESolver;
 		delete myCG;
 		delete myCN;
