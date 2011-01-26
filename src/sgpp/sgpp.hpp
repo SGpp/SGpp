@@ -29,6 +29,7 @@
 #include "algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
 #include "algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"
 #include "algorithm/pde/HeatEquationODESolverSystem.hpp"
+#include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"
 #include "application/pde/HullWhiteSolver.hpp"

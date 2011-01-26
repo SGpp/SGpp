@@ -63,7 +63,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
 	UpDownOneOpDimWithShadow.o OperationODESolverSystemDirichlet.o OperationODESolverSystemNeumann.o\
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
-	EllipticPDESolver.o
+	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
+	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -468,6 +469,9 @@ BlackScholesODESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackS
 HeatEquationODESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationODESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
 	
+PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+
 DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	
@@ -581,6 +585,15 @@ OperationODESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationODESolverSys
 	
 OperationODESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationODESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationODESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationODESolverSystemDirichlet.cpp
+	
+OperationEllipticPDESolverSystem.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystem.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
+	
+OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
+	
+OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
 	
 clean:
 	rm *

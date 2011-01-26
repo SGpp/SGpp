@@ -74,13 +74,12 @@ void writeHelp()
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	left_bound: x_i of left boundary" << std::endl;
 	mySStream << "	right_bound: x_i of right boundary" << std::endl;
-	mySStream << "	a: thermal diffusivity" << std::endl;
 	mySStream << "	initHeat: initial heat distribution" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "HESolver PoissonEquation 3 5 0.0 3.0 1.0 smooth 0.00001 400" << std::endl;
+	mySStream << "HESolver PoissonEquation 3 5 0.0 3.0 smooth 0.00001 400" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
 	mySStream << "	poissonStart.gnuplot: the start condition" << std::endl;
@@ -129,7 +128,10 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 	}
 
 	// Print the initial heat function into a gnuplot file
-	myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatStart.gnuplot");
+	if (dim < 3)
+	{
+		myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatStart.gnuplot");
+	}
 
 	// set heat coefficient
 	myHESolver->setHeatCoefficient(a);
@@ -149,7 +151,10 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 	}
 
 	// Print the solved Heat Equation into a gnuplot file
-	myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatSolved.gnuplot");
+	if (dim < 3)
+	{
+		myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatSolved.gnuplot");
+	}
 
 	delete myHESolver;
 	delete myBoundingBox;
@@ -192,14 +197,19 @@ void testPoissonEquation(size_t dim, size_t level, double bound_left, double bou
 	}
 
 	// Print the initial heat function into a gnuplot file
-	myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStart.gnuplot");
+	if (dim < 3)
+	{
+		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStart.gnuplot");
+	}
 
 	// solve Poisson Equation
-	std::cout << "String solving" << std::endl;
 	myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
 
 	// Print the solved Heat Equation into a gnuplot file
-	myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
+	if (dim < 3)
+	{
+		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
+	}
 
 	delete myPoisSolver;
 	delete myBoundingBox;
