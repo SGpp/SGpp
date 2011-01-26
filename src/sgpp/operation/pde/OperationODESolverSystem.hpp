@@ -11,8 +11,6 @@
 #include "grid/Grid.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
-#include "grid/common/DirichletUpdateVector.hpp"
-#include "grid/common/DirichletGridConverter.hpp"
 
 namespace sg
 {

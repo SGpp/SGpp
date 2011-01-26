@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "application/pde/PoissonEquationSolver.hpp"
+#include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 #include "solver/sle/ConjugateGradients.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
@@ -49,35 +50,27 @@ void PoissonEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level
 void PoissonEquationSolver::solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose)
 {
 	ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-	DirichletGridConverter* myGridConverter =  new DirichletGridConverter();
-	DirichletUpdateVector* myBoundaryUpdate = new DirichletUpdateVector(this->myGrid->getStorage());
-	OperationMatrix* L_complete = this->myGrid->createOperationLaplace();
-	Grid* InnerGrid;
-	DataVector* alpha_inner;
-	DataVector* rhs_inner;
-	DataVector alpha_complete(rhs);
-	DataVector tmp_complete(rhs);
+	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), rhs);
 
-	myBoundaryUpdate->setInnerPointsToZero(alpha_complete);
-	L_complete->mult(alpha_complete, tmp_complete);
+	std::cout << "Gridpoints (complete grid): " << mySystem->getNumGridPointsComplete() << std::endl;
+	std::cout << "Gridpoints (inner grid): " << mySystem->getNumGridPointsInner() << std::endl << std::endl << std::endl;
 
-	myGridConverter->buildInnerGridWithCoefs(*this->myGrid, tmp_complete, &InnerGrid, &rhs_inner);
-	OperationMatrix* L_inner = InnerGrid->createOperationLaplace();
-	alpha_inner = new DataVector(rhs_inner->getSize());
-	alpha_inner->setAll(0.0);
-	rhs_inner->mult(-1.0);
-	myCG->solve(*L_inner, *alpha_inner, *rhs_inner, true, verbose, 0.0);
+	DataVector* alpha_solve = mySystem->getGridCoefficientsForCG();
+	std::cout << "coefficients has been initialized for solving!" << std::endl;
+	DataVector* rhs_solve = mySystem->generateRHS();
+	std::cout << "right hand side has been initialized for solving!" << std::endl << std::endl << std::endl;
 
-	myGridConverter->updateBoundaryCoefs(alpha, *alpha_inner);
+	myCG->solve(*mySystem, *alpha_solve, *rhs_solve, true, verbose, 0.0);
+
+	// Copy result into coefficient vector of the boundary grid
+	mySystem->getSolutionBoundGrid(alpha, *alpha_solve);
+
+	std::cout << std::endl << std::endl;
+	std::cout << "Gridpoints (complete grid): " << mySystem->getNumGridPointsComplete() << std::endl;
+	std::cout << "Gridpoints (inner grid): " << mySystem->getNumGridPointsInner() << std::endl << std::endl << std::endl;
 
 	delete myCG;
-	delete L_complete;
-	delete L_inner;
-	delete rhs_inner;
-	delete alpha_inner;
-	delete myGridConverter;
-	delete myBoundaryUpdate;
-	delete InnerGrid;
+	delete mySystem; // alpha_solver and rhs_solve are allocated and freed here!!
 }
 
 void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor)

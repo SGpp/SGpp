@@ -35,7 +35,7 @@
 #define USE_BOUNDARIES
 
 // do Test only after last refinement
-//#define TEST_LAST_ONLY
+#define TEST_LAST_ONLY
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {

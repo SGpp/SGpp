@@ -161,6 +161,9 @@ basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
 operation/pde/OperationODESolverSystemDirichlet.cpp
 operation/pde/OperationODESolverSystemNeumann.cpp
 operation/pde/OperationODESolverSystem.cpp
+operation/pde/OperationEllipticPDESolverSystem.cpp
+operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
+operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
 algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
@@ -172,6 +175,7 @@ algorithm/pde/HullWhiteODESolverSystem.cpp
 algorithm/pde/BlackScholesODESolverSystemEuropean.cpp
 algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
 algorithm/pde/HeatEquationODESolverSystem.cpp
+algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 algorithm/pde/StdUpDown.cpp
 algorithm/pde/UpDownOneOpDim.cpp
 algorithm/pde/UpDownTwoOpDims.cpp
