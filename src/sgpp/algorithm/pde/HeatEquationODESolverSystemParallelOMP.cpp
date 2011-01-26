@@ -87,6 +87,8 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 #ifdef USEOMPTHREE
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 	size_t nDims = algoDims.size();
+	omp_lock_t Mutex;
+	omp_init_lock(&Mutex);
 
 	// Apply Laplace, parallel in Dimensions
 	for (size_t i = 0; i < nDims; i++)
@@ -99,14 +101,15 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 			((UpDownOneOpDim*)(this->OpLaplaceBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
-			#pragma omp critical
-			{
-				temp.add(myResult);
-			}
+			omp_set_lock(&Mutex);
+			temp.add(myResult);
+			omp_unset_lock(&Mutex);
 		}
 	}
 
 	#pragma omp taskwait
+
+	omp_destroy_lock(&Mutex);
 #else
 	// Apply Laplace Operator
 	this->OpLaplaceBound->mult(alpha, temp);
@@ -137,6 +140,8 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 #ifdef USEOMPTHREE
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 	size_t nDims = algoDims.size();
+	omp_lock_t Mutex;
+	omp_init_lock(&Mutex);
 
 	// Apply Laplace, parallel in Dimensions
 	for (size_t i = 0; i < nDims; i++)
@@ -149,14 +154,15 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 			((UpDownOneOpDim*)(this->OpLaplaceInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
-			#pragma omp critical
-			{
-				temp.add(myResult);
-			}
+			omp_set_lock(&Mutex);
+			temp.add(myResult);
+			omp_unset_lock(&Mutex);
 		}
 	}
 
 	#pragma omp taskwait
+
+	omp_destroy_lock(&Mutex);
 #else
 	// Apply Laplace Operator
 	this->OpLaplaceInner->mult(alpha, temp);
