@@ -51,7 +51,7 @@ LFLAGS_ICC=-Wall -ansi -O3 -static-intel -ipo -ip
 CFLAGS_ICC_TRONE=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSETRONE -DUSEICCINTRINSICS -std=c++0x -axSSE3
 LFLAGS_ICC_TRONE=-Wall -ansi -O3 -static-intel -ipo -ip
 
-CFLAGS_ICC_OMP=-Wall -ansi -ipo -ip -c -O3 -axSSE3 -fno-strict-aliasing -ansi-alias -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS
+CFLAGS_ICC_OMP=-Wall -ansi -c -O3 -axSSE3 -fno-strict-aliasing -ipo -ip -ansi-alias -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS
 LFLAGS_ICC_OMP=-Wall -ansi -O3 -static-intel -openmp -openmp-link static -ipo -ip
 CFLAGS_ICC_OMP_TRONE=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -DUSEICCINTRINSICS -std=c++0x -axSSE3
 LFLAGS_ICC_OMP_TRONE=-Wall -ansi -O3 -static-intel -openmp -openmp-link static -ipo -ip

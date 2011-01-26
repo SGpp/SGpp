@@ -79,7 +79,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	UpDownOneOpDimWithShadow.o OperationODESolverSystemDirichlet.o OperationODESolverSystemNeumann.o\
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
-	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o
+	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
+	HeatEquationODESolverSystemParallelOMP.o
 
 ###################################################################
 # Compiler Flags
@@ -514,6 +515,9 @@ BlackScholesODESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackS
 
 HeatEquationODESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
 	$(CC) $(CFLAGS) -o HeatEquationODESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
+	
+HeatEquationODESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystemParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationODESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystemParallelOMP.cpp	
 	
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
