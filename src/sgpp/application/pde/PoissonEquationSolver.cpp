@@ -11,6 +11,7 @@
 #include "solver/sle/ConjugateGradients.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 #include "stdlib.h"
 #include <sstream>
 
@@ -50,6 +51,11 @@ void PoissonEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level
 
 void PoissonEquationSolver::solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose)
 {
+	double dTimeAlpha = 0.0;
+	double dTimeRHS = 0.0;
+	double dTimeSolver = 0.0;
+
+	SGppStopwatch* myStopwatch = new SGppStopwatch();
 	ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
 	PoissonEquationEllipticPDESolverSystemDirichletParallelOMP* mySystem = new PoissonEquationEllipticPDESolverSystemDirichletParallelOMP(*(this->myGrid), rhs);
@@ -60,22 +66,36 @@ void PoissonEquationSolver::solvePDE(DataVector& alpha, DataVector& rhs, size_t 
 	std::cout << "Gridpoints (complete grid): " << mySystem->getNumGridPointsComplete() << std::endl;
 	std::cout << "Gridpoints (inner grid): " << mySystem->getNumGridPointsInner() << std::endl << std::endl << std::endl;
 
+	myStopwatch->start();
 	DataVector* alpha_solve = mySystem->getGridCoefficientsForCG();
+	dTimeAlpha = myStopwatch->stop();
 	std::cout << "coefficients has been initialized for solving!" << std::endl;
+	myStopwatch->start();
 	DataVector* rhs_solve = mySystem->generateRHS();
+	dTimeRHS = myStopwatch->stop();
 	std::cout << "right hand side has been initialized for solving!" << std::endl << std::endl << std::endl;
 
+	myStopwatch->start();
 	myCG->solve(*mySystem, *alpha_solve, *rhs_solve, true, verbose, 0.0);
 
 	// Copy result into coefficient vector of the boundary grid
 	mySystem->getSolutionBoundGrid(alpha, *alpha_solve);
+	dTimeSolver = myStopwatch->stop();
 
 	std::cout << std::endl << std::endl;
 	std::cout << "Gridpoints (complete grid): " << mySystem->getNumGridPointsComplete() << std::endl;
 	std::cout << "Gridpoints (inner grid): " << mySystem->getNumGridPointsInner() << std::endl << std::endl << std::endl;
 
+	std::cout << "Timings for solving Poisson Equation" << std::endl;
+	std::cout << "------------------------------------" << std::endl;
+	std::cout << "Time for creating CG coeffs: " << dTimeAlpha << std::endl;
+	std::cout << "Time for creating RHS: " << dTimeRHS << std::endl;
+	std::cout << "Time for solving: " << dTimeSolver << std::endl << std::endl;
+	std::cout << "Time: " << dTimeAlpha + dTimeRHS + dTimeSolver << std::endl << std::endl << std::endl;
+
 	delete myCG;
 	delete mySystem; // alpha_solver and rhs_solve are allocated and freed here!!
+	delete myStopwatch;
 }
 
 void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor)
