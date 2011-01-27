@@ -232,8 +232,12 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixInner(DataVe
 
 	result.setAll(0.0);
 
+#ifdef USEOMPTHREE
+	((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
+#else
 	// Apply the mass matrix
 	this->OpLTwoInner->mult(alpha, temp);
+#endif
 
 	result.add(temp);
 }
@@ -244,8 +248,12 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(Dat
 
 	result.setAll(0.0);
 
+#ifdef USEOMPTHREE
+	((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
+#else
 	// Apply the mass matrix
 	this->OpLTwoBound->mult(alpha, temp);
+#endif
 
 	result.add(temp);
 }
