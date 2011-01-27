@@ -71,8 +71,12 @@ void HeatEquationODESolverSystemParallelOMP::applyMassMatrixComplete(DataVector&
 
 	DataVector temp(alpha.getSize());
 
+#ifdef USEOMPTHREE
+	((StdUpDown*)(this->OpMassBound))->multParallelBuildingBlock(alpha, temp);
+#else
 	// Apply the mass matrix
 	this->OpMassBound->mult(alpha, temp);
+#endif
 
 	result.add(temp);
 }
@@ -124,8 +128,12 @@ void HeatEquationODESolverSystemParallelOMP::applyMassMatrixInner(DataVector& al
 
 	DataVector temp(alpha.getSize());
 
+#ifdef USEOMPTHREE
+	((StdUpDown*)(this->OpMassInner))->multParallelBuildingBlock(alpha, temp);
+#else
 	// Apply the mass matrix
 	this->OpMassInner->mult(alpha, temp);
+#endif
 
 	result.add(temp);
 }
