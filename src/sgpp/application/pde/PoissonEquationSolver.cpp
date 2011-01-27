@@ -7,6 +7,7 @@
 
 #include "application/pde/PoissonEquationSolver.hpp"
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
+#include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.hpp"
 #include "solver/sle/ConjugateGradients.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
@@ -50,7 +51,11 @@ void PoissonEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level
 void PoissonEquationSolver::solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose)
 {
 	ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+#ifdef USEOMPTHREE
+	PoissonEquationEllipticPDESolverSystemDirichletParallelOMP* mySystem = new PoissonEquationEllipticPDESolverSystemDirichletParallelOMP(*(this->myGrid), rhs);
+#else
 	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), rhs);
+#endif
 
 	std::cout << "Gridpoints (complete grid): " << mySystem->getNumGridPointsComplete() << std::endl;
 	std::cout << "Gridpoints (inner grid): " << mySystem->getNumGridPointsInner() << std::endl << std::endl << std::endl;

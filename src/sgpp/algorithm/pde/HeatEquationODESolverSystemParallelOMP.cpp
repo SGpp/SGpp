@@ -10,7 +10,6 @@
 
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
-#include "algorithm/pde/UpDownTwoOpDims.hpp"
 
 namespace sg
 {

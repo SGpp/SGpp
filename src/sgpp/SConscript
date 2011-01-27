@@ -177,6 +177,7 @@ algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
 algorithm/pde/HeatEquationODESolverSystem.cpp
 algorithm/pde/HeatEquationODESolverSystemParallelOMP.cpp
 algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.cpp
 algorithm/pde/StdUpDown.cpp
 algorithm/pde/UpDownOneOpDim.cpp
 algorithm/pde/UpDownTwoOpDims.cpp
