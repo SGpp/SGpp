@@ -65,7 +65,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
-	HeatEquationODESolverSystemParallelOMP.o
+	HeatEquationODESolverSystemParallelOMP.o PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -475,6 +475,9 @@ HeatEquationODESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationOD
 	
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+
+PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.cpp
 
 DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
