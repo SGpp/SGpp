@@ -57,5 +57,5 @@ void Thread :: wakeUp ()
 
 @section refs References
 [1] http://www-bs.informatik.tu-cottbus.de/fileadmin/user_upload/lehre/bs1/styleguide.pdf
-
+[2] http://bel.gsi.de/mk/sty/cstyle.html#tth_sEc2
 */
