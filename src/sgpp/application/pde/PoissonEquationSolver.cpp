@@ -57,7 +57,7 @@ void PoissonEquationSolver::solvePDE(DataVector& alpha, DataVector& rhs, size_t 
 
 	SGppStopwatch* myStopwatch = new SGppStopwatch();
 	ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-#ifdef USEOMPTHREE
+#ifdef _OPENMP
 	PoissonEquationEllipticPDESolverSystemDirichletParallelOMP* mySystem = new PoissonEquationEllipticPDESolverSystemDirichletParallelOMP(*(this->myGrid), rhs);
 #else
 	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), rhs);

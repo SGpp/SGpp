@@ -20,10 +20,6 @@
 #include <utility>
 #include <iostream>
 
-#ifdef USEOMP
-#include <omp.h>
-#endif
-
 namespace sg {
 
 /**
@@ -56,7 +52,6 @@ public:
 		result.setAll(0.0);
 		size_t source_size = source.getSize();
 
-#ifdef USEOMP
 		#pragma omp parallel
 		{
 			DataVector privateResult(result.getSize());
@@ -80,17 +75,6 @@ public:
 				result.add(privateResult);
 			}
 		}
-#else
-		std::vector<double> line;
-		AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
-
-		for(size_t i = 0; i < source_size; i++)
-		{
-			x.getRow(i, line);
-
-			AlgoEvalTrans(basis, line, source[i], result);
-		}
-#endif /* USEOMP */
 	}
 
 	/**
@@ -111,7 +95,6 @@ public:
 		result.setAll(0.0);
 		size_t result_size = result.getSize();
 
-#ifdef USEOMP
 		#pragma omp parallel
 		{
 			std::vector<double> line;
@@ -125,17 +108,6 @@ public:
 				result[i] = AlgoEval(basis, line, source);
 			}
 		}
-#else
-		std::vector<double> line;
-		AlgorithmEvaluation<BASIS> AlgoEval(storage);
-
-		for(size_t i = 0; i < result_size; i++)
-		{
-			x.getRow(i, line);
-
-			result[i] = AlgoEval(basis, line, source);
-		}
-#endif
 	}
 
 	void mult_transpose_iterative(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
@@ -143,7 +115,6 @@ public:
 		result.setAll(0.0);
 		size_t result_size = result.getSize();
 
-#ifdef USEOMP
 		#pragma omp parallel
 		{
 			std::vector<double> line;
@@ -157,17 +128,6 @@ public:
 				result[i] = AlgoEval(basis, line, source);
 			}
 		}
-#else
-		std::vector<double> line;
-		AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
-
-		for(size_t i = 0; i < result_size; i++)
-		{
-			x.getRow(i, line);
-
-			result[i] = AlgoEval(basis, line, source);
-		}
-#endif
 	}
 };
 

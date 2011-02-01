@@ -9,7 +9,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.hpp"
 #include "exception/operation_exception.hpp"
 
-#ifdef USEOMP
+#ifdef _OPENMP
 #include "omp.h"
 #endif
 
@@ -94,7 +94,7 @@ double OperationBIterativeSPAVXLinear::multVectorized(DataVectorSP& alpha, DataM
 
     result.setAll(0.0f);
 
-#ifdef USEOMP
+#ifdef _OPENMP
     #pragma omp parallel
 	{
 		size_t chunksize = (storageSize/omp_get_num_threads())+1;
@@ -221,7 +221,7 @@ double OperationBIterativeSPAVXLinear::multVectorized(DataVectorSP& alpha, DataM
 			}
 #endif
 		}
-#ifdef USEOMP
+#ifdef _OPENMP
 	}
 #endif
 
@@ -246,7 +246,7 @@ double OperationBIterativeSPAVXLinear::multTransposeVectorized(DataVectorSP& alp
 
     myTimer->start();
 
-#ifdef USEOMP
+#ifdef _OPENMP
     #pragma omp parallel
 	{
 		size_t chunksize = (result_size/omp_get_num_threads())+1;
@@ -401,7 +401,7 @@ double OperationBIterativeSPAVXLinear::multTransposeVectorized(DataVectorSP& alp
 #endif
 	        }
 		}
-#ifdef USEOMP
+#ifdef _OPENMP
 	}
 #endif
 

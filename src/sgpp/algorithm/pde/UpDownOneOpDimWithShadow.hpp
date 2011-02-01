@@ -29,9 +29,6 @@
 
 #include "data/DataVector.hpp"
 
-#ifdef USEOMP
-#include <omp.h>
-#endif
 
 namespace sg
 {

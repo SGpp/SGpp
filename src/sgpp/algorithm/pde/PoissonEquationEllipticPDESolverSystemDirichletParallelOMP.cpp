@@ -11,6 +11,10 @@
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 
+#ifdef _OPENMP
+#include "omp.h"
+#endif
+
 namespace sg
 {
 
@@ -30,21 +34,16 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::applyLOperatorI
 {
 	result.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	#pragma omp parallel shared(alpha, result)
 	{
-	#ifndef AIX_XLC
 		#pragma omp single nowait
-	#endif
-	#ifdef AIX_XLC
-		#pragma omp single
-	#endif
 		{
 			std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 			size_t nDims = algoDims.size();
+#ifdef _OPENMP
 			omp_lock_t Mutex;
 			omp_init_lock(&Mutex);
-
+#endif
 			// Apply Laplace, parallel in Dimensions
 			for (size_t i = 0; i < nDims; i++)
 			{
@@ -56,41 +55,39 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::applyLOperatorI
 					((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 					// semaphore
+#ifdef _OPENMP
 					omp_set_lock(&Mutex);
+#endif
 					result.add(myResult);
+#ifdef _OPENMP
 					omp_unset_lock(&Mutex);
+#endif
 				}
 			}
 
 			#pragma omp taskwait
 
+#ifdef _OPENMP
 			omp_destroy_lock(&Mutex);
+#endif
 		}
 	}
-#else
-	Laplace_Inner->mult(alpha, result);
-#endif
 }
 
 void PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	#pragma omp parallel shared(alpha, result)
 	{
-	#ifndef AIX_XLC
 		#pragma omp single nowait
-	#endif
-	#ifdef AIX_XLC
-		#pragma omp single
-	#endif
 		{
 			std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 			size_t nDims = algoDims.size();
+#ifdef _OPENMP
 			omp_lock_t Mutex;
 			omp_init_lock(&Mutex);
-
+#endif
 			// Apply Laplace, parallel in Dimensions
 			for (size_t i = 0; i < nDims; i++)
 			{
@@ -102,20 +99,23 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::applyLOperatorC
 					((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 					// semaphore
+#ifdef _OPENMP
 					omp_set_lock(&Mutex);
+#endif
 					result.add(myResult);
+#ifdef _OPENMP
 					omp_unset_lock(&Mutex);
+#endif
 				}
 			}
 
 			#pragma omp taskwait
 
+#ifdef _OPENMP
 			omp_destroy_lock(&Mutex);
+#endif
 		}
 	}
-#else
-	Laplace_Complete->mult(alpha, result);
-#endif
 }
 
 }

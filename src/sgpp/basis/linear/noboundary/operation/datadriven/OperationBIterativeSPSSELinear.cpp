@@ -9,7 +9,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.hpp"
 #include "exception/operation_exception.hpp"
 
-#ifdef USEOMP
+#ifdef _OPENMP
 #include "omp.h"
 #endif
 
@@ -88,7 +88,7 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 
     result.setAll(0.0);
 
-#ifdef USEOMP
+#ifdef _OPENMP
     #pragma omp parallel
 	{
 		size_t chunksize = (storageSize/omp_get_num_threads())+1;
@@ -213,7 +213,7 @@ double OperationBIterativeSPSSELinear::multVectorized(DataVectorSP& alpha, DataM
 			}
 #endif
 		}
-#ifdef USEOMP
+#ifdef _OPENMP
 	}
 #endif
 
@@ -262,7 +262,7 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 
     myTimer->start();
 
-#ifdef USEOMP
+#ifdef _OPENMP
     #pragma omp parallel
 	{
 		size_t chunksize = (result_size/omp_get_num_threads())+1;
@@ -416,7 +416,7 @@ double OperationBIterativeSPSSELinear::multTransposeVectorized(DataVectorSP& alp
 #endif
 	        }
 		}
-#ifdef USEOMP
+#ifdef _OPENMP
 	}
 #endif
 

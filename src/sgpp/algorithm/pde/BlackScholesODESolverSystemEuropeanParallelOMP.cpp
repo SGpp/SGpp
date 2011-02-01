@@ -12,7 +12,7 @@
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
 
-#ifdef USEOMPTHREE
+#ifdef _OPENMP
 #include "omp.h"
 #endif
 
@@ -34,13 +34,14 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVec
 {
 	result.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 	size_t nDims = algoDims.size();
+#ifdef _OPENMP
 	omp_lock_t DeltaMutex;
 	omp_lock_t GammaMutex;
 	omp_init_lock(&DeltaMutex);
 	omp_init_lock(&GammaMutex);
+#endif
 	DataVector DeltaResult(result);
 	DataVector GammaResult(result);
 
@@ -70,9 +71,13 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVec
 			((UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
+#ifdef _OPENMP
 			omp_set_lock(&DeltaMutex);
+#endif
 			DeltaResult.add(myResult);
+#ifdef _OPENMP
 			omp_unset_lock(&DeltaMutex);
+#endif
 		}
 	}
 
@@ -92,9 +97,13 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVec
 					((UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
 					// semaphore
+#ifdef _OPENMP
 					omp_set_lock(&GammaMutex);
+#endif
 					GammaResult.add(myResult);
+#ifdef _OPENMP
 					omp_unset_lock(&GammaMutex);
+#endif
 				}
 			}
 		}
@@ -102,43 +111,28 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVec
 
 	#pragma omp taskwait
 
+#ifdef _OPENMP
 	omp_destroy_lock(&GammaMutex);
 	omp_destroy_lock(&DeltaMutex);
+#endif
 
 	// sum up
 	result.add(DeltaResult);
 	result.sub(GammaResult);
-#else
-	DataVector temp(alpha.getSize());
-
-	// Apply the riskfree rate
-	if (this->r != 0.0)
-	{
-		this->OpLTwoInner->mult(alpha, temp);
-		result.axpy((-1.0)*this->r, temp);
-	}
-
-	// Apply the delta method
-	this->OpDeltaInner->mult(alpha, temp);
-	result.add(temp);
-
-	// Apply the gamma method
-	this->OpGammaInner->mult(alpha, temp);
-	result.sub(temp);
-#endif
 }
 
 void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	std::vector<size_t> algoDims = this->BoundGrid->getStorage()->getAlgorithmicDimensions();
 	size_t nDims = algoDims.size();
+#ifdef _OPENMP
 	omp_lock_t DeltaMutex;
 	omp_lock_t GammaMutex;
 	omp_init_lock(&DeltaMutex);
 	omp_init_lock(&GammaMutex);
+#endif
 	DataVector DeltaResult(result);
 	DataVector GammaResult(result);
 
@@ -168,9 +162,13 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorComplete(Data
 			((UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
+#ifdef _OPENMP
 			omp_set_lock(&DeltaMutex);
+#endif
 			DeltaResult.add(myResult);
+#ifdef _OPENMP
 			omp_unset_lock(&DeltaMutex);
+#endif
 		}
 	}
 
@@ -190,9 +188,13 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorComplete(Data
 					((UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
 					// semaphore
+#ifdef _OPENMP
 					omp_set_lock(&GammaMutex);
+#endif
 					GammaResult.add(myResult);
+#ifdef _OPENMP
 					omp_unset_lock(&GammaMutex);
+#endif
 				}
 			}
 		}
@@ -200,30 +202,14 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorComplete(Data
 
 	#pragma omp taskwait
 
+#ifdef _OPENMP
 	omp_destroy_lock(&GammaMutex);
 	omp_destroy_lock(&DeltaMutex);
+#endif
 
 	// sum up
 	result.add(DeltaResult);
 	result.sub(GammaResult);
-#else
-	DataVector temp(alpha.getSize());
-
-	// Apply the riskfree rate
-	if (this->r != 0.0)
-	{
-		this->OpLTwoBound->mult(alpha, temp);
-		result.axpy((-1.0)*this->r, temp);
-	}
-
-	// Apply the delta method
-	this->OpDeltaBound->mult(alpha, temp);
-	result.add(temp);
-
-	// Apply the gamma method
-	this->OpGammaBound->mult(alpha, temp);
-	result.sub(temp);
-#endif
 }
 
 void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixInner(DataVector& alpha, DataVector& result)
@@ -232,12 +218,7 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixInner(DataVe
 
 	result.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
-#else
-	// Apply the mass matrix
-	this->OpLTwoInner->mult(alpha, temp);
-#endif
 
 	result.add(temp);
 }
@@ -248,12 +229,7 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(Dat
 
 	result.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
-#else
-	// Apply the mass matrix
-	this->OpLTwoBound->mult(alpha, temp);
-#endif
 
 	result.add(temp);
 }
@@ -271,15 +247,9 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, Dat
 		DataVector temp(result.getSize());
 		DataVector temp2(result.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha, result)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha, temp)
 				{
@@ -294,10 +264,6 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, Dat
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixInner(alpha, temp);
-		applyLOperatorInner(alpha, temp2);
-#endif
 
 		result.add(temp);
 		result.axpy((-1.0)*this->TimestepSize, temp2);
@@ -309,15 +275,9 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, Dat
 		DataVector temp(result.getSize());
 		DataVector temp2(result.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha, result)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha, temp)
 				{
@@ -332,10 +292,6 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, Dat
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixInner(alpha, temp);
-		applyLOperatorInner(alpha, temp2);
-#endif
 
 		result.add(temp);
 		result.axpy((-0.5)*this->TimestepSize, temp2);
@@ -364,15 +320,9 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 		DataVector temp2(rhs_complete.getSize());
 		DataVector myAlpha(*this->alpha_complete);
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (myAlpha, temp)
 				{
@@ -387,10 +337,6 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		applyLOperatorComplete(*this->alpha_complete, temp2);
-#endif
 
 		rhs_complete.add(temp);
 		rhs_complete.axpy(this->TimestepSize, temp2);
@@ -409,15 +355,9 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 		DataVector temp2(rhs_complete.getSize());
 		DataVector myAlpha(*this->alpha_complete);
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (myAlpha, temp)
 				{
@@ -432,10 +372,6 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		applyLOperatorComplete(*this->alpha_complete, temp2);
-#endif
 
 		rhs_complete.add(temp);
 		rhs_complete.axpy((0.5)*this->TimestepSize, temp2);
@@ -450,15 +386,9 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(myAlpha, temp)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (myAlpha, temp)
 				{
@@ -468,9 +398,6 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyLOperatorComplete(*this->alpha_complete, temp);
-#endif
 
 		rhs_complete.add(temp);
 		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
@@ -479,15 +406,9 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 
 		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(myOldAlpha, temp_old)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (myOldAlpha, temp_old)
 				{
@@ -497,9 +418,6 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyLOperatorComplete(*this->alpha_complete_old, temp_old);
-#endif
 
 		temp_old.mult(this->TimestepSize/this->TimestepSize_old);
 		temp.sub(temp_old);
@@ -531,15 +449,9 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 		DataVector temp(alpha_bound.getSize());
 		DataVector temp2(alpha_bound.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha_bound, temp)
 				{
@@ -554,10 +466,7 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(alpha_bound, temp);
-		applyLOperatorComplete(alpha_bound, temp2);
-#endif
+
 		result_complete.add(temp);
 		result_complete.axpy((-1.0)*this->TimestepSize, temp2);
 	}
@@ -566,15 +475,9 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 		DataVector temp(alpha_bound.getSize());
 		DataVector temp2(alpha_bound.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha_bound, temp)
 				{
@@ -589,10 +492,7 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(alpha_bound, temp);
-		applyLOperatorComplete(alpha_bound, temp2);
-#endif
+
 		result_complete.add(temp);
 		result_complete.axpy((-0.5)*this->TimestepSize, temp2);
 	}

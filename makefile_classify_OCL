@@ -86,12 +86,12 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 # Compiler Flags
 ###################################################################	
 
-CFLAGS=-Wall -ansi -c -fno-strict-aliasing -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -DUSEOCL -axSSE3
+CFLAGS=-Wall -ansi -c -fno-strict-aliasing -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -openmp -DUSEICCINTRINSICS -DUSEOCL -axSSE3
 # for NVIDIA OpenCL implementation
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOCL
 LFLAGS=-Wall -ansi -O3 -openmp -lOpenCL
 # for AMD stream SDK, CPU OpenCL Impelmentation
-#OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOMP -DUSEOMPTHREE -DUSEOCL -DUSEOCL_CPU
+#OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDES) -DUSEOCL -DUSEOCL_CPU
 #LFLAGS=-Wall -ansi -O3 -openmp -L/opt/ati-stream-sdk-v2.2-lnx64/lib/x86_64 -lOpenCL
 
 ###################################################################

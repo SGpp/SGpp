@@ -11,15 +11,9 @@
 #include <vector>
 
 #include "grid/GridStorage.hpp"
-
 #include "operation/common/OperationMatrix.hpp"
-
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-
-#ifdef USEOMP
-#include <omp.h>
-#endif
 
 namespace sg
 {
@@ -62,7 +56,6 @@ public:
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
-#ifdef USEOMPTHREE
 	/**
 	 * this functions provides the same functionality as the normal mult routine.
 	 * However, it doesn't set up an OpenMP task initialization as the mult routine.
@@ -87,7 +80,6 @@ public:
 	 * @param operationDimTwo Dimension in which the second special operator is applied
 	 */
 	void multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDimOne, size_t operationDimTwo);
-#endif
 
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -99,9 +91,8 @@ protected:
 	/// algorithmic dimensions, operator is applied in this dimensions
 	std::vector<size_t> algoDims;
 
-#ifndef USEOMPTHREE
 	/**
-	 * Recursive procedure for updown
+	 * Recursive procedure for updown, parallel version using OpenMP 3
 	 *
 	 * @param dim the current dimension
 	 * @param op_dim_one the dimension in which to use the first gradient
@@ -112,7 +103,7 @@ protected:
 	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
 
 	/**
-	 * All calculations for gradient
+	 * All calculations for gradient, parallel version using OpenMP 3
 	 *
 	 * @param alpha the coefficients of the grid points
 	 * @param result the result of the operations
@@ -123,7 +114,7 @@ protected:
 	void specialOpOne(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
 
 	/**
-	 * All calculations for gradient, Part 2
+	 * All calculations for gradient, Part 2, parallel version using OpenMP 3
 	 *
 	 * @param alpha the coefficients of the grid points
 	 * @param result the result of the operations
@@ -143,52 +134,6 @@ protected:
 	 * @param op_dim_two the dimension in which to use the second gradient
 	 */
 	void specialOpOneAndOpTwo(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
-#endif
-#ifdef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown, parallel version using OpenMP 3
-	 *
-	 * @param dim the current dimension
-	 * @param op_dim_one the dimension in which to use the first gradient
-	 * @param op_dim_two the dimension in which to use the second gradient
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
-
-	/**
-	 * All calculations for gradient, parallel version using OpenMP 3
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param op_dim_one the dimension in which to use the first gradient
-	 * @param op_dim_two the dimension in which to use the second gradient
-	 */
-	void specialOpOne_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
-
-	/**
-	 * All calculations for gradient, Part 2, parallel version using OpenMP 3
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param op_dim_one the dimension in which to use the first gradient
-	 * @param op_dim_two the dimension in which to use the second gradient
-	 */
-	void specialOpTwo_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
-
-	/**
-	 * if the current dimension is equal to the both special operation dimensions
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param op_dim_one the dimension in which to use the first gradient
-	 * @param op_dim_two the dimension in which to use the second gradient
-	 */
-	void specialOpOneAndOpTwo_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
-#endif
 
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.

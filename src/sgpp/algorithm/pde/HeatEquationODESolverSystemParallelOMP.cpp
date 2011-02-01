@@ -11,6 +11,10 @@
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 
+#ifdef _OPENMP
+#include "omp.h"
+#endif
+
 namespace sg
 {
 
@@ -70,12 +74,7 @@ void HeatEquationODESolverSystemParallelOMP::applyMassMatrixComplete(DataVector&
 
 	DataVector temp(alpha.getSize());
 
-#ifdef USEOMPTHREE
 	((StdUpDown*)(this->OpMassBound))->multParallelBuildingBlock(alpha, temp);
-#else
-	// Apply the mass matrix
-	this->OpMassBound->mult(alpha, temp);
-#endif
 
 	result.add(temp);
 }
@@ -87,11 +86,12 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 	DataVector temp(alpha.getSize());
 	temp.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 	size_t nDims = algoDims.size();
+#ifdef _OPENMP
 	omp_lock_t Mutex;
 	omp_init_lock(&Mutex);
+#endif
 
 	// Apply Laplace, parallel in Dimensions
 	for (size_t i = 0; i < nDims; i++)
@@ -104,18 +104,20 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 			((UpDownOneOpDim*)(this->OpLaplaceBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
+#ifdef _OPENMP
 			omp_set_lock(&Mutex);
+#endif
 			temp.add(myResult);
+#ifdef _OPENMP
 			omp_unset_lock(&Mutex);
+#endif
 		}
 	}
 
 	#pragma omp taskwait
 
+#ifdef _OPENMP
 	omp_destroy_lock(&Mutex);
-#else
-	// Apply Laplace Operator
-	this->OpLaplaceBound->mult(alpha, temp);
 #endif
 
 	result.axpy((-1.0)*this->a,temp);
@@ -127,12 +129,7 @@ void HeatEquationODESolverSystemParallelOMP::applyMassMatrixInner(DataVector& al
 
 	DataVector temp(alpha.getSize());
 
-#ifdef USEOMPTHREE
 	((StdUpDown*)(this->OpMassInner))->multParallelBuildingBlock(alpha, temp);
-#else
-	// Apply the mass matrix
-	this->OpMassInner->mult(alpha, temp);
-#endif
 
 	result.add(temp);
 }
@@ -144,11 +141,12 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 	DataVector temp(alpha.getSize());
 	temp.setAll(0.0);
 
-#ifdef USEOMPTHREE
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 	size_t nDims = algoDims.size();
+#ifdef _OPENMP
 	omp_lock_t Mutex;
 	omp_init_lock(&Mutex);
+#endif
 
 	// Apply Laplace, parallel in Dimensions
 	for (size_t i = 0; i < nDims; i++)
@@ -161,18 +159,20 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 			((UpDownOneOpDim*)(this->OpLaplaceInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
+#ifdef _OPENMP
 			omp_set_lock(&Mutex);
+#endif
 			temp.add(myResult);
+#ifdef _OPENMP
 			omp_unset_lock(&Mutex);
+#endif
 		}
 	}
 
 	#pragma omp taskwait
 
+#ifdef _OPENMP
 	omp_destroy_lock(&Mutex);
-#else
-	// Apply Laplace Operator
-	this->OpLaplaceInner->mult(alpha, temp);
 #endif
 
 	result.axpy((-1.0)*this->a,temp);
@@ -201,15 +201,9 @@ void HeatEquationODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 		DataVector temp(result.getSize());
 		DataVector temp2(result.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha, result, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha, temp)
 				{
@@ -224,10 +218,6 @@ void HeatEquationODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixInner(alpha, temp);
-		applyLOperatorInner(alpha, temp2);
-#endif
 
 		result.add(temp);
 		result.axpy((-1.0)*this->TimestepSize, temp2);
@@ -237,15 +227,9 @@ void HeatEquationODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 		DataVector temp(result.getSize());
 		DataVector temp2(result.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha, result, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha, temp)
 				{
@@ -260,10 +244,6 @@ void HeatEquationODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixInner(alpha, temp);
-		applyLOperatorInner(alpha, temp2);
-#endif
 
 		result.add(temp);
 		result.axpy((-0.5)*this->TimestepSize, temp2);
@@ -286,15 +266,9 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 		DataVector temp2(rhs_complete.getSize());
 		DataVector myAlpha(*this->alpha_complete);
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (myAlpha, temp)
 				{
@@ -309,10 +283,6 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		applyLOperatorComplete(*this->alpha_complete, temp2);
-#endif
 
 		rhs_complete.add(temp);
 		rhs_complete.axpy(this->TimestepSize, temp2);
@@ -331,15 +301,9 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 		DataVector temp2(rhs_complete.getSize());
 		DataVector myAlpha(*this->alpha_complete);
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (myAlpha, temp)
 				{
@@ -354,10 +318,6 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(*this->alpha_complete, temp);
-		applyLOperatorComplete(*this->alpha_complete, temp2);
-#endif
 
 		rhs_complete.add(temp);
 		rhs_complete.axpy((0.5)*this->TimestepSize, temp2);
@@ -387,15 +347,9 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 		DataVector temp(alpha_bound.getSize());
 		DataVector temp2(alpha_bound.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha_bound, temp)
 				{
@@ -410,10 +364,7 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(alpha_bound, temp);
-		applyLOperatorComplete(alpha_bound, temp2);
-#endif
+
 		result_complete.add(temp);
 		result_complete.axpy((-1.0)*this->TimestepSize, temp2);
 	}
@@ -422,15 +373,9 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 		DataVector temp(alpha_bound.getSize());
 		DataVector temp2(alpha_bound.getSize());
 
-#ifdef USEOMPTHREE
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
-		#ifndef AIX_XLC
 			#pragma omp single nowait
-		#endif
-		#ifdef AIX_XLC
-			#pragma omp single
-		#endif
 			{
 				#pragma omp task shared (alpha_bound, temp)
 				{
@@ -445,10 +390,7 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 				#pragma omp taskwait
 			}
 		}
-#else
-		applyMassMatrixComplete(alpha_bound, temp);
-		applyLOperatorComplete(alpha_bound, temp2);
-#endif
+
 		result_complete.add(temp);
 		result_complete.axpy((-0.5)*this->TimestepSize, temp2);
 	}

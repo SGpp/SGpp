@@ -11,14 +11,8 @@
 #include <vector>
 
 #include "grid/GridStorage.hpp"
-
 #include "operation/common/OperationMatrix.hpp"
-
 #include "data/DataVector.hpp"
-
-#ifdef USEOMP
-#include <omp.h>
-#endif
 
 namespace sg
 {
@@ -55,7 +49,6 @@ public:
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
-#ifdef USEOMPTHREE
 	/**
 	 * this functions provides the same functionality as the normal mult routine.
 	 * However, it doesn't set up an OpenMP task initialization as the mult routine.
@@ -76,7 +69,7 @@ public:
 	 * @param operationDim Dimension in which the special operator is applied
 	 */
 	void multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDim);
-#endif
+
 
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -88,9 +81,8 @@ protected:
 	/// algorithmic dimensions, operator is applied in this dimensions
 	std::vector<size_t> algoDims;
 
-#ifndef USEOMPTHREE
 	/**
-	 * Recursive procedure for updown().
+	 * Recursive procedure for updown(), parallel version using OpenMP 3
 	 *
 	 * @param dim the current dimension
 	 * @param op_dim the dimension in which a special operation is applied
@@ -100,28 +92,6 @@ protected:
 	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
 
 	/**
-	 * All calculations for op_dim.
-	 *
-	 * @param alpha the coefficients of the grid points
-	 * @param result the result of the operations
-	 * @param dim the current dimension in the recursion
-	 * @param op_dim the dimension in that a special operation is applied
-	 */
-	virtual void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
-#endif
-
-#ifdef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown(), parallel version using OpenMP 3
-	 *
-	 * @param dim the current dimension
-	 * @param op_dim the dimension in which a special operation is applied
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
-
-	/**
 	 * All calculations for gradient_dim, parallel version using OpenMP 3
 	 *
 	 * @param alpha the coefficients of the grid points
@@ -129,8 +99,7 @@ protected:
 	 * @param dim the current dimension in the recursion
 	 * @param op_dim the dimension in that a special operation is applied
 	 */
-	virtual void specialOP_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
-#endif
+	virtual void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
 
 	/**
 	 * std 1D up operation

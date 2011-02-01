@@ -11,14 +11,8 @@
 #include <vector>
 
 #include "grid/GridStorage.hpp"
-
 #include "operation/common/OperationMatrix.hpp"
-
 #include "data/DataVector.hpp"
-
-#ifdef USEOMPTHREE
-#include <omp.h>
-#endif
 
 namespace sg
 {
@@ -46,9 +40,6 @@ public:
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
-#ifdef USEOMPTHREE
-	void updown_parallel(DataVector& alpha, DataVector& result, size_t dim);
-
 	/**
 	 * this functions provides the same functionality as the normal mult routine.
 	 * However, it doesn't set up an OpenMP task initialization as the mult routine.
@@ -64,7 +55,7 @@ public:
 	 * @param result vector to store the results in
 	 */
 	void multParallelBuildingBlock(DataVector& alpha, DataVector& result);
-#endif
+
 
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
@@ -74,7 +65,6 @@ protected:
 	/// algorithmic dimensions, operator is applied in this dimensions
 	std::vector<size_t> algoDims;
 
-#ifndef USEOMPTHREE
 	/**
 	 * Recursive procedure for updown
 	 *
@@ -83,17 +73,6 @@ protected:
 	 * @param result vector to store the results in
 	 */
 	void updown(DataVector& alpha, DataVector& result, size_t dim);
-#endif
-
-#ifdef USEOMPTHREE
-	/**
-	 * Recursive procedure for updown, parallel version using OpenMP 3
-	 *
-	 * @param dim the current dimension
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-#endif
 
 	/**
 	 * 1D up Operation

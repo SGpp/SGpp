@@ -15,10 +15,6 @@
 #include <utility>
 #include <iostream>
 
-#ifdef USEOMP
-#include <omp.h>
-#endif
-
 namespace sg {
 
 /**
@@ -37,7 +33,6 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 
 	double correct = 0;
 
-#ifdef USEOMP
 	#pragma omp parallel shared(correct)
 	{
 		size_t size = data.getNrows();
@@ -71,37 +66,8 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 			}
 		}
 	}
-#else
-	size_t size = data.getNrows();
-
-	std::vector<double> point;
-
-	GetAffectedBasisFunctions<BASIS> ga(storage);
-
-	for(size_t i = 0; i < size; i++)
-	{
-
-		IndexValVector vec;
-		double result = 0;
-
-		data.getRow(i, point);
-
-		ga(basis, point, vec);
-
-		for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-		{
-			result += iter->second * alpha[iter->first];
-		}
-
-		if( (result >= 0 && classes[i] >= 0) || (result < 0 && classes[i] < 0) )
-		{
-			correct++;
-		}
-	}
-#endif
 
 	return correct;
-
 }
 
 /**
@@ -120,7 +86,6 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
 	DataVector result(refValues.getSize());
 	double mse = 0;
 
-#ifdef USEOMP
 	#pragma omp parallel shared(result)
 	{
 		size_t size = data.getNrows();
@@ -146,29 +111,6 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
 			result[i] = res;
 		}
 	}
-#else
-	size_t size = data.getNrows();
-	std::vector<double> point;
-	GetAffectedBasisFunctions<BASIS> ga(storage);
-
-	for(size_t i = 0; i < size; i++)
-	{
-
-		IndexValVector vec;
-		double res = 0;
-
-		data.getRow(i, point);
-
-		ga(basis, point, vec);
-
-		for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-		{
-			res += iter->second * alpha[iter->first];
-		}
-
-		result[i] = res;
-	}
-#endif
 
 	result.sub(refValues);
 	result.sqr();
@@ -199,7 +141,6 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 	double fp = 0;
 	double fn = 0;
 
-#ifdef USEOMP
 	#pragma omp parallel shared(correct, tp, tn, fp, fn)
 	{
 		size_t size = data.getNrows();
@@ -256,48 +197,6 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 			}
 		}
 	}
-#else
-	size_t size = data.getNrows();
-
-	std::vector<double> point;
-
-	GetAffectedBasisFunctions<BASIS> ga(storage);
-
-	for(size_t i = 0; i < size; i++)
-	{
-
-		IndexValVector vec;
-		double result = 0;
-
-		data.getRow(i, point);
-
-		ga(basis, point, vec);
-
-		for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-		{
-			result += iter->second * alpha[iter->first];
-		}
-
-		if( (result >= 0 && classes[i] >= 0) )
-		{
-				tp++;
-				correct++;
-		}
-		else if( (result < 0 && classes[i] < 0) )
-		{
-				tn++;
-				correct++;
-		}
-		else if( (result >= 0 && classes[i] < 0) )
-		{
-				fp++;
-		}
-		else //( (result < 0 && classes[i] >= 0) )
-		{
-				fn++;
-		}
-	}
-#endif
 
 	if (charaNumbers.getSize() < 4)
 	{
