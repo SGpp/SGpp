@@ -10,10 +10,6 @@
 #include "exception/operation_exception.hpp"
 #include "common/AlignedMemory.hpp"
 
-#ifdef USEOMP
-#include "omp.h"
-#endif
-
 // This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
 #define PERCENT_CPUS 8
 
@@ -87,7 +83,6 @@ double OperationBIterativeSPHybridSSEOCLLinear::multVectorized(DataVectorSP& alp
     	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
-#ifdef USEOMPTHREE
     // split result into GPU and CPU partition
     size_t gpu_partition = (storageSize * (100-PERCENT_CPUS))/100;
     size_t gpu_pad = gpu_partition % 128;
@@ -219,38 +214,6 @@ double OperationBIterativeSPHybridSSEOCLLinear::multVectorized(DataVectorSP& alp
     double time = 0.0;
     //cleanup
     delete[] ptrTransData;
-#else
-    double time = myOCLKernels->multSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
-
-    // do the rest...
-	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
-    size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP;
-
-#ifdef USEOMP
-	#pragma omp parallel for
-#endif
-	for (size_t j = global; j < storageSize; j++)
-	{
-		ptrGlobalResult[j] = 0.0f;
-
-		for (size_t i = 0; i < source_size; i++)
-		{
-			float curSupport = ptrSource[i];
-
-			for (size_t d = 0; d < dims; d++)
-			{
-				float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
-				float index_calc = eval - (ptrIndex[(j*dims)+d]);
-				float abs = fabs(index_calc);
-				float last = 1.0f - abs;
-				float localSupport = std::max<float>(last, 0.0f);
-				curSupport *= localSupport;
-			}
-
-			ptrGlobalResult[j] += curSupport;
-		}
-	}
-#endif
 
 	return time;
 }
@@ -274,7 +237,6 @@ double OperationBIterativeSPHybridSSEOCLLinear::multTransposeVectorized(DataVect
     	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
-#ifdef USEOMPTHREE
     // split result into GPU and CPU partition
     size_t cpu_partition = (result_size * PERCENT_CPUS)/100;
     size_t cpu_pad = cpu_partition % 128;
@@ -405,9 +367,7 @@ double OperationBIterativeSPHybridSSEOCLLinear::multTransposeVectorized(DataVect
     	}
     }
     double time = 0.0;
-#else
-    double time = myOCLKernels->multTransSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, result_size);
-#endif
+
    	return time;
 }
 

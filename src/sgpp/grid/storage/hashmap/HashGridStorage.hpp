@@ -28,10 +28,6 @@
 #include <exception>
 #include <list>
 
-#ifdef USEOMP
-#include <omp.h>
-#endif
-
 namespace sg
 {
 
@@ -708,11 +704,9 @@ public:
 		typename index_type::level_type curLevel;
 		typename index_type::level_type curIndex;
 
-#ifdef USEOMP
 		#pragma omp parallel
 		{
 			#pragma omp for schedule (static) private(curLevel, curIndex)
-#endif
 			for(size_t i = 0; i < list.size(); i++)
 			{
 				for (size_t current_dim = 0; current_dim < DIM; current_dim++)
@@ -722,9 +716,7 @@ public:
 					index.set(i, current_dim, static_cast<double>(curIndex));
 				}
 			}
-#ifdef USEOMP
 		}
-#endif
 	}
 
 	/**
@@ -740,11 +732,9 @@ public:
 		typename index_type::level_type curLevel;
 		typename index_type::level_type curIndex;
 
-#ifdef USEOMP
 		#pragma omp parallel
 		{
 			#pragma omp for schedule (static) private(curLevel, curIndex)
-#endif
 			for(size_t i = 0; i < list.size(); i++)
 			{
 				for (size_t current_dim = 0; current_dim < DIM; current_dim++)
@@ -754,9 +744,7 @@ public:
 					index.set(i, current_dim, static_cast<float>(curIndex));
 				}
 			}
-#ifdef USEOMP
 		}
-#endif
 	}
 
 protected:

@@ -305,11 +305,11 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 
 		if (this->tOptionType == "European")
 		{
-//#ifdef USEOMPTHREE
-//			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#else
+#ifdef _OPENMP
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+#else
 			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#endif
+#endif
 		}
 		else
 		{
@@ -361,11 +361,11 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 
 		if (this->tOptionType == "European")
 		{
-//#ifdef USEOMPTHREE
-//			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#else
+#ifdef _OPENMP
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+#else
 			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#endif
+#endif
 		}
 		else
 		{
@@ -416,11 +416,11 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 
 		if (this->tOptionType == "European")
 		{
-//#ifdef USEOMPTHREE
-//			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#else
+#ifdef _OPENMP
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+#else
 			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#endif
+#endif
 		}
 		else
 		{
@@ -528,11 +528,11 @@ void BlackScholesSolver::solveX(size_t numTimesteps, double timestepsize, size_t
 
 		if (this->tOptionType == "European")
 		{
-//#ifdef USEOMPTHREE
-//			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#else
+#ifdef _OPENMP
+			myBSSystem = new BlackScholesODESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+#else
 			myBSSystem = new BlackScholesODESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-//#endif
+#endif
 		}
 		else
 		{

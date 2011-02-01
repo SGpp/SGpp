@@ -63,7 +63,7 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		double dNeededTime;
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-#ifdef USEOMPTHREE
+#ifdef _OPENMP
 		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
 #else
 		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
@@ -98,7 +98,7 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		double dNeededTime;
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-#ifdef USEOMPTHREE
+#ifdef _OPENMP
 		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
 #else
 		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
@@ -133,7 +133,7 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
 		double dNeededTime;
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-#ifdef USEOMPTHREE
+#ifdef _OPENMP
 		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
 #else
 		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");

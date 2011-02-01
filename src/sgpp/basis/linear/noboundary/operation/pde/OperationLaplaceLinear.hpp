@@ -33,14 +33,7 @@ public:
 	 */
 	virtual ~OperationLaplaceLinear();
 
-protected:
-#ifndef USEOMPTHREE
 	virtual void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
-#endif
-
-#ifdef USEOMPTHREE
-	virtual void specialOP_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
-#endif
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
 

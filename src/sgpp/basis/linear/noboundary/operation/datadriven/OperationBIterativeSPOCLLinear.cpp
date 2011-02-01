@@ -9,10 +9,6 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.hpp"
 #include "exception/operation_exception.hpp"
 
-#ifdef USEOMP
-#include "omp.h"
-#endif
-
 namespace sg
 {
 
@@ -78,9 +74,7 @@ double OperationBIterativeSPOCLLinear::multVectorized(DataVectorSP& alpha, DataM
     	global = storageSize;
     }
 
-#ifdef USEOMP
 	#pragma omp parallel for
-#endif
 	for (size_t j = global; j < storageSize; j++)
 	{
 		ptrGlobalResult[j] = 0.0f;

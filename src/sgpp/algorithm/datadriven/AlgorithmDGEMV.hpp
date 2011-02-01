@@ -18,10 +18,6 @@
 #include <utility>
 #include <iostream>
 
-#ifdef USEOMP
-#include <omp.h>
-#endif
-
 namespace sg {
 
 /**
@@ -55,7 +51,7 @@ public:
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 		result.setAll(0.0);
-#ifdef USEOMP
+
 		#pragma omp parallel
 		{
 			size_t source_size = source.getSize();
@@ -86,28 +82,6 @@ public:
 				result.add(privateResult);
 			}
 		}
-#else
-		size_t source_size = source.getSize();
-
-		std::vector<double> line;
-		IndexValVector vec;
-
-		GetAffectedBasisFunctions<BASIS> ga(storage);
-
-		for(size_t i = 0; i < source_size; i++)
-		{
-			vec.clear();
-
-			x.getRow(i, line);
-
-			ga(basis, line, vec);
-
-			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-			{
-				result[iter->first] += iter->second * source[i];
-			}
-		}
-#endif /* USEOMP */
 	}
 
 	/**
@@ -129,7 +103,6 @@ public:
 
 		result.setAll(0.0);
 
-#ifdef USEOMP
 		#pragma omp parallel
 		{
 			size_t result_size = result.getSize();
@@ -154,28 +127,6 @@ public:
 				}
 			}
 		}
-#else
-		size_t result_size = result.getSize();
-
-		std::vector<double> line;
-		IndexValVector vec;
-
-		GetAffectedBasisFunctions<BASIS> ga(storage);
-
-		for(size_t i = 0; i < result_size; i++)
-		{
-			vec.clear();
-
-			x.getRow(i, line);
-
-			ga(basis, line, vec);
-
-			for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-			{
-				result[i] += iter->second * source[iter->first];
-			}
-		}
-#endif /* USEOMP */
 	}
 };
 

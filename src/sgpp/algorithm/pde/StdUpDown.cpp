@@ -24,79 +24,27 @@ void StdUpDown::mult(DataVector& alpha, DataVector& result)
 {
 	DataVector beta(result.getSize());
 	result.setAll(0.0);
-#ifdef USEOMP
-#ifdef USEOMPTHREE
 	#pragma omp parallel
 	{
-#ifndef AIX_XLC
 		#pragma omp single nowait
-#endif
-#ifdef AIX_XLC
-		#pragma omp single
-#endif
 		{
-			this->updown_parallel(alpha, beta, this->algoDims.size() - 1);
+			this->updown(alpha, beta, this->algoDims.size() - 1);
 		}
 	}
 	result.add(beta);
-#endif
-#ifndef USEOMPTHREE
-	this->updown(alpha, beta, this->algoDims.size() - 1);
-
-	result.add(beta);
-#endif
-#endif
-#ifndef USEOMP
-	this->updown(alpha, beta, this->algoDims.size() - 1);
-
-	result.add(beta);
-#endif
 }
 
-#ifdef USEOMPTHREE
 void StdUpDown::multParallelBuildingBlock(DataVector& alpha, DataVector& result)
 {
 	DataVector beta(result.getSize());
 	result.setAll(0.0);
 
-	this->updown_parallel(alpha, beta, this->algoDims.size() - 1);
+	this->updown(alpha, beta, this->algoDims.size() - 1);
 
 	result.add(beta);
 }
-#endif
 
-#ifndef USEOMPTHREE
 void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
-{
-	//Unidirectional scheme
-	if(dim > 0)
-	{
-		// Reordering ups and downs
-		DataVector temp(alpha.getSize());
-		up(alpha, temp, this->algoDims[dim]);
-		updown(temp, result, dim-1);
-
-		DataVector result_temp(alpha.getSize());
-		updown(alpha, temp, dim-1);
-		down(temp, result_temp, this->algoDims[dim]);
-
-		result.add(result_temp);
-	}
-	else
-	{
-		// Terminates dimension recursion
-		up(alpha, result, this->algoDims[dim]);
-
-		DataVector temp(alpha.getSize());
-		down(alpha, temp, this->algoDims[dim]);
-
-		result.add(temp);
-	}
-}
-#endif
-
-#ifdef USEOMPTHREE
-void StdUpDown::updown_parallel(DataVector& alpha, DataVector& result, size_t dim)
 {
 	//Unidirectional scheme
 	if(dim > 0)
@@ -109,13 +57,13 @@ void StdUpDown::updown_parallel(DataVector& alpha, DataVector& result, size_t di
 		#pragma omp task shared(alpha, temp, result)
 		{
 			up(alpha, temp, this->algoDims[dim]);
-			updown_parallel(temp, result, dim-1);
+			updown(temp, result, dim-1);
 		}
 
 
 		#pragma omp task shared(alpha, temp_two, result_temp)
 		{
-			updown_parallel(alpha, temp_two, dim-1);
+			updown(alpha, temp_two, dim-1);
 			down(temp_two, result_temp, this->algoDims[dim]);
 		}
 
@@ -139,6 +87,5 @@ void StdUpDown::updown_parallel(DataVector& alpha, DataVector& result, size_t di
 		result.add(temp);
 	}
 }
-#endif
 
 }
