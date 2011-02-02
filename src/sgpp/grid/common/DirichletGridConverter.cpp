@@ -46,8 +46,14 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVec
 			// allocate the translation array for the coefficients
 			this->conCoefArray = new size_t[this->numInnerGridPoints];
 
+			// Get the algorithmic dimensions
+			std::vector<size_t> BSalgoDims = BoundaryGrid.getAlgorithmicDimensions();
+
 			// create new inner Grid, with one grid point
 			*InnerGrid = new LinearGrid(*BoundaryGrid.getBoundingBox());
+
+			// Set algorithmic dimensions for inner Grid
+			(*InnerGrid)->setAlgorithmicDimensions(BSalgoDims);
 
 			// create new DataVector for storing the inner grid's coefficients
 			*InnerCoefs = new DataVector(this->numInnerGridPoints);
@@ -102,8 +108,14 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataV
 			delete[] this->conCoefArray;
 			this->conCoefArray = new size_t[this->numInnerGridPoints];
 
+			// Get the algorithmic dimensions
+			std::vector<size_t> BSalgoDims = BoundaryGrid.getAlgorithmicDimensions();
+
 			// create new inner Grid, with one grid point
 			(*InnerGrid)->getStorage()->emptyStorage();
+
+			// Set algorithmic dimensions for inner Grid
+			(*InnerGrid)->setAlgorithmicDimensions(BSalgoDims);
 
 			// create new DataVector for storing the inner grid's coefficients
 			delete (*InnerCoefs);
