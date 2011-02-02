@@ -5,21 +5,21 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef HEATEQUATIONODESOLVERSYSTEMPARALLELOMP_HPP
-#define HEATEQUATIONODESOLVERSYSTEMPARALLELOMP_HPP
+#ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEM_HPP
+#define HEATEQUATIONPARABOLICPDESOLVERSYSTEM_HPP
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/pde/OperationODESolverSystemDirichlet.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 
 namespace sg
 {
 
 /**
- * This class implements the ODESolverSystem for the
+ * This class implements the ParabolicPDESolverSystem for the
  * Heat Equation.
  */
-class HeatEquationODESolverSystemParallelOMP : public OperationODESolverSystemDirichlet
+class HeatEquationParabolicPDESolverSystem : public OperationParabolicPDESolverSystemDirichlet
 {
 private:
 	/// the heat coefficient
@@ -51,22 +51,18 @@ public:
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	HeatEquationODESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+	HeatEquationParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~HeatEquationODESolverSystemParallelOMP();
+	virtual ~HeatEquationParabolicPDESolverSystem();
 
 	void finishTimestep(bool isLastTimestep = false);
 
 	void startTimestep();
-
-	virtual void mult(DataVector& alpha, DataVector& result);
-
-	virtual DataVector* generateRHS();
 };
 
 }
 
-#endif /* HEATEQUATIONODESOLVERSYSTEMPARALLELOMP_HPP */
+#endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEM_HPP */

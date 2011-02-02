@@ -26,7 +26,7 @@ StepsizeControlBDF::~StepsizeControlBDF()
 {
 }
 
-void StepsizeControlBDF::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep, bool verbose)
+void StepsizeControlBDF::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
 	DataVector* rhs;

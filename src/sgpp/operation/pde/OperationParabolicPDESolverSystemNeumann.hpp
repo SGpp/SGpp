@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONODESOLVERSYSTEMNEUMANN_HPP
-#define OPERATIONODESOLVERSYSTEMNEUMANN_HPP
+#ifndef OPERATIONPARABOLICPDESOLVERSYSTEMNEUMANN_HPP
+#define OPERATIONPARABOLICPDESOLVERSYSTEMNEUMANN_HPP
 
-#include "operation/pde/OperationODESolverSystem.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 
 namespace sg
 {
@@ -27,7 +27,7 @@ namespace sg
  * using an iterative SLE solver, that solving step is integrated in the
  * ODE Solver.
  */
-class OperationODESolverSystemNeumann : public OperationODESolverSystem
+class OperationParabolicPDESolverSystemNeumann : public OperationParabolicPDESolverSystem
 {
 protected:
 	/**
@@ -50,12 +50,12 @@ public:
 	/**
 	 * Constructor
 	 */
-	OperationODESolverSystemNeumann();
+	OperationParabolicPDESolverSystemNeumann();
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationODESolverSystemNeumann();
+	virtual ~OperationParabolicPDESolverSystemNeumann();
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
@@ -66,4 +66,4 @@ public:
 
 }
 
-#endif /* OPERATIONODESOLVERMATRIXNEUMANN_HPP */
+#endif /* OPERATIONPARABOLICPDESOLVERSYSTEMNEUMANN_HPP */

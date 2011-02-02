@@ -5,13 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/HeatEquationODESolverSystem.hpp"
+#include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 
 namespace sg
 {
 
-HeatEquationODESolverSystem::HeatEquationODESolverSystem(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
+HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
 {
 	this->a = a;
 	this->tOperationMode = OperationMode;
@@ -38,7 +38,7 @@ HeatEquationODESolverSystem::HeatEquationODESolverSystem(Grid& SparseGrid, DataV
 	this->rhs = new DataVector(1);
 }
 
-HeatEquationODESolverSystem::~HeatEquationODESolverSystem()
+HeatEquationParabolicPDESolverSystem::~HeatEquationParabolicPDESolverSystem()
 {
 	delete this->OpLaplaceBound;
 	delete this->OpMassBound;
@@ -58,7 +58,7 @@ HeatEquationODESolverSystem::~HeatEquationODESolverSystem()
 	delete this->rhs;
 }
 
-void HeatEquationODESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystem::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -70,7 +70,7 @@ void HeatEquationODESolverSystem::applyMassMatrixComplete(DataVector& alpha, Dat
 	result.add(temp);
 }
 
-void HeatEquationODESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystem::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -81,7 +81,7 @@ void HeatEquationODESolverSystem::applyLOperatorComplete(DataVector& alpha, Data
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -93,7 +93,7 @@ void HeatEquationODESolverSystem::applyMassMatrixInner(DataVector& alpha, DataVe
 	result.add(temp);
 }
 
-void HeatEquationODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystem::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -104,13 +104,13 @@ void HeatEquationODESolverSystem::applyLOperatorInner(DataVector& alpha, DataVec
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationODESolverSystem::finishTimestep(bool isLastTimestep)
+void HeatEquationParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 }
 
-void HeatEquationODESolverSystem::startTimestep()
+void HeatEquationParabolicPDESolverSystem::startTimestep()
 {
 }
 

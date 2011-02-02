@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#include "algorithm/pde/HullWhiteODESolverSystem.hpp"
+#include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/Grid.hpp"
@@ -14,7 +14,7 @@
 namespace sg
 {
 
-HullWhiteODESolverSystem::HullWhiteODESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma,
+HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma,
 			double theta, double a, double TimestepSize, std::string OperationMode,
 		    bool useCoarsen, double coarsenThreshold, double coarsenPercent,
 			size_t numExecCoarsen)
@@ -60,7 +60,7 @@ HullWhiteODESolverSystem::HullWhiteODESolverSystem(Grid& SparseGrid, DataVector&
 	this->numSumGridpointsComplete = 0;
 }
 
-HullWhiteODESolverSystem::~HullWhiteODESolverSystem()
+HullWhiteParabolicPDESolverSystem::~HullWhiteParabolicPDESolverSystem()
 {
 	delete this->OpBBound;
 	delete this->OpDBound;
@@ -76,7 +76,7 @@ HullWhiteODESolverSystem::~HullWhiteODESolverSystem()
 	delete this->alpha_complete_tmp;
 }
 
-void HullWhiteODESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
+void HullWhiteParabolicPDESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -105,7 +105,7 @@ void HullWhiteODESolverSystem::applyLOperator(DataVector& alpha, DataVector& res
 	result.sub(temp);
 }
 
-void HullWhiteODESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& result)
+void HullWhiteParabolicPDESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -117,7 +117,7 @@ void HullWhiteODESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& re
 	result.add(temp);
 }
 
-void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
+void HullWhiteParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
@@ -133,7 +133,7 @@ void HullWhiteODESolverSystem::finishTimestep(bool isLastTimestep)
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
 }
 
-void HullWhiteODESolverSystem::startTimestep()
+void HullWhiteParabolicPDESolverSystem::startTimestep()
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate

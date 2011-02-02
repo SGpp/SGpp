@@ -29,7 +29,7 @@ VarTimestep::~VarTimestep()
 {
 }
 
-void VarTimestep::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep, bool verbose)
+void VarTimestep::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
     DataVector* rhs;

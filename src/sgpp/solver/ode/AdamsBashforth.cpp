@@ -27,7 +27,7 @@ AdamsBashforth::~AdamsBashforth()
 {
 }
 
-void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep, bool verbose)
+void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
     DataVector* rhs;

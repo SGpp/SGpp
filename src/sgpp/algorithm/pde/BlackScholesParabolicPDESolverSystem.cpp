@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
@@ -14,7 +14,7 @@
 namespace sg
 {
 
-BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
+BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
@@ -38,19 +38,19 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim())
 	{
-		throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystemn : Number of algorithmic dimensions higher than the number of grid's dimensions.");
+		throw algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystemn : Number of algorithmic dimensions higher than the number of grid's dimensions.");
 	}
 
 	// test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
 	if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize())
 	{
-		throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : Dimension of mu and sigma parameters don't match the grid's dimensions!");
+		throw algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Dimension of mu and sigma parameters don't match the grid's dimensions!");
 	}
 
 	// test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
 	if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols())
 	{
-		throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : Row or col of rho parameter don't match the grid's dimensions!");
+		throw algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Row or col of rho parameter don't match the grid's dimensions!");
 	}
 
 	// test if all algorithmic dimensions are inside the grid's dimensions
@@ -58,7 +58,7 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	{
 		if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim())
 		{
-			throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : Minimum one algorithmic dimension is not inside the grid's dimensions!");
+			throw algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Minimum one algorithmic dimension is not inside the grid's dimensions!");
 		}
 	}
 
@@ -77,7 +77,7 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 
 		if (dimCount > 1)
 		{
-			throw algorithm_exception("BlackScholesODESolverSystem::BlackScholesODESolverSystem : There is minimum one doubled algorithmic dimension!");
+			throw algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : There is minimum one doubled algorithmic dimension!");
 		}
 	}
 
@@ -124,7 +124,7 @@ BlackScholesODESolverSystem::BlackScholesODESolverSystem(Grid& SparseGrid, DataV
 	this->numSumGridpointsComplete = 0;
 }
 
-BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
+BlackScholesParabolicPDESolverSystem::~BlackScholesParabolicPDESolverSystem()
 {
 	delete this->OpDeltaBound;
 	delete this->OpGammaBound;
@@ -140,7 +140,7 @@ BlackScholesODESolverSystem::~BlackScholesODESolverSystem()
 	delete this->alpha_complete_tmp;
 }
 
-void BlackScholesODESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -162,7 +162,7 @@ void BlackScholesODESolverSystem::applyLOperator(DataVector& alpha, DataVector& 
 	result.sub(temp);
 }
 
-void BlackScholesODESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystem::applyMassMatrix(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -174,7 +174,7 @@ void BlackScholesODESolverSystem::applyMassMatrix(DataVector& alpha, DataVector&
 	result.add(temp);
 }
 
-void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
+void BlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
 #ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
@@ -238,7 +238,7 @@ void BlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 	}
 }
 
-void BlackScholesODESolverSystem::startTimestep()
+void BlackScholesParabolicPDESolverSystem::startTimestep()
 {
 #ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
@@ -252,7 +252,7 @@ void BlackScholesODESolverSystem::startTimestep()
 #endif
 }
 
-void BlackScholesODESolverSystem::buildGammaCoefficients()
+void BlackScholesParabolicPDESolverSystem::buildGammaCoefficients()
 {
 	size_t dim = this->BSalgoDims.size();
 
@@ -273,7 +273,7 @@ void BlackScholesODESolverSystem::buildGammaCoefficients()
 	}
 }
 
-void BlackScholesODESolverSystem::buildDeltaCoefficients()
+void BlackScholesParabolicPDESolverSystem::buildDeltaCoefficients()
 {
 	size_t dim = this->BSalgoDims.size();
 	double covar_sum = 0.0;
@@ -297,7 +297,7 @@ void BlackScholesODESolverSystem::buildDeltaCoefficients()
 	}
 }
 
-void BlackScholesODESolverSystem::buildGammaCoefficientsLogTransform()
+void BlackScholesParabolicPDESolverSystem::buildGammaCoefficientsLogTransform()
 {
 	size_t dim = this->BSalgoDims.size();
 
@@ -318,7 +318,7 @@ void BlackScholesODESolverSystem::buildGammaCoefficientsLogTransform()
 	}
 }
 
-void BlackScholesODESolverSystem::buildDeltaCoefficientsLogTransform()
+void BlackScholesParabolicPDESolverSystem::buildDeltaCoefficientsLogTransform()
 {
 	size_t dim = this->BSalgoDims.size();
 

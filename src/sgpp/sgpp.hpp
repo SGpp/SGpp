@@ -23,12 +23,12 @@
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 #include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
 
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
-#include "algorithm/pde/ModifiedBlackScholesODESolverSystem.hpp"
-#include "algorithm/pde/HullWhiteODESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"
-#include "algorithm/pde/HeatEquationODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"

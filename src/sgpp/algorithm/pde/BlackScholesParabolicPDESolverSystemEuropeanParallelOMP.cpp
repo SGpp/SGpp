@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
 #include "exception/algorithm_exception.hpp"
 
 #include "algorithm/pde/StdUpDown.hpp"
@@ -19,18 +19,18 @@
 namespace sg
 {
 
-BlackScholesODESolverSystemEuropeanParallelOMP::BlackScholesODESolverSystemEuropeanParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
+BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesODESolverSystemEuropean(SparseGrid, alpha, mu, sigma, rho,
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesParabolicPDESolverSystemEuropean(SparseGrid, alpha, mu, sigma, rho,
 			r, TimestepSize, OperationMode, bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
 {}
 
-BlackScholesODESolverSystemEuropeanParallelOMP::~BlackScholesODESolverSystemEuropeanParallelOMP()
+BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::~BlackScholesParabolicPDESolverSystemEuropeanParallelOMP()
 {
 }
 
-void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -121,7 +121,7 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVec
 	result.sub(GammaResult);
 }
 
-void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -212,7 +212,7 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyLOperatorComplete(Data
 	result.sub(GammaResult);
 }
 
-void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixInner(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixInner(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -223,7 +223,7 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixInner(DataVe
 	result.add(temp);
 }
 
-void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -234,7 +234,7 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(Dat
 	result.add(temp);
 }
 
-void BlackScholesODESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -304,11 +304,11 @@ void BlackScholesODESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, Dat
 	}
 	else
 	{
-		throw new algorithm_exception(" BlackScholesODESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
+		throw new algorithm_exception(" BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
+DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS()
 {
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
@@ -425,7 +425,7 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -502,7 +502,7 @@ DataVector* BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("BlackScholesODESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	rhs_complete.sub(result_complete);

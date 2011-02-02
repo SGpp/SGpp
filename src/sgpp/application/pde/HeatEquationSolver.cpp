@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/HeatEquationODESolverSystem.hpp"
-#include "algorithm/pde/HeatEquationODESolverSystemParallelOMP.hpp"
+#include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -64,9 +64,9 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
+		HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
 #else
-		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
+		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
@@ -99,9 +99,9 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+		HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
 #else
-		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
@@ -134,9 +134,9 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		double dNeededTime;
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-		HeatEquationODESolverSystemParallelOMP* myHESolver = new HeatEquationODESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+		HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
 #else
-		HeatEquationODESolverSystem* myHESolver = new HeatEquationODESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 

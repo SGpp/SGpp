@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#include "algorithm/pde/ModifiedBlackScholesODESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
@@ -15,11 +15,11 @@
 namespace sg
 {
 
-ModifiedBlackScholesODESolverSystem::ModifiedBlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
+ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
-: BlackScholesODESolverSystem(SparseGrid,
+: BlackScholesParabolicPDESolverSystem(SparseGrid,
 		alpha,
 		mu,
 		sigma,
@@ -39,7 +39,7 @@ ModifiedBlackScholesODESolverSystem::ModifiedBlackScholesODESolverSystem(Grid& S
 	this->OpFBound = this->BoundGrid->createOperationLF();
 }
 
-void ModifiedBlackScholesODESolverSystem::multiplyrBSHW(DataVector& updateVector)
+void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(DataVector& updateVector)
 {
 	double tmp;
 	for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
@@ -58,12 +58,12 @@ void ModifiedBlackScholesODESolverSystem::multiplyrBSHW(DataVector& updateVector
 	}
 }
 
-ModifiedBlackScholesODESolverSystem::~ModifiedBlackScholesODESolverSystem()
+ModifiedBlackScholesParabolicPDESolverSystem::~ModifiedBlackScholesParabolicPDESolverSystem()
 {
 	delete this->OpFBound;
 }
 
-void ModifiedBlackScholesODESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
+void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
 
@@ -88,7 +88,7 @@ void ModifiedBlackScholesODESolverSystem::applyLOperator(DataVector& alpha, Data
 	this->multiplyrBSHW(temp);
 	result.add(temp);
 }
-void ModifiedBlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
+void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
@@ -149,7 +149,7 @@ void ModifiedBlackScholesODESolverSystem::finishTimestep(bool isLastTimestep)
 	}
 }
 
-void ModifiedBlackScholesODESolverSystem::startTimestep()
+void ModifiedBlackScholesParabolicPDESolverSystem::startTimestep()
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate

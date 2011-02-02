@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
-#include "algorithm/pde/ModifiedBlackScholesODESolverSystem.hpp"
-#include "algorithm/pde/HullWhiteODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
 #include "solver/ode/Euler.hpp"
@@ -100,7 +100,7 @@ void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
@@ -171,7 +171,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		std::vector<size_t> newAlgoDimsBS(1);
 		newAlgoDimsBS[0]=0;
 		setAlgorithmicDimensions(newAlgoDimsBS);
-		ModifiedBlackScholesODESolverSystem* myBSSystem = new ModifiedBlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		ModifiedBlackScholesParabolicPDESolverSystem* myBSSystem = new ModifiedBlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 
@@ -190,7 +190,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		newAlgoDimsHW[0]=1;
 		setAlgorithmicDimensions(newAlgoDimsHW);
 
-		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
 
 		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
@@ -228,9 +228,9 @@ void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double
 	{
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		BlackScholesParabolicPDESolverSystemParallelOMP* myBSSystem = new BlackScholesParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();

@@ -5,23 +5,23 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "operation/pde/OperationODESolverSystemNeumann.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 #include "exception/algorithm_exception.hpp"
 
 namespace sg
 {
 
-OperationODESolverSystemNeumann::OperationODESolverSystemNeumann()
+OperationParabolicPDESolverSystemNeumann::OperationParabolicPDESolverSystemNeumann()
 {
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
 }
 
-OperationODESolverSystemNeumann::~OperationODESolverSystemNeumann()
+OperationParabolicPDESolverSystemNeumann::~OperationParabolicPDESolverSystemNeumann()
 {
 }
 
-void OperationODESolverSystemNeumann::mult(DataVector& alpha, DataVector& result)
+void OperationParabolicPDESolverSystemNeumann::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -85,11 +85,11 @@ void OperationODESolverSystemNeumann::mult(DataVector& alpha, DataVector& result
 	}
 	else
 	{
-		throw new algorithm_exception("OperationODESolverSystemNeumann::mult : An unknown operation mode was specified!");
+		throw new algorithm_exception("OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* OperationODESolverSystemNeumann::generateRHS()
+DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 {
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
@@ -192,7 +192,7 @@ DataVector* OperationODESolverSystemNeumann::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("OperationODESolverSystemNeumann::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -209,18 +209,18 @@ DataVector* OperationODESolverSystemNeumann::generateRHS()
 }
 
 /*
-void OperationODESolverSystemNeumann::finishTimestep(bool isLastTimestep)
+void OperationParabolicPDESolverSystemNeumann::finishTimestep(bool isLastTimestep)
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 }
 
-void OperationODESolverSystemNeumann::startTimestep()
+void OperationParabolicPDESolverSystemNeumann::startTimestep()
 {
 }
 */
 
-DataVector* OperationODESolverSystemNeumann::getGridCoefficientsForCG()
+DataVector* OperationParabolicPDESolverSystemNeumann::getGridCoefficientsForCG()
 {
 	return this->alpha_complete;
 }

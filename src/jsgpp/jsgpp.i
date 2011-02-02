@@ -73,9 +73,9 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
-%include "src/sgpp/operation/pde/OperationODESolverSystem.hpp"
-%include "src/sgpp/operation/pde/OperationODESolverSystemDirichlet.hpp"
-%include "src/sgpp/operation/pde/OperationODESolverSystemNeumann.hpp"
+%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystem.hpp"
+%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
+%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
 %include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
@@ -86,10 +86,10 @@ namespace std {
 %include "src/sgpp/algorithm/common/AlgorithmEvaluationIterative.hpp"
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesODESolverSystem.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesODESolverSystemEuropean.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.hpp"
-%include "src/sgpp/algorithm/pde/HeatEquationODESolverSystem.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+%include "src/sgpp/algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 
 %include "src/sgpp/application/common/ScreenOutput.hpp"
 

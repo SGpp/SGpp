@@ -5,22 +5,22 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#ifndef MODIFIEDBLACKSCHOLESODESOLVERSYSTEM_HPP
-#define MODIFIEDBLACKSCHOLESODESOLVERSYSTEM_HPP
+#ifndef MODIFIEDBLACKSCHOLESPARABOLICPDESOLVERSYSTEM_HPP
+#define MODIFIEDBLACKSCHOLESPARABOLICPDESOLVERSYSTEM_HPP
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 
 namespace sg
 {
 
 /**
- * This class implements the Modified ODESolverSystem for the BlackScholes
+ * This class implements the Modified ParabolicPDESolverSystem for the BlackScholes
  * Equation just use for combination of BlackScholes and HullWhite.
  */
-class ModifiedBlackScholesODESolverSystem  : public BlackScholesODESolverSystem
+class ModifiedBlackScholesParabolicPDESolverSystem  : public BlackScholesParabolicPDESolverSystem
 {
 protected:
 
@@ -50,7 +50,7 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
-   	ModifiedBlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
+   	ModifiedBlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel);
@@ -64,7 +64,7 @@ public:
    	/**
 	 * Std-Destructor
 	 */
-	virtual ~ModifiedBlackScholesODESolverSystem();
+	virtual ~ModifiedBlackScholesParabolicPDESolverSystem();
 
 	virtual void finishTimestep(bool isLastTimestep = false);
 
@@ -73,4 +73,4 @@ public:
 
 }
 
-#endif /* MODIFIEDBLACKSCHOLESODESOLVERSYSTEM_HPP */
+#endif /* MODIFIEDBLACKSCHOLESParabolicPDESolverSystem_HPP */
