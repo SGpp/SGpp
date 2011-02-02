@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONODESOLVERSYSTEM_HPP
-#define OPERATIONODESOLVERSYSTEM_HPP
+#ifndef OPERATIONPARABOLICPDESOLVERSYSTEM_HPP
+#define OPERATIONPARABOLICPDESOLVERSYSTEM_HPP
 
 #include "grid/Grid.hpp"
 #include "operation/common/OperationMatrix.hpp"
@@ -25,7 +25,7 @@ namespace sg
  * A: mass matrix
  * L: space discretization (L-Operator)
  */
-class OperationODESolverSystem : public OperationMatrix
+class OperationParabolicPDESolverSystem : public OperationMatrix
 {
 protected:
 	/// Pointer to the alphas (ansatzfunctions' coefficients)
@@ -59,12 +59,12 @@ public:
 	/**
 	 * Constructor
 	 */
-	OperationODESolverSystem();
+	OperationParabolicPDESolverSystem();
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationODESolverSystem();
+	virtual ~OperationParabolicPDESolverSystem();
 
 	/**
 	 * Multiplicates a vector with the matrix
@@ -174,4 +174,4 @@ public:
 
 }
 
-#endif /* OPERATIONODESOLVERMATRIX_HPP */
+#endif /* OPERATIONPARABOLICPDESOLVERSYSTEM_HPP */

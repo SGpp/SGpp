@@ -5,23 +5,23 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#ifndef HULLWHITEODESOLVERSYSTEM_HPP
-#define HULLWHITEODESOLVERSYSTEM_HPP
+#ifndef HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP
+#define HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
-#include "operation/pde/OperationODESolverSystemNeumann.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 
 namespace sg
 {
 
 /**
- * This class implements the ODESolverSystem for the HullWhite
+ * This class implements the ParabolicPDESolverSystem for the HullWhite
  * Equation.
  */
-class HullWhiteODESolverSystem : public OperationODESolverSystemNeumann
+class HullWhiteParabolicPDESolverSystem : public OperationParabolicPDESolverSystemNeumann
 {
 protected:
 	double theta;
@@ -71,7 +71,7 @@ public:
 	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
 	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
 	 */
-	HullWhiteODESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma, double theta,
+	HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma, double theta,
 		    double a, double TimestepSize, std::string OperationMode = "ExEul",
 			bool useCoarsen = false, double coarsenThreshold = 0.0, double coarsenPercent = 0.0,
 			size_t numExecCoarsen = 0);
@@ -79,7 +79,7 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~HullWhiteODESolverSystem();
+	virtual ~HullWhiteParabolicPDESolverSystem();
 
 	void finishTimestep(bool isLastTimestep = false);
 
@@ -88,4 +88,4 @@ public:
 
 }
 
-#endif /* HULLWHITEODESOLVERSYSTEM_HPP */
+#endif /* HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP */

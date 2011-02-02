@@ -9,7 +9,7 @@
 
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
-#include "algorithm/pde/BlackScholesODESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include <string>
 
 namespace sg
@@ -48,7 +48,7 @@ public:
 	 */
 	virtual ~VarTimestep();
 
-	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }

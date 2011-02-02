@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#include "algorithm/pde/HullWhiteODESolverSystem.hpp"
+#include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -83,7 +83,7 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -122,7 +122,7 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		HullWhiteODESolverSystem* myHWSystem = new HullWhiteODESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul",  this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul",  this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -160,9 +160,9 @@ void HullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double timestepsiz
 	{
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef USEOMPTHREE
-		BlackScholesODESolverSystemParallelOMP* myBSSystem = new BlackScholesODESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesParabolicPDESolverSystemParallelOMP* myBSSystem = new BlackScholesParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
 #else
-		BlackScholesODESolverSystem* myBSSystem = new BlackScholesODESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
 #endif
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;

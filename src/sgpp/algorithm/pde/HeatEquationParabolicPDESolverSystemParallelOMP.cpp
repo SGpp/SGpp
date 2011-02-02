@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/HeatEquationODESolverSystemParallelOMP.hpp"
+#include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.hpp"
 #include "exception/algorithm_exception.hpp"
 
 #include "algorithm/pde/StdUpDown.hpp"
@@ -18,7 +18,7 @@
 namespace sg
 {
 
-HeatEquationODESolverSystemParallelOMP::HeatEquationODESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
+HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
 {
 	this->a = a;
 	this->tOperationMode = OperationMode;
@@ -45,7 +45,7 @@ HeatEquationODESolverSystemParallelOMP::HeatEquationODESolverSystemParallelOMP(G
 	this->rhs = NULL;
 }
 
-HeatEquationODESolverSystemParallelOMP::~HeatEquationODESolverSystemParallelOMP()
+HeatEquationParabolicPDESolverSystemParallelOMP::~HeatEquationParabolicPDESolverSystemParallelOMP()
 {
 	delete this->OpLaplaceBound;
 	delete this->OpMassBound;
@@ -68,7 +68,7 @@ HeatEquationODESolverSystemParallelOMP::~HeatEquationODESolverSystemParallelOMP(
 	}
 }
 
-void HeatEquationODESolverSystemParallelOMP::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -79,7 +79,7 @@ void HeatEquationODESolverSystemParallelOMP::applyMassMatrixComplete(DataVector&
 	result.add(temp);
 }
 
-void HeatEquationODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -123,7 +123,7 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorComplete(DataVector& 
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationODESolverSystemParallelOMP::applyMassMatrixInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyMassMatrixInner(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -134,7 +134,7 @@ void HeatEquationODESolverSystemParallelOMP::applyMassMatrixInner(DataVector& al
 	result.add(temp);
 }
 
-void HeatEquationODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -178,17 +178,17 @@ void HeatEquationODESolverSystemParallelOMP::applyLOperatorInner(DataVector& alp
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationODESolverSystemParallelOMP::finishTimestep(bool isLastTimestep)
+void HeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool isLastTimestep)
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 }
 
-void HeatEquationODESolverSystemParallelOMP::startTimestep()
+void HeatEquationParabolicPDESolverSystemParallelOMP::startTimestep()
 {
 }
 
-void HeatEquationODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::mult(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -250,11 +250,11 @@ void HeatEquationODESolverSystemParallelOMP::mult(DataVector& alpha, DataVector&
 	}
 	else
 	{
-		throw new algorithm_exception(" HeatEquationODESolverSystemParallelOMP::mult : An unknown operation mode was specified!");
+		throw new algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelOMP::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
+DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 {
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
@@ -324,7 +324,7 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationODESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	this->startTimestep();
@@ -396,7 +396,7 @@ DataVector* HeatEquationODESolverSystemParallelOMP::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationODESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	rhs_complete.sub(result_complete);

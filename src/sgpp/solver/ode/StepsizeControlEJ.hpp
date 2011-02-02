@@ -50,7 +50,7 @@ public:
 	 */
 	virtual ~StepsizeControlEJ();
 
-	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }

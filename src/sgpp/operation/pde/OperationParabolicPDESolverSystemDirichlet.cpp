@@ -5,23 +5,23 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "operation/pde/OperationODESolverSystemDirichlet.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 #include "exception/algorithm_exception.hpp"
 
 namespace sg
 {
 
-OperationODESolverSystemDirichlet::OperationODESolverSystemDirichlet()
+OperationParabolicPDESolverSystemDirichlet::OperationParabolicPDESolverSystemDirichlet()
 {
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
 }
 
-OperationODESolverSystemDirichlet::~OperationODESolverSystemDirichlet()
+OperationParabolicPDESolverSystemDirichlet::~OperationParabolicPDESolverSystemDirichlet()
 {
 }
 
-void OperationODESolverSystemDirichlet::mult(DataVector& alpha, DataVector& result)
+void OperationParabolicPDESolverSystemDirichlet::mult(DataVector& alpha, DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -85,11 +85,11 @@ void OperationODESolverSystemDirichlet::mult(DataVector& alpha, DataVector& resu
 	}
 	else
 	{
-		throw new algorithm_exception("OperationODESolverSystem::mult : An unknown operation mode was specified!");
+		throw new algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* OperationODESolverSystemDirichlet::generateRHS()
+DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 {
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
@@ -192,7 +192,7 @@ DataVector* OperationODESolverSystemDirichlet::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("OperationODESolverSystem::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -260,7 +260,7 @@ DataVector* OperationODESolverSystemDirichlet::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("OperationODESolverSystem::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
 	}
 	rhs_complete.sub(result_complete);
 
@@ -275,7 +275,7 @@ DataVector* OperationODESolverSystemDirichlet::generateRHS()
 	return this->rhs;
 }
 
-DataVector* OperationODESolverSystemDirichlet::getGridCoefficientsForCG()
+DataVector* OperationParabolicPDESolverSystemDirichlet::getGridCoefficientsForCG()
 {
 	this->GridConverter->calcInnerCoefs(*this->alpha_complete, *this->alpha_inner);
 

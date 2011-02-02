@@ -5,23 +5,24 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BLACKSCHOLESODESOLVERSYSTEM_HPP
-#define BLACKSCHOLESODESOLVERSYSTEM_HPP
+#ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
+#define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-#include "grid/common/DirichletUpdateVector.hpp"
-#include "operation/pde/OperationODESolverSystemNeumann.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 
 namespace sg
 {
 
 /**
- * This class implements the ODESolverSystem for the BlackScholes
+ * This class implements the ParabolicPDESolverSystem for the BlackScholes
  * Equation.
+ *
+ * Here a European Option with fix Dirichlet boundaries is solved.
  */
-class BlackScholesODESolverSystem : public OperationODESolverSystemNeumann
+class BlackScholesParabolicPDESolverSystemEuropean : public OperationParabolicPDESolverSystemDirichlet
 {
 protected:
 	/// the riskfree interest rate
@@ -32,6 +33,12 @@ protected:
 	OperationMatrix* OpGammaBound;
 	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
 	OperationMatrix* OpLTwoBound;
+	/// the delta Operation, on Inner grid
+	OperationMatrix* OpDeltaInner;
+	/// the Gamma Operation, on Inner grid
+	OperationMatrix* OpGammaInner;
+	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
+	OperationMatrix* OpLTwoInner;
 	/// Pointer to the mus
 	DataVector* mus;
 	/// Pointer to the sigmas
@@ -58,12 +65,14 @@ protected:
 	size_t refineMaxLevel;
 	/// the algorithmic dimensions used in this system
 	std::vector<size_t> BSalgoDims;
-	/// Routine to modify the boundaries/inner points of the grid
-	DirichletUpdateVector* BoundaryUpdate;
 
-	virtual void applyLOperator(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
-	virtual void applyMassMatrix(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+
+	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result);
+
+	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
 
 	/**
 	 * Build the coefficients for the Gamma Operation, which
@@ -119,7 +128,7 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
-	BlackScholesODESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
+	BlackScholesParabolicPDESolverSystemEuropean(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
 			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
@@ -127,13 +136,13 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BlackScholesODESolverSystem();
+	virtual ~BlackScholesParabolicPDESolverSystemEuropean();
 
-	virtual void finishTimestep(bool isLastTimestep = false);
+	void finishTimestep(bool isLastTimestep = false);
 
-	virtual void startTimestep();
+	void startTimestep();
 };
 
 }
 
-#endif /* BLACKSCHOLESODESOLVERSYSTEM_HPP */
+#endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP */

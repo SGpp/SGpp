@@ -5,70 +5,70 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "operation/pde/OperationODESolverSystem.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 
 namespace sg
 {
 
-OperationODESolverSystem::OperationODESolverSystem()
+OperationParabolicPDESolverSystem::OperationParabolicPDESolverSystem()
 {
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
 }
 
-OperationODESolverSystem::~OperationODESolverSystem()
+OperationParabolicPDESolverSystem::~OperationParabolicPDESolverSystem()
 {
 }
 
-DataVector* OperationODESolverSystem::getGridCoefficients()
+DataVector* OperationParabolicPDESolverSystem::getGridCoefficients()
 {
 	return this->alpha_complete;
 }
 
-Grid* OperationODESolverSystem::getGrid()
+Grid* OperationParabolicPDESolverSystem::getGrid()
 {
 	return this->BoundGrid;
 }
 
-void OperationODESolverSystem::setODESolver(std::string ode)
+void OperationParabolicPDESolverSystem::setODESolver(std::string ode)
 {
 	this->tOperationMode = ode;
 }
 
-std::string OperationODESolverSystem::getODESolver()
+std::string OperationParabolicPDESolverSystem::getODESolver()
 {
 	return this->tOperationMode;
 }
 
-void OperationODESolverSystem::setTimestepSize(double newTimestepSize)
+void OperationParabolicPDESolverSystem::setTimestepSize(double newTimestepSize)
 {
 	this->TimestepSize_old = this->TimestepSize;
 	this->TimestepSize = newTimestepSize;
 }
 
-void OperationODESolverSystem::abortTimestep()
+void OperationParabolicPDESolverSystem::abortTimestep()
 {
 	*(this->alpha_complete) = *(this->alpha_complete_tmp);
 }
 
-void OperationODESolverSystem::saveAlpha()
+void OperationParabolicPDESolverSystem::saveAlpha()
 {
 	*(this->alpha_complete_old) = *(this->alpha_complete_tmp);
 	*(this->alpha_complete_tmp) = *(this->alpha_complete);
 }
 
-size_t OperationODESolverSystem::getSumGridPointsComplete()
+size_t OperationParabolicPDESolverSystem::getSumGridPointsComplete()
 {
 	return this->numSumGridpointsComplete;
 }
 
-size_t OperationODESolverSystem::getSumGridPointsInner()
+size_t OperationParabolicPDESolverSystem::getSumGridPointsInner()
 {
 	return this->numSumGridpointsInner;
 }
 
-void OperationODESolverSystem::getGridCoefficientsForSC(DataVector& Values)
+void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(DataVector& Values)
 {
 	Values = *(this->alpha_complete);
 	OperationHierarchisation* myHierarchisation = BoundGrid->createOperationHierarchisation();

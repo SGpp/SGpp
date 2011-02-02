@@ -40,7 +40,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o\
 	OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
 	OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
-	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesODESolverSystem.o HullWhiteODESolverSystem.o BlackScholesSolver.o HullWhiteSolver.o\
+	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesParabolicPDESolverSystem.o HullWhiteParabolicPDESolverSystem.o BlackScholesSolver.o HullWhiteSolver.o\
 	BlackScholesHullWhiteSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
 	Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
 	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o\
@@ -49,7 +49,7 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationLaplaceLinearBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o\
 	OperationTestModWavelet.o OperationBModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
 	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o\
-	HeatEquationODESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o\
+	HeatEquationParabolicPDESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o\
 	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
 	DirichletGridConverter.o OperationDeltaLinear.o OperationGammaLinear.o OperationDeltaLogLinearBoundary.o\
@@ -63,21 +63,21 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
-	EvalCuboidGenerator.o OperationODESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
-	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesODESolverSystemEuropeanParallelOMP.o\
+	EvalCuboidGenerator.o OperationParabolicPDESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
+	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o\
 	OperationBIterativeSSELinear.o DMSystemMatrixVectorizedIdentity.o OperationDeltaLogLinear.o\
 	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
 	UpdPhidPhiBBIterativeLinearBoundary.o OperationBIterativeAVXLinear.o\
 	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o\
-	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o BlackScholesODESolverSystemEuropean.o NativeCppClassifyBenchmark.o\
-	OperationBIterativeArBBLinear.o OperationBIterativeSPArBBLinear.o ModifiedBlackScholesODESolverSystem.o ArBBKernels.o\
+	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o BlackScholesParabolicPDESolverSystemEuropean.o NativeCppClassifyBenchmark.o\
+	OperationBIterativeArBBLinear.o OperationBIterativeSPArBBLinear.o ModifiedBlackScholesParabolicPDESolverSystem.o ArBBKernels.o\
 	PrewaveletGrid.o PrewaveletGridGenerator.o OperationBPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
-	UpDownOneOpDimWithShadow.o OperationODESolverSystemDirichlet.o OperationODESolverSystemNeumann.o\
+	UpDownOneOpDimWithShadow.o OperationParabolicPDESolverSystemDirichlet.o OperationParabolicPDESolverSystemNeumann.o\
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
-	HeatEquationODESolverSystemParallelOMP.o PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o
+	HeatEquationParabolicPDESolverSystemParallelOMP.o PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o
 
 ###################################################################
 # Compiler Flags
@@ -482,26 +482,26 @@ DowndPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/
 UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o UpdPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp	
 		
-BlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
-	$(CC) $(CFLAGS) -o BlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystem.cpp
+BlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o BlackScholesParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
 
-ModifiedBlackScholesODESolverSystem.o : $(SRCDIR)algorithm/pde/ModifiedBlackScholesODESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ModifiedBlackScholesODESolverSystem.o $(SRCDIR)algorithm/pde/ModifiedBlackScholesODESolverSystem.cpp
+ModifiedBlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModifiedBlackScholesParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 
-BlackScholesODESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropean.cpp
-	$(CC) $(CFLAGS) -o BlackScholesODESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropean.cpp
+BlackScholesParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
+	$(CC) $(CFLAGS) -o BlackScholesParabolicPDESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
 
-HullWhiteODESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteODESolverSystem.cpp
-	$(CC) $(CFLAGS) -o HullWhiteODESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteODESolverSystem.cpp
+HullWhiteParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o HullWhiteParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
 
-BlackScholesODESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
-	$(CC) $(CFLAGS) -o BlackScholesODESolverSystemEuropeanParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesODESolverSystemEuropeanParallelOMP.cpp
+BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
+	$(CC) $(CFLAGS) -o BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
 
-HeatEquationODESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
-	$(CC) $(CFLAGS) -o HeatEquationODESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystem.cpp
+HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o HeatEquationParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
 
-HeatEquationODESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationODESolverSystemParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationODESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationODESolverSystemParallelOMP.cpp	
+HeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp	
 	
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
@@ -614,14 +614,14 @@ UpDownTwoOpDims.o : $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
 UpDownOneOpDimWithShadow.o : $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimWithShadow.o $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
 	
-OperationODESolverSystem.o : $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
-	$(CC) $(CFLAGS) -o OperationODESolverSystem.o $(SRCDIR)operation/pde/OperationODESolverSystem.cpp
+OperationParabolicPDESolverSystem.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o OperationParabolicPDESolverSystem.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystem.cpp
 	
-OperationODESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationODESolverSystemNeumann.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationODESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationODESolverSystemNeumann.cpp
+OperationParabolicPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemNeumann.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemNeumann.cpp
 	
-OperationODESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationODESolverSystemDirichlet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationODESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationODESolverSystemDirichlet.cpp
+OperationParabolicPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemDirichlet.cpp
 
 OperationEllipticPDESolverSystem.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystem.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp

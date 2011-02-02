@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONODESOLVERSYSTEMDIRICHLET_HPP
-#define OPERATIONODESOLVERSYSTEMDIRICHLET_HPP
+#ifndef OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP
+#define OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP
 
-#include "operation/pde/OperationODESolverSystem.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/common/DirichletGridConverter.hpp"
 
@@ -29,12 +29,12 @@ namespace sg
  * using an iterative SLE solver, that solving step is integrated in the
  * ODE Solver.
  *
- * This class is a specialized version of OperationODESolverSystem which
+ * This class is a specialized version of OperationParabolicPDESolverSystem which
  * exploit Dirichlet boundary conditions. Hence there are no degrees of freedom
  * on on the boundaries the iterative solver (CG or BiCGSTAB) has only to take
  * inner grid points into account.
  */
-class OperationODESolverSystemDirichlet : public OperationODESolverSystem
+class OperationParabolicPDESolverSystemDirichlet : public OperationParabolicPDESolverSystem
 {
 protected:
 	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
@@ -82,12 +82,12 @@ public:
 	/**
 	 * Constructor
 	 */
-	OperationODESolverSystemDirichlet();
+	OperationParabolicPDESolverSystemDirichlet();
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationODESolverSystemDirichlet();
+	virtual ~OperationParabolicPDESolverSystemDirichlet();
 
 	/**
 	 * Multiplicates a vector with the matrix
@@ -109,4 +109,4 @@ public:
 
 }
 
-#endif /* OPERATIONODESOLVERMATRIXDIRICHLET_HPP */
+#endif /* OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP */

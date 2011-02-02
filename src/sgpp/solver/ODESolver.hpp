@@ -41,7 +41,7 @@ public:
 	 * @param bIdentifyLastStep set this to true to tell System the last step
 	 * @param verbose prints information during execution of the solver
 	 */
-	virtual void solve(SLESolver& LinearSystemSolver, OperationODESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
+	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
 };
 
 }
