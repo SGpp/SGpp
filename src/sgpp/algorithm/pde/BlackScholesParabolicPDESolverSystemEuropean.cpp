@@ -90,8 +90,6 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-	// Pass algorithmic dimensions to inner grid
-	this->InnerGrid->setAlgorithmicDimensions(this->BSalgoDims);
 
 	if (bLogTransform == false)
 	{
