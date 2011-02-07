@@ -134,6 +134,8 @@ void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double
 	{
 		throw new application_exception("BlackScholesSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}*/
+
+	throw new application_exception("BlackScholesHullWhiteSolver::solveExplicitEuler : explicit Euler is not supported for BlackScholesHullWhiteSolver!");
 }
 
 void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
@@ -286,6 +288,8 @@ void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double
 	{
 		throw new application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}*/
+
+	throw new application_exception("BlackScholesHullWhiteSolver::solveCrankNicolson : Crank-Nicloson is not supported for BlackScholesHullWhiteSolver!");
 }
 
 std::vector<size_t> BlackScholesHullWhiteSolver::getAlgorithmicDimensions()
