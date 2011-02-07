@@ -214,6 +214,8 @@ void HullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double timestepsiz
 	{
 		throw new application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
 	}*/
+
+	throw new application_exception("HullWhiteSolver::solveCrankNicolson : Crank-Nicolson is not supported for HullWhiteSolver!!");
 }
 
 
