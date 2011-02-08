@@ -3,11 +3,12 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Chao qi (qic@in.tum.de)
+// @author Chao qi (qic@in.tum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
+#include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/Grid.hpp"
 #include <cmath>
 
@@ -16,8 +17,8 @@ namespace sg
 
 HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma,
 			double theta, double a, double TimestepSize, std::string OperationMode,
-		    bool useCoarsen, double coarsenThreshold, double coarsenPercent,
-			size_t numExecCoarsen)
+			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -52,8 +53,11 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& Spars
 	// set coarsen settings
 	this->useCoarsen = useCoarsen;
 	this->coarsenThreshold = coarsenThreshold;
-	this->coarsenPercent = coarsenPercent;
-	this->numExecCoarsen = numExecCoarsen;
+	this->refineThreshold = refineThreshold;
+	this->adaptSolveMode = adaptSolveMode;
+	this->numCoarsenPoints = numCoarsenPoints;
+	this->refineMode = refineMode;
+	this->refineMaxLevel = refineMaxLevel;
 
 	// init Number of AverageGridPoins
 	this->numSumGridpointsInner = 0;
@@ -131,6 +135,52 @@ void HullWhiteParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 	// add number of Gridpoints
 	this->numSumGridpointsInner += 0;
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
+
+	if (this->useCoarsen == true && isLastTimestep == false)
+	{
+		///////////////////////////////////////////////////
+		// Start integrated refinement & coarsening
+		///////////////////////////////////////////////////
+
+		size_t originalGridSize = this->BoundGrid->getStorage()->size();
+
+		// Coarsen the grid
+		GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+
+		//std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
+		//std::cout << "Grid Size: " << originalGridSize << std::endl;
+
+		if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine")
+		{
+			size_t numRefines = myGenerator->getNumberOfRefinablePoints();
+			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
+			if (this->refineMode == "maxLevel")
+			{
+				myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+				this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+			}
+			if (this->refineMode == "classic")
+			{
+				myGenerator->refine(myRefineFunc);
+				this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+			}
+			delete myRefineFunc;
+		}
+
+		if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
+		{
+			size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+			SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
+			myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
+			delete myCoarsenFunctor;
+		}
+
+		delete myGenerator;
+
+		///////////////////////////////////////////////////
+		// End integrated refinement & coarsening
+		///////////////////////////////////////////////////
+	}
 }
 
 void HullWhiteParabolicPDESolverSystem::startTimestep()

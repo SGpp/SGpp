@@ -31,11 +31,11 @@ BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) :
 	this->myScreen = NULL;
 	this->useCoarsen = false;
 	this->coarsenThreshold = 0.0;
-	this->coarsenPercent = 0.0;
-	this->numExecCoarsen = 0;
 	this->adaptSolveMode = "none";
 	this->refineMode = "classic";
 	this->numCoarsenPoints = -1;
+	this->useLogTransform = useLogTransform;
+	this->refineMaxLevel = 0;
 	this->useLogTransform = useLogTransform;
 	this->refineMaxLevel = 0;
 	this->nNeededIterations = 0;
@@ -95,46 +95,7 @@ void BlackScholesHullWhiteSolver::setStochasticData(DataVector& mus, DataVector&
 }
 
 void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
-{/*
-	if (this->bGridConstructed && this->bStochasticDataAlloc)
-	{
-		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
-		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
-		this->staInnerGridSize = getNumberInnerGridPoints();
-
-		std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
-		myStopwatch->start();
-		myEuler->solve(*myCG, *myBSSystem, true, verbose);
-		this->dNeededTime = myStopwatch->stop();
-
-		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-
-		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-
-		if (this->myScreen != NULL)
-		{
-			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
-		}
-
-		this->finInnerGridSize = getNumberInnerGridPoints();
-		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
-		this->nNeededIterations = myEuler->getNumberIterations();
-
-		delete myBSSystem;
-		delete myCG;
-		delete myEuler;
-		delete myStopwatch;
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
-	}*/
-
+{
 	throw new application_exception("BlackScholesHullWhiteSolver::solveExplicitEuler : explicit Euler is not supported for BlackScholesHullWhiteSolver!");
 }
 
@@ -173,6 +134,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		std::vector<size_t> newAlgoDimsBS(1);
 		newAlgoDimsBS[0]=0;
 		setAlgorithmicDimensions(newAlgoDimsBS);
+
 		ModifiedBlackScholesParabolicPDESolverSystem* myBSSystem = new ModifiedBlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
@@ -192,7 +154,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		newAlgoDimsHW[0]=1;
 		setAlgorithmicDimensions(newAlgoDimsHW);
 
-		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 
 		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
@@ -225,70 +187,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 }
 
 void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
-{/*
-	if (this->bGridConstructed && this->bStochasticDataAlloc)
-	{
-		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-#ifdef USEOMPTHREE
-		BlackScholesParabolicPDESolverSystemParallelOMP* myBSSystem = new BlackScholesParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-#else
-		BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-#endif
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
-		this->staInnerGridSize = getNumberInnerGridPoints();
-
-		size_t numCNSteps;
-		size_t numIESteps;
-
-		numCNSteps = numTimesteps;
-		if (numTimesteps > NumImEul)
-		{
-			numCNSteps = numTimesteps - NumImEul;
-		}
-		numIESteps = NumImEul;
-
-		Euler* myEuler = new Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
-		CrankNicolson* myCN = new CrankNicolson(numCNSteps, timestepsize, this->myScreen);
-
-		myStopwatch->start();
-		if (numIESteps > 0)
-		{
-			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl;
-			myBSSystem->setODESolver("ImEul");
-			myEuler->solve(*myCG, *myBSSystem, false, false);
-		}
-		myBSSystem->setODESolver("CrNic");
-		std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
-		myCN->solve(*myCG, *myBSSystem, true, false);
-		this->dNeededTime = myStopwatch->stop();
-
-		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-
-		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-
-		if (this->myScreen != NULL)
-		{
-			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
-		}
-
-		this->finInnerGridSize = getNumberInnerGridPoints();
-		this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
-		this->nNeededIterations = myEuler->getNumberIterations() + myCN->getNumberIterations();
-
-		delete myBSSystem;
-		delete myCG;
-		delete myCN;
-		delete myEuler;
-		delete myStopwatch;
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
-	}*/
-
+{
 	throw new application_exception("BlackScholesHullWhiteSolver::solveCrankNicolson : Crank-Nicloson is not supported for BlackScholesHullWhiteSolver!");
 }
 
