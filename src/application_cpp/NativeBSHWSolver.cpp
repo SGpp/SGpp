@@ -219,19 +219,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	//myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 
 	// Start combining the Black Scholes and Hull White Equation
-	if (Solver == "ExEul")
-	{
-		double theta=0;
-		int count=0;
-		for (int i=0; i<T/stepsize; i++)
-		{
-		theta=calculatetheta(a, sigma, T, count,stepsize);
-		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
-		myBSHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-		count=count+1;
-	    }
-	}
-	else if (Solver == "ImEul")
+	if (Solver == "ImEul")
 	{
 		double theta=0;
 		int count=0;
