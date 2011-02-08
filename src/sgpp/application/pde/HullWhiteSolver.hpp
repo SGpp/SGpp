@@ -53,14 +53,21 @@ private:
     bool bStochasticDataAlloc;
 	/// screen object used in this solver
 	ScreenOutput* myScreen;
-	/// use coarsening between timesteps in order to reduce gridsize/
+	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// Threshold used to decide if a grid point should be deleted
 	double coarsenThreshold;
-	/// Percent how many of the removable points should be tested for deletion
-	double coarsenPercent;
-	/// denotes the number of coarsening procedures within one timestep
-	size_t numExecCoarsen;
+	/// Threshold used to decide if a grid point should be refined
+	double refineThreshold;
+	/// adaptive mode during solving Black Scholes Equation: none, coarsen, refine, coarsenNrefine
+	std::string adaptSolveMode;
+	/// refine mode during solving Black Scholes Equation: classic or maxLevel
+	std::string refineMode;
+	/// number of points the are coarsened in each coarsening-step
+	int numCoarsenPoints;
+	/// max. level for refinement during solving
+	size_t refineMaxLevel;
+	/// variable to store needed solving iterations
 
 	/**
 	 * returns the option value (payoff value) for an European call option

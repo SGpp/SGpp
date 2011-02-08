@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Chao qi (qic@in.tum.de)
+// @author Chao qi (qic@in.tum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #ifndef HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP
 #define HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP
@@ -37,14 +37,22 @@ protected:
 	OperationMatrix* OpFBound;
 	/// the LTwoDotProduct Operation (Mass Matrix A), on boundary grid
 	OperationMatrix* OpLTwoBound;
+
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
+	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
+	std::string adaptSolveMode;
+	/// number of points the are coarsened in each coarsening-step !CURRENTLY UNUSED PARAMETER!
+	int numCoarsenPoints;
 	/// Threshold used to decide if a grid point should be deleted
 	double coarsenThreshold;
-	/// Percent how many of the removable points should be tested for deletion
-	double coarsenPercent;
-	/// denotes the number of complete coarsen procedures per timestep
-	size_t numExecCoarsen;
+	/// Threshold used to decide if a grid point should be refined
+	double refineThreshold;
+	/// refine mode during solving Black Scholes Equation: classic or maxLevel
+	std::string refineMode;
+	/// maxLevel max. Level of refinement
+	size_t refineMaxLevel;
+
 
 	std::vector<size_t> HWalgoDims;
 	/// Routine to modify the boundaries/inner points of the grid
@@ -73,8 +81,9 @@ public:
 	 */
 	HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma, double theta,
 		    double a, double TimestepSize, std::string OperationMode = "ExEul",
-			bool useCoarsen = false, double coarsenThreshold = 0.0, double coarsenPercent = 0.0,
-			size_t numExecCoarsen = 0);
+		    bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
+		    int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
+		    size_t refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor

@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Chao qi (qic@in.tum.de)
+// @author Chao qi (qic@in.tum.de), Stefanie Schraufstetter 8schraufs@in.tum.de)
 
 #include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
@@ -28,8 +28,10 @@ HullWhiteSolver::HullWhiteSolver() : ParabolicPDESolver()
 	this->myScreen = NULL;
 	this->useCoarsen = false;
 	this->coarsenThreshold = 0.0;
-	this->coarsenPercent = 0.0;
-	this->numExecCoarsen = 0;
+	this->adaptSolveMode = "none";
+	this->refineMode = "classic";
+	this->numCoarsenPoints = -1;
+	this->refineMaxLevel = 0;
 }
 
 
@@ -83,7 +85,7 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -122,7 +124,7 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsiz
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul",  this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
+		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 		double execTime;
 
@@ -156,65 +158,6 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsiz
 
 void HullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
 {
-	/*if (this->bGridConstructed && this->bStochasticDataAlloc)
-	{
-		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-#ifdef USEOMPTHREE
-		BlackScholesParabolicPDESolverSystemParallelOMP* myBSSystem = new BlackScholesParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-#else
-		BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "CrNic", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->coarsenPercent, this->numExecCoarsen);
-#endif
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
-		double execTime;
-
-		size_t numCNSteps;
-		size_t numIESteps;
-
-		numCNSteps = numTimesteps;
-		if (numTimesteps > NumImEul)
-		{
-			numCNSteps = numTimesteps - NumImEul;
-		}
-		numIESteps = NumImEul;
-
-		Euler* myEuler = new Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
-		CrankNicolson* myCN = new CrankNicolson(numCNSteps, timestepsize, this->myScreen);
-
-		myStopwatch->start();
-		if (numIESteps > 0)
-		{
-			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl;
-			myBSSystem->setODESolver("ImEul");
-			myEuler->solve(*myCG, *myBSSystem, false, false);
-		}
-		myBSSystem->setODESolver("CrNic");
-		std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
-		myCN->solve(*myCG, *myBSSystem, true, false);
-		execTime = myStopwatch->stop();
-
-		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-
-		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-
-		if (this->myScreen != NULL)
-		{
-			std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
-		}
-
-		delete myBSSystem;
-		delete myCG;
-		delete myCN;
-		delete myEuler;
-		delete myStopwatch;
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
-	}*/
-
 	throw new application_exception("HullWhiteSolver::solveCrankNicolson : Crank-Nicolson is not supported for HullWhiteSolver!!");
 }
 
@@ -276,57 +219,6 @@ void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::
 		throw new application_exception("HullWhiteSolver::initGridWithPayoff : A grid wasn't constructed before!");
 	}
 }
-/*
-double BlackScholesSolver::get1DEuroCallPayoffValue(double assetValue, double strike)
-{
-	if (assetValue <= strike)
-	{
-		return 0.0;
-	}
-	else
-	{
-		return assetValue - strike;
-	}
-}*/
-/*
-void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t)
-{
-	if (bStochasticDataAlloc)
-	{
-		double stock = 0.0;
-		double vola = this->sigmas->get(0);
-		StdNormalDistribution* myStdNDis = new StdNormalDistribution();
-
-		for (stock = 0.0; stock <= maxStock; stock += StockInc)
-		{
-			double dOne = (log((stock/strike)) + ((this->r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
-			double dTwo = dOne - (vola*sqrt(t));
-			double prem = (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*this->r*t)));
-
-			premiums.push_back(std::make_pair(stock, prem));
-		}
-
-		delete myStdNDis;
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::solve1DAnalytic : Stochastic parameters weren't set!");
-	}
-} */
-/*
-void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename)
-{
-	typedef std::vector< std::pair<double, double> > printVector;
-	std::ofstream fileout;
-
-	fileout.open(tfilename.c_str());
-	for(printVector::iterator iter = premiums.begin(); iter != premiums.end(); iter++)
-	{
-		fileout << iter->first << " " << iter->second << " " << std::endl;
-	}
-	fileout.close();
-}
-*/
 
 std::vector<size_t> HullWhiteSolver::getAlgorithmicDimensions()
 {
