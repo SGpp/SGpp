@@ -282,9 +282,16 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 				myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
 			}
 		sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-		delete[] myBoundaries;
+		//delete[] myBoundaries; // we need them for calculating the evaluation point later!
+
 		// init Screen Object
 		myBSHWSolver->initScreen();
+
+		// set BS and HW dimension
+		int dim_BS = 0;
+		int dim_HW = 1;
+		// if this method is not called, the default values are set, i.e. BS=0, HW=1
+		myBSHWSolver->setProcessDimensions(dim_BS, dim_HW);
 
 		// Construct a grid
 		myBSHWSolver->constructGrid(*myBoundingBox, level);
@@ -349,6 +356,9 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 		myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
 		count=count+1;
 		t_local += dt_outerCall;
+
+		std::cout << "solved at t = " << t_local << " of T = " << T << std::endl;
+
 	    }
 	}
 	else
@@ -373,16 +383,21 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	std::vector<double> point;
 	for (size_t i = 0; i < d; i++)
 	{
-		if (isLogSolve == true)
-		{
-			point.push_back(log(1.0));
-		}
-		else
-		{
-			point.push_back(1.0);
-		}
+//		if (isLogSolve == true)
+//		{
+//			point.push_back(log(1.0));
+//		}
+//		else
+//		{
+//			point.push_back(1.0);
+//		}
+
+		// take the mean of the given domain
+		double point_i = (myBoundaries[i].rightBoundary + myBoundaries[i].leftBoundary)/2.0;
+		point.push_back(point_i);
 	}
-	std::cout << "Optionprice at testpoint: " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	delete[] myBoundaries;
+	std::cout << "Optionprice at [" << point[0] << ", " << point[1] << "]: " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSHWSolver;
@@ -454,7 +469,8 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
 		}
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-	delete[] myBoundaries;
+	//delete[] myBoundaries; // we need them for calculating the evaluation point later!
+
 	// init Screen Object
 	myBSHWSolver->initScreen();
 
@@ -623,6 +639,7 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 		myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
 		count=count+1;
 		t_local += dt_outerCall;
+		std::cout << "solved at t = " << t_local << " of T = " << T << std::endl;
 	    }
 	}
 	else
@@ -647,16 +664,21 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	std::vector<double> point;
 	for (size_t i = 0; i < d; i++)
 	{
-		if (isLogSolve == true)
-		{
-			point.push_back(log(1.0));
-		}
-		else
-		{
-			point.push_back(1.0);
-		}
+//		if (isLogSolve == true)
+//		{
+//			point.push_back(log(1.0));
+//		}
+//		else
+//		{
+//			point.push_back(1.0);
+//		}
+
+		// take the mean of the given domain
+		double point_i = (myBoundaries[i].rightBoundary + myBoundaries[i].leftBoundary)/2.0;
+		point.push_back(point_i);
 	}
-	std::cout << "Optionprice at testpoint: " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	delete[] myBoundaries;
+	std::cout << "Optionprice at [" << point[0] << ", " << point[1] << "]: " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSHWSolver;
