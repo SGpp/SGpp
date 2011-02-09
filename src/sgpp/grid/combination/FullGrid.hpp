@@ -48,8 +48,8 @@ class FullGrid{
 		{
 			level[i]=g.level[i];
 		}			
-    	 intersect=new double[2*dim];
-    	 aindex=new int[dim];
+    	 //intersect=new double[2*dim];
+    	 //aindex=new int[dim];
 	}
 
 	/** Creates a fullgrid skeleton of given dimension and level
@@ -57,8 +57,8 @@ class FullGrid{
     FullGrid(size_t indim): dim(indim),size(1),boundingBox(0)
     {          
       level=new level_t[dim];
- 	  intersect=new double[2*dim];
- 	  aindex=new int[dim];
+ 	  //intersect=new double[2*dim];
+ 	  //aindex=new int[dim];
     }
 
     /** Ctor for dimension adaptive full grid
@@ -70,16 +70,16 @@ class FullGrid{
 			  size=size*(powOfTwo[inlevel->at(i)]+1);
 		}         		
        vec.resize(size,0);
-       intersect=new double[2*dim];
-       aindex=new int[dim];
+       //intersect=new double[2*dim];
+       //aindex=new int[dim];
      }
 
     /** Destructor*/
     ~FullGrid()
     {    	
       delete[] level;
-      delete[] intersect;
-      delete[] aindex;
+      //delete[] intersect;
+      //delete[] aindex;
     }
 
     /** Copy constructor */
@@ -97,8 +97,8 @@ class FullGrid{
 			level[i]=fg.level[i];		
       for (size_t i=0;i<size;i++)
 		        vec.at(i)=fg.vec.at(i);
- 	 intersect=new double[2*dim];
- 	 aindex=new int[dim];
+ 	 //intersect=new double[2*dim];
+ 	 //aindex=new int[dim];
  	 boundingBox=fg.boundingBox;
  	 return *this;
     }
@@ -303,8 +303,8 @@ class FullGrid{
    BoundingBox* boundingBox;
 
   /**Auxiliar variables for use with eval*/
-	 double *intersect;
-	 int *aindex;
+	 //double *intersect;
+	 //int *aindex;
 
 };}
 

@@ -21,8 +21,8 @@ public:
 			FullGrid::size=FullGrid::size*(powOfTwo[inlevel->at(i)]-1);
 		}
 		vec.resize(size,0);
-		intersect=new double[2*dim];
-		aindex=new int[dim];
+		//intersect=new double[2*dim];
+		//aindex=new int[dim];
 	}
 
 	/** Returns the gridpoint for given index vector

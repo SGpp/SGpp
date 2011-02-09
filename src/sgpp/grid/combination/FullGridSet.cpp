@@ -693,15 +693,15 @@ double FullGridSet::combinedResult()
 
 double FullGridSet::eval(DataVector& p)
 {
-	double val=0;
+	double val=0.0;
 	size_t j=0;
 	/* Every fullgrid is evaluated and then the results are combined*/
 	//std::cout << " FullGridSet::eval p[0]:" << p[0] << " , p[1]:" << p[1] << std::endl;
 	for (j=0;j<size;j++)
 	{
-		grids.at(j)->eval(p);
+		val += grids.at(j)->eval(p) * coefs[j] ;
 		//std::cout << " FullGridSet::eval j:" << j << std::endl;
-		val+=grids.at(j)->val()*coefs[j];
+		//val+=grids.at(j)->val()*coefs[j];
 	}
 	return val;
 }
