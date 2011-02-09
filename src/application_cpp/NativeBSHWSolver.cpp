@@ -221,24 +221,27 @@ int readOptionsValues(DataVector& values, std::string tFile)
  * @param a is the mean reversion rate
  * @param sigma is the volatility
  * @param T is the maturity
- * @param count*stepsize is the current time
+ * @param t is the current time
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 
-double calculatetheta(double a, double sigma, double T, int count, double stepsize)
+double calculatetheta(double a, double sigma, double T, int t)
 {
 	double theta=0;
-	return theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+	return theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-t)))/(2*a);
 }
 /**
  * Combine Hull White solver and Black Scholes solver with European call option
  *
+ * @param d dimensions
  * @param l the number of levels used in the Sparse Grid
  * @param the stochastic data (theta, sigmahw, sigmabs, a)
  * @param the grid's bounding box - domain boundary(min,max)
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param timeSt the number of timesteps that are executed during the solving process
+ *               (not the number of timesteps in total, but the number of timesteps after which
+ *               BS and HW solver are alternatingly combined)
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
@@ -249,8 +252,8 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 {
 	    size_t dim = d;
 		size_t level = l;
-		size_t timesteps = timeSt;
-		double stepsize = dt;
+		size_t timesteps_innerCall = timeSt;
+		double stepsize_general = dt;
 		size_t CGiterations = CGIt;
 		double CGepsilon = CGeps;
 		DataVector mu(dim);
@@ -337,12 +340,15 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	{
 		double theta=0;
 		int count=0;
-		for (int i=0; i<T/stepsize; i++)
+		double dt_outerCall = T/(stepsize_general*static_cast<double>(timesteps_innerCall));
+		double t = 0.0;
+		for (int i=0; i<dt_outerCall; i++)
 		{
-		theta=calculatetheta(a, sigma, T, count,stepsize);
+		theta=calculatetheta(a, sigma, T, t);
 		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
-		myBSHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
 		count=count+1;
+		t += dt_outerCall;
 	    }
 	}
 	else
@@ -394,6 +400,8 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
  * @param the grid's bounding box - domain boundary(min,max)
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param timeSt the number of timesteps that are executed during the solving process
+ *               (not the number of timesteps in total, but the number of timesteps after which
+ *               BS and HW solver are alternatingly combined)
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
@@ -416,8 +424,8 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 {
 	size_t dim = d;
 	size_t level = l;
-	size_t timesteps = timeSt;
-	double stepsize = dt;
+	size_t timesteps_innerCall = timeSt;
+	double stepsize_general = dt;
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 	DataVector mu(dim);
@@ -606,13 +614,15 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	{
 		double theta=0;
 		int count=0;
-		for (int i=0; i<T/stepsize; i++)
+		double dt_outerCall = T/(stepsize_general*static_cast<double>(timesteps_innerCall));
+		double t = 0.0;
+		for (int i=0; i<dt_outerCall; i++)
 		{
-		theta=calculatetheta(a, sigma, T, count,stepsize);
+		theta=calculatetheta(a, sigma, T, t);
 		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
-		myBSHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-		std::cout << " t = " << ((static_cast<double>(i))*stepsize) << "   of " << T << std::endl;
+		myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
 		count=count+1;
+		t += dt_outerCall;
 	    }
 	}
 	else
@@ -795,8 +805,6 @@ void writeHelp()
 						std::cout << std::endl << std::endl;
 						writeHelp();
 					}
-				//testHullWhite(size_t l, double theta, double signma, double a, std::string fileBound, std::string payoffType,
-					//	size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T)
 				testBSHW(atoi(argv[2]),atoi(argv[3]),sigma, a, fileStoch, fileBound, payoff, atof(argv[9]), atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver,atof(argv[14]),dStrike,coords);
 			}
 
