@@ -341,14 +341,14 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 		double theta=0;
 		int count=0;
 		double dt_outerCall = T/(stepsize_general*static_cast<double>(timesteps_innerCall));
-		double t = 0.0;
+		double t_local = 0.0;
 		for (int i=0; i<dt_outerCall; i++)
 		{
-		theta=calculatetheta(a, sigma, T, t);
+		theta=calculatetheta(a, sigma, T, t_local);
 		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 		myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
 		count=count+1;
-		t += dt_outerCall;
+		t_local += dt_outerCall;
 	    }
 	}
 	else
@@ -615,14 +615,14 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 		double theta=0;
 		int count=0;
 		double dt_outerCall = T/(stepsize_general*static_cast<double>(timesteps_innerCall));
-		double t = 0.0;
+		double t_local = 0.0;
 		for (int i=0; i<dt_outerCall; i++)
 		{
-		theta=calculatetheta(a, sigma, T, t);
+		theta=calculatetheta(a, sigma, T, t_local);
 		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 		myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
 		count=count+1;
-		t += dt_outerCall;
+		t_local += dt_outerCall;
 	    }
 	}
 	else
