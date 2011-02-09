@@ -41,7 +41,7 @@ def generateBBTSSEMatrix(factory, training, verbose=False):
     from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
        
-    b = factory.createOperationBVectorized("SSE")
+    b = factory.createOperationMultipleEvalVectorized("SSE", training)
 
     alpha = DataVector(storage.size())
     erg = DataVector(len(alpha))
@@ -67,8 +67,8 @@ def generateBBTSSEMatrix(factory, training, verbose=False):
         erg.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
-        b.multTransposeVectorized(alpha, training, temp)
-        b.multVectorized(temp, training, erg)
+        b.multVectorized(alpha, temp)
+        b.multTransposeVectorized(temp, erg)
         #Sets the column in m
         m.setColumn(i, erg)
         

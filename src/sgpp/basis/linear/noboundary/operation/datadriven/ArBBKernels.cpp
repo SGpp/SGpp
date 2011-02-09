@@ -41,7 +41,7 @@ void arbb_evalTransGridPoint_oneDim(const fp_Type& dataPointDim, const arbb::den
 }
 
 template <typename fp_Type>
-void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& source, arbb::dense<fp_Type>& result)
+void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& source, arbb::dense<fp_Type>& result)
 {
 	arbb::usize source_size = Data.num_rows();
 	arbb::usize storage_size = Level.num_rows();
@@ -73,7 +73,7 @@ void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2
 }
 
 template <typename fp_Type>
-void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& alpha, arbb::dense<fp_Type>& result)
+void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& alpha, arbb::dense<fp_Type>& result)
 {
 	arbb::usize result_size = result.length();
 	arbb::usize storage_size = Level.num_rows();
@@ -120,7 +120,7 @@ ArBBKernels::~ArBBKernels()
 {
 }
 
-double ArBBKernels::multArBB(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims)
+double ArBBKernels::multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims)
 {
 	double time = 0.0;
 
@@ -136,13 +136,13 @@ double ArBBKernels::multArBB(double* ptrSource, double* ptrData, double* ptrLeve
 			arbb::bind(ArBB_Data, ptrData, dims, sourceSize);
 			arbb::bind(ArBB_Level, ptrLevel, dims, storageSize);
 			arbb::bind(ArBB_Index, ptrIndex, dims, storageSize);
-			isMultfirst = false;
+			isMultTransfirst = false;
 		}
 
 		arbb::bind(ArBB_result, ptrGlobalResult, storageSize);
 		arbb::bind(ArBB_source, ptrSource, sourceSize);
 
-		arbb::call(&(arbb_mult<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_source, ArBB_result);
+		arbb::call(&(arbb_multTrans<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_source, ArBB_result);
 	}
 	catch (const std::exception& e)
 	{
@@ -172,7 +172,7 @@ double ArBBKernels::multArBB(double* ptrSource, double* ptrData, double* ptrLeve
 	return time;
 }
 
-double ArBBKernels::multTransArBB(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims)
+double ArBBKernels::multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims)
 {
 	double time = 0.0;
 
@@ -188,13 +188,13 @@ double ArBBKernels::multTransArBB(double* ptrAlpha, double* ptrData, double* ptr
 			arbb::bind(ArBB_Data, ptrData, dims, result_size);
 			arbb::bind(ArBB_Level, ptrLevel, dims, storageSize);
 			arbb::bind(ArBB_Index, ptrIndex, dims, storageSize);
-			isMultTransfirst = false;
+			isMultfirst = false;
 		}
 
 		arbb::bind(ArBB_result, ptrResult, result_size);
 		arbb::bind(ArBB_alpha, ptrAlpha, storageSize);
 
-		arbb::call(&(arbb_multTrans<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_alpha, ArBB_result);
+		arbb::call(&(arbb_mult<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_alpha, ArBB_result);
 	}
 	catch (const std::exception& e)
 	{
@@ -224,7 +224,7 @@ double ArBBKernels::multTransArBB(double* ptrAlpha, double* ptrData, double* ptr
 	return time;
 }
 
-double ArBBKernels::multSPArBB(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims)
+double ArBBKernels::multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims)
 {
 	double time = 0.0;
 
@@ -240,13 +240,13 @@ double ArBBKernels::multSPArBB(float* ptrSource, float* ptrData, float* ptrLevel
 			arbb::bind(ArBB_DataSP, ptrData, dims, sourceSize);
 			arbb::bind(ArBB_LevelSP, ptrLevel, dims, storageSize);
 			arbb::bind(ArBB_IndexSP, ptrIndex, dims, storageSize);
-			isMultSPfirst = false;
+			isMultTransSPfirst = false;
 		}
 
 		arbb::bind(ArBB_result, ptrGlobalResult, storageSize);
 		arbb::bind(ArBB_source, ptrSource, sourceSize);
 
-		arbb::call(&(arbb_mult<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP, ArBB_source, ArBB_result);
+		arbb::call(&(arbb_multTrans<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP, ArBB_source, ArBB_result);
 	}
 	catch (const std::exception& e)
 	{
@@ -276,7 +276,7 @@ double ArBBKernels::multSPArBB(float* ptrSource, float* ptrData, float* ptrLevel
 	return time;
 }
 
-double ArBBKernels::multTransSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims)
+double ArBBKernels::multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims)
 {
 	double time = 0.0;
 
@@ -292,13 +292,13 @@ double ArBBKernels::multTransSPArBB(float* ptrAlpha, float* ptrData, float* ptrL
 			arbb::bind(ArBB_DataSP, ptrData, dims, result_size);
 			arbb::bind(ArBB_LevelSP, ptrLevel, dims, storageSize);
 			arbb::bind(ArBB_IndexSP, ptrIndex, dims, storageSize);
-			isMultTransSPfirst = false;
+			isMultSPfirst = false;
 		}
 
 		arbb::bind(ArBB_result, ptrResult, result_size);
 		arbb::bind(ArBB_alpha, ptrAlpha, storageSize);
 
-		arbb::call(&(arbb_multTrans<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP, ArBB_alpha, ArBB_result);
+		arbb::call(&(arbb_mult<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP, ArBB_alpha, ArBB_result);
 	}
 	catch (const std::exception& e)
 	{

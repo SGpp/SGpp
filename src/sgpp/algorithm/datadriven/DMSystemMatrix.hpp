@@ -10,7 +10,7 @@
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/datadriven/OperationB.hpp"
+#include "operation/datadriven/OperationMultipleEval.hpp"
 #include "operation/common/OperationMatrix.hpp"
 
 namespace sg
@@ -28,7 +28,7 @@ private:
 	/// OperationMatrix, the regularisation mehtod
 	OperationMatrix* C;
 	/// OperationB for calculating the data matrix
-	OperationB* B;
+	OperationMultipleEval* B;
 	/// Pointer to the data vector
 	DataMatrix* data;
 

@@ -41,7 +41,7 @@ def generateBTMatrix(factory, training, verbose=False):
     from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
        
-    b = factory.createOperationB()
+    b = factory.createOperationMultipleEval(training)
     
     alpha = DataVector(storage.size())
     temp = DataVector(training.getNrows())
@@ -54,7 +54,7 @@ def generateBTMatrix(factory, training, verbose=False):
         temp.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
-        b.multTranspose(alpha, training, temp)
+        b.mult(alpha, temp)
         
         #Sets the column in m       
         m.setColumn(i, temp)

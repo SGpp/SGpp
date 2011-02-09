@@ -11,7 +11,7 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the poly grid
-#include "basis/poly/operation/datadriven/OperationBPoly.hpp"
+#include "basis/poly/operation/datadriven/OperationMultipleEvalPoly.hpp"
 #include "basis/poly/operation/datadriven/OperationTestPoly.hpp"
 #include "basis/poly/operation/common/OperationEvalPoly.hpp"
 #include "basis/poly/operation/common/OperationHierarchisationPoly.hpp"
@@ -64,17 +64,17 @@ GridGenerator* PolyGrid::createGridGenerator()
 	return new StandardGridGenerator(this->storage);
 }
 
-OperationB* PolyGrid::createOperationB()
+OperationMultipleEval* PolyGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
-	return new OperationBPoly(this->storage, this->degree);
+	return new OperationMultipleEvalPoly(this->storage, this->degree, dataset);
 }
 
-OperationBVectorized* PolyGrid::createOperationBVectorized(const std::string& VecType)
+OperationMultipleEvalVectorized* PolyGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationBVectorizedSP* PolyGrid::createOperationBVectorizedSP(const std::string& VecType)
+OperationMultipleEvalVectorizedSP* PolyGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }

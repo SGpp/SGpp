@@ -24,7 +24,6 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	// create the operations needed in ApplyMatrix
 	this->vecMode = vecMode;
 	this->lamb = lambda;
-	this->B = SparseGrid.createOperationBVectorizedSP(this->vecMode);
 	this->data = new DataMatrixSP(trainData);
 
 	if (this->vecMode == "SSE")
@@ -78,6 +77,8 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	}
 
 	this->myTimer = new SGppStopwatch();
+
+	this->B = SparseGrid.createOperationMultipleEvalVectorizedSP(this->vecMode, this->data);
 }
 
 DMSystemMatrixSPVectorizedIdentity::~DMSystemMatrixSPVectorizedIdentity()
@@ -93,7 +94,7 @@ void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP&
 
     // Operation B
 	this->myTimer->start();
-	this->computeTimeMultTrans += this->B->multTransposeVectorized(alpha, (*data), temp);
+	this->computeTimeMultTrans += this->B->multVectorized(alpha, temp);
     this->completeTimeMultTrans += this->myTimer->stop();
 
     // patch result -> set additional entries zero
@@ -106,7 +107,7 @@ void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP&
     }
 
     this->myTimer->start();
-    this->computeTimeMult += this->B->multVectorized(temp, (*data), result);
+    this->computeTimeMult += this->B->multTransposeVectorized(temp, result);
     this->completeTimeMult += this->myTimer->stop();
 
     result.axpy(numTrainingInstances*this->lamb, alpha);
@@ -123,7 +124,7 @@ void DMSystemMatrixSPVectorizedIdentity::generateb(DataVectorSP& classes, DataVe
 	}
 
 	this->myTimer->start();
-	this->computeTimeMult += this->B->multVectorized(myClasses, (*data), b);
+	this->computeTimeMult += this->B->multTransposeVectorized(myClasses, b);
 	this->completeTimeMult += this->myTimer->stop();
 }
 

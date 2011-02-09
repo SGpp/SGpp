@@ -114,30 +114,10 @@ OCLKernels::OCLKernels()
 
 OCLKernels::~OCLKernels()
 {
-	if (!isFirstTimeMultTransSP)
-	{
-	    for (size_t i = 0; i < num_devices; i++)
-	    {
-	    	clReleaseKernel(kernel_multTransSP[i]);
-	    }
-	    clReleaseProgram(program_multTransSP);
-	}
-
-	if (!isFirstTimeMultTransDP)
-	{
-	    for (size_t i = 0; i < num_devices; i++)
-	    {
-	    	clReleaseKernel(kernel_multTransDP[i]);
-	    }
-	    clReleaseProgram(program_multTransDP);
-	}
-
 	if (!isFirstTimeMultSP)
 	{
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-	    	clReleaseMemObject(clLevelSP[i]);
-	    	clReleaseMemObject(clIndexSP[i]);
 	    	clReleaseKernel(kernel_multSP[i]);
 	    }
 	    clReleaseProgram(program_multSP);
@@ -147,11 +127,31 @@ OCLKernels::~OCLKernels()
 	{
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-	    	clReleaseMemObject(clLevelDP[i]);
-	    	clReleaseMemObject(clIndexDP[i]);
 	    	clReleaseKernel(kernel_multDP[i]);
 	    }
 	    clReleaseProgram(program_multDP);
+	}
+
+	if (!isFirstTimeMultTransSP)
+	{
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseMemObject(clLevelSP[i]);
+	    	clReleaseMemObject(clIndexSP[i]);
+	    	clReleaseKernel(kernel_multTransSP[i]);
+	    }
+	    clReleaseProgram(program_multTransSP);
+	}
+
+	if (!isFirstTimeMultTransDP)
+	{
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseMemObject(clLevelDP[i]);
+	    	clReleaseMemObject(clIndexDP[i]);
+	    	clReleaseKernel(kernel_multTransDP[i]);
+	    }
+	    clReleaseProgram(program_multTransDP);
 	}
 
 	if (!isVeryFirstTimeSP)
@@ -179,16 +179,16 @@ OCLKernels::~OCLKernels()
     delete[] device_ids;
 }
 
-double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition)
+double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
-	if (isFirstTimeMultDP)
+	if (isFirstTimeMultTransDP)
 	{
 		std::stringstream stream_program_src;
 
 		stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
-		stream_program_src << "__kernel void multOCL(__global double* ptrSource," << std::endl;
+		stream_program_src << "__kernel void multTransOCL(__global double* ptrSource," << std::endl;
 		stream_program_src << "						__global double* ptrData," << std::endl;
 		stream_program_src << "						__global double* ptrLevel," << std::endl;
 		stream_program_src << "						__global double* ptrIndex," << std::endl;
@@ -245,7 +245,7 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 
 	    // setting the program
 	    const char* kernel_src = program_src.c_str();
-	    program_multDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
+	    program_multTransDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
 	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
@@ -253,7 +253,7 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multDP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+	    err = clBuildProgram(program_multTransDP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
 
 	    if (err != CL_SUCCESS)
 	    {
@@ -263,7 +263,7 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 	    	char buffer[2048];
 
 	    	// get the build log
-	    	clGetProgramBuildInfo(program_multDP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+	    	clGetProgramBuildInfo(program_multTransDP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
 
 	    	std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
 	    	return 0.0;
@@ -272,7 +272,7 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 	    // creating the kernel
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-			kernel_multDP[i] = clCreateKernel(program_multDP, "multOCL", &err);
+			kernel_multTransDP[i] = clCreateKernel(program_multTransDP, "multTransOCL", &err);
 			if (err != CL_SUCCESS)
 			{
 				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
@@ -325,13 +325,13 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
     for (size_t i = 0; i < num_devices; i++)
     {
     	clOffsets[i] = (cl_uint)offset;
-		if ( clSetKernelArg(kernel_multDP[i], 0, sizeof(cl_mem), &clSource[i]) ||
-				clSetKernelArg(kernel_multDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
-				clSetKernelArg(kernel_multDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
-				clSetKernelArg(kernel_multDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
-				clSetKernelArg(kernel_multDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
-				clSetKernelArg(kernel_multDP[i], 5, sizeof(cl_uint), &clSourceSize) ||
-				clSetKernelArg(kernel_multDP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+		if ( clSetKernelArg(kernel_multTransDP[i], 0, sizeof(cl_mem), &clSource[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+				clSetKernelArg(kernel_multTransDP[i], 5, sizeof(cl_uint), &clSourceSize) ||
+				clSetKernelArg(kernel_multTransDP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
 			std::cout << "Failed to create kernel Args for kernel " << i << "!" << std::endl;
 			return 0.0;
@@ -346,7 +346,7 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
     // enqueue kernels
     for (size_t i = 0; i < num_devices; i++)
     {
-		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multDP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
+		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransDP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
 		if (err != CL_SUCCESS)
 		{
 			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -403,7 +403,7 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
     	clReleaseMemObject(clResult[i]);
     }
 
-    isFirstTimeMultDP = false;
+    isFirstTimeMultTransDP = false;
 
 //   	for (size_t i = 0; i < sourceSize; i++)
 //	{
@@ -428,16 +428,16 @@ double OCLKernels::multOCL(double* ptrSource, double* ptrData, double* ptrLevel,
 	return time;
 }
 
-double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition)
+double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
-	if (isFirstTimeMultTransDP)
+	if (isFirstTimeMultDP)
 	{
 		std::stringstream stream_program_src;
 
 		stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
-		stream_program_src << "__kernel void multTransOCL(__global double* ptrAlpha," << std::endl;
+		stream_program_src << "__kernel void multOCL(__global double* ptrAlpha," << std::endl;
 		stream_program_src << "						__global double* ptrData," << std::endl;
 		stream_program_src << "						__global double* ptrLevel," << std::endl;
 		stream_program_src << "						__global double* ptrIndex," << std::endl;
@@ -516,7 +516,7 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 
 	    // setting the program
 	    const char* kernel_src = program_src.c_str();
-	    program_multTransDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
+	    program_multDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
 	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
@@ -524,7 +524,7 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multTransDP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+	    err = clBuildProgram(program_multDP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
 
 	    if (err != CL_SUCCESS)
 	    {
@@ -534,7 +534,7 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 	    	char buffer[2048];
 
 	    	// get the build log
-	    	clGetProgramBuildInfo(program_multTransDP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+	    	clGetProgramBuildInfo(program_multDP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
 
 	    	std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
 	    	return 0.0;
@@ -543,7 +543,7 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 	    // creating the kernels
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-			kernel_multTransDP[i] = clCreateKernel(program_multTransDP, "multTransOCL", &err);
+			kernel_multDP[i] = clCreateKernel(program_multDP, "multOCL", &err);
 			if (err != CL_SUCCESS)
 			{
 				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
@@ -593,14 +593,14 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
     {
     	clOffsets[i] = (cl_uint)offset;
 		// set kernel arguments
-		if ( clSetKernelArg(kernel_multTransDP[i], 0, sizeof(cl_mem), &clAlpha[i]) ||
-				clSetKernelArg(kernel_multTransDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
-				clSetKernelArg(kernel_multTransDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
-				clSetKernelArg(kernel_multTransDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
-				clSetKernelArg(kernel_multTransDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
-				clSetKernelArg(kernel_multTransDP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
-				clSetKernelArg(kernel_multTransDP[i], 6, sizeof(cl_uint), &clStorageSize) ||
-				clSetKernelArg(kernel_multTransDP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+		if ( clSetKernelArg(kernel_multDP[i], 0, sizeof(cl_mem), &clAlpha[i]) ||
+				clSetKernelArg(kernel_multDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
+				clSetKernelArg(kernel_multDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
+				clSetKernelArg(kernel_multDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
+				clSetKernelArg(kernel_multDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+				clSetKernelArg(kernel_multDP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
+				clSetKernelArg(kernel_multDP[i], 6, sizeof(cl_uint), &clStorageSize) ||
+				clSetKernelArg(kernel_multDP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
 			std::cout << "Failed to create kernel Args!" << std::endl;
 			return 0.0;
@@ -614,7 +614,7 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
     // enqueue kernel
     for (size_t i = 0; i < num_devices; i++)
     {
-		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransDP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
+		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multDP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
 		if (err != CL_SUCCESS)
 		{
 			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -671,7 +671,7 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
     	clReleaseMemObject(clResult[i]);
     }
 
-    isFirstTimeMultTransDP = false;
+    isFirstTimeMultDP = false;
 
 //	for (size_t i = 0; i < result_size; i++)
 //	{
@@ -696,15 +696,15 @@ double OCLKernels::multTransOCL(double* ptrAlpha, double* ptrData, double* ptrLe
 	return time;
 }
 
-double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition)
+double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
-	if (isFirstTimeMultSP)
+	if (isFirstTimeMultTransSP)
 	{
 		std::stringstream stream_program_src;
 
-		stream_program_src << "__kernel void multSPOCL(__global float* ptrSource," << std::endl;
+		stream_program_src << "__kernel void multTransSPOCL(__global float* ptrSource," << std::endl;
 		stream_program_src << "						__global float* ptrData," << std::endl;
 		stream_program_src << "						__global float* ptrLevel," << std::endl;
 		stream_program_src << "						__global float* ptrIndex," << std::endl;
@@ -761,7 +761,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 
 	    // setting the program
 	    const char* kernel_src = program_src.c_str();
-	    program_multSP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
+	    program_multTransSP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
 	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
@@ -769,9 +769,9 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
-	    //err = clBuildProgram(program_multSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
-	    //err = clBuildProgram(program_multSP, 0, NULL, NULL, NULL, NULL);
+	    err = clBuildProgram(program_multTransSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+	    //err = clBuildProgram(program_multTransSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+	    //err = clBuildProgram(program_multTransSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
@@ -780,7 +780,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 	    	char buffer[2048];
 
 	    	// get the build log
-	    	clGetProgramBuildInfo(program_multSP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+	    	clGetProgramBuildInfo(program_multTransSP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
 
 	    	std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
 	    	return 0.0;
@@ -789,7 +789,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 	    // creating the kernel
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-			kernel_multSP[i] = clCreateKernel(program_multSP, "multSPOCL", &err);
+			kernel_multTransSP[i] = clCreateKernel(program_multTransSP, "multTransSPOCL", &err);
 			if (err != CL_SUCCESS)
 			{
 				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
@@ -842,13 +842,13 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     for (size_t i = 0; i < num_devices; i++)
     {
     	clOffsets[i] = (cl_uint)offset;
-		if ( clSetKernelArg(kernel_multSP[i], 0, sizeof(cl_mem), &clSource[i]) ||
-				clSetKernelArg(kernel_multSP[i], 1, sizeof(cl_mem), &clDataSP[i]) ||
-				clSetKernelArg(kernel_multSP[i], 2, sizeof(cl_mem), &clLevelSP[i]) ||
-				clSetKernelArg(kernel_multSP[i], 3, sizeof(cl_mem), &clIndexSP[i]) ||
-				clSetKernelArg(kernel_multSP[i], 4, sizeof(cl_mem), &clResult[i]) ||
-				clSetKernelArg(kernel_multSP[i], 5, sizeof(cl_uint), &clSourceSize) ||
-				clSetKernelArg(kernel_multSP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+		if ( clSetKernelArg(kernel_multTransSP[i], 0, sizeof(cl_mem), &clSource[i]) ||
+				clSetKernelArg(kernel_multTransSP[i], 1, sizeof(cl_mem), &clDataSP[i]) ||
+				clSetKernelArg(kernel_multTransSP[i], 2, sizeof(cl_mem), &clLevelSP[i]) ||
+				clSetKernelArg(kernel_multTransSP[i], 3, sizeof(cl_mem), &clIndexSP[i]) ||
+				clSetKernelArg(kernel_multTransSP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+				clSetKernelArg(kernel_multTransSP[i], 5, sizeof(cl_uint), &clSourceSize) ||
+				clSetKernelArg(kernel_multTransSP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
 			std::cout << "Failed to create kernel Args for kernel " << i << "!" << std::endl;
 			return 0.0;
@@ -863,7 +863,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     // enqueue kernels
     for (size_t i = 0; i < num_devices; i++)
     {
-		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multSP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
+		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransSP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
 		if (err != CL_SUCCESS)
 		{
 			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -920,7 +920,7 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
     	clReleaseMemObject(clResult[i]);
     }
 
-    isFirstTimeMultSP = false;
+    isFirstTimeMultTransSP = false;
 
 //    // do the rest...
 //	for (size_t j = global; j < storageSize; j++)
@@ -948,15 +948,15 @@ double OCLKernels::multSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, 
 	return time;
 }
 
-double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition)
+double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition)
 {
 	double time = 0.0;
 
-	if (isFirstTimeMultTransSP)
+	if (isFirstTimeMultSP)
 	{
 		std::stringstream stream_program_src;
 
-		stream_program_src << "__kernel void multTransSPOCL(__global float* ptrAlpha," << std::endl;
+		stream_program_src << "__kernel void multSPOCL(__global float* ptrAlpha," << std::endl;
 		stream_program_src << "						__global float* ptrData," << std::endl;
 		stream_program_src << "						__global float* ptrLevel," << std::endl;
 		stream_program_src << "						__global float* ptrIndex," << std::endl;
@@ -1035,7 +1035,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 
 	    // setting the program
 	    const char* kernel_src = program_src.c_str();
-	    program_multTransSP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
+	    program_multSP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
 	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
@@ -1043,9 +1043,9 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multTransSP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
-	    //err = clBuildProgram(program_multTransSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
-	    //err = clBuildProgram(program_multTransSP, 0, NULL, NULL, NULL, NULL);
+	    err = clBuildProgram(program_multSP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+	    //err = clBuildProgram(program_multSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+	    //err = clBuildProgram(program_multSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
@@ -1054,7 +1054,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 	    	char buffer[2048];
 
 	    	// get the build log
-	    	clGetProgramBuildInfo(program_multTransSP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+	    	clGetProgramBuildInfo(program_multSP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
 
 	    	std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
 	    	return 0.0;
@@ -1063,7 +1063,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 	    // creating the kernels
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-			kernel_multTransSP[i] = clCreateKernel(program_multTransSP, "multTransSPOCL", &err);
+			kernel_multSP[i] = clCreateKernel(program_multSP, "multSPOCL", &err);
 			if (err != CL_SUCCESS)
 			{
 				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
@@ -1113,14 +1113,14 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
     {
     	clOffsets[i] = (cl_uint)offset;
 		// set kernel arguments
-		if ( clSetKernelArg(kernel_multTransSP[i], 0, sizeof(cl_mem), &clAlpha[i]) ||
-				clSetKernelArg(kernel_multTransSP[i], 1, sizeof(cl_mem), &clDataSP[i]) ||
-				clSetKernelArg(kernel_multTransSP[i], 2, sizeof(cl_mem), &clLevelSP[i]) ||
-				clSetKernelArg(kernel_multTransSP[i], 3, sizeof(cl_mem), &clIndexSP[i]) ||
-				clSetKernelArg(kernel_multTransSP[i], 4, sizeof(cl_mem), &clResult[i]) ||
-				clSetKernelArg(kernel_multTransSP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
-				clSetKernelArg(kernel_multTransSP[i], 6, sizeof(cl_uint), &clStorageSize) ||
-				clSetKernelArg(kernel_multTransSP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+		if ( clSetKernelArg(kernel_multSP[i], 0, sizeof(cl_mem), &clAlpha[i]) ||
+				clSetKernelArg(kernel_multSP[i], 1, sizeof(cl_mem), &clDataSP[i]) ||
+				clSetKernelArg(kernel_multSP[i], 2, sizeof(cl_mem), &clLevelSP[i]) ||
+				clSetKernelArg(kernel_multSP[i], 3, sizeof(cl_mem), &clIndexSP[i]) ||
+				clSetKernelArg(kernel_multSP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+				clSetKernelArg(kernel_multSP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
+				clSetKernelArg(kernel_multSP[i], 6, sizeof(cl_uint), &clStorageSize) ||
+				clSetKernelArg(kernel_multSP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
 			std::cout << "Failed to create kernel Args!" << std::endl;
 			return 0.0;
@@ -1134,7 +1134,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
     // enqueue kernel
     for (size_t i = 0; i < num_devices; i++)
     {
-		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransSP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
+		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multSP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
 		if (err != CL_SUCCESS)
 		{
 			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -1191,7 +1191,7 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
     	clReleaseMemObject(clResult[i]);
     }
 
-    isFirstTimeMultTransSP = false;
+    isFirstTimeMultSP = false;
 
 //	for (size_t i = 0; i < result_size; i++)
 //	{
@@ -1218,39 +1218,28 @@ double OCLKernels::multTransSPOCL(float* ptrAlpha, float* ptrData, float* ptrLev
 
 void OCLKernels::resetKernels()
 {
-	if (!isFirstTimeMultTransSP)
-	{
-	    clReleaseProgram(program_multTransSP);
-	    for (size_t i = 0; i < num_devices; i++)
-	    {
-	    	clReleaseKernel(kernel_multTransSP[i]);
-	    }
-
-	    isFirstTimeMultTransSP = true;
-	}
-
 	if (!isFirstTimeMultSP)
 	{
 	    clReleaseProgram(program_multSP);
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-	    	clReleaseMemObject(clLevelSP[i]);
-	    	clReleaseMemObject(clIndexSP[i]);
 	    	clReleaseKernel(kernel_multSP[i]);
 	    }
 
 	    isFirstTimeMultSP = true;
 	}
 
-	if (!isFirstTimeMultTransDP)
+	if (!isFirstTimeMultTransSP)
 	{
-	    clReleaseProgram(program_multTransDP);
+	    clReleaseProgram(program_multTransSP);
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-	    	clReleaseKernel(kernel_multTransDP[i]);
+	    	clReleaseMemObject(clLevelSP[i]);
+	    	clReleaseMemObject(clIndexSP[i]);
+	    	clReleaseKernel(kernel_multTransSP[i]);
 	    }
 
-	    isFirstTimeMultTransDP = true;
+	    isFirstTimeMultTransSP = true;
 	}
 
 	if (!isFirstTimeMultDP)
@@ -1258,12 +1247,23 @@ void OCLKernels::resetKernels()
 	    clReleaseProgram(program_multDP);
 	    for (size_t i = 0; i < num_devices; i++)
 	    {
-	    	clReleaseMemObject(clLevelDP[i]);
-	    	clReleaseMemObject(clIndexDP[i]);
 	    	clReleaseKernel(kernel_multDP[i]);
 	    }
 
 	    isFirstTimeMultDP = true;
+	}
+
+	if (!isFirstTimeMultTransDP)
+	{
+	    clReleaseProgram(program_multTransDP);
+	    for (size_t i = 0; i < num_devices; i++)
+	    {
+	    	clReleaseMemObject(clLevelDP[i]);
+	    	clReleaseMemObject(clIndexDP[i]);
+	    	clReleaseKernel(kernel_multTransDP[i]);
+	    }
+
+	    isFirstTimeMultTransDP = true;
 	}
 }
 

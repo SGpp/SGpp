@@ -25,8 +25,8 @@
 
 %newobject sg::Grid::unserialize(const std::string& istr);
 
-%newobject sg::Grid::createOperationB();
-%newobject sg::Grid::createOperationBVectorized(const std::string& VecType);
+%newobject sg::Grid::createOperationMultipleEval(DataMatrix* dataset);
+%newobject sg::Grid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset);
 %newobject sg::Grid::createGridGenerator();
 %newobject sg::Grid::createOperationLaplace();
 %newobject sg::Grid::createOperationEval();
@@ -69,8 +69,8 @@ public:
 
 public:	
 	virtual GridGenerator* createGridGenerator() = 0;
-	virtual OperationB* createOperationB() = 0;
-	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType) = 0;
+	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
+	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset) = 0;
 	virtual OperationEval* createOperationEval() = 0;
 	virtual OperationTest* createOperationTest() = 0;
 	virtual OperationMatrix* createOperationLaplace() = 0;

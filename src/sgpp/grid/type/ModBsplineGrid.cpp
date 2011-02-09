@@ -11,7 +11,7 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod bspline grid
-#include "basis/modbspline/operation/datadriven/OperationBModBspline.hpp"
+#include "basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.hpp"
 #include "basis/modbspline/operation/datadriven/OperationTestModBspline.hpp"
 #include "basis/modbspline/operation/common/OperationEvalModBspline.hpp"
 #include "basis/modbspline/operation/common/OperationHierarchisationModBspline.hpp"
@@ -65,17 +65,17 @@ GridGenerator* ModBsplineGrid::createGridGenerator()
 	return new StandardGridGenerator(this->storage);
 }
 
-OperationB* ModBsplineGrid::createOperationB()
+OperationMultipleEval* ModBsplineGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
-	return new OperationBModBspline(this->storage, this->degree);
+	return new OperationMultipleEvalModBspline(this->storage, this->degree, dataset);
 }
 
-OperationBVectorized* ModBsplineGrid::createOperationBVectorized(const std::string& VecType)
+OperationMultipleEvalVectorized* ModBsplineGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationBVectorizedSP* ModBsplineGrid::createOperationBVectorizedSP(const std::string& VecType)
+OperationMultipleEvalVectorizedSP* ModBsplineGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }

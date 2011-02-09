@@ -27,7 +27,7 @@
 #include "grid/generation/PrewaveletGridGenerator.hpp"
 
 // Include all operations on the prewavelet grid
-#include "basis/prewavelet/operation/datadriven/OperationBPrewavelet.hpp"
+#include "basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.hpp"
 #include "basis/prewavelet/operation/datadriven/OperationTestPrewavelet.hpp"
 #include "basis/prewavelet/operation/datadriven/OperationLaplacePrewavelet.hpp"
 #include "basis/prewavelet/operation/common/OperationEvalPrewavelet.hpp"
@@ -76,17 +76,17 @@ GridGenerator* PrewaveletGrid::createGridGenerator()
 	return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
 }
 
-OperationB* PrewaveletGrid::createOperationB()
+OperationMultipleEval* PrewaveletGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
-	return new OperationBPrewavelet(this->storage);
+	return new OperationMultipleEvalPrewavelet(this->storage, dataset);
 }
 
-OperationBVectorized* PrewaveletGrid::createOperationBVectorized(const std::string& VecType)
+OperationMultipleEvalVectorized* PrewaveletGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationBVectorizedSP* PrewaveletGrid::createOperationBVectorizedSP(const std::string& VecType)
+OperationMultipleEvalVectorizedSP* PrewaveletGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }

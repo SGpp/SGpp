@@ -10,7 +10,7 @@
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
-#include "operation/datadriven/OperationBVectorized.hpp"
+#include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 
@@ -37,7 +37,7 @@ private:
 	/// the lambda, the regularisation parameter
 	double lamb;
 	/// OperationB for calculating the data matrix
-	OperationBVectorized* B;
+	OperationMultipleEvalVectorized* B;
 	/// Pointer to the data vector
 	DataMatrix* data;
 	/// Number of orignal training instances

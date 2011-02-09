@@ -39,19 +39,19 @@ OCLINCLUDES = /opt/cuda/include
 OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
 	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
 	TruncatedTrapezoidGridGenerator.o SquareRootGridGenerator.o\
-	OperationBLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationBModLinear.o OperationEvalModLinear.o\
-	OperationHierarchisationModLinear.o OperationBModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
-	OperationBPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
-	OperationEvalLinearBoundary.o OperationBLinearBoundary.o BlackScholesParabolicPDESolverSystem.o HullWhiteParabolicPDESolverSystem.o BlackScholesSolver.o HullWhiteSolver.o\
+	OperationMultipleEvalLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationMultipleEvalModLinear.o OperationEvalModLinear.o\
+	OperationHierarchisationModLinear.o OperationMultipleEvalModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
+	OperationMultipleEvalPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
+	OperationEvalLinearBoundary.o OperationMultipleEvalLinearBoundary.o BlackScholesParabolicPDESolverSystem.o HullWhiteParabolicPDESolverSystem.o BlackScholesSolver.o HullWhiteSolver.o\
 	BlackScholesHullWhiteSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
 	Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
 	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o\
 	OperationLBLinear.o OperationLDLinear.o OperationLELinear.o OperationLFLinear.o\
 	OperationLBLinearBoundary.o OperationLDLinearBoundary.o OperationLELinearBoundary.o OperationLFLinearBoundary.o\
 	OperationLaplaceLinearBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o\
-	OperationTestModWavelet.o OperationBModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
+	OperationTestModWavelet.o OperationMultipleEvalModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
 	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o\
-	HeatEquationParabolicPDESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationBModBspline.o\
+	HeatEquationParabolicPDESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationMultipleEvalModBspline.o\
 	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
 	DirichletGridConverter.o OperationDeltaLinear.o OperationGammaLinear.o OperationDeltaLogLinearBoundary.o\
@@ -67,14 +67,14 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
 	EvalCuboidGenerator.o OperationParabolicPDESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
 	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o\
-	OperationBIterativeSSELinear.o DMSystemMatrixVectorizedIdentity.o OperationDeltaLogLinear.o\
+	OperationMultipleEvalIterativeSSELinear.o DMSystemMatrixVectorizedIdentity.o OperationDeltaLogLinear.o\
 	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
-	UpdPhidPhiBBIterativeLinearBoundary.o OperationBIterativeAVXLinear.o\
-	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationBIterativeSPSSELinear.o\
-	OperationBIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o BlackScholesParabolicPDESolverSystemEuropean.o NativeCppClassifyBenchmark.o\
-	OperationBIterativeOCLLinear.o OperationBIterativeSPOCLLinear.o ModifiedBlackScholesParabolicPDESolverSystem.o OCLKernels.o\
-	OperationBIterativeSPHybridSSEOCLLinear.o OperationBIterativeHybridSSEOCLLinear.o\
-	PrewaveletGrid.o PrewaveletGridGenerator.o OperationBPrewavelet.o OperationTestPrewavelet.o\
+	UpdPhidPhiBBIterativeLinearBoundary.o OperationMultipleEvalIterativeAVXLinear.o\
+	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationMultipleEvalIterativeSPSSELinear.o\
+	OperationMultipleEvalIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o BlackScholesParabolicPDESolverSystemEuropean.o NativeCppClassifyBenchmark.o\
+	OperationMultipleEvalIterativeOCLLinear.o OperationMultipleEvalIterativeSPOCLLinear.o ModifiedBlackScholesParabolicPDESolverSystem.o OCLKernels.o\
+	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o OperationMultipleEvalIterativeHybridSSEOCLLinear.o\
+	PrewaveletGrid.o PrewaveletGridGenerator.o OperationMultipleEvalPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
 	UpDownOneOpDimWithShadow.o OperationParabolicPDESolverSystemDirichlet.o OperationParabolicPDESolverSystemNeumann.o\
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
@@ -189,8 +189,8 @@ OperationTestModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/Opera
 OperationEvalModWavelet.o : $(SRCDIR)basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 	$(CC) $(CFLAGS) -o OperationEvalModWavelet.o $(SRCDIR)basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 
-OperationBModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/OperationBModWavelet.cpp
-	$(CC) $(CFLAGS) -o OperationBModWavelet.o $(SRCDIR)basis/modwavelet/operation/datadriven/OperationBModWavelet.cpp
+OperationMultipleEvalModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalModWavelet.o $(SRCDIR)basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.cpp
 
 OperationHierarchisationModWavelet.o : $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 	$(CC) $(CFLAGS) -o OperationHierarchisationModWavelet.o $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
@@ -201,8 +201,8 @@ OperationTestPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/Opera
 OperationEvalPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
 
-OperationBPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationBPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
+OperationMultipleEvalPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.cpp
 
 OperationHierarchisationPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
@@ -216,38 +216,38 @@ OperationTestModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/Opera
 OperationEvalModBspline.o : $(SRCDIR)basis/modbspline/operation/common/OperationEvalModBspline.cpp
 	$(CC) $(CFLAGS) -o OperationEvalModBspline.o $(SRCDIR)basis/modbspline/operation/common/OperationEvalModBspline.cpp
 
-OperationBModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationBModBspline.cpp
-	$(CC) $(CFLAGS) -o OperationBModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationBModBspline.cpp
+OperationMultipleEvalModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.cpp
 
 OperationHierarchisationModBspline.o : $(SRCDIR)basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 	$(CC) $(CFLAGS) -o OperationHierarchisationModBspline.o $(SRCDIR)basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 
-OperationBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
+OperationMultipleEvalLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
 	
-OperationBIterativeSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
+OperationMultipleEvalIterativeSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
 	
-OperationBIterativeSPSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeSPSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.cpp
+OperationMultipleEvalIterativeSPSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSPSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
 	
-OperationBIterativeAVXLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeAVXLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.cpp
+OperationMultipleEvalIterativeAVXLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeAVXLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
 
-OperationBIterativeSPAVXLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeSPAVXLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.cpp
+OperationMultipleEvalIterativeSPAVXLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSPAVXLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
 	
-OperationBIterativeOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeOCLLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeOCLLinear.cpp
+OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
 
-OperationBIterativeSPOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeSPOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.cpp
+OperationMultipleEvalIterativeSPOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
 	
-OperationBIterativeSPHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPHybridSSEOCLLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeSPHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeSPHybridSSEOCLLinear.cpp	
+OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.cpp	
 
-OperationBIterativeHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeHybridSSEOCLLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBIterativeHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationBIterativeHybridSSEOCLLinear.cpp	
+OperationMultipleEvalIterativeHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp	
 	
 OCLKernels.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
 	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
@@ -345,8 +345,8 @@ DowndPhidPhiBBIterativeLinear.o : $(SRCDIR)basis/linear/noboundary/common/DowndP
 OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 	$(CC) $(CFLAGS) -o OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
 
-OperationBModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationBModLinear.cpp
-	$(CC) $(CFLAGS) -o OperationBModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationBModLinear.cpp
+OperationMultipleEvalModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
 
 OperationTestModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 	$(CC) $(CFLAGS) -o OperationTestModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
@@ -375,8 +375,8 @@ PhiPhiDownModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/PhiPhiDownModLi
 PhiPhiUpModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
 	$(CC) $(CFLAGS) -o PhiPhiUpModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
 		
-OperationBModPoly.o : $(SRCDIR)basis/modpoly/operation/datadriven/OperationBModPoly.cpp
-	$(CC) $(CFLAGS) -o OperationBModPoly.o $(SRCDIR)basis/modpoly/operation/datadriven/OperationBModPoly.cpp
+OperationMultipleEvalModPoly.o : $(SRCDIR)basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalModPoly.o $(SRCDIR)basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.cpp
 
 OperationTestModPoly.o : $(SRCDIR)basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
 	$(CC) $(CFLAGS) -o OperationTestModPoly.o $(SRCDIR)basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
@@ -387,8 +387,8 @@ OperationEvalModPoly.o : $(SRCDIR)basis/modpoly/operation/common/OperationEvalMo
 OperationHierarchisationModPoly.o : $(SRCDIR)basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 	$(CC) $(CFLAGS) -o OperationHierarchisationModPoly.o $(SRCDIR)basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 
-OperationBPoly.o : $(SRCDIR)basis/poly/operation/datadriven/OperationBPoly.cpp
-	$(CC) $(CFLAGS) -o OperationBPoly.o $(SRCDIR)basis/poly/operation/datadriven/OperationBPoly.cpp
+OperationMultipleEvalPoly.o : $(SRCDIR)basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalPoly.o $(SRCDIR)basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
 
 OperationTestPoly.o : $(SRCDIR)basis/poly/operation/datadriven/OperationTestPoly.cpp
 	$(CC) $(CFLAGS) -o OperationTestPoly.o $(SRCDIR)basis/poly/operation/datadriven/OperationTestPoly.cpp
@@ -408,8 +408,8 @@ OperationEvalLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/
 OperationUpDownTestLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o OperationUpDownTestLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
 
-OperationBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o OperationBLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.cpp
+OperationMultipleEvalLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.cpp
 
 OperationTestLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o OperationTestLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
