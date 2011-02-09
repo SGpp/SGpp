@@ -71,6 +71,10 @@ namespace sg{
   	 int jj;
   	 double dist,baseVal,ofs,len;
   	 double normcoord;
+  	 double ret_val = 0.0;
+	 double intersect[2*dim];
+	 int aindex[dim];
+
   	 /**If the boundingBox of the fullgrid is null we consider the default [0,1]^d hypercube*/
   	 if (boundingBox!=0){
   		 for ( ii = dim-1 ; ii >=0; ii--){
@@ -99,7 +103,6 @@ namespace sg{
 				 intersect[2*ii+1] = 1 - dist;
 			 }
   	 }
-  	 value = 0.0;
   	 nr=powOfTwo[dim];
   	 for (ii=0; ii < nr; ii++){
   	        baseVal = 1;//we will store here the coefficient for the next corner point of the cuboid
@@ -117,9 +120,10 @@ namespace sg{
   	        }
   	        // multiply the basis function value with the coefficient
   	        //if (baseVal!=0) //todo:
-  	        value += baseVal * vec[i];
+  	      ret_val += baseVal * vec[i];
   	  }
   	  // just return the value
-  	  return value;
+  	  value = ret_val;
+  	  return ret_val;
    }
 }

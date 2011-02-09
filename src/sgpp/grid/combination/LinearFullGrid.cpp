@@ -20,6 +20,9 @@ double LinearFullGrid::eval(DataVector& p)
 	    int jj;
 	    double dist,baseVal,ofs,len;
 	    double normcoord;
+	    double ret_val = 0.0;
+		double intersect[2*dim];
+		int aindex[dim];
 	    /**If the boundingBox of the fullgrid is null we consider the default [0,1]^d hypercube*/
 	    if (boundingBox!=0){
 	    		 for ( ii = dim-1 ; ii >=0; ii--){
@@ -77,7 +80,6 @@ double LinearFullGrid::eval(DataVector& p)
 				 }
 	    }
 
-	    value = 0.0;
 	    size_t d=dim;
 	    // detect the "real" dimensions, where there is only one point in one dimension
 	    for (ii=0;ii < (int)dim;ii++){
@@ -108,11 +110,12 @@ double LinearFullGrid::eval(DataVector& p)
 	        }// end for loop
 
 	        // multiply the basis function value with the coefficient
-	        value += baseVal* vec[i];
+	        ret_val += baseVal* vec[i];
 
 	    }
+	    value = ret_val;
 	    // just return the value
-	    return value;
+	    return ret_val;
 }
 
 }
