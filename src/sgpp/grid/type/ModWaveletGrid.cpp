@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "grid/Grid.hpp"
 #include "grid/type/ModWaveletGrid.hpp"
@@ -11,7 +11,7 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod wavelet grid
-#include "basis/modwavelet/operation/datadriven/OperationBModWavelet.hpp"
+#include "basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.hpp"
 #include "basis/modwavelet/operation/datadriven/OperationTestModWavelet.hpp"
 #include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
 #include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
@@ -28,7 +28,6 @@ namespace sg
 ModWaveletGrid::ModWaveletGrid(std::istream& istr) : Grid(istr)
 {
 }
-
 
 ModWaveletGrid::ModWaveletGrid(size_t dim)
 {
@@ -58,17 +57,17 @@ GridGenerator* ModWaveletGrid::createGridGenerator()
 	return new StandardGridGenerator(this->storage);
 }
 
-OperationB* ModWaveletGrid::createOperationB()
+OperationMultipleEval* ModWaveletGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
-	return new OperationBModWavelet(this->storage);
+	return new OperationMultipleEvalModWavelet(this->storage, dataset);
 }
 
-OperationBVectorized* ModWaveletGrid::createOperationBVectorized(const std::string& VecType)
+OperationMultipleEvalVectorized* ModWaveletGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationBVectorizedSP* ModWaveletGrid::createOperationBVectorizedSP(const std::string& VecType)
+OperationMultipleEvalVectorizedSP* ModWaveletGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }

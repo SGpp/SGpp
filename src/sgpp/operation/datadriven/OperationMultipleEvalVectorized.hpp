@@ -24,10 +24,10 @@ namespace sg
  * for datadriven task (multiple function evaluations, classification, regression). Target
  * architectures may be Intel SSE, Intel AVX, nVidia CUDA, OpenCL.
  */
-class OperationMutlipleEvalVectorized
+class OperationMultipleEvalVectorized
 {
 protected:
-	/// Pointer to the DataSet that should be evaluated on the grid
+	/// Pointer to the dataset that should be evaluated on the grid
 	DataMatrix* dataset_;
 	/// Member to store the sparse grid's levels for better vectorization
 	DataMatrix* level_;
@@ -38,7 +38,8 @@ public:
 	/**
 	 * Constructor
 	 */
-	OperationMutlipleEvalVectorized(DataMatrix& DataSet) {
+	OperationMultipleEvalVectorized(DataMatrix* dataset) {
+		this->dataset_ = dataset;
 		this->level_ = NULL;
 		this->index_ = NULL;
 	}
@@ -48,7 +49,7 @@ public:
 	 *
 	 * cleans up level_ and index_ members
 	 */
-	virtual ~OperationMutlipleEvalVectorized() {
+	virtual ~OperationMultipleEvalVectorized() {
 		if (this->level_ != NULL)
 			delete this->level_;
 
@@ -67,7 +68,7 @@ public:
 	 * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual void multVectorized(DataVector& alpha, DataVector& result) = 0;
+	virtual double multVectorized(DataVector& alpha, DataVector& result) = 0;
 
 	/**
 	 * Multiplication of @f$B@f$ with vector @f$\alpha@f$
@@ -80,7 +81,7 @@ public:
 	 * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual void multTransposeVectorized(DataVector& source, DataVector& result) = 0;
+	virtual double multTransposeVectorized(DataVector& source, DataVector& result) = 0;
 
 	/**
 	 * rebuilds the DataMatrix for Level and Index in Derivatives

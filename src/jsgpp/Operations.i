@@ -40,18 +40,18 @@ public:
 };
 
 
-class OperationB
+class OperationMultipleEval
 {
 public:
-	virtual void mult(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
-	virtual void multTranspose(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual void mult(DataVector& alpha, DataVector& result) = 0;
+	virtual void multTranspose(DataVector& soruce, DataVector& result) = 0;
 };
 
-class OperationBVectorized
+class OperationMultipleEvalVectorized
 {
 public:
-	virtual double multVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
-	virtual double multTransposeVectorized(DataVector& alpha, DataMatrix& data, DataVector& result) = 0;
+	virtual double multVectorized(DataVector& alpha, DataVector& result) = 0;
+	virtual double multTransposeVectorized(DataVector& source, DataVector& result) = 0;
 	virtual void rebuildLevelAndIndex() = 0;
 };
 

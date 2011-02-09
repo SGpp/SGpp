@@ -46,7 +46,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
+	void mult_transposed(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -97,7 +97,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
+	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
 	{
 		typedef std::vector<std::pair<size_t, double> > IndexValVector;
 

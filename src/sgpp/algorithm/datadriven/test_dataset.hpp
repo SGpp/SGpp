@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef TEST_DATASET_HPP
-#define TEST_DATASET_HPP
+#ifndef TEST_dataset_HPP
+#define TEST_dataset_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -213,4 +213,4 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 
 }
 
-#endif /* TEST_DATASET_HPP */
+#endif /* TEST_dataset_HPP */

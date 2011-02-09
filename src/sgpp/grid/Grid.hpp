@@ -10,9 +10,9 @@
 
 #include "grid/GridStorage.hpp"
 
-#include "operation/datadriven/OperationB.hpp"
-#include "operation/datadriven/OperationBVectorized.hpp"
-#include "operation/datadriven/OperationBVectorizedSP.hpp"
+#include "operation/datadriven/OperationMultipleEval.hpp"
+#include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
+#include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
 #include "operation/datadriven/OperationTest.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "operation/common/OperationHierarchisation.hpp"
@@ -181,31 +181,35 @@ public:
 	virtual GridGenerator* createGridGenerator() = 0;
 
 	/**
-	 * gets a pointer to OperationB object
+	 * gets a pointer to OperationMultipleEval object
+	 *
+	 * @param dataset the dataset that should be evaluated on the sparse grid
 	 *
 	 * @return pointer to the OperationB object
 	 */
-	virtual OperationB* createOperationB() = 0;
+	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
 
 	/**
 	 * gets a pointer to OperationBVectorized object
 	 *
 	 * @param VecType Type of Vectorization used: Currently supported: SSE, AVX
+	 * @param dataset the dataset that should be evaluated on the sparse grid
 	 *
 	 * @return pointer to the OperationB object
 	 */
-	virtual OperationBVectorized* createOperationBVectorized(
-			const std::string& VecType) = 0;
+	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(
+			const std::string& VecType, DataMatrix* dataset) = 0;
 
 	/**
 	 * gets a pointer to OperationBVectorizedSP object
 	 *
 	 * @param VecType Type of Vectorization used: Currently supported: SSE, AVX
+	 * @param dataset the dataset that should be evaluated on the sparse grid
 	 *
 	 * @return pointer to the OperationBSP object
 	 */
-	virtual OperationBVectorizedSP* createOperationBVectorizedSP(
-			const std::string& VecType) = 0;
+	virtual OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(
+			const std::string& VecType, DataMatrixSP* dataset) = 0;
 
 	/**
 	 * gets a pointer to OperationConvert object

@@ -504,7 +504,7 @@ class TestLinearGrid(unittest.TestCase):
         gen.refine(func)
         self.failUnlessEqual(storage.size(), 5)
 
-    def testOperationB(self):
+    def testOperationMultipleEval(self):
         from pysgpp import Grid, DataVector, DataMatrix
         factory = Grid.createLinearGrid(1)
         gen = factory.createGridGenerator()
@@ -519,8 +519,8 @@ class TestLinearGrid(unittest.TestCase):
         p.set(0,0,0.25)
         beta[0] = 1.0
         
-        opb = factory.createOperationB()
-        opb.mult(beta, p, alpha)
+        opb = factory.createOperationMultipleEval(p)
+        opb.multTranspose(beta, alpha)
         
         self.failUnlessAlmostEqual(alpha[0], 0.5)
         self.failUnlessAlmostEqual(alpha[1], 1.0)
@@ -533,7 +533,7 @@ class TestLinearGrid(unittest.TestCase):
         
         beta[0] = 0.0
         
-        opb.multTranspose(alpha, p, beta)
+        opb.mult(alpha, beta)
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
@@ -636,7 +636,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         gen.refine(func)
         self.failUnlessEqual(storage.size(), 81)
 
-    def testOperationB(self):
+    def testOperationMultipleEval(self):
         from pysgpp import Grid, DataVector, DataMatrix
         factory = Grid.createLinearTrapezoidBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -651,8 +651,8 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         p.set(0,0,0.25)
         beta[0] = 1.0
         
-        opb = factory.createOperationB()
-        opb.mult(beta, p, alpha)
+        opb = factory.createOperationMultipleEval(p)
+        opb.multTranspose(beta, alpha)
         
         self.failUnlessAlmostEqual(alpha[0], 0.75)
         self.failUnlessAlmostEqual(alpha[1], 0.25)
@@ -667,7 +667,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         
         beta[0] = 0.0
         
-        opb.multTranspose(alpha, p, beta)
+        opb.mult(alpha, beta)
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
@@ -929,7 +929,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         gen.refine(func)
         self.failUnlessEqual(storage.size(), 29) 
 
-    def testOperationB(self):
+    def testOperationMultipleEval(self):
         from pysgpp import Grid, DataVector, DataMatrix
         factory = Grid.createLinearBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -944,8 +944,8 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         p.set(0,0,0.25)
         beta[0] = 1.0
         
-        opb = factory.createOperationB()
-        opb.mult(beta, p, alpha)
+        opb = factory.createOperationMultipleEval(p)
+        opb.multTranspose(beta, alpha)
         
         self.failUnlessAlmostEqual(alpha[0], 0.75)
         self.failUnlessAlmostEqual(alpha[1], 0.25)
@@ -960,7 +960,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         
         beta[0] = 0.0
         
-        opb.multTranspose(alpha, p, beta)
+        opb.mult(alpha, beta)
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):

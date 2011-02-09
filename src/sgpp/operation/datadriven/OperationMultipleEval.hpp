@@ -20,22 +20,22 @@ namespace sg
  *
  * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data points
  */
-class OperationMutlipleEval
+class OperationMultipleEval
 {
 protected:
-	/// Pointer to the DataSet that should be evaluated on the grid
+	/// Pointer to the dataset that should be evaluated on the grid
 	DataMatrix* dataset_;
 
 public:
 	/**
 	 * Constructor
 	 */
-	OperationMutlipleEval(DataMatrix& DataSet) {}
+	OperationMultipleEval(DataMatrix* dataset) : dataset_(dataset) {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationMutlipleEval() {}
+	virtual ~OperationMultipleEval() {}
 
 	/**
 	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$

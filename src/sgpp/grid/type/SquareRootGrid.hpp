@@ -44,8 +44,9 @@ public:
 
 	virtual const char* getType();
 
-	virtual OperationB* createOperationB(){ return 0;};
-	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType){return 0;};
+	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset){return 0;};
+	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset){return 0;};
+	virtual OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset){return 0;};
 	virtual GridGenerator* createGridGenerator();
 	virtual OperationMatrix* createOperationLaplace(){return 0;};
 	virtual OperationEval* createOperationEval();
@@ -66,7 +67,6 @@ public:
 	virtual OperationMatrix* createOperationLD() {return 0;};
 	virtual OperationMatrix* createOperationLE() {return 0;};
 	virtual OperationMatrix* createOperationLF() {return 0;};
-	virtual OperationBVectorizedSP* createOperationBVectorizedSP(const std::string& VecType) {return 0;};
 
 	static Grid* unserialize(std::istream& istr);
 };

@@ -368,9 +368,9 @@ void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, Data
 			throw new application_exception("PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
 		}
 
-		OperationB* myOpB = myGrid->createOperationB();
-		myOpB->multTranspose(alpha, EvaluationPoints, OptionPrices);
-		delete myOpB;
+		OperationMultipleEval* myOpMultEval = myGrid->createOperationMultipleEval(&EvaluationPoints);
+		myOpMultEval->mult(alpha, OptionPrices);
+		delete myOpMultEval;
 	}
 	else
 	{

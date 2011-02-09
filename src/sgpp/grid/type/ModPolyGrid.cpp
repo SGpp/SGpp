@@ -11,7 +11,7 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod poly grid
-#include "basis/modpoly/operation/datadriven/OperationBModPoly.hpp"
+#include "basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.hpp"
 #include "basis/modpoly/operation/datadriven/OperationTestModPoly.hpp"
 #include "basis/modpoly/operation/common/OperationEvalModPoly.hpp"
 #include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
@@ -66,17 +66,17 @@ GridGenerator* ModPolyGrid::createGridGenerator()
 	return new StandardGridGenerator(this->storage);
 }
 
-OperationB* ModPolyGrid::createOperationB()
+OperationMultipleEval* ModPolyGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
-	return new OperationBModPoly(this->storage, this->degree);
+	return new OperationMultipleEvalModPoly(this->storage, this->degree, dataset);
 }
 
-OperationBVectorized* ModPolyGrid::createOperationBVectorized(const std::string& VecType)
+OperationMultipleEvalVectorized* ModPolyGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }
 
-OperationBVectorizedSP* ModPolyGrid::createOperationBVectorizedSP(const std::string& VecType)
+OperationMultipleEvalVectorizedSP* ModPolyGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }

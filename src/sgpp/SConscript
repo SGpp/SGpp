@@ -45,11 +45,11 @@ grid/generation/SurplusRefinementFunctor.cpp
 grid/generation/SurplusCoarseningFunctor.cpp
 grid/generation/PrewaveletGridGenerator.cpp
 
-basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
-basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.cpp
-basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.cpp
-basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.cpp
-basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
 basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
@@ -86,7 +86,7 @@ basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.cpp
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
-basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.cpp
+basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.cpp
 basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
 basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.cpp
 basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
@@ -119,7 +119,7 @@ basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp
 basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
 
-basis/modlinear/operation/datadriven/OperationBModLinear.cpp
+basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
@@ -132,27 +132,27 @@ basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
 basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
 basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
 
-basis/poly/operation/datadriven/OperationBPoly.cpp
+basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
 basis/poly/operation/datadriven/OperationTestPoly.cpp
 basis/poly/operation/common/OperationEvalPoly.cpp
 basis/poly/operation/common/OperationHierarchisationPoly.cpp
 
-basis/modpoly/operation/datadriven/OperationBModPoly.cpp
+basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.cpp
 basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
 basis/modpoly/operation/common/OperationEvalModPoly.cpp
 basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 
-basis/modwavelet/operation/datadriven/OperationBModWavelet.cpp
+basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.cpp
 basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
 basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 
-basis/modbspline/operation/datadriven/OperationBModBspline.cpp
+basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.cpp
 basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
 basis/modbspline/operation/common/OperationEvalModBspline.cpp
 basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
 
-basis/prewavelet/operation/datadriven/OperationBPrewavelet.cpp
+basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.cpp
 basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
 basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
 basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp

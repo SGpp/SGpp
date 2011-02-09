@@ -11,11 +11,11 @@
 #include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSSELinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPSSELinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeAVXLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPAVXLinear.hpp"
+#include "basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.hpp"
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
@@ -23,15 +23,15 @@
 #include "basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.hpp"
 
 #ifdef USEOCL
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPHybridSSEOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeHybridSSEOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
 #endif
 
 #ifdef USEARBB
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeArBBLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationBIterativeSPArBBLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #endif
 
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
@@ -92,35 +92,35 @@ GridGenerator* LinearTrapezoidBoundaryGrid::createGridGenerator()
 	return new TrapezoidBoundaryGridGenerator(this->storage);
 }
 
-OperationB* LinearTrapezoidBoundaryGrid::createOperationB()
+OperationMultipleEval* LinearTrapezoidBoundaryGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
-	return new OperationBLinearBoundary(this->storage);
+	return new OperationMultipleEvalLinearBoundary(this->storage, dataset);
 }
 
-OperationBVectorized* LinearTrapezoidBoundaryGrid::createOperationBVectorized(const std::string& VecType)
+OperationMultipleEvalVectorized* LinearTrapezoidBoundaryGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	if (VecType == "SSE")
 	{
-		return new OperationBIterativeSSELinear(this->storage);
+		return new OperationMultipleEvalIterativeSSELinear(this->storage, dataset);
 	}
 	else if (VecType == "AVX")
 	{
-		return new OperationBIterativeAVXLinear(this->storage);
+		return new OperationMultipleEvalIterativeAVXLinear(this->storage, dataset);
 	}
 #ifdef USEOCL
 	else if (VecType == "OCL")
 	{
-		return new OperationBIterativeOCLLinear(this->storage);
+		return new OperationMultipleEvalIterativeOCLLinear(this->storage, dataset);
 	}
 	else if (VecType == "HYBRID_SSE_OCL")
 	{
-		return new OperationBIterativeHybridSSEOCLLinear(this->storage);
+		return new OperationMultipleEvalIterativeHybridSSEOCLLinear(this->storage, dataset);
 	}
 #endif
 #ifdef USEARBB
 	else if (VecType == "ArBB")
 	{
-		return new OperationBIterativeArBBLinear(this->storage);
+		return new OperationMultipleEvalIterativeArBBLinear(this->storage, dataset);
 	}
 #endif
 	else
@@ -129,30 +129,30 @@ OperationBVectorized* LinearTrapezoidBoundaryGrid::createOperationBVectorized(co
 	}
 }
 
-OperationBVectorizedSP* LinearTrapezoidBoundaryGrid::createOperationBVectorizedSP(const std::string& VecType)
+OperationMultipleEvalVectorizedSP* LinearTrapezoidBoundaryGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	if (VecType == "SSE")
 	{
-		return new OperationBIterativeSPSSELinear(this->storage);
+		return new OperationMultipleEvalIterativeSPSSELinear(this->storage, dataset);
 	}
 	else if (VecType == "AVX")
 	{
-		return new OperationBIterativeSPAVXLinear(this->storage);
+		return new OperationMultipleEvalIterativeSPAVXLinear(this->storage, dataset);
 	}
 #ifdef USEOCL
 	else if (VecType == "OCL")
 	{
-		return new OperationBIterativeSPOCLLinear(this->storage);
+		return new OperationMultipleEvalIterativeSPOCLLinear(this->storage, dataset);
 	}
 	else if (VecType == "HYBRID_SSE_OCL")
 	{
-		return new OperationBIterativeSPHybridSSEOCLLinear(this->storage);
+		return new OperationMultipleEvalIterativeSPHybridSSEOCLLinear(this->storage, dataset);
 	}
 #endif
 #ifdef USEARBB
 	else if (VecType == "ArBB")
 	{
-		return new OperationBIterativeSPArBBLinear(this->storage);
+		return new OperationMultipleEvalIterativeSPArBBLinear(this->storage, dataset);
 	}
 #endif
 	else

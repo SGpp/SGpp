@@ -14,7 +14,7 @@
 
 #include "algorithm/common/AlgorithmEvaluation.hpp"
 #include "algorithm/common/AlgorithmEvaluationTransposed.hpp"
-#include "algorithm/common/AlgorithmEvaluationIterative.hpp"
+//#include "algorithm/common/AlgorithmEvaluationIterative.hpp"
 
 #include <vector>
 #include <utility>
@@ -23,9 +23,13 @@
 namespace sg {
 
 /**
- * Basic multiplaction with B and B^T on grids with no boundaries.
- * If there are @f$N@f$ basis functions @f$\varphi(\vec{x})@f$ and @f$m@f$ data points, then B is a (Nxm) matrix, with
- * @f[ (B)_{i,j} = \varphi_i(x_j). @f]
+ * Abstract implementation for multiple function evaluations. In Data Mining
+ * to operators are needed: mass evaluation and transposed evaluation, referenced
+ * in literature as matrix vector products with matrices B^T (mass evaluation) and B
+ * (transposed evaluation).
+ *
+ * If there are @f$N@f$ basis functions @f$\varphi(\vec{x})@f$ and @f$m@f$ data points, then B is a (mxN) matrix, with
+ * @f[ (B)_{j,i} = \varphi_i(x_j). @f]
  *
  * @todo (blank) check if it is possible to have some functor for the BASIS type
  */
@@ -35,9 +39,7 @@ class AlgorithmMultipleEvaluation
 public:
 
 	/**
-	 * Performs the DGEMV Operation on the grid
-	 *
-	 * This operation can be executed in parallel by setting the USEOMP define
+	 * Performs a transposed mass evaluation
 	 *
 	 * @todo (heinecke, nice) add mathematical description
 	 *
@@ -47,7 +49,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
+	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
 	{
 		result.setAll(0.0);
 		size_t source_size = source.getSize();
@@ -78,9 +80,7 @@ public:
 	}
 
 	/**
-	 * Performs the DGEMV Operation on the grid having a transposed matrix
-	 *
-	 * This operation can be executed in parallel by setting the USEOMP define
+	 * Performs a mass evaluation
 	 *
 	 * @todo (heinecke, nice) add mathematical description
 	 *
@@ -90,7 +90,7 @@ public:
 	 * @param x the d-dimensional vector with data points (row-wise)
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
+	void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
 	{
 		result.setAll(0.0);
 		size_t result_size = result.getSize();
@@ -110,25 +110,25 @@ public:
 		}
 	}
 
-	void mult_transpose_iterative(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
-	{
-		result.setAll(0.0);
-		size_t result_size = result.getSize();
-
-		#pragma omp parallel
-		{
-			std::vector<double> line;
-			AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
-
-			#pragma omp for schedule (static)
-			for(size_t i = 0; i < result_size; i++)
-			{
-				x.getRow(i, line);
-
-				result[i] = AlgoEval(basis, line, source);
-			}
-		}
-	}
+//	void mult_iterative(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
+//	{
+//		result.setAll(0.0);
+//		size_t result_size = result.getSize();
+//
+//		#pragma omp parallel
+//		{
+//			std::vector<double> line;
+//			AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
+//
+//			#pragma omp for schedule (static)
+//			for(size_t i = 0; i < result_size; i++)
+//			{
+//				x.getRow(i, line);
+//
+//				result[i] = AlgoEval(basis, line, source);
+//			}
+//		}
+//	}
 };
 
 }

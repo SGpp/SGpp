@@ -16,9 +16,9 @@ DMSystemMatrix::DMSystemMatrix(Grid& SparseGrid, DataMatrix& trainData, Operatio
 {
 	// create the operations needed in ApplyMatrix
 	this->C = &C;
-	this->B = SparseGrid.createOperationB();
 	this->lamb = lambda;
 	this->data = &trainData;
+	this->B = SparseGrid.createOperationMultipleEval(this->data);
 }
 
 DMSystemMatrix::~DMSystemMatrix()
@@ -32,8 +32,8 @@ void DMSystemMatrix::mult(DataVector& alpha, DataVector& result)
   size_t M = (*data).getNrows();
 
     // Operation B
-    this->B->multTranspose(alpha, (*data), temp);
-    this->B->mult(temp, (*data), result);
+    this->B->mult(alpha, temp);
+    this->B->multTranspose(temp, result);
 
 	DataVector temptwo(alpha.getSize());
 	this->C->mult(alpha, temptwo);
@@ -42,7 +42,7 @@ void DMSystemMatrix::mult(DataVector& alpha, DataVector& result)
 
 void DMSystemMatrix::generateb(DataVector& classes, DataVector& b)
 {
-	this->B->mult(classes, (*data), b);
+	this->B->multTranspose(classes, b);
 }
 
 }
