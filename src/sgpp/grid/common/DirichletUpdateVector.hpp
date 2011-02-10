@@ -85,7 +85,7 @@ public:
 	 *@param T timestepsize
 	 *@param dim_r axis with risk-free rate (HW axis)
 	 */
-	void getfactor(DataVector& factor, double T, int dim_r);
+	void getDiscountFactor(DataVector& factor, double T, int dim_r);
 	/**
 	* Multiplies the values on the boundary with a constant value
 	*
