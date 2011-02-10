@@ -146,7 +146,6 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		setAlgorithmicDimensions(newAlgoDimsBS);
 
 		ModifiedBlackScholesParabolicPDESolverSystem* myBSSystem = new ModifiedBlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel, this->dim_HW);
-//BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 
@@ -168,7 +167,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 
 		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel, this->dim_HW);
 
-//		myEuler->solve(*myCG, *myHWSystem, true, verbose);
+		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;

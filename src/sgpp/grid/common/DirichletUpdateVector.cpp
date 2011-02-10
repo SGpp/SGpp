@@ -66,7 +66,7 @@ void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double va
 	}
 }
 
-void DirichletUpdateVector::getfactor(DataVector& factor, double T, int dim_r)
+void DirichletUpdateVector::getDiscountFactor(DataVector& factor, double T, int dim_r)
 {
 	double tmp;
 	for (size_t i = 0; i < storage->size(); i++)

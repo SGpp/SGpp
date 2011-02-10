@@ -127,7 +127,7 @@ void HullWhiteParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize, this->dim_r);
+   this->BoundaryUpdate->getDiscountFactor(*factor, this->TimestepSize, this->dim_r);
 
 	if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 	{
@@ -189,7 +189,7 @@ void HullWhiteParabolicPDESolverSystem::startTimestep()
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize, this->dim_r);
+	   this->BoundaryUpdate->getDiscountFactor(*factor, this->TimestepSize, this->dim_r);
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
