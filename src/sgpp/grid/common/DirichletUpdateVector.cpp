@@ -66,7 +66,7 @@ void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double va
 	}
 }
 
-void DirichletUpdateVector::getfactor(DataVector& factor, double T)
+void DirichletUpdateVector::getfactor(DataVector& factor, double T, int dim_r)
 {
 	double tmp;
 	for (size_t i = 0; i < storage->size(); i++)
@@ -80,7 +80,8 @@ void DirichletUpdateVector::getfactor(DataVector& factor, double T)
 			dblFuncValues[j] = tmp;
 		}
 		//std::cout<<dblFuncValues[1]<<std::endl;
-		factor.set(i, exp((-1.0)*dblFuncValues[1]*T));
+		//factor.set(i, exp((-1.0)*dblFuncValues[1]*T));
+		factor.set(i, exp((-1.0)*dblFuncValues[dim_r]*T));
 	}
 }
 

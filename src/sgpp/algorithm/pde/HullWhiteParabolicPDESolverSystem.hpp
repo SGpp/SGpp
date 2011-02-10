@@ -78,12 +78,13 @@ public:
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
 	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
 	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
+	 * @param dim_HW dimension of Hull-White (dimension of risk-free rate)
 	 */
 	HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma, double theta,
 		    double a, double TimestepSize, std::string OperationMode = "ExEul",
 		    bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 		    int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
-		    size_t refineMaxLevel = 0);
+		    size_t refineMaxLevel = 0, int dim_HW = 1);
 
 	/**
 	 * Std-Destructor
@@ -93,6 +94,11 @@ public:
 	void finishTimestep(bool isLastTimestep = false);
 
 	void startTimestep();
+
+private:
+
+	/// the dimension of the risk-free rate (Hull-White dimension)
+	int dim_r;
 };
 
 }

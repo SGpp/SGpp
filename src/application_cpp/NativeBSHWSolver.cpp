@@ -288,8 +288,8 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 		myBSHWSolver->initScreen();
 
 		// set BS and HW dimension
-		int dim_BS = 0;
-		int dim_HW = 1;
+		int dim_BS = 1;  // default: 0
+		int dim_HW = 0;  // default: 1
 		// if this method is not called, the default values are set, i.e. BS=0, HW=1
 		myBSHWSolver->setProcessDimensions(dim_BS, dim_HW);
 

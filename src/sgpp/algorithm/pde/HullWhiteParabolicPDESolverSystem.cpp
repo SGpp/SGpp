@@ -18,7 +18,8 @@ namespace sg
 HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma,
 			double theta, double a, double TimestepSize, std::string OperationMode,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel,
+			int dim_HW)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -62,6 +63,7 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& Spars
 	// init Number of AverageGridPoins
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
+	this->dim_r = dim_HW;
 }
 
 HullWhiteParabolicPDESolverSystem::~HullWhiteParabolicPDESolverSystem()
@@ -125,7 +127,7 @@ void HullWhiteParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
+   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize, this->dim_r);
 
 	if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 	{
@@ -187,7 +189,7 @@ void HullWhiteParabolicPDESolverSystem::startTimestep()
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
+	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize, this->dim_r);
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
