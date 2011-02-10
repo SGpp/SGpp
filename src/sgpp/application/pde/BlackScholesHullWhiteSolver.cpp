@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
+
 #include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
@@ -43,6 +43,8 @@ BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) :
 	this->staInnerGridSize = 0;
 	this->finInnerGridSize = 0;
 	this->avgInnerGridSize = 0;
+	this->dim_BS = 0;
+	this->dim_HW = 1;
 }
 
 BlackScholesHullWhiteSolver::~BlackScholesHullWhiteSolver()
@@ -94,6 +96,13 @@ void BlackScholesHullWhiteSolver::setStochasticData(DataVector& mus, DataVector&
 	bStochasticDataAlloc = true;
 }
 
+
+void BlackScholesHullWhiteSolver::setProcessDimensions(int dim_BS, int dim_HW)
+{
+	this->dim_BS = dim_BS;
+	this->dim_HW = dim_HW;
+}
+
 void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	throw new application_exception("BlackScholesHullWhiteSolver::solveExplicitEuler : explicit Euler is not supported for BlackScholesHullWhiteSolver!");
@@ -122,28 +131,31 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		myBoundaries[1].leftBoundary = t->getIntervalOffset(1);
 		myBoundaries[1].rightBoundary = t->getIntervalOffset(1) + t->getIntervalWidth(1);
 
-		myBoundaries[0].bDirichletLeft = true;
-		myBoundaries[0].bDirichletRight = true;
-		myBoundaries[1].bDirichletLeft = false;
-		myBoundaries[1].bDirichletRight = false;
+		// step 1: do BS along dimension dim_BS
+		myBoundaries[this->dim_BS].bDirichletLeft = true;
+		myBoundaries[this->dim_BS].bDirichletRight = true;
+		myBoundaries[this->dim_HW].bDirichletLeft = false;
+		myBoundaries[this->dim_HW].bDirichletRight = false;
 
 		t->setBoundary(0,myBoundaries[0]);
 		t->setBoundary(1,myBoundaries[1]);
 		//this->myGrid->setBoundingBox(*t);*/
 
 		std::vector<size_t> newAlgoDimsBS(1);
-		newAlgoDimsBS[0]=0;
+		newAlgoDimsBS[0]=this->dim_BS;
 		setAlgorithmicDimensions(newAlgoDimsBS);
 
-		ModifiedBlackScholesParabolicPDESolverSystem* myBSSystem = new ModifiedBlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		ModifiedBlackScholesParabolicPDESolverSystem* myBSSystem = new ModifiedBlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel, this->dim_HW);
+//BlackScholesParabolicPDESolverSystem* myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 
-	//std::cout << alpha.toString() << std::endl;
-		myBoundaries[0].bDirichletLeft = false;
-		myBoundaries[0].bDirichletRight = false;
-		myBoundaries[1].bDirichletLeft = true;
-		myBoundaries[1].bDirichletRight = true;
+
+		// step 2: do HW along dim_HW
+		myBoundaries[this->dim_BS].bDirichletLeft = false;
+		myBoundaries[this->dim_BS].bDirichletRight = false;
+		myBoundaries[this->dim_HW].bDirichletLeft = true;
+		myBoundaries[this->dim_HW].bDirichletRight = true;
 
 		t->setBoundary(0,myBoundaries[0]);
 		t->setBoundary(1,myBoundaries[1]);
@@ -151,12 +163,12 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		//this->myGrid->setBoundingBox(*t);*/
 
 		std::vector<size_t> newAlgoDimsHW(1);
-		newAlgoDimsHW[0]=1;
+		newAlgoDimsHW[0]=this->dim_HW;
 		setAlgorithmicDimensions(newAlgoDimsHW);
 
-		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel, this->dim_HW);
 
-		myEuler->solve(*myCG, *myHWSystem, true, verbose);
+//		myEuler->solve(*myCG, *myHWSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
 
 		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
@@ -288,7 +300,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 
 			if (payoffType == "std_euro_call")
 			{
-				alpha[i] = std::max<double>(dblFuncValues[0]-strike, 0.0);
+				alpha[i] = std::max<double>(dblFuncValues[this->dim_BS]-strike, 0.0);
 			}
 			else if (payoffType == "GMIB")
 			{
@@ -296,10 +308,10 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 				double PT=0;
 				for(int k=(timeT+1); k<=endtime;k++)
 				{
-					PT=exp(0.04*(timeT-k)+ 0.04*(1-exp(-a*(k-timeT)))/a - pow(sigma,2.0)*pow((exp(-a*k)-exp(-a*timeT)),2.0)*(exp(2*a*timeT)-1)/(4*pow(a,3.0))-(1-exp(-a*(k-timeT)))*dblFuncValues[1]/a);
+					PT=exp(0.04*(timeT-k)+ 0.04*(1-exp(-a*(k-timeT)))/a - pow(sigma,2.0)*pow((exp(-a*k)-exp(-a*timeT)),2.0)*(exp(2*a*timeT)-1)/(4*pow(a,3.0))-(1-exp(-a*(k-timeT)))*dblFuncValues[this->dim_HW]/a);
 					PB=PB+0.06*PT;
 				}
-				alpha[i] = std::max<double>(PB-dblFuncValues[0], 0.0);
+				alpha[i] = std::max<double>(PB-dblFuncValues[this->dim_BS], 0.0);
 			}
 			else
 			{

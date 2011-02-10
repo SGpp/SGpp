@@ -49,11 +49,13 @@ public:
 	 * @param refineThreshold Threshold to decide, if a grid point should be refined
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
+	 * @param dimension of Hull-White (= where r value is taken)
 	 */
    	ModifiedBlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel);
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel,
+			int dim_HW);
 
    	/**
 	 * Multiplies the corresponding r coordinates with the whole grid value
@@ -70,6 +72,11 @@ public:
 	virtual void finishTimestep(bool isLastTimestep = false);
 
 	virtual void startTimestep();
+
+private:
+
+	/// the dimension of the risk-free rate (Hull-White dimension)
+	int dim_r;
 };
 
 }

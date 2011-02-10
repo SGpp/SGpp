@@ -18,7 +18,7 @@ namespace sg
 ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel, int dim_HW)
 : BlackScholesParabolicPDESolverSystem(SparseGrid,
 		alpha,
 		mu,
@@ -37,6 +37,7 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
 		refineMaxLevel)
 {
 	this->OpFBound = this->BoundGrid->createOperationLF();
+	this->dim_r = dim_HW;
 }
 
 void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(DataVector& updateVector)
@@ -53,8 +54,9 @@ void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(DataVector& upd
 			    coordsStream >> tmp;
                 dblFuncValues[j] = tmp;
 			}
-       // std::cout<< dblFuncValues[1]<< std::endl;
-		updateVector.set(i, updateVector.get(i)* dblFuncValues[1]);
+        // std::cout<< dblFuncValues[1]<< std::endl;
+		//updateVector.set(i, updateVector.get(i)* dblFuncValues[1]);
+		updateVector.set(i, updateVector.get(i)* dblFuncValues[this->dim_r]);
 	}
 }
 
@@ -92,7 +94,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTim
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
+	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize, this->dim_r);
 
 		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
@@ -153,7 +155,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::startTimestep()
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize);
+	   this->BoundaryUpdate->getfactor(*factor, this->TimestepSize, this->dim_r);
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{

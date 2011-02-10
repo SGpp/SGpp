@@ -89,6 +89,10 @@ private:
 	double sigma;
 	///
 	double a;
+	/// dimension in which BS is calculated
+	int dim_BS;
+	/// dimension in which HW is calculated
+	int dim_HW;
 
 public:
 	/**
@@ -114,6 +118,11 @@ public:
 	 * @param r the riskfree rate used in the market model
 	 */
 	void setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r,double theta, double sigma, double a);
+
+	/**
+	 *  defines the dimension of the stoch. processes (BS and HW). default is BS:0, HW:1
+	 */
+	void setProcessDimensions(int dim_BS, int dim_HW);
 
 	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
