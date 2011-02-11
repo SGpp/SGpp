@@ -39,11 +39,9 @@ LFLAGS_GCC=-Wall -pedantic -ansi -O3
 CFLAGS_GCC_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -DUSETRONE -std=c++0x
 LFLAGS_GCC_TRONE=-Wall -pedantic -ansi -O3
 
-#CFLAGS_GCC_OMP=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -DUSEOMP -DUSEOMPTHREE -fopenmp -I$(SRCDIR)
-CFLAGS_GCC_OMP=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR)
+CFLAGS_GCC_OMP=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -fopenmp -I$(SRCDIR)
 LFLAGS_GCC_OMP=-Wall -pedantic -ansi -O3 -pthread -fopenmp
-#CFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -DUSEOMP -DUSEOMPTHREE -fopenmp -I$(SRCDIR) -DUSETRONE -Isrc/sgpp/
-CFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -DUSETRONE -Isrc/sgpp/
+CFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -fopenmp -I$(SRCDIR) -DUSETRONE -Isrc/sgpp/
 LFLAGS_GCC_OMP_TRONE=-Wall -pedantic -ansi -O3 -fopenmp
 
 CFLAGS_ICC=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSEICCINTRINSICS -xAVX -DUSEAVX
@@ -51,16 +49,10 @@ LFLAGS_ICC=-Wall -ansi -O3 -static-intel -ipo -ip
 CFLAGS_ICC_TRONE=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DUSETRONE -DUSEICCINTRINSICS -std=c++0x -xAVX -DUSEAVX
 LFLAGS_ICC_TRONE=-Wall -ansi -O3 -static-intel -ipo -ip
 
-CFLAGS_ICC_OMP=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSEICCINTRINSICS -xAVX -DUSEAVX
+CFLAGS_ICC_OMP=-Wall -ansi -c -O3 -xAVX -DUSEAVX -fno-strict-aliasing -ipo -ip -ansi-alias -funroll-loops -I$(SRCDIR) -openmp -DUSEICCINTRINSICS
 LFLAGS_ICC_OMP=-Wall -ansi -O3 -static-intel -openmp -openmp-link static -ipo -ip
-CFLAGS_ICC_OMP_TRONE=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSEOMP -DUSEOMPTHREE -DUSETRONE -DUSEICCINTRINSICS -std=c++0x -xAVX -DUSEAVX
+CFLAGS_ICC_OMP_TRONE=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -openmp -DUSETRONE -DUSEICCINTRINSICS -std=c++0x -xAVX -DUSEAVX
 LFLAGS_ICC_OMP_TRONE=-Wall -ansi -O3 -static-intel -openmp -openmp-link static -ipo -ip
-
-CFLAGS_XLC=-O3 -qstrict -qtune=auto -qarch=auto -qansialias -c -I$(SRCDIR) -DAIX_XLC -DUSETRONE
-LFLAGS_XLC=
-
-CFLAGS_XLC_OMP=-O3 -qstrict -qtune=auto -qarch=auto -qansialias -c -I$(SRCDIR) -DAIX_XLC -DUSETRONE -DUSEOMP -DUSEOMPTHREE -qsmp=omp
-LFLAGS_XLC_OMP=-qsmp=omp
 
 ###################################################################
 # Builds a lib containing all SG Algorithms
@@ -96,14 +88,6 @@ ifeq ($(TR1),0)
 else	
 	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a"
 endif	
-endif
-endif
-ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/sgpplib_xlc
-ifeq ($(OMP),0)
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a"
-else
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xls.a"
 endif
 endif
 
@@ -143,14 +127,6 @@ else
 endif	
 endif
 endif
-ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/BSSolver_xlc
-ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSSolver_XLC"
-else
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSSolver_XLC"
-endif
-endif
 
 ###################################################################
 # Builds a Hull White Solver
@@ -186,14 +162,6 @@ ifeq ($(TR1),0)
 else	
 	make -f ./../../../src/makefileNativeHullWhiteSolver --directory=./tmp/build_native/HWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=HWSolver_ICC"
 endif	
-endif
-endif
-ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/HWSolver_xlc
-ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeHullWhiteSolver --directory=./tmp/build_native/HWSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=HWSolver_XLC"
-else
-	make -f ./../../../src/makefileNativeHullWhiteSolver --directory=./tmp/build_native/HWSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=HWSolver_XLC"
 endif
 endif
 
@@ -233,14 +201,6 @@ else
 endif	
 endif
 endif
-ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/BSHWSolver_xlc
-ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSHWSolver_XLC"
-else
-	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=BSHWSolver_XLC"
-endif
-endif
 
 ###################################################################
 # Builds a simple Heat Equation Solver
@@ -276,14 +236,6 @@ ifeq ($(TR1),0)
 else
 	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC"
 endif	
-endif
-endif
-ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/HESolver_xlc
-ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=HESolver_XLC"
-else
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=HESolver_XLC"
 endif
 endif
 
@@ -323,14 +275,6 @@ else
 endif	
 endif
 endif
-ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/Classifier_xlc
-ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=Classifier_XLC"
-else
-	make -f ./../../../src/makefileNativeClassifier --directory=./tmp/build_native/Classifier_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=Classifier_XLC"
-endif
-endif
 
 ###################################################################
 # Builds a ClassifyBenchmark Application
@@ -366,14 +310,6 @@ ifeq ($(TR1),0)
 else	
 	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS_ICC_OMP_TRONE)" "LFLAGS=$(LFLAGS_ICC_OMP_TRONE)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC"
 endif	
-endif
-endif
-ifeq ($(CC),xlc++_r)
-	mkdir -p tmp/build_native/ClassifyBenchmark_xlc
-ifeq ($(OMP),0)
-	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC)" "LFLAGS=$(LFLAGS_XLC)" "LIBNAME=libsgpp_xlc.a" "BINNAME=ClassifyBenchmark_XLC"
-else
-	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_xlc "CC=$(CC)" "CFLAGS=$(CFLAGS_XLC_OMP)" "LFLAGS=$(LFLAGS_XLC_OMP)" "LIBNAME=libsgpp_xlc.a" "BINNAME=ClassifyBenchmark_XLC"
 endif
 endif
 
