@@ -34,6 +34,7 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& Spars
 	this->TimestepSize = TimestepSize;
 	this->TimestepSize_old = TimestepSize;
 	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
+	this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
 	this->a = a;
 	this->theta = theta;
 	this->sigma = sigma;
@@ -74,6 +75,7 @@ HullWhiteParabolicPDESolverSystem::~HullWhiteParabolicPDESolverSystem()
 	delete this->OpFBound;
 	delete this->OpLTwoBound;
 	delete this->BoundaryUpdate;
+	delete this->variableDiscountFactor;
 	if (this->rhs != NULL)
 	{
 		delete this->rhs;
@@ -127,7 +129,7 @@ void HullWhiteParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
 	DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-   this->BoundaryUpdate->getDiscountFactor(*factor, this->TimestepSize, this->dim_r);
+	this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
 
 	if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 	{
@@ -189,7 +191,7 @@ void HullWhiteParabolicPDESolverSystem::startTimestep()
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getDiscountFactor(*factor, this->TimestepSize, this->dim_r);
+	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{

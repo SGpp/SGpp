@@ -250,58 +250,58 @@ double calculatetheta(double a, double sigma, double T, int t)
 void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
 		size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double T,double dStrike, bool isLogSolve)
 {
-	    size_t dim = d;
-		size_t level = l;
-		size_t timesteps_innerCall = timeSt;
-		double stepsize_general = dt;
-		size_t CGiterations = CGIt;
-		double CGepsilon = CGeps;
-		DataVector mu(dim);
-		DataVector sigmabs(dim);
-		DataMatrix rho(dim,dim);
+	size_t dim = d;
+	size_t level = l;
+	size_t timesteps_innerCall = timeSt;
+	double stepsize_general = dt;
+	size_t CGiterations = CGIt;
+	double CGepsilon = CGeps;
+	DataVector mu(dim);
+	DataVector sigmabs(dim);
+	DataMatrix rho(dim,dim);
 
-		if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0)
-			{
-				return;
-			}
-
-		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
-		if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+	if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0)
 		{
 			return;
 		}
-        //std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
-        //std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
-		sg::BlackScholesHullWhiteSolver* myBSHWSolver;
-		if (isLogSolve == true)
-			{
-				myBSHWSolver = new sg::BlackScholesHullWhiteSolver(true);
-			}
-			else
-			{
-				myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
-			}
-		sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-		//delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
-		// init Screen Object
-		myBSHWSolver->initScreen();
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+	{
+		return;
+	}
+	//std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
+	//std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
+	sg::BlackScholesHullWhiteSolver* myBSHWSolver;
+	if (isLogSolve == true)
+		{
+			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(true);
+		}
+		else
+		{
+			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
+		}
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	//delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
-		// set BS and HW dimension
-		int dim_BS = 1;  // default: 0
-		int dim_HW = 0;  // default: 1
-		// if this method is not called, the default values are set, i.e. BS=0, HW=1
-		myBSHWSolver->setProcessDimensions(dim_BS, dim_HW);
+	// init Screen Object
+	myBSHWSolver->initScreen();
 
-		// Construct a grid
-		myBSHWSolver->constructGrid(*myBoundingBox, level);
+//	// set BS and HW dimension
+//	int dim_BS = 0;  // default: 0
+//	int dim_HW = 1;  // default: 1
+//	// if this method is not called, the default values are set, i.e. BS=0, HW=1
+//	myBSHWSolver->setProcessDimensions(dim_BS, dim_HW);
 
-		// init the basis functions' coefficient vector
-		DataVector* alpha = new DataVector(myBSHWSolver->getNumberGridPoints());
+	// Construct a grid
+	myBSHWSolver->constructGrid(*myBoundingBox, level);
 
-		std::cout << "Grid has " << level << " Levels" << std::endl;
-		std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
-		std::cout << "Initial Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+	// init the basis functions' coefficient vector
+	DataVector* alpha = new DataVector(myBSHWSolver->getNumberGridPoints());
+
+	std::cout << "Grid has " << level << " Levels" << std::endl;
+	std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
+	std::cout << "Initial Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// Init the grid with on payoff function
 	myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType, a, sigma);

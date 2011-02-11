@@ -13,6 +13,7 @@
 #include "data/DataMatrix.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
+#include "application/finance/VariableDiscountFactor.hpp"
 
 namespace sg
 {
@@ -57,6 +58,9 @@ protected:
 	std::vector<size_t> HWalgoDims;
 	/// Routine to modify the boundaries/inner points of the grid
 	DirichletUpdateVector* BoundaryUpdate;
+
+	/// access to the variable discount factor
+	VariableDiscountFactor* variableDiscountFactor;
 
 	virtual void applyLOperator(DataVector& alpha, DataVector& result);
 

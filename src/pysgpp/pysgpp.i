@@ -104,6 +104,8 @@ namespace std {
 %include "src/sgpp/application/pde/BlackScholesSolver.hpp"
 %include "src/sgpp/application/pde/HeatEquationSolver.hpp"
 
+%include "src/sgpp/application/finance/VariableDiscountFactor.hpp"
+
 %include "src/sgpp/basis/linear/noboundary/linear_base.hpp"
 %include "src/sgpp/basis/linear/boundary/linearboundaryBase.hpp"
 %include "src/sgpp/basis/modlinear/modified_linear_base.hpp"
