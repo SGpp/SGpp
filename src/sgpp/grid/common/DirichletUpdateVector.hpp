@@ -80,13 +80,6 @@ public:
 	 */
 	void multiplyBoundaryVector(DataVector& updateVector,DataVector& factor);
 	/**
-	 * get a vector which contains all the factors needed to multiply with another vector
-	 *@param factor the vector that should be calculated to multiply with another vector
-	 *@param T timestepsize
-	 *@param dim_r axis with risk-free rate (HW axis)
-	 */
-	void getDiscountFactor(DataVector& factor, double T, int dim_r);
-	/**
 	* Multiplies the values on the boundary with a constant value
 	*
 	* @param updateVector the vector that should be updated

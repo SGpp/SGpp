@@ -192,6 +192,7 @@ application/pde/HullWhiteSolver.cpp
 application/pde/BlackScholesHullWhiteSolver.cpp
 application/pde/HeatEquationSolver.cpp
 application/pde/PoissonEquationSolver.cpp
+application/finance/VariableDiscountFactor.cpp
 
 solver/sle/ConjugateGradients.cpp
 solver/sle/ConjugateGradientsSP.cpp

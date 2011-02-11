@@ -66,25 +66,6 @@ void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector, double va
 	}
 }
 
-void DirichletUpdateVector::getDiscountFactor(DataVector& factor, double T, int dim_r)
-{
-	double tmp;
-	for (size_t i = 0; i < storage->size(); i++)
-	{
-		std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
-		std::stringstream coordsStream(coords);
-		double* dblFuncValues = new double[2];
-		for (size_t j = 0; j < 2; j++)
-		{
-			coordsStream >> tmp;
-			dblFuncValues[j] = tmp;
-		}
-		//std::cout<<dblFuncValues[1]<<std::endl;
-		//factor.set(i, exp((-1.0)*dblFuncValues[1]*T));
-		factor.set(i, exp((-1.0)*dblFuncValues[dim_r]*T));
-	}
-}
-
 void DirichletUpdateVector::multiplyBoundaryVector(DataVector& updateVector,DataVector& factor)
 {
 	for (size_t i = 0; i < storage->size(); i++)

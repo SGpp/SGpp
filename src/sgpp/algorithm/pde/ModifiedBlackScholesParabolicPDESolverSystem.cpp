@@ -10,6 +10,7 @@
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "application/finance/VariableDiscountFactor.hpp"
 #include <cmath>
 
 namespace sg
@@ -38,6 +39,7 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
 {
 	this->OpFBound = this->BoundGrid->createOperationLF();
 	this->dim_r = dim_HW;
+	this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
 }
 
 void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(DataVector& updateVector)
@@ -63,6 +65,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(DataVector& upd
 ModifiedBlackScholesParabolicPDESolverSystem::~ModifiedBlackScholesParabolicPDESolverSystem()
 {
 	delete this->OpFBound;
+	delete this->variableDiscountFactor;
 }
 
 void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
@@ -94,7 +97,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTim
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getDiscountFactor(*factor, this->TimestepSize, this->dim_r);
+	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
 
 		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
@@ -155,7 +158,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::startTimestep()
 {
 	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->BoundaryUpdate->getDiscountFactor(*factor, this->TimestepSize, this->dim_r);
+	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{

@@ -12,6 +12,7 @@
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
+#include "application/finance/VariableDiscountFactor.hpp"
 
 namespace sg
 {
@@ -73,10 +74,13 @@ public:
 
 	virtual void startTimestep();
 
-private:
+protected:
 
 	/// the dimension of the risk-free rate (Hull-White dimension)
 	int dim_r;
+
+	/// access to the variable discount factor
+	VariableDiscountFactor* variableDiscountFactor;
 };
 
 }
