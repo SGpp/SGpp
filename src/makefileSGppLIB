@@ -20,10 +20,20 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
+
 SRCDIR = ./../../../src/sgpp/
 OUTDIR = ./
 BINDIR = ./../../../lib/sgpp/
-OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
+#only for extensions:
+#####################
+# Intel Array Building Blocks
+ARBBINCLUDE = /opt/intel/arbb/1.0.0.015/include
+ARBBLIB = /opt/intel/arbb/1.0.0.015/lib/intel64
+# NVidia OpenCL
+OCLINCLUDE = /opt/cuda/include
+OCLLIB = /usr/lib64
+
+OBJS := DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
 	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
 	TruncatedTrapezoidGridGenerator.o SquareRootGridGenerator.o\
 	OperationMultipleEvalLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationMultipleEvalModLinear.o OperationEvalModLinear.o\
@@ -67,6 +77,19 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
 	HeatEquationParabolicPDESolverSystemParallelOMP.o PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o \
 	VariableDiscountFactor.o
+	
+ifeq ($(EXT), ArBB)
+OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
+endif
+ifeq ($(EXT), OCL)
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o OperationMultipleEvalIterativeHybridSSEOCLLinear.o OCLKernels.o
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL
+OCLCC=g++
+endif
+ifeq ($(EXT), MPI)
+
+endif
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
@@ -605,6 +628,34 @@ OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationEl
 	
 OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
+	
+# ArBB Extensions:
+OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
+
+OperationMultipleEvalIterativeSPArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSPArBBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.cpp
+	
+ArBBKernels.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/ArBBKernels.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/ArBBKernels.cpp
+	
+# OCL Extensions:
+OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
+
+OperationMultipleEvalIterativeSPOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
+	
+OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.cpp	
+
+OperationMultipleEvalIterativeHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp
+	$(CC) $(CFLAGS) -o OperationMultipleEvalIterativeHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp	
+	
+OCLKernels.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
+	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
+
+	
 	
 clean:
 	rm *

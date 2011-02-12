@@ -20,7 +20,19 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
+###################################################################
+# Needed Pathes
+###################################################################
 SRCDIR=./../../../src/sgpp
+#only for extensions:
+#####################
+# Intel Array Building Blocks
+ARBBINCLUDE = /opt/intel/arbb/1.0.0.015/include
+ARBBLIB = /opt/intel/arbb/1.0.0.015/lib/intel64
+# NVidia OpenCL
+OCLINCLUDE = /opt/cuda/include
+OCLLIB = /usr/lib64
+
 ###################################################################
 # Default Variables, overwirtten by CLI
 ###################################################################	
@@ -32,6 +44,12 @@ TR1=0
 CC=g++
 # vectorization option for intel compiler
 VEC=sse3
+# extensions, manages extensions to be included, possible values (only when using Intel Compiler):
+#	ArBB - Intel Array Building Blocks support
+#	OCL - NVIDIA OpenCL support
+#	MPI - Intel MPI support
+#	NO - no extensions, default
+EXT=NO
 
 ###################################################################
 # Compiler Flags
@@ -45,6 +63,7 @@ LFLAGS_ICC:=-Wall -ansi -O3 -static-intel -ipo -ip
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
 LFLAGS:=$(LFLAGS_GCC)
+EXT=NO
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -fopenmp
 LFLAGS:=$(LFLAGS) -fopenmp
@@ -63,7 +82,7 @@ ifeq ($(VEC),sse4)
 CFLAGS:=$(CFLAGS) -xSSE4.2
 endif
 ifeq ($(VEC),avx)
-CFLAGS:=$(CFLAGS) -xAVX
+CFLAGS:=$(CFLAGS) -xAVX -DUSEAVX
 endif
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -openmp
@@ -71,6 +90,16 @@ LFLAGS:=$(LFLAGS) -openmp
 endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+endif
+ifeq ($(EXT), ArBB)
+CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
+LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
+endif
+ifeq ($(EXT), OCL)
+CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -openmp
+LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -openmp
+endif
+ifeq ($(EXT), MPI)
 endif
 endif
 
@@ -80,11 +109,11 @@ endif
 default:
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/sgpplib_gcc
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/sgpplib_icc
-	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a"
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -93,11 +122,11 @@ endif
 BSSolver: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/BSSolver_gcc
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolver_GCC"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolver_GCC" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/BSSolver_icc
-	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC"
+	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -106,11 +135,11 @@ endif
 HWSolver: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/HWSolver_gcc
-	make -f ./../../../src/makefileNativeHullWhiteSolver --directory=./tmp/build_native/HWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HWSolver_GCC"
+	make -f ./../../../src/makefileNativeHullWhiteSolver --directory=./tmp/build_native/HWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HWSolver_GCC" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/HWSolver_icc
-	make -f ./../../../src/makefileNativeHullWhiteSolver --directory=./tmp/build_native/HWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HWSolver_ICC"
+	make -f ./../../../src/makefileNativeHullWhiteSolver --directory=./tmp/build_native/HWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HWSolver_ICC" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -119,11 +148,11 @@ endif
 BSHWSolver: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/BSHWSolver_gcc
-	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSHWSolver_GCC"
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSHWSolver_GCC" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/BSHWSolver_icc
-	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSHWSolver_ICC"
+	make -f ./../../../src/makefileNativeBSHWSolver --directory=./tmp/build_native/BSHWSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSHWSolver_ICC" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -132,11 +161,11 @@ endif
 HESolver: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/HESolver_gcc
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolver_GCC"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolver_GCC" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/HESolver_icc
-	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC"
+	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -145,11 +174,11 @@ endif
 ClassifyBenchmark: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/ClassifyBenchmark_gcc
-	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icc
-	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC"
+	make -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -158,7 +187,7 @@ endif
 UpDownTest: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/UpDownTest_gcc
-	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC"
+	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -167,7 +196,7 @@ endif
 RefineCoarsenTest: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/RefineCoarsen_gcc
-	make -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc"
+	make -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc" "EXT=$(EXT)"
 endif
 		
 clean:
