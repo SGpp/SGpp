@@ -32,45 +32,48 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
-	DataVector beta(result.getSize());
-
-	for(size_t i = 0; i < this->algoDims.size(); i++)
+	#pragma omp parallel
 	{
-		for(size_t j = 0; j < this->algoDims.size(); j++)
+		#pragma omp single nowait
 		{
-			// use the operator's symmetry
-			if ( j <= i)
+			for(size_t i = 0; i < this->algoDims.size(); i++)
 			{
-				#pragma omp parallel
+				for(size_t j = 0; j < this->algoDims.size(); j++)
 				{
-					#pragma omp single nowait
+					// use the operator's symmetry
+					if ( j <= i)
 					{
-						if (this->coefs != NULL)
+						#pragma omp task firstprivate(i, j) shared(alpha, result)
 						{
-							if (this->coefs->get(i,j) != 0.0)
+							DataVector beta(result.getSize());
+
+							if (this->coefs != NULL)
+							{
+								if (this->coefs->get(i,j) != 0.0)
+								{
+									this->updown(alpha, beta, this->algoDims.size() - 1, i, j);
+
+									#pragma omp critical
+									{
+										result.axpy(this->coefs->get(i,j),beta);
+									}
+								}
+							}
+							else
 							{
 								this->updown(alpha, beta, this->algoDims.size() - 1, i, j);
+
+								#pragma omp critical
+								{
+									result.add(beta);
+								}
 							}
-						}
-						else
-						{
-							this->updown(alpha, beta, this->algoDims.size() - 1, i, j);
 						}
 					}
 				}
 			}
-			// Calculate the "diagonal" of the operation
-			if (j <= i)
-			{
-				if (this->coefs != NULL)
-				{
-					result.axpy(this->coefs->get(i,j),beta);
-				}
-				else
-				{
-					result.add(beta);
-				}
-			}
+
+			#pragma omp taskwait
 		}
 	}
 }

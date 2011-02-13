@@ -32,26 +32,44 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
-	DataVector beta(result.getSize());
-
-	for(size_t i = 0; i < this->algoDims.size(); i++)
+	#pragma omp parallel
 	{
-		#pragma omp parallel
+		#pragma omp single nowait
 		{
-			#pragma omp single nowait
+			for(size_t i = 0; i < this->algoDims.size(); i++)
 			{
-				this->updown(alpha, beta, this->algoDims.size() - 1, i);
+				#pragma omp task firstprivate(i) shared(alpha, result)
+				{
+					DataVector beta(result.getSize());
+
+					if (this->coefs != NULL)
+					{
+						if (this->coefs->get(i) != 0.0)
+						{
+							this->updown(alpha, beta, this->algoDims.size() - 1, i);
+
+							#pragma omp critical
+							{
+								result.axpy(this->coefs->get(i),beta);
+							}
+						}
+					}
+					else
+					{
+						this->updown(alpha, beta, this->algoDims.size() - 1, i);
+
+						#pragma omp critical
+						{
+							result.add(beta);
+						}
+					}
+				}
 			}
-		}
-		if (this->coefs != NULL)
-		{
-			result.axpy(this->coefs->get(i),beta);
-		}
-		else
-		{
-			result.add(beta);
+
+			#pragma omp taskwait
 		}
 	}
+
 }
 
 void UpDownOneOpDim::multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDim)
@@ -60,14 +78,19 @@ void UpDownOneOpDim::multParallelBuildingBlock(DataVector& alpha, DataVector& re
 
 	DataVector beta(result.getSize());
 
-	this->updown(alpha, beta, this->algoDims.size() - 1, operationDim);
-
 	if (this->coefs != NULL)
 	{
-		result.axpy(this->coefs->get(operationDim),beta);
+		if (this->coefs->get(operationDim) != 0.0)
+		{
+			this->updown(alpha, beta, this->algoDims.size() - 1, operationDim);
+
+			result.axpy(this->coefs->get(operationDim),beta);
+		}
 	}
 	else
 	{
+		this->updown(alpha, beta, this->algoDims.size() - 1, operationDim);
+
 		result.add(beta);
 	}
 }
