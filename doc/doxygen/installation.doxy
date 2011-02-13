@@ -169,7 +169,7 @@ If using the Intel Compiler you can specify two
 addtional options regarding CPU vectorization versions and
 library extensions for fast evaluation routines:
 @verbatim
-  VEC : selects to instruction for the auto-vectorizer: sse3: for Intel Core 2 (Conroe, Merom) or older and AMD chips. 
+  VEC : selects to instruction set for the auto-vectorizer: sse3: for Intel Core 2 (Conroe, Merom) or older and AMD chips. 
   sse4: for Intel Nehalem or Intel Westmere CPUs, avx: for Intel Sandy Bridge CPUs, default is sse3
   EXT : includes special versions of OperationMultipleEval into the SG++ lib: ArBB: Intel Array Building Blocks, OCL: NVIDIA OpenCL
   with support for 2 or 1 GPUs.
