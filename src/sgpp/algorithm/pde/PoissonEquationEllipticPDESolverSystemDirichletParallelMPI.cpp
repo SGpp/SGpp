@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.hpp"
+#include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
 #include "exception/algorithm_exception.hpp"
 
 #include "algorithm/pde/StdUpDown.hpp"
@@ -18,19 +18,19 @@
 namespace sg
 {
 
-PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::PoissonEquationEllipticPDESolverSystemDirichletParallelOMP(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
+PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
 {
 	this->Laplace_Complete = this->BoundGrid->createOperationLaplace();
 	this->Laplace_Inner = this->InnerGrid->createOperationLaplace();
 }
 
-PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::~PoissonEquationEllipticPDESolverSystemDirichletParallelOMP()
+PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI()
 {
 	delete this->Laplace_Complete;
 	delete this->Laplace_Inner;
 }
 
-void PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorInner(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -74,7 +74,7 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::applyLOperatorI
 	}
 }
 
-void PoissonEquationEllipticPDESolverSystemDirichletParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
