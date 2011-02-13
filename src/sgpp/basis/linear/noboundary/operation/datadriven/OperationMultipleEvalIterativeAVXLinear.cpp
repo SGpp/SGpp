@@ -13,7 +13,7 @@
 #include "omp.h"
 #endif
 
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 #ifdef USEAVX
 #include <immintrin.h>
 #else
@@ -109,7 +109,7 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(DataVect
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (end-k));
 
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 			for (size_t i = 0; i < source_size; i+=CHUNKDATAPOINTS_AVX)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
@@ -278,7 +278,7 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(DataVector& alpha
 
 			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m)))
 			{
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m));
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_AVX; i+=24)

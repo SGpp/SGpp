@@ -13,7 +13,7 @@
 #include "omp.h"
 #endif
 
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
 
@@ -102,7 +102,7 @@ double OperationMultipleEvalIterativeSPSSELinear::multTransposeVectorized(DataVe
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (end-k));
 
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 			for (size_t i = 0; i < source_size; i+=CHUNKDATAPOINTS)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
@@ -294,7 +294,7 @@ double OperationMultipleEvalIterativeSPSSELinear::multVectorized(DataVectorSP& a
 
 			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m)))
 			{
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m));
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=24)
