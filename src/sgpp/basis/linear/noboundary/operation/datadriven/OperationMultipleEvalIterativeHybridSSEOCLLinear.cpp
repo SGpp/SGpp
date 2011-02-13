@@ -14,7 +14,7 @@
 #define PERCENT_CPUS 16
 #define PERCENT_CPUS_MULT 16
 
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
 
@@ -111,7 +111,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multTransposeVectorized
 
 			#pragma omp task
     		{
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
     			for (size_t n = 0; n < source_size; n++)
     			{
     				for(size_t d = 0; d < dims; d++)
@@ -263,7 +263,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multVectorized(DataVect
 
 			#pragma omp task
     		{
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 				for (size_t i = gpu_partition; i < result_size; i+=8)
 				{
 					#pragma omp task firstprivate(i)

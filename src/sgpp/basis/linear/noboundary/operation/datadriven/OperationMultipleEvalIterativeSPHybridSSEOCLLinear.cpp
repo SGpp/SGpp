@@ -13,7 +13,7 @@
 // This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
 #define PERCENT_CPUS 8
 
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
 
@@ -102,7 +102,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 
 			#pragma omp task
     		{
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
     			for (size_t n = 0; n < source_size; n++)
     			{
     				for(size_t d = 0; d < dims; d++)
@@ -254,7 +254,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(DataVe
 
 			#pragma omp task
     		{
-#ifdef USEICCINTRINSICS
+#ifdef __ICC
 				for (size_t i = gpu_partition; i < result_size; i+=16)
 				{
 					#pragma omp task firstprivate(i)
