@@ -127,6 +127,13 @@ class FullGrid{
     {
        return vec.at(index);
     }
+
+	/** returns the whole vector*/
+	inline std::vector<double>& getVector() { return vec; }
+
+	/** returns the whole vector*/
+	inline const std::vector<double>& getVector() const { return vec; }
+
 	/** Allows acces to the gridpoints by it's indexes in every dimension
 	 * @param index the index of the gridpoint in every dimension
 	 * @return acces to the gridpoint value at the given coordinate */
