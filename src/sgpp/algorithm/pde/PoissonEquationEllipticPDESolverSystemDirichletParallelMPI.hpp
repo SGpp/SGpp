@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELOMP_HPP
-#define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELOMP_HPP
+#ifndef POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
+#define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
 
 #include "operation/pde/OperationEllipticPDESolverSystemDirichlet.hpp"
 
@@ -22,7 +22,7 @@ namespace sg
  * There is a parallelization over all operators, required
  * to solve the poisson equation.
  */
-class PoissonEquationEllipticPDESolverSystemDirichletParallelOMP : public OperationEllipticPDESolverSystemDirichlet
+class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public OperationEllipticPDESolverSystemDirichlet
 {
 protected:
 	OperationMatrix* Laplace_Inner;
@@ -38,14 +38,14 @@ public:
 	 *
 	 * @param rhs the right hand side for solving the elliptic PDE
 	 */
-	PoissonEquationEllipticPDESolverSystemDirichletParallelOMP(Grid& SparseGrid, DataVector& rhs);
+	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(Grid& SparseGrid, DataVector& rhs);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~PoissonEquationEllipticPDESolverSystemDirichletParallelOMP();
+	virtual ~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI();
 };
 
 }
 
-#endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP */
+#endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP */
