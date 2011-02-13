@@ -80,7 +80,8 @@ OBJS = DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
-	HeatEquationParabolicPDESolverSystemParallelOMP.o PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o
+	HeatEquationParabolicPDESolverSystemParallelOMP.o PoissonEquationEllipticPDESolverSystemDirichletParallelOMP.o\
+	VariableDiscountFactor.o
 
 ###################################################################
 # Compiler Flags
@@ -647,6 +648,9 @@ OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationEl
 	
 OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
+
+VariableDiscountFactor.o : $(SRCDIR)application/finance/VariableDiscountFactor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)VariableDiscountFactor.o $(SRCDIR)application/finance/VariableDiscountFactor.cpp
 
 clean:
 	rm -rdfv tmp/build_native
