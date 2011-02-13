@@ -39,7 +39,7 @@ OperationMultipleEvalIterativeSPHybridSSEOCLLinear::OperationMultipleEvalIterati
 	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
 	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->level_));
+	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myTimer = new SGppStopwatch();
 	myOCLKernels = new OCLKernels();
