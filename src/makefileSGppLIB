@@ -567,7 +567,7 @@ PoissonEquationSolver.o : $(SRCDIR)application/pde/PoissonEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolver.o $(SRCDIR)application/pde/PoissonEquationSolver.cpp
 
 VariableDiscountFactor.o : $(SRCDIR)application/finance/VariableDiscountFactor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)VariableDiscountFactor.o $(SRCDIR)application/finance/VariableDiscountFactor.cpp	
+	$(CC) $(CFLAGS) -o $(OUTDIR)VariableDiscountFactor.o $(SRCDIR)application/finance/VariableDiscountFactor.cpp
 	
 BoundingBox.o : $(SRCDIR)grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundingBox.o $(SRCDIR)grid/common/BoundingBox.cpp

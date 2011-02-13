@@ -216,6 +216,8 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multTransposeVectorized
 				}
 #endif
     		}
+
+			#pragma omp taskwait
     	}
     }
 
@@ -373,6 +375,8 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multVectorized(DataVect
 				}
 #endif
     		}
+
+			#pragma omp taskwait
     	}
     }
     double time = 0.0;
