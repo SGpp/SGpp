@@ -155,19 +155,32 @@ are three additional targets which are native applications:
   default - builds the SG-Lib
   BSSolver - builds a Black Scholes Solver application
   HESolver - builds a very simple Heat Equation Solver application
-  Classifier - builds a very simple Classifier application
+  ClassifyBenchmark - builds a very simple Classifier application
 @endverbatim
 Additional Python-code is not needed to execute these applications.
 
 There is the possibility the configure the targets (Compiler-Selection, parallelization, hashmap-Implementation):
 @verbatim
-  CC : Selects the comiler, default g++, avail: g++, icpc (Intel), xlc++_r (IBM)
+  CC : Selects the comiler, default g++, avail: g++, icpc (Intel)
   OMP : 0/1; default 0: uses the OpenMP 3 for parallelization
   TR1 : 0/1; default 0: uses the TR1 Implementations for Hashmaps
 @endverbatim
+If using the Intel Compiler you can specify two 
+addtional options regarding CPU vectorization versions and
+library extensions for fast evaluation routines:
+@verbatim
+  VEC : selects to instruction for the auto-vectorizer: sse3: for Intel Core 2 (Conroe, Merom) or older and AMD chips. 
+  sse4: for Intel Nehalem or Intel Westmere CPUs, avx: for Intel Sandy Bridge CPUs, default is sse3
+  EXT : includes special versions of OperationMultipleEval into the SG++ lib: ArBB: Intel Array Building Blocks, OCL: NVIDIA OpenCL
+  with support for 2 or 1 GPUs.
+@endverbatim
 Just specify these parameters when you type make. E.g.: 
 @verbatim
-  make BSSolver CC=icpc OMP=1
+  make CC=icpc OMP=1 BSSolver
+@endverbatim
+For building a GPU-enabled classifier application:
+@verbatim
+  make CC=icpc OMP=1 EXT=OCL ClassifyBenchmark
 @endverbatim
 
 @section stepByStep Step-by-step instructions (Linux)
