@@ -238,7 +238,7 @@ test_BSHW:
 # test ClassifyBenchmark
 ###################################################################	
 
-test_ClassBench:
+test_ClassifyBenchmark:
 	cd bin; \
 	./copyClassifyBenchmarkToTest.sh; \
 	cd ./../tests/CPP_Apps/ClassifyBenchmark; \
