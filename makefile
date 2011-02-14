@@ -238,7 +238,11 @@ test_BSHW:
 # test ClassifyBenchmark
 ###################################################################	
 
-
+test_ClassBench:
+	cd bin; \
+	./copyClassifyBenchmarkToTest.sh; \
+	cd ./../tests/CPP_Apps/ClassifyBenchmark; \
+	./test_ClassifyBenchmark.sh;
 
 clean:
 	rm -rdfv tmp/build_native
