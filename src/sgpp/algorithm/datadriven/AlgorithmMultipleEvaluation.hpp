@@ -14,7 +14,6 @@
 
 #include "algorithm/common/AlgorithmEvaluation.hpp"
 #include "algorithm/common/AlgorithmEvaluationTransposed.hpp"
-//#include "algorithm/common/AlgorithmEvaluationIterative.hpp"
 
 #include <vector>
 #include <utility>
@@ -110,25 +109,6 @@ public:
 		}
 	}
 
-//	void mult_iterative(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result)
-//	{
-//		result.setAll(0.0);
-//		size_t result_size = result.getSize();
-//
-//		#pragma omp parallel
-//		{
-//			std::vector<double> line;
-//			AlgorithmEvaluationIterative<BASIS> AlgoEval(storage);
-//
-//			#pragma omp for schedule (static)
-//			for(size_t i = 0; i < result_size; i++)
-//			{
-//				x.getRow(i, line);
-//
-//				result[i] = AlgoEval(basis, line, source);
-//			}
-//		}
-//	}
 };
 
 }

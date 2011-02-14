@@ -198,6 +198,47 @@ ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/RefineCoarsen_gcc
 	make -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc" "EXT=$(EXT)"
 endif
+
+###################################################################
+# test Balck Scholes Solver
+###################################################################	
 		
+test_BS_1d:
+	cd bin; \
+	./copyBSSolverToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolver/1d; \
+	./test_BSSolver_1d.sh;
+	
+test_BS_2d:
+	cd bin; \
+	./copyBSSolverToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolver/2d; \
+	./test_BSSolver_2d.sh;
+		
+test_BS_3d:
+	cd bin; \
+	./copyBSSolverToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolver/3d; \
+	./test_BSSolver_3d.sh;
+	
+test_BS_all: test_BS_1d test_BS_2d test_BS_3d
+	echo "executed all BS tests!"
+		
+###################################################################
+# test Combined Hull Wihte Solver Solver
+###################################################################			
+
+test_BSHW:
+	cd bin; \
+	./copyBSHWSolverToTest.sh; \
+	cd ./../tests/CPP_Apps/BSHWSolver; \
+	./test_BSHWSolver_2d_cart.sh;
+		
+###################################################################
+# test ClassifyBenchmark
+###################################################################	
+
+
+
 clean:
 	rm -rdfv tmp/build_native
