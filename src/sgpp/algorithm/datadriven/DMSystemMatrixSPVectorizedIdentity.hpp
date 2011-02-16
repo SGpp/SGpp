@@ -29,8 +29,6 @@ namespace sg
  * vectorized formulations in SSE, AVX, OpenCL or Intel Array Building Blocks
  * are used.
  *
- * OpenCL and Intel Array Building Blocks aren't supported, yet!
- *
  * In this class single precision DataVectors are used.
  */
 class DMSystemMatrixSPVectorizedIdentity : public OperationMatrixSP
