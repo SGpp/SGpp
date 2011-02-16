@@ -28,8 +28,6 @@ namespace sg
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations in SSE, AVX, OpenCL or Intel Array Building Blocks
  * are used.
- *
- * OpenCL and Intel Array Building Blocks aren't supported, yet!
  */
 class DMSystemMatrixVectorizedIdentity : public OperationMatrix
 {
