@@ -72,6 +72,7 @@ ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
 endif
 endif
+
 ifeq ($(CC),icpc)
 CFLAGS:=$(CFLAGS_ICC)
 LFLAGS:=$(LFLAGS_ICC)
@@ -99,7 +100,21 @@ ifeq ($(EXT), OCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -openmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -openmp
 endif
-ifeq ($(EXT), MPI)
+endif
+
+ifeq ($(CC),mpiicpc)
+CFLAGS:=$(CFLAGS_ICC)
+LFLAGS:=$(LFLAGS_ICC)
+CFLAGS:=$(CFLAGS) -DUSE_MPI
+EXT=MPI
+ifeq ($(VEC),sse3)
+CFLAGS:=$(CFLAGS) -xSSE3
+endif
+ifeq ($(VEC),sse4)
+CFLAGS:=$(CFLAGS) -xSSE4.2
+endif
+ifeq ($(VEC),avx)
+CFLAGS:=$(CFLAGS) -xAVX -DUSEAVX
 endif
 endif
 
@@ -115,6 +130,11 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/sgpplib_icc
 	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "EXT=$(EXT)"
 endif
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/sgpplib_mpiicc
+	make -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "EXT=$(EXT)"
+endif
+
 
 ###################################################################
 # Builds a Balck Scholes Solver
@@ -166,6 +186,10 @@ endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/HESolver_icc
 	make -f ./../../../src/makefileNativeHeatEquationSolver --directory=./tmp/build_native/HESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolver_ICC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/HESolver_mpiicc
+	make -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=HESolver_ICC_MPI" "EXT=$(EXT)"
 endif
 
 ###################################################################

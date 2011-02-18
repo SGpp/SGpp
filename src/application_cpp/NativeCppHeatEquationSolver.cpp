@@ -19,6 +19,10 @@
 #include <algorithm>
 #include <string>
 
+#ifdef USE_MPI
+#include <mpi.h>
+#endif
+
 #include "sgpp.hpp"
 
 
@@ -216,13 +220,89 @@ void testPoissonEquation(size_t dim, size_t level, double bound_left, double bou
 	delete alpha;
 }
 
+#ifdef USE_MPI
+void testPoissonEquation_MPI(size_t dim, size_t level, double bound_left, double bound_right,
+						std::string initFunc, double cg_eps, size_t cg_its, int mpi_myid, int mpi_ranks)
+{
+	sg::PoissonEquationSolver* myPoisSolver = new sg::PoissonEquationSolver();
+
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	// set the bounding box
+	for (size_t i = 0; i < dim; i++)
+	{
+		myBoundaries[i].leftBoundary = bound_left;
+		myBoundaries[i].rightBoundary = bound_right;
+		myBoundaries[i].bDirichletLeft = true;
+		myBoundaries[i].bDirichletRight = true;
+	}
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	delete[] myBoundaries;
+
+	// init Screen Object
+	myPoisSolver->initScreen(mpi_myid);
+
+	// Construct a grid
+	myPoisSolver->constructGrid(*myBoundingBox, level, mpi_myid);
+
+	// init the basis functions' coefficient vector (start solution)
+	DataVector* alpha = new DataVector(myPoisSolver->getNumberGridPoints());
+	if (initFunc == "smooth")
+	{
+		myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR, mpi_myid);
+	}
+	else
+	{
+		if (mpi_myid == 0)
+		{
+			writeHelp();
+		}
+
+
+	}
+
+	// Print the initial heat function into a gnuplot file
+	if (dim < 3)
+	{
+		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStart.gnuplot", mpi_myid);
+	}
+
+	// solve Poisson Equation
+	myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true, mpi_myid, mpi_ranks);
+
+
+	// Print the solved Heat Equation into a gnuplot file
+	if (dim < 3)
+	{
+		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot", mpi_myid);
+	}
+
+	delete myPoisSolver;
+	delete myBoundingBox;
+	delete alpha;
+}
+#endif
+
 int main(int argc, char *argv[])
 {
 	std::string option;
 
+#ifdef USE_MPI
+	MPI::Init(argc, argv);
+	int mpi_myid = id = MPI::COMM_WORLD.Get_rank();
+	int mpi_ranks = MPI::COMM_WORLD.Get_size();
+#endif
+
 	if (argc == 1)
 	{
+#ifdef USE_MPI
+		if (mpi_myid == 0)
+		{
+			writeHelp();
+		}
+		MPI::Abort();
+#else
 		writeHelp();
+#endif
 		return 0;
 	}
 
@@ -230,9 +310,26 @@ int main(int argc, char *argv[])
 
 	if (option == "HeatEquation")
 	{
+// No MPI support yet -> abort
+#ifdef USE_MPI
+			if (mpi_myid == 0)
+			{
+				std::cout << "not supported mode when using MPI!" << std::endl;
+			}
+			MPI::Abort();
+			return 0;
+#endif
 		if (argc != 13)
 		{
+#ifdef USE_MPI
+			if (mpi_myid == 0)
+			{
+				writeHelp();
+			}
+			MPI::Abort();
+#else
 			writeHelp();
+#endif
 			return 0;
 		}
 
@@ -266,7 +363,15 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 9)
 		{
+#ifdef USE_MPI
+			if (mpi_myid == 0)
+			{
+				writeHelp();
+			}
+			MPI::Abort();
+#else
 			writeHelp();
+#endif
 			return 0;
 		}
 
@@ -285,12 +390,25 @@ int main(int argc, char *argv[])
 		initFunc.assign(argv[6]);
 		cg_eps = atof(argv[7]);
 		cg_its = atoi(argv[8]);
-
+#ifdef USE_MPI
+		testPoissonEquation_MPI(dim, level, bound_left, bound_right, initFunc, cg_eps, cg_its);
+#else
 		testPoissonEquation(dim, level, bound_left, bound_right, initFunc, cg_eps, cg_its);
+#endif
 	}
 	else
 	{
+#ifdef USE_MPI
+		if (mpi_myid == 0)
+		{
+			writeHelp();
+		}
+#else
 		writeHelp();
-		return 0;
+#endif
 	}
+
+#ifdef USE_MPI
+	MPI::Finalize();
+#endif
 }
