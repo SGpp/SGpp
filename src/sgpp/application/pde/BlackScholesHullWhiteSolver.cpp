@@ -281,6 +281,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 	double tmp;
 	int timeT=12;
 	int endtime=32;
+	double c = 0.06;
 
 	if (this->bGridConstructed)
 	{
@@ -308,7 +309,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 				for(int k=(timeT+1); k<=endtime;k++)
 				{
 					PT=exp(0.04*(timeT-k)+ 0.04*(1-exp(-a*(k-timeT)))/a - pow(sigma,2.0)*pow((exp(-a*k)-exp(-a*timeT)),2.0)*(exp(2*a*timeT)-1)/(4*pow(a,3.0))-(1-exp(-a*(k-timeT)))*dblFuncValues[this->dim_HW]/a);
-					PB=PB+0.06*PT;
+					PB=PB+c*PT;
 				}
 				alpha[i] = std::max<double>(PB-dblFuncValues[this->dim_BS], 0.0);
 			}
