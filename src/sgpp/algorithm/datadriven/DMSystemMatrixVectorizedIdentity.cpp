@@ -94,8 +94,8 @@ void DMSystemMatrixVectorizedIdentity::mult(DataVector& alpha, DataVector& resul
 
     // Operation B
 	this->myTimer->start();
-	this->computeTimeMultTrans += this->B->multVectorized(alpha, temp);
-    this->completeTimeMultTrans += this->myTimer->stop();
+	this->computeTimeMult += this->B->multVectorized(alpha, temp);
+    this->completeTimeMult += this->myTimer->stop();
 
     // patch result -> set additional entries zero
     if (numTrainingInstances != temp.getSize())
@@ -107,8 +107,8 @@ void DMSystemMatrixVectorizedIdentity::mult(DataVector& alpha, DataVector& resul
     }
 
     this->myTimer->start();
-    this->computeTimeMult += this->B->multTransposeVectorized(temp, result);
-    this->completeTimeMult += this->myTimer->stop();
+    this->computeTimeMultTrans += this->B->multTransposeVectorized(temp, result);
+    this->completeTimeMultTrans += this->myTimer->stop();
 
     result.axpy(numTrainingInstances*this->lamb, alpha);
 }
@@ -124,8 +124,8 @@ void DMSystemMatrixVectorizedIdentity::generateb(DataVector& classes, DataVector
 	}
 
 	this->myTimer->start();
-	this->computeTimeMult += this->B->multTransposeVectorized(myClasses, b);
-	this->completeTimeMult += this->myTimer->stop();
+	this->computeTimeMultTrans += this->B->multTransposeVectorized(myClasses, b);
+	this->completeTimeMultTrans += this->myTimer->stop();
 }
 
 void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex()

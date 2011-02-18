@@ -44,6 +44,10 @@ public:
 	 * Destructor
 	 */
 	virtual ~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI();
+
+	void mult(DataVector& alpha, DataVector& result);
+
+	DataVector* generateRHS();
 };
 
 }

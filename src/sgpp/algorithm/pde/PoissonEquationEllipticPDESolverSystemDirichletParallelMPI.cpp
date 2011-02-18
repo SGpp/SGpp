@@ -5,15 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#include "tools/MPI/SGppMPITools.hpp"
+
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
 #include "exception/algorithm_exception.hpp"
 
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
-
-#ifdef _OPENMP
-#include "omp.h"
-#endif
 
 namespace sg
 {
@@ -34,88 +32,112 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorI
 {
 	result.setAll(0.0);
 
-	#pragma omp parallel shared(alpha, result)
+	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+	size_t nDims = algoDims.size();
+
+	// Apply Laplace, parallel in Dimensions
+	for (size_t i = 0; i < nDims; i++)
 	{
-		#pragma omp single nowait
+		if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 		{
-			std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
-			size_t nDims = algoDims.size();
-#ifdef _OPENMP
-			omp_lock_t Mutex;
-			omp_init_lock(&Mutex);
-#endif
-			// Apply Laplace, parallel in Dimensions
-			for (size_t i = 0; i < nDims; i++)
-			{
-				#pragma omp task firstprivate(i) shared(alpha, result, algoDims)
-				{
-					DataVector myResult(result.getSize());
+			DataVector myResult(result.getSize());
 
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+			/// @todo (heinecke) discuss methods in order to avoid this cast
+			((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
-					// semaphore
-#ifdef _OPENMP
-					omp_set_lock(&Mutex);
-#endif
-					result.add(myResult);
-#ifdef _OPENMP
-					omp_unset_lock(&Mutex);
-#endif
-				}
-			}
-
-			#pragma omp taskwait
-
-#ifdef _OPENMP
-			omp_destroy_lock(&Mutex);
-#endif
+			result.add(myResult);
 		}
 	}
+
 }
 
 void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorComplete(DataVector& alpha, DataVector& result)
 {
 	result.setAll(0.0);
 
-	#pragma omp parallel shared(alpha, result)
+	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+	size_t nDims = algoDims.size();
+
+	// Apply Laplace, parallel in Dimensions
+	for (size_t i = 0; i < nDims; i++)
 	{
-		#pragma omp single nowait
+		if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 		{
-			std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
-			size_t nDims = algoDims.size();
-#ifdef _OPENMP
-			omp_lock_t Mutex;
-			omp_init_lock(&Mutex);
-#endif
-			// Apply Laplace, parallel in Dimensions
-			for (size_t i = 0; i < nDims; i++)
-			{
-				#pragma omp task firstprivate(i) shared(alpha, result, algoDims)
-				{
-					DataVector myResult(result.getSize());
+			DataVector myResult(result.getSize());
 
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+			/// @todo (heinecke) discuss methods in order to avoid this cast
+			((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
-					// semaphore
-#ifdef _OPENMP
-					omp_set_lock(&Mutex);
-#endif
-					result.add(myResult);
-#ifdef _OPENMP
-					omp_unset_lock(&Mutex);
-#endif
-				}
-			}
-
-			#pragma omp taskwait
-
-#ifdef _OPENMP
-			omp_destroy_lock(&Mutex);
-#endif
+			result.add(myResult);
 		}
 	}
+}
+
+void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(DataVector& alpha, DataVector& result)
+{
+	// distribute the current grid coefficients
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		myGlobalMPIComm->broadcastGridCoefficients(alpha);
+	}
+	else
+	{
+		myGlobalMPIComm->receiveGridCoefficients(alpha);
+	}
+
+	this->applyLOperatorInner(alpha, result);
+
+	// aggregate all results
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		myGlobalMPIComm->aggregateGridCoefficients(result);
+	}
+	else
+	{
+		myGlobalMPIComm->sendGridCoefficients(result, 0);
+	}
+}
+
+DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS()
+{
+	if (this->InnerGrid != NULL)
+	{
+		DataVector alpha_tmp_complete(*(this->rhs));
+		DataVector rhs_tmp_complete(*(this->rhs));
+
+		// distribute the current grid coefficients
+		if (myGlobalMPIComm->getMyRank() == 0)
+		{
+			this->BoundaryUpdate->setInnerPointsToZero(alpha_tmp_complete);
+			myGlobalMPIComm->broadcastGridCoefficients(alpha_tmp_complete);
+		}
+		else
+		{
+			myGlobalMPIComm->receiveGridCoefficients(alpha_tmp_complete);
+		}
+
+		applyLOperatorComplete(alpha_tmp_complete, rhs_tmp_complete);
+
+		// aggregate all results
+		if (myGlobalMPIComm->getMyRank() == 0)
+		{
+			myGlobalMPIComm->aggregateGridCoefficients(rhs_tmp_complete);
+		}
+		else
+		{
+			myGlobalMPIComm->sendGridCoefficients(rhs_tmp_complete, 0);
+		}
+
+		this->GridConverter->calcInnerCoefs(rhs_tmp_complete, *(this->rhs_inner));
+		this->rhs_inner->mult(-1.0);
+	}
+	else
+	{
+		myGlobalMPIComm->Abort();
+		throw new algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
+	}
+
+	return this->rhs_inner;
 }
 
 }
