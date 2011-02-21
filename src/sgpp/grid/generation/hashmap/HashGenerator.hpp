@@ -196,11 +196,11 @@ protected:
 		if (storage->dim() == 0)
 			return;
 
-		index_type idx(storage->dim());
+		index_type idx_1d(storage->dim());
 
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
-			idx.push(d, 1, 1, false);
+			idx_1d.push(d, 1, 1, false);
 		}
 
 		// Generate 1D grid
@@ -210,13 +210,13 @@ protected:
 			{
 				if (l == n)
 				{
-					idx.push(0, l, i, true);
+					idx_1d.push(0, l, i, true);
 				}
 				else
 				{
-					idx.push(0, l, i, false);
+					idx_1d.push(0, l, i, false);
 				}
-				storage->insert(idx);
+				storage->insert(idx_1d);
 			}
 		}
 
@@ -230,7 +230,7 @@ protected:
 				bool first = true;
 				// add missing Level 1
 				level_t level_sum = (storage->dim()-1) - d;
-				idx = new index_type(storage->get(g));
+				index_type idx(storage->get(g));
 
 				// Calculate level-sum
 				for (size_t sd = 0; sd < d; sd++)
@@ -285,11 +285,11 @@ protected:
 		if (storage->dim() == 0)
 			return;
 
-		index_type idx(storage->dim());
+		index_type idx_1d(storage->dim());
 
 		for(size_t d = 0; d < storage->dim(); d++)
 		{
-			idx.push(d, 1, 1, false);
+			idx_1d.push(d, 1, 1, false);
 		}
 
 		// Generate 1D grid
@@ -298,10 +298,10 @@ protected:
 			// generate boundary basis functions
 			if (l == 1)
 			{
-				idx.push(0, 0, 0, false);
-				storage->insert(idx);
-				idx.push(0, 0, 1, false);
-				storage->insert(idx);
+				idx_1d.push(0, 0, 0, false);
+				storage->insert(idx_1d);
+				idx_1d.push(0, 0, 1, false);
+				storage->insert(idx_1d);
 			}
 
 			// generate inner basis function
@@ -309,13 +309,13 @@ protected:
 			{
 				if (l == n)
 				{
-					idx.push(0, l, i, true);
+					idx_1d.push(0, l, i, true);
 				}
 				else
 				{
-					idx.push(0, l, i, false);
+					idx_1d.push(0, l, i, false);
 				}
-				storage->insert(idx);
+				storage->insert(idx_1d);
 			}
 		}
 
@@ -329,7 +329,7 @@ protected:
 				// add missing Level 1
 				level_t level_sum = (storage->dim()-1) - d;
 				bool has_level_zero = false;
-				idx = new index_type(storage->get(g));
+				index_type idx(storage->get(g));
 
 				// Calculate level-sum
 				for (size_t sd = 0; sd < d; sd++)
