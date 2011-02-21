@@ -60,13 +60,15 @@ public:
 
 		index_type index(storage->dim());
 
-		for(size_t d = 0; d < storage->dim(); d++)
-		{
-			index.push(d, 1, 1, false);
-		}
+//		for(size_t d = 0; d < storage->dim(); d++)
+//		{
+//			index.push(d, 1, 1, false);
+//		}
+//
+//		size_t mydim = storage->dim();
+//		this->regular_rec(storage, index, ((storage->dim()) - 1), mydim, ((level + (storage->dim())) - 1));
 
-		size_t mydim = storage->dim();
-		this->regular_rec(storage, index, ((storage->dim()) - 1), mydim, ((level + (storage->dim())) - 1));
+		this->regular_iter(storage, level);
 	}
 
 	/**
@@ -100,12 +102,14 @@ public:
 			}
 			else
 			{
-				for(size_t d = 0; d < storage->dim(); d++)
-				{
-					index.push(d, 1, 1, false);
-				}
+//				for(size_t d = 0; d < storage->dim(); d++)
+//				{
+//					index.push(d, 1, 1, false);
+//				}
+//
+//				this->boundaries_trapezoid_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
 
-				this->boundaries_trapezoid_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
+				this->regular_boundary_trapezoid_iter(storage, level);
 			}
 		}
 		else
@@ -179,6 +183,204 @@ public:
 		}
 
 protected:
+
+	/**
+	 * Implements an full iterative regular Sparse Gird generation
+	 * with Dirichlet 0 boundaries.
+	 *
+	 * @param storage pointer to storage object into which the grid points should be stored
+	 * @param n max. level of regular sparse grid
+	 */
+	void regular_iter(GridStorage* storage, level_t n)
+	{
+		if (storage->dim() == 0)
+			return;
+
+		index_type idx(storage->dim());
+
+		for(size_t d = 0; d < storage->dim(); d++)
+		{
+			idx.push(d, 1, 1, false);
+		}
+
+		// Generate 1D grid
+		for (level_t l = 1; l <= n; l++)
+		{
+			for (index_t i = 1; i < (1 << l); i+=2)
+			{
+				if (l == n)
+				{
+					idx.push(0, l, i, true);
+				}
+				else
+				{
+					idx.push(0, l, i, false);
+				}
+				storage->insert(idx);
+			}
+		}
+
+		// Generate grid points in all other dimensions
+		for (size_t d = 1; d < storage->dim(); d++)
+		{
+			size_t grid_size = storage->size();
+
+			for (size_t g = 0; g < grid_size; g++)
+			{
+				bool first = true;
+				// add missing Level 1
+				level_t level_sum = (storage->dim()-1) - d;
+				idx = new index_type(storage->get(g));
+
+				// Calculate level-sum
+				for (size_t sd = 0; sd < d; sd++)
+				{
+					level_sum += idx.getLevel(sd);
+				}
+
+				for (level_t l = 1; l + level_sum <= n+storage->dim()-1; l++)
+				{
+					for (index_t i = 1; i < (1 << l); i+=2)
+					{
+						if (first == false)
+						{
+							if ((l+level_sum) == n+storage->dim()-1)
+							{
+								idx.push(d, l, i, true);
+							}
+							else
+							{
+								idx.push(d, l, i, false);
+							}
+							storage->insert(idx);
+						}
+						else
+						{
+							if ((l+level_sum) == n+storage->dim()-1)
+							{
+								idx.push(d, l, i, true);
+							}
+							else
+							{
+								idx.push(d, l, i, false);
+							}
+							storage->update(idx, g);
+							first = false;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Implements an full iterative regular Sparse Gird generation
+	 * with trapezoid boundaries.
+	 *
+	 * @param storage pointer to storage object into which the grid points should be stored
+	 * @param n max. level of regular sparse grid
+	 */
+	void regular_boundary_trapezoid_iter(GridStorage* storage, level_t n)
+	{
+		if (storage->dim() == 0)
+			return;
+
+		index_type idx(storage->dim());
+
+		for(size_t d = 0; d < storage->dim(); d++)
+		{
+			idx.push(d, 1, 1, false);
+		}
+
+		// Generate 1D grid
+		for (level_t l = 1; l <= n; l++)
+		{
+			// generate boundary basis functions
+			if (l == 1)
+			{
+				idx.push(0, 0, 0, false);
+				storage->insert(idx);
+				idx.push(0, 0, 1, false);
+				storage->insert(idx);
+			}
+
+			// generate inner basis function
+			for (index_t i = 1; i < (1 << l); i+=2)
+			{
+				if (l == n)
+				{
+					idx.push(0, l, i, true);
+				}
+				else
+				{
+					idx.push(0, l, i, false);
+				}
+				storage->insert(idx);
+			}
+		}
+
+		// Generate grid points in all other dimensions
+		for (size_t d = 1; d < storage->dim(); d++)
+		{
+			size_t grid_size = storage->size();
+
+			for (size_t g = 0; g < grid_size; g++)
+			{
+				// add missing Level 1
+				level_t level_sum = (storage->dim()-1) - d;
+				bool has_level_zero = false;
+				idx = new index_type(storage->get(g));
+
+				// Calculate level-sum
+				for (size_t sd = 0; sd < d; sd++)
+				{
+					level_t tmp = idx.getLevel(sd);
+					if (tmp == 0)
+					{
+						tmp = 1;
+						has_level_zero = true;
+					}
+					level_sum += tmp;
+				}
+
+				for (level_t l = 1; l + level_sum <= n+storage->dim()-1; l++)
+				{
+					// generate boundary basis functions
+					if (l == 1)
+					{
+						idx.push(d, 0, 0, false);
+						storage->update(idx, g);
+
+						idx.push(d, 0, 1, false);
+						storage->insert(idx);
+					}
+
+					// generate inner basis functions
+					for (index_t i = 1; i < (1 << l); i+=2)
+					{
+						if ((l+level_sum) == n+storage->dim()-1)
+						{
+							if (has_level_zero == false)
+							{
+								idx.push(d, l, i, true);
+							}
+							else
+							{
+								idx.push(d, l, i, false);
+							}
+						}
+						else
+						{
+							idx.push(d, l, i, false);
+						}
+						storage->insert(idx);
+					}
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * recursive construction of the spare grid without boundaries
 	 *

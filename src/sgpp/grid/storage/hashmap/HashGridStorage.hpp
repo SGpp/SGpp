@@ -396,6 +396,27 @@ public:
 		return (map[insert] = this->seq() - 1);
 	}
 
+	/**
+	 * updates an already stored index
+	 *
+	 * @param index reference to the index that should be updated
+	 * @param pos position where the index should be stored
+	 */
+	void update(index_type& index, size_t pos)
+	{
+		if (pos < seq())
+		{
+			// Remove old element at pos
+			index_pointer del = list[pos];
+			map.erase(del);
+			delete del;
+			// Insert update
+			index_pointer insert = new GIT(&index);
+			list[pos] = insert;
+			map[insert] = pos;
+		}
+	}
+
 
 	/**
 	 * This methods removes the gridpoint added last. Use with coution, only needed for
