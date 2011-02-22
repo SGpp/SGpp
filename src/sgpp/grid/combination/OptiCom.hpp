@@ -18,6 +18,7 @@ namespace sg {
 
 /** class to contain the methods to calculate the opticom coefficients */
 class OptiCom {
+	typedef GridStorage::index_type::level_type level_t;
 
 public:
 
@@ -33,7 +34,7 @@ public:
 	  int i,j,k,nr,ii,k0,k1;
 	  double sum;
 	  DataVector coords(dim);
-	  vector<unsigned int>lev(dim);
+	  vector<level_t>lev(dim);
 	  double c1,c2;
 	  for (i=0;i<size;i++){
 		  for (j=0;j<size;j++)
