@@ -58,8 +58,8 @@ public:
 			throw generation_exception("storage not empty");
 		}
 
-		index_type index(storage->dim());
-
+//		index_type index(storage->dim());
+//
 //		for(size_t d = 0; d < storage->dim(); d++)
 //		{
 //			index.push(d, 1, 1, false);
