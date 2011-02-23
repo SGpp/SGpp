@@ -1,0 +1,81 @@
+## This Scons script builds a static library for the Sundance PDE toolbox
+
+import os;
+import sys;
+
+#########################################################################
+##### MAIN CODE
+#########################################################################
+
+##### Initialize build variables
+
+cppdefines = [ ]
+cpppath = ['.' , '..']
+ccflags = ['-Wall']
+libpath = [ ]
+libs = [ ]
+linkfalgs = [ ]
+cxx = 'g++'
+
+
+##### Read command line parameter #######
+
+###### --- build modus ---
+build = ARGUMENTS.get('build', 'debug') 
+if build == 'debug':
+   print "\n Building DEBUG version ... "
+   cppdefines.append('_GLIBCXX_DEBUG')
+   ccflags.append('-g3')
+   ccflags.append('-O0')
+elif build == 'release':
+   print "\n Building RELEASE version ... "
+   ccflags.append('-O3')
+else:
+   print "ERROR: build must be = 'debug' or 'release' (default is 'debug') ! "
+   sys.exit(1) 
+   
+
+#####     Determine build path     #####################
+
+target = ARGUMENTS.get('target', '')  # Read command line parameter
+build_offset = ARGUMENTS.get('buildoffset', 'build')
+buildpath = './'
+
+
+##### Print options used to build
+#
+print
+print "Target: " + target
+print "Options: build = NONE"
+print "Buildpath " + buildpath
+print
+
+##### Setup construction environment:
+#
+env = Environment ( 
+   CPPDEFINES = cppdefines,
+   LIBPATH    = libpath,
+   LINKFLAGS  = linkfalgs,
+   LIBS       = libs, 
+   CPPPATH    = cpppath,
+   CCFLAGS    = ccflags,
+   CXX        = cxx
+   )
+
+##### Define source Files 
+#            
+sourceFiles = [
+   Glob(buildpath + './basisfunction/*.cpp'),
+   Glob(buildpath + './combigrid/*.cpp'),
+   Glob(buildpath + './fullgrid/*.cpp'),
+#   Glob(buildpath + './tests/*.cpp'),
+   Glob(buildpath + './utils/*.cpp')
+   ]
+
+testFile = ['./tests/test_main.cpp']
+
+################################################################################
+
+
+# build the tester and the two binaries code 
+env.Program('test',[ testFile , sourceFiles ])
