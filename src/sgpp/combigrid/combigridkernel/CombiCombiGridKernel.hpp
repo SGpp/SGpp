@@ -9,6 +9,7 @@
 #define COMBICOMBIGRIDKERNEL_HPP_
 
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
+#include "combigrid/combischeme/CombiCombiSchemeBasis.hpp"
 
 using namespace std;
 
@@ -29,11 +30,31 @@ public:
 		nrFG_ = 0;
 	}
 
+	/** Ctor with a combi scheme as an input */
+	CombiGridKernel(const CombiSchemeBasis* combischeme , const std::vector<bool>& hasBoundaryPts) {
+		dim_ = combischeme->getDim();
+		fullgrids_.resize(0);
+		coefs_.resize(0);
+		nrFG_ = 0;
+		initialize( combischeme , hasBoundaryPts );
+	}
+
 	virtual ~CombiGridKernel() {
 		// delete all full grids
-		for (int i = 0 ; i < nrFG_ ; i++){
-			//COMBIGRID_OUT_LEVEL3( 6, "~CombiGridKernel delete i:" << i << " , fullgrids_.size():" << fullgrids_.size());
-			delete fullgrids_[i];
+		deleteAll();
+	}
+
+	/** method which initializes the object with a combi scheme object*/
+	void initialize(const CombiSchemeBasis* combischeme , const std::vector<bool>& hasBoundaryPts){
+
+		// first delete everything what was there before
+		deleteAll();
+
+		// now create the kernel from the scheme
+		dim_ = combischeme->getDim();
+		for (int i = 0 ; i < combischeme->getNrSapces() ; i++){
+			// add a full grid
+			addFullGrid( combischeme->getLevel(i) , hasBoundaryPts , combischeme->getCoef(i) );
 		}
 	}
 
@@ -41,7 +62,7 @@ public:
 	 * @param levels levels of the FG
 	 * @param hasBoundaryPts for each dimension if the full grid should have boundary points
 	 * @param coef the coeficient in the combination scheme */
-	void addFullGrid(std::vector<int>& levels, std::vector<bool>& hasBoundaryPts , double coef){
+	void addFullGrid(const std::vector<int>& levels, const std::vector<bool>& hasBoundaryPts , double coef){
 		// create the full grid and add to the grid vector
 		FullGrid<ELEMENT>* fg = new combigrid::FullGrid<ELEMENT>( dim_ , levels , hasBoundaryPts );
 		fullgrids_.resize(nrFG_+1);
@@ -97,7 +118,7 @@ public:
 	}
 
 	/** return the number of full grids */
-	inline int getNrFullGrids() { return nrFG_; }
+	inline int getNrFullGrids() const { return nrFG_; }
 
 	/** return the full grids level vector */
 	inline const std::vector<int>& getFullGridLevel(int i) const { return fullgrids_[i]->getLevels(); }
@@ -115,10 +136,19 @@ public:
 
 private:
 
+	/** deletes all the full grids and frees the memory */
+	void deleteAll(){
+		// delete all full grids
+		for (int i = 0 ; i < nrFG_ ; i++){
+			//COMBIGRID_OUT_LEVEL3( 6, "~deleteAll delete i:" << i << " , fullgrids_.size():" << fullgrids_.size());
+			delete fullgrids_[i];
+		}
+	}
+
 	/** dimensions of the full grids */
 	int dim_;
 
-	/** number of */
+	/** number of full grids */
 	int nrFG_;
 
 	/** the coefficients of the full grids*/

@@ -25,7 +25,7 @@ class FullGrid {
 
 public:
 
-	/** simplest Ctor with homogene levels */
+	/** simplest Ctor with homogeneous  levels */
 	FullGrid(int dim, int level, bool hasBdrPoints = true, const BasisFunctionBasis* basis=NULL){
 		// set the basis function for the full grid
 		if (basis == NULL) basis_ = LinearBasisFunction::getDefaultBasis();
@@ -46,7 +46,7 @@ public:
 	}
 
 	/** dimension adaptive Ctor */
-	FullGrid(int dim, std::vector<int>& levels, bool hasBdrPoints = true, const BasisFunctionBasis* basis=NULL){
+	FullGrid( int dim , const std::vector<int>& levels, bool hasBdrPoints = true, const BasisFunctionBasis* basis=NULL){
 		// set the basis function for the full grid
 		if (basis == NULL) basis_ = LinearBasisFunction::getDefaultBasis();
 		else basis_ = basis;
@@ -66,7 +66,7 @@ public:
 	}
 
 	/** dimension adaptive Ctor */
-	FullGrid(int dim, std::vector<int>& levels, std::vector<bool>& hasBdrPoints, const BasisFunctionBasis* basis=NULL){
+	FullGrid( int dim , const std::vector<int>& levels, const std::vector<bool>& hasBdrPoints, const BasisFunctionBasis* basis=NULL){
 		// set the basis function for the full grid
 		if (basis == NULL) basis_ = LinearBasisFunction::getDefaultBasis();
 		else basis_ = basis;
@@ -90,12 +90,14 @@ public:
 	/** allocates the memory for the element vector of the full grid <br>
 	 * Only after this needs the full grid considerable amount of memory */
 	void createFullGrid(){
+		isFGcreated_ = true;
 		fullgridVector_.resize(nrElements_);
 	}
 
 	/** Deallocates the element vector, so the memory requirement should not be significant afer this*/
 	void deleteFullGrid(){
-		fullgridVector_.resize(0);
+		isFGcreated_ = false;
+		fullgridVector_.flush();
 	}
 
 	/** evaluates the full grid on the specified coordinates
@@ -105,7 +107,8 @@ public:
 	 	 int jj;
 	 	 double baseVal;
 	 	 double normcoord;
-	 	 FG_ELEMENT ret_val;
+	 	 // this value will be reseted, but just to avoid compiler warnings
+	 	 FG_ELEMENT ret_val = fullgridVector_[0];
 		 double intersect[2*dim_];
 		 int aindex[dim_];
 		 //int verb = 6;
@@ -194,6 +197,47 @@ public:
                coords[j] = ((double)(ind+tmp_add))*oneOverPowOfTwo[levels_[j]];
          	   //COMBIGRID_OUT_LEVEL3( verb , "FullGrid::getCoords j:" << j << " , coords[j]:" << coords[j]);
         }
+    }
+
+
+    /* returns the LI (level,index) notation for a given element in the full grid
+     * @param elementIndex [IN] the linear index of the element
+     * @param levels [OUT] the levels of the point in the LI notation
+     * @param indexes [OUT] the indexes of the point in the LI notation */
+    //void getLI_std(int elementIndex , std::vector<int>& levels , std::vector<int>& indexes) const {
+    //	getLI( elementIndex , &(levels[0]) , &(indexes[0]) );
+    //}
+
+    /** returns the LI (level,index) notation for a given element in the full grid
+     * @param elementIndex [IN] the linear index of the element
+     * @param levels [OUT] the levels of the point in the LI notation
+     * @param indexes [OUT] the indexes of the point in the LI notation */
+    void getLI(int elementIndex ,  std::vector<int>& levels , std::vector<int>& indexes ) const {
+    	  int k , startindex , tmp_val ;
+
+    	  tmp_val = elementIndex;
+    	  // first calculate intermediary indexes
+	      for ( k = 0 ; k < dim_ ; k++ )
+	      {
+	    	  startindex = (hasBoundaryPoints_[k])? 0 : 1;
+	    	  indexes[k] = tmp_val % nrPoints_[k] + startindex;
+	    	  tmp_val = tmp_val / nrPoints_[k];
+	      }
+//The level and index of the element in the hashgridstorage are computed dividing by two the index and level in the fullgrid
+//until we obtain an impair number for the index, thus obtaining the level and index in the hierarchical basis (Aliz Nagy)
+// ...
+	      for ( k = 0 ; k < dim_ ; k++){
+	    	  tmp_val = levels_[k];
+		      if ( indexes[k] != 0 ){
+		    	  // todo: these operations can be optimized
+				  while ( indexes[k] % 2 == 0 ){
+					  indexes[k] = indexes[k] / 2;
+					  tmp_val--;
+				  }
+		      }
+		      else { tmp_val = 0; }
+		      levels[k] = tmp_val;
+	      }
     }
 
 	/** returns the dimension of the full grid */

@@ -88,6 +88,20 @@ namespace combigrid{
 			1.0/524288.0 , 1.0/1048576.0 , 1.0/2097152.0 , 1.0/4194304.0 , 1.0/8388608.0 , 1.0/16777216.0 ,
 			1.0/33554432.0 , 1.0/67108864.0 , 1.0/134217728.0 , 1.0/268435456.0 };
 
+
+	/** the function C_{N}^K , combination of N,K*/
+	static int combination(int n, int k)
+	{
+		if ((k==0)||(n==k)) return 1;
+		else
+		if ((k==1)||(n==k+1)) return n;
+		else
+		if ((k==2)||(n==k+2)) return n*(n-1)/2;
+		else
+		return combination(n-1,k)+combination(n-1,k-1);
+	}
+
+
 };
 
 #endif /* COMBIGRID_ULTILS_HPP_ */
