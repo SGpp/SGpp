@@ -67,9 +67,13 @@ env = Environment (
 sourceFiles = [
    Glob(buildpath + './basisfunction/*.cpp'),
    Glob(buildpath + './combigrid/*.cpp'),
+   Glob(buildpath + './combischeme/*.cpp'),
+   Glob(buildpath + './combikernel/*.cpp'),
    Glob(buildpath + './fullgrid/*.cpp'),
-#   Glob(buildpath + './tests/*.cpp'),
-   Glob(buildpath + './utils/*.cpp')
+   Glob(buildpath + './utils/*.cpp'),
+# SGpp objcets which are needed, in order to build a binary
+   Glob(buildpath + '../data/DataVector.cpp'),
+   Glob(buildpath + '../grid/common/BoundingBox.cpp')
    ]
 
 testFile = ['./tests/test_main.cpp']
