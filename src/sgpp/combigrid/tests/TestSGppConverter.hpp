@@ -229,6 +229,7 @@ public:
     	delete combischeme;
     }
 
+
     static void test21(){
 
     	std::vector<double> coords( 3 , 0.0);
@@ -318,6 +319,7 @@ public:
     	delete combigrid;
     	delete combischeme;
     }
+
 
     static void test22(){
 
