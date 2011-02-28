@@ -110,6 +110,7 @@ public:
     	delete combischeme;
     }
 
+
     static void test12(){
     	std::vector<double> coords( 2 , 0.0);
     	CombiSchemeBasis* combischeme = new S_CT( 2 , 9 , 3);
@@ -305,6 +306,7 @@ public:
     	delete combigrid;
     	delete combigrid1;
     	delete combischeme;
+
     }
 
 };
