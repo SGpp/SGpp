@@ -139,6 +139,7 @@ public:
 	            	  aindex[ii] = 1;
 	            	  // extrapolation to the left, must be a negative number
 	            	  normcoord = coords[ii] * powerOfTwo[levels_[ii]] - 1;
+	            	  //COMBIGRID_OUT_LEVEL3( verb , "FullG L , aindex[ii]:" << aindex[ii]);
 	             }
 	             else{
 	               // make extrapolation at the last cell (where there is no boundary point)
@@ -146,10 +147,13 @@ public:
 	                  aindex[ii] = (int)nrPoints_[ii]-1;
 	            	  // extrapolation to the right this will be a >=1 number
 	                  normcoord = coords[ii] * powerOfTwo[levels_[ii]] - (double)aindex[ii]; // this should be 1 + ...
+	                  //COMBIGRID_OUT_LEVEL3( verb , "FullG R , aindex[ii]:" << aindex[ii]);
 	               }
 	             }
 	             // we have to subtract one in case of no boundary points
 	             aindex[ii] = aindex[ii] - 1;
+	             // in some special cases this might become negative, so limit to zero (when level = 1 and no boundary point )
+	             aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
 			 }
 			 //COMBIGRID_OUT_LEVEL3( verb , "FullGrid::eval ii:" << ii << " , coords[ii]:" << coords[ii] << " , aindex[ii]:" << aindex[ii]
 			 //                     << " , level[ii]:" << levels_[ii] << " , normcoord:" << normcoord );
@@ -166,7 +170,7 @@ public:
 	  	        vv = 0;
 	  	        // compute the "dim" dimensional basis function value(for one node) and the corresponding vector index
 	  	        for (jj = dim_-1 ; jj >=0; jj--){
-	  	              vv = (tmp_val & 1);
+	  	              vv = ( nrPoints_[jj] > 1) ? (tmp_val & 1) : 0; // if we have only one point then use the same
 	  	              baseVal = baseVal * intersect[2*jj+vv];
 	  	              i = i*nrPoints_[jj] + aindex[jj] + vv;
 	  	              tmp_val = tmp_val >> 1;
