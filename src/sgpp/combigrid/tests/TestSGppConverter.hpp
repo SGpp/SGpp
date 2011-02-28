@@ -135,10 +135,11 @@ public:
     	delete combischeme;
     }
 
+
     static void test2(){
 
     	std::vector<double> coords( 3 , 0.0);
-    	std::vector<int> levels( 3 , 8);
+    	std::vector<int> levels( 3 , 7);
     	std::vector<bool> makeCombi( 3 , true);
     	CombiSchemeBasis* combischeme = new TS_CT( 3 , levels , makeCombi );
     	AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
