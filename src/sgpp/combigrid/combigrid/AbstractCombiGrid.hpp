@@ -10,8 +10,8 @@
 
 #include "combigrid/utils/combigrid_ultils.hpp"
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
-#include "combigrid/combigridkernel/CombiCombiGridKernel.hpp"
-#include "combigrid/combischeme/CombiCombiSchemeBasis.hpp"
+#include "combigrid/combigridkernel/CombiGridKernel.hpp"
+#include "combigrid/combischeme/CombiSchemeBasis.hpp"
 
 // ------ SGpp includes -------------
 #include "data/DataVector.hpp"

@@ -9,7 +9,7 @@
 #define COMBICOMBIGRIDKERNEL_HPP_
 
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
-#include "combigrid/combischeme/CombiCombiSchemeBasis.hpp"
+#include "combigrid/combischeme/CombiSchemeBasis.hpp"
 
 using namespace std;
 
