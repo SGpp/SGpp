@@ -9,7 +9,7 @@
 #define TESTCOMBIGRIDKERNEL_HPP_
 
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
-#include "combigrid/combigridkernel/CombiCombiGridKernel.hpp"
+#include "combigrid/combigridkernel/CombiGridKernel.hpp"
 #include "combigrid/utils/combigrid_ultils.hpp"
 
 
