@@ -116,6 +116,10 @@ endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -xAVX -DUSEAVX
 endif
+ifeq ($(OMP),1)
+CFLAGS:=$(CFLAGS) -openmp
+LFLAGS:=$(LFLAGS) -openmp
+endif
 endif
 
 ###################################################################
