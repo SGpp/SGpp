@@ -42,8 +42,14 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorI
 		{
 			DataVector myResult(result.getSize());
 
-			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+			#pragma omp parallel
+			{
+				#pragma omp single nowait
+				{
+					/// @todo (heinecke) discuss methods in order to avoid this cast
+					((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+				}
+			}
 
 			result.add(myResult);
 		}
@@ -65,8 +71,14 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
 		{
 			DataVector myResult(result.getSize());
 
-			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+			#pragma omp parallel
+			{
+				#pragma omp single nowait
+				{
+					/// @todo (heinecke) discuss methods in order to avoid this cast
+					((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+				}
+			}
 
 			result.add(myResult);
 		}
