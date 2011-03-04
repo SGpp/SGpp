@@ -32,26 +32,34 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorI
 {
 	result.setAll(0.0);
 
-	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
-	size_t nDims = algoDims.size();
-
-	// Apply Laplace, parallel in Dimensions
-	for (size_t i = 0; i < nDims; i++)
+	#pragma omp parallel shared(alpha, result)
 	{
-		if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
+		#pragma omp single nowait
 		{
-			DataVector myResult(result.getSize());
+			std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+			size_t nDims = algoDims.size();
 
-			#pragma omp parallel
+			// Apply Laplace, parallel in Dimensions
+			for (size_t i = 0; i < nDims; i++)
 			{
-				#pragma omp single nowait
+				if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 				{
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+					#pragma omp task firstprivate(i) shared(alpha, result, algoDims)
+					{
+						DataVector myResult(result.getSize());
+
+						/// @todo (heinecke) discuss methods in order to avoid this cast
+						((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+
+						#pragma omp critical
+						{
+							result.add(myResult);
+						}
+					}
 				}
 			}
 
-			result.add(myResult);
+			#pragma omp taskwait
 		}
 	}
 
@@ -61,26 +69,35 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
 {
 	result.setAll(0.0);
 
-	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
-	size_t nDims = algoDims.size();
-
-	// Apply Laplace, parallel in Dimensions
-	for (size_t i = 0; i < nDims; i++)
+	#pragma omp parallel shared(alpha, result)
 	{
-		if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
+		#pragma omp single nowait
 		{
-			DataVector myResult(result.getSize());
+			std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+			size_t nDims = algoDims.size();
 
-			#pragma omp parallel
+			// Apply Laplace, parallel in Dimensions
+			for (size_t i = 0; i < nDims; i++)
 			{
-				#pragma omp single nowait
+				if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 				{
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+					#pragma omp task firstprivate(i) shared(alpha, result, algoDims)
+					{
+
+						DataVector myResult(result.getSize());
+
+						/// @todo (heinecke) discuss methods in order to avoid this cast
+						((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+
+						#pragma omp critical
+						{
+							result.add(myResult);
+						}
+					}
 				}
 			}
 
-			result.add(myResult);
+			#pragma omp taskwait
 		}
 	}
 }
