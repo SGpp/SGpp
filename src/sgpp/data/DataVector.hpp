@@ -321,14 +321,14 @@ public:
 	 *
 	 * @return the vector's L two norm
 	 */
-	double LtwoNorm();
+	double RMSNorm();
 
 	/**
 	 * calculates the vectors two norm
 	 *
 	 * @return the vector's two norm
 	 */
-	double twoNorm();
+	double l2Norm();
 
 #ifndef LARRABEE
 	/**

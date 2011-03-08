@@ -305,29 +305,29 @@ float DataVectorSP::maxNorm() {
     return max;
 }
 
-float DataVectorSP::LtwoNorm()
+float DataVectorSP::RMSNorm()
 {
-	float twoNorm;
+	float l2Norm;
 	DataVectorSP temp(*this);
 
 	temp.componentwise_mult(temp);
-	twoNorm = temp.sum();
-	twoNorm /= static_cast<float>(temp.getSize());
-	twoNorm = std::sqrt(twoNorm);
+	l2Norm = temp.sum();
+	l2Norm /= static_cast<float>(temp.getSize());
+	l2Norm = std::sqrt(l2Norm);
 
-    return twoNorm;
+    return l2Norm;
 }
 
-float DataVectorSP::twoNorm()
+float DataVectorSP::l2Norm()
 {
-	float twoNorm;
+	float l2Norm;
 	DataVectorSP temp(*this);
 
 	temp.componentwise_mult(temp);
-	twoNorm = temp.sum();
-	twoNorm = std::sqrt(twoNorm);
+	l2Norm = temp.sum();
+	l2Norm = std::sqrt(l2Norm);
 
-    return twoNorm;
+    return l2Norm;
 }
 
 void DataVectorSP::partitionClasses(float threshold)
