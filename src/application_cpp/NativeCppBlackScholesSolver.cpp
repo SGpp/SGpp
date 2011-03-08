@@ -803,7 +803,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				DataVector maxLevel(results[i-start_l]);
 				DataVector relError(results[j]);
 				double maxNorm = 0.0;
-				double twoNorm = 0.0;
+				double l2Norm = 0.0;
 
 				// calculate relative error
 				relError.sub(maxLevel);
@@ -813,13 +813,13 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				maxNorm = relError.maxNorm();
 
 				// calculate two norm of relative error
-				twoNorm = relError.LtwoNorm();
+				l2Norm = relError.RMSNorm();
 
 				// Printing norms
-				std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/twoNorm) << std::endl;
+				std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
 
 				oldMaxNorm = maxNorm;
-				oldTwoNorm = twoNorm;
+				oldTwoNorm = l2Norm;
 			}
 		}
 		std::cout << std::endl << std::endl;
@@ -1131,7 +1131,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	// calculate relative errors
 	////////////////////////////
 	double maxNorm = 0.0;
-	double twoNorm = 0.0;
+	double l2Norm = 0.0;
 
 	if (retCuboid == 0 && retCuboidValues == 0)
 	{
@@ -1162,10 +1162,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		maxNorm = relError.maxNorm();
 
 		// calculate two norm of relative error
-		twoNorm = relError.LtwoNorm();
+		l2Norm = relError.RMSNorm();
 
 		// Printing norms
-		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
 
 		// reprint data with prefix -> can be easily grep-ed
 		std::cout << std::endl << std::endl;
@@ -1197,13 +1197,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize() << std::endl;
 	std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
 	std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
-	std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << twoNorm << std::endl;
+	std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
 	std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl;
 	std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
 		<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
 		<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
 		<< ";" << myBSSolver->getAverageInnerGridSize() << ";" << myBSSolver->getNeededIterationsToSolve()
-		<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << twoNorm << std::endl;
+		<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << l2Norm << std::endl;
 	std::cout << std::endl << std::endl;
 
 	delete myBSSolver;
