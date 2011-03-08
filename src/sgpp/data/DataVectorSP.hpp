@@ -256,14 +256,14 @@ public:
 	 *
 	 * @return the vector's L two norm
 	 */
-	float LtwoNorm();
+	float RMSNorm();
 
 	/**
 	 * calculates the vectors two norm
 	 *
 	 * @return the vector's two norm
 	 */
-	float twoNorm();
+	float l2Norm();
 
 	/**
 	 * Returns the minimum over all entries.
