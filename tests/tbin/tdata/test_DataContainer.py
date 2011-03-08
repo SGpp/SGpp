@@ -60,7 +60,7 @@ class TestDataContainer(unittest.TestCase):
         for entry in self.container:
             point = entry.getPoint()
             point.sub(self.vectors[c])
-            self.assertEqual(point.twoNorm(), 0)
+            self.assertEqual(point.l2Norm(), 0)
             self.assertEqual(entry.getValue(), c)
             c += 1
         self.assertEqual(c, self.size)
@@ -74,7 +74,7 @@ class TestDataContainer(unittest.TestCase):
         for entry in trainContainer:
             point = entry.getPoint()
             point.sub(self.vectors[c])
-            self.assertEqual(point.twoNorm(), 0)
+            self.assertEqual(point.l2Norm(), 0)
             self.assertEqual(entry.getValue(), c)
             c += 1
 
@@ -88,7 +88,7 @@ class TestDataContainer(unittest.TestCase):
         for entry in testContainer:
             point = entry.getPoint()
             point.sub(self.vectors[c])
-            self.assertEqual(point.twoNorm(), 0)
+            self.assertEqual(point.l2Norm(), 0)
             self.assertEqual(entry.getValue(), c)
             c += 1
 

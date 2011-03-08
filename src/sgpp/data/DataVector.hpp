@@ -316,25 +316,28 @@ public:
 	double maxNorm();
 
 	/**
-	 * calculates the vectors L two norm
-	 * function based two norm
+	 * Returns the vector's root mean square (RMS)-norm, i.e.,
+	 * @f$\sqrt{ 1/N \sum_{i=1}^N x_i^2 }@f$. If the vector's entries
+	 * correspond to function values on a full grid, this is the 
+	 * discrete @f$L^2@f$-norm of the corresponding function.
 	 *
-	 * @return the vector's L two norm
+	 * @return The vector's root mean square-norm.
 	 */
-	double LtwoNorm();
+	double RMSNorm();
 
 	/**
-	 * calculates the vectors two norm
+	 * Returns the vector's @f$l^2@f$-norm, i.e., 
+	 * @f$\sqrt{ \sum_i x_i^2 }@f$.
 	 *
-	 * @return the vector's two norm
+	 * @return The vector's @f$l^2@f$-norm.
 	 */
-	double twoNorm();
+	double l2Norm();
 
 #ifndef LARRABEE
 	/**
 	 * Returns the minimum over all entries.
 	 *
-	 * @return global minimum
+	 * @return Minimal value
 	 */
 	double min();
 

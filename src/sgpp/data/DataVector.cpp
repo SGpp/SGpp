@@ -421,29 +421,29 @@ double DataVector::maxNorm() {
     return max;
 }
 
-double DataVector::LtwoNorm()
+double DataVector::RMSNorm()
 {
-	double twoNorm;
+	double l2Norm;
 	DataVector temp(*this);
 
-	temp.componentwise_mult(temp);
-	twoNorm = temp.sum();
-	twoNorm /= static_cast<double>(temp.getSize());
-	twoNorm = std::sqrt(twoNorm);
+	temp.sqr();
+	l2Norm = temp.sum();
+	l2Norm /= static_cast<double>(temp.getSize());
+	l2Norm = std::sqrt(l2Norm);
 
-    return twoNorm;
+    return l2Norm;
 }
 
-double DataVector::twoNorm()
+double DataVector::l2Norm()
 {
-	double twoNorm;
+	double l2Norm;
 	DataVector temp(*this);
 
 	temp.componentwise_mult(temp);
-	twoNorm = temp.sum();
-	twoNorm = std::sqrt(twoNorm);
+	l2Norm = temp.sum();
+	l2Norm = std::sqrt(l2Norm);
 
-    return twoNorm;
+    return l2Norm;
 }
 
 void DataVector::partitionClasses(double threshold)
