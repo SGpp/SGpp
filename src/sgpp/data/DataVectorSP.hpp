@@ -377,7 +377,7 @@ public:
 	/**
 	 * Normalizes vector entries to [border, 1-border]
 	 *
-	 * @param border value ot the border
+	 * @param border width of border
 	 */
 	void normalize(float border);
 
