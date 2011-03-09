@@ -31,15 +31,6 @@ public:
 	DataVector(size_t size);
 
 	/**
-	 * Constructor: multi-dimensional DataVector with <it>size</it> rows and
-	 * <it>dim</it> columns.
-	 *
-	 * @param size number of elements per dimension
-	 * @param dim dimension of Vector
-	 */
-//	DataVector(size_t size, size_t dim);
-
-	/**
 	 * Create a new DataVector that is a copy of vec.
 	 *
 	 * @param vec Reference to another instance of DataMatrix
@@ -113,7 +104,7 @@ public:
 	 * Corresponds to a resize to size+inc_elems new elements while leaving
 	 * the current vector's size unchanged.
 	 *
-	 * @param inc_nrows Number of additional elements for which storage is to be reserved.
+	 * @param inc_elems Number of additional elements for which storage is to be reserved.
 	 */
 	void addSize(size_t inc_elems);
 
@@ -201,39 +192,6 @@ public:
 	 * @param value New value for element
 	 */
 	void set(size_t i, double value);
-
-	/**
-	 * gets a row of the DataVector
-	 *
-	 * @param row the row that should be read
-	 * @param vec DataVector into which the data is written
-	 */
-// 	void getRow(size_t row, DataVector& vec) const;
-
-	/**
-	 * sets a row of the DataVector
-	 *
-	 * @param row the row that should be written
-	 * @param vec DataVector from which the data is read
-	 */
-// 	void setRow(int row, DataVector& vec);
-
-	/**
-	 * gets a col of the DataVector
-	 *
-	 * @param col the col that should be read
-	 * @param vec DataVector into which the data is written
-	 */
-// 	void getColumn(int col, DataVector& vec) const;
-
-	/**
-	 * sets a row of the DataVector
-	 *
-	 * @param col the row that should be written
-	 * @param vec DataVector from which the data is read
-	 */
-// 	void setColumn(int col, DataVector& vec);
-
 
  	/**
  	 * Adds the values from another DataVector to the current values.
@@ -367,22 +325,6 @@ public:
 	void axpy(double a, DataVector& x);
 
 	/**
-	 * gets a line of the DataVector
-	 *
-	 * @param row the line that should be read
-	 * @param vec DataVector into which the data is written
-	 */
-//	void getLine(int row, DataVector& vec);
-
-	/**
-	 * gets a line of the DataVector
-	 *
-	 * @param row the line that should be read
-	 * @param vec std vector into which the data is written
-	 */
-//	void getLine(int row, std::vector<double>& vec);
-
-	/**
 	 * Returns the dot product of the two vectors.
 	 *
 	 * @param vec Reference to another vector
@@ -449,20 +391,6 @@ public:
 
 
 	/**
-	 * get the dimension of the DataVector
-	 *
-	 * @return dimension of the DataVector
-	 */
-//	size_t getDim() const;
-
-	/**
-	 * gets number of elements in all dimensions
-	 *
-	 * @return number of elements in all dimensions
-	 */
-//	size_t getTotalSize() const;
-
-	/**
 	 * Partitions vector into two classes using a choosen border.
 	 *
 	 * @param threshold value of the border
@@ -470,17 +398,15 @@ public:
 	void partitionClasses(double threshold);
 
 	/**
-	 * Normalizes d-th dimension with border 0.0
+	 * Normalizes vector entries to [0,1]
 	 *
-	 * @param d the dimension that should be normalized
 	 */
 	void normalize();
 
 	/**
-	 * Normalizes d-th dimension with border
+	 * Normalizes vector entries to [border, 1-border]
 	 *
-	 * @param d the dimension that should be normalized
-	 * @param border value ot the border
+	 * @param border width of border
 	 */
 	void normalize(double border);
 
@@ -516,12 +442,10 @@ private:
 	double* data;
 	/// Number of elements of the data vector
 	size_t size;
-	/// number of dimensions of one element in this vector
-//	int dim;
 	/// Number of additional rows for which memory has already been reserved
 	size_t unused;
-    /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
-    size_t inc_elems;
+  /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
+  size_t inc_elems;
 };
 
 #endif /*DATAVECTOR_H_*/
