@@ -66,7 +66,6 @@ public:
 	 *
 	 * @param SparseGrid reference to the sparse grid
 	 * @param trainData reference to DataMatrix that contains the training data
-	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
 	 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	 */

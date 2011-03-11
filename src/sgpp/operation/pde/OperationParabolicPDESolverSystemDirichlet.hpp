@@ -50,7 +50,7 @@ protected:
 	 * applies the PDE's mass matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
+	 * @param result reference to the DataVector into which the result is written
 	 */
 	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result) = 0;
 
@@ -58,7 +58,7 @@ protected:
 	 * applies the PDE's system matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
+	 * @param result reference to the DataVector into which the result is written
 	 */
 	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result) = 0;
 
@@ -66,7 +66,7 @@ protected:
 	 * applies the PDE's mass matrix, on inner grid only
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
+	 * @param result reference to the DataVector into which the result is written
 	 */
 	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result) = 0;
 
@@ -74,7 +74,7 @@ protected:
 	 * applies the PDE's system matrix, on inner grid only
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
+	 * @param result reference to the DataVector into which the result is written
 	 */
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result) = 0;
 
