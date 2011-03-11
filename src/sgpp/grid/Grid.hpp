@@ -112,11 +112,14 @@ public:
 	 * @param dim the grid's dimension
 	 * */
 	static Grid* createSquareRootGrid(size_t dim);
+
 	/**
-	 * creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have |l|<level and li>=l_user
+	 * creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have \f$|l|<level and li>=l_user\f$
+	 *
 	 * @param dim the grid's dimension
 	 * */
 	static Grid* createTruncatedTrapezoidGrid(size_t dim);
+
 	/**
 	 * reads a grid out of a string
 	 *

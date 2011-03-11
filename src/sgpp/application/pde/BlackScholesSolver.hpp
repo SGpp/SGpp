@@ -237,10 +237,11 @@ public:
 	 * Inits the alpha vector with a payoff function of an European call option or put option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+
 	/**
 	 * Inits the screen object
 	 */
@@ -258,7 +259,7 @@ public:
 	 * sets the algorithmic dimensions (the dimensions in which the Up Down
 	 * operations (need for space discretization) should be applied)
 	 *
-	 * @param algoDims std::vector containing the algorithmic dimensions
+	 * @param newAlgoDims std::vector containing the algorithmic dimensions
 	 */
 	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 
@@ -284,7 +285,7 @@ public:
 	 *
 	 * @param alpha the sparse grid's coefficients
 	 * @param tFilename the name of file contain the interpolation error
-	 * @param numTestpoints Number of equal distribute testpoints @money
+	 * @param numTestpoints Number of equal distribute testpoints at money
 	 * @param strike the option's strike
 	 */
 	void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);

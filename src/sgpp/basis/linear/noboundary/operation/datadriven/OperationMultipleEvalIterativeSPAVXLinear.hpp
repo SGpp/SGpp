@@ -24,8 +24,8 @@ namespace sg
  *
  * IMPORTANT REMARK:
  * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
- * 	- data MUST a have even number of points AND it must be transposed
- *  - result MUST have the same size as data points that should be evaluated
+ * @li data MUST a have even number of points AND it must be transposed
+ * @li result MUST have the same size as data points that should be evaluated
  */
 class OperationMultipleEvalIterativeSPAVXLinear : public OperationMultipleEvalVectorizedSP
 {
