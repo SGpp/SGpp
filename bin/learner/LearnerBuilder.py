@@ -247,7 +247,9 @@ class LearnerBuilder(object):
         if self.__specificationDescriptor == None:
             self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
-            self.__learner.specification.setBOperator(self.__learner.grid.createOperationB())
+            self.__learner.specification.setBOperator(
+            self.__learner.grid.createOperationMultipleEval(self.__learner.\
+            dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         return self.__learner
 
 
