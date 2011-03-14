@@ -63,6 +63,7 @@ public:
 	 *
 	 * @param func pointer to coarsening functor
 	 * @param alpha Pointer to DataVector containing the grid's coefficients
+	 * @param numFirstOnly max. number grid points to be coarsened
 	 */
 	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) = 0;
 

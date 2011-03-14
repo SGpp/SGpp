@@ -392,7 +392,7 @@ public:
 	 * sets the algorithmic dimensions (the dimensions in which the Up Down
 	 * operations should be applied)
 	 *
-	 * @param algoDims std::vector containing the algorithmic dimensions
+	 * @param newAlgoDims std::vector containing the algorithmic dimensions
 	 */
 	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 

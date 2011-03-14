@@ -46,6 +46,7 @@ public:
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
+	 * @param the sparse grid's coefficients
 	 * @param a the heat coefficient
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,

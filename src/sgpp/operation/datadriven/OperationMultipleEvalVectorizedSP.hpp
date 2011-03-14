@@ -37,6 +37,8 @@ protected:
 public:
 	/**
 	 * Constructor
+	 *
+	 * @param dataset data set that should be evaluated on the sparse grid
 	 */
 	OperationMultipleEvalVectorizedSP(DataMatrixSP* dataset) {
 		this->dataset_ = dataset;

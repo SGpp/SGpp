@@ -240,7 +240,6 @@ public:
 	 * gets level <i>l</i> in dimension <i>d</i>
 	 *
 	 * @param d the dimension in which the ansatz function should be read
-	 * @param l reference parameter for the level of the ansatz function
 	 */
 	int getLevel(size_t d) const
 	{
@@ -252,7 +251,6 @@ public:
 	 * gets index <i>i</i> in dimension <i>d</i>
 	 *
 	 * @param d the dimension in which the ansatz function should be read
-	 * @param i reference parameter for the index of the ansatz function
 	 */
 	int getIndex(size_t d) const
 	{

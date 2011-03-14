@@ -299,7 +299,7 @@ public:
 	 * @param strike the option's strike
 	 * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
 	 *
-	 * @param number of gridpoints at money
+	 * @return number of gridpoints at money
 	 */
 	size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
