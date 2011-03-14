@@ -36,6 +36,7 @@ public:
 	/**
 	 * Constructor
 	 *
+	 * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
 	 * @param rhs the right hand side for solving the elliptic PDE
 	 */
 	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(Grid& SparseGrid, DataVector& rhs);

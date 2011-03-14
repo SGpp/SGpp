@@ -50,8 +50,8 @@ protected:
 	 * The result is stored dehierarchized in alpha.
 	 *
 	 * @param alpha contains dehierarchized sparse grid coefficients containing the values of the multi dimensional normal distribution after call
-	 * @param std_mu the expected values of the normal distribution for every grid dimension
-	 * @param std_sigma the standard deviation of the normal distribution for every grid dimension
+	 * @param norm_mu the expected values of the normal distribution for every grid dimension
+	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
 	virtual void getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
