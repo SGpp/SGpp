@@ -67,7 +67,7 @@ protected:
 	/// number of algorithmic dimensions
 	const size_t numAlgoDims_;
 	/// max number of parallel stages (dimension recursive calls)
-	static const size_t maxParallelDims_ = 2;
+	static const size_t maxParallelDims_ = 3;
 
 	/**
 	 * Recursive procedure for updown
