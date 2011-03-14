@@ -10,10 +10,8 @@
 namespace sg
 {
 
-StdUpDown::StdUpDown(GridStorage* storage)
+StdUpDown::StdUpDown(GridStorage* storage) : storage(storage), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
-	this->storage = storage;
-	this->algoDims = this->storage->getAlgorithmicDimensions();
 }
 
 StdUpDown::~StdUpDown()
@@ -28,7 +26,7 @@ void StdUpDown::mult(DataVector& alpha, DataVector& result)
 	{
 		#pragma omp single nowait
 		{
-			this->updown(alpha, beta, this->algoDims.size() - 1);
+			this->updown(alpha, beta, this->numAlgoDims_ - 1);
 		}
 	}
 	result.add(beta);
@@ -39,7 +37,7 @@ void StdUpDown::multParallelBuildingBlock(DataVector& alpha, DataVector& result)
 	DataVector beta(result.getSize());
 	result.setAll(0.0);
 
-	this->updown(alpha, beta, this->algoDims.size() - 1);
+	this->updown(alpha, beta, this->numAlgoDims_ - 1);
 
 	result.add(beta);
 }
@@ -54,14 +52,14 @@ void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
 		DataVector result_temp(alpha.getSize());
 		DataVector temp_two(alpha.getSize());
 
-		#pragma omp task shared(alpha, temp, result)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 		{
 			up(alpha, temp, this->algoDims[dim]);
 			updown(temp, result, dim-1);
 		}
 
 
-		#pragma omp task shared(alpha, temp_two, result_temp)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp_two, result_temp)
 		{
 			updown(alpha, temp_two, dim-1);
 			down(temp_two, result_temp, this->algoDims[dim]);
@@ -76,10 +74,10 @@ void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
 		// Terminates dimension recursion
 		DataVector temp(alpha.getSize());
 
-		#pragma omp task shared(alpha, result)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 		up(alpha, result, this->algoDims[dim]);
 
-		#pragma omp task shared(alpha, temp)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp)
 		down(alpha, temp, this->algoDims[dim]);
 
 		#pragma omp taskwait
