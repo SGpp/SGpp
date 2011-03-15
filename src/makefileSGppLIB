@@ -88,7 +88,8 @@ OCLCC=g++
 endif
 ifeq ($(EXT), MPI)
 OBJS:=$(OBJS) MPICommunicator.o GlobalMPIComm.o ConjugateGradientsMPI.o PoissonEquationSolverMPI.o\
-	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o HeatEquationParabolicPDESolverSystemParallelMPI.o
+	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o HeatEquationParabolicPDESolverSystemParallelMPI.o\
+	HeatEquationSolverMPI.o
 endif
 
 default : $(OBJS)
@@ -675,5 +676,8 @@ PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)algorith
 HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
 
+HeatEquationSolverMPI.o : $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
+	
 clean:
 	rm *
