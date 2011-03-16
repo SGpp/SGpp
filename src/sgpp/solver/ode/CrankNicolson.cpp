@@ -7,6 +7,7 @@
 
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+using namespace sg::base;
 
 namespace sg
 {

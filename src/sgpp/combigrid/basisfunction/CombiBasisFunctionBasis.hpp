@@ -9,6 +9,7 @@
 #define COMBIBASISFUNCTION_HPP_
 
 #include "combigrid/utils/combigrid_ultils.hpp"
+using namespace sg::base;
 
 using namespace std;
 

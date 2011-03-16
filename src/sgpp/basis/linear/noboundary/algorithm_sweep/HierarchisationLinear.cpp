@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 namespace detail
 {
@@ -64,3 +66,4 @@ void HierarchisationLinear::rec(DataVector& source, DataVector& result, grid_ite
 }	// namespace detail
 
 }	// namespace sg
+}

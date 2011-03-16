@@ -28,6 +28,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * abstract base class for all types grids used in sgpp
@@ -414,6 +416,7 @@ private:
 	static OperationEval* evalOp;
 };
 
+}
 }
 
 #endif /* GRID_HPP */

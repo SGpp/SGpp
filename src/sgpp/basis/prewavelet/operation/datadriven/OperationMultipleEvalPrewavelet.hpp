@@ -29,6 +29,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationMultipleEval for a grids with prewavelet ansatzfunctions without boundaries
@@ -58,6 +60,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALPREWAVELET_HPP */

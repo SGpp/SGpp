@@ -12,6 +12,7 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
 {

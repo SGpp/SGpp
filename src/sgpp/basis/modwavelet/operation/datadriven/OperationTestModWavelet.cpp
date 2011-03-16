@@ -13,6 +13,7 @@
 #include "data/DataVector.hpp"
 
 #include "exception/operation_exception.hpp"
+using namespace sg::base;
 
 namespace sg
 {

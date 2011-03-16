@@ -29,6 +29,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * GridGenerator for prewavelet grids without boundaries
@@ -75,6 +77,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* PREWAVELETGRIDGENERATOR_HPP */

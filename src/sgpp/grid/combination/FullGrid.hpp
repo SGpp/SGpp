@@ -6,6 +6,7 @@
 #include "grid/GridStorage.hpp"
 #include "grid/common/BoundingBox.hpp"
 using namespace std;
+using namespace sg::base;
 namespace sg{
 
 /** the arrays which contains the precalculated values of power of two*/

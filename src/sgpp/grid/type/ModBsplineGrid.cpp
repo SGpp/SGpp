@@ -24,6 +24,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 ModBsplineGrid::ModBsplineGrid(std::istream& istr) : Grid(istr), degree(-1)
 {
@@ -155,4 +157,5 @@ OperationConvert* ModBsplineGrid::createOperationConvert()
 	throw factory_exception("Unsupported operation");
 }
 
+}
 }

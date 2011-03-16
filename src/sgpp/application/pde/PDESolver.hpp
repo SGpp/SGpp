@@ -17,6 +17,7 @@
 #include "tools/common/GridPrinter.hpp"
 
 #include <vector>
+using namespace sg::base;
 
 namespace sg
 {

@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * grid with linear base functions with boundaries
@@ -67,6 +69,7 @@ public:
 	static Grid* unserialize(std::istream& istr);
 };
 
+}
 }
 
 #endif /* LINEARBOUNDARYGRID_HPP */

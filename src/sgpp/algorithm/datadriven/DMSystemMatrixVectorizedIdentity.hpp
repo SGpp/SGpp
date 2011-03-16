@@ -15,6 +15,7 @@
 #include "tools/common/SGppStopwatch.hpp"
 
 #include <string>
+using namespace sg::base;
 
 namespace sg
 {

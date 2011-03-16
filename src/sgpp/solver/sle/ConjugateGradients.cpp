@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "solver/sle/ConjugateGradients.hpp"
+using namespace sg::base;
 
 namespace sg
 {

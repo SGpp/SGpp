@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * grid with linear base functions
@@ -76,6 +78,7 @@ public:
 	static Grid* unserialize(std::istream& istr);
 };
 
+}
 }
 
 #endif /* LINEARGRID_HPP */

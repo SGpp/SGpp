@@ -6,6 +6,7 @@
 // @author Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "application/finance/VariableDiscountFactor.hpp"
+using namespace sg::base;
 
 namespace sg
 {

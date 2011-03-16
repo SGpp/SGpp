@@ -13,6 +13,7 @@
 #include "data/DataMatrix.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
+using namespace sg::base;
 
 namespace sg
 {

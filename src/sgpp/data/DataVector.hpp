@@ -13,6 +13,7 @@
 #include <vector>
 #include "data/DataVectorDefinition.hpp"
 
+
 /**
  * A class to store one-dimensional data.
  * Typically, an object of type DataVector will contain an array

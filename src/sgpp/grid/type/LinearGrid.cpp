@@ -52,6 +52,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 LinearGrid::LinearGrid(std::istream& istr) : Grid(istr)
 {
@@ -238,4 +240,5 @@ OperationConvert* LinearGrid::createOperationConvert()
 	throw factory_exception("Unsupported operation");
 }
 
+}
 }

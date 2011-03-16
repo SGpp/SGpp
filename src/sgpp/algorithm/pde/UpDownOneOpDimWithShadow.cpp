@@ -22,6 +22,7 @@
 
 #include "algorithm/pde/UpDownOneOpDimWithShadow.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+using namespace sg::base;
 
 namespace sg
 {

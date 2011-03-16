@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.hpp"
+using namespace sg::base;
 
 namespace sg
 {

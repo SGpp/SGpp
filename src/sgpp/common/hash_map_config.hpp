@@ -12,6 +12,7 @@
 #ifdef KNF
 #include <ext/hash_map>
 namespace sg {
+namespace base {
 	template<class key>
 	class LRBSGHasher;
 }
@@ -58,11 +59,13 @@ namespace std {
 // forward declaration of hash function and hash comparison function
 #ifndef KNF
 namespace sg {
+namespace base {
 	template<class key>
 	struct hash { };
 
 	template<class key>
 	struct eqIndex { };
+}
 }
 #endif
 

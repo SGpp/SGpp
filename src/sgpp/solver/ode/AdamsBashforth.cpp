@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+using namespace sg::base;
 
 namespace sg
 {

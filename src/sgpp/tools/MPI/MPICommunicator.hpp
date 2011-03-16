@@ -15,6 +15,7 @@
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 #include "grid/Grid.hpp"
+using namespace sg::base;
 
 namespace sg
 {

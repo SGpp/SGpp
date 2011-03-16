@@ -12,6 +12,7 @@
 #include "data/DataVectorSP.hpp"
 
 #include <iostream>
+using namespace sg::base;
 
 namespace sg
 {

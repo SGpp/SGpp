@@ -13,6 +13,7 @@
 #include "data/DataMatrix.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
+using namespace sg::base;
 
 namespace sg
 {

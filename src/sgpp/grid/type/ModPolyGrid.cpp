@@ -24,6 +24,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 ModPolyGrid::ModPolyGrid(std::istream& istr) : Grid(istr), degree(-1)
 {
@@ -159,4 +161,5 @@ OperationConvert* ModPolyGrid::createOperationConvert()
 	throw factory_exception("Unsupported operation");
 }
 
+}
 }

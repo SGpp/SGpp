@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 #ifdef WINDOWS
 ScreenOutput::ScreenOutput()
@@ -135,4 +137,5 @@ void ScreenOutput::writeEmptyLines(size_t numLines)
 	}
 }
 
+}
 }

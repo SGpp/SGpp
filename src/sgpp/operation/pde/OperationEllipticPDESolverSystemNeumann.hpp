@@ -9,6 +9,7 @@
 #define OPERATIONELLITPICPDESOLVERSYSTEMNEUMANN_HPP
 
 #include "operation/pde/OperationEllipticPDESolverSystem.hpp"
+using namespace sg::base;
 
 namespace sg
 {

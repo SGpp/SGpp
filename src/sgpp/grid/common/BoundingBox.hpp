@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * struct that defines the boundaries for one specific dimension
@@ -147,6 +149,7 @@ public:
 	bool hasDirichletBoundaryRight(size_t dimension);
 };
 
+}
 }
 
 #endif /* BOUNDINGBOX_HPP */

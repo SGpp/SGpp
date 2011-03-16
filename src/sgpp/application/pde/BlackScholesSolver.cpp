@@ -22,6 +22,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::base;
 
 namespace sg
 {

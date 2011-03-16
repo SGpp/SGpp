@@ -16,6 +16,7 @@
 // ------ SGpp includes -------------
 #include "data/DataVector.hpp"
 #include "grid/GridStorage.hpp"
+using namespace sg::base;
 
 using namespace std;
 
@@ -88,20 +89,20 @@ namespace combigrid{
 
 		/** create SGpp grid storage out of the combi grid <br>
 		 * @return the created grid storage for the SGpp grid */
-		virtual sg::GridStorage* createSGppGridStorage() const = 0;
+		virtual GridStorage* createSGppGridStorage() const = 0;
 
 		/** in this step the full grid values will be projected to the sparse grid space
 		 * @param gridstorageSGpp  , SGpp grid storage
 		 * @param alpha , the coefficient vector which will be overwritten
 		 * @param minAlpha , the minimum of all points, if this argument is set
 		 * @param maxAlpha , the maximum of all points, if this argument is set*/
-		virtual void reCompose(sg::GridStorage* gridstorageSGpp , DataVector* alpha,
+		virtual void reCompose(GridStorage* gridstorageSGpp , DataVector* alpha,
 				DataVector* minAlpha = NULL , DataVector* maxAlpha = NULL) const = 0;
 
 		/** takes the SGpp sparse grid space and projects to the combi grid
 		 * @param gridstorageSGpp , SGpp grid storage
 		 * @param alpha , the coefficient vector with which the combi grid values will be set */
-		virtual void deCompose(sg::GridStorage* gridstorageSGpp , DataVector* alpha) = 0;
+		virtual void deCompose(GridStorage* gridstorageSGpp , DataVector* alpha) = 0;
 
 		/** return the combi kernel, needed for the combination of the full grids */
 		inline const CombiGridKernelD* getCombiKernel() const { return combikernel_; }

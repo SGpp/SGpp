@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationTest for a grids with linear basis ansatzfunctions with
@@ -44,6 +46,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONTESTLINEARBOUNDARY_HPP */

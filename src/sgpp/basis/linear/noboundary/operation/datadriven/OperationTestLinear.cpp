@@ -12,6 +12,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
 
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
 {

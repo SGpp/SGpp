@@ -12,6 +12,7 @@
 #include "grid/Grid.hpp"
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "operation/common/OperationMatrix.hpp"
+using namespace sg::base;
 
 namespace sg
 {

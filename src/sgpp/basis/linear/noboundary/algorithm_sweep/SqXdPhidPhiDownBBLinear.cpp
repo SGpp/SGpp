@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {

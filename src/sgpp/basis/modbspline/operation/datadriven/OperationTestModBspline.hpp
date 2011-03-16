@@ -12,6 +12,7 @@
 #include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"
+using namespace sg::base;
 
 namespace sg
 {

@@ -11,6 +11,7 @@
 #include "operation/pde/OperationEllipticPDESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/common/DirichletGridConverter.hpp"
+using namespace sg::base;
 
 namespace sg
 {

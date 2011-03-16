@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
 {
@@ -39,4 +41,5 @@ double SurplusRefinementFunctor::getRefinementThreshold()
 	return this->threshold;
 }
 
+}
 }

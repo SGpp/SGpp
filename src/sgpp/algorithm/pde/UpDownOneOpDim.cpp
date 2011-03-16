@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
+using namespace sg::base;
 
 namespace sg
 {

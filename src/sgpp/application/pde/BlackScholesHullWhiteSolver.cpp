@@ -20,6 +20,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::base;
 
 namespace sg
 {
@@ -121,10 +122,10 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 
-		//sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[2];
+		//DimensionBoundary* myBoundaries = new DimensionBoundary[2];
 		BoundingBox* t = this->myGrid->getBoundingBox();
 
-		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+		DimensionBoundary* myBoundaries = new DimensionBoundary[dim];
 
 		myBoundaries[0].leftBoundary = t->getIntervalOffset(0);
 		myBoundaries[0].rightBoundary = t->getIntervalOffset(0) + t->getIntervalWidth(0);

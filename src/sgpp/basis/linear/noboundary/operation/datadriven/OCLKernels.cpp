@@ -16,6 +16,7 @@
 
 // include OpenCL
 #include "CL/cl.h"
+using namespace sg::base;
 
 namespace sg
 {

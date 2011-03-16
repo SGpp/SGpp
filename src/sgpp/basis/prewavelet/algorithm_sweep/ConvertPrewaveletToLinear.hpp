@@ -29,6 +29,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 namespace detail
 {
@@ -227,5 +229,6 @@ public:
 } // namespace detail
 
 } // namespace sg
+}
 
 #endif /* CONVERTPREWAVELETTOLINEAR_HPP */

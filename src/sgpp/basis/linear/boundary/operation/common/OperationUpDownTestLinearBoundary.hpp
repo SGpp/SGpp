@@ -26,6 +26,7 @@
 #include "operation/common/OperationMatrix.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::base;
 
 namespace sg
 {

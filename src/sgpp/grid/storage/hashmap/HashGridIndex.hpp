@@ -22,6 +22,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This Class represents one Gridpoint.
@@ -726,6 +728,7 @@ public:
 };
 #endif
 
+}
 }
 
 #endif /* HASHGRIDINDEX_HPP */

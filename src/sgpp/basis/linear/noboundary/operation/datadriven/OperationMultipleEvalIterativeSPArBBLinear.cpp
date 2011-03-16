@@ -8,6 +8,7 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #include "exception/operation_exception.hpp"
+using namespace sg::base;
 
 namespace sg
 {

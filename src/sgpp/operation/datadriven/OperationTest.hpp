@@ -10,6 +10,7 @@
 
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
+using namespace sg::base;
 
 #ifdef WINDOWS
 #pragma warning(disable: 4267)

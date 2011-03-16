@@ -28,6 +28,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * grid with prewavelet base functions
@@ -74,6 +76,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* PREWAVELETGRID_HPP */

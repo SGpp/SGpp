@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This provides an implementation of the standradized normal
@@ -64,6 +66,7 @@ public:
 	double getDensity(const double x, const double mu, const double sigma);
 };
 
+}
 }
 
 #endif /* STDNORMALDISTRIBUTION_HPP */

@@ -35,6 +35,7 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 #include<iostream>
 

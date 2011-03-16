@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Exception that is thrown in case of a grid operation failure
@@ -63,6 +65,7 @@ protected:
 
 };
 
+}
 }
 
 #endif /* OPERATION_EXCEPTION_HPP */

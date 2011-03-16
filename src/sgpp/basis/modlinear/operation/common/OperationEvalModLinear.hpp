@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationEval for a grids with mod linear basis ansatzfunctions with
@@ -42,6 +44,7 @@ protected:
 
 };
 
+}
 }
 
 #endif /* OPERATIONEVELMODLINEAR_HPP */

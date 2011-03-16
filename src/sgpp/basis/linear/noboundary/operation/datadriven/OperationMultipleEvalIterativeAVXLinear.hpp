@@ -11,6 +11,7 @@
 #include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+using namespace sg::base;
 
 namespace sg
 {

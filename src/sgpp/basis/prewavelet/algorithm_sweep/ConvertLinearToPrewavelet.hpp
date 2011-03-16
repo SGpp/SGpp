@@ -28,6 +28,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 namespace detail
 {
@@ -266,5 +268,6 @@ public:
 } // namespace detail
 
 } // namespace sg
+}
 
 #endif /* CONVERTLINEARTOPREWAVELET_HPP */

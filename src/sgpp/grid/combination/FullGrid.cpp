@@ -1,6 +1,7 @@
 #include "FullGrid.hpp"
 #include "LinearFullGrid.hpp"
 using namespace std;
+using namespace sg::base;
 namespace sg{
 
 

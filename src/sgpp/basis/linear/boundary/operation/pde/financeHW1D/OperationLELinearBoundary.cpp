@@ -14,6 +14,7 @@
 #include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::base;
 
 namespace sg
 {

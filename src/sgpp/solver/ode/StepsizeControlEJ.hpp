@@ -9,6 +9,7 @@
 
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
+using namespace sg::base;
 
 namespace sg
 {

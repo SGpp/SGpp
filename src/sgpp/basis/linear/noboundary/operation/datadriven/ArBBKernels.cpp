@@ -14,6 +14,7 @@
 #include <string>
 
 #include <arbb.hpp>
+using namespace sg::base;
 
 namespace sg
 {

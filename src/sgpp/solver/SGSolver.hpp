@@ -12,6 +12,7 @@
 #include "operation/common/OperationMatrix.hpp"
 #include "solver/SGSolverInfo.hpp"
 #include "solver/SGSolverResult.hpp"
+using namespace sg::base;
 
 namespace sg
 {

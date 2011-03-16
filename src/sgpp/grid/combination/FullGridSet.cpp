@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+using namespace sg::base;
 
 namespace sg{
 

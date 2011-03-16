@@ -14,6 +14,7 @@
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
+using namespace sg::base;
 
 namespace sg
 {

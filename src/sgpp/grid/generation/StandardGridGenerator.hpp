@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * GridGenerator for standard grids without boundaries
@@ -48,6 +50,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* STANDARDGRIDGEMERATOR_HPP */

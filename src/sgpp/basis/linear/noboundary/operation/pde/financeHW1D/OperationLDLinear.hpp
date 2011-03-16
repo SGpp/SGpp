@@ -9,6 +9,7 @@
 #define OPERATIONLDLINEAR_HPP
 
 #include "algorithm/pde/StdUpDown.hpp"
+using namespace sg::base;
 
 namespace sg
 {
