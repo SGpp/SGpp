@@ -9,6 +9,7 @@
 #define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP
 
 #include "operation/pde/OperationEllipticPDESolverSystemDirichlet.hpp"
+using namespace sg::base;
 
 namespace sg
 {

@@ -10,6 +10,7 @@
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
 {

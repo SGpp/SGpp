@@ -18,6 +18,7 @@
 #include <utility>
 
 namespace sg {
+namespace base {
 
 /**
  * Basic algorithm for getting all affected basis functions.
@@ -774,6 +775,7 @@ protected:
 //
 //};
 
+}
 }
 
 #endif /* ALGORITHMEVALUATIONTRANSPOSED_HPP */

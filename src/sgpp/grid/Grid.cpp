@@ -28,6 +28,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 Grid* Grid::createLinearGrid(size_t dim)
 {
@@ -268,4 +270,5 @@ void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
 	this->storage->setAlgorithmicDimensions(newAlgoDims);
 }
 
+}
 }

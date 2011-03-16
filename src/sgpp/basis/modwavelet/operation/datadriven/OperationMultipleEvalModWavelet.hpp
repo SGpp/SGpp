@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationMultipleEval for a grids with mod wavelet basis ansatzfunctions
@@ -42,6 +44,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALMODWAVELET_HPP */

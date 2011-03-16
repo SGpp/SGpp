@@ -51,6 +51,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) : Grid(istr)
 {
@@ -232,4 +234,5 @@ OperationConvert* LinearBoundaryGrid::createOperationConvert()
 	throw factory_exception("Unsupported operation");
 }
 
+}
 }

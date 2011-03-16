@@ -18,6 +18,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
 {
@@ -43,4 +45,5 @@ void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
 	}
 }
 
+}
 }

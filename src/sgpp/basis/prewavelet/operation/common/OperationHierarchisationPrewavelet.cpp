@@ -37,6 +37,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationHierarchisationPrewavelet::doHierarchisation(
 		DataVector& node_values)
@@ -105,4 +107,5 @@ void OperationHierarchisationPrewavelet::shrinkGrid()
 	}
 }
 
+}
 }

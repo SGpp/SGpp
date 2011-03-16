@@ -11,6 +11,7 @@
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::base;
 
 namespace sg
 {

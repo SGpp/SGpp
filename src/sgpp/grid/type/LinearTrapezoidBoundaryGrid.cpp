@@ -53,6 +53,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(std::istream& istr) : Grid(istr)
 {
@@ -240,4 +242,5 @@ OperationConvert* LinearTrapezoidBoundaryGrid::createOperationConvert()
 }
 
 
+}
 }

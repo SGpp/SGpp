@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationHierarchisationModBspline::doHierarchisation(DataVector& node_values)
 {
@@ -27,4 +29,5 @@ void OperationHierarchisationModBspline::doDehierarchisation(DataVector& alpha)
 	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
+}
 }

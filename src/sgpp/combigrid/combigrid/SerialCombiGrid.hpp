@@ -10,6 +10,7 @@
 
 #include "combigrid/combigrid/AbstractCombiGrid.hpp"
 #include "combigrid/converter/CombiSGppConverter.hpp"
+using namespace sg::base;
 
 using namespace std;
 
@@ -47,14 +48,14 @@ namespace combigrid{
 		virtual void eval( const std::vector< std::vector<double> >& coords , std::vector<double>& results ) const ;
 
 		/** see supercalss for docu */
-		virtual sg::GridStorage* createSGppGridStorage() const ;
+		virtual GridStorage* createSGppGridStorage() const ;
 
 		/** see supercalss for docu */
-		virtual void reCompose(sg::GridStorage* gridstorageSGpp , DataVector* alpha,
+		virtual void reCompose(GridStorage* gridstorageSGpp , DataVector* alpha,
 				DataVector* minAlpha = NULL , DataVector* maxAlpha = NULL) const ;
 
 		/** see supercalss for docu */
-		virtual void deCompose(sg::GridStorage* gridstorageSGpp , DataVector* alpha) ;
+		virtual void deCompose(GridStorage* gridstorageSGpp , DataVector* alpha) ;
 
     };
 }

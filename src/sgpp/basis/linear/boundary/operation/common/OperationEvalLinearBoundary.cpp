@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>& point)
 {
@@ -36,5 +38,6 @@ double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>&
 	return result;
 }
 
+}
 }
 

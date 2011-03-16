@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationMultipleEval for a grids with mod poly basis ansatzfunctions
@@ -50,6 +52,7 @@ protected:
 	SModPolyBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALMODPOLY_HPP */

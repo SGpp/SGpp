@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Grid with modified Bspline basis functions
@@ -75,6 +77,7 @@ protected:
 
 };
 
+}
 }
 
 #endif /* MODBSPLINEGRID_HPP */

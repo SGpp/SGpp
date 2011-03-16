@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Operation that evaluates the current sparse grid function defined
@@ -61,6 +63,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* OPERATIONEVAL_HPP */

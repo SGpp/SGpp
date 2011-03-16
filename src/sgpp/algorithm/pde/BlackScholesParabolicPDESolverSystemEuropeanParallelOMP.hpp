@@ -9,6 +9,7 @@
 #define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELOMP_HPP
 
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
+using namespace sg::base;
 
 namespace sg
 {

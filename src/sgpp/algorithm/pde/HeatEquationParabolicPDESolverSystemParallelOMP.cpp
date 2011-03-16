@@ -13,6 +13,7 @@
 
 #ifdef _OPENMP
 #include "omp.h"
+using namespace sg::base;
 #endif
 
 namespace sg

@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * grid with modified polynomial base functions
@@ -72,6 +74,7 @@ protected:
 	size_t degree;
 };
 
+}
 }
 
 #endif /* MODPOLYGRID_HPP */

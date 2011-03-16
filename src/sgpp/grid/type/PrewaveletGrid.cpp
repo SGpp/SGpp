@@ -42,6 +42,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 PrewaveletGrid::PrewaveletGrid(std::istream& istr) : Grid(istr)
 {
@@ -169,4 +171,5 @@ OperationConvert* PrewaveletGrid::createOperationConvert()
 	return new OperationConvertPrewavelet(this->storage,this->shadowStorage);
 }
 
+}
 }

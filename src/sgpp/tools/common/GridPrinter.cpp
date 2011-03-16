@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 GridPrinter::GridPrinter(Grid& SparseGrid): myGrid(&SparseGrid)
 {
@@ -203,4 +205,5 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha, std::string tFi
 	fileout.close();
 }
 
+}
 }

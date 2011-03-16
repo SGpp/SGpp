@@ -22,6 +22,7 @@
 #include "algorithm/common/sweep.hpp"
 
 #include <iostream>
+using namespace sg::base;
 
 namespace sg
 {

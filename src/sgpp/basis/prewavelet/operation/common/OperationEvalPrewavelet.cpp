@@ -32,6 +32,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 double OperationEvalPrewavelet::eval(DataVector& alpha,
 		std::vector<double>& point)
@@ -86,4 +88,5 @@ double OperationEvalPrewavelet::integrate(DataVector& alpha)
 	return result;
 }
 
+}
 }

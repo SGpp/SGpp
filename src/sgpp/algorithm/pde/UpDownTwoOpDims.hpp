@@ -14,6 +14,7 @@
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
+using namespace sg::base;
 
 namespace sg
 {

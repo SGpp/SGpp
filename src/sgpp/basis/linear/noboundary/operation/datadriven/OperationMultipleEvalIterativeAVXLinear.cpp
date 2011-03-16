@@ -18,6 +18,7 @@
 #include <immintrin.h>
 #else
 #include "common/avxintrin_emu.h"
+using namespace sg::base;
 #endif
 
 union doubleAbsMaskAVX

@@ -13,6 +13,7 @@
 #include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::base;
 
 namespace sg
 {

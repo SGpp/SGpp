@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 namespace detail
 {
@@ -53,3 +55,4 @@ void HierarchisationLinearBoundary::operator()(DataVector& source, DataVector& r
 }	// namespace detail
 
 }	// namespace sg
+}

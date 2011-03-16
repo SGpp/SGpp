@@ -18,6 +18,7 @@
 #include <sstream>
 #include <fstream>
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
 {

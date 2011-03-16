@@ -11,6 +11,7 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/Grid.hpp"
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
 {

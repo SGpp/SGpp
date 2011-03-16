@@ -17,6 +17,7 @@
 #ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
+using namespace sg::base;
 
 union doubleAbsMaskHybrid
 {

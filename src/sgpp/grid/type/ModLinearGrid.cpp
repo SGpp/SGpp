@@ -25,6 +25,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 ModLinearGrid::ModLinearGrid(std::istream& istr) : Grid(istr)
 {
@@ -149,4 +151,5 @@ OperationConvert* ModLinearGrid::createOperationConvert()
 	throw factory_exception("Unsupported operation");
 }
 
+}
 }

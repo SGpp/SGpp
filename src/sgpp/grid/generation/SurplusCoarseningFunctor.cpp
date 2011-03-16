@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num, double threshold) : alpha(alpha), removements_num(removements_num), threshold(threshold)
 {
@@ -37,4 +39,5 @@ double SurplusCoarseningFunctor::getCoarseningThreshold()
 	return this->threshold;
 }
 
+}
 }

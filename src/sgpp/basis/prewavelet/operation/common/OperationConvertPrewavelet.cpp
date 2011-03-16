@@ -38,6 +38,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationConvertPrewavelet::doConvertToLinear(
 		DataVector& alpha)
@@ -65,4 +67,5 @@ void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha)
 	}
 }
 
+}
 }

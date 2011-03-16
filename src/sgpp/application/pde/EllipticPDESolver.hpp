@@ -9,6 +9,7 @@
 #define ELLIPTICPDESOLVER_HPP
 
 #include "application/pde/PDESolver.hpp"
+using namespace sg::base;
 
 namespace sg
 {

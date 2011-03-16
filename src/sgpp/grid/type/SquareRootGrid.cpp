@@ -24,6 +24,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 SquareRootGrid::SquareRootGrid(std::istream& istr) : Grid(istr)
 {
@@ -74,5 +76,6 @@ OperationConvert* SquareRootGrid::createOperationConvert()
 	throw factory_exception("Unsupported operation");
 }
 
+}
 }
 

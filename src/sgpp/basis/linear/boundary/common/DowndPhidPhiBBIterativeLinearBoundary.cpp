@@ -7,6 +7,7 @@
 
 #include "basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.hpp"
 #include "grid/common/BoundingBox.hpp"
+using namespace sg::base;
 
 namespace sg
 {

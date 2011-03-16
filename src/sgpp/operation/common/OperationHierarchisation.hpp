@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements the hierarchisation and dehierarchisation on the sparse grid
@@ -44,6 +46,7 @@ public:
 	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
 
+}
 }
 
 #endif /* OPERATIONHIERARCHISATION_HPP */

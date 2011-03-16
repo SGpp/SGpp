@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 StandardGridGenerator::StandardGridGenerator(GridStorage* storage) : storage(storage)
 {
@@ -68,4 +70,5 @@ size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int 
 	return 0;
 }
 
+}
 }

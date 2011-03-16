@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de) Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {

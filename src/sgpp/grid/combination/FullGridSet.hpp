@@ -7,6 +7,7 @@
 #include "grid/Grid.hpp"
 #include "grid/GridStorage.hpp"
 #include "grid/common/BoundingBox.hpp"
+using namespace sg::base;
 
 using namespace std;
 

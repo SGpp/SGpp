@@ -7,6 +7,7 @@
 
 #include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
 #include "exception/operation_exception.hpp"
+using namespace sg::base;
 
 namespace sg
 {

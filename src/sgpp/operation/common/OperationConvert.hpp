@@ -32,6 +32,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Operation that cpnverts a given basis into the normal, linear hat basis and vice versa
@@ -62,6 +64,7 @@ public:
 	virtual void doConvertFromLinear(DataVector& alpha) = 0;
 };
 
+}
 }
 
 #endif /* OPERATIONCONVERT_HPP */

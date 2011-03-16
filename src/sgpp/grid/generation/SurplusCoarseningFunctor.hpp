@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * A coarsening functor, removing points according to the minimal absolute values in a DataVector provided.
@@ -55,6 +57,7 @@ protected:
 	double threshold;
 };
 
+}
 }
 
 #endif /* SURPLUSCOARSENINGFUNCTOR_HPP */

@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "tools/MPI/MPICommunicator.hpp"
+using namespace sg::base;
 
 namespace sg
 {

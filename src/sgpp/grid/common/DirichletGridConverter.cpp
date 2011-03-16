@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 DirichletGridConverter::DirichletGridConverter() : numTotalGridPoints(0), numInnerGridPoints(0), conCoefArray(NULL), bFirstTime(true)
 {
@@ -180,4 +182,5 @@ void DirichletGridConverter::updateBoundaryCoefs(DataVector& BoundaryCoefs, Data
 	}
 }
 
+}
 }

@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  *	OS-independent (per Preprocessor) version of a stopwatch
@@ -62,6 +64,7 @@ public:
 	double stop();
 };
 
+}
 }
 
 #endif	/* SGPPSTOPWATCH_H */

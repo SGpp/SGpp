@@ -14,6 +14,7 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+using namespace sg::base;
 
 namespace sg
 {

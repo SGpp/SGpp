@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 namespace detail
 {
@@ -74,5 +76,6 @@ protected:
 }	// namespace detail
 
 }	// namespace sg
+}
 
 #endif /* HIERARCHISATIONLINEAR_HPP */

@@ -9,6 +9,7 @@
 #define OPERATIONLAPLACELINEARBOUNDARY_HPP
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
+using namespace sg::base;
 
 namespace sg
 {

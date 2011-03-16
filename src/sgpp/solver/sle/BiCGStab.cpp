@@ -7,6 +7,7 @@
 
 #include "solver/sle/BiCGStab.hpp"
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
 {

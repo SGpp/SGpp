@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 SGppStopwatch::SGppStopwatch()
 {
@@ -76,4 +78,5 @@ double SGppStopwatch::stop()
 #endif
 }
 
+}
 }

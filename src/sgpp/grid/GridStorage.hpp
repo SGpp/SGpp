@@ -13,6 +13,7 @@
 #include "grid/storage/hashmap/HashGridIterator.hpp"
 
 namespace sg {
+namespace base {
 
 /**
  * Main typedef for GridIndex
@@ -23,6 +24,7 @@ typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
  */
 typedef HashGridStorage<GridIndex> GridStorage;
 
+}
 }
 
 #endif /* GRIDSTORAGE_HPP */

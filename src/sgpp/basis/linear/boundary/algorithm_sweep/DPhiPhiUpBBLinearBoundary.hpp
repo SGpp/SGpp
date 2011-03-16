@@ -12,6 +12,7 @@
 #include "data/DataVector.hpp"
 
 #include "basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {

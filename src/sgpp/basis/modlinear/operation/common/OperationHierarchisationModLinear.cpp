@@ -18,6 +18,8 @@
 
 namespace sg
 {
+namespace base
+{
 /**
  * Implements the hierarchisation on a sprase grid with mod linear base functions
  *
@@ -56,4 +58,5 @@ void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha)
 	}
 }
 
+}
 }

@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {

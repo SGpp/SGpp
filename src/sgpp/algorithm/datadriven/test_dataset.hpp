@@ -14,6 +14,7 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+using namespace sg::base;
 
 namespace sg {
 

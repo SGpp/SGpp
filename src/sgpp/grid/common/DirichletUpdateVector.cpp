@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 DirichletUpdateVector::DirichletUpdateVector(GridStorage* storage): myBoundingBox(storage->getBoundingBox()), storage(storage)
 {
@@ -76,5 +78,6 @@ void DirichletUpdateVector::multiplyBoundaryVector(DataVector& updateVector,Data
 			updateVector.set(i, updateVector.get(i)* factor.get(i));
 		}
 	}
+}
 }
 }

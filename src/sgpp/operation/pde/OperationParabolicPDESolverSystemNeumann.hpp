@@ -9,6 +9,7 @@
 #define OPERATIONPARABOLICPDESOLVERSYSTEMNEUMANN_HPP
 
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
+using namespace sg::base;
 
 namespace sg
 {

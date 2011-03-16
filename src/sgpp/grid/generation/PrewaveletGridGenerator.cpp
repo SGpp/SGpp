@@ -32,6 +32,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * An adaptive grid with prewavelet ansatz functions requires for operations
@@ -297,5 +299,6 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 		unsigned int maxLevel)
 {
 	return 0;
+}
 }
 }

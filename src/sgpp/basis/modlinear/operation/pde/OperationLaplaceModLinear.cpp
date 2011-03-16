@@ -13,6 +13,7 @@
 #include "basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::base;
 
 namespace sg
 {

@@ -27,6 +27,7 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+using namespace sg::base;
 
 namespace sg
 {

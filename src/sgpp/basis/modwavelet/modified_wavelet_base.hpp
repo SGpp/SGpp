@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Modified Wavelet basis functions.
@@ -46,6 +48,7 @@ class modified_wavelet_base
 
 };
 
+}
 }
 
 #endif /* MODIFIED_WAVELET_BASE_HPP */

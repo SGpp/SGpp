@@ -20,6 +20,7 @@
 #include <iostream>
 
 namespace sg {
+namespace base {
 
 /**
  * Abstract implementation for multiple function evaluations. In Data Mining
@@ -111,6 +112,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* ALGORTIHMMULTIPLEEVALUATION_HPP */

@@ -10,6 +10,7 @@
 
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
 #include "combigrid/utils/combigrid_ultils.hpp"
+using namespace sg::base;
 
 namespace combigrid{
 

@@ -9,6 +9,7 @@
 #define OPERATIONGAMMALOGLINEAR_HPP
 
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
+using namespace sg::base;
 
 namespace sg
 {

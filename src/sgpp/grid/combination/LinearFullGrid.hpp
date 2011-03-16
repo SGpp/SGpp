@@ -2,6 +2,7 @@
 #define LINEARFULLGRID_HPP
 
 #include "FullGrid.hpp"
+using namespace sg::base;
 
 namespace sg{
 

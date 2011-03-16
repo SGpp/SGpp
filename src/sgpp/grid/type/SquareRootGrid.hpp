@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * grid with linear base functions with boundaries, pentagon cut
@@ -71,6 +73,7 @@ public:
 	static Grid* unserialize(std::istream& istr);
 };
 
+}
 }
 
 #endif /* SQUAREROOTGRID_HPP_ */

@@ -24,6 +24,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(std::istream& istr) : Grid(istr)
 {
@@ -74,5 +76,6 @@ OperationConvert* TruncatedTrapezoidGrid::createOperationConvert()
 	throw factory_exception("Unsupported operation");
 }
 
+}
 }
 

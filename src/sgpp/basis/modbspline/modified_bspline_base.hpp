@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Modified B-Spline basis functions.
@@ -74,6 +76,7 @@ class modified_bspline_base
 
 };
 
+}
 }
 
 #endif /* MODIFIED_BSPLINE_BASE_HPP */

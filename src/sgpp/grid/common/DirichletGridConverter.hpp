@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class handles the conversion of a boundary grid with dirichlet
@@ -94,6 +96,7 @@ public:
 	void calcInnerCoefs(DataVector& BoundaryCoefs, DataVector& InnerCoefs);
 };
 
+}
 }
 
 #endif /* DIRICHLETGRIDCONVERTER_HPP */

@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "sgpp.hpp"
+using namespace sg::base;
 
 namespace sg {
 

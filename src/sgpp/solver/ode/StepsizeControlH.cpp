@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+using namespace sg::base;
 
 namespace sg
 {

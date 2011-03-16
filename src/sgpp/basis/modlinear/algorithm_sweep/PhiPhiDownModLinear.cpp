@@ -6,6 +6,7 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {

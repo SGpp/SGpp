@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * linear basis functions with boundaries
@@ -84,6 +86,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* LINEARBOUNDARYBASE_HPP */

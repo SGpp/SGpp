@@ -33,6 +33,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationHierarchisationLinearBoundary::doHierarchisation(DataVector& node_values)
 {
@@ -74,4 +76,5 @@ void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alp
 	}
 }
 
+}
 }

@@ -12,6 +12,7 @@
 #include "combigrid/combischeme/CombiTS_CT.hpp"
 #include "combigrid/combischeme/CombiS_CT.hpp"
 #include "combigrid/converter/CombiSGppConverter.hpp"
+using namespace sg::base;
 
 namespace combigrid{
 
@@ -53,7 +54,7 @@ public:
     	std::vector<double> coords( 2 , 0.0);
     	CombiSchemeBasis* combischeme = new TS_CT( 2 , 6 );
     	AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
-    	sg::GridStorage* gridstorageSGpp;
+    	GridStorage* gridstorageSGpp;
     	DataVector *alphas , *minAlpha , *maxAlpha ;
 
     	// creates the full grids in the combination grid
@@ -146,7 +147,7 @@ public:
     	std::vector<bool> makeCombi( 3 , true);
     	CombiSchemeBasis* combischeme = new TS_CT( 3 , levels , makeCombi );
     	AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
-    	sg::GridStorage* gridstorageSGpp;
+    	GridStorage* gridstorageSGpp;
     	DataVector *alphas , *minAlpha , *maxAlpha ;
 
     	// creates the full grids in the combination grid
@@ -239,7 +240,7 @@ public:
     	levels_trunc[0] = 1; levels_trunc[1] = 3; levels_trunc[2] = 1;
     	CombiSchemeBasis* combischeme = new S_CT( 3 , levels , levels_trunc );
     	AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
-    	sg::GridStorage* gridstorageSGpp;
+    	GridStorage* gridstorageSGpp;
     	DataVector *alphas , *minAlpha , *maxAlpha ;
 
     	// creates the full grids in the combination grid
@@ -330,7 +331,7 @@ public:
     	levels_trunc[0] = 1; levels_trunc[1] = 3; levels_trunc[2] = 1;
     	CombiSchemeBasis* combischeme = new S_CT( 3 , levels , levels_trunc );
     	AbstractCombiGrid* combigrid = new SerialCombiGrid( combischeme , false );
-    	sg::GridStorage* gridstorageSGpp;
+    	GridStorage* gridstorageSGpp;
     	DataVector *alphas , *minAlpha , *maxAlpha ;
 
     	// creates the full grids in the combination grid

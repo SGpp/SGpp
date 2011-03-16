@@ -7,6 +7,7 @@
 
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 #include "exception/algorithm_exception.hpp"
+using namespace sg::base;
 
 namespace sg
 {

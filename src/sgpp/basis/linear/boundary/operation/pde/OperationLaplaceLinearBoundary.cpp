@@ -16,6 +16,7 @@
 #include "algorithm/common/sweep.hpp"
 
 #include "grid/common/BoundingBox.hpp"
+using namespace sg::base;
 
 namespace sg
 {

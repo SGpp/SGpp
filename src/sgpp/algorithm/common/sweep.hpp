@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Standard sweep operation
@@ -231,6 +233,7 @@ protected:
 	}
 };
 
+}
 }
 
 #endif /* SWEEP_HPP */

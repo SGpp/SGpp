@@ -29,6 +29,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationEval for a grids with prewavelet basis ansatzfunctions without boundaries
@@ -58,6 +60,7 @@ protected:
 
 };
 
+}
 }
 
 #endif /* OPERATIONEVELMODLINEAR_HPP */

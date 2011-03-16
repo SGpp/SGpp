@@ -24,6 +24,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 ModWaveletGrid::ModWaveletGrid(std::istream& istr) : Grid(istr)
 {
@@ -151,4 +153,5 @@ OperationConvert* ModWaveletGrid::createOperationConvert()
 }
 
 
+}
 }

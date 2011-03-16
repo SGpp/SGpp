@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 namespace detail
 {
@@ -62,3 +64,4 @@ void DehierarchisationLinear::rec(DataVector& source, DataVector& result, grid_i
 }	// namespace detail
 
 }	// namespace sg
+}

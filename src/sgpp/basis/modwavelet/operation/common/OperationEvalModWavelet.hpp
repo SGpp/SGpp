@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
@@ -39,6 +41,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIINEVALMODWAVELET_HPP */

@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Hierarchisation on sparse grid, mod wavelet case
@@ -55,6 +57,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONHIERARCHISATIONMODWAVELET_HPP */

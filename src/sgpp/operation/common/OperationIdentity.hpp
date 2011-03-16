@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Implementation of identity Operation for all kinds of grids
@@ -37,4 +39,5 @@ public:
 	}
 };
 
+}
 }

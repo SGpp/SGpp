@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * grid with modified polynomial base functions
@@ -67,6 +69,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* MODWAVELETGRID_HPP */

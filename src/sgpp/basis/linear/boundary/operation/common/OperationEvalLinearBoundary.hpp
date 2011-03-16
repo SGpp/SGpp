@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationEval for a grids with linear basis ansatzfunctions with
@@ -42,6 +44,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONEVALLINEARBOUNDARY_HPP */
