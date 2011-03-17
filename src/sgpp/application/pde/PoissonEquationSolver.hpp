@@ -71,6 +71,34 @@ public:
 	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param tFilename file into which the matrix is written
+	 */
+	void storeInnerMatrix(std::string tFilename);
+
+	/**
+	 * Routine to export the RHS of the inner system which has to be
+	 * solved in order to solve the Poisson equation
+	 *
+	 * @param alpha the start solution
+	 * @param tFilename file into which the rhs is written
+	 */
+	void storeInnerRHS(DataVector& alpha, std::string tFilename);
+
+	/**
+	 * Routine to export the solution of the inner system which
+	 * has been calculated by Up/Down scheme
+	 *
+	 * @param alpha the start solution
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the C
+	 * @param tFilename file into which the rhs is written
+	 */
+	void storeInnerSolution(DataVector& alpha, size_t maxCGIterations, double epsilonCG, std::string tFilename);
+
+	/**
 	 * Inits the screen object
 	 */
 	void initScreen();
