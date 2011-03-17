@@ -13,6 +13,8 @@
 #define DIV_SIGMA 4.0
 #define DISTRI_FACTOR 5.0
 
+#define EXPORT_MATRIX_FILES
+
 #include <cstdlib>
 #include <sstream>
 #include <iostream>
@@ -209,6 +211,45 @@ void testPoissonEquation(size_t dim, size_t level, double bound_left, double bou
 	{
 		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
 	}
+
+#ifdef EXPORT_MATRIX_FILES
+	// print inner matrix
+	std::stringstream mtxFile;
+	mtxFile.clear();
+	mtxFile << "SG_Poisson_InnerMatrix_" << dim << "d_" << level << "l.mtx";
+	myPoisSolver->storeInnerMatrix(mtxFile.str());
+
+	// print inner rhs
+	std::stringstream rhsFile;
+	rhsFile.clear();
+	alpha->setAll(0.0);
+	if (initFunc == "smooth")
+	{
+		myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+	}
+	else
+	{
+		writeHelp();
+	}
+	rhsFile << "SG_Poisson_InnerRHS_" << dim << "d_" << level << "l.vec";
+	myPoisSolver->storeInnerRHS(*alpha, rhsFile.str());
+
+	// print inner solution
+	std::stringstream solFile;
+	solFile.clear();
+	alpha->setAll(0.0);
+	if (initFunc == "smooth")
+	{
+		myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+	}
+	else
+	{
+		writeHelp();
+	}
+	solFile << "SG_Poisson_InnerSolution_" << dim << "d_" << level << "l.vec";
+	myPoisSolver->storeInnerSolution(*alpha, cg_its, cg_eps, solFile.str());
+	std::cout << std::endl << std::endl;
+#endif
 
 	delete myPoisSolver;
 	delete myBoundingBox;

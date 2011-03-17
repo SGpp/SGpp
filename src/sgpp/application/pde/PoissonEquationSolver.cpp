@@ -13,6 +13,7 @@
 #include "tools/common/SGppStopwatch.hpp"
 #include "stdlib.h"
 #include <sstream>
+#include <fstream>
 
 namespace sg
 {
@@ -149,6 +150,76 @@ void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu,
 	{
 		throw new application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
 	}
+}
+
+void PoissonEquationSolver::storeInnerMatrix(std::string tFilename)
+{
+	DataVector rhs(this->myGrid->getSize());
+	rhs.setAll(0.0);
+	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), rhs);
+	SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+	std::string mtx = "";
+
+	std::cout << "Generating matrix in MatrixMarket format..." << std::endl;
+	myStopwatch->start();
+	mySystem->getInnerMatrix(mtx);
+
+	std::ofstream outfile(tFilename.c_str());
+	outfile << mtx;
+	outfile.close();
+	std::cout << "Generating matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+	delete myStopwatch;
+	delete mySystem;
+}
+
+void PoissonEquationSolver::storeInnerRHS(DataVector& alpha, std::string tFilename)
+{
+	SGppStopwatch* myStopwatch = new SGppStopwatch();
+	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), alpha);
+
+	std::cout << "Exporting inner right-hand-side..." << std::endl;
+	myStopwatch->start();
+	DataVector* rhs_inner = mySystem->generateRHS();
+
+	size_t nCoefs = rhs_inner->getSize();
+	std::ofstream outfile(tFilename.c_str());
+	for (size_t i = 0; i < nCoefs; i++)
+	{
+		outfile << rhs_inner->get(i) << std::endl;
+	}
+	outfile.close();
+	std::cout << "Exporting inner right-hand-side... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+	delete mySystem; // rhs_inner are allocated and freed here!!
+	delete myStopwatch;
+}
+
+void PoissonEquationSolver::storeInnerSolution(DataVector& alpha, size_t maxCGIterations, double epsilonCG, std::string tFilename)
+{
+	ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), alpha);
+
+	std::cout << "Exporting inner solution..." << std::endl;
+
+	DataVector* alpha_solve = mySystem->getGridCoefficientsForCG();
+	DataVector* rhs_solve = mySystem->generateRHS();
+
+	myCG->solve(*mySystem, *alpha_solve, *rhs_solve, true, false, 0.0);
+
+	size_t nCoefs = alpha_solve->getSize();
+	std::ofstream outfile(tFilename.c_str());
+	for (size_t i = 0; i < nCoefs; i++)
+	{
+		outfile << alpha_solve->get(i) << std::endl;
+	}
+	outfile.close();
+
+	std::cout << "Exporting inner solution... DONE!" << std::endl;
+
+	delete myCG;
+	delete mySystem; // alpha_solver and rhs_solve are allocated and freed here!!
 }
 
 void PoissonEquationSolver::initScreen()
