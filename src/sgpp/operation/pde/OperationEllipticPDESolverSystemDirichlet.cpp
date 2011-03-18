@@ -129,7 +129,7 @@ size_t OperationEllipticPDESolverSystemDirichlet::getMatrix(std::string& mtxStri
 		{
 			if (result[j] != 0.0)
 			{
-				mtxStream << j << " " << i << " " << result[j] << std::endl;
+				mtxStream << (j+1) << " " << (i+1) << " " << std::scientific << result[j] << std::endl;
 				nonZeros++;
 			}
 		}

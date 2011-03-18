@@ -187,7 +187,7 @@ void PoissonEquationSolver::storeInnerRHS(DataVector& alpha, std::string tFilena
 	std::ofstream outfile(tFilename.c_str());
 	for (size_t i = 0; i < nCoefs; i++)
 	{
-		outfile << rhs_inner->get(i) << std::endl;
+		outfile << std::scientific << rhs_inner->get(i) << std::endl;
 	}
 	outfile.close();
 	std::cout << "Exporting inner right-hand-side... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
@@ -212,7 +212,7 @@ void PoissonEquationSolver::storeInnerSolution(DataVector& alpha, size_t maxCGIt
 	std::ofstream outfile(tFilename.c_str());
 	for (size_t i = 0; i < nCoefs; i++)
 	{
-		outfile << alpha_solve->get(i) << std::endl;
+		outfile << std::scientific << alpha_solve->get(i) << std::endl;
 	}
 	outfile.close();
 
