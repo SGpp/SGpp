@@ -108,7 +108,6 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 			r.axpy(-a, q);
 		}
 
-
 		// calculate new deltas and determine beta
 		delta_old = delta_new;
 		delta_new = r.dotProduct(r);
