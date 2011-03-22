@@ -14,15 +14,13 @@
 #define DISTRI_FACTOR 5.0
 
 #include <mpi.h>
+#include "sgpp_mpi.hpp"
 
 #include <cstdlib>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <string>
-
-#include "sgpp_mpi.hpp"
-
 
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object
@@ -91,6 +89,125 @@ void writeHelp()
 	std::cout << mySStream.str() << std::endl;
 }
 
+void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_right, double a,
+						std::string initFunc, double T, double dt, std::string ODESolver,
+						double cg_eps, size_t cg_its)
+{
+	size_t timesteps = (size_t)(T/dt);
+	sg::HeatEquationSolverMPI* myHESolver = new sg::HeatEquationSolverMPI();
+	DataVector* alpha = NULL;
+
+	if (sg::myGlobalMPIComm->getMyRank() == 0)
+	{
+		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+
+		// set the bounding box
+		for (size_t i = 0; i < dim; i++)
+		{
+			myBoundaries[i].leftBoundary = bound_left;
+			myBoundaries[i].rightBoundary = bound_right;
+			myBoundaries[i].bDirichletLeft = true;
+			myBoundaries[i].bDirichletRight = true;
+		}
+
+
+		sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+		delete[] myBoundaries;
+
+		// init Screen Object
+		myHESolver->initScreen();
+
+		// Construct a grid
+		myHESolver->constructGrid(*myBoundingBox, level);
+
+		// init the basis functions' coefficient vector (start solution)
+		alpha = new DataVector(myHESolver->getNumberGridPoints());
+		if (initFunc == "smooth")
+		{
+			myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+		}
+		else
+		{
+			writeHelp();
+			sg::myGlobalMPIComm->Abort();
+		}
+
+		delete myBoundingBox;
+	}
+
+	// Communicate grid
+	if (sg::myGlobalMPIComm->getMyRank() == 0)
+	{
+		std::string serialized_grid = myHESolver->getGrid();
+
+		sg::myGlobalMPIComm->broadcastGrid(serialized_grid);
+	}
+	else
+	{
+		// Now receive the grid
+		std::string serialized_grid = "";
+
+		sg::myGlobalMPIComm->receiveGrid(serialized_grid);
+		myHESolver->setGrid(serialized_grid);
+
+		alpha = new DataVector(myHESolver->getNumberGridPoints());
+	}
+
+	sg::myGlobalMPIComm->Barrier();
+
+	// Communicate coefficients
+	if (sg::myGlobalMPIComm->getMyRank() == 0)
+	{
+		sg::myGlobalMPIComm->broadcastGridCoefficients(*alpha);
+	}
+	else
+	{
+		sg::myGlobalMPIComm->receiveGridCoefficients(*alpha);
+	}
+
+	sg::myGlobalMPIComm->Barrier();
+
+	// Print initial grid only on rank 0
+	if (sg::myGlobalMPIComm->getMyRank() == 0)
+	{
+		// Print the initial heat function into a gnuplot file
+		if (dim < 3)
+		{
+			myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatStart.gnuplot");
+		}
+	}
+
+	// set heat coefficient
+	myHESolver->setHeatCoefficient(a);
+
+	// Start solving the Heat Equation
+	if (ODESolver == "ExEul")
+	{
+		myHESolver->solveExplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false, std::max(timesteps/SOLUTION_FRAMES,(size_t)1));
+	}
+	else if (ODESolver == "ImEul")
+	{
+		myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false, std::max(timesteps/SOLUTION_FRAMES,(size_t)1));
+	}
+	else if (ODESolver == "CrNic")
+	{
+		myHESolver->solveCrankNicolson(timesteps, dt, cg_its, cg_eps, *alpha, CRNIC_IMEUL_STEPS);
+	}
+
+	// print solved grid only on rank 0
+	if (sg::myGlobalMPIComm->getMyRank() == 0)
+	{
+		// Print the solved Heat Equation into a gnuplot file
+		if (dim < 3)
+		{
+			myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatSolved.gnuplot");
+		}
+	}
+
+	delete myHESolver;
+	delete alpha;
+}
+
 void testPoissonEquation(size_t dim, size_t level, double bound_left, double bound_right,
 						std::string initFunc, double cg_eps, size_t cg_its)
 {
@@ -125,10 +242,7 @@ void testPoissonEquation(size_t dim, size_t level, double bound_left, double bou
 		}
 		else
 		{
-			if (sg::myGlobalMPIComm->getMyRank() == 0)
-			{
-				writeHelp();
-			}
+			writeHelp();
 			sg::myGlobalMPIComm->Abort();
 		}
 
@@ -215,7 +329,45 @@ int main(int argc, char *argv[])
 
 	option.assign(argv[1]);
 
-	if (option == "PoissonEquation")
+	if (option == "HeatEquation")
+	{
+		if (argc != 13)
+		{
+			if (mpi_myid == 0)
+			{
+				writeHelp();
+			}
+			sg::myGlobalMPIComm->Abort();
+			return 0;
+		}
+
+		size_t dim;
+		size_t level;
+		double bound_left;
+		double bound_right;
+		double a;
+		std::string initFunc;
+		double T;
+		double dt;
+		std::string ODESolver;
+		double cg_eps;
+		size_t cg_its;
+
+		dim = atoi(argv[2]);
+		level = atoi(argv[3]);
+		bound_left = atof(argv[4]);
+		bound_right = atof(argv[5]);
+		a = atof(argv[6]);
+		initFunc.assign(argv[7]);
+		T = atof(argv[8]);
+		dt = atof(argv[9]);
+		ODESolver.assign(argv[10]);
+		cg_eps = atof(argv[11]);
+		cg_its = atoi(argv[12]);
+
+		testHeatEquation(dim, level, bound_left, bound_right, a, initFunc, T, dt, ODESolver, cg_eps, cg_its);
+	}
+	else if (option == "PoissonEquation")
 	{
 		if (argc != 9)
 		{
