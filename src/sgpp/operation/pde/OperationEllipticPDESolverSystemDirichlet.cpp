@@ -143,6 +143,53 @@ size_t OperationEllipticPDESolverSystemDirichlet::getMatrix(std::string& mtxStri
 	return nonZeros;
 }
 
+void OperationEllipticPDESolverSystemDirichlet::getMatrixDiagonal(std::string& mtxString, bool complete)
+{
+	size_t vector_size;
+	if (complete == true)
+	{
+		vector_size = this->numGridpointsComplete;
+	}
+	else
+	{
+		vector_size = this->numGridpointsInner;
+	}
+
+	DataVector alpha(vector_size);
+	DataVector result(vector_size);
+	std::stringstream mtxStream;
+	std::stringstream mtxHeaderStream;
+
+	mtxHeaderStream.clear();
+	mtxStream.clear();
+
+	// loop over the system matrices columns
+	for (size_t i = 0; i < vector_size; i++)
+	{
+		alpha.setAll(0.0);
+		result.setAll(0.0);
+		alpha.set(i, 1.0);
+
+		// calculate column via Up/Down
+		if (complete == true)
+		{
+			applyLOperatorComplete(alpha, result);
+		}
+		else
+		{
+			applyLOperatorInner(alpha, result);
+		}
+
+		// serialize result into mtxStream
+		mtxStream << (i+1) << " " << (i+1) << " " << std::scientific << result[i] << std::endl;
+	}
+
+	// Generate Header Line
+	mtxHeaderStream << vector_size << " " << vector_size << " " << vector_size << std::endl;
+
+	mtxString = mtxHeaderStream.str() + mtxStream.str();
+}
+
 size_t OperationEllipticPDESolverSystemDirichlet::getCompleteMatrix(std::string& mtxString)
 {
 	return getMatrix(mtxString, true);
@@ -151,6 +198,11 @@ size_t OperationEllipticPDESolverSystemDirichlet::getCompleteMatrix(std::string&
 size_t OperationEllipticPDESolverSystemDirichlet::getInnerMatrix(std::string& mtxString)
 {
 	return getMatrix(mtxString, false);
+}
+
+void OperationEllipticPDESolverSystemDirichlet::getInnerMatrixDiagonal(std::string& mtxString)
+{
+	getMatrixDiagonal(mtxString, false);
 }
 
 }
