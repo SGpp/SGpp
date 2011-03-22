@@ -6,9 +6,12 @@
 // @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 %newobject sg::Grid::createLinearGrid(size_t dim);
+%newobject sg::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sg::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sg::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::Grid::createLinearTrapezoidBoundaryGrid(BoudingBox& BB);
+%newobject sg::Grid::createLinearTrapezoidBoundaryGrid(BoundingBox& BB);
+%newobject sg::Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
+%newobject sg::Grid::createLinearStretchedTrapezoidBoundaryGrid(Stretching& BB);
 %newobject sg::Grid::createModLinearGrid(size_t dim);
 %newobject sg::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sg::Grid::createModPolyGrid(size_t dim, size_t degree);
@@ -48,8 +51,10 @@ class Grid
 {
 public:
 	static Grid* createLinearGrid(size_t dim);
+	static Grid* createLinearStretchedGrid(size_t dim);
 	static Grid* createLinearBoundaryGrid(size_t dim);
 	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
+	static Grid* createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
@@ -88,6 +93,7 @@ public:
 	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
+	virtual Stretching* getStretching();
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr);

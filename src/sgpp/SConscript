@@ -18,6 +18,7 @@ common/AlignedMemory.cpp
 grid/Grid.cpp
 
 grid/common/BoundingBox.cpp
+grid/common/Stretching.cpp
 grid/common/DirichletUpdateVector.cpp
 grid/common/DirichletGridConverter.cpp
 grid/combination/FullGrid.cpp
@@ -26,7 +27,9 @@ grid/combination/LinearFullGrid.cpp
 
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp
+grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
 grid/type/LinearGrid.cpp
+grid/type/LinearStretchedGrid.cpp
 grid/type/ModLinearGrid.cpp
 grid/type/PolyGrid.cpp
 grid/type/ModPolyGrid.cpp
@@ -39,6 +42,7 @@ grid/type/PrewaveletGrid.cpp
 grid/generation/StandardGridGenerator.cpp
 grid/generation/BoundaryGridGenerator.cpp
 grid/generation/TrapezoidBoundaryGridGenerator.cpp
+grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
 grid/generation/SquareRootGridGenerator.cpp
 grid/generation/TruncatedTrapezoidGridGenerator.cpp
 grid/generation/SurplusRefinementFunctor.cpp
@@ -119,7 +123,70 @@ basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
 basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp
 basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
 
+basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
+basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinearStretched.cpp
+basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinearStretched.cpp
+basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinearStretched.cpp
+basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinearStretched.cpp
+basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
+basis/linearstretched/noboundary/operation/common/OperationEvalLinearStretched.cpp
+basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.cpp
+
+basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp
+
+basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.cpp
+
+basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/common/OperationUpDownTestLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationGammaLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/OperationLTwoDotProductLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.cpp
+
+basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp
+
+basis/linearstretched/boundary/common/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/common/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp
+
 basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
+
 basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
@@ -187,9 +254,11 @@ application/pde/PDESolver.cpp
 application/pde/ParabolicPDESolver.cpp
 application/pde/EllipticPDESolver.cpp
 application/pde/BlackScholesSolver.cpp
+application/pde/BlackScholesSolverWithStretching.cpp
 application/pde/HullWhiteSolver.cpp
 application/pde/BlackScholesHullWhiteSolver.cpp
 application/pde/HeatEquationSolver.cpp
+application/pde/HeatEquationSolverWithStretching.cpp
 application/pde/PoissonEquationSolver.cpp
 application/finance/VariableDiscountFactor.cpp
 
@@ -206,8 +275,10 @@ solver/ode/StepsizeControlEJ.cpp
 
 tools/common/StdNormalDistribution.cpp
 tools/common/GridPrinter.cpp
+tools/common/GridPrinterForStretching.cpp
 tools/common/SGppStopwatch.cpp
 tools/common/EvalCuboidGenerator.cpp
+tools/common/EvalCuboidGeneratorForStretching.cpp
 tools/finance/IOToolBonnSG.cpp
 
 """)

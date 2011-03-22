@@ -13,6 +13,7 @@
 #include "basis/modwavelet/modified_wavelet_base.hpp"
 #include "basis/modbspline/modified_bspline_base.hpp"
 #include "basis/linear/boundary/linearboundaryBase.hpp"
+#include "basis/linearstretched/boundary/linearstretchedboundaryBase.hpp"
 #include "basis/prewavelet/prewavelet_base.hpp"
 
 
@@ -802,6 +803,177 @@ protected:
 
 };
 
+/**
+ * Template Specialization for linearstretchedboundaryBase basis.
+ */
+template<>
+class GetAffectedBasisFunctions<linearstretchedboundaryBase<unsigned int, unsigned int> >
+{
+	typedef linearstretchedboundaryBase<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
+public:
+	GetAffectedBasisFunctions(GridStorage* storage) : storage(storage), stretch(storage->getStretching())
+	{
+	}
+
+	~GetAffectedBasisFunctions() {}
+
+	void operator()(SLinearStretchedBoundaryBase& basis, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
+	{
+		//There's no BoundaryBox checking necessary
+
+		GridStorage::grid_iterator working(storage);
+
+		working.resetToLevelZero();
+		result.clear();
+
+		recBB(basis, point, 0, 1.0, working, result);
+
+
+	}
+
+protected:
+	GridStorage* storage;
+	Stretching* stretch;
+
+void recBB(SLinearStretchedBoundaryBase& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result)
+	{
+		typedef GridStorage::index_type::level_type level_type;
+		typedef GridStorage::index_type::index_type index_type;
+		double posl=0, posr=0, posc=0;
+
+		level_type work_level = 0;
+
+		while(true)
+		{
+			size_t seq = working.seq();
+			index_type global_work_index = 0;
+
+
+			if (storage->end(seq))
+			{
+				break;
+			}
+			else
+			{
+				index_type work_index;
+				level_type temp;
+
+				working.get(current_dim, temp, work_index);
+				global_work_index = work_index;
+
+
+
+
+				if (work_level > 0)
+				{
+//					stretch->getAdjacentPositions(static_cast<int>(temp), static_cast<int>(work_index), current_dim,posl,posr);
+//					posc=stretch->getCoordinates(static_cast<int>(temp), static_cast<int>(work_index), current_dim);
+					stretch->getAdjacentPositions(static_cast<int>(temp), static_cast<int>(work_index), current_dim,posc,posl,posr);
+					//double new_value = basis.eval(work_level, work_index, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+					double new_value;
+					if(posc<point[current_dim]){
+						/// calculate using the right-hand ramp
+						new_value = basis.eval(work_level, work_index, point[current_dim], posr, posc);
+					}
+					else{
+						///calculate using the left-hand ramp
+						new_value = basis.eval(work_level, work_index, point[current_dim], posl, posc);
+					}
+
+
+					if(current_dim == storage->dim()-1)
+					{
+						result.push_back(std::make_pair(seq, value*new_value));
+					}
+					else
+					{
+						recBB(basis, point, current_dim + 1, value*new_value, working, result);
+					}
+				}
+				// handle boundaries if we are on level 0
+				else
+				{
+					double left = stretch->getBoundary(current_dim).leftBoundary;
+					double right = stretch->getBoundary(current_dim).rightBoundary;
+					// level 0, index 0
+					working.left_levelzero(current_dim);
+					size_t seq_lz_left = working.seq();
+					//double new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+					double new_value_l_zero_left = basis.eval(0, 0,  point[current_dim],right, left);
+					if(current_dim == storage->dim()-1)
+					{
+						result.push_back(std::make_pair(seq_lz_left, value*new_value_l_zero_left));
+					}
+					else
+					{
+						recBB(basis, point, current_dim + 1, value*new_value_l_zero_left, working, result);
+					}
+
+					// level 0, index 1
+					working.right_levelzero(current_dim);
+					size_t seq_lz_right = working.seq();
+					//double new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+					double new_value_l_zero_right = basis.eval(0, 1,  point[current_dim],left,right);
+					if(current_dim == storage->dim()-1)
+					{
+						result.push_back(std::make_pair(seq_lz_right, value*new_value_l_zero_right));
+					}
+					else
+					{
+						recBB(basis, point, current_dim + 1, value*new_value_l_zero_right, working, result);
+					}
+				}
+			}
+
+			// there are no levels left
+			if(working.hint())
+			{
+				break;
+			}
+
+			// this decides in which direction we should descend by evaluating the corresponding bit
+			// the bits are coded from left to right starting with level 1 being in position src_level
+			if (work_level > 0)
+			{
+				double hat = 0.0;
+//				level_type h = 0;
+//				h = 1<<work_level;
+//				hat = (stretch->getIntervalWidth(current_dim)*((1.0/static_cast<double>(h))*static_cast<double>(global_work_index))) + stretch->getIntervalOffset(current_dim);
+				hat = stretch->getCoordinates(static_cast<int>(work_level), static_cast<int>(global_work_index), current_dim);
+
+
+				if (point[current_dim] == hat)
+					break;
+
+				if(point[current_dim] < hat)
+				{
+					working.left_child(current_dim);
+				}
+				else
+				{
+					working.right_child(current_dim);
+				}
+			}
+			else
+			{
+				//if (point[current_dim] == (BB->getIntervalOffset(current_dim)) || point[current_dim] == ((BB->getIntervalWidth(current_dim))+BB->getIntervalOffset(current_dim)))
+				//break;
+
+				if((point[current_dim] == stretch->getCoordinates(0,0,current_dim)) || (point[current_dim] == stretch->getCoordinates(0,1,current_dim))){
+					break;
+				}
+
+				working.top(current_dim);
+			}
+			++work_level;
+		}
+
+		working.left_levelzero(current_dim);
+	}
+
+};
+
+
 
 /**
  * Template Specialization for prewavelet basis.
@@ -927,7 +1099,6 @@ protected:
 	}
 
 };
-
 }
 
 #endif /* GETAFFECTEDBASISFUNCTIONS_HPP */

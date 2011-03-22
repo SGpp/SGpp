@@ -23,7 +23,7 @@ namespace sg
  */
 class GridPrinter
 {
-private:
+protected:
 	/// Pointer to the grid Object, which should be printed
 	Grid* myGrid;
 
@@ -38,7 +38,7 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	~GridPrinter();
+	virtual ~GridPrinter();
 
 	/**
 	 * Print the grid with its function to a file; front end
@@ -47,7 +47,7 @@ public:
 	 * @param tFilename absolute path to the file the grid is written into
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
-	void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
+	virtual void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
 
 	/**
 	 * Print the grid with its function to a file; front end
@@ -57,7 +57,7 @@ public:
 	 * @param GridArea The area in which the function should be plotted
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
-	void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension);
+	virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -67,7 +67,7 @@ public:
 	 * @param tFilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus);
+	virtual void printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -80,7 +80,7 @@ public:
 	 * @param tFilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus);
+	virtual void printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus);
 };
 
 }

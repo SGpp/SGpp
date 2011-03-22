@@ -153,6 +153,21 @@ ifeq ($(CC),icpc)
 	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC" "EXT=$(EXT)"
 endif
 
+
+###################################################################
+# Builds a Black Scholes Solver with Stretching
+###################################################################	
+BSSolverWithStretching: default
+
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/BSSolverWithStretching_gcc
+	make -f ./../../../src/makefileNativeBlackScholesSolverWithStretching --directory=./tmp/build_native/BSSolverWithStretching_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolverWithStretching_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/BSSolverWithStretching_icc
+	make -f ./../../../src/makefileNativeBlackScholesSolverWithStretching --directory=./tmp/build_native/BSSolverWithStretching_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolverWithStretching_ICC" "EXT=$(EXT)"
+endif
+
 ###################################################################
 # Builds a Hull White Solver
 ###################################################################	

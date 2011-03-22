@@ -1,14 +1,17 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * Copyright (C) 2011 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
+
 
 #ifndef DIRICHLETUPDATEVECTOR_HPP
 #define DIRICHLETUPDATEVECTOR_HPP
 
 #include "grid/common/BoundingBox.hpp"
+#include "grid/common/Stretching.hpp"
+
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
@@ -32,6 +35,8 @@ class DirichletUpdateVector
 private:
 	/// bounding box of the grid
 	BoundingBox* myBoundingBox;
+	/// stretching of the grid
+	Stretching* myStretching;
 	/// Grid Storage object
 	GridStorage* storage;
 

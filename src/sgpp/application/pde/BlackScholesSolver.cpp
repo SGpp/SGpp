@@ -22,6 +22,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+#include "sgpp.hpp"
 
 namespace sg
 {
