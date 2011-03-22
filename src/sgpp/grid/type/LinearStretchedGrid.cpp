@@ -12,37 +12,9 @@
 
 // Include all operations on the linearstretched grid
 #include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinearStretched.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinearStretched.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinearStretched.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinearStretched.hpp"
 #include "basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.hpp"
 #include "basis/linearstretched/noboundary/operation/common/OperationEvalLinearStretched.hpp"
 #include "basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.hpp"
-//
-//#ifdef USEOCL
-//#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinearStretched.hpp"
-//#endif
-//
-//#ifdef USEARBB
-//#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinearStretched.hpp"
-//#endif
-
-#ifdef USEOCL
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
-#endif
-
-#ifdef USEARBB
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
-#endif
 
 #include "basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.hpp"
 #include "basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.hpp"
@@ -110,66 +82,12 @@ OperationMultipleEval* LinearStretchedGrid::createOperationMultipleEval(DataMatr
 
 OperationMultipleEvalVectorized* LinearStretchedGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
-	if (VecType == "SSE")
-	{
-		return new OperationMultipleEvalIterativeSSELinearStretched(this->storage, dataset);
-	}
-	else if (VecType == "AVX")
-	{
-		return new OperationMultipleEvalIterativeAVXLinearStretched(this->storage, dataset);
-	}
-#ifdef USEOCL
-	else if (VecType == "OCL")
-	{
-		return new OperationMultipleEvalIterativeOCLLinearStretched(this->storage, dataset);
-	}
-	else if (VecType == "HYBRID_SSE_OCL")
-	{
-		return new OperationMultipleEvalIterativeHybridSSEOCLLinearStretched(this->storage, dataset);
-	}
-#endif
-#ifdef USEARBB
-	else if (VecType == "ArBB")
-	{
-		return new OperationMultipleEvalIterativeArBBLinearStretched(this->storage, dataset);
-	}
-#endif
-	else
-	{
-		throw factory_exception("Unsupported vectorization type");
-	}
+	throw factory_exception("Unsupported operation");
 }
 
 OperationMultipleEvalVectorizedSP* LinearStretchedGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
-	if (VecType == "SSE")
-	{
-		return new OperationMultipleEvalIterativeSPSSELinearStretched(this->storage, dataset);
-	}
-	else if (VecType == "AVX")
-	{
-		return new OperationMultipleEvalIterativeSPAVXLinearStretched(this->storage, dataset);
-	}
-#ifdef USEOCL
-	else if (VecType == "OCL")
-	{
-		return new OperationMultipleEvalIterativeSPOCLLinearStretched(this->storage, dataset);
-	}
-	else if (VecType == "HYBRID_SSE_OCL")
-	{
-		return new OperationMultipleEvalIterativeSPHybridSSEOCLLinearStretched(this->storage, dataset);
-	}
-#endif
-#ifdef USEARBB
-	else if (VecType == "ArBB")
-	{
-		return new OperationMultipleEvalIterativeSPArBBLinearStretched(this->storage, dataset);
-	}
-#endif
-	else
-	{
-		throw factory_exception("Unsupported vectorization type");
-	}
+	throw factory_exception("Unsupported operation");
 }
 OperationMatrix* LinearStretchedGrid::createOperationLaplace()
 {
