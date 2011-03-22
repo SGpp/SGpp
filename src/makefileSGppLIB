@@ -24,7 +24,6 @@
 SRCDIR = ./../../../src/sgpp/
 OUTDIR = ./
 BINDIR = ./../../../lib/sgpp/
-
 #only for extensions:
 #####################
 # Intel Array Building Blocks
@@ -107,7 +106,8 @@ OCLCC=g++
 endif
 ifeq ($(EXT), MPI)
 OBJS:=$(OBJS) MPICommunicator.o GlobalMPIComm.o ConjugateGradientsMPI.o PoissonEquationSolverMPI.o\
-	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o
+	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o HeatEquationParabolicPDESolverSystemParallelMPI.o\
+	HeatEquationSolverMPI.o
 endif
 
 default : $(OBJS)
@@ -147,13 +147,13 @@ LinearBoundaryGrid.o : $(SRCDIR)grid/type/LinearBoundaryGrid.cpp
 
 LinearTrapezoidBoundaryGrid.o : $(SRCDIR)grid/type/LinearTrapezoidBoundaryGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearTrapezoidBoundaryGrid.o $(SRCDIR)grid/type/LinearTrapezoidBoundaryGrid.cpp
-
+	
 LinearStretchedTrapezoidBoundaryGrid.o : $(SRCDIR)grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedTrapezoidBoundaryGrid.o $(SRCDIR)grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
 	
 LinearGrid.o : $(SRCDIR)grid/type/LinearGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearGrid.o $(SRCDIR)grid/type/LinearGrid.cpp
-
+	
 LinearStretchedGrid.o : $(SRCDIR)grid/type/LinearStretchedGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedGrid.o $(SRCDIR)grid/type/LinearStretchedGrid.cpp	
 	
@@ -504,7 +504,7 @@ DowndPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/
 	
 UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp	
-
+	
 StretchedTrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StretchedTrapezoidBoundaryGridGenerator.o $(SRCDIR)grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
 
@@ -695,10 +695,10 @@ BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/p
 
 HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
-
+	
 HeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp	
-
+	
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 
@@ -752,7 +752,7 @@ EllipticPDESolver.o : $(SRCDIR)application/pde/EllipticPDESolver.cpp
 
 BlackScholesSolver.o : $(SRCDIR)application/pde/BlackScholesSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolver.o $(SRCDIR)application/pde/BlackScholesSolver.cpp
-
+	
 BlackScholesSolverWithStretching.o : $(SRCDIR)application/pde/BlackScholesSolverWithStretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverWithStretching.o $(SRCDIR)application/pde/BlackScholesSolverWithStretching.cpp
 	
@@ -764,7 +764,7 @@ BlackScholesHullWhiteSolver.o : $(SRCDIR)application/pde/BlackScholesHullWhiteSo
 
 HeatEquationSolver.o : $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolver.o $(SRCDIR)application/pde/HeatEquationSolver.cpp
-
+	
 HeatEquationSolverWithStretching.o : $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverWithStretching.o $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
 
@@ -785,7 +785,7 @@ IOToolBonnSG.o : $(SRCDIR)tools/finance/IOToolBonnSG.cpp
 
 GridPrinter.o : $(SRCDIR)tools/common/GridPrinter.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinter.o $(SRCDIR)tools/common/GridPrinter.cpp
-
+	
 GridPrinterForStretching.o : $(SRCDIR)tools/common/GridPrinterForStretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinterForStretching.o $(SRCDIR)tools/common/GridPrinterForStretching.cpp
 	
@@ -806,7 +806,7 @@ SGppStopwatch.o : $(SRCDIR)tools/common/SGppStopwatch.cpp
 
 EvalCuboidGenerator.o : $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGenerator.o $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
-
+	
 EvalCuboidGeneratorForStretching.o : $(SRCDIR)tools/common/EvalCuboidGeneratorForStretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGeneratorForStretching.o $(SRCDIR)tools/common/EvalCuboidGeneratorForStretching.cpp
 	
@@ -821,18 +821,9 @@ UpDownOneOpDim.o : $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
 
 UpDownTwoOpDims.o : $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownTwoOpDims.o $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
-
+	
 UpDownOneOpDimWithShadow.o : $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimWithShadow.o $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
-
-OperationEllipticPDESolverSystem.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystem.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
-	
-OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
-	
-OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
 	
 OperationParabolicPDESolverSystem.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystem.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystem.cpp
@@ -842,6 +833,15 @@ OperationParabolicPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationPar
 	
 OperationParabolicPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemDirichlet.cpp
+	
+OperationEllipticPDESolverSystem.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystem.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
+	
+OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
+	
+OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
@@ -885,5 +885,11 @@ PoissonEquationSolverMPI.o : $(SRCDIR)application/pde/PoissonEquationSolverMPI.c
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
 
+HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
+
+HeatEquationSolverMPI.o : $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
+	
 clean:
 	rm *
