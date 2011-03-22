@@ -83,10 +83,10 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	XdPhiPhiUpBBLinearStretchedBoundary.o XPhidPhiDownBBLinearStretchedBoundary.o XPhidPhiUpBBLinearStretchedBoundary.o DPhiPhiDownBBLinearStretchedBoundary.o\
 	DPhiPhiUpBBLinearStretchedBoundary.o PhidPhiDownBBLinearStretchedBoundary.o PhidPhiUpBBLinearStretchedBoundary.o\
 	DPhiPhiDownBBLinearStretched.o DPhiPhiUpBBLinearStretched.o PhidPhiDownBBLinearStretched.o PhidPhiUpBBLinearStretched.o\
-	OperationMultipleEvalIterativeSSELinearStretched.o OperationDeltaLogLinearStretched.o OperationGammaLogLinearStretched.o DowndPhidPhiBBIterativeLinearStretched.o\
-	DowndPhidPhiBBIterativeLinearStretchedBoundary.o OperationMultipleEvalIterativeSPSSELinearStretched.o OperationMultipleEvalIterativeSPAVXLinearStretched.o\
-	UpdPhidPhiBBIterativeLinearStretchedBoundary.o OperationMultipleEvalIterativeAVXLinearStretched.o\
-	OperationMultipleEvalIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesParabolicPDESolverSystem.o BlackScholesParabolicPDESolverSystemEuropean.o\
+	OperationDeltaLogLinearStretched.o OperationGammaLogLinearStretched.o DowndPhidPhiBBIterativeLinearStretched.o\
+	DowndPhidPhiBBIterativeLinearStretchedBoundary.o\
+	UpdPhidPhiBBIterativeLinearStretchedBoundary.o\
+	DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesParabolicPDESolverSystem.o BlackScholesParabolicPDESolverSystemEuropean.o\
 	PrewaveletGrid.o PrewaveletGridGenerator.o OperationMultipleEvalPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
 	UpDownOneOpDimWithShadow.o OperationParabolicPDESolverSystemDirichlet.o OperationParabolicPDESolverSystemNeumann.o\
@@ -511,18 +511,6 @@ StretchedTrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/StretchedTr
 OperationMultipleEvalLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
 	
-OperationMultipleEvalIterativeSSELinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSSELinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinearStretched.cpp
-
-OperationMultipleEvalIterativeSPSSELinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPSSELinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinearStretched.cpp
-
-OperationMultipleEvalIterativeAVXLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeAVXLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinearStretched.cpp
-
-OperationMultipleEvalIterativeSPAVXLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPAVXLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinearStretched.cpp
-
 OperationTestLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
 
