@@ -17,6 +17,7 @@
 #include "grid/storage/hashmap/SerializationVersion.hpp"
 
 #include "grid/common/BoundingBox.hpp"
+#include "grid/common/Stretching.hpp"
 
 #include "data/DataMatrix.hpp"
 #include "data/DataMatrixSP.hpp"
@@ -27,6 +28,7 @@
 #include <sstream>
 #include <exception>
 #include <list>
+#include <typeinfo>
 
 namespace sg
 {
@@ -68,7 +70,9 @@ public:
 	 */
 	HashGridStorage(size_t dim) : DIM(dim), list(), map()
 	{
+		bUseStretching = false;
 		boundingBox = new BoundingBox(DIM);
+		stretching = NULL;
 		for (size_t i = 0; i < DIM; i++)
 		{
 			algoDims.push_back(i);
@@ -84,7 +88,9 @@ public:
 	 */
 	HashGridStorage(BoundingBox& creationBoundingBox) : DIM(), list(), map()
 	{
+		bUseStretching = false;
 		boundingBox = new BoundingBox(creationBoundingBox);
+		stretching = NULL;
 		DIM = boundingBox->getDimensions();
 		for (size_t i = 0; i < DIM; i++)
 		{
@@ -92,6 +98,24 @@ public:
 		}
 	}
 
+	/**
+	 * Constructor
+	 *
+	 * initializes the stretching with a reference to another stretching
+	 *
+	 * @param creationStretching reference to stretching object that describes the grid boundaries and the stretching
+	 */
+	HashGridStorage(Stretching& creationStretching) : DIM(), list(), map()
+	{
+		bUseStretching = true;
+		boundingBox = NULL;
+		stretching = new Stretching(creationStretching);
+		DIM = stretching->getDimensions();
+		for (size_t i = 0; i < DIM; i++)
+		{
+			algoDims.push_back(i);
+		}
+	}
 	/**
 	 * Constructor that reads the data from a string
 	 *
@@ -132,7 +156,16 @@ public:
 	{
 		// Copy dimensions and bounding box
 		DIM = copyFrom.DIM;
+		if(!copyFrom.bUseStretching){
+			bUseStretching = false;
 		boundingBox = new BoundingBox(*(copyFrom.boundingBox));
+			stretching = NULL;
+		}
+		if(copyFrom.bUseStretching){
+			bUseStretching = true;
+			stretching = new Stretching(*(copyFrom.stretching));
+			boundingBox = NULL;
+		}
 
 		// copy algorithmic dimensions
 		for (size_t i = 0; i > copyFrom.algoDims.size(); i++)
@@ -149,7 +182,7 @@ public:
 
 
 	/**
-	 * Desctructor
+	 * Destructor
 	 */
 	~HashGridStorage()
 	{
@@ -160,7 +193,12 @@ public:
 		}
 
 		// delete the grid's bounding box
+		if(!bUseStretching){
 		delete boundingBox;
+	}
+		if(bUseStretching){
+			delete stretching;
+		}
 	}
 
 	/**
@@ -256,7 +294,9 @@ public:
 		ostream << SERIALIZATION_VERSION << " ";
 		ostream << DIM << " ";
 		ostream << list.size() << std::endl;
-
+		//If BoundingBox used, write zero
+		if(!bUseStretching){
+			ostream << std::scientific << 0 <<std::endl;
 		// Print the bounding box
 		for (size_t i = 0; i < DIM; i++)
 		{
@@ -264,7 +304,64 @@ public:
 			ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
 		}
 		ostream << std::endl;
+		}
+		else{
+			//If analytic stretching, print the stretching type
+			if(*(stretching->getStretchingMode())== "analytic"){
+				ostream << std::scientific << 1 <<std::endl;
+				// Print the bounding box
+				for (size_t i = 0; i < DIM; i++)
+				{
+					tempBound = stretching->getBoundary(i);
+					ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
+				}
+				ostream << std::endl;
+				Stretching1D str1d;
+				int stretchingType=0;
+				/*
+				 * Write stretching type if
+				 * id: 1
+				 * log: 2
+				 * sinh:3
+				 */
+				for (size_t i = 0; i < DIM; i++)
+				{
+					str1d = stretching->getStretching1D(i);
+					if(str1d.type == "id"){
+						stretchingType =1;
+					}
+					else if(str1d.type == "log"){
+						stretchingType =2;
+					}
+					else if(str1d.type == "sinh"){
+						stretchingType =3;
+					}
+					ostream << std::scientific << stretchingType << " " << str1d.x_0 << " " << str1d.xsi << std::endl;
 
+				}
+			}
+			//If discrete stretching, print the grid vector
+			else if(*(stretching->getStretchingMode())== "discrete"){
+				ostream << std::scientific << 2 <<std::endl;
+				// Print the bounding box
+				for (size_t i = 0; i < DIM; i++)
+				{
+					tempBound = stretching->getBoundary(i);
+					ostream << std::scientific << tempBound.leftBoundary << " " << tempBound.rightBoundary << " " << tempBound.bDirichletLeft << " " << tempBound.bDirichletRight << " ";
+				}
+				ostream << std::endl;
+				std::vector<double>* vec = stretching->getDiscreteVector(true);
+				int* vecLevel = stretching->getDiscreteVectorLevel();
+				for (size_t i = 0; i < DIM; i++)
+				{
+					ostream << std::scientific << vecLevel[i] << std::endl;
+					for(size_t j=0; j<vec[i].size();j++){
+						ostream << std::scientific << vec[i][j] << " ";
+					}
+					ostream << std::endl;
+				}
+			}
+		}
 		// print the coordinates of the grid points
 		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
 		{
@@ -702,14 +799,47 @@ public:
 	}
 
 	/**
+	 * get the stretching bounding box of the current grid
+	 *
+	 * @return returns a pointer to GridStorage's bounding box
+	 */
+	Stretching* getStretching()
+																																			{
+		return stretching;
+																																			}
+
+	/**
 	 * sets the bounding box of the current grid
 	 *
 	 * @param bb bounding box to which the GridStorage's pointer is set
 	 */
 	void setBoundingBox(BoundingBox& bb)
 	{
+		if(!bUseStretching){
 		delete boundingBox;
+		}
+		if(bUseStretching){
+			delete stretching;
+		}
 		boundingBox = new BoundingBox(bb);
+		bUseStretching = false;
+	}
+
+	/**
+	 * sets the stretching bounding box of the current grid
+	 *
+	 * @param bb stretching to which the GridStorage's pointer is set
+	 */
+	void setStretching(Stretching& bb)
+	{
+		if(bUseStretching){
+			delete stretching;
+		}
+		if(!bUseStretching){
+			delete boundingBox;
+		}
+		bUseStretching = true;
+		stretching = new Stretching(bb);
 	}
 
 	/**
@@ -786,10 +916,14 @@ private:
 	grid_list list;
 	/// the indecies of the grid points
     grid_map map;
-    /// the grids bounding box
+	/// the grid's bounding box
     BoundingBox* boundingBox;
+	/// the grid's stretching
+	Stretching* stretching;
     /// algorithmic dimension, these are used in Up/Downs
     std::vector<size_t> algoDims;
+	/// Flag to check if stretching or bb used
+	bool bUseStretching;
 
     /**
      * Parses the gird's information (grid points, dimensions, bounding box) from a string stream
@@ -802,9 +936,6 @@ private:
     	istream >> version;
 
     	istream >> DIM;
-
-    	// create a standard bounding box
-    	boundingBox = new BoundingBox(DIM);
 
     	size_t num;
     	istream >> num;
@@ -820,9 +951,19 @@ private:
 			}
 		}
 
+		//no bounding box, generate a trivial one
+		if(version == 1 || version == 2){
+			// create a standard bounding box
+			boundingBox = new BoundingBox(DIM);
+		}
+
     	// read the bounding box
-    	if (version == 3 || version == 4)
+		else if (version == 3 || version == 4)
     	{
+			// create a standard bounding box
+			boundingBox = new BoundingBox(DIM);
+			stretching = NULL;
+			bUseStretching=false;
     		DimensionBoundary tempBound;
 
     		// reads the bounding box
@@ -836,6 +977,109 @@ private:
     			boundingBox->setBoundary(i, tempBound);
     		}
     	}
+		else if(version == 5){
+//			std::cout<<"Version 5 parse starts\n";
+			int useStretching;
+			DimensionBoundary tempBound;
+			istream >> useStretching;
+			if(useStretching==0){
+				//BoundingBox
+
+				// create a standard bounding box
+				boundingBox = new BoundingBox(DIM);
+				stretching = NULL;
+				bUseStretching=false;
+
+
+				// reads the boundary data
+				for (size_t i = 0; i < DIM; i++)
+				{
+					istream >> tempBound.leftBoundary;
+					istream >> tempBound.rightBoundary;
+					istream >> tempBound.bDirichletLeft;
+					istream >> tempBound.bDirichletRight;
+
+					boundingBox->setBoundary(i, tempBound);
+				}
+			}
+			else if(useStretching==1){
+				//Stretching with analytic mode
+				boundingBox = NULL;
+				bUseStretching = true;
+				Stretching1D* str1ds = new Stretching1D [DIM];
+				DimensionBoundary* tempBounds = new DimensionBoundary[DIM];
+
+				// reads the boundary data
+				for (size_t i = 0; i < DIM; i++)
+				{
+					istream >> tempBounds[i].leftBoundary;
+					istream >> tempBounds[i].rightBoundary;
+					istream >> tempBounds[i].bDirichletLeft;
+					istream >> tempBounds[i].bDirichletRight;
+				}
+
+				int stretchingType=0;
+				//Reads the 1D stretching data
+				for (size_t i = 0; i < DIM; i++)
+				{
+					istream >> stretchingType;
+					switch(stretchingType){
+					case 1:
+						str1ds[i].type.assign("id");
+						break;
+					case 2:
+						str1ds[i].type.assign("log");
+						break;
+					case 3:
+						str1ds[i].type.assign("sinh");
+						break;
+					default:
+						std::cout<<"Stretching Type Unknown in parseGridDescription\n";
+						break;
+					}
+					istream >> str1ds[i].x_0;
+					istream >> str1ds[i].xsi;
+				}
+
+				stretching = new Stretching(DIM,tempBounds,str1ds );
+				delete [] tempBounds;
+				delete[] str1ds;
+			}
+			else if(useStretching==2){
+				//Stretching with discrete Mode
+
+				boundingBox = NULL;
+				bUseStretching = true;
+
+				// reads the boundary data, won't be used.
+				for (size_t i = 0; i < DIM; i++)
+				{
+					istream >> tempBound.leftBoundary;
+					istream >> tempBound.rightBoundary;
+					istream >> tempBound.bDirichletLeft;
+					istream >> tempBound.bDirichletRight;
+				}
+				int discreteLevel= 0;
+				int vectorLength = 0;
+				std::vector<double>* vec = new std::vector<double>[DIM];
+				for (size_t i = 0; i < DIM; i++)
+				{
+					istream >> discreteLevel;
+					vectorLength = pow(2,discreteLevel)+1;
+					vec[i]= std::vector<double>(vectorLength,0);
+					for(int j=0; j<vectorLength;j++){
+						istream >> vec[i][j];
+					}
+				}
+
+				stretching = new Stretching(DIM, vec);
+				delete[] vec;
+			}
+			else {
+				std::cout << "Unknown Container Id Given in parseGridDescription\n";
+			}
+		}
+
 
     	for(size_t i = 0; i < num; i++)
     	{

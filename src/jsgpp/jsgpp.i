@@ -26,9 +26,11 @@
 
 
 namespace std {
-	%template(DoubleVector) vector<double>;
-	%template(IndexValPair) pair<size_t, double>;
-	%template(IndexValVector) vector<pair<size_t, double> >;
+    %template(DoubleVector) vector<double>;
+    %template(IndexValPair) pair<size_t, double>;
+    %template(IndexValVector) vector<pair<size_t, double> >;
+    %template(SizeTVector) vector<size_t>;
+	%template(SizeTVector) vector<size_t>;
 	%template(SizeTVector) vector<size_t>;
 }
 
@@ -46,6 +48,7 @@ namespace std {
 %include "src/sgpp/grid/storage/hashmap/HashGridStorage.hpp"
 %include "src/sgpp/grid/GridStorage.hpp"
 %include "src/sgpp/grid/common/BoundingBox.hpp"
+%include "src/sgpp/grid/common/Stretching.hpp"
 %include "src/sgpp/grid/common/DirichletUpdateVector.hpp"
 
 %include "Operations.i"
@@ -57,12 +60,14 @@ namespace std {
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.hpp"
+%include "src/sgpp/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
 %include "GridFactory.i"
 
 %include "src/sgpp/tools/common/GridPrinter.hpp"
+%include "src/sgpp/tools/common/GridPrinterForStretching.hpp"
 %include "src/sgpp/tools/common/StdNormalDistribution.hpp"
 
 // the Bad
@@ -95,12 +100,15 @@ namespace std {
 %include "src/sgpp/application/pde/PDESolver.hpp"
 %include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
 %include "src/sgpp/application/pde/BlackScholesSolver.hpp"
+%include "src/sgpp/application/pde/BlackScholesSolverWithStretching.hpp"
 %include "src/sgpp/application/pde/HeatEquationSolver.hpp"
+%include "src/sgpp/application/pde/HeatEquationSolverWithStretching.hpp"
 %include "src/sgpp/application/finance/VariableDiscountFactor.hpp"
-
 
 %include "src/sgpp/basis/linear/noboundary/linear_base.hpp"
 %include "src/sgpp/basis/linear/boundary/linearboundaryBase.hpp"
+%include "src/sgpp/basis/linearstretched/noboundary/linearstretched_base.hpp"
+%include "src/sgpp/basis/linearstretched/boundary/linearstretchedboundaryBase.hpp"
 %include "src/sgpp/basis/modlinear/modified_linear_base.hpp"
 %include "src/sgpp/basis/poly/poly_base.hpp"
 %include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
@@ -125,6 +133,8 @@ namespace std {
 
 %template(SLinearBase) sg::linear_base<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) sg::linearboundaryBase<unsigned int, unsigned int>;
+%template(SLinearStretchedBase) sg::linearstretched_base<unsigned int, unsigned int>;
+%template(SLinearStretchedBoundaryBase) sg::linearstretchedboundaryBase<unsigned int, unsigned int>;
 %template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
 %template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;

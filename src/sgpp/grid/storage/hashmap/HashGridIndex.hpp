@@ -12,6 +12,7 @@
 #include "data/DataVector.hpp"
 
 #include "grid/common/BoundingBox.hpp"
+#include "grid/common/Stretching.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -304,6 +305,17 @@ public:
 	{
 		return q*(index[d] * pow(2.0, -static_cast<double>(level[d]))) + t;
 	}
+	/**
+	 * determines the coordinate in a given dimension
+	 *
+	 * @param d the dimension in which the coordinate should be calculated
+	 * @param stretch the stretching the index belongs to
+	 *
+	 * @return the coordinate in the given dimension
+	 */
+	double getCoordStretching(size_t d, Stretching* stretch){
+		return stretch->getCoordinates(level[d], index[d], d);
+	}
 
 	/**
 	 * determines if the grid point is an inner grid point
@@ -561,6 +573,26 @@ public:
 			}
 		}
     }
+    /**
+       * Sets the entries of DataVector p to the coordinates of the gridpoint with stretching
+       *
+       * @param p the (result) DataVector p that should be overwritten
+       * @param stretch reference to Stretching Object, that stores grid points in all dimensions
+       */
+    void getCoordsStretching(DataVector& p, Stretching & stretch)
+        {
+    		for(size_t i = 0; i < DIM; i++)
+    		{
+    			if(level[i] == 0)
+    			{
+    				p.set(i, (stretch.getIntervalWidth(i)*index[i])+stretch.getIntervalOffset(i));
+    			}
+    			else
+    			{
+    				p.set(i,stretch.getCoordinates(level[i],index[i], i));
+    			}
+    		}
+        }
 
     /**
      * Generates a string with all coordinates of the grid point.
@@ -628,6 +660,33 @@ public:
 
     	return return_stream.str();
     }
+
+    /**
+      * Generates a string with all coordinates of the grid point with bounding box
+      * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
+      *
+      * This version scales the coordinates with q and t
+      *
+      * @param stretch reference to Stretching Object, that stores all boundaries for all dimensions
+      *
+      * @return returns a string with the coordinates of the grid point separated by whitespace
+      */
+     std::string getCoordsStringStretching(Stretching& stretch)
+     {
+     	std::stringstream return_stream;
+
+     	for(size_t i = 0; i < DIM; i++)
+     	{
+     		return_stream << std::scientific << stretch.getCoordinates(level[i],index[i], i);
+
+     		if (i < DIM-1)
+     	     		{
+     	     			return_stream << " ";
+     	     		}
+     	}
+
+     	return return_stream.str();
+     }
 
     /**
       * Returns the sum of the one-dimensional levels, i.e. @f$ |\vec{l}|_1 @f$.

@@ -10,6 +10,7 @@
 
 #include "grid/Grid.hpp"
 #include "grid/common/BoundingBox.hpp"
+#include "grid/common/Stretching.hpp"
 
 #include <iostream>
 

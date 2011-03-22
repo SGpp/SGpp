@@ -13,6 +13,7 @@
 #include "basis/modwavelet/modified_wavelet_base.hpp"
 #include "basis/modbspline/modified_bspline_base.hpp"
 #include "basis/linear/boundary/linearboundaryBase.hpp"
+#include "basis/linearstretched/boundary/linearstretchedboundaryBase.hpp"
 
 #include <vector>
 #include <utility>

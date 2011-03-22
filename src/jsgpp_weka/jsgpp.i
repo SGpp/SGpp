@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 %module jsgpp
 
@@ -25,9 +25,9 @@
 
 
 namespace std {
-	%template(DoubleVector) vector<double>;
-	%template(IndexValPair) pair<size_t, double>;
-	%template(IndexValVector) vector<pair<size_t, double> >;
+    %template(DoubleVector) vector<double>;
+    %template(IndexValPair) pair<size_t, double>;
+    %template(IndexValVector) vector<pair<size_t, double> >;
 }
 
 // This should include all necessary header files
@@ -42,6 +42,7 @@ namespace std {
 %include "src/sgpp/grid/storage/hashmap/HashGridStorage.hpp"
 %include "src/sgpp/grid/GridStorage.hpp"
 %include "src/sgpp/grid/common/BoundingBox.hpp"
+%include "src/sgpp/grid/common/Stretching.hpp"
 %include "src/sgpp/grid/common/DirichletUpdateVector.hpp"
 
 %include "Operations.i"
@@ -53,6 +54,7 @@ namespace std {
 %include "src/sgpp/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/TrapezoidBoundaryGridGenerator.hpp"
+%include "src/sgpp/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
@@ -86,6 +88,8 @@ namespace std {
 
 %include "src/sgpp/basis/linear/noboundary/linear_base.hpp"
 %include "src/sgpp/basis/linear/boundary/linearboundaryBase.hpp"
+%include "src/sgpp/basis/linearstretched/noboundary/linearstretched_base.hpp"
+%include "src/sgpp/basis/linearstretched/boundary/linearstretchedboundaryBase.hpp"
 %include "src/sgpp/basis/modlinear/modified_linear_base.hpp"
 %include "src/sgpp/basis/poly/poly_base.hpp"
 %include "src/sgpp/basis/modpoly/modified_poly_base.hpp"
@@ -110,6 +114,8 @@ namespace std {
 
 %template(SLinearBase) sg::linear_base<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) sg::linearboundaryBase<unsigned int, unsigned int>;
+%template(SLinearStretchedBase) sg::linearstretched_base<unsigned int, unsigned int>;
+%template(SLinearStretchedBoundaryBase) sg::linearstretchedboundaryBase<unsigned int, unsigned int>;
 %template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
 %template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
