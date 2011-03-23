@@ -234,6 +234,18 @@ void testPoissonEquation(size_t dim, size_t level, double bound_left, double bou
 	rhsFile << "SG_Poisson_InnerRHS_" << dim << "d_" << level << "l.vec";
 	myPoisSolver->storeInnerRHS(*alpha, rhsFile.str());
 
+	// print inner matrix, diagonal only
+	std::stringstream mtxDiagFile;
+	mtxDiagFile.clear();
+	mtxDiagFile << "SG_Poisson_InnerMatrixDiagonal_" << dim << "d_" << level << "l.mtx";
+	myPoisSolver->storeInnerMatrixDiagonal(mtxDiagFile.str());
+
+	// print inner matrix, diagonal containing row sum
+	std::stringstream mtxDiagRowSumFile;
+	mtxDiagRowSumFile.clear();
+	mtxDiagRowSumFile << "SG_Poisson_InnerMatrixDiagonalRowSum_" << dim << "d_" << level << "l.mtx";
+	myPoisSolver->storeInnerMatrixDiagonalRowSum(mtxDiagRowSumFile.str());
+
 	// print inner solution
 	std::stringstream solFile;
 	solFile.clear();
