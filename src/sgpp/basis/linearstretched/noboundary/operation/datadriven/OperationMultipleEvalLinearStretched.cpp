@@ -18,18 +18,18 @@ namespace sg
 
 void OperationMultipleEvalLinearStretched::mult(DataVector& alpha, DataVector& result)
 {
-	AlgorithmMultipleEvaluation<SLinearStretchedBase> op;
+	AlgorithmDGEMV<SLinearStretchedBase> op;
 	linearstretched_base<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, *(this->dataset_), result);
 }
 
-void OperationMultipleEvalLinearStretched::multTranspose(DataVector& alpha, DataVector& result)
+void OperationMultipleEvalLinearStretched::multTranspose(DataVector& source, DataVector& result)
 {
-	AlgorithmMultipleEvaluation<SLinearStretchedBase> op;
+	AlgorithmDGEMV<SLinearStretchedBase> op;
 	linearstretched_base<unsigned int, unsigned int> base;
 
-	op.mult_transpose(storage, base, alpha, *(this->dataset_), result);
+	op.mult_transposed(storage, base, source, *(this->dataset_), result);
 }
 
 }
