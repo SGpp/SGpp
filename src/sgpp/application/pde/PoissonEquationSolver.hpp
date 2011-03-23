@@ -79,6 +79,22 @@ public:
 	void storeInnerMatrix(std::string tFilename);
 
 	/**
+	 * Routine to export inner system matrix's diagonal as
+	 * diagonal matrix in matrix market format
+	 *
+	 * @param tFilename file into which the matrix is written
+	 */
+	void storeInnerMatrixDiagonal(std::string tFilename);
+
+	/**
+	 * Routine to export inner system matrix's row sum as
+	 * diagonal matrix in matrix market format
+	 *
+	 * @param tFilename file into which the matrix is written
+	 */
+	void storeInnerMatrixDiagonalRowSum(std::string tFilename);
+
+	/**
 	 * Routine to export the RHS of the inner system which has to be
 	 * solved in order to solve the Poisson equation
 	 *

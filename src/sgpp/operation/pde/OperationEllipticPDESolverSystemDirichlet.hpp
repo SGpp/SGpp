@@ -90,6 +90,19 @@ protected:
 	 */
 	void getMatrixDiagonal(std::string& mtxString, bool complete);
 
+	/**
+	 * Use this function in order to obtain the system for
+	 * solving an elliptical PDE on Sparse Grids with an extern
+	 * solver (e.g. Intel's MKL). The matrix is written into the
+	 * mtxString in Matrix Market format (http://math.nist.gov/MatrixMarket/formats.html).
+	 *
+	 * The system's row sum is exported as a diagonal matrix
+	 *
+	 * @param mtxString reference to string-object into which the serialized matrix is stored
+	 * @param complete indicates whether the matrix of the complete system (including boundaries) (=true) should be generated or not
+	 */
+	void getMatrixDiagonalRowSum(std::string& mtxString, bool complete);
+
 public:
 	/**
 	 * Constructor
@@ -171,6 +184,23 @@ public:
 	 * @return the number of non zeros in the system matrix
 	 */
 	void getInnerMatrixDiagonal(std::string& mtxString);
+
+	/**
+	 * Use this function in order to obtain the system for
+	 * solving an elliptical PDE on Sparse Grids with an extern
+	 * solver (e.g. Intel's MKL). The matrix is written into the
+	 * mtxString in Matrix Market format (http://math.nist.gov/MatrixMarket/formats.html).
+	 *
+	 * For this function the matrix excluding the boundary ansatzfunctions
+	 * is generated
+	 *
+	 * The systemmatrix's row sum is exported as a diagonal matrix
+	 *
+	 * @param mtxString reference to string-object into which the serialized matrix is stored
+	 *
+	 * @return the number of non zeros in the system matrix
+	 */
+	void getInnerMatrixDiagonalRowSum(std::string& mtxString);
 };
 
 }

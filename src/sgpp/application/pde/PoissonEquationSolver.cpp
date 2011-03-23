@@ -174,6 +174,50 @@ void PoissonEquationSolver::storeInnerMatrix(std::string tFilename)
 	delete mySystem;
 }
 
+void PoissonEquationSolver::storeInnerMatrixDiagonal(std::string tFilename)
+{
+	DataVector rhs(this->myGrid->getSize());
+	rhs.setAll(0.0);
+	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), rhs);
+	SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+	std::string mtx = "";
+
+	std::cout << "Generating diagonal matrix in MatrixMarket format..." << std::endl;
+	myStopwatch->start();
+	mySystem->getInnerMatrixDiagonal(mtx);
+
+	std::ofstream outfile(tFilename.c_str());
+	outfile << mtx;
+	outfile.close();
+	std::cout << "Generating diagonal matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+	delete myStopwatch;
+	delete mySystem;
+}
+
+void PoissonEquationSolver::storeInnerMatrixDiagonalRowSum(std::string tFilename)
+{
+	DataVector rhs(this->myGrid->getSize());
+	rhs.setAll(0.0);
+	PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), rhs);
+	SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+	std::string mtx = "";
+
+	std::cout << "Generating row sum diagonal matrix in MatrixMarket format..." << std::endl;
+	myStopwatch->start();
+	mySystem->getInnerMatrixDiagonalRowSum(mtx);
+
+	std::ofstream outfile(tFilename.c_str());
+	outfile << mtx;
+	outfile.close();
+	std::cout << "Generating row sum diagonal matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+	delete myStopwatch;
+	delete mySystem;
+}
+
 void PoissonEquationSolver::storeInnerRHS(DataVector& alpha, std::string tFilename)
 {
 	SGppStopwatch* myStopwatch = new SGppStopwatch();
