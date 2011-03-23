@@ -212,6 +212,19 @@ ifeq ($(CC),mpiicpc)
 endif
 
 ###################################################################
+# Builds a simple Heat Equation Solver with Stretching
+###################################################################	
+HESolverWithStretching: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/HESolverWithStretching_gcc
+	make -f ./../../../src/makefileNativeHeatEquationSolverWithStretching --directory=./tmp/build_native/HESolverWithStretching_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolverWithStretching_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/HESolverWithStretching_icc
+	make -f ./../../../src/makefileNativeHeatEquationSolverWithStretching --directory=./tmp/build_native/HESolverWithStretching_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolverWithStretching_ICC" "EXT=$(EXT)"
+endif
+
+###################################################################
 # Builds a ClassifyBenchmark Application
 ###################################################################	
 ClassifyBenchmark: default

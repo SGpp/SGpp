@@ -9,9 +9,6 @@
 #ifndef DIRICHLETUPDATEVECTOR_HPP
 #define DIRICHLETUPDATEVECTOR_HPP
 
-#include "grid/common/BoundingBox.hpp"
-#include "grid/common/Stretching.hpp"
-
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
@@ -33,10 +30,10 @@ namespace sg
 class DirichletUpdateVector
 {
 private:
-	/// bounding box of the grid
-	BoundingBox* myBoundingBox;
-	/// stretching of the grid
-	Stretching* myStretching;
+//	/// bounding box of the grid
+//	BoundingBox* myBoundingBox;
+//	/// stretching of the grid
+//	Stretching* myStretching;
 	/// Grid Storage object
 	GridStorage* storage;
 

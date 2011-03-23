@@ -10,7 +10,7 @@
 
 namespace sg
 {
-DirichletUpdateVector::DirichletUpdateVector(GridStorage* storage): myBoundingBox(storage->getBoundingBox()), myStretching(storage->getStretching()), storage(storage)
+DirichletUpdateVector::DirichletUpdateVector(GridStorage* storage):  storage(storage)
 {
 }
 

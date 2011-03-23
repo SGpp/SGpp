@@ -8,7 +8,6 @@
 #ifndef BLACKSCHOLESSOLVER_HPP
 #define BLACKSCHOLESSOLVER_HPP
 
-//#include "sgpp.hpp"
 
 #include "application/pde/ParabolicPDESolver.hpp"
 
@@ -23,6 +22,7 @@
 #include "tools/common/StdNormalDistribution.hpp"
 
 #include "application/common/ScreenOutput.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 #include <iostream>
 #include <string>

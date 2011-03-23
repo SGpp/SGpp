@@ -11,6 +11,8 @@
 #include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+#include "solver/ode/AdamsBashforth.hpp"
+#include "solver/ode/VarTimestep.hpp"
 #include "solver/ode/StepsizeControlH.hpp"
 #include "solver/ode/StepsizeControlBDF.hpp"
 #include "solver/ode/StepsizeControlEJ.hpp"
@@ -22,7 +24,6 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
-#include "sgpp.hpp"
 
 namespace sg
 {
