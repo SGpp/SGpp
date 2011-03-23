@@ -60,9 +60,11 @@ void writeHelp()
 	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	stretchingMode: gives the stretching mode, can be either analytic or discrete" << std::endl;
+	mySStream << "	file_stretch: file containing the stretching data, file format different depending on the mode" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "HESolver HeatEquation 3 5 0.0 3.0 1.0 smooth 1.0 0.1 ImEul 0.00001 400" << std::endl;
+	mySStream << "HESolver HeatEquation 3 5 0.0 3.0 1.0 smooth 1.0 0.1 ImEul 0.00001 400 analytic fileStretch.data" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
 	mySStream << "	heatStart.gnuplot: the start condition" << std::endl;
@@ -78,9 +80,11 @@ void writeHelp()
 	mySStream << "	initHeat: initial heat distribution" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "	stretchingMode: gives the stretching mode, can be either analytic or discrete" << std::endl;
+	mySStream << "	file_stretch: file containing the stretching data, file format different depending on the mode" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "HESolver PoissonEquation 3 5 0.0 3.0 smooth 0.00001 400" << std::endl;
+	mySStream << "HESolver PoissonEquation 3 5 0.0 3.0 smooth 0.00001 400 analytic fileStretch.data" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
 	mySStream << "	poissonStart.gnuplot: the start condition" << std::endl;
