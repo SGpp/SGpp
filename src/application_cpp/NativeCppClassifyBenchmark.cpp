@@ -165,6 +165,9 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     double execTime = 0.0;
     double acc = 0.0;
     double accTest = 0.0;
+    double GFlops = 0.0;
+    double GBytes = 0.0;
+
 	sg::ARFFTools ARFFTool;
 	std::string tfileTrain = dataFile;
 	std::string tfileTest = testFile;
@@ -172,6 +175,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	size_t nDim = ARFFTool.getDimension(tfileTrain);
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
 	size_t nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
+	size_t nGridsize = 0;
 
 	std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
@@ -235,6 +239,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 #endif
 
     std::cout << "Starting Learning...." << std::endl;
+
     // execute adaptsteps
     sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
     myStopwatch->start();
@@ -268,6 +273,26 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
+
+    	// Calc flops and mem bandwidth
+    	nGridsize = myGrid->getStorage()->size();
+    	GFlops += 1e-9*static_cast<double>(myCG->getNumberIterations())
+    			*(2.0
+    			*((static_cast<double>(nDim)
+    			*(static_cast<double>(nGridsize)
+    			*static_cast<double>(nInstancesNo)))*6.0));
+
+    	// GBytes for Eval
+    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
+    			*((static_cast<double>(nInstancesNo)*2.0*static_cast<double>(nDim)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(double)))
+    				+(static_cast<double>(nInstancesNo)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(double)))
+    				+(static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(double))));
+
+    	// GBytes for EvalTrans
+    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
+    			*((static_cast<double>(nGridsize)*static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(double)))
+    			+(static_cast<double>(nGridsize)*2.0*static_cast<double>(nDim)*static_cast<double>(sizeof(double))));
+
 
 #ifndef TEST_LAST_ONLY
 		// Do tests on test data
@@ -361,6 +386,9 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << "         mult (compute) : " << computeMult << " seconds" << std::endl;
     std::cout << "  mult trans. (complete): " << completeMultTrans << " seconds" << std::endl;
     std::cout << "  mult trans. (compute) : " << computeMultTrans << " seconds" << std::endl;
+    std::cout << std::endl << std::endl;
+    std::cout << "GFlop/s: " << GFlops/execTime << std::endl;
+    std::cout << "GByte/s: " << GBytes/execTime << std::endl;
 #else
     std::cout << "Needed time: " << execTime << " seconds (Double Precision, recursive)" << std::endl;
 #endif
@@ -397,6 +425,8 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	double execTime = 0.0;
     double acc = 0.0;
     double accTest = 0.0;
+    double GFlops = 0.0;
+    double GBytes = 0.0;
 	sg::ARFFTools ARFFTool;
 	std::string tfileTrain = dataFile;
 	std::string tfileTest = testFile;
@@ -404,6 +434,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	size_t nDim = ARFFTool.getDimension(tfileTrain);
 	size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
 	size_t nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
+	size_t nGridsize = 0;
 
 	std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
@@ -514,6 +545,25 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
+    	// Calc flops and mem bandwidth
+    	nGridsize = myGrid->getStorage()->size();
+    	GFlops += 1e-9*static_cast<double>(myCG->getNumberIterations())
+    			*(2.0
+    			*((static_cast<double>(nDim)
+    			*(static_cast<double>(nGridsize)
+    			*static_cast<double>(nInstancesNo)))*6.0));
+
+    	// GBytes for Eval
+    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
+    			*((static_cast<double>(nInstancesNo)*2.0*static_cast<double>(nDim)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(float)))
+    				+(static_cast<double>(nInstancesNo)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(float)))
+    				+(static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(float))));
+
+    	// GBytes for EvalTrans
+    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
+    			*((static_cast<double>(nGridsize)*static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(float)))
+    			+(static_cast<double>(nGridsize)*2.0*static_cast<double>(nDim)*static_cast<double>(sizeof(float))));
+
     	// Do tests on test data
 #ifndef TEST_LAST_ONLY
     	convertDataVectorSPToDataVector(alphaSP, alpha);
@@ -608,6 +658,9 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << "         mult (compute) : " << computeMult << " seconds" << std::endl;
     std::cout << "  mult trans. (complete): " << completeMultTrans << " seconds" << std::endl;
     std::cout << "  mult trans. (compute) : " << computeMultTrans << " seconds" << std::endl;
+    std::cout << std::endl << std::endl;
+    std::cout << "GFlop/s: " << GFlops/execTime << std::endl;
+    std::cout << "GByte/s: " << GBytes/execTime << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
