@@ -85,3 +85,8 @@ testFile = ['./tests/test_main.cpp']
 
 # build the tester and the two binaries code 
 env.Program('test',[ testFile , sourceFiles ])
+env.Library('combigrid', [sourceFiles])
+
+#Command(["lib/libcombigrid.a"], ["libcombigrid.a"], Copy("$TARGET", "$SOURCE"))
+#Command("#././lib/sgpp/libcombigrid.a", "#libcombigrid.a", Copy("$TARGET", "$SOURCE"))
+#Command("cp libcombigrid.a ../../../lib/sgpp/libcombigrid.a")

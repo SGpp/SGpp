@@ -102,6 +102,6 @@ namespace combigrid{
 	}
 
 
-};
+}
 
 #endif /* COMBIGRID_ULTILS_HPP_ */

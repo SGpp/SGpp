@@ -8,8 +8,7 @@
 #ifndef TESTFULLGRID_HPP_
 #define TESTFULLGRID_HPP_
 
-#include "combigrid/fullgrid/CombiFullGrid.hpp"
-#include "combigrid/utils/combigrid_ultils.hpp"
+#include "combigrid.hpp"
 
 namespace combigrid{
 

@@ -103,13 +103,14 @@ namespace combigrid{
 		 * @param alpha , the coefficient vector with which the combi grid values will be set */
 		virtual void deCompose(sg::GridStorage* gridstorageSGpp , DataVector* alpha) = 0;
 
+
+	protected:
+
 		/** return the combi kernel, needed for the combination of the full grids */
 		inline const CombiGridKernelD* getCombiKernel() const { return combikernel_; }
 
 		/** return the combi scheme */
 		inline const CombiSchemeBasis* getCombiScheme() const { return combischeme_; }
-
-protected:
 
 		/** pointer to the combi scheme which is set from the constructor argument */
 		const CombiSchemeBasis* combischeme_;
