@@ -13,7 +13,7 @@
 #define DIV_SIGMA 4.0
 #define DISTRI_FACTOR 5.0
 
-#define EXPORT_MATRIX_FILES
+//#define EXPORT_MATRIX_FILES
 
 #include <cstdlib>
 #include <sstream>
@@ -156,6 +156,84 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 	{
 		myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatSolved.gnuplot");
 	}
+
+#ifdef EXPORT_MATRIX_FILES
+	// print inner matrix
+	std::stringstream mtxFile;
+	mtxFile.clear();
+	alpha->setAll(0.0);
+	if (initFunc == "smooth")
+	{
+		myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+	}
+	else
+	{
+		writeHelp();
+	}
+	mtxFile << "SG_HeatEquation_InnerMatrix_" << dim << "d_" << level << "l.mtx";
+	myHESolver->storeInnerMatrix(*alpha, mtxFile.str(), dt);
+
+	// print inner matrix, diagonal
+	std::stringstream mtxFileDiagonal;
+	mtxFileDiagonal.clear();
+	alpha->setAll(0.0);
+	if (initFunc == "smooth")
+	{
+		myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+	}
+	else
+	{
+		writeHelp();
+	}
+	mtxFileDiagonal << "SG_HeatEquation_InnerMatrixDiagonal_" << dim << "d_" << level << "l.mtx";
+	myHESolver->storeInnerMatrixDiagonal(*alpha, mtxFileDiagonal.str(), dt);
+
+	// print inner matrix, diagonal row sum
+	std::stringstream mtxFileDiagonalRowSum;
+	mtxFileDiagonalRowSum.clear();
+	alpha->setAll(0.0);
+	if (initFunc == "smooth")
+	{
+		myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+	}
+	else
+	{
+		writeHelp();
+	}
+	mtxFileDiagonalRowSum << "SG_HeatEquation_InnerMatrixDiagonalRowSum_" << dim << "d_" << level << "l.mtx";
+	myHESolver->storeInnerMatrixDiagonalRowSum(*alpha, mtxFileDiagonalRowSum.str(), dt);
+
+	// print inner rhs
+	std::stringstream rhsFile;
+	rhsFile.clear();
+	alpha->setAll(0.0);
+	if (initFunc == "smooth")
+	{
+		myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+	}
+	else
+	{
+		writeHelp();
+	}
+	rhsFile << "SG_HeatEquation_InnerRHS_" << dim << "d_" << level << "l.vec";
+	myHESolver->storeInnerRHS(*alpha, rhsFile.str(), dt);
+
+	// print inner solution
+	std::stringstream solFile;
+	solFile.clear();
+	alpha->setAll(0.0);
+	if (initFunc == "smooth")
+	{
+		myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+	}
+	else
+	{
+		writeHelp();
+	}
+	solFile << "SG_HeatEquation_InnerSolution_" << dim << "d_" << level << "l.vec";
+	myHESolver->storeInnerSolution(*alpha, timesteps, dt, cg_its, cg_eps, solFile.str());
+	std::cout << std::endl << std::endl;
+#endif
 
 	delete myHESolver;
 	delete myBoundingBox;

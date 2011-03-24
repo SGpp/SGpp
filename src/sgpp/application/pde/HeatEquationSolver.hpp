@@ -87,6 +87,59 @@ public:
 	 * Inits the screen object
 	 */
 	void initScreen();
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the RHS of the inner system which has to be
+	 * solved in order to solve the Poisson equation
+	 *
+	 * @param alpha the start solution
+	 * @param tFilename file into which the rhs is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the solution of the inner system which
+	 * has been calculated by Up/Down scheme
+	 *
+	 * @param alpha the start solution
+	 * @param numTimesteps number timesteps
+	 * @param timestepsize size of timesteps
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the C
+	 * @param tFilename file into which the rhs is written
+	 */
+	void storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
 };
 
 }
