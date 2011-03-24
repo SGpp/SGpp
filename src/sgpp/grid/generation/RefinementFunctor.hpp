@@ -14,7 +14,7 @@ namespace sg
 {
 
 /**
- * Abstract class the defines the interface that refinement functors have to provide
+ * Abstract class that defines the interface that refinement functors have to provide
  * @version $HEAD$
  */
 class RefinementFunctor
@@ -44,26 +44,27 @@ public:
 	virtual double operator()(GridStorage* storage, size_t seq) = 0;
 
 	/**
-	 * This should return the initial value of refinement criterion (e.g. alpha or error).
+	 * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
+	 * The refinement value of grid points to be refined have to be larger than this value
 	 *
-	 * @return the initial value
+	 * @return lower bound
 	 */
 	virtual double start() = 0;
 
 	/**
 	 * Returns the maximal number of points that should be refined.
 	 *
-	 * The maximal number of points to refine is set in the constructor of implementation class.
+	 * The maximal number of points to refine is set in the constructor of the implementing class.
 	 *
 	 * @return number of points that should refined. Default value: 1.
 	 */
 	virtual size_t getRefinementsNum(){ return 1;}
 
 	/**
-	 * Returns the threshold value.
+	 * Returns the threshold for refinement.
 	 *
-	 * Only the grid points with absolute value of refinement criterion (e.g. alpha or error) greater
-	 * or equal to this threshold will be refined
+	 * Only the grid points with absolute value of refinement criterion (e.g., alpha or error) greater
+	 * or equal to this threshold will be refined.
 	 *
 	 * @return threshold value for refinement. Default value: 0.
 	 */
