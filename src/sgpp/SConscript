@@ -25,6 +25,13 @@ grid/combination/FullGrid.cpp
 grid/combination/FullGridSet.cpp
 grid/combination/LinearFullGrid.cpp
 
+combigrid/basisfunction/CombiLinearBasisFunction.cpp
+combigrid/combigrid/SerialCombiGrid.cpp
+combigrid/combischeme/CombiS_CT.cpp  
+combigrid/combischeme/CombiSchemeBasis.cpp  
+combigrid/combischeme/CombiTS_CT.cpp
+combigrid/converter/CombiSGppConverter.cpp
+
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp
 grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp

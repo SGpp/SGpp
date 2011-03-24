@@ -5,7 +5,7 @@
  *      Author: benk
  */
 
-#include "combigrid/utils/combigrid_ultils.hpp"
+
 #include "combigrid/tests/TestFullGrid.hpp"
 #include "combigrid/tests/TestCombiGridKernel.hpp"
 #include "combigrid/tests/TestSerialCombiGrid.hpp"
