@@ -272,7 +272,7 @@ public:
 	/**
 	 * serialize the gridstorage into a string
 	 *
-	 * @return a string the contains all gridstorage information
+	 * @return a string that contains all gridstorage information
 	 */
 	std::string serialize()
 	{

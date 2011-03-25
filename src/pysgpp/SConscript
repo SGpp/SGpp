@@ -5,18 +5,14 @@
 # author Joerg Blank (blankj@in.tum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
-srcs = Split("""
-pysgpp.i
-""")
-
 Import('env')
 Import('src_objs')
 
 py_env = env.Clone()
 
-py_env.Append(SWIGFLAGS=['-c++','-python'])
-py_env.Append(CPPPATH=['#/src/sgpp'])
+py_env.AppendUnique(SWIGFLAGS=['-c++','-python'], CPPPATH=['#/src/sgpp'])
 
-pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+pysgpp = py_env.SharedLibrary(target="pysgpp", source = ['pysgpp.i']+src_objs, SHLIBPREFIX = '_')
 
 Export('pysgpp')
+Return('pysgpp')

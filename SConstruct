@@ -8,6 +8,72 @@
 import os
 import distutils.sysconfig
 
+# Check for versions of Scons and Python
+EnsureSConsVersion(1, 0)
+EnsurePythonVersion(2, 5)
+
+# Custom test for executables used during configuration
+def CheckExec(context, cmd):
+    context.Message( 'Checking for %s...' % (cmd) )
+    ret = context.env.WhereIs(cmd)
+    if ret == None:
+        ret = ''
+    context.Result(ret)
+    return ret
+
+# get all subdirs of path, required by CheckJNI
+def getSubdirs(path):
+    pathlist = []
+    for f in os.listdir(path):
+        if os.path.isdir(os.path.join(path, f)):
+            pathlist.append(os.path.join(path, f))
+    return pathlist
+
+# Check for jni header file
+# if found, additionally add all subdirs to CPPPATH (platform dependent files)
+def CheckJNI(context):
+    found = False
+    print "Trying to locate jni.h..."
+    # message if JNI_CPPINCLUDE not set
+    if not os.environ.get('JNI_CPPINCLUDE'):
+        print "... JNI_CPPINCLUDE not set"
+    # check for JAVA_HOME first
+    if os.environ.get('JAVA_HOME'):
+        pname = os.path.join(os.environ.get('JAVA_HOME'), 'include')
+        if os.path.exists(os.path.join(pname, 'jni.h')):
+            context.env.Append(CPPPATH = [pname]+getSubdirs(pname))
+            res = "... found in "+pname
+            context.Result(res)
+            return res
+        else:
+            print "... not found in $JAVA_HOME/include"
+    else:
+        print "... JAVA_HOME not set"
+        # not found, try guessing:
+        # look, where java and javac are located: include/ directory might be 1 or 2 dirs below
+        print "... trying to guess"
+        for f in ['java', 'javacc']:
+            fdir = context.env.WhereIs(f)
+            if not fdir:
+                continue
+            # os.path.realpath to resolve links
+            basedir = os.path.dirname(os.path.realpath(fdir))
+            for subdir in ['..', os.path.join('..','..')]:
+                pname = os.path.join(basedir, subdir, 'include')
+                if os.path.exists(os.path.join(pname, 'jni.h')):
+                    context.env.Append(CPPPATH = [pname]+getSubdirs(pname))
+                    res = "... found in "+pname
+                    context.Result(res)
+                    return res
+    ret = 0
+    context.Result('... nothing found!')
+    return ret
+
+
+
+
+
+
 vars = Variables("custom.py")
 
 # define the flags 
@@ -22,8 +88,9 @@ vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
 
 # for building the the jsgpp lib
 vars.Add('JSGPP', 'Build jsgpp if set to True', False)
-vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
-vars.Add('JNI_OS', 'JNI os path', None)
+#vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
+#vars.Add('JNI_OS', 'JNI os path', None)
+
 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
@@ -31,23 +98,44 @@ vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
 
 env = Environment(variables = vars, ENV = os.environ)
 
-# Specifying the target
-# there are several targets avialable:
-# 	- default: using the gcc toolchain with OpenMP 2
-#	- opteronICC: using the ICC 11.x toolchain with OpenMP 3 with standard x86_64 options
-#	- core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (core architecture)
-#	- nehalemICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (nehalem architecture)
-#	- snbICC: using the ICC 12.x toolchain with OpenMP 3 with Intel x86_64 options (sandy bridge architecture)
-#	- ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
-#
-# FOR LRZ please execute:
-# module load python
-# module load gcc/4.5
-#
-# FOR LRZ and when using intel compiler:
-#
-# execute:
-# export LIBPATH=$LD_LIBRARY_PATH
+
+# Help Text
+Help("""---------------------------------------------------------------------
+
+Type: 'scons [parameters]' to build the libraries
+
+There are compiler optimizations for different platforms which can be
+specified via parameters.
+
+Parameters can be set either by setting the corresponding environment
+variables, or directly via the commandline, e.g.,
+> scons OMP=True
+to enable OpenMP support.
+
+
+Specifying the target, the following options are available:
+    - default: using the gcc toolchain with OpenMP 2
+    - opteronICC: using the ICC 11.x toolchain with OpenMP 3 with standard x86_64 options
+    - core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (core architecture)
+    - nehalemICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (nehalem architecture)
+    - snbICC: using the ICC 12.x toolchain with OpenMP 3 with Intel x86_64 options (sandy bridge architecture)
+    - ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
+
+For LRZ, please execute:
+module load python
+module load gcc/4.5
+
+FOR LRZ and when using intel compiler, execute:
+export LIBPATH=$LD_LIBRARY_PATH
+
+---------------------------------------------------------------------
+
+Parameters are:
+""" +
+vars.GenerateHelpText(env))
+
+
+
 
 
 # scons usually adds double quotes around the command-line arguments containing 
@@ -124,12 +212,65 @@ if env.has_key('MARCH'):
     else:
         print "Warning: Ignoring option MARCH"
          
-# add path of python includes
-env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
 
-if not env.GetOption('clean'):	
-    config = env.Configure()
-	
+
+# boolean variables for environment 
+pyAvail = True
+swigAvail = True
+javaAvail = True
+
+# configure environment
+# ---------------------
+if not env.GetOption('clean'):
+
+    config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
+                                            'CheckJNI' : CheckJNI })
+
+    # check if the math header is available
+    if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
+        sys.stderr.write("Error: Math headers are missing.\n")
+        Exit(1)
+
+    # check whether swig installed
+    if not config.CheckExec('swig'):
+        sys.stderr.write("Error: swig cannot be found. Check PATH environment variable!\n")
+        swigAvail = False
+
+    # check for Python headers
+    config.env.AppendUnique(CPPPATH = distutils.sysconfig.get_python_inc())
+    if not config.CheckCXXHeader('Python.h'):
+        sys.stderr.write("Error: Python.h not found. Check path to Python include files: "
+                         + distutils.sysconfig.get_python_inc() + "\n")
+        sys.stderr.write("Warning: You might have to install package python-dev\n")
+        sys.stderr.write("... skipping Python support and unit tests")
+        pyAvail = False
+
+    # check for $JAVA_HOME; prepend to search path
+    if os.environ.get('JAVA_HOME'):
+        config.env.PrependENVPath('PATH', os.path.join(os.environ.get('JAVA_HOME'), 'bin'))
+
+    # check whether javac installed
+    if not config.CheckExec('javac'):
+        sys.stderr.write("Error: javac cannot be found. Check PATH environment variable!\n")
+        javaAvail = False
+    # check whether javac installed
+    if javaAvail and not config.CheckExec('java'):
+        sys.stderr.write("Warning: java cannot be found. Check PATH environment variable!\n")
+
+    # check for JNI headers
+    if javaAvail and os.environ.get('JNI_CPPINCLUDE'):
+        config.env.AppendUnique(CPPPATH = [os.environ.get('JNI_CPPINCLUDE')])
+    if javaAvail and not config.CheckCXXHeader('jni.h'):
+        # not found; try to find
+        if not config.CheckJNI():
+            sys.stderr.write("Error: jni.h not found.\n"
+                             +"Please set JAVA_HOME environment variable "
+                             +"with $JAVA_HOME/bin/javac, $JAVA_HOME/include/jni.h\n"
+                             +"or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h\n")
+            javaAvail = False
+    if not javaAvail:
+        sys.stderr.write("No Java support...\n")
+
     # check if the intel omp lib is available
     if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC'] and env['OMP']:
         if not config.CheckLib('iomp5'):
@@ -140,19 +281,7 @@ if not env.GetOption('clean'):
     if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC']:
         if not config.CheckLib('svml'):
             print "SVML should be available when using intelc. Consider runnning scons --config=force!"
-
-    # check if the math header is available
-    if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
-        print "Error: Math headers are missing."
-        Exit(1)
-        
-    # check if the Python headers are available
-    # @todo (heinecke) some old things that not work, should be fixed
-#    if not config.CheckCHeader('Python.h'):
-#        print "Error: Python.h not found. Check path to Python include files."
-#        print distutils.sysconfig.get_python_inc()
-#        Exit(1)
-
+            
     env = config.Finish()
 
 
@@ -161,40 +290,39 @@ env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 
 Export('env')
 
-#start build of pysgpp and jsgpp
-SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
-SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
-if env['JSGPP']:
-    SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
-    SConscript('src/jsgpp_weka/SConscript', build_dir='tmp/build_jsgpp_weka', duplicate=0)
+print "finished configuration"
 
-# Copy required files
-cpy = []
-cpy += Command("#lib/pysgpp/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#bin/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#lib/sgpp/libsgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
+
+# Now start for compilation...
+# ----------------------------
+
+# build c++ lib
+libsgpp = env.SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
+# install
+env.Install('lib/sgpp', [libsgpp])
+
+# build python lib
+if swigAvail and pyAvail:
+    libpysgpp = env.SConscript('src/pysgpp/SConscript',
+                               build_dir='tmp/build_pysgpp', duplicate=0)
+    # install
+    dep = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(dep, libpysgpp)
+    dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(dep, libpysgpp)
+    
+# build java lib
+if swigAvail and javaAvail and env['JSGPP']:
+    libjsgpp = env.SConscript('src/jsgpp/SConscript',
+                              build_dir='tmp/build_jsgpp', duplicate=0)
+    env.SConscript('src/jsgpp_weka/SConscript',
+                   build_dir='tmp/build_jsgpp_weka', duplicate=0)
+    # install
+    env.Install('lib/jsgpp', [libjsgpp])
 
 # Execute Unit Tests
-if not env['NO_UNIT_TESTS']:
-    SConscript('tests/SConscript')
+if not env['NO_UNIT_TESTS'] and pyAvail:
+    env.SConscript('tests/SConscript')
+else:
+    sys.stderr.write("Warning!! Skipping unit tests!!\n")
 
-
-# Help Text
-Help("""Type: 'scons [parameters]' to build the libraries
-
-There are compiler optimizations for different platforms which can be
-specified via parameters.
-
-Parameters can be set either by setting the corresponding environment
-variables, or directly via the commandline, e.g.,
-> scons OMP=True
-to enable OpenMP support.
-
----------------------------------------------------------------------
-
-Parameters are:
-""" +
-vars.GenerateHelpText(env))
