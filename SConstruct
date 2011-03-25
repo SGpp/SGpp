@@ -322,7 +322,10 @@ if swigAvail and javaAvail and env['JSGPP']:
 
 # Execute Unit Tests
 if not env['NO_UNIT_TESTS'] and pyAvail:
-    env.SConscript('tests/SConscript')
+    print "executing unit tests..."
+    dep = env.SConscript('tests/SConscript')
+    if javaAvail and env['JSGPP']:
+        Depends(dep, libjsgpp)
 else:
     sys.stderr.write("Warning!! Skipping unit tests!!\n")
 
