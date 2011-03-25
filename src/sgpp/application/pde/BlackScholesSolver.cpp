@@ -900,4 +900,150 @@ size_t BlackScholesSolver::getAverageInnerGridSize()
 	return this->avgInnerGridSize;
 }
 
+void BlackScholesSolver::storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize)
+{
+	if (this->bGridConstructed)
+	{
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+		std::string mtx = "";
+
+		myStopwatch->start();
+		std::cout << "Generating matrix in MatrixMarket format..." << std::endl;
+		myBSSystem->getInnerMatrix(mtx);
+
+		std::ofstream outfile(tFilename.c_str());
+		outfile << mtx;
+		outfile.close();
+		std::cout << "Generating matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+		delete myStopwatch;
+		delete myBSSystem;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::storeInnerMatrix : A grid wasn't constructed before!");
+	}
+}
+
+void BlackScholesSolver::storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize)
+{
+	if (this->bGridConstructed)
+	{
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+		std::string mtx = "";
+
+		myStopwatch->start();
+		std::cout << "Generating systemmatrix's diagonal in MatrixMarket format..." << std::endl;
+		myBSSystem->getInnerMatrixDiagonal(mtx);
+
+		std::ofstream outfile(tFilename.c_str());
+		outfile << mtx;
+		outfile.close();
+		std::cout << "Generating systemmatrix's diagonal in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+		delete myStopwatch;
+		delete myBSSystem;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::storeInnerMatrix : A grid wasn't constructed before!");
+	}
+}
+
+void BlackScholesSolver::storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize)
+{
+	if (this->bGridConstructed)
+	{
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+		std::string mtx = "";
+
+		myStopwatch->start();
+		std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format..." << std::endl;
+		myBSSystem->getInnerMatrixDiagonalRowSum(mtx);
+
+		std::ofstream outfile(tFilename.c_str());
+		outfile << mtx;
+		outfile.close();
+		std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+		delete myStopwatch;
+		delete myBSSystem;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::storeInnerMatrix : A grid wasn't constructed before!");
+	}
+}
+
+void BlackScholesSolver::storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize)
+{
+	if (this->bGridConstructed)
+	{
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+		myStopwatch->start();
+		std::cout << "Exporting inner right-hand-side..." << std::endl;
+		DataVector* rhs_inner = myBSSystem->generateRHS();
+
+		size_t nCoefs = rhs_inner->getSize();
+		std::ofstream outfile(tFilename.c_str());
+		for (size_t i = 0; i < nCoefs; i++)
+		{
+			outfile << std::scientific << rhs_inner->get(i) << std::endl;
+		}
+		outfile.close();
+		std::cout << "Exporting inner right-hand-side... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+
+		delete myStopwatch;
+		delete myBSSystem;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::storeInnerMatrix : A grid wasn't constructed before!");
+	}
+}
+
+void BlackScholesSolver::storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename)
+{
+	if (this->bGridConstructed)
+	{
+		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, false, 0, myScreen);
+		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+		myStopwatch->start();
+		std::cout << "Exporting inner solution..." << std::endl;
+		myEuler->solve(*myCG, *myBSSystem, false);
+
+		DataVector* alpha_solve = myBSSystem->getGridCoefficientsForCG();
+		size_t nCoefs = alpha_solve->getSize();
+		std::ofstream outfile(tFilename.c_str());
+		for (size_t i = 0; i < nCoefs; i++)
+		{
+			outfile << std::scientific << alpha_solve->get(i) << std::endl;
+		}
+		outfile.close();
+
+		std::cout << "Exporting inner solution... DONE!" << std::endl;
+
+		delete myStopwatch;
+		delete myBSSystem;
+		delete myCG;
+		delete myEuler;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before!");
+	}
+
+}
+
 }
