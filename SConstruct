@@ -5,7 +5,7 @@
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
-import os
+import os, sys
 import distutils.sysconfig
 
 # Check for versions of Scons and Python
@@ -295,9 +295,10 @@ print "finished configuration"
 # ----------------------------
 
 # build c++ lib
-libsgpp = env.SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
+(libsgpp, libsgppa) = env.SConscript('src/sgpp/SConscript',
+                                     build_dir='tmp/build_sg', duplicate=0)
 # install
-env.Install('lib/sgpp', [libsgpp])
+env.Install('lib/sgpp', [libsgpp, libsgppa])
 
 # build python lib
 if swigAvail and pyAvail:
