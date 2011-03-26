@@ -159,7 +159,6 @@ if env['TARGETCPU'] == 'default':
                          '-funroll-loops', '-ffloat-store'])
     if env['OMP']:
 	env.Append(CPPFLAGS=['-fopenmp'])
-    	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
     	
 elif env['TARGETCPU'] == 'ia64ICC':
@@ -203,7 +202,6 @@ if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbI
     if env['OMP']:
 	env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp']) 
-        env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE', 'USEICCINTRINSICS'])
     
 # sets the architecture option for gcc
 if env.has_key('MARCH'):
