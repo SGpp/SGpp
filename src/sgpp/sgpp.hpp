@@ -9,6 +9,7 @@
 #define SGPP_HPP_
 
 #include "grid/GridStorage.hpp"
+#include "grid/GridDataBase.hpp"
 
 #include "application/common/ScreenOutput.hpp"
 

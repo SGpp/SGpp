@@ -60,6 +60,8 @@ namespace std {
 
 %include "GridFactory.i"
 
+%include "src/sgpp/grid/GridDataBase.hpp"
+
 // the Bad
 %include "src/sgpp/data/DataVector.hpp"
 %include "src/sgpp/data/DataMatrix.hpp"

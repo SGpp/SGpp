@@ -72,6 +72,8 @@ namespace std {
 %include "src/sgpp/grid/combination/FullGridSet.hpp"
 %include "FullGridSet.i"
 
+%include "src/sgpp/grid/GridDataBase.hpp"
+
 // the Bad
 
 %include "DataVector.i"
