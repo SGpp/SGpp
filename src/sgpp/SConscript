@@ -296,7 +296,8 @@ src_objs = sg_env.SharedObject(srcs)
 Export('src_objs')
 
 libsgpp = sg_env.SharedLibrary(target="sgpp", source = src_objs)
+libsgppa = sg_env.StaticLibrary(target="sgpp", source = src_objs)
 #libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
 Export('libsgpp')
 
-Return('libsgpp')
+Return('libsgpp libsgppa')
