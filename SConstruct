@@ -305,8 +305,8 @@ if swigAvail and pyAvail:
     libpysgpp = env.SConscript('src/pysgpp/SConscript',
                                build_dir='tmp/build_pysgpp', duplicate=0)
     # install
-    dep = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-    Depends(dep, libpysgpp)
+    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(pyinst, libpysgpp)
     dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
     Depends(dep, libpysgpp)
     
@@ -314,17 +314,19 @@ if swigAvail and pyAvail:
 if swigAvail and javaAvail and env['JSGPP']:
     libjsgpp = env.SConscript('src/jsgpp/SConscript',
                               build_dir='tmp/build_jsgpp', duplicate=0)
-    env.SConscript('src/jsgpp_weka/SConscript',
-                   build_dir='tmp/build_jsgpp_weka', duplicate=0)
+    libweka = env.SConscript('src/jsgpp_weka/SConscript',
+                             build_dir='tmp/build_jsgpp_weka', duplicate=0)
     # install
-    env.Install('lib/jsgpp', [libjsgpp])
+    jinst = env.Install('lib/jsgpp', [libjsgpp])
 
 # Execute Unit Tests
 if not env['NO_UNIT_TESTS'] and pyAvail:
-    print "executing unit tests..."
     dep = env.SConscript('tests/SConscript')
+    # execute after all installations (even where not necessary)
     if javaAvail and env['JSGPP']:
-        Depends(dep, libjsgpp)
+        Depends(dep, [jinst, pyinst])
+    else:
+        Depends(dep, [pyinst])
 else:
     sys.stderr.write("Warning!! Skipping unit tests!!\n")
 

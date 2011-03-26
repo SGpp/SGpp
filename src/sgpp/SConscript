@@ -16,6 +16,7 @@ data/DataMatrixSP.cpp
 common/AlignedMemory.cpp
 
 grid/Grid.cpp
+grid/GridDataBase.cpp
 
 grid/common/BoundingBox.cpp
 grid/common/Stretching.cpp

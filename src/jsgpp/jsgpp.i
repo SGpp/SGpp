@@ -70,6 +70,8 @@ namespace std {
 %include "src/sgpp/tools/common/GridPrinterForStretching.hpp"
 %include "src/sgpp/tools/common/StdNormalDistribution.hpp"
 
+%include "src/sgpp/grid/GridDataBase.hpp"
+
 // the Bad
 %include "src/sgpp/data/DataVector.hpp"
 %include "src/sgpp/data/DataMatrix.hpp"
