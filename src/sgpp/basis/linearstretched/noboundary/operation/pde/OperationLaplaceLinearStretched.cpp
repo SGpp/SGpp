@@ -26,7 +26,6 @@ OperationLaplaceLinearStretched::~OperationLaplaceLinearStretched()
 {
 }
 
-#ifndef USEOMPTHREE
 void OperationLaplaceLinearStretched::specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
 {
 	// In direction gradient_dim we only calculate the norm of the gradient
@@ -43,26 +42,6 @@ void OperationLaplaceLinearStretched::specialOP(DataVector& alpha, DataVector& r
 		downOpDim(alpha, result, gradient_dim);
 	}
 }
-#endif
-
-#ifdef USEOMPTHREE
-void OperationLaplaceLinearStretched::specialOP_parallel(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
-{
-	// In direction gradient_dim we only calculate the norm of the gradient
-	// The up-part is empty, thus omitted
-	if(dim > 0)
-	{
-		DataVector temp(alpha.getSize());
-		updown_parallel(alpha, temp, dim-1, gradient_dim);
-		downOpDim(temp, result, gradient_dim);
-	}
-	else
-	{
-		// Terminates dimension recursion
-		downOpDim(alpha, result, gradient_dim);
-	}
-}
-#endif
 
 void OperationLaplaceLinearStretched::up(DataVector& alpha, DataVector& result, size_t dim)
 {
