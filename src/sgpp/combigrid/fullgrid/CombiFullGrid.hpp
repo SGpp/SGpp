@@ -109,8 +109,8 @@ public:
 	 	 double normcoord;
 	 	 // this value will be reseted, but just to avoid compiler warnings
 	 	 FG_ELEMENT ret_val = fullgridVector_[0];
-		 double intersect[2*dim_]; // alternatievly [127]
-		 int aindex[dim_]; // alternatievly [63]
+		 double intersect[127]; // alternatievly [127]
+		 int aindex[63]; // alternatievly [63]
 		 //int verb = 6;
 
 		// the coordinates are on the unit square
