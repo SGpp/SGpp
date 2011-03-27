@@ -1,59 +1,103 @@
-# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2009 Technische Universitaet Muenchen
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at
-# sgpp.sparsegrids.org
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-import glob
-import SCons
-import fnmatch
-import os
-import SGppConfigure
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-from Helper import *
+
+import os, sys
+import distutils.sysconfig
 
 # Check for versions of Scons and Python
-EnsurePythonVersion(2, 7)
-# check scons
-EnsureSConsVersion(2, 0)
-print "Using SCons", SCons.__version__
+EnsureSConsVersion(1, 0)
+EnsurePythonVersion(2, 5)
 
-# languageWrapperList = ['SG_PYTHON', 'SG_JAVA']
-allLanguageWrapperList = ['SG_PYTHON', 'SG_JAVA']
+# Custom test for executables used during configuration
+def CheckExec(context, cmd):
+    context.Message( 'Checking for %s...' % (cmd) )
+    ret = context.env.WhereIs(cmd)
+    if ret == None:
+        ret = ''
+    context.Result(ret)
+    return ret
 
-ignoreFolders = ['tests', 'jsgpp', 'pysgpp']
+# get all subdirs of path, required by CheckJNI
+def getSubdirs(path):
+    pathlist = []
+    for f in os.listdir(path):
+        if os.path.isdir(os.path.join(path, f)):
+            pathlist.append(os.path.join(path, f))
+    return pathlist
 
-# find all modules
-moduleFolders = getModules(ignoreFolders)
-languageSupport = ['pysgpp']
+# Check for jni header file
+# if found, additionally add all subdirs to CPPPATH (platform dependent files)
+def CheckJNI(context):
+    found = False
+    print "Trying to locate jni.h..."
+    # message if JNI_CPPINCLUDE not set
+    if not os.environ.get('JNI_CPPINCLUDE'):
+        print "... JNI_CPPINCLUDE not set"
+    # check for JAVA_HOME first
+    if os.environ.get('JAVA_HOME'):
+        pname = os.path.join(os.environ.get('JAVA_HOME'), 'include')
+        if os.path.exists(os.path.join(pname, 'jni.h')):
+            context.env.Append(CPPPATH = [pname]+getSubdirs(pname))
+            res = "... found in "+pname
+            context.Result(res)
+            return res
+        else:
+            print "... not found in $JAVA_HOME/include"
+    else:
+        print "... JAVA_HOME not set"
+        # not found, try guessing:
+        # look, where java and javac are located: include/ directory might be 1 or 2 dirs below
+        print "... trying to guess"
+        for f in ['java', 'javacc']:
+            fdir = context.env.WhereIs(f)
+            if not fdir:
+                continue
+            # os.path.realpath to resolve links
+            basedir = os.path.dirname(os.path.realpath(fdir))
+            for subdir in ['..', os.path.join('..','..')]:
+                pname = os.path.join(basedir, subdir, 'include')
+                if os.path.exists(os.path.join(pname, 'jni.h')):
+                    context.env.Append(CPPPATH = [pname]+getSubdirs(pname))
+                    res = "... found in "+pname
+                    context.Result(res)
+                    return res
+    ret = 0
+    context.Result('... nothing found!')
+    return ret
 
-prepareDoxyfile(moduleFolders)
 
-moduleNames = []
-for moduleFolder in moduleFolders:
-    moduleNames.append('SG_' + moduleFolder.upper())
+
+
+
 
 vars = Variables("custom.py")
 
-# define the flags
-vars.Add('CPPFLAGS', 'Set additional Flags, they are compiler-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
-vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
-# define the target
-vars.Add('MARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
-vars.Add('TARGETCPU', "Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
-vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
-# for compiling on LRZ without errors: omit unit tests
-vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
-vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', True))
-vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', False))
-vars.Add(BoolVariable('SSE3_FALLBACK', 'Tries to build as much as possible with SSE3 instead of AVX (intrinsics based functions won\'t work)', False))
-vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
-vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
-vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
+# define the flags 
+vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','-Wno-deprecated')
+vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 
-# initialize environment
-env = Environment(variables=vars, ENV=os.environ)
-env.Export('moduleNames')
-env.Export('moduleFolders')
+# define the target
+vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
+vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'opteronICC', 'core2ICC', 'ia64ICC'; here Intel Compiler in version 11 must be used", 'default')
+vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
+vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
+
+# for building the the jsgpp lib
+vars.Add('JSGPP', 'Build jsgpp if set to True', False)
+#vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
+#vars.Add('JNI_OS', 'JNI os path', None)
+
+
+# for compiling on LRZ without errors: omit unit tests
+vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
+
+
+env = Environment(variables = vars, ENV = os.environ)
+
 
 # Help Text
 Help("""---------------------------------------------------------------------
@@ -65,13 +109,17 @@ specified via parameters.
 
 Parameters can be set either by setting the corresponding environment
 variables, or directly via the commandline, e.g.,
-> scons VERBOSE=True
-to enable verbose compilation.
+> scons OMP=True
+to enable OpenMP support.
 
 
 Specifying the target, the following options are available:
     - default: using the gcc toolchain with OpenMP 2
-    - ICC: using the ICC toolchain with OpenMP 3 with standard x86_64 options
+    - opteronICC: using the ICC 11.x toolchain with OpenMP 3 with standard x86_64 options
+    - core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (core architecture)
+    - nehalemICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (nehalem architecture)
+    - snbICC: using the ICC 12.x toolchain with OpenMP 3 with Intel x86_64 options (sandy bridge architecture)
+    - ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
 
 For LRZ, please execute:
 module load python
@@ -86,120 +134,199 @@ Parameters are:
 """ +
 vars.GenerateHelpText(env))
 
-# adds trailing slashes were required and if not present
-BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
-Export('BUILD_DIR')
-PYSGPP_BUILD_PATH = os.path.join(env['OUTPUT_PATH'], 'lib', 'pysgpp')
-Export('PYSGPP_BUILD_PATH')
-PYSGPP_BUILD_DIR = Dir(PYSGPP_BUILD_PATH)
-Export('PYSGPP_BUILD_DIR')
-JAVASGPP_BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
-Export('JAVASGPP_BUILD_DIR')
-TEST_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'tests'))
-Export('TEST_DIR')
 
-# no checks if clean:
+
+
+
+# scons usually adds double quotes around the command-line arguments containing 
+# white spaces  this whould produce compilation error, therefore replace string 
+# with corresponding list of parameters
+opt_flags = Split(env['CPPFLAGS'])
+env['CPPFLAGS'] = []
+
+if env['TRONE']:
+    env.Append(CPPDEFINES=['USETRONE'])
+    env.Append(CPPFLAGS=['-std=c++0x'])
+
+if env['TARGETCPU'] == 'default':
+    print "Using default gcc"
+    # -Wno-long-long as swig uses long long
+    # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
+    #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
+    #     ensure you also compile with -fno-strict-aliasing"
+    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', 
+                         '-fno-strict-aliasing', '-O3',
+                         '-funroll-loops', '-ffloat-store'])
+    if env['OMP']:
+	env.Append(CPPFLAGS=['-fopenmp'])
+    	env.Append(LINKFLAGS=['-fopenmp'])
+    	
+elif env['TARGETCPU'] == 'ia64ICC':
+    print "Using icc 11.0 for Itanium systems"
+    # ICC doesn't know '-pedantic'
+    # ICC has different options on ia64
+    env.Append(CPPFLAGS = ['-O3', '-funroll-loops', 
+                           '-no-alias', '-i-static', '-gcc-version=400', 
+                           '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
+                           '-ansi', '-wd981', '-fno-strict-aliasing']) 
+elif env['TARGETCPU'] == 'opteronICC':
+    print "Using icc 11.x/12.0 for Opteron systems"
+    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
+                           '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing'])
+elif env['TARGETCPU'] == 'core2ICC':
+    print "Using icc 11.x/12.0 for Core2 systems"
+    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
+                           '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing'])
+elif env['TARGETCPU'] == 'nehalemICC':
+    print "Using icc 11.x/12.0 for Nehalem/Westmere systems"
+    env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
+                           '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing'])
+elif env['TARGETCPU'] == 'snbICC':
+    print "Using icc 12.0 for Sandy Bridge systems"
+    env.Append(CPPFLAGS = ['-axAVX', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
+                           '-Wall', '-ansi', '-wd981', 
+                           '-fno-strict-aliasing'])
+else:
+    print "You must specify a valid value for TARGETCPU."
+    print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"
+    Exit(1)
+    
+# sets ICC-wide commen options and the tool chain   
+if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC']:
+    env['CC'] = ('icc')
+    env['LINK'] = ('icpc')
+    env['CXX'] = ('icpc')	    
+    if env['OMP']:
+	env.Append(CPPFLAGS=['-openmp'])
+        env.Append(LINKFLAGS=['-openmp']) 
+    
+# sets the architecture option for gcc
+if env.has_key('MARCH'):
+    if env['TARGETCPU'] == 'default':
+        env.Append(CPPFLAGS=('-march=' + env['MARCH']))
+    else:
+        print "Warning: Ignoring option MARCH"
+         
+
+
+# boolean variables for environment 
+pyAvail = True
+swigAvail = True
+javaAvail = True
+
+# configure environment
+# ---------------------
 if not env.GetOption('clean'):
-    SGppConfigure.doConfigure(env, moduleFolders)
 
-# add C++ defines for all modules
-cppdefines = []
-for module in moduleNames:
-    cppdefines.append(module)
-env.Append(CPPDEFINES=cppdefines)
+    config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
+                                            'CheckJNI' : CheckJNI })
 
-# environement setup finished, export environment
+    # check if the math header is available
+    if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
+        sys.stderr.write("Error: Math headers are missing.\n")
+        Exit(1)
+
+    # check whether swig installed
+    if not config.CheckExec('swig'):
+        sys.stderr.write("Error: swig cannot be found. Check PATH environment variable!\n")
+        swigAvail = False
+
+    # check for Python headers
+    config.env.AppendUnique(CPPPATH = distutils.sysconfig.get_python_inc())
+    if not config.CheckCXXHeader('Python.h'):
+        sys.stderr.write("Error: Python.h not found. Check path to Python include files: "
+                         + distutils.sysconfig.get_python_inc() + "\n")
+        sys.stderr.write("Warning: You might have to install package python-dev\n")
+        sys.stderr.write("... skipping Python support and unit tests")
+        pyAvail = False
+
+    # check for $JAVA_HOME; prepend to search path
+    if os.environ.get('JAVA_HOME'):
+        config.env.PrependENVPath('PATH', os.path.join(os.environ.get('JAVA_HOME'), 'bin'))
+
+    # check whether javac installed
+    if not config.CheckExec('javac'):
+        sys.stderr.write("Error: javac cannot be found. Check PATH environment variable!\n")
+        javaAvail = False
+    # check whether javac installed
+    if javaAvail and not config.CheckExec('java'):
+        sys.stderr.write("Warning: java cannot be found. Check PATH environment variable!\n")
+
+    # check for JNI headers
+    if javaAvail and os.environ.get('JNI_CPPINCLUDE'):
+        config.env.AppendUnique(CPPPATH = [os.environ.get('JNI_CPPINCLUDE')])
+    if javaAvail and not config.CheckCXXHeader('jni.h'):
+        # not found; try to find
+        if not config.CheckJNI():
+            sys.stderr.write("Error: jni.h not found.\n"
+                             +"Please set JAVA_HOME environment variable "
+                             +"with $JAVA_HOME/bin/javac, $JAVA_HOME/include/jni.h\n"
+                             +"or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h\n")
+            javaAvail = False
+    if not javaAvail:
+        sys.stderr.write("No Java support...\n")
+
+    # check if the intel omp lib is available
+    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC'] and env['OMP']:
+        if not config.CheckLib('iomp5'):
+            print "Error: Intel omp library iomp5 is missing."
+            Exit(1)
+               
+    # check if the the intel vector lib is available
+    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC']:
+        if not config.CheckLib('svml'):
+            print "SVML should be available when using intelc. Consider runnning scons --config=force!"
+            
+    env = config.Finish()
+
+
+# the optional CPPFLAGS at the end will override the previous flags
+env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
+
 Export('env')
 
-# Install alglib
-libalglib, alglibstatic = SConscript(os.path.join('tools', 'SConscriptAlglib'),
-                                      variant_dir=os.path.join('tmp', 'build_alglib'),
-                                      duplicate=0)
-alglibinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'),
-                         [libalglib, alglibstatic])
-env.Depends(os.path.join("#", BUILD_DIR.path, "libsgppbase.so"), alglibinst)
+print "finished configuration"
 
-env.Append(CPPPATH=['#/tools'])
 
-libraryTargetList = []
-installTargetList = []
-env.Export('libraryTargetList')
-env.Export('installTargetList')
+# Now start for compilation...
+# ----------------------------
 
-# compile selected modules
-for moduleFolder in sorted(moduleFolders):
-  # as the dependency tracking for swig is buggy in scons, always trigger a
-  # "reswig" by removing the swig wrapper
-  moduleWrapperSourceFile = os.path.join(moduleFolder, "build", "pysgpp", "%s_wrap.cc" % moduleFolder)
-  if os.path.exists(moduleWrapperSourceFile):
-      os.remove(moduleWrapperSourceFile)
-
-  print "Preparing to build module: ", moduleFolder
-  # SConscript('src/sgpp/SConscript' + moduleFolder, variant_dir='#/tmp/build/', duplicate=0)
-  env.SConscript('#/' + moduleFolder + '/SConscript', {'env': env, 'moduleName': moduleFolder})
+# build c++ lib
+(libsgpp, libsgppa) = env.SConscript('src/sgpp/SConscript',
+                                     build_dir='tmp/build_sg', duplicate=0)
+# install
+env.Install('lib/sgpp', [libsgpp, libsgppa])
 
 # build python lib
-# if env['SG_PYTHON']:
-#    SConscript('#/pysgpp/SConscript')
-#    Import('pysgppInstall')
-
-# build java lib
-if env['SG_JAVA']:
-    libjsgpp = env.SConscript('#/jsgpp/SConscript',
-                              variant_dir='tmp/build_jsgpp', duplicate=0)
+if swigAvail and pyAvail:
+    libpysgpp = env.SConscript('src/pysgpp/SConscript',
+                               build_dir='tmp/build_pysgpp', duplicate=0)
     # install
-    jinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'),
-                        [libjsgpp])
+    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(pyinst, libpysgpp)
+    dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(dep, libpysgpp)
+    
+# build java lib
+if swigAvail and javaAvail and env['JSGPP']:
+    libjsgpp = env.SConscript('src/jsgpp/SConscript',
+                              build_dir='tmp/build_jsgpp', duplicate=0)
+    libweka = env.SConscript('src/jsgpp_weka/SConscript',
+                             build_dir='tmp/build_jsgpp_weka', duplicate=0)
+    # install
+    jinst = env.Install('lib/jsgpp', [libjsgpp])
 
-# Unit tests
-#########################################################################
-
-# if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-#    testdep = env.SConscript('tests/SConscript')
-#    # execute after all installations (even where not necessary)
-#    if env['SG_JAVA']:
-#        Depends(testdep, [jinst, pysgppInstall])
-#    else:
-#        Depends(testdep, [pysgppInstall])
-# else:
-#    print "Warning: Skipping python unit tests"
-if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    # run tests
-    builder = Builder(action="python $SOURCE.file", chdir=1)
-    env.Append(BUILDERS={'Test' : builder})
-    builder = Builder(action="python $SOURCE")
-    env.Append(BUILDERS={'SimpleTest' : builder})
-
-    pysgppTestTargets = []
-    dependency = None
-    for moduleFolder in moduleFolders:
-      if moduleFolder in ["parallel", "finance", "pde", "solver"]:
-          # these modules don't currently have tests
-          continue
-
-      moduleTest = env.Test(os.path.join("#", moduleFolder, 'tests', 'test_%s.py' % moduleFolder))
-      moduleSharedLibFile = os.path.join("#", PYSGPP_BUILD_PATH, moduleFolder, "_%s.so" % moduleFolder)
-      env.Requires(moduleTest, moduleSharedLibFile)
-
-      # run minimal test after compilation
-      pysgppSimpleImportTest = env.SimpleTest(os.path.join('#', moduleFolder, 'tests', 'test_import.py'))
-      env.Requires(pysgppSimpleImportTest, moduleSharedLibFile)
-      env.Requires(pysgppSimpleImportTest, installTargetList)
-      env.Requires(pysgppSimpleImportTest, libraryTargetList)
-      env.AlwaysBuild(pysgppSimpleImportTest)
-      env.Depends(moduleTest, pysgppSimpleImportTest)
-      env.AlwaysBuild(moduleTest)
-      if dependency is None:
-          dependency = moduleTest
-      else:
-          env.Depends(moduleTest, dependency)
-          dependency = moduleTest
-
-      pysgppTestTargets.append(moduleTest)
+# Execute Unit Tests
+if not env['NO_UNIT_TESTS'] and pyAvail:
+    dep = env.SConscript('tests/SConscript')
+    # execute after all installations (even where not necessary)
+    if javaAvail and env['JSGPP']:
+        Depends(dep, [jinst, pyinst])
+    else:
+        Depends(dep, [pyinst])
 else:
-    print "Warning: Skipping python unit tests"
+    sys.stderr.write("Warning!! Skipping unit tests!!\n")
 
-# not strictly necessary, used to enforce an order on the final steps of the building of the wrapper
-# used to execute the unittests at the very end
-if env['SG_PYTHON'] and env['SG_JAVA']:
-    env.Requires(pysgppInstall, jsgppInstall)

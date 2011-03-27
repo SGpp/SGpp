@@ -1,0 +1,28 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+
+
+Import('env')
+Import('src_objs')
+
+j_env = env.Clone()
+
+j_env.AppendUnique(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'])
+#j_env.Append(CPPPATH=['#/src/sgpp', env['JNI_CPPPATH'], env['JNI_CPPPATH'] + '/' + env['JNI_OS']])
+j_env.AppendUnique(CPPPATH=['#/src/sgpp'])
+j_env.AppendUnique(CPPFLAGS=['-fno-strict-aliasing'])
+
+jsgpp = j_env.SharedLibrary(target="jsgpp", source = ['jsgpp.i']+src_objs, SHLIBPREFIX = 'lib')
+
+from glob import glob
+files = glob('*.java')
+env.Install('#/lib/jsgpp/sgpp/', files)
+#Command('#/lib/jsgpp/sgpp/', files, Mkdir('lib/jsgpp/sgpp'))
+
+#for f in files:
+#	Command('#/lib/jsgpp/sgpp/' + f, f, Copy('$TARGET', 'tmp/build_jsgpp/' + f))
+
+Return('jsgpp')

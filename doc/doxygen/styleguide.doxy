@@ -1,0 +1,61 @@
+/**
+@page styleguide Styleguide for SG++
+
+@section intro Introduction
+Please read through this before starting to code!
+(The styleguide has been adapted partially from [1])
+
+@section comments Comments
+The complete code has to be commented elaborately. The comments,
+together with the identifiers, have to enable others to familiarize
+quickly with the code. Header files have to be commented
+completely. In source files it suffices to comment the codelines. The
+comments have to be verbose enough so that one can understand what is
+going on without reading the code!
+@verbatim
+// Thread .h
+
+/** 
+ * Klassenbeschreibung
+ */
+class Thread {
+public :
+    /** 
+     * Methodenbeschreibung
+     */
+    void wakeUp ();
+
+    State state ; // Variablenbeschreibung
+};
+
+
+// Thread .cc
+
+void Thread :: wakeUp ()
+{
+    // Beschreibung von Implementierungsdetails
+    if ( ... ) {
+        ...
+    }
+}
+@endverbatim
+
+@section naming Naming
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section refs References
+[1] http://www-bs.informatik.tu-cottbus.de/fileadmin/user_upload/lehre/bs1/styleguide.pdf
+
+*/

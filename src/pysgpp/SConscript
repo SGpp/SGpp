@@ -1,0 +1,18 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Joerg Blank (blankj@in.tum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+
+
+Import('env')
+Import('src_objs')
+
+py_env = env.Clone()
+
+py_env.AppendUnique(SWIGFLAGS=['-c++','-python'], CPPPATH=['#/src/sgpp'])
+
+pysgpp = py_env.SharedLibrary(target="pysgpp", source = ['pysgpp.i']+src_objs, SHLIBPREFIX = '_')
+
+Export('pysgpp')
+Return('pysgpp')

@@ -1,22 +1,22 @@
-# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2009 Technische Universitaet Muenchen
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
-# sgpp.sparsegrids.org
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-# Import('env pysgpp')
-Import('env pysgppInstall')
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import('env pysgpp')
 
 test_env = env.Clone()
 # install prerequisites to tests directory
-# ti = env.Install('#/tests/',
-#                       [pysgpp, '#/tmp/build_pysgpp/pysgpp.py', '#/bin/tools.py'])
+ti = env.Install('#/tests/',
+                      [pysgpp, '#/tmp/build_pysgpp/pysgpp.py', '#/bin/tools.py'])
 
 # run tests
 bld = Builder(action = "python $SOURCE")
 test_env.Append(BUILDERS = {'Test' : bld})
 tests = test_env.Test('test_pysgpp.py')
-Requires(tests, pysgppInstall)
-AlwaysBuild(tests) 
+Requires(tests, ti)
+AlwaysBuild(tests)
 
 test_env.Alias('test', tests)
 

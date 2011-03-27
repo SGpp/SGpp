@@ -1,0 +1,220 @@
+/**
+@mainpage SG++ Documentation
+Welcome to the Sparse Grid ++ (SG++ or SGpp) documentation.
+
+@version (Stable Beta) Revision 0.9.0 -- Beta, as still some
+interfaces could change in the very near future towards version 1.0
+
+@image html teaser.gif "Images taken from [1]"
+
+<div align="center">
+  <table width="600">
+    <tr>
+      <td>
+        If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see section \ref copyright).
+      </td>
+     </tr>
+  </table>
+</div>
+
+
+SG++ is a toolbox allowing to employ spatially adaptive sparse grids
+straightforward, flexibly, and without the vast initial overhead that
+has to be spent when implementing sparse grids and the corresponding
+algorithms. To be able to deal with different kinds
+of problems in a spatially adaptive way - ranging from interpolation
+and quadrature via the solution of differential equations to
+regression, classification, and more - a main motivation behind the
+development and all considerations was to create a toolbox which can
+be used in a very flexible and modular way by different users in
+different applications.
+
+The main features of the sparse grid toolbox are efficiency and
+flexibility, both of which can sometimes be nasty rivals, for example
+if the reusability of an algorithm for different purposes requires
+extra data structures or control mechanisms, thus slowing down special
+algorithmic variants. To ensure performance at run-time, we use C++
+for all performance critical parts. Considering flexibility, we have
+spent a great deal in ensuring modularity, reusability and the
+separation of data structures and algorithms. Furthermore, we provide
+the means to use the SG++ toolbox from within Python, Matlab, Java,
+and C++, of course.
+
+To name a few special features:
+- Different types of basis functions are supported which enable to
+cope with the characteristics of special applications.
+- Modern shared-memory multi-core systems are supported via OpenMP to
+speed-up computations.
+- Adaptive refinement criteria can easily specified as functor
+objects.
+- The underlying data structure (which is, per default, hash-based)
+is encapsulated so that it can be exchanged by other choices.
+- Template-based support for fast realizations of typical sparse-grid
+algorithms that make use of the tensor product structure of the
+underlying basis.
+
+SG++ is open source software and delivered as source code. For
+questions, contributions, and requests, please <a
+href="mailto:Dirk.Pflueger@in.tum.de">contact us</a>.
+
+
+
+<!-- ############################################################# -->
+@section mainpage__overview Overview and Documentation
+
+- @subpage development
+- @subpage manual
+
+<em>The documentation can also be found in the navigation bar, unfolding
+<b>SG++ Documentation</b>.</em>
+
+The documentation of the SG++ toolbox is structured in two main
+parts. The first one, @ref development, addresses all those who
+want to contribute to SG++ or who are involved in its
+development. There, the styleguide can be found, references to useful
+tools and utilities are provided, and a few issues that did arise at
+the initial development at the Chair of Scientific Computing at the TU
+Munich are gathered.
+
+The second one, @ref manual, is dedicated to users of
+SG++. For example, installation instructions are provided as well
+as short use cases as a quick-start to using SG++.
+
+
+<!-- ############################################################# -->
+@section mainpage__history Version History
+
+@subsection mainpage_history_090 Version 0.9.0
+- Provides everything that is necessary to use spatially adaptive
+sparse grids for interpolation, optimization, ...
+- Several types of piecewise linear basis functions
+ - Different boundary treatment
+ - Modified boundary basis functions
+- Grids (handling, creation, modification, ...)
+- Adaptivity
+- Hash-based grid storage
+
+@subsection mainpage_history_100 What will be there for Release Version 1.0
+- Support for the solution of (simple) PDEs
+- Different types of basis functions such as
+ - B-splines
+ - Polynomial basis functions
+- More documentation, especially on adaptive refinement
+- And much more...
+
+<!-- ############################################################# -->
+@section mainpage__literature Literature
+
+The following publications address SG++:
+
+- TBA
+- ...
+- ...
+
+
+<!-- ############################################################# -->
+@section mainpage__references References
+
+[1] Spatially Adaptive Sparse Grids for Higher-Dimensional Problems ...
+
+
+
+<!--
+
+@section mainpage__overview Overview
+#- \ref mainpage__lastmodifications
+#- @ subpage svn instructions (separate page)
+#- @ subpage installation instructions (separate page)
+#- @ subpage grid (separate page)
+#- \ref guideline
+#- \ref unittests
+#- \ref description
+#- \ref doxygen
+#- \ref copyright
+
+
+@section mainpage__lastmodifications Last modifications
+$SVN_LOG$
+
+
+@section mainpage__references References
+
+
+<hr><hr><hr><hr>
+
+
+@section mainpage__tmpoverview Overview
+- Getting started
+  - blah
+- Example usage
+
+
+
+@image html SG++_XS_wcrop.png
+
+@section mainpage__doxygen Usage of Doxygen
+
+Executing <tt>doxygen</tt> in the main folder creates the
+Doxygen-documentation in the subfolder <tt>doc</tt>. The settings
+for Doxygen are automatically taken from the file
+<tt>Doxyfile</tt>. As those settings do some preprocessing to
+include the revision numbers from the svn-Repository this requires the
+use of <tt>svn</tt> and takes longer than normal execution.
+
+Therefore a second file with Doxygen-settings exists, just without
+the preprocessing steps, <tt>Doxyfile.fast</tt>, which is much
+faster. It can be used running <tt>doxygen Doxyfile.fast</tt>
+in the main folder.
+
+The preprocessing steps include the substitution of the tags
+<pre>
+\@version&nbsp;$HEAD$
+</pre> to show the current revision of the svn, and 
+<pre>
+\@version&nbsp;$CURR$
+</pre> to additionally show the last revision, the current file 
+changed and the last author working on the file. Additionally the tag
+<pre>
+$<tt>SVN_LOG</tt>$
+</pre>
+is substituted by a list of the last few check-ins, as shown above.
+
+
+//section mainpage__copyright Copyright
+
+Copyright (C) 2007  Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), 
+Richard Roettger (roettger@in.tum.de)
+Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+@todo Add the description
+@todo Structure the Doxygen Documentation / Group the files somehow, see README for an example
+@todo Remove the all leftover from SGClass
+
+
+
+
+
+
+
+
+
+-->
+
+
+*/

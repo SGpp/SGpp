@@ -1,0 +1,69 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+
+srcs = Split("""
+data/DataVector.cpp
+data/DataMatrix.cpp
+
+grid/Grid.cpp
+grid/GridDataBase.cpp
+
+grid/common/BoundingBox.cpp
+
+grid/type/LinearBoundaryGrid.cpp
+grid/type/LinearTrapezoidBoundaryGrid.cpp
+grid/type/LinearGrid.cpp
+grid/type/ModLinearGrid.cpp
+
+grid/generation/StandardGridGenerator.cpp
+grid/generation/BoundaryGridGenerator.cpp
+grid/generation/TrapezoidBoundaryGridGenerator.cpp
+
+basis/linear/noboundary/operation/datadriven/OperationBLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
+basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
+basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
+
+basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+
+basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
+basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
+basis/linear/boundary/operation/datadriven/OperationBLinearBoundary.cpp
+basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
+
+basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+
+basis/modlinear/operation/datadriven/OperationBModLinear.cpp
+basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
+basis/modlinear/operation/common/OperationEvalModLinear.cpp
+basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+
+basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
+basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
+
+algorithm/datadriven/DMSystemMatrix.cpp
+
+""")
+
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs = sg_env.SharedObject(srcs)
+Export('src_objs')
+
+libsgpp = sg_env.SharedLibrary(target="sgpp", source = src_objs)
+libsgppa = sg_env.StaticLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+Export('libsgpp')
+
+Return('libsgpp libsgppa')
