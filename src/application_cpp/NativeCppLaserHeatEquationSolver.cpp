@@ -68,7 +68,7 @@ void testLaserHeatEquation(size_t dim, size_t level, double bound_left, double b
 
 	// init the basis functions' coefficient vector (start solution)
 	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
-	myHESolver->refineInitialGridWithLaserHeat(*alpha, 4.0, 12, 0.025);
+	myHESolver->refineInitialGridWithLaserHeat(*alpha, 4.0, 5, 0.025);
 
 	// Print the initial heat function into a gnuplot file
 	if (dim < 3)
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 		level = 6;
 		bound_left = 0.0;
 		bound_right = 1.0;
-		a = 1;
+		a = 10.0;
 		T = 1.0;
 		dt = 0.001;
 		ODESolver = "ImEul";
