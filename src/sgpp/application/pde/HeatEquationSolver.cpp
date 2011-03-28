@@ -225,7 +225,8 @@ void HeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, doubl
 {
 	if (this->bGridConstructed)
 	{
-		double sigma = 0.3;
+		double sigma = 0.04;
+		StdNormalDistribution myNormDistr;
 
 		for (size_t r = 0; r < nRefinements; r++)
 		{
@@ -243,16 +244,29 @@ void HeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, doubl
 				}
 
 				// check if coordinates at starting point of laser
-				alpha[i] = 0.0;
-				if ((0.25-heat_length <= dblFuncValues[0]) && (dblFuncValues[0] <= 0.25+heat_length))
+				alpha[i] =  heat*(myNormDistr.getDensity(dblFuncValues[0], 0.25, sigma)*myNormDistr.getDensity(dblFuncValues[1], 0.5, sigma));
+
+				//boundaries are set to zero
+				if (dblFuncValues[0] == 0.0 || dblFuncValues[1] == 0.0)
 				{
-					if ((0.5-heat_length <= dblFuncValues[1]) && (dblFuncValues[1] <= 0.5+heat_length))
-					{
-						alpha[i] =  heat*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[0]-0.25)/sigma)*((dblFuncValues[1]-0.25)/sigma)));
-						point_to_refine++;
-						//std::cout << dblFuncValues[0] << " " << dblFuncValues[1] << std::endl;
-					}
+					alpha[i] = 0.0;
 				}
+
+//				if (alpha[i] > 3.0)
+//				{
+//					point_to_refine++;
+//				}
+
+//				alpha[i] = 0.0;
+//				if ((0.25-heat_length <= dblFuncValues[0]) && (dblFuncValues[0] <= 0.25+heat_length))
+//				{
+//					if ((0.5-heat_length <= dblFuncValues[1]) && (dblFuncValues[1] <= 0.5+heat_length))
+//					{
+//						alpha[i] =  heat*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[0]-0.25)/sigma)*((dblFuncValues[1]-0.25)/sigma)));
+//						point_to_refine++;
+//						//std::cout << dblFuncValues[0] << " " << dblFuncValues[1] << std::endl;
+//					}
+//				}
 			}
 
 			delete[] dblFuncValues;
@@ -263,7 +277,7 @@ void HeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, doubl
 			delete myHierarchisation;
 
 			// do refinement
-			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, point_to_refine, 0.0);
+			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, 100, 0.00001);
 			this->myGrid->createGridGenerator()->refine(myRefineFunc);
 			delete myRefineFunc;
 
@@ -283,15 +297,23 @@ void HeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, doubl
 			}
 
 			// check if coordinates at starting point of laser
-			alpha[i] = 0.0;
-			if ((0.25-heat_length <= dblFuncValues[0]) && (dblFuncValues[0] <= 0.25+heat_length))
+			alpha[i] =  heat*(myNormDistr.getDensity(dblFuncValues[0], 0.25, sigma)*myNormDistr.getDensity(dblFuncValues[1], 0.5, sigma));
+
+			//boundaries are set to zero
+			if (dblFuncValues[0] == 0.0 || dblFuncValues[1] == 0.0)
 			{
-				if ((0.5-heat_length <= dblFuncValues[1]) && (dblFuncValues[1] <= 0.5+heat_length))
-				{
-					alpha[i] =  heat*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[0]-0.25)/sigma)*((dblFuncValues[1]-0.25)/sigma)));
-					//std::cout << dblFuncValues[0] << " " << dblFuncValues[1] << std::endl;
-				}
+				alpha[i] = 0.0;
 			}
+
+//			alpha[i] = 0.0;
+//			if ((0.25-heat_length <= dblFuncValues[0]) && (dblFuncValues[0] <= 0.25+heat_length))
+//			{
+//				if ((0.5-heat_length <= dblFuncValues[1]) && (dblFuncValues[1] <= 0.5+heat_length))
+//				{
+//					alpha[i] =  heat*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[0]-0.25)/sigma)*((dblFuncValues[1]-0.25)/sigma)));
+//					//std::cout << dblFuncValues[0] << " " << dblFuncValues[1] << std::endl;
+//				}
+//			}
 		}
 
 		delete[] dblFuncValues;
