@@ -221,6 +221,92 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 	}
 }
 
+void HeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements, double heat_length)
+{
+	if (this->bGridConstructed)
+	{
+		double sigma = 0.3;
+
+		for (size_t r = 0; r < nRefinements; r++)
+		{
+			double* dblFuncValues = new double[dim];
+			size_t point_to_refine = 0;
+
+			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+			{
+				std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
+				std::stringstream coordsStream(coords);
+
+				for (size_t j = 0; j < this->dim; j++)
+				{
+					coordsStream >> dblFuncValues[j];
+				}
+
+				// check if coordinates at starting point of laser
+				alpha[i] = 0.0;
+				if ((0.25-heat_length <= dblFuncValues[0]) && (dblFuncValues[0] <= 0.25+heat_length))
+				{
+					if ((0.5-heat_length <= dblFuncValues[1]) && (dblFuncValues[1] <= 0.5+heat_length))
+					{
+						alpha[i] =  heat*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[0]-0.25)/sigma)*((dblFuncValues[1]-0.25)/sigma)));
+						point_to_refine++;
+						//std::cout << dblFuncValues[0] << " " << dblFuncValues[1] << std::endl;
+					}
+				}
+			}
+
+			delete[] dblFuncValues;
+
+			// do hierarchisation
+			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+			myHierarchisation->doHierarchisation(alpha);
+			delete myHierarchisation;
+
+			// do refinement
+			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, point_to_refine, 0.0);
+			this->myGrid->createGridGenerator()->refine(myRefineFunc);
+			delete myRefineFunc;
+
+			alpha.resize(this->myGridStorage->size());
+		}
+		// Init last grid
+		double* dblFuncValues = new double[dim];
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
+			std::stringstream coordsStream(coords);
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> dblFuncValues[j];
+			}
+
+			// check if coordinates at starting point of laser
+			alpha[i] = 0.0;
+			if ((0.25-heat_length <= dblFuncValues[0]) && (dblFuncValues[0] <= 0.25+heat_length))
+			{
+				if ((0.5-heat_length <= dblFuncValues[1]) && (dblFuncValues[1] <= 0.5+heat_length))
+				{
+					alpha[i] =  heat*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[0]-0.25)/sigma)*((dblFuncValues[1]-0.25)/sigma)));
+					//std::cout << dblFuncValues[0] << " " << dblFuncValues[1] << std::endl;
+				}
+			}
+		}
+
+		delete[] dblFuncValues;
+
+		// do hierarchisation
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
+	}
+}
+
 void HeatEquationSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();

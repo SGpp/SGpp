@@ -212,6 +212,19 @@ ifeq ($(CC),mpiicpc)
 endif
 
 ###################################################################
+# Builds a simple Heat Equation Solver
+###################################################################	
+LaserHESolver: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/LaserHESolver_gcc
+	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=LaserHESolver_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/LaserHESolver_icc
+	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LaserHESolver_ICC" "EXT=$(EXT)"
+endif
+
+###################################################################
 # Builds a simple Heat Equation Solver with Stretching
 ###################################################################	
 HESolverWithStretching: default
