@@ -1420,7 +1420,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	alpha->setAll(0.0);
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
-	solFile << "SG_HeatEquation_InnerSolution_" << dim << "d_" << level << "l.vec";
+	solFile << "SG_BlackScholes_InnerSolution_" << dim << "d_" << level << "l.vec";
 	myBSSolver->storeInnerSolution(*alpha, timesteps, stepsize, CGiterations, CGepsilon, solFile.str());
 	std::cout << std::endl << std::endl;
 #endif
