@@ -317,7 +317,7 @@ size_t OperationParabolicPDESolverSystemDirichlet::getInnerMatrix(std::string& m
 	}
 
 	// Generate Header Line
-	mtxHeaderStream << vector_size << " " << vector_size << " " << nonZeros << std::endl;
+	mtxHeaderStream << "%%MatrixMarket matrix coordinate real general" << std::endl << vector_size << " " << vector_size << " " << nonZeros << std::endl;
 
 	mtxString = mtxHeaderStream.str() + mtxStream.str();
 
@@ -351,7 +351,7 @@ void OperationParabolicPDESolverSystemDirichlet::getInnerMatrixDiagonal(std::str
 	}
 
 	// Generate Header Line
-	mtxHeaderStream << vector_size << " " << vector_size << " " << vector_size << std::endl;
+	mtxHeaderStream << "%%MatrixMarket matrix coordinate real general" << std::endl << vector_size << " " << vector_size << " " << vector_size << std::endl;
 
 	mtxString = mtxHeaderStream.str() + mtxStream.str();
 }
@@ -391,7 +391,7 @@ void OperationParabolicPDESolverSystemDirichlet::getInnerMatrixDiagonalRowSum(st
 	}
 
 	// Generate Header Line
-	mtxHeaderStream << vector_size << " " << vector_size << " " << vector_size << std::endl;
+	mtxHeaderStream << "%%MatrixMarket matrix coordinate real general" << std::endl << vector_size << " " << vector_size << " " << vector_size << std::endl;
 
 	mtxString = mtxHeaderStream.str() + mtxStream.str();
 }
