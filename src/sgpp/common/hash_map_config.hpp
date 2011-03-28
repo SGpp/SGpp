@@ -8,55 +8,34 @@
 #ifndef HASH_MAP_CONFIG
 #define HASH_MAP_CONFIG
 
-// use the MS hashmap (TR1 is not supported, yet) on Larrabee
-#ifdef KNF
-#include <ext/hash_map>
-namespace sg {
-	template<class key>
-	class LRBSGHasher;
-}
-#endif
-
 // backward compatible: able to use the  standard gnu hashmap of linux (SGI/STLPort)
-#ifndef KNF
 #ifndef USETRONE
 #include <ext/hash_map>
 namespace std {
     using namespace __gnu_cxx;
 }
 #endif
-#endif
 
 // if available you can use the upcoming standard: unordered_map
 #ifdef USETRONE
 
-// do some defines for icc, avoiding
+// do some defines for icc, avoiding, icc only with gcc 4.3 or lower
 // errors:
 // See:
 // http://software.intel.com/en-us/forums/intel-c-compiler/topic/65041/
 #ifndef WINDOWS
-#ifndef AIX_XLC
 #define __aligned__   ignored
 #include <tr1/unordered_map>
 #undef __aligned__
-#endif
-#endif
-
-#ifdef WINDOWS
+#else
 #define __aligned__   ignored
 #include <unordered_map>
 #undef __aligned__
-#endif
-
-#ifdef AIX_XLC
-#define __IBMCPP_TR1__ 1
-#include <unordered_map>
 #endif
 
 #endif
 
 // forward declaration of hash function and hash comparison function
-#ifndef KNF
 namespace sg {
 	template<class key>
 	struct hash { };
@@ -64,7 +43,6 @@ namespace sg {
 	template<class key>
 	struct eqIndex { };
 }
-#endif
 
 #endif /* HASH_MAP_CONFIG */
 
