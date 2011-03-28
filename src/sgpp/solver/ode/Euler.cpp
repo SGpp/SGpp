@@ -102,7 +102,8 @@ void Euler::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSyst
 
 			// Print grid to file
 			GridPrinter myPrinter(*System.getGrid());
-			myPrinter.printGrid(*System.getGridCoefficients(), tFilename, this->evalsAnimation);
+//			myPrinter.printGrid(*System.getGridCoefficients(), tFilename, this->evalsAnimation);
+			myPrinter.printSparseGrid(*System.getGridCoefficients(), tFilename, false);
 		}
 	}
 

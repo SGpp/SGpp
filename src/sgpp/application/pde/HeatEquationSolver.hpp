@@ -76,12 +76,22 @@ public:
 	 * Inits the grid with an smooth heat distribution based the
 	 * normal distribution formula
 	 *
-	 * @param alpha reference to the coefficients vector
+	 * @param alpha reference to the coefficient's vector
 	 * @param mu the exspected value of the normal distribution
 	 * @param sigma the sigma of the normal distribution
 	 * @param factor a factor that is used to stretch the function values
 	 */
 	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
+
+	/**
+	 * grid initialization for rotating laser test case
+	 *
+	 * @param alpha reference to the coefficient's vector
+	 * @param heat value of laser's heat
+	 * @param nRefinements number of initial refinement before solving the heat equation
+	 * @param heat_length expansion of the heat in every dimensions
+	 */
+	void refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements, double heat_length);
 
 	/**
 	 * Inits the screen object
