@@ -43,14 +43,8 @@ public:
     typedef GIT index_type;
     typedef GIT* index_pointer;
 #ifndef USETRONE
-#ifndef KNF
     typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
-#endif
-#ifdef KNF
-	typedef std::hash_map<index_pointer, size_t, LRBSGHasher<index_pointer> > grid_map;
-#endif
-#endif
-#ifdef USETRONE
+#else
     typedef std::tr1::unordered_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif
     typedef typename grid_map::iterator grid_map_iterator;
