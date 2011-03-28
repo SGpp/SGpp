@@ -17,10 +17,10 @@
 namespace sg
 {
 
-  GridDataBase::GridDataBase(size_t dim) : _dim(dim), _map() 
+  GridDataBase::GridDataBase(size_t dim) : _map(), _dim(dim)
   {}
 
-  GridDataBase::GridDataBase(Grid *grid, DataVector &values) : _dim(grid->getStorage()->dim()), _map() 
+  GridDataBase::GridDataBase(Grid *grid, DataVector &values) : _map(), _dim(grid->getStorage()->dim()) 
   {
     GridStorage* gs = grid->getStorage();
     for (size_t i = 0; i < gs->size(); i++) {
@@ -81,11 +81,16 @@ namespace sg
   }
 
   void GridDataBase::remove(GridIndex* gi) {
-    //    grid_map_const_iterator ind = _map.find(gi);
-    //    if (ind != _map.end()) 
-    _map.erase(gi);
+    grid_map_iterator ind = _map.find(gi);
+    if (ind != _map.end()) {
+      // remove
+      _map.erase(ind);
+      // free allocated memory for GridIndex
+      delete ind->first;
+    }
   }
 
+  
 
 
 }
