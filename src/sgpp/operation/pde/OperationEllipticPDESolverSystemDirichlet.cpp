@@ -136,7 +136,7 @@ size_t OperationEllipticPDESolverSystemDirichlet::getMatrix(std::string& mtxStri
 	}
 
 	// Generate Header Line
-	mtxHeaderStream << vector_size << " " << vector_size << " " << nonZeros << std::endl;
+	mtxHeaderStream << "%%MatrixMarket matrix coordinate real general" << std::endl << vector_size << " " << vector_size << " " << nonZeros << std::endl;
 
 	mtxString = mtxHeaderStream.str() + mtxStream.str();
 
@@ -185,7 +185,7 @@ void OperationEllipticPDESolverSystemDirichlet::getMatrixDiagonal(std::string& m
 	}
 
 	// Generate Header Line
-	mtxHeaderStream << vector_size << " " << vector_size << " " << vector_size << std::endl;
+	mtxHeaderStream << "%%MatrixMarket matrix coordinate real general" << std::endl << vector_size << " " << vector_size << " " << vector_size << std::endl;
 
 	mtxString = mtxHeaderStream.str() + mtxStream.str();
 }
@@ -240,7 +240,7 @@ void OperationEllipticPDESolverSystemDirichlet::getMatrixDiagonalRowSum(std::str
 	}
 
 	// Generate Header Line
-	mtxHeaderStream << vector_size << " " << vector_size << " " << vector_size << std::endl;
+	mtxHeaderStream << "%%MatrixMarket matrix coordinate real general" << std::endl << vector_size << " " << vector_size << " " << vector_size << std::endl;
 
 	mtxString = mtxHeaderStream.str() + mtxStream.str();
 }
