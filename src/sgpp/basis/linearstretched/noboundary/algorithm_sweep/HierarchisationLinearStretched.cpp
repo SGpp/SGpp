@@ -63,23 +63,18 @@ void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result,
 	GridStorage::index_type::index_type current_index;
 	index.get(dim, current_level, current_index);
 
-//	std::cout<<"Hierarchization Current Level Params (l,i,dim): ("<<current_level<<","<<current_index<<","<<dim<<")\n";
-
 	double posl=0, posr=0, posc=0;
 	if((static_cast<int>(current_level)) == 0){
 		std::cout<<"printing fl and fr "<<fl<<" "<<fr<<std::endl;
 	}
 
-//	stretch->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim,posl, posr );
-//	posc = stretch->getCoordinates(static_cast<int>(current_level), static_cast<int>(current_index), dim);
+
 	stretch->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, posc, posl, posr );
-//	std::cout<<"(l,i,dim): ("<<current_level<<","<<current_index<<","<<dim<<")\n";
-//	std::cout<<"posl:"<<posl<<" posr:"<<posr<<" curr pos:"<<posc<<std::endl<<std::endl;
+
 
 	double fcurr = (fr-fl)*(posc-posl)/(posr-posl)+fl;
 	result[seq] = fm-fcurr;
 
-//	result[seq] = fm - ((fl + fr)/2.0);
 }
 
 }	// namespace detail

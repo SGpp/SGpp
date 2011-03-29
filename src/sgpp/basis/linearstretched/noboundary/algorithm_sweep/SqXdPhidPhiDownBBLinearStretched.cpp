@@ -30,7 +30,6 @@ void SqXdPhidPhiDownBBLinearStretched::operator()(DataVector& source, DataVector
 
 void SqXdPhidPhiDownBBLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 {
-	//TODO: FIx this (selcuk)
 	size_t seq = index.seq();
 
 	double alpha_value = source[seq];
@@ -52,7 +51,6 @@ void SqXdPhidPhiDownBBLinearStretched::rec(DataVector& source, DataVector& resul
 
 
 	// dehierarchisation
-//	double fm = ((fl+fr)/2.0) + alpha_value;
 	double fm  = (fr-fl)*(leftLength)/(baseLength)+fl + alpha_value;
 
 	if(!index.hint())

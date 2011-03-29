@@ -44,7 +44,6 @@ void DehierarchisationLinearStretched::rec(DataVector& source, DataVector& resul
 
 	double fcurr = (fr-fl)*(posc-posl)/(posr-posl)+fl;
 	fm += fcurr;
-//	fm += (fl+fr)/2.0;
 	result[seq] = fm;
 
 

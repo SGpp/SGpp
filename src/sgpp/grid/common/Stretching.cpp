@@ -207,10 +207,8 @@ Stretching::Stretching(Stretching& copyStretching) : BoundingBox(copyStretching)
 	dimensionBoundaries = new DimensionBoundary[nDim];
 	stretching1Ds = new Stretching1D[nDim];
 	discreteVectorLevel = new int [nDim];
-//	stretchingMode = copyStretching.getStretchingMode();
 	stretchingMode = new std::string(*(copyStretching.getStretchingMode()));
-//	stretchingMode = new std::string();
-//	stretchingMode->assign(*(copyStretching.getStretchingMode()));
+
 
 	for(size_t i=0; i<nDim;i++){
 		dimensionBoundaries[i] = copyStretching.getBoundary(i);
@@ -362,8 +360,6 @@ double Stretching::stretchingXform(int level, int index, size_t dim){
 		double posr = getCoordinates(rightLevel, rightIndex, dim);
 		double step = (posr-posl)/pow2deltaL;
 		temp = posl+ step*(dIndex-floor(dIndex))*pow2deltaL;
-		//		std::cout<<"level: "<<level<<" index : "<<index<<" llevel: "<<leftLevel<<" lindex: "<<leftIndex<<
-		//				" rlevel: "<<rightLevel<<" rindex: "<<rightIndex <<"\nposl = "<<posl<<"\nposr = "<<posr<<std::endl;
 	}
 	else {
 
@@ -398,7 +394,6 @@ double Stretching::logXform(int l, int i, size_t dim){
 void Stretching::leentvaarXform(Stretching1D &str1D, size_t dim){
 	//f_inv(sinh(x))= log(x+sqrt(x²+1))
 	int idx = 0;
-	//double y = 0;
 	double a = (getBoundary(dim).leftBoundary);
 	double b = (getBoundary(dim).rightBoundary);
 	double sinhArgumenta = ((a-str1D.x_0)*str1D.xsi);
@@ -408,8 +403,6 @@ void Stretching::leentvaarXform(Stretching1D &str1D, size_t dim){
 	for(int l=1;l<=(LOOKUPMAX);l++){
 		int elemPerLevel = pow(2,l-1);
 		for(int i=1; i<= elemPerLevel;i++){
-			//y=(f_a + (2*i-1)/(2*elemPerlevel)*(f_b-f_a)));
-			//stretchingLookupTable[dim][idx++] =1/xsi*sinh(y)+x_0;
 			str1D.lookup[idx++][0] =
 					(1/str1D.xsi*sinh((f_a + (double)(2*i-1)/(2*elemPerLevel)*(f_b-f_a)))+str1D.x_0);
 		}
@@ -430,11 +423,8 @@ double Stretching::leentvaarXform (int l, int i, size_t dim){
 
 void Stretching::noXform(Stretching1D &str1D,size_t dim){
 	int idx = 0;
-	//	double f_a=this->getBoundary(dim).leftBoundary;
-	//	double f_b=this->getBoundary(dim).rightBoundary;
 	double f_a=getBoundary(dim).leftBoundary;
 	double f_b=getBoundary(dim).rightBoundary;
-	//	std::cout<<getBoundary(dim).rightBoundary<<std::endl<<getBoundary(dim).leftBoundary<<std::endl;
 	for(int l=1;l<=(LOOKUPMAX);l++){
 		int elemPerLevel = pow(2,l-1);
 		for(int i=1; i<= elemPerLevel;i++){
@@ -457,14 +447,6 @@ double Stretching::noXform(int l, int i, size_t dim){
 int Stretching::calculateLookupIndex(int l, int i){
 	//Note: indices are always odd ;)
 	return (pow(2,l-1)-1+(i-1)/2);
-	/*	if(l==0){
-		if(i==1)
-			return -1;
-		if(i==0)
-			return -2;
-	}
-	else{
-	return (pow(2,l-1)-1+(i-1)/2);}*/
 }
 
 double Stretching::getCoordinates(int level, int index, size_t dim){

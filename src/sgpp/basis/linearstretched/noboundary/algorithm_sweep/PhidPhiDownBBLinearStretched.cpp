@@ -40,15 +40,12 @@ void PhidPhiDownBBLinearStretched::rec(DataVector& source, DataVector& result, g
 	index.get(dim, l, i);
 
 	double posl=0, posr=0, posc=0;
-//	this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posl, posr );
-//	posc = this->stretching->getCoordinates(static_cast<int>(l), static_cast<int>(i), dim);
 	this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl, posr );
 
 	// integration
 	result[seq] = (  0.5*(fl -fr) );    // diagonal entry = 0.0
 
 	// dehierarchisation
-//	double fm = ((fl+fr)/2.0) + alpha_value;
 	double fm  = (fr-fl)*(posc-posl)/(posr-posl)+fl + alpha_value;
 
 	if(!index.hint())
