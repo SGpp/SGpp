@@ -14,6 +14,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * This class implements OperationEval for a grids with mod linear basis ansatzfunctions with
@@ -45,6 +47,7 @@ protected:
 
 };
 
+}
 }
 
 #endif /* OPERATIONTESTMODLINEAR_HPP */

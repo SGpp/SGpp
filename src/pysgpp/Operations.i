@@ -7,6 +7,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 class RefinementFunctor
 {
@@ -73,7 +75,10 @@ class OperationEval
 public:
 	virtual double eval(DataVector& alpha, DataVector& point) = 0;
 };
+}
 
+namespace datadriven {
+%nodefaultdtor sg::datadriven::OperationTest;
 class OperationTest
 {
 public:
@@ -81,7 +86,9 @@ public:
 	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues) = 0;
 	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
 };
+}
 
+namespace base {
 class OperationHierarchisation
 {
 public:
@@ -89,4 +96,5 @@ public:
 	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
 
+}
 }

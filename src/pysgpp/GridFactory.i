@@ -5,30 +5,30 @@
 ******************************************************************************/
 // @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-%newobject sg::Grid::createLinearGrid(size_t dim);
-%newobject sg::Grid::createLinearBoundaryGrid(size_t dim);
-%newobject sg::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::Grid::createLinearTrapezoidBoundaryGrid(BoudingBox& BB);
-%newobject sg::Grid::createModLinearGrid(size_t dim);
-%newobject sg::Grid::createPolyGrid(size_t dim, size_t degree);
-%newobject sg::Grid::createModPolyGrid(size_t dim, size_t degree);
-%newobject sg::Grid::createModWaveletGrid(size_t dim);
-%newobject sg::Grid::createModBsplineGrid(size_t dim, size_t degree);
-%newobject sg::Grid::createTruncatedTrapezoidGrid(size_t dim);
-%newobject sg::Grid::createSquareRootGrid(size_t dim);
-%newobject sg::Grid::createPrewaveletGrid(size_t dim);
+%newobject sg::base::Grid::createLinearGrid(size_t dim);
+%newobject sg::base::Grid::createLinearBoundaryGrid(size_t dim);
+%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
+%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(BoudingBox& BB);
+%newobject sg::base::Grid::createModLinearGrid(size_t dim);
+%newobject sg::base::Grid::createPolyGrid(size_t dim, size_t degree);
+%newobject sg::base::Grid::createModPolyGrid(size_t dim, size_t degree);
+%newobject sg::base::Grid::createModWaveletGrid(size_t dim);
+%newobject sg::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
+%newobject sg::base::Grid::createTruncatedTrapezoidGrid(size_t dim);
+%newobject sg::base::Grid::createSquareRootGrid(size_t dim);
+%newobject sg::base::Grid::createPrewaveletGrid(size_t dim);
 
-%newobject sg::Grid::unserialize(std::string& istr);
+%newobject sg::base::Grid::unserialize(std::string& istr);
 
-%newobject sg::Grid::createOperationMultipleEval(DataMatrix* dataset);
-%newobject sg::Grid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset);
-%newobject sg::Grid::createGridGenerator();
-%newobject sg::Grid::createOperationLaplace();
-%newobject sg::Grid::createOperationLTwoDotProduct();
-%newobject sg::Grid::createOperationEval();
-%newobject sg::Grid::createOperationTest();
-%newobject sg::Grid::createOperationHierarchisation();
-%newobject sg::Grid::createOperationConvert();
+%newobject sg::base::Grid::createOperationMultipleEval(DataMatrix* dataset);
+%newobject sg::base::Grid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset);
+%newobject sg::base::Grid::createGridGenerator();
+%newobject sg::base::Grid::createOperationLaplace();
+%newobject sg::base::Grid::createOperationLTwoDotProduct();
+%newobject sg::base::Grid::createOperationEval();
+%newobject sg::base::Grid::createOperationTest();
+%newobject sg::base::Grid::createOperationHierarchisation();
+%newobject sg::base::Grid::createOperationConvert();
 
 %include "stl.i"
 %include "typemaps.i"
@@ -40,8 +40,10 @@
 
 //void getMemento();
 
-
+using namespace sg;
 namespace sg
+{
+namespace base
 {
 
 class Grid
@@ -73,7 +75,7 @@ public:
 	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
 	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset) = 0;
 	virtual OperationEval* createOperationEval() = 0;
-	virtual OperationTest* createOperationTest() = 0;
+	virtual sg::datadriven::OperationTest* createOperationTest() = 0;
 	virtual OperationMatrix* createOperationLaplace() = 0;
 	virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
 	virtual OperationMatrix* createOperationIdentity() = 0;
@@ -97,19 +99,17 @@ public:
 	int getSize();
 	
 };
-
-
-
+}
 }
 
 //these are just two new interfaces for consistency with Memento design pattern
-%extend sg::Grid{
+%extend sg::base::Grid{
 	Grid* createMemento(){
 		return $self;
 	}
 	
-	static sg::Grid* setMemento(std::string& istr){
-		return sg::Grid::unserialize(istr);
+	static Grid* setMemento(std::string& istr){
+		return Grid::unserialize(istr);
 	}
 };
 

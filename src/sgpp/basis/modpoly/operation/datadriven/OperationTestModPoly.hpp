@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * This class implements OperationTest for a grids with mod poly basis ansatzfunctions with
@@ -49,6 +51,7 @@ protected:
 	SModPolyBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONTESTMODPOLY_HPP */

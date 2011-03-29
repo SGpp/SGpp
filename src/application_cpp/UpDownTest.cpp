@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	size_t numGridPoints;
 
 	sg::Grid* myGrid;
-	sg::OperationMatrix* myUpDown;
+	sg::base::OperationMatrix* myUpDown;
 
 	std::cout << std::endl;
 	std::cout << "Starting the Up / Down Test" << std::endl;

@@ -10,6 +10,7 @@
 #include "grid/Grid.hpp"
 
 #include <iostream>
+using namespace sg::datadriven;
 
 namespace sg
 {

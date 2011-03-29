@@ -17,6 +17,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 double OperationTestModWavelet::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
 {
@@ -36,4 +38,5 @@ double OperationTestModWavelet::testWithCharacteristicNumber(DataVector& alpha, 
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
+}
 }

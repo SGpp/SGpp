@@ -14,6 +14,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * This class implements OperationTest for a grid with mod wavelet basis ansatzfunctions
@@ -44,6 +46,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONTESTMODWAVELET_HPP */

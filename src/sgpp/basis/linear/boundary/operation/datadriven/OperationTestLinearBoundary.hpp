@@ -10,6 +10,7 @@
 
 #include "operation/datadriven/OperationTest.hpp"
 #include "grid/GridStorage.hpp"
+using namespace sg::datadriven;
 
 namespace sg
 {

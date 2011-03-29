@@ -21,6 +21,7 @@
 #include "sgpp.hpp"
 
 #include <iostream>
+using namespace sg::datadriven;
 
 namespace sg
 {

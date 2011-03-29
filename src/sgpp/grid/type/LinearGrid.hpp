@@ -12,6 +12,7 @@
 #include "grid/common/BoundingBox.hpp"
 
 #include <iostream>
+using namespace sg::datadriven;
 
 namespace sg
 {

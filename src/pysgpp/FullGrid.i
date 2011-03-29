@@ -6,7 +6,7 @@
 %newobject  sg::FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel);
 %newobject sg::FullGrid::createLinearBoundaryFullGrid(size_t dim, vector<level_t> *inlevel);
 
-
+using namespace sg::base;
 namespace sg{
 class FullGrid{
 public:

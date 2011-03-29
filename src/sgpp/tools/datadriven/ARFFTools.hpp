@@ -14,6 +14,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * Class that provides functionality to read and write ARFF files
@@ -83,6 +85,7 @@ public:
 	void readClasses(std::string tfilename, DataVector& destination);
 };
 
+}
 }
 
 #endif /* ARFFTOOLS_HPP */

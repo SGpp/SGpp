@@ -18,6 +18,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * Operation the tests the function that is applied the current Sparse Grid at a given point
@@ -75,6 +77,7 @@ public:
 	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
 };
 
+}
 }
 
 #endif /* OPERATIONTEST_HPP */
