@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 /**
  * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
@@ -52,6 +54,7 @@ public:
 	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
+}
 }
 
 #endif /* VARTIMESTEP_HPP */

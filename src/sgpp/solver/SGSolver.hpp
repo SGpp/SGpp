@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 /**
  * Abstract class that defines a solver used in Sparse Grids
@@ -104,6 +106,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* SGSOLVER_HPP */

@@ -17,6 +17,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::solver;
 using namespace sg::base;
 
 namespace sg

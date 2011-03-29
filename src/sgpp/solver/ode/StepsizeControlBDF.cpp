@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps, ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen)
 {
@@ -167,4 +169,5 @@ void StepsizeControlBDF::solve(SLESolver& LinearSystemSolver, OperationParabolic
 	}
 }
 
+}
 }

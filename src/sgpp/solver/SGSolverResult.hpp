@@ -10,6 +10,8 @@
 
 namespace sg
 {
+namespace solver
+{
 /**
  * This struct is needed for exchanging the SGSolver Results
  * to another address space.
@@ -22,6 +24,7 @@ struct SGSolverResult
 	double finalResiduum;
 };
 
+}
 }
 
 #endif /* SGSOLVERRESULT_HPP */

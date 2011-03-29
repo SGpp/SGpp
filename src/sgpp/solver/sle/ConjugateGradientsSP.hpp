@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 class ConjugateGradientsSP
 {
@@ -89,6 +91,7 @@ public:
 	float getEpsilon();
 };
 
+}
 }
 
 #endif /* CONJUGATEGRADIENTSSP_HPP */

@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 /**
  * This class implements a step size control using Crank-Nicolson with different step sizes
@@ -53,6 +55,7 @@ public:
 	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
+}
 }
 
 #endif /* STEPSIZECONTROLH_HPP */

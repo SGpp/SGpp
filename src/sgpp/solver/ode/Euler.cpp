@@ -18,6 +18,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 Euler::Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation, size_t numEvalsAnimation, ScreenOutput* screen) : ODESolver(imax, timestepSize), bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), ExMode(Mode), myScreen(screen)
 {
@@ -116,4 +118,5 @@ void Euler::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSyst
     this->nIterations = allIter;
 }
 
+}
 }

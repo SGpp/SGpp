@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 /**
  * This class implements a step size control using the midpoint method and BDF2
@@ -51,6 +53,7 @@ public:
 	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
+}
 }
 
 #endif /* STEPSIZECONTROLBDF_HPP */

@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 /**
  * This class implements a time step size control using 1D-Diffusion
@@ -54,6 +56,7 @@ public:
 	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
+}
 }
 
 #endif /* STEPSIZECONTROLEJ_HPP */

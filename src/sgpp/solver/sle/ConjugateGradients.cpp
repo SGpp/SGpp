@@ -10,6 +10,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : SLESolver(imax, epsilon)
 {
@@ -155,4 +157,5 @@ void ConjugateGradients::complete()
 {
 }
 
+}
 }
