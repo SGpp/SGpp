@@ -215,7 +215,7 @@ public:
 	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+	virtual void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
@@ -228,7 +228,7 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const;
+	virtual void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const;
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -240,7 +240,7 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	virtual void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -255,7 +255,7 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	virtual void printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
 	 * use this to determine the number of grid points, used to solve

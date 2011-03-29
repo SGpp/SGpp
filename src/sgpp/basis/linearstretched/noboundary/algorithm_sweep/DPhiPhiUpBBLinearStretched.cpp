@@ -63,8 +63,6 @@ void DPhiPhiUpBBLinearStretched::rec(DataVector& source, DataVector& result, gri
 
 	index.get(dim, current_level, current_index);
 	double posl=0, posr=0, posc=0;
-//	this->stretching->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, posl, posr );
-//	posc = this->stretching->getCoordinates(static_cast<int>(current_level), static_cast<int>(current_index), dim);
 	this->stretching->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, posc, posl, posr );
 	double fm = fml + fmr;
 
@@ -73,8 +71,6 @@ void DPhiPhiUpBBLinearStretched::rec(DataVector& source, DataVector& result, gri
 	// transposed operations:
 	result[seq] = fm;
 
-//	fl = (fm/2.0) + (alpha_value*0.5 + fl);
-//	fr = (fm/2.0) + (alpha_value*(-0.5) + fr);
 	double baseLength = posr - posl;
 	double leftLength = posc - posl;
 	double rightLength = posr - posc;

@@ -85,7 +85,7 @@ private:
 	void logXform(Stretching1D &str1D, size_t dimension);
 
 	/*
-	 * overridden
+	 * overloaded
 	 * calculates the logarithm transform for an arbitrary input
 	 *
 	 * @param level level of the node
