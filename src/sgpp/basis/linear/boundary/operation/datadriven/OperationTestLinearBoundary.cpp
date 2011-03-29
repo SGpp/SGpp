@@ -12,6 +12,7 @@
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 
 #include "data/DataVector.hpp"
+using namespace sg::datadriven;
 
 namespace sg
 {

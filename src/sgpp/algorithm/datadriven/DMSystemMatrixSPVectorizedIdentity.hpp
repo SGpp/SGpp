@@ -19,6 +19,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * Class that implements the virtual class OperationMatrix for the
@@ -109,6 +111,7 @@ public:
 	void getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans);
 };
 
+}
 }
 
 #endif /* DMSYSTEMMATRIXSPVECTORIZEDIDENTITY_HPP */

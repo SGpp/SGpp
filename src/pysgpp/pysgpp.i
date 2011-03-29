@@ -127,20 +127,20 @@ namespace std {
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
-%template(GridIndex) sg::HashGridIndex<unsigned int, unsigned int>;
-%template(GridStorage) sg::HashGridStorage<sg::GridIndex>;
+%template(GridIndex) sg::base::HashGridIndex<unsigned int, unsigned int>;
+%template(GridStorage) sg::base::HashGridStorage<sg::base::GridIndex>;
 
-%template(SLinearBase) sg::linear_base<unsigned int, unsigned int>;
-%template(SLinearBoundaryBase) sg::linearboundaryBase<unsigned int, unsigned int>;
-%template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
-%template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
-%template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
-%template(SModWaveletBase) sg::modified_wavelet_base<unsigned int, unsigned int>;
-%template(SModBsplineBase) sg::modified_bspline_base<unsigned int, unsigned int>;
-%template(SPrewaveletBase) sg::prewavelet_base<unsigned int, unsigned int>;
+%template(SLinearBase) sg::base::linear_base<unsigned int, unsigned int>;
+%template(SLinearBoundaryBase) sg::base::linearboundaryBase<unsigned int, unsigned int>;
+%template(SModLinearBase) sg::base::modified_linear_base<unsigned int, unsigned int>;
+%template(SPolyBase) sg::base::poly_base<unsigned int, unsigned int>;
+%template(SModPolyBase) sg::base::modified_poly_base<unsigned int, unsigned int>;
+%template(SModWaveletBase) sg::base::modified_wavelet_base<unsigned int, unsigned int>;
+%template(SModBsplineBase) sg::base::modified_bspline_base<unsigned int, unsigned int>;
+%template(SPrewaveletBase) sg::base::prewavelet_base<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
-%template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
-%template(SAlgorithmEvaluation) sg::AlgorithmEvaluation<sg::SLinearBase>;
-%template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::SLinearBase>;
+%template(SAlgorithmEvaluation) sg::base::AlgorithmEvaluation<sg::SLinearBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;

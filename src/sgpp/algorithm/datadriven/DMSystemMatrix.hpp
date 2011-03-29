@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * Class that implements the virtual class OperationMatrix for the
@@ -60,6 +62,7 @@ public:
 	void generateb(DataVector& classes, DataVector& b);
 };
 
+}
 }
 
 #endif /* DMSYSTEMMATRIX_HPP */

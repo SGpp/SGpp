@@ -17,6 +17,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 double OperationTestModPoly::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
 {
@@ -33,4 +35,5 @@ double OperationTestModPoly::testWithCharacteristicNumber(DataVector& alpha, Dat
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
+}
 }

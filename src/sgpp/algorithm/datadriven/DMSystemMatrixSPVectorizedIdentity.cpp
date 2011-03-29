@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda, std::string vecMode)
 {
@@ -150,4 +152,5 @@ void DMSystemMatrixSPVectorizedIdentity::getTimers(double& timeMult, double& com
 	computeMultTrans = this->computeTimeMultTrans;
 }
 
+}
 }

@@ -12,6 +12,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace datadriven
+{
 
 DMSystemMatrix::DMSystemMatrix(Grid& SparseGrid, DataMatrix& trainData, OperationMatrix& C, double lambda)
 {
@@ -46,4 +48,5 @@ void DMSystemMatrix::generateb(DataVector& classes, DataVector& b)
 	this->B->multTranspose(classes, b);
 }
 
+}
 }

@@ -229,7 +229,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
 #endif
 #else
-    sg::OperationMatrix* myC = myGrid->createOperationIdentity();
+    sg::base::OperationMatrix* myC = myGrid->createOperationIdentity();
     //sg::OperationMatrix* myC = myGrid->createOperationLaplace();
     sg::DMSystemMatrix* mySystem = new sg::DMSystemMatrix(*myGrid, data, *myC, lambda);
 #endif
