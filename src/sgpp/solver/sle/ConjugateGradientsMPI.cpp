@@ -10,6 +10,7 @@
 #endif
 
 #include "solver/sle/ConjugateGradientsMPI.hpp"
+using namespace sg::solver;
 using namespace sg::base;
 
 namespace sg

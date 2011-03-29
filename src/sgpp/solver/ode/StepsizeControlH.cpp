@@ -18,6 +18,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 StepsizeControlH::StepsizeControlH(size_t imax, double timestepSize, double eps, ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
 {
@@ -147,4 +149,5 @@ void StepsizeControlH::solve(SLESolver& LinearSystemSolver, OperationParabolicPD
 	}
 }
 
+}
 }

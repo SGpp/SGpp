@@ -15,6 +15,7 @@
 #include "exception/application_exception.hpp"
 #include "stdlib.h"
 #include <sstream>
+using namespace sg::solver;
 using namespace sg::base;
 
 namespace sg

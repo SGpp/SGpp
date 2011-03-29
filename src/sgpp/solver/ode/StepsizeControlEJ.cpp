@@ -22,6 +22,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 StepsizeControlEJ::StepsizeControlEJ(size_t nTimesteps, double timestepSize, double eps, double sc, ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen)
 {
@@ -156,4 +158,5 @@ void StepsizeControlEJ::solve(SLESolver& LinearSystemSolver, OperationParabolicP
 	}
 }
 
+}
 }

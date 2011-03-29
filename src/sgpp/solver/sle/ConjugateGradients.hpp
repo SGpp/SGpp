@@ -17,6 +17,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace solver
+{
 
 class ConjugateGradients : public SLESolver
 {
@@ -59,6 +61,7 @@ public:
 	virtual void complete();
 };
 
+}
 }
 
 #endif /* CONJUGATEGRADIENTS_HPP */
