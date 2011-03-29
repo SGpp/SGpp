@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 /**
  * This class implements OperationB for a grids with linear basis ansatzfunctions without boundaries
@@ -63,6 +65,7 @@ protected:
 	SGppStopwatch* myTimer;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALITERATIVESSELINEAR_HPP */

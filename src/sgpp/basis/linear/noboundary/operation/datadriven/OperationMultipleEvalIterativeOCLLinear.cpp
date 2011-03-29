@@ -12,6 +12,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
 {
@@ -126,4 +128,5 @@ double OperationMultipleEvalIterativeOCLLinear::multVectorized(DataVector& alpha
    	return time;
 }
 
+}
 }

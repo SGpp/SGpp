@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 /**
  * This class implements OperationMultipleEval for a grids with linear basis ansatzfunctions without boundaries
@@ -66,6 +68,7 @@ protected:
 	OCLKernels* myOCLKernels;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALITERATIVEOCLLINEAR_HPP */

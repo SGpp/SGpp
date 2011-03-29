@@ -12,6 +12,7 @@ using namespace sg::base;
 using namespace std;
 
 namespace sg{
+namespace combigrid {
 
 /**
  * Represents a set of fullgrids, which can be combined into a sparse grid of given level and dimension
@@ -357,5 +358,6 @@ private:
     /** flag to indicate if the created full grids should be with or wothout boundary points*/
     bool gridsWithBonudaryPoints_;
 };
+}
 }
 #endif /*FULLGRIDSET_*/

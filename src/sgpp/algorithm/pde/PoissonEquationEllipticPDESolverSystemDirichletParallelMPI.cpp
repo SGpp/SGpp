@@ -17,6 +17,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
 {
@@ -171,4 +173,5 @@ DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generate
 	return this->rhs_inner;
 }
 
+}
 }

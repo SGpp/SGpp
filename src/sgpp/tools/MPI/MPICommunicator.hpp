@@ -19,6 +19,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 /**
  * This class provides standard tasks, like
@@ -138,6 +140,7 @@ public:
 	int getNumRanks();
 };
 
+}
 }
 
 

@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace parallel
+{
 
 class ArBBKernels
 {
@@ -37,6 +39,7 @@ public:
 	void resetKernels();
 };
 
+}
 }
 
 #endif /* ARBBKERNELS_HPP */

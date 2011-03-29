@@ -12,6 +12,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 OperationMultipleEvalIterativeArBBLinear::OperationMultipleEvalIterativeArBBLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
 {
@@ -93,4 +95,5 @@ double OperationMultipleEvalIterativeArBBLinear::multTransposeVectorized(DataVec
    	return time;
 }
 
+}
 }

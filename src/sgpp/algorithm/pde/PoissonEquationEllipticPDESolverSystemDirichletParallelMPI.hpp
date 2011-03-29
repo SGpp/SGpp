@@ -14,6 +14,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 /**
  * This class uses OperationEllipticPDESolverSystemDirichlet
@@ -52,6 +54,7 @@ public:
 	DataVector* generateRHS();
 };
 
+}
 }
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP */

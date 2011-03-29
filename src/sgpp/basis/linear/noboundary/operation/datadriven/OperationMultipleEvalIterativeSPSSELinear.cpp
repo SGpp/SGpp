@@ -40,6 +40,8 @@ const __m128 _mm_abs_ps( const __m128& x)
 
 namespace sg
 {
+namespace parallel
+{
 
 OperationMultipleEvalIterativeSPSSELinear::OperationMultipleEvalIterativeSPSSELinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
 {
@@ -445,4 +447,5 @@ double OperationMultipleEvalIterativeSPSSELinear::multVectorized(DataVectorSP& a
 	return myTimer->stop();
 }
 
+}
 }
