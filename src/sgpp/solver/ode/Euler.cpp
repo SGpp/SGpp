@@ -44,6 +44,22 @@ void Euler::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSyst
     	animationStep = 1;
     }
 
+	// Create pictures of the animation, if specified
+    if ((this->bAnimation == true))
+	{
+		// Build filename
+		std::string tFilename = "00000000000000000000000000000000";
+		std::stringstream number;
+		number << 0;
+		tFilename.append(number.str());
+		tFilename = tFilename.substr(tFilename.length()-14,14);
+		tFilename.append(".gnuplot");
+
+		// Print grid to file
+		GridPrinter myPrinter(*System.getGrid());
+		myPrinter.printSparseGrid(*System.getGridCoefficients(), tFilename, false);
+	}
+
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
 		// generate right hand side
@@ -95,14 +111,13 @@ void Euler::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSyst
 			// Build filename
 			std::string tFilename = "00000000000000000000000000000000";
 			std::stringstream number;
-			number << i;
+			number << (i+1);
 			tFilename.append(number.str());
 			tFilename = tFilename.substr(tFilename.length()-14,14);
 			tFilename.append(".gnuplot");
 
 			// Print grid to file
 			GridPrinter myPrinter(*System.getGrid());
-//			myPrinter.printGrid(*System.getGridCoefficients(), tFilename, this->evalsAnimation);
 			myPrinter.printSparseGrid(*System.getGridCoefficients(), tFilename, false);
 		}
 	}

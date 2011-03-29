@@ -93,7 +93,8 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
-	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o
+	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o\
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP.o LaserHeatEquationSolver.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -687,6 +688,9 @@ HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationPara
 HeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp	
 	
+LaserHeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP.cpp	
+
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 
@@ -752,6 +756,9 @@ BlackScholesHullWhiteSolver.o : $(SRCDIR)application/pde/BlackScholesHullWhiteSo
 
 HeatEquationSolver.o : $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolver.o $(SRCDIR)application/pde/HeatEquationSolver.cpp
+	
+LaserHeatEquationSolver.o : $(SRCDIR)application/pde/LaserHeatEquationSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationSolver.o $(SRCDIR)application/pde/LaserHeatEquationSolver.cpp
 	
 HeatEquationSolverWithStretching.o : $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverWithStretching.o $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp

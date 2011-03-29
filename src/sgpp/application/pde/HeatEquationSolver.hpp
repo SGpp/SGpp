@@ -8,8 +8,6 @@
 #ifndef HEATEQUATIONSOLVER_HPP
 #define HEATEQUATIONSOLVER_HPP
 
-#include "sgpp.hpp"
-
 #include "application/pde/ParabolicPDESolver.hpp"
 
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
@@ -19,6 +17,7 @@
 #include "tools/common/StdNormalDistribution.hpp"
 
 #include "application/common/ScreenOutput.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 #include <iostream>
 #include <string>
@@ -40,7 +39,7 @@ namespace sg
  */
 class HeatEquationSolver : public ParabolicPDESolver
 {
-private:
+protected:
 	/// the heat coefficient
 	double a;
 	/// screen object used in this solver
@@ -59,11 +58,11 @@ public:
 
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
 
 	/**
 	 * This method sets the heat coefficient of the regarded material
@@ -84,19 +83,9 @@ public:
 	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
-	 * grid initialization for rotating laser test case
-	 *
-	 * @param alpha reference to the coefficient's vector
-	 * @param heat value of laser's heat
-	 * @param nRefinements number of initial refinement before solving the heat equation
-	 * @param heat_length expansion of the heat in every dimensions
-	 */
-	void refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements, double heat_length);
-
-	/**
 	 * Inits the screen object
 	 */
-	void initScreen();
+	virtual void initScreen();
 
 	/**
 	 * Routine to export the matrix of the inner system in matrix

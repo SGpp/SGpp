@@ -8,8 +8,6 @@
 #ifndef HEATEQUATIONSOLVERMPI_HPP
 #define HEATEQUATIONSOLVERMPI_HPP
 
-#include "sgpp.hpp"
-
 #include "application/pde/ParabolicPDESolver.hpp"
 
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
@@ -19,6 +17,7 @@
 #include "tools/common/StdNormalDistribution.hpp"
 
 #include "application/common/ScreenOutput.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 #include <iostream>
 #include <string>

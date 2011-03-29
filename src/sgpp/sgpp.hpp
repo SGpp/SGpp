@@ -31,17 +31,14 @@
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 
-
 #include "application/pde/BlackScholesSolver.hpp"
 #include "application/pde/BlackScholesSolverWithStretching.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
 #include "application/pde/BlackScholesHullWhiteSolver.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 #include "application/pde/HeatEquationSolverWithStretching.hpp"
+#include "application/pde/LaserHeatEquationSolver.hpp"
 #include "application/pde/PoissonEquationSolver.hpp"
-
-
-
 
 #include "basis/basis.hpp"
 
