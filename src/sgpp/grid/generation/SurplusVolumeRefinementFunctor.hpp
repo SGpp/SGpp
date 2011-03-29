@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#ifndef SURPLUSREFINEMENTFUNCTOR_HPP
-#define SURPLUSREFINEMENTFUNCTOR_HPP
+#ifndef SURPLUSVOLUMEREFINEMENTFUNCTOR_HPP
+#define SURPLUSVOLUMEREFINEMENTFUNCTOR_HPP
 
 #include "data/DataVector.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
@@ -58,4 +58,4 @@ protected:
 
 }
 
-#endif /* SURPLUSREFINEMENTFUNCTOR_HPP */
+#endif /* SURPLUSVOLUMEREFINEMENTFUNCTOR_HPP */
