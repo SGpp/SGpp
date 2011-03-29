@@ -45,17 +45,39 @@ private:
 
   // the hash_map
   grid_map _map;
-  // dimension of grid
-  size_t _dim;
+  // dimensionality of grid
+  int _dim;
 
   // index and level types
   typedef GridIndex::index_type index_t;
   typedef GridIndex::level_type level_t;
 
+  /**
+   * Loads database in ASCII format from file. Adds (grid point - value) mappings
+   * to current database. Overwrites existing entries. To load a new database, 
+   * use GridDataBase::fromFile(std::string filename).
+   * @param filename name of file
+   */
+  void _loadTypeDim(const std::string filename, bool &ftype, int &dim, std::ifstream &fin);
+
+  /**
+   * Loads database in ASCII format from file. Adds (grid point - value) mappings
+   * to current database. Overwrites existing entries. To load a new database, 
+   * use GridDataBase::fromFile(std::string filename).
+   * @param filename name of file
+   */
+  void _loadGrid(std::ifstream fin);
+
+
+
 public:
 
   typedef grid_map::iterator grid_map_iterator;
   typedef grid_map::const_iterator grid_map_const_iterator;
+
+  static const bool ascii=true;
+  static const bool binary=false;
+
   /**
    * Standard Constructor, creating an empty database with dimensionality dim.
    * @param dim the dimensionality of the grid points
@@ -68,6 +90,12 @@ public:
    * @param values the initial values
    */
   GridDataBase(Grid *grid, DataVector &values);
+
+  /**
+   * Constructor, reading grid data base from file.
+   * @param filename name of file
+   */
+  //  GridDataBase(std::string filename);
 
   /**
    * Returns std::string representation of database.
@@ -123,6 +151,21 @@ public:
    */
   void remove(GridIndex* gi);
 
+  /**
+   * Save database in ASCII format to file. Overwrites existing files
+   * without warning! Each line contains an entry @f$l_1, i_1, \ldots, l_d, i_d, value@f$.
+   * @param filename name of file
+   * @param type filetype (either ASCII, GridDataBase::asc (default), or binary, GridDataBase::bin)
+   */
+  void save(std::string filename, bool type=GridDataBase::ascii);
+
+  /**
+   * Loads database in ASCII format from file. Adds (grid point - value) mappings
+   * to current database. Overwrites existing entries. To load a new database, 
+   * use GridDataBase::fromFile(std::string filename).
+   * @param filename name of file
+   */
+  void load(const std::string filename);
 
 
 };

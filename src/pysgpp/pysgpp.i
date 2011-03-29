@@ -64,6 +64,7 @@ namespace std {
 %include "src/sgpp/grid/generation/SquareRootGridGenerator.hpp"
 %include "src/sgpp/grid/generation/PrewaveletGridGenerator.hpp"
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
+%include "src/sgpp/grid/generation/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
 %include "GridFactory.i"
