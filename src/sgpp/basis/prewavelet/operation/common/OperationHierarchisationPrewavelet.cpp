@@ -48,16 +48,16 @@ void OperationHierarchisationPrewavelet::doHierarchisation(
 	 * linear grid, afterwards they are converted into a prewavelet basis
 	 */
 
-	detail::HierarchisationLinear func(this->storage);
-	sweep<detail::HierarchisationLinear> s(func, this->storage);
+	HierarchisationLinear func(this->storage);
+	sweep<HierarchisationLinear> s(func, this->storage);
 
 	for (size_t i = 0; i < this->storage->dim(); i++)
 	{
 		s.sweep1D(node_values, node_values, i);
 	}
 
-	detail::ConvertLinearToPrewavelet func2(this->storage, this->shadowStorage);
-	sweep<detail::ConvertLinearToPrewavelet> s2(func2, this->storage);
+	ConvertLinearToPrewavelet func2(this->storage, this->shadowStorage);
+	sweep<ConvertLinearToPrewavelet> s2(func2, this->storage);
 
 	for (size_t i = 0; i < this->storage->dim(); i++)
 	{
@@ -68,16 +68,16 @@ void OperationHierarchisationPrewavelet::doHierarchisation(
 
 void OperationHierarchisationPrewavelet::doDehierarchisation(DataVector& alpha)
 {
-	detail::ConvertPrewaveletToLinear func(this->storage);
-	sweep<detail::ConvertPrewaveletToLinear> s(func, this->storage);
+	ConvertPrewaveletToLinear func(this->storage);
+	sweep<ConvertPrewaveletToLinear> s(func, this->storage);
 
 	for (size_t i = 0; i < this->storage->dim(); i++)
 	{
 		s.sweep1D(alpha, alpha, i);
 	}
 
-	detail::DehierarchisationLinear func2(this->storage);
-	sweep<detail::DehierarchisationLinear> s2(func2, this->storage);
+	DehierarchisationLinear func2(this->storage);
+	sweep<DehierarchisationLinear> s2(func2, this->storage);
 
 	for (size_t i = 0; i < this->storage->dim(); i++)
 	{

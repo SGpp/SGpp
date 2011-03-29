@@ -14,9 +14,12 @@
 #include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 OperationLELinearBoundary::OperationLELinearBoundary(GridStorage* storage) : StdUpDown(storage)
@@ -41,4 +44,5 @@ void OperationLELinearBoundary::down(DataVector& alpha, DataVector& result, size
 	myDown(alpha, result, dim);
 }
 
+}
 }

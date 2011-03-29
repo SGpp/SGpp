@@ -25,6 +25,7 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg

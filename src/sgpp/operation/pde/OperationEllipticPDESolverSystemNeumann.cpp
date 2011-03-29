@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationEllipticPDESolverSystemNeumann::OperationEllipticPDESolverSystemNeumann(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
 {
@@ -30,5 +32,6 @@ DataVector* OperationEllipticPDESolverSystemNeumann::generateRHS()
 	return this->rhs;
 }
 
+}
 }
 

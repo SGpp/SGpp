@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Defines a System that is used to solve elliptic partial
@@ -57,6 +59,7 @@ public:
 	virtual DataVector* generateRHS();
 };
 
+}
 }
 
 #endif /* OPERATIONELLITPTICPDESOLVERMATRIXNEUMANN_HPP */

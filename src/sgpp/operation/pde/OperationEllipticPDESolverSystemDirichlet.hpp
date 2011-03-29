@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Defines a System that is used to solve elliptic partial
@@ -99,6 +101,7 @@ public:
 	virtual void getSolutionBoundGrid(DataVector& Solution, DataVector& SolutionInner);
 };
 
+}
 }
 
 #endif /* OPERATIONELLIPTICPDESOLVERMATRIXDIRICHLET_HPP */

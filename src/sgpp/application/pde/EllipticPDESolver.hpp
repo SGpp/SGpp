@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class extends the PDESolver with functions that are needed to
@@ -48,6 +50,7 @@ public:
 	virtual void solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
 };
 
+}
 }
 
 #endif /* ELLIPTICPDESOLVER_HPP */

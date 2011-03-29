@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationParabolicPDESolverSystemNeumann::OperationParabolicPDESolverSystemNeumann()
 {
@@ -226,5 +228,6 @@ DataVector* OperationParabolicPDESolverSystemNeumann::getGridCoefficientsForCG()
 	return this->alpha_complete;
 }
 
+}
 }
 

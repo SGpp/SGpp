@@ -30,9 +30,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 /**
  * Implements the down Method needed for the Laplace operator on prewavelet grids.
@@ -261,8 +262,9 @@ protected:
 
 };
 
-}
 
+
+}
 }
 
 #endif /* LAPLACEUPPREWAVELET_HPP */

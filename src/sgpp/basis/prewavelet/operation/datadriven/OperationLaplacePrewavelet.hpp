@@ -41,6 +41,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implementation for linear functions of Laplace Operation, prewavelet grids without boundaries.
@@ -75,8 +77,8 @@ protected:
 
 	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceUpPrewavelet func(this->storage);
-		sweep<detail::LaplaceUpPrewavelet> s(func, this->storage);
+		LaplaceUpPrewavelet func(this->storage);
+		sweep<LaplaceUpPrewavelet> s(func, this->storage);
 		s.sweep1D(alpha, result, dim);
 	}
 
@@ -86,20 +88,21 @@ protected:
 
 	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceDownGradientPrewavelet func(this->storage);
-		sweep<detail::LaplaceDownGradientPrewavelet> s(func, this->storage);
+		LaplaceDownGradientPrewavelet func(this->storage);
+		sweep<LaplaceDownGradientPrewavelet> s(func, this->storage);
 		s.sweep1D(alpha, result, dim);
 	}
 
 	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 	{
-		detail::LaplaceUpGradientPrewavelet func(this->storage);
-		sweep<detail::LaplaceUpGradientPrewavelet> s(func, this->storage);
+		LaplaceUpGradientPrewavelet func(this->storage);
+		sweep<LaplaceUpGradientPrewavelet> s(func, this->storage);
 		s.sweep1D(alpha, result, dim);
 	}
 
 };
 
+}
 }
 
 #endif /* OPERATIONLAPLACEPREWAVELET_HPP */

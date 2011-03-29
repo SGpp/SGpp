@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Abstract definition of a System that is used to solve elliptic partial
@@ -82,6 +84,7 @@ public:
 	size_t getNumGridPointsInner();
 };
 
+}
 }
 
 #endif /* OPERATIONELLITPICPDESOLVERMATRIX_HPP */

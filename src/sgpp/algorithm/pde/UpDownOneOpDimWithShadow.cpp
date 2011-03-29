@@ -26,6 +26,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(GridStorage* storage,
 		GridStorage* shadowStorage)
@@ -167,4 +169,5 @@ void UpDownOneOpDimWithShadow::specialOP(DataVector& alpha, DataVector& result,
 	}
 }
 
+}
 }

@@ -82,9 +82,7 @@
 #include "tools/common/GridPrinter.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 #include "tools/common/EvalCuboidGenerator.hpp"
-//using namespace sg::solver;
-//using namespace datadriven;
-//using namespace sg::base;
+using namespace sg::finance;
 
 namespace sg
 {

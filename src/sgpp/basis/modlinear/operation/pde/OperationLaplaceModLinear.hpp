@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implementation of Laplace for mod linear functions
@@ -44,6 +46,7 @@ protected:
 	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONLAPLACEMODLINEAR_HPP */

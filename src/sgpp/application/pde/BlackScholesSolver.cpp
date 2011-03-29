@@ -22,10 +22,13 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::pde;
 using namespace sg::solver;
 using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionType) : ParabolicPDESolver()
@@ -900,4 +903,5 @@ size_t BlackScholesSolver::getAverageInnerGridSize()
 	return this->avgInnerGridSize;
 }
 
+}
 }

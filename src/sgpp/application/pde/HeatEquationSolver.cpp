@@ -20,6 +20,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver()
 {
@@ -228,4 +230,5 @@ void HeatEquationSolver::initScreen()
 	this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
 }
 
+}
 }

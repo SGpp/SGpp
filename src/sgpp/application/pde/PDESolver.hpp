@@ -17,9 +17,12 @@
 #include "tools/common/GridPrinter.hpp"
 
 #include <vector>
+using namespace sg::finance;
 using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -282,6 +285,7 @@ public:
 	size_t getNumberDimensions();
 };
 
+}
 }
 
 #endif /* PDESOLVER_HPP */

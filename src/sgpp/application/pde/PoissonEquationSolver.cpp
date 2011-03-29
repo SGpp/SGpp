@@ -18,6 +18,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 PoissonEquationSolver::PoissonEquationSolver() : EllipticPDESolver()
 {
@@ -159,4 +161,5 @@ void PoissonEquationSolver::initScreen()
 	this->myScreen->writeTitle("SGpp - Poisson Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
 }
 
+}
 }

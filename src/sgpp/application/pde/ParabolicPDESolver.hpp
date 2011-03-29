@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class extends the PDESolver with functions that are needed to
@@ -80,6 +82,7 @@ public:
 	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0) = 0;
 };
 
+}
 }
 
 #endif /* PARABOLICPDESOLVER_HPP */

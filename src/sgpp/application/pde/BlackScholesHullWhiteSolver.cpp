@@ -20,10 +20,13 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::pde;
 using namespace sg::solver;
 using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) : ParabolicPDESolver()
@@ -358,4 +361,5 @@ size_t BlackScholesHullWhiteSolver::getAverageInnerGridSize()
 	return this->avgInnerGridSize;
 }
 
+}
 }

@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationParabolicPDESolverSystem::OperationParabolicPDESolverSystem()
 {
@@ -77,4 +79,5 @@ void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(DataVector& Val
 	delete myHierarchisation;
 }
 
+}
 }

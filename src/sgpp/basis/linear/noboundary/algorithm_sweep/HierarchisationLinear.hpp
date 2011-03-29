@@ -16,8 +16,7 @@ namespace sg
 namespace base
 {
 
-namespace detail
-{
+
 
 /**
  * Class that implements the hierarchisation on a linear sparse grid. Therefore
@@ -73,7 +72,7 @@ protected:
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
 };
 
-}	// namespace detail
+	// namespace detail
 
 }	// namespace sg
 }

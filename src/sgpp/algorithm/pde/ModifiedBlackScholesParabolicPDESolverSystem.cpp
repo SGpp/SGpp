@@ -16,6 +16,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace finance
+{
 
 ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
@@ -165,5 +167,6 @@ void ModifiedBlackScholesParabolicPDESolverSystem::startTimestep()
 		{
 			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
 		}
+}
 }
 }

@@ -11,9 +11,12 @@
 #include "basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 OperationLBLinear::OperationLBLinear(GridStorage* storage) : StdUpDown(storage)
@@ -27,8 +30,8 @@ OperationLBLinear::~OperationLBLinear()
 void OperationLBLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Dphi * phi
-	detail::DPhiPhiUpBBLinear func(this->storage);
-	sweep<detail::DPhiPhiUpBBLinear> s(func, this->storage);
+	DPhiPhiUpBBLinear func(this->storage);
+	sweep<DPhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -36,10 +39,11 @@ void OperationLBLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 void OperationLBLinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Dphi * phi
-	detail::DPhiPhiDownBBLinear func(this->storage);
-	sweep<detail::DPhiPhiDownBBLinear> s(func, this->storage);
+	DPhiPhiDownBBLinear func(this->storage);
+	sweep<DPhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
+}
 }

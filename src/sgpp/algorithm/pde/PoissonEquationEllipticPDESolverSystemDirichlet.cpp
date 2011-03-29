@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
 {
@@ -34,4 +36,5 @@ void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorComplete(Dat
 	Laplace_Complete->mult(alpha, result);
 }
 
+}
 }

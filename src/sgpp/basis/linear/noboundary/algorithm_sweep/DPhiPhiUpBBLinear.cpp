@@ -10,9 +10,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 DPhiPhiUpBBLinear::DPhiPhiUpBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
@@ -74,6 +75,7 @@ void DPhiPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterato
 	fr = (fm/2.0) + (alpha_value*(-0.5) + fr);
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

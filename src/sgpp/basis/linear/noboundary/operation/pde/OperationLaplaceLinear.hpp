@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implementation for linear functions of Laplace Operation, linear grids without boundaries
@@ -45,6 +47,7 @@ public:
 	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONLAPLACELINEAR_HPP */

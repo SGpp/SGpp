@@ -26,9 +26,12 @@
 #include "operation/common/OperationMatrix.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::finance;
 using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -82,6 +85,7 @@ protected:
 	void down(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONUPDOWNTESTLINEARBOUNDARY_HPP */

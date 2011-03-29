@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace pde
+{
 
 EllipticPDESolver::EllipticPDESolver() : PDESolver()
 {
@@ -18,4 +20,5 @@ EllipticPDESolver::~EllipticPDESolver()
 {
 }
 
+}
 }

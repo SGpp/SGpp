@@ -18,6 +18,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
 {
@@ -413,4 +415,5 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 	return this->rhs;
 }
 
+}
 }

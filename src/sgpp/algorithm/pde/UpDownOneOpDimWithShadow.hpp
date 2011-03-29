@@ -33,6 +33,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implements the Up/Down scheme with one dimension with a special operation. Before the actual
@@ -137,6 +139,7 @@ protected:
 	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim) = 0;
 };
 
+}
 }
 
 #endif /* UPDOWNONEOPDIMWITHSHADOW_HPP */

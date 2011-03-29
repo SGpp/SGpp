@@ -20,6 +20,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(GridStorage* storage) : UpDownOneOpDim(storage)
 {
@@ -31,15 +33,15 @@ OperationLaplaceLinearBoundary::~OperationLaplaceLinearBoundary()
 
 void OperationLaplaceLinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearBoundary> s(func, this->storage);
+	PhiPhiUpBBLinearBoundary func(this->storage);
+	sweep<PhiPhiUpBBLinearBoundary> s(func, this->storage);
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
 void OperationLaplaceLinearBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearBoundary> s(func, this->storage);
+	PhiPhiDownBBLinearBoundary func(this->storage);
+	sweep<PhiPhiDownBBLinearBoundary> s(func, this->storage);
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
@@ -55,4 +57,5 @@ void OperationLaplaceLinearBoundary::upOpDim(DataVector& alpha, DataVector& resu
 	myUp(alpha, result, dim);
 }
 
+}
 }

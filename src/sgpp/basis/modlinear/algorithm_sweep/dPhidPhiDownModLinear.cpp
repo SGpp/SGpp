@@ -10,9 +10,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 dPhidPhiDownModLinear::dPhidPhiDownModLinear(GridStorage* storage) : storage(storage)
 {
@@ -80,6 +81,7 @@ void dPhidPhiDownModLinear::rec(DataVector& source, DataVector& result, grid_ite
 
 }
 
-}
 
+
+}
 }

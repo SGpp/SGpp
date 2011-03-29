@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace finance
+{
 
 /**
  * This class implements the ParabolicPDESolverSystem for the BlackScholes
@@ -84,6 +86,7 @@ public:
 	virtual DataVector* generateRHS();
 };
 
+}
 }
 
 #endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELOMP_HPP */

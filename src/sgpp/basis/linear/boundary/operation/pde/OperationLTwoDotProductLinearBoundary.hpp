@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implements the standard L 2 scalar product on linear boundary grids
@@ -58,6 +60,7 @@ protected:
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONLTWODOTPRODUCTLINEARBOUNDARY_HPP */

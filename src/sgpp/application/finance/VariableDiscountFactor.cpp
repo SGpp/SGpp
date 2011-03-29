@@ -10,6 +10,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace finance
+{
 
 VariableDiscountFactor::VariableDiscountFactor(GridStorage* storage, int dim_r): myBoundingBox(storage->getBoundingBox()), storage(storage), dim_r(dim_r)
 {
@@ -38,4 +40,5 @@ void VariableDiscountFactor::getDiscountFactor(DataVector& factor, double T)
 	}
 }
 
+}
 }
