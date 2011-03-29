@@ -21,7 +21,7 @@
 namespace sg
 {
 
-LaserHeatEquationSolver::LaserHeatEquationSolver() : HeatEquationSolver()
+LaserHeatEquationSolver::LaserHeatEquationSolver(double beam_velocity, double heat_sigma, size_t max_level) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), HeatEquationSolver()
 {
 }
 
@@ -42,7 +42,7 @@ void LaserHeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double tim
 		double dNeededTime;
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-		LaserHeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new LaserHeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+		LaserHeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new LaserHeatEquationParabolicPDESolverSystemParallelOMP(this->beam_velocity_, this->heat_sigma_, this->max_level_, *this->myGrid, alpha, this->a, timestepsize, "ImEul");
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		myStopwatch->start();
@@ -71,7 +71,7 @@ void LaserHeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double tim
 	throw new application_exception("LaserHeatEquationSolver::solveCrankNicolson : Crank Nicolson is not supported!");
 }
 
-void LaserHeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements, size_t maxLevel, double heat_sigma)
+void LaserHeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements)
 {
 	if (this->bGridConstructed)
 	{
@@ -95,7 +95,7 @@ void LaserHeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, 
 				}
 
 				// check if coordinates at starting point of laser
-				alpha[i] =  heat*(myNormDistr.getDensity(dblFuncValues[0], 0.25, heat_sigma)*myNormDistr.getDensity(dblFuncValues[1], 0.5, heat_sigma));
+				alpha[i] =  heat*(myNormDistr.getDensity(dblFuncValues[0], 0.25, this->heat_sigma_)*myNormDistr.getDensity(dblFuncValues[1], 0.5, this->heat_sigma_));
 
 				//boundaries are set to zero
 				if (dblFuncValues[0] == 0.0 || dblFuncValues[1] == 0.0)
@@ -113,7 +113,7 @@ void LaserHeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, 
 
 			// do refinement
 			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, 100, 0.00001);
-			this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+			this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, this->max_level_);
 			delete myRefineFunc;
 
 			std::cout << "Refining grid..." << std::endl;
@@ -137,7 +137,7 @@ void LaserHeatEquationSolver::refineInitialGridWithLaserHeat(DataVector& alpha, 
 			}
 
 			// check if coordinates at starting point of laser
-			alpha[i] =  heat*(myNormDistr.getDensity(dblFuncValues[0], 0.25, heat_sigma)*myNormDistr.getDensity(dblFuncValues[1], 0.5, heat_sigma));
+			alpha[i] =  heat*(myNormDistr.getDensity(dblFuncValues[0], 0.25, this->heat_sigma_)*myNormDistr.getDensity(dblFuncValues[1], 0.5, this->heat_sigma_));
 
 			//boundaries are set to zero
 			if (dblFuncValues[0] == 0.0 || dblFuncValues[1] == 0.0)

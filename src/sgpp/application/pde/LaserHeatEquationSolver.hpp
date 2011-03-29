@@ -25,11 +25,23 @@ namespace sg
  */
 class LaserHeatEquationSolver : public HeatEquationSolver
 {
+private:
+	/// stores the beam velocity
+	double beam_velocity_;
+	/// stores the expansions of the laser's heat
+	double heat_sigma_;
+	/// stores the grid's max. refinement level
+	size_t max_level_;
+
 public:
 	/**
 	 * Std-Constructor of the solver
+	 *
+	 * @param beam_velocity the velocity of the rotating laser beam
+	 * @param heat_sigma the laser beam's expansion
+	 * @param max_level the max. refinement level
 	 */
-	LaserHeatEquationSolver();
+	LaserHeatEquationSolver(double beam_velocity, double heat_sigma, size_t max_level);
 
 	/**
 	 * Std-Destructor of the solver
@@ -48,10 +60,8 @@ public:
 	 * @param alpha reference to the coefficient's vector
 	 * @param heat value of laser's heat
 	 * @param nRefinements number of initial refinement before solving the heat equation
-	 * @param maxLevel max. Level in the refined grid
-	 * @param heat_sigma expansion of the heat in every dimensions (sigma of normal distribution)
 	 */
-	void refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements, size_t maxLevel, double heat_sigma);
+	void refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements);
 
 	void initScreen();
 };

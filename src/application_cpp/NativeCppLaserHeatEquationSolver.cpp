@@ -22,7 +22,7 @@
  */
 void writeHelp()
 {
-	sg::LaserHeatEquationSolver* myHESolver = new sg::LaserHeatEquationSolver();
+	sg::LaserHeatEquationSolver* myHESolver = new sg::LaserHeatEquationSolver(1.0, 0.4, 5);
 
 	myHESolver->initScreen();
 
@@ -56,7 +56,7 @@ void testLaserHeatEquation(size_t dim, size_t level, double bound_left, double b
 		myBoundaries[i].bDirichletRight = true;
 	}
 
-	sg::LaserHeatEquationSolver* myHESolver = new sg::LaserHeatEquationSolver();
+	sg::LaserHeatEquationSolver* myHESolver = new sg::LaserHeatEquationSolver(1.0, 0.04, 7);
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
@@ -68,7 +68,7 @@ void testLaserHeatEquation(size_t dim, size_t level, double bound_left, double b
 
 	// init the basis functions' coefficient vector (start solution)
 	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
-	myHESolver->refineInitialGridWithLaserHeat(*alpha, 4.0, 5, 7, 0.04);
+	myHESolver->refineInitialGridWithLaserHeat(*alpha, 4.0, 5);
 
 	// Print the initial heat function into a gnuplot file
 	if (dim < 3)

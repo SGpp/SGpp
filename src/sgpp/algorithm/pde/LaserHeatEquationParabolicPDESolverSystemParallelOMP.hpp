@@ -24,12 +24,28 @@ class LaserHeatEquationParabolicPDESolverSystemParallelOMP : public HeatEquation
 {
 private:
 	/// the velocity of the rotating laser beam
-	double laser_velo_;
+	double beam_velocity_;
+	/// the laser beam's expansion
+	double heat_sigma_;
+	/// the max. refinement level
+	size_t max_level_;
+
+	/// current offset of laser position (x direction)
+	double laser_x_offset_;
+	/// position of laser at beginning (x direction)
+	double laser_x_start_;
+	/// position of laser in last time step (x direction)
+	double laser_x_last_;
+	/// indicator of sign for y offset
+	size_t y_sign_switch;
 
 public:
 	/**
 	 * Std-Constructor
 	 *
+	 * @param beam_velocity the velocity of the rotating laser beam
+	 * @param heat_sigma the laser beam's expansion
+	 * @param max_level the max. refinement level
 	 * @param SparseGrid reference to the sparse grid
 	 * @param alpha the sparse grid's coefficients
 	 * @param a the heat coefficient
@@ -37,7 +53,7 @@ public:
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	LaserHeatEquationParabolicPDESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP(double beam_velocity, double heat_sigma, size_t max_level, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor
