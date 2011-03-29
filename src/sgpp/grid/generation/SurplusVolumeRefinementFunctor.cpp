@@ -6,6 +6,7 @@
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
 #include "grid/generation/SurplusVolumeRefinementFunctor.hpp"
+#include <cmath>
 
 namespace sg
 {
@@ -21,7 +22,7 @@ SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor()
 
 double SurplusVolumeRefinementFunctor::operator()(GridStorage* storage, size_t seq)
 {
-  return pow(2.0, -storage->get(seq)->getLevelSum())*fabs(alpha->get(seq));
+  return pow(2, - ((int)storage->get(seq)->getLevelSum()))*fabs(alpha->get(seq));
 }
 
 double SurplusVolumeRefinementFunctor::start()
