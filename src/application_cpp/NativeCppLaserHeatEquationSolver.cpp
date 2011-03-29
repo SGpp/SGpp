@@ -56,7 +56,7 @@ void testLaserHeatEquation(size_t dim, size_t level, double bound_left, double b
 		myBoundaries[i].bDirichletRight = true;
 	}
 
-	sg::LaserHeatEquationSolver* myHESolver = new sg::LaserHeatEquationSolver(1.0, 0.04, 7);
+	sg::LaserHeatEquationSolver* myHESolver = new sg::LaserHeatEquationSolver(1.0, 0.04, 5);
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
