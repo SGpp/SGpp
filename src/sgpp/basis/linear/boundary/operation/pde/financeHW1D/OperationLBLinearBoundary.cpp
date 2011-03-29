@@ -11,9 +11,12 @@
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 OperationLBLinearBoundary::OperationLBLinearBoundary(GridStorage* storage) : StdUpDown(storage)
@@ -27,8 +30,8 @@ OperationLBLinearBoundary::~OperationLBLinearBoundary()
 void OperationLBLinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Dphi * phi
-	detail::DPhiPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::DPhiPhiUpBBLinearBoundary> s(func, this->storage);
+	DPhiPhiUpBBLinearBoundary func(this->storage);
+	sweep<DPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -36,10 +39,11 @@ void OperationLBLinearBoundary::up(DataVector& alpha, DataVector& result, size_t
 void OperationLBLinearBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// Dphi * phi
-	detail::DPhiPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::DPhiPhiDownBBLinearBoundary> s(func, this->storage);
+	DPhiPhiDownBBLinearBoundary func(this->storage);
+	sweep<DPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
+}
 }

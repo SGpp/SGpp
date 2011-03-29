@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace pde
+{
 
 ParabolicPDESolver::ParabolicPDESolver() : PDESolver()
 {
@@ -18,4 +20,5 @@ ParabolicPDESolver::~ParabolicPDESolver()
 {
 }
 
+}
 }

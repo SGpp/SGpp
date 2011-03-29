@@ -13,11 +13,13 @@
 #include "data/DataMatrix.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg
 {
-
+namespace finance
+{
 /**
  * This class implements the ParabolicPDESolverSystem for the BlackScholes
  * Equation.
@@ -134,7 +136,7 @@ public:
 
 	virtual void startTimestep();
 };
-
+}
 }
 
 #endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEM_HPP */

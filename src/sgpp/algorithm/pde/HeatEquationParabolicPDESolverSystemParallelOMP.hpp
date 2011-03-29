@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class implements the ParabolicPDESolverSystem for the
@@ -68,6 +70,7 @@ public:
 	virtual DataVector* generateRHS();
 };
 
+}
 }
 
 #endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP_HPP */

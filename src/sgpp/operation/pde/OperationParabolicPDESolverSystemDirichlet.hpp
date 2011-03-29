@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Defines a System that is used to solve parabolic partial
@@ -108,6 +110,7 @@ public:
 	virtual DataVector* getGridCoefficientsForCG();
 };
 
+}
 }
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP */

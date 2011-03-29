@@ -17,10 +17,13 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::pde;
 using namespace sg::solver;
 using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 HullWhiteSolver::HullWhiteSolver() : ParabolicPDESolver()
@@ -238,5 +241,6 @@ void HullWhiteSolver::initScreen()
 	this->myScreen = new ScreenOutput();
 	this->myScreen->writeTitle("SGpp - Hull White Solver, 1.3.0", "TUM (C) 2009-2010, by Chao qi");
 	this->myScreen->writeStartSolve("One dimensional Hull White Solver");
+}
 }
 }

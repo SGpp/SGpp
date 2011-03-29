@@ -28,9 +28,12 @@
 #include "algorithm/common/sweep.hpp"
 
 #include "grid/common/BoundingBox.hpp"
+using namespace sg::finance;
 using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 OperationUpDownTestLinearBoundary::OperationUpDownTestLinearBoundary(GridStorage* storage) : storage(storage)
@@ -88,28 +91,28 @@ void OperationUpDownTestLinearBoundary::updown(DataVector& alpha, DataVector& re
 void OperationUpDownTestLinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	//detail::PhiPhiUpBBLinearBoundary func(this->storage);
-	//sweep<detail::PhiPhiUpBBLinearBoundary> s(func, this->storage);
+	//PhiPhiUpBBLinearBoundary func(this->storage);
+	//sweep<PhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// x^2 * dphi * dphi
-	//detail::SqXdPhidPhiUpBBLinearBoundary func(this->storage);
-	//sweep<detail::SqXdPhidPhiUpBBLinearBoundary> s(func, this->storage);
+	//SqXdPhidPhiUpBBLinearBoundary func(this->storage);
+	//sweep<SqXdPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// x * dphi * phi
-	//detail::XdPhiPhiUpBBLinearBoundary func(this->storage);
-	//sweep<detail::XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+	//XdPhiPhiUpBBLinearBoundary func(this->storage);
+	//sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// x * phi * dphi
-	detail::XPhidPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::XPhidPhiUpBBLinearBoundary> s(func, this->storage);
+	XPhidPhiUpBBLinearBoundary func(this->storage);
+	sweep<XPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// dphi * phi
-	//detail::DPhiPhiUpBBLinearBoundary func(this->storage);
-	//sweep<detail::DPhiPhiUpBBLinearBoundary> s(func, this->storage);
+	//DPhiPhiUpBBLinearBoundary func(this->storage);
+	//sweep<DPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	// phi * dphi
-	//detail::PhidPhiUpBBLinearBoundary func(this->storage);
-	//sweep<detail::PhidPhiUpBBLinearBoundary> s(func, this->storage);
+	//PhidPhiUpBBLinearBoundary func(this->storage);
+	//sweep<PhidPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -117,30 +120,31 @@ void OperationUpDownTestLinearBoundary::up(DataVector& alpha, DataVector& result
 void OperationUpDownTestLinearBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	//detail::PhiPhiDownBBLinearBoundary func(this->storage);
-	//sweep<detail::PhiPhiDownBBLinearBoundary> s(func, this->storage);
+	//PhiPhiDownBBLinearBoundary func(this->storage);
+	//sweep<PhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	// x^2 * dphi * dphi
-	//detail::SqXdPhidPhiDownBBLinearBoundary func(this->storage);
-	//sweep<detail::SqXdPhidPhiDownBBLinearBoundary> s(func, this->storage);
+	//SqXdPhidPhiDownBBLinearBoundary func(this->storage);
+	//sweep<SqXdPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 	// x * dphi * phi
-	//detail::XdPhiPhiDownBBLinearBoundary func(this->storage);
-	//sweep<detail::XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+	//XdPhiPhiDownBBLinearBoundary func(this->storage);
+	//sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	// x * phi * dphi
-	detail::XPhidPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::XPhidPhiDownBBLinearBoundary> s(func, this->storage);
+	XPhidPhiDownBBLinearBoundary func(this->storage);
+	sweep<XPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 	//  dphi * phi
-	//detail::DPhiPhiDownBBLinearBoundary func(this->storage);
-	//sweep<detail::DPhiPhiDownBBLinearBoundary> s(func, this->storage);
+	//DPhiPhiDownBBLinearBoundary func(this->storage);
+	//sweep<DPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	//  phi * dphi
-	//detail::PhidPhiDownBBLinearBoundary func(this->storage);
-	//sweep<detail::PhidPhiDownBBLinearBoundary> s(func, this->storage);
+	//PhidPhiDownBBLinearBoundary func(this->storage);
+	//sweep<PhidPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
+}
 }

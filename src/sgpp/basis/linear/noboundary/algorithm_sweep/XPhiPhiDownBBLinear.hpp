@@ -14,9 +14,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 /**
  * Implementation of sweep operator (): 1D Down for
@@ -85,8 +86,9 @@ protected:
 	void recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t);
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}
 
 #endif /* PHIPHIDOWNBBLINEAR_HPP */

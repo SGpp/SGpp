@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace finance
+{
 
 /**
  * This class provides a method for discounting when the risk-free rate corresponds to an axis of the grid
@@ -52,6 +54,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* VARIABLEDISCOUNTFACTOR_HPP */

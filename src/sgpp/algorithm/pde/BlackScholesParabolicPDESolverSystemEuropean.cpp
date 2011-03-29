@@ -14,6 +14,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace finance
+{
 
 BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
 			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
@@ -395,4 +397,5 @@ void BlackScholesParabolicPDESolverSystemEuropean::buildDeltaCoefficientsLogTran
 	}
 }
 
+}
 }

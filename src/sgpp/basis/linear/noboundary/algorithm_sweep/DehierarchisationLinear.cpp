@@ -12,8 +12,7 @@ namespace sg
 namespace base
 {
 
-namespace detail
-{
+
 
 DehierarchisationLinear::DehierarchisationLinear(GridStorage* storage) : storage(storage)
 {
@@ -61,7 +60,7 @@ void DehierarchisationLinear::rec(DataVector& source, DataVector& result, grid_i
 	}
 }
 
-}	// namespace detail
+	// namespace detail
 
 }	// namespace sg
 }

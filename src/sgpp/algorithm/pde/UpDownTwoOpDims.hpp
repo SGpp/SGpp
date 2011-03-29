@@ -18,6 +18,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implements the Up/Down scheme with two dimensions with special operations: i,j
@@ -213,6 +215,7 @@ protected:
 	virtual void upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim) = 0;
 };
 
+}
 }
 
 #endif /* UPDOWNTWOOPDIMS_HPP */

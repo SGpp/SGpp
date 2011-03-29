@@ -15,9 +15,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -74,8 +75,9 @@ protected:
 };
 
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}
 
 #endif /* DPHIPHIUPBBLINEARBOUNDARY_HPP */

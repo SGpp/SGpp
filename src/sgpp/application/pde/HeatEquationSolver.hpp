@@ -29,6 +29,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class provides a simple-to-use solver of the multi dimensional
@@ -90,6 +92,7 @@ public:
 	void initScreen();
 };
 
+}
 }
 
 #endif /* HEATEQUATIONSOLVER_HPP */

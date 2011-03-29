@@ -10,9 +10,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 XPhidPhiDownBBLinear::XPhidPhiDownBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
@@ -121,6 +122,7 @@ void XPhidPhiDownBBLinear::recBB(DataVector& source, DataVector& result, grid_it
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

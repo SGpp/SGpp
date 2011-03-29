@@ -11,6 +11,8 @@
 #include "solver/ODESolver.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include <string>
+using namespace sg::finance;
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg

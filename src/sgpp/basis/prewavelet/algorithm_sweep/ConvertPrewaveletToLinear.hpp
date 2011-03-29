@@ -32,8 +32,7 @@ namespace sg
 namespace base
 {
 
-namespace detail
-{
+
 
 /**
  * Class that implements the transformation of a hierarchical prewavelet sparse grid to a
@@ -226,7 +225,7 @@ public:
 
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }

@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationEllipticPDESolverSystem::OperationEllipticPDESolverSystem(Grid& SparseGrid, DataVector& rhs)
 {
@@ -34,4 +36,5 @@ size_t OperationEllipticPDESolverSystem::getNumGridPointsInner()
 	return this->numGridpointsInner;
 }
 
+}
 }

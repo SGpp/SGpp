@@ -45,8 +45,8 @@ void OperationConvertPrewavelet::doConvertToLinear(
 		DataVector& alpha)
 {
 
-	detail::ConvertPrewaveletToLinear func(this->storage);
-	sweep<detail::ConvertPrewaveletToLinear> s(func, this->storage);
+	ConvertPrewaveletToLinear func(this->storage);
+	sweep<ConvertPrewaveletToLinear> s(func, this->storage);
 
 
 	for (size_t i = 0; i < this->storage->dim(); i++)
@@ -58,8 +58,8 @@ void OperationConvertPrewavelet::doConvertToLinear(
 
 void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha)
 {
-	detail::ConvertLinearToPrewavelet func(this->storage, this->shadowstorage);
-	sweep<detail::ConvertLinearToPrewavelet> s(func, this->storage);
+	ConvertLinearToPrewavelet func(this->storage, this->shadowstorage);
+	sweep<ConvertLinearToPrewavelet> s(func, this->storage);
 
 	for (size_t i = 0; i < this->storage->dim(); i++)
 	{

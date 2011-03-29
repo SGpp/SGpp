@@ -10,6 +10,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 UpDownTwoOpDims::UpDownTwoOpDims(GridStorage* storage, DataMatrix& coef)
 {
@@ -297,4 +299,5 @@ void UpDownTwoOpDims::specialOpOneAndOpTwo(DataVector& alpha, DataVector& result
 	}
 }
 
+}
 }

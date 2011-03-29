@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class implements the ParabolicPDESolverSystem for the
@@ -64,6 +66,7 @@ public:
 	void startTimestep();
 };
 
+}
 }
 
 #endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEM_HPP */

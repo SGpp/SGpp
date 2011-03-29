@@ -17,6 +17,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implements a standard Up/Down Schema without any operation dim.
@@ -94,6 +96,7 @@ protected:
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
 };
 
+}
 }
 
 #endif /* STDUPDOWN_HPP */

@@ -13,6 +13,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class uses OperationEllipticPDESolverSystemDirichlet
@@ -44,6 +46,7 @@ public:
 	virtual ~PoissonEquationEllipticPDESolverSystemDirichlet();
 };
 
+}
 }
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP */

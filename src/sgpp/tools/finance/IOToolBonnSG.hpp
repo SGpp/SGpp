@@ -17,6 +17,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace finance
+{
 
 /**
  * This class implements an IO Tool to read and write files
@@ -62,6 +64,7 @@ public:
 	void writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha, bool ishierarchized);
 };
 
+}
 }
 
 #endif /* IOTOOLBONNSG_HPP */

@@ -18,9 +18,12 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+using namespace sg::finance;
 using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 PDESolver::PDESolver()
@@ -415,4 +418,5 @@ size_t PDESolver::getNumberDimensions()
 	}
 }
 
+}
 }

@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
 {
@@ -115,4 +117,5 @@ void HeatEquationParabolicPDESolverSystem::startTimestep()
 {
 }
 
+}
 }

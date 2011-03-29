@@ -49,6 +49,8 @@
 #include "sgpp.hpp"
 
 #include <iostream>
+using namespace sg::finance;
+using namespace sg::pde;
 using namespace sg::datadriven;
 
 namespace sg

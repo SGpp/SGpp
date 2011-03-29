@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(GridStorage* storage) : StdUpDown(storage)
 {
@@ -27,8 +29,8 @@ OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear()
 void OperationLTwoDotProductLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinear func(this->storage);
-	sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
+	PhiPhiUpBBLinear func(this->storage);
+	sweep<PhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -36,10 +38,11 @@ void OperationLTwoDotProductLinear::up(DataVector& alpha, DataVector& result, si
 void OperationLTwoDotProductLinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinear func(this->storage);
-	sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
+	PhiPhiDownBBLinear func(this->storage);
+	sweep<PhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
+}
 }

@@ -15,6 +15,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace finance
+{
 
 HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma,
 			double theta, double a, double TimestepSize, std::string OperationMode,
@@ -201,4 +203,5 @@ void HullWhiteParabolicPDESolverSystem::startTimestep()
 
 }
 
+}
 }

@@ -11,6 +11,7 @@
 #include "solver/SGSolver.hpp"
 #include "solver/SLESolver.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg

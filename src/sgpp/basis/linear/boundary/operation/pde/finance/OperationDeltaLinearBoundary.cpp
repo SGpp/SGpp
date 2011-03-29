@@ -14,9 +14,12 @@
 #include "basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 OperationDeltaLinearBoundary::OperationDeltaLinearBoundary(GridStorage* storage, DataVector& coef) : UpDownOneOpDim(storage, coef)
@@ -30,8 +33,8 @@ OperationDeltaLinearBoundary::~OperationDeltaLinearBoundary()
 void OperationDeltaLinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearBoundary> s(func, this->storage);
+	PhiPhiUpBBLinearBoundary func(this->storage);
+	sweep<PhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -39,8 +42,8 @@ void OperationDeltaLinearBoundary::up(DataVector& alpha, DataVector& result, siz
 void OperationDeltaLinearBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearBoundary> s(func, this->storage);
+	PhiPhiDownBBLinearBoundary func(this->storage);
+	sweep<PhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -48,8 +51,8 @@ void OperationDeltaLinearBoundary::down(DataVector& alpha, DataVector& result, s
 void OperationDeltaLinearBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiUpBBLinearBoundary func(this->storage);
-	sweep<detail::XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+	XdPhiPhiUpBBLinearBoundary func(this->storage);
+	sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -57,10 +60,11 @@ void OperationDeltaLinearBoundary::upOpDim(DataVector& alpha, DataVector& result
 void OperationDeltaLinearBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiDownBBLinearBoundary func(this->storage);
-	sweep<detail::XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+	XdPhiPhiDownBBLinearBoundary func(this->storage);
+	sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
+}
 }

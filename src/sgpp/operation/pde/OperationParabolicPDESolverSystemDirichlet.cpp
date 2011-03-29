@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationParabolicPDESolverSystemDirichlet::OperationParabolicPDESolverSystemDirichlet()
 {
@@ -283,4 +285,5 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::getGridCoefficientsForCG
 	return this->alpha_inner;
 }
 
+}
 }

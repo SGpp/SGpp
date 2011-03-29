@@ -14,9 +14,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -67,8 +68,9 @@ protected:
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& f);
 };
 
-}
 
+
+}
 }
 
 #endif /* DPHIDPHIUPMODLINEAR_HPP */

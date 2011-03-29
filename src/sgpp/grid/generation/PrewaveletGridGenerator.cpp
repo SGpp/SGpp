@@ -29,6 +29,7 @@
 #include "sgpp.hpp"
 
 #include <iostream>
+using namespace sg::pde;
 
 namespace sg
 {

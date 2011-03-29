@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDirichlet(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
 {
@@ -85,4 +87,5 @@ void OperationEllipticPDESolverSystemDirichlet::getSolutionBoundGrid(DataVector&
 	this->GridConverter->updateBoundaryCoefs(Solution, SolutionInner);
 }
 
+}
 }

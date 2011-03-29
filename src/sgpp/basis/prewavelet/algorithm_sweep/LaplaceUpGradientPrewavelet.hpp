@@ -30,9 +30,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 /**
  * Implements the upGradient Method needed for the Laplace operator on prewavelet grids. The calculation
@@ -253,8 +254,9 @@ public:
 
 };
 
-}
 
+
+}
 }
 
 #endif /* LAPLACEUPGRADIENTMODLINEAR_HPP */

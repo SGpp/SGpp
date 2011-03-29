@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+using namespace sg::pde;
 using namespace sg::base;
 
 namespace sg

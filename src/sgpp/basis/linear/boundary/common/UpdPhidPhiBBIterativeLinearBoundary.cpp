@@ -11,6 +11,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace pde
+{
 
 UpdPhidPhiBBIterativeLinearBoundary::UpdPhidPhiBBIterativeLinearBoundary(GridStorage* storage) : storage(storage)
 {
@@ -78,4 +80,5 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(DataVector& alpha, DataVect
 	}
 }
 
+}
 }

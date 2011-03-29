@@ -10,9 +10,10 @@ using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 DPhiPhiDownBBLinearBoundary::DPhiPhiDownBBLinearBoundary(GridStorage* storage) : DPhiPhiDownBBLinear(storage)
 {
@@ -85,6 +86,7 @@ void DPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& res
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}
