@@ -40,6 +40,8 @@ const __m128d _mm_abs_pd( const __m128d& x)
 
 namespace sg
 {
+namespace parallel
+{
 
 OperationMultipleEvalIterativeSSELinear::OperationMultipleEvalIterativeSSELinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
 {
@@ -402,4 +404,5 @@ double OperationMultipleEvalIterativeSSELinear::multVectorized(DataVector& alpha
 	return myTimer->stop();
 }
 
+}
 }

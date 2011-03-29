@@ -16,6 +16,7 @@
 using namespace sg::base;
 
 namespace sg {
+namespace combigrid {
 
 /** class to contain the methods to calculate the opticom coefficients */
 class OptiCom {
@@ -128,5 +129,6 @@ public:
 	  }
   }; // end of class
 } // end namaspace
+}
 
 #endif /* SG_OPTICOM_HPP_ */

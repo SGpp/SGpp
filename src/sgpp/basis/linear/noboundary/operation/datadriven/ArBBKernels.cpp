@@ -18,6 +18,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 size_t global_dims;
 
@@ -338,4 +340,5 @@ void ArBBKernels::resetKernels()
 	isMultfirst = true;
 }
 
+}
 }

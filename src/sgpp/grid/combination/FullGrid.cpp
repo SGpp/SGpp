@@ -3,6 +3,7 @@
 using namespace std;
 using namespace sg::base;
 namespace sg{
+namespace combigrid {
 
 
     FullGrid* FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel)
@@ -127,4 +128,5 @@ namespace sg{
   	  value = ret_val;
   	  return ret_val;
    }
+}
 }

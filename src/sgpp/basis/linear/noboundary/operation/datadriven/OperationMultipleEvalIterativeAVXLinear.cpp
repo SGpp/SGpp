@@ -46,6 +46,8 @@ static const __m256i ldStMaskAVX = _mm256_set_epi64x(0x0000000000000000, 0x00000
 
 namespace sg
 {
+namespace parallel
+{
 
 OperationMultipleEvalIterativeAVXLinear::OperationMultipleEvalIterativeAVXLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
 {
@@ -409,4 +411,5 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(DataVector& alpha
 	return myTimer->stop();
 }
 
+}
 }

@@ -9,6 +9,9 @@
 
 namespace sg
 {
+namespace parallel
+{
 	// @todo MPI (heinecke) Hack, remove if possible
 	MPICommunicator* myGlobalMPIComm;
+}
 }

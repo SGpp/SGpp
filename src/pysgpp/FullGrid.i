@@ -3,11 +3,12 @@
 %rename(__len__) FullGrid::getSize;
 %rename(assign) FullGrid::operator=;
 
-%newobject  sg::FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel);
-%newobject sg::FullGrid::createLinearBoundaryFullGrid(size_t dim, vector<level_t> *inlevel);
+%newobject  sg::combigrid::FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel);
+%newobject sg::combigrid::FullGrid::createLinearBoundaryFullGrid(size_t dim, vector<level_t> *inlevel);
 
 using namespace sg::base;
 namespace sg{
+namespace combigrid{
 class FullGrid{
 public:
 	  typedef GridStorage::index_type index_type;
@@ -36,4 +37,5 @@ public:
 
 
 };
+}
 }

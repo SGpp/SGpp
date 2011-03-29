@@ -22,6 +22,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 PoissonEquationSolverMPI::PoissonEquationSolverMPI() : EllipticPDESolver()
 {
@@ -184,4 +186,5 @@ void PoissonEquationSolverMPI::initScreen()
 	this->myScreen->writeTitle("SGpp - Poisson Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
 }
 
+}
 }

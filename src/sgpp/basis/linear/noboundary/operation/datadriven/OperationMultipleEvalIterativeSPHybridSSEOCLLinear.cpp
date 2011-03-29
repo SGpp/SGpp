@@ -32,6 +32,8 @@ static const __m128 abs2MaskHybrid = _mm_load1_ps( &absMaskHybrid.f );
 
 namespace sg
 {
+namespace parallel
+{
 
 OperationMultipleEvalIterativeSPHybridSSEOCLLinear::OperationMultipleEvalIterativeSPHybridSSEOCLLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
 {
@@ -376,4 +378,5 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(DataVe
    	return time;
 }
 
+}
 }

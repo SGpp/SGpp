@@ -12,6 +12,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 OperationMultipleEvalIterativeSPOCLLinear::OperationMultipleEvalIterativeSPOCLLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
 {
@@ -125,4 +127,5 @@ double OperationMultipleEvalIterativeSPOCLLinear::multVectorized(DataVectorSP& a
    	return time;
 }
 
+}
 }

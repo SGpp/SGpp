@@ -10,6 +10,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 MPICommunicator::MPICommunicator(int myid, int ranks) : myid_(myid), ranks_(ranks) { }
 
@@ -119,4 +121,5 @@ int MPICommunicator::getNumRanks()
 	return this->ranks_;
 }
 
+}
 }

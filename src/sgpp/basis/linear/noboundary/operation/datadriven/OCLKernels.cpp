@@ -20,6 +20,8 @@ using namespace sg::base;
 
 namespace sg
 {
+namespace parallel
+{
 
 cl_int err;
 cl_platform_id platform_id;
@@ -1291,4 +1293,5 @@ void OCLKernels::resetData()
 	}
 }
 
+}
 }
