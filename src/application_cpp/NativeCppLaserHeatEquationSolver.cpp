@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 		bound_left = 0.0;
 		bound_right = 1.0;
 		a = 10.0;
-		T = 1.0;
+		T = 2.0;
 		dt = 0.001;
 		ODESolver = "ImEul";
 		cg_eps = 0.00001;
