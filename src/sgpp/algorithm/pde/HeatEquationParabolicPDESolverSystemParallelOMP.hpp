@@ -21,7 +21,7 @@ namespace sg
  */
 class HeatEquationParabolicPDESolverSystemParallelOMP : public OperationParabolicPDESolverSystemDirichlet
 {
-private:
+protected:
 	/// the heat coefficient
 	double a;
 	/// the Laplace Operation (Stiffness Matrix), on boundary grid
@@ -59,9 +59,9 @@ public:
 	 */
 	virtual ~HeatEquationParabolicPDESolverSystemParallelOMP();
 
-	void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep(bool isLastTimestep = false);
 
-	void startTimestep();
+	virtual void startTimestep();
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
