@@ -22,7 +22,7 @@
 namespace sg
 {
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP::LaserHeatEquationParabolicPDESolverSystemParallelOMP(double beam_velocity, double heat_sigma, size_t max_level, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), laser_x_offset_(0.0), laser_x_start_(0.25), laser_x_last_(0.25), y_sign_switch(0), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
+LaserHeatEquationParabolicPDESolverSystemParallelOMP::LaserHeatEquationParabolicPDESolverSystemParallelOMP(double beam_velocity, double heat_sigma, size_t max_level, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), laser_x_offset_(0.0), laser_x_start_(0.25), laser_x_last_(0.25), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
 {
 }
 
@@ -35,6 +35,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool i
 	double heat = 4.0;
 	double xadd = 0.0;
 	bool y_add = true;
+	bool x_add = true;
 
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
@@ -53,27 +54,43 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool i
 	if ((this->laser_x_offset_ - ((double)int_x_offset)) <= 0.25)
 	{
 		y_add = true;
+		x_add = true;
 		xadd = 0.0;
 	}
 	if ((this->laser_x_offset_ - ((double)int_x_offset)) > 0.25)
 	{
 		y_add = true;
-		xadd = 0.25;
+		x_add = false;
+		xadd = 0.5;
 	}
 	if ((this->laser_x_offset_ - ((double)int_x_offset)) > 0.5)
 	{
 		y_add = false;
+		x_add = true;
 		xadd = 0.5;
 	}
 	if ((this->laser_x_offset_ - ((double)int_x_offset)) > 0.75)
 	{
 		y_add = false;
-		xadd = 0.25;
+		x_add = false;
+		xadd = 0.0;
 	}
 
-	double pos_x = this->laser_x_start_ + xadd + (0.25*sin(this->laser_x_offset_*2.0*PI));
-	double pos_y = sqrt((0.25*0.25)-((pos_x-0.5)*(pos_x-0.5)));
-	pos_y = pos_y*(pow(-1.0, (double)this->y_sign_switch));
+	double pos_x = 0.0;
+	if (x_add == true)
+	{
+		pos_x = this->laser_x_start_ + xadd + (0.25*sin(this->laser_x_offset_*2.0*PI));
+	}
+	else
+	{
+		pos_x = this->laser_x_start_ + xadd - (0.25*sin(this->laser_x_offset_*2.0*PI));
+	}
+	double radi = (0.25*0.25)-((pos_x-0.5)*(pos_x-0.5));
+	if (radi < 0.0)
+	{
+		radi = 0.0;
+	}
+	double pos_y = sqrt(radi);
 
 	if (y_add == true)
 	{
@@ -84,7 +101,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool i
 		pos_y = 0.5 - pos_y;
 	}
 
-	std::cout << std::endl << std::endl << pos_x << " " << pos_y << std::endl << std::endl;
+	//std::cout << std::endl << std::endl << pos_x << " " << pos_y << std::endl << std::endl;
 
 	double* dblFuncValues = new double[2];
 	for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)

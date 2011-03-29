@@ -36,8 +36,6 @@ private:
 	double laser_x_start_;
 	/// position of laser in last time step (x direction)
 	double laser_x_last_;
-	/// indicator of sign for y offset
-	size_t y_sign_switch;
 
 public:
 	/**
