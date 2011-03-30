@@ -6,9 +6,10 @@ for file in *.gnuplot
 do
 	cp $file solution.gnuplot
 	gnuplot gen_animation_frame.gplt
-	cp temp.jpg ${file}.jpg
+	cp temp.png ${file}.png
 	rm solution.gnuplot
-	rm temp.jpg
+	rm temp.png
 done
-# now build an mpeg movie form the jpeg files
-ls *.jpg | jpeg2yuv -f 25 -I p | mpeg2enc -o animation.mpg
+# now build an mpeg movie form the png files
+mogrify *.png
+png2yuv -j %014d.gnuplot.png -f25 -Ip -L0 | mpeg2enc -f3 -b16 -o animation.mpg
