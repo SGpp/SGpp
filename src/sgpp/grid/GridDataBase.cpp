@@ -84,11 +84,18 @@ namespace sg
     }
   }
 
+  void GridDataBase::setValuesFor(Grid* grid, DataVector &values) {
+    GridStorage* gs = grid->getStorage();
+    for (GridStorage::grid_map_iterator iter=gs->begin(); iter!=gs->end(); iter++) {
+      values[iter->second] = get(iter->first);
+    }
+  }
+
   double GridDataBase::get(GridIndex* gi) {
     grid_map_const_iterator ind = _map.find(gi);
     if (ind == _map.end()) {
-      //      throw new sg::data_exception("GridDataBase::get : grid point not in database");
-      return NULL;
+      std::cerr << gi->toString() << " not in database" << std::endl;
+      throw new sg::data_exception("GridDataBase::get : grid point not in database");
     }
     return ind->second;
   }
