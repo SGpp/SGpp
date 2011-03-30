@@ -22,7 +22,7 @@
 namespace sg
 {
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), laser_x_offset_(0.0), laser_x_start_(0.25), laser_x_last_(0.25), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), done_steps_(0), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
 {
 }
 
@@ -32,10 +32,6 @@ LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::~LaserHeatEquationParabo
 
 void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool isLastTimestep)
 {
-	double xadd = 0.0;
-	bool y_add = true;
-	bool x_add = true;
-
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
@@ -47,58 +43,11 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool
 	DataVector laser_update(this->BoundGrid->getStorage()->size());
 	BoundingBox* myBoundingBox = new BoundingBox(*(this->BoundGrid->getStorage()->getBoundingBox()));
 
-	this->laser_x_offset_ += (this->beam_velocity_*this->TimestepSize);
+	this->done_steps_++;
+	double angle = ((this->beam_velocity_*(double(this->done_steps_)*this->TimestepSize)) * 360) - 180;
 
-	int int_x_offset = (int)laser_x_offset_;
-	if ((this->laser_x_offset_ - ((double)int_x_offset)) <= 0.25)
-	{
-		y_add = true;
-		x_add = true;
-		xadd = 0.0;
-	}
-	if ((this->laser_x_offset_ - ((double)int_x_offset)) > 0.25)
-	{
-		y_add = true;
-		x_add = false;
-		xadd = 0.5;
-	}
-	if ((this->laser_x_offset_ - ((double)int_x_offset)) > 0.5)
-	{
-		y_add = false;
-		x_add = true;
-		xadd = 0.5;
-	}
-	if ((this->laser_x_offset_ - ((double)int_x_offset)) > 0.75)
-	{
-		y_add = false;
-		x_add = false;
-		xadd = 0.0;
-	}
-
-	double pos_x = 0.0;
-	if (x_add == true)
-	{
-		pos_x = this->laser_x_start_ + xadd + (0.25*sin(this->laser_x_offset_*2.0*PI));
-	}
-	else
-	{
-		pos_x = this->laser_x_start_ + xadd - (0.25*sin(this->laser_x_offset_*2.0*PI));
-	}
-	double radi = (0.25*0.25)-((pos_x-0.5)*(pos_x-0.5));
-	if (radi < 0.0)
-	{
-		radi = 0.0;
-	}
-	double pos_y = sqrt(radi);
-
-	if (y_add == true)
-	{
-		pos_y = pos_y + 0.5;
-	}
-	else
-	{
-		pos_y = 0.5 - pos_y;
-	}
+	double pos_x = ((cos((angle * PI) / 180.0))*0.25)+0.5;
+	double pos_y = ((sin((angle * PI) / 180.0))*0.25)+0.5;
 
 	//std::cout << std::endl << std::endl << pos_x << " " << pos_y << std::endl << std::endl;
 
@@ -124,8 +73,6 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool
 	}
 	delete[] dblFuncValues;
 	delete myBoundingBox;
-
-	this->laser_x_last_ = pos_x;
 
 	// combine last solution and laser update
 	for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)

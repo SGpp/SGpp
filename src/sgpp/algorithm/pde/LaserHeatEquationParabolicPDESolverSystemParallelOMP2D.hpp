@@ -29,20 +29,14 @@ private:
 	double heat_sigma_;
 	/// the max. refinement level
 	size_t max_level_;
-
-	/// current offset of laser position (x direction)
-	double laser_x_offset_;
-	/// position of laser at beginning (x direction)
-	double laser_x_start_;
-	/// position of laser in last time step (x direction)
-	double laser_x_last_;
-
 	/// heating the grid initialization
 	double heat_;
 	/// threshold for refinening during solution
 	double refine_threshold_;
 	/// threshold for coarsening during solution
 	double coarsen_threshold_;
+	/// number of calculated timesteps
+	size_t done_steps_;
 
 public:
 	/**
