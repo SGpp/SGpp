@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP.hpp"
+#include "algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
@@ -22,17 +22,16 @@
 namespace sg
 {
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP::LaserHeatEquationParabolicPDESolverSystemParallelOMP(double beam_velocity, double heat_sigma, size_t max_level, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), laser_x_offset_(0.0), laser_x_start_(0.25), laser_x_last_(0.25), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), laser_x_offset_(0.0), laser_x_start_(0.25), laser_x_last_(0.25), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
 {
 }
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP::~LaserHeatEquationParabolicPDESolverSystemParallelOMP()
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::~LaserHeatEquationParabolicPDESolverSystemParallelOMP2D()
 {
 }
 
-void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool isLastTimestep)
+void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool isLastTimestep)
 {
-	double heat = 4.0;
 	double xadd = 0.0;
 	bool y_add = true;
 	bool x_add = true;
@@ -115,7 +114,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool i
 		}
 
 		// check if coordinates at starting point of laser
-		laser_update[i] =  heat*(myNormDistr.getDensity(dblFuncValues[0], pos_x, this->heat_sigma_)*myNormDistr.getDensity(dblFuncValues[1], pos_y, this->heat_sigma_));
+		laser_update[i] =  this->heat_*(myNormDistr.getDensity(dblFuncValues[0], pos_x, this->heat_sigma_)*myNormDistr.getDensity(dblFuncValues[1], pos_y, this->heat_sigma_));
 
 		//boundaries are set to zero
 		if (dblFuncValues[0] == 0.0 || dblFuncValues[1] == 0.0)
@@ -148,7 +147,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool i
 	GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
 	size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-	SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, 0.01);
+	SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refine_threshold_);
 	myGenerator->refineMaxLevel(myRefineFunc, this->max_level_);
 	this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
 	delete myRefineFunc;
@@ -156,7 +155,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool i
 	if (this->BoundGrid->getStorage()->getNumInnerPoints() > 100)
 	{
 		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
-		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, 0.001);
+		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsen_threshold_);
 		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 		delete myCoarsenFunctor;
 	}
@@ -171,7 +170,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool i
 	this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 }
 
-void LaserHeatEquationParabolicPDESolverSystemParallelOMP::startTimestep()
+void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::startTimestep()
 {
 }
 

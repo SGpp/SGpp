@@ -1,24 +1,10 @@
-#############################################################################
-# This file is part of sgpp, a program package making use of spatially      #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU Lesser General Public License as published  #
-# by the Free Software Foundation; either version 3 of the License, or      #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU Lesser General Public License  #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
+#################################################################################
+# Copyright (C) 2009-2011 Technische Universitaet Muenchen                      #
+# This file is part of the SG++ project. For conditions of distribution and     #
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp            #
+#                                                                               #
+# author Alexander Heinecke (Alexander.Heinecke@mytum.de)                       #
+#################################################################################
 
 ###################################################################
 # Needed Pathes
@@ -212,16 +198,16 @@ ifeq ($(CC),mpiicpc)
 endif
 
 ###################################################################
-# Builds a simple Heat Equation Solver
+# Builds a simple Heat Equation Solver (rotating Laser test case)
 ###################################################################	
-LaserHESolver: default
+LaserHESolver2D: default
 ifeq ($(CC),g++)
-	mkdir -p tmp/build_native/LaserHESolver_gcc
-	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=LaserHESolver_GCC" "EXT=$(EXT)"
+	mkdir -p tmp/build_native/LaserHESolver2D_gcc
+	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver2D_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=LaserHESolver2D_GCC" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
-	mkdir -p tmp/build_native/LaserHESolver_icc
-	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LaserHESolver_ICC" "EXT=$(EXT)"
+	mkdir -p tmp/build_native/LaserHESolver2D_icc
+	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver2D_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LaserHESolver2D_ICC" "EXT=$(EXT)"
 endif
 
 ###################################################################

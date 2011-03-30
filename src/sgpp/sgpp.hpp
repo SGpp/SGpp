@@ -37,7 +37,7 @@
 #include "application/pde/BlackScholesHullWhiteSolver.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
 #include "application/pde/HeatEquationSolverWithStretching.hpp"
-#include "application/pde/LaserHeatEquationSolver.hpp"
+#include "application/pde/LaserHeatEquationSolver2D.hpp"
 #include "application/pde/PoissonEquationSolver.hpp"
 
 #include "basis/basis.hpp"
