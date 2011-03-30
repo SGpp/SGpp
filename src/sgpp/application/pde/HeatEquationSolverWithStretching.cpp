@@ -223,25 +223,25 @@ void HeatEquationSolverWithStretching::initScreen()
 	this->myScreen->writeTitle("SGpp - Heat Equation Solver With Stretching, 1.0.1", "Alexander Heinecke, Sarpkan Selcuk (C) 2009-2011");
 }
 
-void HeatEquationSolverWithStretching::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename)
+void HeatEquationSolverWithStretching::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void HeatEquationSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename)
+void HeatEquationSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
-void HeatEquationSolverWithStretching::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus)
+void HeatEquationSolverWithStretching::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
 }
 
-void HeatEquationSolverWithStretching::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus)
+void HeatEquationSolverWithStretching::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
