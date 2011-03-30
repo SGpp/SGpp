@@ -1,25 +1,10 @@
-#############################################################################
-# This file is part of sgpp, a program package making use of spatially      #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU Lesser General Public License as published  #
-# by the Free Software Foundation; either version 3 of the License, or      #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU Lesser General Public License  #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
-
+#################################################################################
+# Copyright (C) 2009-2011 Technische Universitaet Muenchen                      #
+# This file is part of the SG++ project. For conditions of distribution and     #
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp            #
+#                                                                               #
+# author Alexander Heinecke (Alexander.Heinecke@mytum.de)                       #
+#################################################################################
 
 SRCDIR = ./../../../src/sgpp/
 OUTDIR = ./
@@ -94,7 +79,7 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
 	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o\
-	LaserHeatEquationParabolicPDESolverSystemParallelOMP.o LaserHeatEquationSolver.o
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -688,8 +673,8 @@ HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationPara
 HeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp	
 	
-LaserHeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP.cpp	
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o : $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp	
 
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
@@ -757,8 +742,8 @@ BlackScholesHullWhiteSolver.o : $(SRCDIR)application/pde/BlackScholesHullWhiteSo
 HeatEquationSolver.o : $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolver.o $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	
-LaserHeatEquationSolver.o : $(SRCDIR)application/pde/LaserHeatEquationSolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationSolver.o $(SRCDIR)application/pde/LaserHeatEquationSolver.cpp
+LaserHeatEquationSolver2D.o : $(SRCDIR)application/pde/LaserHeatEquationSolver2D.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationSolver2D.o $(SRCDIR)application/pde/LaserHeatEquationSolver2D.cpp
 	
 HeatEquationSolverWithStretching.o : $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverWithStretching.o $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp

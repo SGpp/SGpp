@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef LASERHEATEQUATIONSOLVER_HPP
-#define LASERHEATEQUATIONSOLVER_HPP
+#ifndef LASERHEATEQUATIONSOLVER2D_HPP
+#define LASERHEATEQUATIONSOLVER2D_HPP
 
 #include "application/pde/HeatEquationSolver.hpp"
 
@@ -23,7 +23,7 @@ namespace sg
  *
  * @version $HEAD$
  */
-class LaserHeatEquationSolver : public HeatEquationSolver
+class LaserHeatEquationSolver2D : public HeatEquationSolver
 {
 private:
 	/// stores the beam velocity
@@ -32,6 +32,12 @@ private:
 	double heat_sigma_;
 	/// stores the grid's max. refinement level
 	size_t max_level_;
+	/// threshold for refineing the grid during solution process
+	double refine_threshold_;
+	/// threshold for coarsening the grid during solution process
+	double coarsen_threshold_;
+	/// heating factor
+	double heat_;
 
 public:
 	/**
@@ -40,13 +46,16 @@ public:
 	 * @param beam_velocity the velocity of the rotating laser beam
 	 * @param heat_sigma the laser beam's expansion
 	 * @param max_level the max. refinement level
+	 * @param refine_threshold threshold for refineing the grid during solution process
+	 * @param coarsen_threshold threshold for coarsening the grid during solution process
+	 * @param heat the heat factor to initialize the grid
 	 */
-	LaserHeatEquationSolver(double beam_velocity, double heat_sigma, size_t max_level);
+	LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, size_t max_level, double refine_threshold, double coarsen_threshold, double heat);
 
 	/**
 	 * Std-Destructor of the solver
 	 */
-	virtual ~LaserHeatEquationSolver();
+	virtual ~LaserHeatEquationSolver2D();
 
 	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
@@ -58,14 +67,13 @@ public:
 	 * grid initialization for rotating laser test case
 	 *
 	 * @param alpha reference to the coefficient's vector
-	 * @param heat value of laser's heat
 	 * @param nRefinements number of initial refinement before solving the heat equation
 	 */
-	void refineInitialGridWithLaserHeat(DataVector& alpha, double heat, size_t nRefinements);
+	void refineInitialGridWithLaserHeat(DataVector& alpha, size_t nRefinements);
 
 	void initScreen();
 };
 
 }
 
-#endif /* LASERHEATEQUATIONSOLVER_HPP */
+#endif /* LASERHEATEQUATIONSOLVER2D_HPP */

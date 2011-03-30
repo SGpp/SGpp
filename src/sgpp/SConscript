@@ -248,7 +248,7 @@ algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
 algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
 algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
 algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
-algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP.cpp
+algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp
 algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 algorithm/pde/StdUpDown.cpp
 algorithm/pde/UpDownOneOpDim.cpp
@@ -265,7 +265,7 @@ application/pde/HullWhiteSolver.cpp
 application/pde/BlackScholesHullWhiteSolver.cpp
 application/pde/HeatEquationSolver.cpp
 application/pde/HeatEquationSolverWithStretching.cpp
-application/pde/LaserHeatEquationSolver.cpp
+application/pde/LaserHeatEquationSolver2D.cpp
 application/pde/PoissonEquationSolver.cpp
 application/finance/VariableDiscountFactor.cpp
 
