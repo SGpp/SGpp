@@ -12,4 +12,4 @@ do
 done
 # now build an mpeg movie form the png files
 mogrify *.png
-png2yuv -j %014d.gnuplot.png -f25 -Ip -L0 | mpeg2enc -f3 -b16 -o animation.mpg
+png2yuv -j %014d.gnuplot.png -f25 -Ip -L0 | mpeg2enc -f12 -a3 -x1280 -y720 -o animation.mpg
