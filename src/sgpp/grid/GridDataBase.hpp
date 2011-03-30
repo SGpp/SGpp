@@ -129,6 +129,13 @@ public:
   void set(GridIndex* gi, double value);
 
   /**
+   * Set values for given grid from stored ones in database.
+   * @param grid a grid
+   * @param values the corresponding coefficient vector
+   */
+  void setValuesFor(Grid* grid, DataVector &values);
+
+  /**
    * Returns the number of grid points that are currently stored
    * in the database.
    *
