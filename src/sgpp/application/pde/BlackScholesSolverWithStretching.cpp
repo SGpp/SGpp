@@ -499,25 +499,25 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(DataVect
 	}
 }
 
-void BlackScholesSolverWithStretching::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename)
+void BlackScholesSolverWithStretching::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void BlackScholesSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename)
+void BlackScholesSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
-void BlackScholesSolverWithStretching::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus)
+void BlackScholesSolverWithStretching::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
 }
 
-void BlackScholesSolverWithStretching::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus)
+void BlackScholesSolverWithStretching::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
