@@ -58,15 +58,16 @@ private:
    * use GridDataBase::fromFile(std::string filename).
    * @param filename name of file
    */
-  void _loadTypeDim(const std::string filename, bool &ftype, int &dim, std::ifstream &fin);
+  void _loadTypeDim(const std::string filename, char &ftype, int &dim, std::ifstream &fin);
 
   /**
    * Loads database in ASCII format from file. Adds (grid point - value) mappings
    * to current database. Overwrites existing entries. To load a new database, 
    * use GridDataBase::fromFile(std::string filename).
+   * closes filestream fin at end
    * @param filename name of file
    */
-  void _loadGrid(std::ifstream fin);
+  void _loadData(std::ifstream &fin, char &ftype);
 
 
 
@@ -75,8 +76,8 @@ public:
   typedef grid_map::iterator grid_map_iterator;
   typedef grid_map::const_iterator grid_map_const_iterator;
 
-  static const bool ascii=true;
-  static const bool binary=false;
+  static const char ascii='a';
+  static const char binary='b';
 
   /**
    * Standard Constructor, creating an empty database with dimensionality dim.
@@ -92,10 +93,20 @@ public:
   GridDataBase(Grid *grid, DataVector &values);
 
   /**
-   * Constructor, reading grid data base from file.
-   * @param filename name of file
+   * Constructor, reading from existing database.
+   * @param filename filename of database file
    */
-  //  GridDataBase(std::string filename);
+  GridDataBase(std::string &filename);
+
+  /**
+   * Destructor
+   */
+  ~GridDataBase();
+
+  /**
+   * Clears database, removing all entries. Dimensionality is maintained.
+   */
+  void clear();
 
   /**
    * Returns std::string representation of database.
@@ -111,35 +122,35 @@ public:
   bool hasKey(GridIndex* gi);
 
   /**
-   * Store grid point - value pair in database.
+   * Store (grid point - value) pair in database.
    * @param gi a grid index
    * @param value the value to store
    */
   void set(GridIndex* gi, double value);
 
-    /**
-     * Returns the number of grid points that are stored
-     * in the database.
-     *
-     * @return the size of the database
-     */
-    size_t size() const
-    {
-        return _map.size();
-    };
-
-    /**
-     * Returns the dimensionality of the grid points.
-     *
-     * @return the dimensionality of the grid points
-     */
-    size_t dim() const
-    {
-      return _dim;
-    };
+  /**
+   * Returns the number of grid points that are currently stored
+   * in the database.
+   *
+   * @return the size of the database
+   */
+  size_t size() const
+  {
+    return _map.size();
+  };
 
   /**
-   * Get value for grid point from database.
+   * Returns the dimensionality of the grid points.
+   *
+   * @return the dimensionality of the grid points
+   */
+  size_t dim() const
+  {
+    return _dim;
+  };
+
+  /**
+   * Get value for grid point from database. Return NULL if not existant.
    * @param gi a grid index
    * @return value
    */
@@ -152,21 +163,32 @@ public:
   void remove(GridIndex* gi);
 
   /**
-   * Save database in ASCII format to file. Overwrites existing files
-   * without warning! Each line contains an entry @f$l_1, i_1, \ldots, l_d, i_d, value@f$.
+   * Save database to file. Overwrites existing files
+   * without warning! Writes either ASCII (default) or binary format.
    * @param filename name of file
    * @param type filetype (either ASCII, GridDataBase::asc (default), or binary, GridDataBase::bin)
    */
-  void save(std::string filename, bool type=GridDataBase::ascii);
+  void save(std::string filename, char ftype=GridDataBase::ascii);
 
   /**
-   * Loads database in ASCII format from file. Adds (grid point - value) mappings
+   * Loads database in ASCII or binary format. Adds (grid point - value) mappings
    * to current database. Overwrites existing entries. To load a new database, 
-   * use GridDataBase::fromFile(std::string filename).
+   * use GridDataBase::GridDataBase(std::string filename).
    * @param filename name of file
    */
   void load(const std::string filename);
 
+  /**
+   * Return iterator to beginning. Entries are of type pair<GridIndex, double>.
+   * @return iterator to beginning.
+   */
+  grid_map_iterator begin();
+
+  /**
+   * Return iterator to end.
+   * @return iterator to end.
+   */
+  grid_map_iterator end();
 
 };
 
