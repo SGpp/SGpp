@@ -504,8 +504,7 @@ OperationEvalLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/opera
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/common\/OperationEvalLinearStretched.cpp
 
 OperationHierarchisationLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/common\
-/OperationHierarchisationLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
 
 OperationLTwoDotProductLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
@@ -571,8 +570,7 @@ DowndPhidPhiBBIterativeLinearStretched.o : $(SRCDIR)basis/linearstretched/noboun
 	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.cpp
 
 OperationHierarchisationLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretchedBoundary.o $(SRCDIR)\
-basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
 
 OperationEvalLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
