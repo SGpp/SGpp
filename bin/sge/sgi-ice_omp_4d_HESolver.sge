@@ -16,11 +16,12 @@ module unload mpi.mpt
 module load ccomp/intel/12.0
 module load mpi.intel
 
-#export KMP_AFFINITY=granularity=fine,compact,1,0
 export OMP_NUM_THREADS=16
-export I_MPI_PIN_DOMAIN=omp:platform
+export I_MPI_PIN_DOMAIN=node
+export I_MPI_PIN_MODE=mpd
+export I_MPI_DEBUG=4
 
-mpiexec -genv OMP_NUM_THREADS 16 -genv I_MPI_PIN_DOMAIN omp:platform -n 1 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 10 0.0 3.0 smooth 0.00001 400
+mpiexec -genv OMP_NUM_THREADS 16 -genv I_MPI_PIN_DOMAIN node -n 1 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 10 0.0 3.0 smooth 0.00001 400
 
 jobperf -j $JOB_ID 
 
