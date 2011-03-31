@@ -1,6 +1,6 @@
 #!/bin/bash 
-#$-o $HOME/SGpp/bin/sge/sgpp_hesolver_ice_2p.$JOB_ID.out -j y 
-#$-N sgpp_hesolver_ice_2p 
+#$-o $HOME/SGpp/bin/sge/sgpp_4d_hesolver_ice_2p.$JOB_ID.out -j y 
+#$-N sgpp_4d_hesolver_ice_2p 
 #$-l h_rt=01:00:00 
 #$-S /bin/bash 
 #$-pe mpi_ice 8
