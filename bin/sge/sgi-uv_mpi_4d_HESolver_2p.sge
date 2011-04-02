@@ -1,9 +1,9 @@
 #!/bin/bash 
-#$-o $HOME/SGpp/bin/sge/sgpp_4d_hesolver_uv_4p.$JOB_ID.out -j y 
-#$-N sgpp_4d_hesolver_4p_uv 
+#$-o $HOME/SGpp/bin/sge/sgpp_4d_hesolver_uv_2p.$JOB_ID.out -j y 
+#$-N sgpp_4d_hesolver_2p_uv 
 #$-l h_rt=01:00:00 
 #$-S /bin/bash 
-#$-pe uv 32 
+#$-pe uv 16 
 #$-M heinecke@in.tum.de 
 
 . /etc/profile 
@@ -18,7 +18,7 @@ module load mpi.intel
 export OMP_NUM_THREADS=8
 export I_MPI_PIN_DOMAIN=socket
 
-mpiexec -n 4 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 10 0.0 3.0 smooth 0.00001 400
+mpiexec -n 2 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 10 0.0 3.0 smooth 0.00001 400
 
 #jobperf -j $JOB_ID 
 
