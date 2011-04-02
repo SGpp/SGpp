@@ -17,6 +17,8 @@ module load mpi.intel
 
 export OMP_NUM_THREADS=8
 export I_MPI_PIN_DOMAIN=socket
+export I_MPI_PIN_MODE=mpd
+export I_MPI_DEBUG=4
 
 mpiexec -n 4 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 10 0.0 3.0 smooth 0.00001 400
 
