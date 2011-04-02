@@ -3,7 +3,7 @@
 #$-N sgpp_6d_hesolver_ice_2p 
 #$-l h_rt=01:00:00 
 #$-S /bin/bash 
-#$-pe mpi_ice 8
+#$-pe mpi_ice 16
 #$-M heinecke@in.tum.de 
 
 . /etc/profile 
