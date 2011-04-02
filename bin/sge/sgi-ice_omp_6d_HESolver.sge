@@ -1,6 +1,6 @@
 #!/bin/bash 
-#$-o $HOME/SGpp/bin/sge/sgpp_4d_hesolver_ice_omp.$JOB_ID.out -j y 
-#$-N sgpp_4d_hesolver_ice_omp 
+#$-o $HOME/SGpp/bin/sge/sgpp_6d_hesolver_ice_omp.$JOB_ID.out -j y 
+#$-N sgpp_6d_hesolver_ice_omp 
 #$-l h_rt=01:00:00 
 #$-S /bin/bash 
 #$-pe mpi_ice 16
@@ -21,7 +21,7 @@ export I_MPI_PIN_DOMAIN=node
 export I_MPI_PIN_MODE=mpd
 export I_MPI_DEBUG=4
 
-mpiexec -genv OMP_NUM_THREADS 16 -genv I_MPI_PIN_DOMAIN node -n 1 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 10 0.0 3.0 smooth 0.00001 400
+mpiexec -genv OMP_NUM_THREADS 16 -genv I_MPI_PIN_DOMAIN node -n 1 $HOME/SGpp/bin/HESolverMPI PoissonEquation 6 8 0.0 3.0 smooth 0.00001 400
 
 jobperf -j $JOB_ID 
 
