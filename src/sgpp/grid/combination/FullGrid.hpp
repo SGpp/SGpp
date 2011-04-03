@@ -137,7 +137,7 @@ class FullGrid{
 	/** Allows acces to the gridpoints by it's indexes in every dimension
 	 * @param index the index of the gridpoint in every dimension
 	 * @return acces to the gridpoint value at the given coordinate */
-    virtual inline double& at(size_t *index){
+    virtual double& at(size_t *index){
     	size_t ind=0;
 		for (int i=dim-1;i>=0;i--)
     	    	ind=(powOfTwo[level[i]]+1)*ind+index[i];
