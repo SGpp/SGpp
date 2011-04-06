@@ -9,7 +9,7 @@
 #define STRETCHING_HPP
 
 #define LOOKUPSIZE 2047
-#define LOOKUPMAX 11
+#define LOOKUPMAX 15
 #include <cstddef>
 #include <math.h>
 #include <string>
