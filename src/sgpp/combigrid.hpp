@@ -22,6 +22,11 @@
 #include "combigrid/combischeme/CombiS_CT.hpp"
 #include "combigrid/combischeme/CombiTS_CT.hpp"
 
+#include "combigrid/domain/CombiGridDomain.hpp"
+#include "combigrid/domain/CombiTanStretching.hpp"
+#include "combigrid/domain/CombiAtanSpecialStretching.hpp"
+#include "combigrid/domain/CombiUniformStretching.hpp"
+
 #include "combigrid/converter/CombiSGppConverter.hpp"
 
 #endif /* COMBIGRID_HPP_ */

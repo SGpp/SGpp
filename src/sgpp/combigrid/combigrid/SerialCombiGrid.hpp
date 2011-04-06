@@ -31,6 +31,9 @@ namespace combigrid{
 		/** see superclass for docu */
 		virtual void createFullGrids() ;
 
+		/** sets the domain for all fullgrids */
+		virtual void setDomainAllFG( GridDomain* gridDomain ) const;
+
 		/** see superclass for docu */
 		virtual FullGridD* getFullGrid( int i ) { return combikernel_->getFullGrid(i); }
 
@@ -41,10 +44,10 @@ namespace combigrid{
 		virtual int getNrFullGrid() const { return combikernel_->getNrFullGrids(); }
 
 		/** see superclass for docu */
-		virtual double eval( const std::vector<double>& coords ) const ;
+		virtual double eval( std::vector<double>& coords ) const ;
 
 		/** see superclass for docu */
-		virtual void eval( const std::vector< std::vector<double> >& coords , std::vector<double>& results ) const ;
+		virtual void eval( std::vector< std::vector<double> >& coords , std::vector<double>& results ) const ;
 
 		/** see superclass for docu */
 		virtual sg::GridStorage* createSGppGridStorage() const ;

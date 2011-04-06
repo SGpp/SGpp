@@ -12,7 +12,7 @@ using namespace std;
 
 
 
-TS_CT::TS_CT( int dim , int level ) : CombiSchemeBasis(dim) {
+TS_CT::TS_CT( int dim , int level ) : CombiSchemeBasis(dim,level) {
 	std::vector<int> level_small( dim , level/2 );
 	std::vector<int> level_tmp;
 	// add all the spaces for all dimensions
@@ -29,7 +29,7 @@ TS_CT::TS_CT( int dim , int level ) : CombiSchemeBasis(dim) {
 
 
 
-TS_CT::TS_CT( int dim , const std::vector<int>& levels ) : CombiSchemeBasis(dim) {
+TS_CT::TS_CT( int dim , const std::vector<int>& levels ) : CombiSchemeBasis(dim,levels) {
 	std::vector<int> level_small( dim , 0 );
 	std::vector<int> level_tmp;
 	// calculate
@@ -51,7 +51,7 @@ TS_CT::TS_CT( int dim , const std::vector<int>& levels ) : CombiSchemeBasis(dim)
 
 
 TS_CT::TS_CT( int dim , const std::vector<int>& levels ,
-	 const std::vector<bool>& makeCombiInDimension ) : CombiSchemeBasis(dim){
+	 const std::vector<bool>& makeCombiInDimension ) : CombiSchemeBasis(dim,levels){
 	std::vector<int> level_small( dim , 0 );
 	std::vector<bool> dimActive( dim , true );
 	std::vector<int> level_tmp;
@@ -80,15 +80,15 @@ TS_CT::TS_CT( int dim , const std::vector<int>& levels ,
 
 
 
-TS_CT::TS_CT( int dim , const std::vector<int>& minlevels ,
-		 const std::vector<int>& maxlevels  ) : CombiSchemeBasis(dim){
+TS_CT::TS_CT( const std::vector<int>& minlevels ,
+		 const std::vector<int>& maxlevels  ) : CombiSchemeBasis((int)minlevels.size(),maxlevels){
 
-	std::vector<int> level_small( dim , 0 );
+	std::vector<int> level_small( getDim() , 0 );
 	std::vector<int> level_tmp;
-	int nrActiveDimensions = dim;
+	int nrActiveDimensions = getDim();
 
 	// first create the small levels into a vector
-	for (int i = 0; i < dim ; i++){
+	for (int i = 0; i < getDim() ; i++){
 		level_small[i] = minlevels[i];
 		if (minlevels[i] == maxlevels[i] ) {
 			nrActiveDimensions--;
@@ -96,8 +96,8 @@ TS_CT::TS_CT( int dim , const std::vector<int>& minlevels ,
 	}
 
 	// add all the spaces for all dimensions
-	for (int i = 0; i < dim ; i++){
-		if (minlevels[i] == maxlevels[i] ) {
+	for (int i = 0; i < getDim() ; i++){
+		if (minlevels[i] != maxlevels[i] ) {
 			level_tmp = level_small;
 			level_tmp[i] = maxlevels[i];
 			levels_vector_.push_back(level_tmp);

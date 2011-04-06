@@ -11,6 +11,7 @@
 #include "combigrid/utils/combigrid_ultils.hpp"
 #include "combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
 #include "combigrid/basisfunction/CombiLinearBasisFunction.hpp"
+#include "combigrid/domain/CombiGridDomain.hpp"
 
 using namespace std;
 
@@ -31,6 +32,8 @@ public:
 		if (basis == NULL) basis_ = LinearBasisFunction::getDefaultBasis();
 		else basis_ = basis;
 
+		sgppIndex_ = new std::vector<int>(0);
+		gridDomain_ = NULL;
 		isFGcreated_ = false;
 		dim_ = dim;
 		levels_.resize( dim , level );
@@ -51,6 +54,8 @@ public:
 		if (basis == NULL) basis_ = LinearBasisFunction::getDefaultBasis();
 		else basis_ = basis;
 
+		sgppIndex_ = new std::vector<int>(0);
+		gridDomain_ = NULL;
 		dim_ = dim;
 		isFGcreated_ = false;
 		levels_ = levels;
@@ -71,6 +76,8 @@ public:
 		if (basis == NULL) basis_ = LinearBasisFunction::getDefaultBasis();
 		else basis_ = basis;
 
+		sgppIndex_ = new std::vector<int>(0);
+		gridDomain_ = NULL;
 		dim_ = dim;
 		isFGcreated_ = false;
 		levels_ = levels;
@@ -85,7 +92,7 @@ public:
 		}
 	}
 
-	virtual ~FullGrid() { }
+	virtual ~FullGrid() {  delete sgppIndex_; }
 
 	/** allocates the memory for the element vector of the full grid <br>
 	 * Only after this needs the full grid considerable amount of memory */
@@ -98,11 +105,19 @@ public:
 	void deleteFullGrid(){
 		isFGcreated_ = false;
 		fullgridVector_.flush();
+		delete sgppIndex_;
+		sgppIndex_ = new std::vector<int>(0);
 	}
+
+	/** sets the domain of the full grid */
+	void setDomain( GridDomain* gridDomain ) const { gridDomain_ = gridDomain; }
+
+	/** returns the domain of the full grid */
+	const GridDomain* getDomain() const { return gridDomain_; }
 
 	/** evaluates the full grid on the specified coordinates
 	 * @param coords ND coordinates on the unit square [0,1]^D*/
-	FG_ELEMENT eval(const std::vector<double>& coords) const {
+	FG_ELEMENT eval(std::vector<double>& coords) const {
 	 	 int ii,i,tmp_val,vv,nr;
 	 	 int jj;
 	 	 double baseVal;
@@ -112,6 +127,13 @@ public:
 		 double intersect[127]; // alternatievly [127]
 		 int aindex[63]; // alternatievly [63]
 		 //int verb = 6;
+
+		 // if there is a transformation then transform to the unit coordinates
+		 if (gridDomain_ != NULL ) {
+			 for (ii = dim_-1 ; ii >=0; ii--){
+				 (gridDomain_->get1DDomain(ii)).transformRealToUnit( coords[ii] , coords[ii] , levels_[ii] , (hasBoundaryPoints_[ii]==false));
+			 }
+		 }
 
 		// the coordinates are on the unit square
 		 for ( ii = dim_-1 ; ii >=0; ii--)
@@ -193,13 +215,27 @@ public:
         int ind = 0;
         int tmp_add = 0;
 
-        for (int j=0 ; j < dim_ ;j++){
-               ind       = elemIndex % (int)(nrPoints_[j]);
-               elemIndex = elemIndex / (int)(nrPoints_[j]);
-               // set the coordinate based on if we have boundary points
-               tmp_add = (hasBoundaryPoints_[j] == true) ? (0) : (1);
-               coords[j] = ((double)(ind+tmp_add))*oneOverPowOfTwo[levels_[j]];
-         	   //COMBIGRID_OUT_LEVEL3( verb , "FullGrid::getCoords j:" << j << " , coords[j]:" << coords[j]);
+        if (gridDomain_ == NULL)
+        {
+        	for (int j=0 ; j < dim_ ;j++){
+				   ind       = elemIndex % (int)(nrPoints_[j]);
+				   elemIndex = elemIndex / (int)(nrPoints_[j]);
+				   // set the coordinate based on if we have boundary points
+				   tmp_add = (hasBoundaryPoints_[j] == true) ? (0) : (1);
+				   coords[j] = ((double)(ind+tmp_add))*oneOverPowOfTwo[levels_[j]];
+				   //COMBIGRID_OUT_LEVEL3( verb , "FullGrid::getCoords j:" << j << " , coords[j]:" << coords[j]);
+			}
+        }
+        else
+        { // we have a valid Domain
+        	for (int j=0 ; j < dim_ ;j++){
+				   ind       = elemIndex % (int)(nrPoints_[j]);
+				   elemIndex = elemIndex / (int)(nrPoints_[j]);
+				   // set the coordinate based on if we have boundary points
+				   tmp_add = (hasBoundaryPoints_[j] == true) ? (0) : (1);
+				   (gridDomain_->get1DDomain(j)).transformUnitToReal( levels_[j] , ind+tmp_add , coords[j] );
+				   //COMBIGRID_OUT_LEVEL3( verb , "FullGrid::getCoords j:" << j << " , coords[j]:" << coords[j]);
+			}
         }
     }
 
@@ -230,7 +266,8 @@ public:
 //The level and index of the element in the hashgridstorage are computed dividing by two the index and level in the fullgrid
 //until we obtain an impair number for the index, thus obtaining the level and index in the hierarchical basis (Aliz Nagy)
 // ...
-	      for ( k = 0 ; k < dim_ ; k++){
+	      for ( k = 0 ; k < dim_ ; k++)
+	      {
 	    	  tmp_val = levels_[k];
 		      if ( indexes[k] != 0 ){
 		    	  // todo: these operations can be optimized
@@ -256,7 +293,7 @@ public:
 	inline int getOffset(int i) const { return offsets_[i]; }
 	inline const std::vector<int>& getOffsets() const { return offsets_; }
 
-	/** return the level vector*/
+	/** return the level vector */
 	inline const std::vector<int>& getLevels() const {return levels_;}
 	inline std::vector<int>& getLevels() {return levels_;}
 
@@ -269,6 +306,9 @@ public:
 	/** number of points per dimension i */
 	inline int length(int i) const { return nrPoints_[i]; }
 
+	/** return the vector for faster combination of the full grids <br>
+	 * this will be used in the Converter */
+	inline std::vector<int>& getSGppIndex() const { return (*sgppIndex_); }
 
 private:
 
@@ -299,6 +339,12 @@ private:
 
    /** pointer to the function basis*/
    const BasisFunctionBasis* basis_;
+
+   /** the domain transformation */
+   mutable GridDomain* gridDomain_;
+
+   /** vector for the SGpp index, for recombination*/
+   mutable std::vector<int>* sgppIndex_;
 
 };
 

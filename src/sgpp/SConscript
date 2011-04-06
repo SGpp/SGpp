@@ -32,6 +32,11 @@ combigrid/combischeme/CombiS_CT.cpp
 combigrid/combischeme/CombiSchemeBasis.cpp  
 combigrid/combischeme/CombiTS_CT.cpp
 combigrid/converter/CombiSGppConverter.cpp
+combigrid/domain/CombiDomain1D.cpp
+combigrid/domain/CombiGridDomain.cpp
+combigrid/domain/CombiUniformStretching.cpp
+combigrid/domain/CombiTanStretching.cpp
+combigrid/domain/CombiAtanSpecialStretching.cpp
 
 grid/type/LinearBoundaryGrid.cpp
 grid/type/LinearTrapezoidBoundaryGrid.cpp

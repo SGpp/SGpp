@@ -12,7 +12,7 @@ using namespace combigrid;
 using namespace std;
 
 
-S_CT::S_CT( int dim , int level ) : CombiSchemeBasis(dim) {
+S_CT::S_CT( int dim , int level ) : CombiSchemeBasis(dim,level) {
 
 	std::vector< int > levels( dim_ , level);
 	// the rations for the dimension adaptive case
@@ -25,7 +25,7 @@ S_CT::S_CT( int dim , int level ) : CombiSchemeBasis(dim) {
 }
 
 
-S_CT::S_CT( int dim , int level , int level_truncation) : CombiSchemeBasis(dim) {
+S_CT::S_CT( int dim , int level , int level_truncation) : CombiSchemeBasis(dim,level) {
 
 	std::vector< int > levels( dim_ , level);
 	// the rations for the dimension adaptive case
@@ -39,7 +39,7 @@ S_CT::S_CT( int dim , int level , int level_truncation) : CombiSchemeBasis(dim) 
 
 
 
-S_CT::S_CT( int dim , const std::vector< int >& levels ) : CombiSchemeBasis(dim) {
+S_CT::S_CT( int dim , const std::vector< int >& levels ) : CombiSchemeBasis(dim,levels) {
 
 	std::vector< int > levels_tmp = levels;
 	// the rations for the dimension adaptive case
@@ -53,7 +53,7 @@ S_CT::S_CT( int dim , const std::vector< int >& levels ) : CombiSchemeBasis(dim)
 
 
 
-S_CT::S_CT( int dim , int level , const std::vector< int >& levels_trunk ) : CombiSchemeBasis(dim) {
+S_CT::S_CT( int dim , int level , const std::vector< int >& levels_trunk ) : CombiSchemeBasis(dim,level) {
 
 	std::vector< int > levels( dim_ , level );
 	// the rations for the dimension adaptive case
@@ -70,7 +70,7 @@ S_CT::S_CT( int dim , int level , const std::vector< int >& levels_trunk ) : Com
 
 
 
-S_CT::S_CT( int dim , const std::vector< int >& levels , const std::vector< int >& levels_trunk ) : CombiSchemeBasis(dim) {
+S_CT::S_CT( int dim , const std::vector< int >& levels , const std::vector< int >& levels_trunk ) : CombiSchemeBasis(dim,levels) {
 
 	std::vector< int > levels_tmp = levels;
 	// the rations for the dimension adaptive case
