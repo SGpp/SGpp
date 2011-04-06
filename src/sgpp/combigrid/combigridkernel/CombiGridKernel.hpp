@@ -28,10 +28,12 @@ public:
 		fullgrids_.resize(0);
 		coefs_.resize(0);
 		nrFG_ = 0;
+		hasBoundaryPts_.resize(dim,true);
 	}
 
 	/** Ctor with a combi scheme as an input */
-	CombiGridKernel(const CombiSchemeBasis* combischeme , const std::vector<bool>& hasBoundaryPts) {
+	CombiGridKernel(const CombiSchemeBasis* combischeme ,
+			const std::vector<bool>& hasBoundaryPts):hasBoundaryPts_(hasBoundaryPts) {
 		dim_ = combischeme->getDim();
 		fullgrids_.resize(0);
 		coefs_.resize(0);
@@ -45,7 +47,8 @@ public:
 	}
 
 	/** method which initializes the object with a combi scheme object*/
-	void initialize(const CombiSchemeBasis* combischeme , const std::vector<bool>& hasBoundaryPts){
+	void initialize(const CombiSchemeBasis* combischeme
+			, const std::vector<bool>& hasBoundaryPts) {
 
 		// first delete everything what was there before
 		deleteAll();
@@ -134,6 +137,9 @@ public:
 	/** return the coefficient of one space */
 	int getCoef(int i) const { return coefs_[i]; }
 
+	/** returns the array of flags, which shows for each dimensions if there are boundary points */
+	const std::vector<bool>& getBoundaryFlags() const { return hasBoundaryPts_;}
+
 private:
 
 	/** deletes all the full grids and frees the memory */
@@ -156,6 +162,9 @@ private:
 
 	/** vector contains the full grids */
 	std::vector< FullGrid<ELEMENT>* > fullgrids_;
+
+	/** for each dimensions if there are boundary points in that dimension*/
+	std::vector<bool> hasBoundaryPts_;
 };
 
 }

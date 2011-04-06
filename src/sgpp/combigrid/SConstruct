@@ -71,6 +71,7 @@ sourceFiles = [
    Glob(buildpath + './combischeme/*.cpp'),
    Glob(buildpath + './combikernel/*.cpp'),
    Glob(buildpath + './converter/*.cpp'),
+   Glob(buildpath + './domain/*.cpp'),
    Glob(buildpath + './fullgrid/*.cpp'),
    Glob(buildpath + './utils/*.cpp'),
 # SGpp objcets which are needed, in order to build a binary

@@ -19,16 +19,33 @@ void SerialCombiGrid::createFullGrids() {
 	}
 }
 
-double SerialCombiGrid::eval( const std::vector<double>& coords ) const {
+
+void SerialCombiGrid::setDomainAllFG( GridDomain* gridDomain ) const{
+	// sets the domain for all fullgrids
+	for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++){
+		combikernel_->getFullGrid(i)->setDomain(gridDomain);
+	}
+}
+
+
+double SerialCombiGrid::eval( std::vector<double>& coords ) const {
 	double result = 0.0;
+	std::vector<double> coords_tmp = coords;
+
+	//COMBIGRID_OUT_LEVEL3( 4 , "SerialCombiGrid::eval");
+	 // if there is a transformation then transform to the unit coordinates
+	 if (gridDomain_ != NULL ) { gridDomain_->transformRealToUnit( coords , combischeme_->getMaxLevel() , this->getBoundaryFlags() );}
+
 	// we evaluate each full grid and multiply with the coefficient, and sum the result up
 	for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++){
-		result = result + combikernel_->getCoef(i) * combikernel_->getFullGrid(i)->eval(coords);
+		coords_tmp = coords;
+		result = result + combikernel_->getCoef(i) * combikernel_->getFullGrid(i)->eval(coords_tmp);
 	}
+	//COMBIGRID_OUT_LEVEL3( 4 , "SerialCombiGrid::eval result=" << result);
 	return result;
 }
 
-void SerialCombiGrid::eval( const std::vector< std::vector<double> >& coords , std::vector<double>& results ) const {
+void SerialCombiGrid::eval( std::vector< std::vector<double> >& coords , std::vector<double>& results ) const {
 	// just iterate over each point and call the serial evaluation function
 	for ( int i = 0 ; i < (int)results.size() ; i++){
 		results[i] = eval(coords[i]);
@@ -58,7 +75,8 @@ void SerialCombiGrid::reCompose(sg::GridStorage* gridstorageSGpp , DataVector* a
 			CombiSGppConverter::FullGridToSGpp( fg , combikernel_->getCoef(i) , gridstorageSGpp , alpha , minAlpha , maxAlpha );
 		}
 	}
-	else{ // this is the case when no min or max should be calculated
+	else
+	{ // this is the case when no min or max should be calculated
 		for ( int i = 0 ; i < (int)alpha->getSize() ; i++){
 			// we set the vector to zero
 			(*alpha)[i] = 0.0;

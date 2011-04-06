@@ -37,10 +37,9 @@ public:
 
 
 	/** Ctor for manual steared TS scheme where the user specifies the higher and the lower levels
-	 * @param dim
 	 * @param minlevels the min levels
 	 * @param maxlevels the max levels  */
-	TS_CT( int dim , const std::vector<int>& minlevels ,
+	TS_CT( const std::vector<int>& minlevels ,
 			 const std::vector<int>& maxlevels  );
 
 private:
