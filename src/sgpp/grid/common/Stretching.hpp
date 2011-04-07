@@ -9,7 +9,7 @@
 #define STRETCHING_HPP
 
 #define LOOKUPSIZE 2047
-#define LOOKUPMAX 15
+#define LOOKUPMAX 11
 #include <cstddef>
 #include <math.h>
 #include <string>
@@ -252,7 +252,7 @@ public:
 	 */
 	int* getDiscreteVectorLevel();
 
-
+	void calculateNeighborLookup(int maxlevel);
 };
 
 }

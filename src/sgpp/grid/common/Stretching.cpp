@@ -623,4 +623,61 @@ int* Stretching::getDiscreteVectorLevel(){
 	return discreteVectorLevel;
 }
 
+void Stretching::calculateNeighborLookup(int maxlevel){
+
+
+//	std::string file1 = "leftIndex.txt";
+//	std::string file2 = "rightIndex.txt";
+	std::ofstream outfile1;
+	std::ofstream outfile2;
+
+	outfile1.open("leftIndex.txt");
+	outfile2.open("rightIndex.txt");
+
+	outfile1<<"{";
+	outfile2<<"{";
+
+	int lLevel,lIndex,rLevel,rIndex,temp;
+	double elemPerLevel;
+	for(int l=1; l<=maxlevel;l++){
+		elemPerLevel = pow(2,l);
+		for(int i=1; i < elemPerLevel;i = i+2){
+			calculateNeighborSpecs(l,i,lLevel, lIndex,rLevel,rIndex);
+
+			//Left position
+			if(lLevel==0){
+				if(lIndex==1)
+					temp= -1;
+				if(lIndex==0)
+					temp= -2;
+			}
+			else{
+				temp= (pow(2,lLevel-1)-1+(lIndex-1)/2);
+			}
+			outfile1<<temp;
+			outfile1<<", ";
+
+			//Right position
+			if(rLevel==0){
+				if(rIndex==1)
+					temp= -1;
+				if(rIndex==0)
+					temp= -2;
+			}
+			else{
+				temp= (pow(2,rLevel-1)-1+(rIndex-1)/2);
+			}
+			outfile2<<temp;
+			outfile2<<", ";
+		}
+
+	}
+
+	outfile1<<"}";
+	outfile2<<"}";
+
+	outfile1.close();
+	outfile2.close();
+}
+
 }
