@@ -7,6 +7,7 @@
  ******************************************************************************/
 // @author Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 #include "grid/common/Stretching.hpp"
+#include <fstream>
 
 namespace sg
 {
