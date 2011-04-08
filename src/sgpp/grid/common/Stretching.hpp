@@ -14,6 +14,7 @@
 #include <math.h>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <time.h>
 #include <algorithm>
