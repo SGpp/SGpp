@@ -20,8 +20,73 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <iomanip>
 
 #include "sgpp.hpp"
+
+/**
+ * Writes a DataMatrix into a file
+ *
+ * @param data the DataMatrix that should be written into a file
+ * @param tFile the file into which the data is written
+ *
+ * @return error code
+ */
+int writeDataMatrix(DataMatrix& data, std::string tFile)
+{
+	std::ofstream file;
+	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot write file: " << tFile << std::endl;
+		return -1;
+	}
+
+	for (size_t i = 0; i < data.getNrows(); i++)
+	{
+		for (size_t j = 0; j < data.getNcols(); j++)
+		{
+			file << std::scientific << std::setprecision( 16 ) << data.get(i,j) << " ";
+		}
+		file << std::endl;
+	}
+
+	file.close();
+
+	return 0;
+}
+
+
+/**
+ * Writes a DataVector into a file
+ *
+ * @param data the DataVector that should be written into a file
+ * @param tFile the file into which the data is written
+ *
+ * @return error code
+ */
+int writeDataVector(DataVector& data, std::string tFile)
+{
+	std::ofstream file;
+	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot write file: " << tFile << std::endl;
+		return -1;
+	}
+
+	for (size_t i = 0; i < data.getSize(); i++)
+	{
+
+		file << std::scientific << std::setprecision( 16 ) << data.get(i) << " " << std::endl;
+	}
+
+	file.close();
+
+	return 0;
+}
 
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object
@@ -72,7 +137,8 @@ void writeHelp()
 	mySStream << "PoissonEquation" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+	mySStream << "	start_level: number of start-levels of the Sparse Grid" << std::endl;
+	mySStream << "	end_level: number of max. levels of the Sparse Grid" << std::endl;
 	mySStream << "	left_bound: x_i of left boundary" << std::endl;
 	mySStream << "	right_bound: x_i of right boundary" << std::endl;
 	mySStream << "	initHeat: initial heat distribution" << std::endl;
@@ -80,7 +146,7 @@ void writeHelp()
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "HESolver PoissonEquation 3 5 0.0 3.0 smooth 0.00001 400" << std::endl;
+	mySStream << "HESolver PoissonEquation 3 3 5 0.0 3.0 smooth 0.00001 400" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
 	mySStream << "	poissonStart.gnuplot: the start condition" << std::endl;
@@ -240,10 +306,15 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 	delete alpha;
 }
 
-void testPoissonEquation(size_t dim, size_t level, double bound_left, double bound_right,
+void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, double bound_left, double bound_right,
 						std::string initFunc, double cg_eps, size_t cg_its)
 {
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	DataMatrix EvalPoints(1, dim);
+	std::string tFileEvalCuboid = "EvalPointsPoisson";
+	std::string tFileEvalCuboidValues = "EvalValuesPoisson";
+	size_t evalPoints = 21;
+	std::vector<DataVector> results;
 
 	// set the bounding box
 	for (size_t i = 0; i < dim; i++)
@@ -258,92 +329,164 @@ void testPoissonEquation(size_t dim, size_t level, double bound_left, double bou
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
+	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
+
 	// init Screen Object
 	myPoisSolver->initScreen();
 
-	// Construct a grid
-	myPoisSolver->constructGrid(*myBoundingBox, level);
-
-	// init the basis functions' coefficient vector (start solution)
-	DataVector* alpha = new DataVector(myPoisSolver->getNumberGridPoints());
-	if (initFunc == "smooth")
+	for (size_t l = start_level; l <= end_level; l++)
 	{
-		myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
-	}
-	else
-	{
-		writeHelp();
-	}
+		// Construct a grid
+		myPoisSolver->constructGrid(*myBoundingBox, l);
 
-	// Print the initial heat function into a gnuplot file
-	if (dim < 3)
-	{
-		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStart.gnuplot");
+		// in first iteration -> calculate the evaluation points
+		if (l == start_level)
+		{
+			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myBoundingBox, evalPoints);
+
+			writeDataMatrix(EvalPoints, tFileEvalCuboid);
+		}
+
+		// init the basis functions' coefficient vector (start solution)
+		DataVector* alpha = new DataVector(myPoisSolver->getNumberGridPoints());
+		if (initFunc == "smooth")
+		{
+			myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+		}
+		else
+		{
+			writeHelp();
+		}
+
+		// Print the initial heat function into a gnuplot file
+		if (dim < 3)
+		{
+			myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStart.gnuplot");
+		}
+
+		// solve Poisson Equation
+		myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
+
+		// Print the solved Heat Equation into a gnuplot file
+		if (dim < 3)
+		{
+			myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
+		}
+
+		// Calculate Norms
+		// Evaluate Cuboid
+		DataVector PoisEvals(EvalPoints.getNrows());
+		myPoisSolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
+		results.push_back(PoisEvals);
+
+		// write solution in a additional file
+		std::stringstream level_string;
+		level_string << l;
+		writeDataVector(PoisEvals, tFileEvalCuboidValues+".level_"+ level_string.str());
+		writeDataVector(PoisEvals, tFileEvalCuboidValues);
+
+		if (l > start_level)
+		{
+			std::cout << "=====================================================================" << std::endl;
+			std::cout << "=====================================================================" << std::endl << std::endl;
+			std::cout << "Calculating norms of relative errors to a grid" << std::endl;
+			std::cout << "with " << l << " levels and testing-coboid" << std::endl;
+			std::cout << "with the bounding box:" << std::endl;
+			for (size_t j = 0; j < dim; j++)
+			{
+				std::cout << myBoundingBox->getBoundary(j).leftBoundary << " " << myBoundingBox->getBoundary(j).rightBoundary << std::endl;
+			}
+			std::cout << std::endl << std::endl;
+
+			double oldMaxNorm = 0.0;
+			double oldTwoNorm = 0.0;
+
+			// Calculate relative errors and some norms
+			for (size_t j = 0; j < l-start_level; j++)
+			{
+				DataVector maxLevel(results[l-start_level]);
+				DataVector relError(results[j]);
+				double maxNorm = 0.0;
+				double l2Norm = 0.0;
+
+				// calculate relative error
+				relError.sub(maxLevel);
+				relError.componentwise_div(maxLevel);
+
+				// calculate max. norm of relative error
+				maxNorm = relError.maxNorm();
+
+				// calculate two norm of relative error
+				l2Norm = relError.RMSNorm();
+
+				// Printing norms
+				std::cout << "Level " << j + start_level << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+
+				oldMaxNorm = maxNorm;
+				oldTwoNorm = l2Norm;
+			}
+		}
+		std::cout << std::endl << std::endl;
+
+
+	#ifdef EXPORT_MATRIX_FILES
+		// print inner matrix
+		std::stringstream mtxFile;
+		mtxFile.clear();
+		mtxFile << "SG_Poisson_InnerMatrix_" << dim << "d_" << level << "l.mtx";
+		myPoisSolver->storeInnerMatrix(mtxFile.str());
+
+		// print inner rhs
+		std::stringstream rhsFile;
+		rhsFile.clear();
+		alpha->setAll(0.0);
+		if (initFunc == "smooth")
+		{
+			myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+		}
+		else
+		{
+			writeHelp();
+		}
+		rhsFile << "SG_Poisson_InnerRHS_" << dim << "d_" << level << "l.vec";
+		myPoisSolver->storeInnerRHS(*alpha, rhsFile.str());
+
+		// print inner matrix, diagonal only
+		std::stringstream mtxDiagFile;
+		mtxDiagFile.clear();
+		mtxDiagFile << "SG_Poisson_InnerMatrixDiagonal_" << dim << "d_" << level << "l.mtx";
+		myPoisSolver->storeInnerMatrixDiagonal(mtxDiagFile.str());
+
+		// print inner matrix, diagonal containing row sum
+		std::stringstream mtxDiagRowSumFile;
+		mtxDiagRowSumFile.clear();
+		mtxDiagRowSumFile << "SG_Poisson_InnerMatrixDiagonalRowSum_" << dim << "d_" << level << "l.mtx";
+		myPoisSolver->storeInnerMatrixDiagonalRowSum(mtxDiagRowSumFile.str());
+
+		// print inner solution
+		std::stringstream solFile;
+		solFile.clear();
+		alpha->setAll(0.0);
+		if (initFunc == "smooth")
+		{
+			myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+		}
+		else
+		{
+			writeHelp();
+		}
+		solFile << "SG_Poisson_InnerSolution_" << dim << "d_" << level << "l.vec";
+		myPoisSolver->storeInnerSolution(*alpha, cg_its, cg_eps, solFile.str());
+		std::cout << std::endl << std::endl;
+	#endif
+
+		// Iteration cleanup
+		myPoisSolver->deleteGrid();
+		delete alpha;
 	}
-
-	// solve Poisson Equation
-	myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
-
-	// Print the solved Heat Equation into a gnuplot file
-	if (dim < 3)
-	{
-		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
-	}
-
-#ifdef EXPORT_MATRIX_FILES
-	// print inner matrix
-	std::stringstream mtxFile;
-	mtxFile.clear();
-	mtxFile << "SG_Poisson_InnerMatrix_" << dim << "d_" << level << "l.mtx";
-	myPoisSolver->storeInnerMatrix(mtxFile.str());
-
-	// print inner rhs
-	std::stringstream rhsFile;
-	rhsFile.clear();
-	alpha->setAll(0.0);
-	if (initFunc == "smooth")
-	{
-		myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
-	}
-	else
-	{
-		writeHelp();
-	}
-	rhsFile << "SG_Poisson_InnerRHS_" << dim << "d_" << level << "l.vec";
-	myPoisSolver->storeInnerRHS(*alpha, rhsFile.str());
-
-	// print inner matrix, diagonal only
-	std::stringstream mtxDiagFile;
-	mtxDiagFile.clear();
-	mtxDiagFile << "SG_Poisson_InnerMatrixDiagonal_" << dim << "d_" << level << "l.mtx";
-	myPoisSolver->storeInnerMatrixDiagonal(mtxDiagFile.str());
-
-	// print inner matrix, diagonal containing row sum
-	std::stringstream mtxDiagRowSumFile;
-	mtxDiagRowSumFile.clear();
-	mtxDiagRowSumFile << "SG_Poisson_InnerMatrixDiagonalRowSum_" << dim << "d_" << level << "l.mtx";
-	myPoisSolver->storeInnerMatrixDiagonalRowSum(mtxDiagRowSumFile.str());
-
-	// print inner solution
-	std::stringstream solFile;
-	solFile.clear();
-	alpha->setAll(0.0);
-	if (initFunc == "smooth")
-	{
-		myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
-	}
-	else
-	{
-		writeHelp();
-	}
-	solFile << "SG_Poisson_InnerSolution_" << dim << "d_" << level << "l.vec";
-	myPoisSolver->storeInnerSolution(*alpha, cg_its, cg_eps, solFile.str());
-	std::cout << std::endl << std::endl;
-#endif
 
 	delete myPoisSolver;
 	delete myBoundingBox;
-	delete alpha;
 }
 
 int main(int argc, char *argv[])
@@ -394,14 +537,16 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "PoissonEquation")
 	{
-		if (argc != 9)
+		if (argc != 10)
 		{
 			writeHelp();
 			return 0;
 		}
 
 		size_t dim;
-		size_t level;
+		size_t start_level;
+		size_t end_level;
+
 		double bound_left;
 		double bound_right;
 		std::string initFunc;
@@ -409,13 +554,14 @@ int main(int argc, char *argv[])
 		size_t cg_its;
 
 		dim = atoi(argv[2]);
-		level = atoi(argv[3]);
-		bound_left = atof(argv[4]);
-		bound_right = atof(argv[5]);
-		initFunc.assign(argv[6]);
-		cg_eps = atof(argv[7]);
-		cg_its = atoi(argv[8]);
-		testPoissonEquation(dim, level, bound_left, bound_right, initFunc, cg_eps, cg_its);
+		start_level = atoi(argv[3]);
+		end_level = atoi(argv[4]);
+		bound_left = atof(argv[5]);
+		bound_right = atof(argv[6]);
+		initFunc.assign(argv[7]);
+		cg_eps = atof(argv[8]);
+		cg_its = atoi(argv[9]);
+		testPoissonEquation(dim, start_level, end_level, bound_left, bound_right, initFunc, cg_eps, cg_its);
 	}
 	else
 	{

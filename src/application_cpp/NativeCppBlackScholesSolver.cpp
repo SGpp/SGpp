@@ -818,7 +818,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// Construct a grid
 		myBSSolver->constructGrid(*myBoundingBox, level);
 
-		// in the first iteration -> calculate the evaluation points
+		// in first iteration -> calculate the evaluation points
 		if (i == start_l)
 		{
 			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
