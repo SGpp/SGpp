@@ -26,7 +26,11 @@ GridPrinterForStretching::~GridPrinterForStretching()
 {
 }
 
-void GridPrinterForStretching::printGridDomain(DataVector& alpha, std::string tFilename, Stretching& GridArea, double PointsPerDimension)
+void GridPrinterForStretching::printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension){
+	throw new tool_exception("GridPrinterForStretching::printGridDomain : This printer does not support BoundingBox, use printGridDomainStretching instead!");
+}
+
+void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha, std::string tFilename, Stretching& GridArea, double PointsPerDimension)
 {
 	DimensionBoundary dimOne;
 	DimensionBoundary dimTwo;
@@ -36,7 +40,7 @@ void GridPrinterForStretching::printGridDomain(DataVector& alpha, std::string tF
 	{
 		if (myGrid->getStorage()->dim() != 2)
 		{
-			throw new tool_exception("GridPrinterForStretching::printGridDomain : The grid has more not two dimensions. Thus it cannot be printed!");
+			throw new tool_exception("GridPrinterForStretching::printGridDomainStretching : The grid has more not two dimensions. Thus it cannot be printed!");
 		}
 		else
 		{
@@ -66,7 +70,7 @@ void GridPrinterForStretching::printGridDomain(DataVector& alpha, std::string tF
 	}
 	else
 	{
-		throw new tool_exception("GridPrinterForStretching::printGridDomain : The grid has no dimensions. Thus it cannot be printed!");
+		throw new tool_exception("GridPrinterForStretching::printGridDomainStretching : The grid has no dimensions. Thus it cannot be printed!");
 	}
 }
 

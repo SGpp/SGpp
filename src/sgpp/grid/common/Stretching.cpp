@@ -8,10 +8,11 @@
 // @author Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 #include "grid/common/Stretching.hpp"
 #include <fstream>
+#include <iostream>
 
 namespace sg
 {
-static int leftIdx[LOOKUPSIZE]={-2, -2, 0, -2, 1, 0, 2, -2, 3, 1, 4, 0, 5, 2, 6, -2, 7, 3, 8, 1, 9, 4, 10, 0, 11, 5, 12, 2, 13, 6, 14, -2,
+static int leftIdx[2047]={-2, -2, 0, -2, 1, 0, 2, -2, 3, 1, 4, 0, 5, 2, 6, -2, 7, 3, 8, 1, 9, 4, 10, 0, 11, 5, 12, 2, 13, 6, 14, -2,
 		15, 7, 16, 3, 17, 8, 18, 1, 19, 9, 20, 4, 21, 10, 22, 0, 23, 11, 24, 5, 25, 12, 26, 2, 27, 13, 28, 6, 29, 14, 30, -2, 31, 15, 32,
 		7, 33, 16, 34, 3, 35, 17, 36, 8, 37, 18, 38, 1, 39, 19, 40, 9, 41, 20, 42, 4, 43, 21, 44, 10, 45, 22, 46, 0, 47, 23, 48, 11, 49,
 		24, 50, 5, 51, 25, 52, 12, 53, 26, 54, 2, 55, 27, 56, 13, 57, 28, 58, 6, 59, 29, 60, 14, 61, 30, 62, -2, 63, 31, 64, 15, 65, 32,
@@ -85,7 +86,7 @@ static int leftIdx[LOOKUPSIZE]={-2, -2, 0, -2, 1, 0, 2, -2, 3, 1, 4, 0, 5, 2, 6,
 		126, 1019, 509, 1020, 254, 1021, 510, 1022};
 
 
-static int rightIdx[LOOKUPSIZE]= {-1, 0, -1, 1, 0, 2, -1, 3, 1, 4, 0, 5, 2, 6, -1, 7, 3, 8, 1, 9, 4, 10, 0, 11, 5, 12, 2, 13, 6, 14, -1, 15, 7, 16,
+static int rightIdx[2047]= {-1, 0, -1, 1, 0, 2, -1, 3, 1, 4, 0, 5, 2, 6, -1, 7, 3, 8, 1, 9, 4, 10, 0, 11, 5, 12, 2, 13, 6, 14, -1, 15, 7, 16,
 		3, 17, 8, 18, 1, 19, 9, 20, 4, 21, 10, 22, 0, 23, 11, 24, 5, 25, 12, 26, 2, 27, 13, 28, 6, 29, 14, 30, -1, 31, 15, 32, 7, 33, 16, 34, 3, 35,
 		17, 36, 8, 37, 18, 38, 1, 39, 19, 40, 9, 41, 20, 42, 4, 43, 21, 44, 10, 45, 22, 46, 0, 47, 23, 48, 11, 49, 24, 50, 5, 51, 25, 52, 12, 53, 26,
 		54, 2, 55, 27, 56, 13, 57, 28, 58, 6, 59, 29, 60, 14, 61, 30, 62, -1, 63, 31, 64, 15, 65, 32, 66, 7, 67, 33, 68, 16, 69, 34, 70, 3, 71, 35, 72,
@@ -156,10 +157,31 @@ static int rightIdx[LOOKUPSIZE]= {-1, 0, -1, 1, 0, 2, -1, 3, 1, 4, 0, 5, 2, 6, -
 Stretching::Stretching(size_t dim, DimensionBoundary* boundaries, Stretching1D* t) : BoundingBox(dim, boundaries )
 {
 
-	//	nDim = dim;
+	nDim = dim;
 	bTrivialCube = true;
 	stretching1Ds = new Stretching1D[nDim];
-	//	dimensionBoundaries = new DimensionBoundary[nDim];
+	dimensionBoundaries = new DimensionBoundary[nDim];
+	discreteVectorLevel = new int [nDim];
+	stretchingMode = new std::string("analytic");
+	for(size_t i=0; i<nDim;i++){
+		dimensionBoundaries[i] = boundaries[i];
+		if (dimensionBoundaries[i].leftBoundary != 0.0 || dimensionBoundaries[i].rightBoundary != 1.0)
+		{
+			bTrivialCube = false;
+		}
+		discreteVectorLevel[i] = -1;
+		stretching1Ds[i]= t[i];
+	}
+	generateLookupTable();
+}
+
+Stretching::Stretching(size_t dim, std::vector<DimensionBoundary> boundaries, std::vector<Stretching1D> t) : BoundingBox(dim)
+{
+
+	nDim = dim;
+	bTrivialCube = true;
+	stretching1Ds = new Stretching1D[nDim];
+	dimensionBoundaries = new DimensionBoundary[nDim];
 	discreteVectorLevel = new int [nDim];
 	stretchingMode = new std::string("analytic");
 	for(size_t i=0; i<nDim;i++){
@@ -244,6 +266,7 @@ Stretching::~Stretching()
 
 void Stretching::generateLookupTable()
 {
+	//	std::cout<<"Generate Lookup Table"<<std::endl;
 	for(size_t i=0;i<nDim;i++){
 		if (stretching1Ds[i].type == "log"){
 			logXform(stretching1Ds[i],i);
@@ -389,7 +412,7 @@ double Stretching::logXform(int l, int i, size_t dim){
 	double f_b=log(getBoundary(dim).rightBoundary);
 	int elemPerLevel = pow(2,l-1);
 
-	return exp (f_a + (double)(2*i-1)/(2*elemPerLevel)*(f_b-f_a));
+	return exp (f_a + (double)(i)/(2*elemPerLevel)*(f_b-f_a));
 }
 
 void Stretching::leentvaarXform(Stretching1D &str1D, size_t dim){
@@ -419,7 +442,7 @@ double Stretching::leentvaarXform (int l, int i, size_t dim){
 	double f_b=log(sinhArgumentb+sqrt(sinhArgumentb*sinhArgumentb+1));
 	int elemPerLevel = pow(2,l-1);
 
-	return (1/stretching1Ds[dim].xsi*sinh((f_a + (double)(2*i-1)/(2*elemPerLevel)*(f_b-f_a)))+stretching1Ds[dim].x_0);
+	return (1/stretching1Ds[dim].xsi*sinh((f_a + (double)(i)/(2*elemPerLevel)*(f_b-f_a)))+stretching1Ds[dim].x_0);
 }
 
 void Stretching::noXform(Stretching1D &str1D,size_t dim){
@@ -440,7 +463,7 @@ double Stretching::noXform(int l, int i, size_t dim){
 	double f_b=getBoundary(dim).rightBoundary;
 	int elemPerLevel = pow(2,l-1);
 
-	return (f_a + (double)(2*i-1)/(2*elemPerLevel)*(f_b-f_a));
+	return (f_a + (double)(i)/(2*elemPerLevel)*(f_b-f_a));
 }
 
 
@@ -627,8 +650,8 @@ int* Stretching::getDiscreteVectorLevel(){
 void Stretching::calculateNeighborLookup(int maxlevel){
 
 
-//	std::string file1 = "leftIndex.txt";
-//	std::string file2 = "rightIndex.txt";
+	//	std::string file1 = "leftIndex.txt";
+	//	std::string file2 = "rightIndex.txt";
 	std::ofstream outfile1;
 	std::ofstream outfile2;
 

@@ -95,7 +95,8 @@ void BlackScholesSolverWithStretching::getGridNormalDistribution(DataVector& alp
 	}
 }
 
-void BlackScholesSolverWithStretching::constructGrid(Stretching& stretching, size_t level)
+
+void BlackScholesSolverWithStretching::constructGridStretching(Stretching& stretching, size_t level)
 {
 	this->dim = stretching.getDimensions();
 	this->levels = level;
@@ -114,6 +115,10 @@ void BlackScholesSolverWithStretching::constructGrid(Stretching& stretching, siz
 	//std::cout << serGrid << std::endl;
 
 	this->bGridConstructed = true;
+}
+
+void BlackScholesSolverWithStretching::constructGrid(BoundingBox& myBoundingBox, size_t level){
+	throw new application_exception("BlackScholesSolverWithStretching::constructGrid : This solver does not support BoundingBox, use constructGridStretching instead!");
 }
 
 void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance)
@@ -505,10 +510,15 @@ void BlackScholesSolverWithStretching::printGrid(DataVector& alpha, double Point
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void BlackScholesSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const
+void BlackScholesSolverWithStretching::printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
-	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
+	myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, PointesPerDimension);
+}
+
+void BlackScholesSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename)const
+{
+	throw new application_exception("BlackScholesSolverWithStretching::printGridDomain: BoundingBox not supported, use printGridDomainStretching instead!");
 }
 
 void BlackScholesSolverWithStretching::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const

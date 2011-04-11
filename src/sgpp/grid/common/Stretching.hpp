@@ -10,6 +10,7 @@
 
 #define LOOKUPSIZE 2047
 #define LOOKUPMAX 11
+
 #include <cstddef>
 #include <math.h>
 #include <string>
@@ -176,6 +177,8 @@ public:
 	 */
 	Stretching(size_t dim, DimensionBoundary* boundaries, Stretching1D* stretching1ds);
 
+
+	Stretching(size_t dim, std::vector<DimensionBoundary> boundaries, std::vector<Stretching1D> t);
 
 	/**
 	 * Constructor for Stretching
