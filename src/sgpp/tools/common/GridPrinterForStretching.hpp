@@ -32,7 +32,7 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	~GridPrinterForStretching();
+	virtual ~GridPrinterForStretching();
 
 	/**
 	 * Print the grid with its function to a file; front end
@@ -41,8 +41,14 @@ public:
 	 * @param tFilename absolute path to the file the grid is written into
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
-	void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
+	virtual void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
 
+
+	/**
+	 * This function is not used for stretching grid printing, use printGridDomainStretching instead
+
+	 */
+	virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension);
 	/**
 	 * Print the grid with its function to a file; front end
 	 *
@@ -51,7 +57,7 @@ public:
 	 * @param GridArea The area in which the function should be plotted
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
-	void printGridDomain(DataVector& alpha, std::string tFilename, Stretching& GridArea, double PointsPerDimension);
+	virtual void printGridDomainStretching(DataVector& alpha, std::string tFilename, Stretching& GridArea, double PointsPerDimension);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -61,7 +67,7 @@ public:
 	 * @param tFilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus);
+	virtual void printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -74,7 +80,7 @@ public:
 	 * @param tFilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus);
+	virtual void printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus);
 };
 
 }

@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+ * Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 #ifndef BLACKSCHOLESSOLVERWITHSTRETCHING_HPP
@@ -79,9 +79,11 @@ public:
 	/**
 	 * Std-Destructor of the solver
 	 */
-	 ~BlackScholesSolverWithStretching();
+	~BlackScholesSolverWithStretching();
 
-	 void constructGrid(Stretching& myStretching, size_t level);
+	void constructGridStretching(Stretching& myStretching, size_t level);
+
+	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
 	/**
 	 * This function tries to refine the grid such that
@@ -171,17 +173,22 @@ public:
 	virtual void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
 	/**
-		 * This is some kind of debug functionality. It writes a file,
-		 * that can be used with gnuplot the print the grid.
-		 *
-		 * Is only implemented for 2D grids!
-		 *
-		 * @param alpha the coefficients of the Sparse Gird's basis functions
-		 * @param PointesPerDimension the distance between evaluation points
-		 * @param GridArea the area in which the function should be plotted
-		 * @param tfilename absolute path to file into which the grid's evaluation is written
-		 */
-	virtual void printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const;
+	 * This is not used, throws exception to inform about the function printGridDomainStretching
+	 */
+	virtual void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const;
+
+	/**
+	 * This is some kind of debug functionality. It writes a file,
+	 * that can be used with gnuplot the print the grid.
+	 *
+	 * Is only implemented for 2D grids!
+	 *
+	 * @param alpha the coefficients of the Sparse Gird's basis functions
+	 * @param PointesPerDimension the distance between evaluation points
+	 * @param GridArea the area in which the function should be plotted
+	 * @param tfilename absolute path to file into which the grid's evaluation is written
+	 */
+	virtual void printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const;
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -196,18 +203,18 @@ public:
 	virtual void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
-		 * Prints the Grid Points of the Sparse Grid either with their node basis value
-		 * or their hierarchical surplus
-		 *
-		 * This function is available for all dimensions.
-		 *
-		 * The coordinates of the grid points are pushed the exp function. So
-		 * log transformed grids can be plotted in cartesion coordinates.
-		 *
-		 * @param alpha the coefficients of the grid's ansatzfunctions
-		 * @param tfilename absoulte path to the file the grid is written into
-		 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
-		 */
+	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * or their hierarchical surplus
+	 *
+	 * This function is available for all dimensions.
+	 *
+	 * The coordinates of the grid points are pushed the exp function. So
+	 * log transformed grids can be plotted in cartesion coordinates.
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tfilename absoulte path to the file the grid is written into
+	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
+	 */
 	virtual void printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 

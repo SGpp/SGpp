@@ -525,7 +525,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	myBSSolver->initScreen();
 
 	// Construct a grid
-	myBSSolver->constructGrid(*myStretching, level);
+	myBSSolver->constructGridStretching(*myStretching, level);
 
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
@@ -555,7 +555,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		if (payoffType == "std_euro_call")
 		{
 			std::vector< std::pair<double, double> > prems;
-			myBSSolver->solve1DAnalytic(prems, maxStock, 0.03, dStrike, ((double)(timesteps))*stepsize, true);
+			myBSSolver->solve1DAnalytic(prems, maxStock, 0.04, dStrike, ((double)(timesteps))*stepsize, true);
 			myBSSolver->print1DAnalytic(prems, "analyticBS.gnuplot");
 		}
 		if (payoffType == "std_euro_put")
@@ -786,7 +786,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		size_t level = i;
 
 		// Construct a grid
-		myBSSolver->constructGrid(*myStretching, level);
+		myBSSolver->constructGridStretching(*myStretching, level);
 
 		// in the first iteration -> calculate the evaluation points
 		if (i == start_l)
@@ -1084,7 +1084,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	myBSSolver->initScreen();
 
 	// Construct a grid
-	myBSSolver->constructGrid(*myStretching, level);
+	myBSSolver->constructGridStretching(*myStretching, level);
 
 	// Enable Coarsening
 	if (useCoarsen == true)
@@ -1495,7 +1495,7 @@ void writeHelp()
 	mySStream << "	file_stretch: file containing the stretching data, file format different depending on the mode" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001" << "StretchingMode stretch.data"<< std::endl;
+	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001" << " analytic stretch.data"<< std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1523,7 +1523,7 @@ void writeHelp()
 	mySStream << "	file_stretch: file containing the stretching data, file format different depending on the mode" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "cart 3 2 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data" << "StretchingMode stretch.data"<< std::endl;
+	mySStream << "cart 3 2 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data" << " analytic stretch.data"<< std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
@@ -1560,7 +1560,7 @@ void writeHelp()
 	mySStream << "	file_stretch: file containing the stretching data, file format different depending on the mode" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 classic 0 5 1e-10 coarsen 1e-6" << "StretchingMode stretch.data"<<std::endl;
+	mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call "<< "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 classic 0 5 1e-10 coarsen 1e-6" << " analytic stretch.data"<<std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;

@@ -28,6 +28,7 @@ OMP=0
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
 CC=g++
+#CC=icpc
 # vectorization option for intel compiler
 VEC=sse3
 # extensions, manages extensions to be included, possible values (only when using Intel Compiler):
@@ -246,6 +247,15 @@ ifeq ($(CC),g++)
 endif
 
 ###################################################################
+# Builds a Up/Down Test Application
+###################################################################	
+UpDownTestForStretching: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/UpDownTestForStretching_gcc
+	make -f ./../../../src/makefileUpDownTestForStretching --directory=./tmp/build_native/UpDownTestForStretching_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTestForStretching_GCC" "EXT=$(EXT)"
+endif
+
+###################################################################
 # Builds a Refine/Coarsen Test Application
 ###################################################################	
 RefineCoarsenTest: default
@@ -277,6 +287,31 @@ test_BS_3d:
 	./test_BSSolver_3d.sh;
 	
 test_BS_all: test_BS_1d test_BS_2d test_BS_3d
+	echo "executed all BS tests!"
+
+###################################################################
+# test Black Scholes Solver with Stretching
+###################################################################	
+		
+test_BSS_1d:
+	cd bin; \
+	./copyBSSolverWithStretchingToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolverWithStretching/1d; \
+	./test_BSSolverWithStretching_1d.sh;
+	
+test_BSS_2d:
+	cd bin; \
+	./copyBSSolverWithStretchingToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolverWithStretching/2d; \
+	./test_BSSolverWithStretching_2d.sh;
+		
+test_BSS_3d:
+	cd bin; \
+	./copyBSSolverWithStretchingToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolverWithStretching/3d; \
+	./test_BSSolverWithStretching_3d.sh;
+	
+test_BSS_all: test_BSS_1d test_BSS_2d test_BSS_3d
 	echo "executed all BS tests!"
 		
 ###################################################################
