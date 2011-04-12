@@ -13,7 +13,7 @@
 #define DIV_SIGMA 4.0
 #define DISTRI_FACTOR 5.0
 
-#define NUMEVALPOINTS 21
+#define NUMEVALPOINTS 11
 
 //#define EXPORT_MATRIX_FILES
 
