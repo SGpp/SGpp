@@ -27,6 +27,110 @@
 #include "sgpp.hpp"
 
 /**
+ * reads a cuboid defined by several points from a file. These points are stored in the
+ * cuboid DataMatrix
+ *
+ * @param cuboid DataMatrix into which the evaluations points are stored
+ * @param tFile file that contains the cuboid
+ * @param dim the dimensions of cuboid
+ */
+int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
+{
+	std::fstream file;
+	double cur_coord;
+
+	file.open(tFile.c_str());
+
+	if(cuboid.getNcols() != dim)
+	{
+		std::cout << "Cuboid-definition file doesn't match: " << tFile << std::endl;
+		return -1;
+	}
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
+
+	// Get number of lines and resize DataMatrix
+	size_t i = 0;
+	while (!file.eof())
+	{
+		for (size_t d = 0; d < dim; d++)
+		{
+			file >> cur_coord;
+		}
+		i++;
+	}
+	file.close();
+	cuboid.resize(i);
+
+	// Read data from file
+	file.open(tFile.c_str());
+	i = 0;
+	while (!file.eof())
+	{
+		DataVector line(dim);
+		line.setAll(0.0);
+		for (size_t d = 0; d < dim; d++)
+		{
+			file >> cur_coord;
+			line.set(d, cur_coord);
+		}
+		cuboid.setRow(i, line);
+		i++;
+	}
+	file.close();
+
+	return 0;
+}
+
+/**
+ * reads function values from a file
+ *
+ * @param values DataVector into which the values will be stored
+ * @param tFile file from which the values are read
+ * @param numValues number of values stored in the file
+ */
+int readCuboidValues(DataVector& values, std::string tFile)
+{
+	std::fstream file;
+	double cur_value;
+
+	file.open(tFile.c_str());
+
+	if(!file.is_open())
+	{
+		std::cout << "Error cannot read file: " << tFile << std::endl;
+		return -1;
+	}
+
+	// Count number of lines
+	size_t i = 0;
+	while (!file.eof())
+	{
+		file >> cur_value;
+		i++;
+	}
+	values.resize(i);
+	file.close();
+
+	// Read data from File
+	file.open(tFile.c_str());
+	i = 0;
+	while (!file.eof())
+	{
+		file >> cur_value;
+		values.set(i, cur_value);
+		i++;
+	}
+	file.close();
+
+	return 0;
+}
+
+/**
  * Writes a DataMatrix into a file
  *
  * @param data the DataMatrix that should be written into a file
@@ -595,7 +699,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 
 	// read reference values for evaluation cuboid
 	DataVector EvalCuboidValues(1);
-	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+	int retCuboidValues = readCuboidValues(EvalCuboidValues, tFileEvalCuboidValues);
 
 	// init Screen Object
 	myPoisSolver->initScreen();
@@ -622,6 +726,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 			}
 			std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
 			std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
+		}
 	}
 	else
 	{
@@ -642,11 +747,6 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 	{
 		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
 	}
-
-	// Calculate Norms
-	// Evaluate Cuboid
-	DataVector PoisEvals(EvalPoints.getNrows());
-	myPoisSolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
 
 	// cleanup
 	delete alpha;
@@ -753,7 +853,7 @@ int main(int argc, char *argv[])
 
 		dim = atoi(argv[2]);
 		start_level = atoi(argv[3]);
-		refine = assign(argv[4]);
+		refine.assign(argv[4]);
 		max_ref_level = atoi(argv[5]);
 		num_refines = atoi(argv[6]);
 		refine_thres = atof(argv[7]);
