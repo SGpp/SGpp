@@ -229,10 +229,14 @@ void HeatEquationSolverWithStretching::printGrid(DataVector& alpha, double Point
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void HeatEquationSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const
+void HeatEquationSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const{
+	throw new application_exception("HeatEquationSolverWithStretching::printGridDomain : BoundingBox not supported with this solver, use printGridDomainStretching instead ");
+}
+
+void HeatEquationSolverWithStretching::printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
-	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
+	myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
 void HeatEquationSolverWithStretching::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const
