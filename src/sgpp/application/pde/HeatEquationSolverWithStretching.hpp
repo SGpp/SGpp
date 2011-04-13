@@ -126,6 +126,11 @@ public:
 	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
 	/**
+	 This function is a placeholder, is not used.
+	 */
+	void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const;
+
+	/**
 	 * This is some kind of debug functionality. It writes a file,
 	 * that can be used with gnuplot the print the grid.
 	 *
@@ -136,7 +141,7 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void printGridDomain(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const;
+	void printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const;
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
