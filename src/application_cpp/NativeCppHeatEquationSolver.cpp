@@ -166,8 +166,8 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 	size_t timesteps = (size_t)(T/dt);
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
 	DataMatrix EvalPoints(1, dim);
-	std::string tFileEvalCuboid = "EvalPointsHeatEquation";
-	std::string tFileEvalCuboidValues = "EvalValuesHeatEquation";
+	std::string tFileEvalCuboid = "EvalPointsHeatEquation.data";
+	std::string tFileEvalCuboidValues = "EvalValuesHeatEquation.data";
 	size_t evalPoints = NUMEVALPOINTS;
 	std::vector<DataVector> results;
 
@@ -388,8 +388,8 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 {
 	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
 	DataMatrix EvalPoints(1, dim);
-	std::string tFileEvalCuboid = "EvalPointsPoisson";
-	std::string tFileEvalCuboidValues = "EvalValuesPoisson";
+	std::string tFileEvalCuboid = "EvalPointsPoisson.data";
+	std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
 	size_t evalPoints = NUMEVALPOINTS;
 	std::vector<DataVector> results;
 
@@ -566,6 +566,94 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 	delete myBoundingBox;
 }
 
+void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine, size_t max_ref_level, size_t num_refines, double refine_thres, double bound_left, double bound_right,
+						std::string initFunc, double cg_eps, size_t cg_its)
+{
+	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	std::string tFileEvalCuboid = "EvalPointsPoisson.data";
+	std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
+
+	// set the bounding box
+	for (size_t i = 0; i < dim; i++)
+	{
+		myBoundaries[i].leftBoundary = bound_left;
+		myBoundaries[i].rightBoundary = bound_right;
+		myBoundaries[i].bDirichletLeft = true;
+		myBoundaries[i].bDirichletRight = true;
+	}
+
+	sg::PoissonEquationSolver* myPoisSolver = new sg::PoissonEquationSolver();
+	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	delete[] myBoundaries;
+
+	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
+	DataVector* alpha = NULL;
+
+	// read Evaluation cuboid
+	DataMatrix EvalCuboid(1, dim);
+	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+
+	// read reference values for evaluation cuboid
+	DataVector EvalCuboidValues(1);
+	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+
+	// init Screen Object
+	myPoisSolver->initScreen();
+
+	// Construct a grid
+	myPoisSolver->constructGrid(*myBoundingBox, start_level);
+
+	// init the basis functions' coefficient vector (start solution)
+	alpha = new DataVector(myPoisSolver->getNumberGridPoints());
+	if (initFunc == "smooth")
+	{
+		for (size_t i = 0; i < num_refines; i++)
+		{
+			std::cout << "Refining Grid..." << std::endl;
+			myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+			if (refine == "classic")
+			{
+
+				myPoisSolver->refineInitialGridSurplus(*alpha, -1, num_refines);
+			}
+			else
+			{
+				myPoisSolver->refineInitialGridSurplus(*alpha, -1, num_refines);
+			}
+			std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+			std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
+	}
+	else
+	{
+		writeHelp();
+	}
+
+	// Print the initial heat function into a gnuplot file
+	if (dim < 3)
+	{
+		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStart.gnuplot");
+	}
+
+	// solve Poisson Equation
+	myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
+
+	// Print the solved Heat Equation into a gnuplot file
+	if (dim < 3)
+	{
+		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
+	}
+
+	// Calculate Norms
+	// Evaluate Cuboid
+	DataVector PoisEvals(EvalPoints.getNrows());
+	myPoisSolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
+
+	// cleanup
+	delete alpha;
+	delete myPoisSolver;
+	delete myBoundingBox;
+}
+
 int main(int argc, char *argv[])
 {
 	std::string option;
@@ -641,6 +729,40 @@ int main(int argc, char *argv[])
 		cg_eps = atof(argv[8]);
 		cg_its = atoi(argv[9]);
 		testPoissonEquation(dim, start_level, end_level, bound_left, bound_right, initFunc, cg_eps, cg_its);
+	}
+	else if (option == "PoissonEquationAdapt")
+	{
+		if (argc != 13)
+		{
+			writeHelp();
+			return 0;
+		}
+
+		size_t dim;
+		size_t start_level;
+		std::string refine;
+		size_t max_ref_level;
+		size_t num_refines;
+		size_t refine_thres;
+
+		double bound_left;
+		double bound_right;
+		std::string initFunc;
+		double cg_eps;
+		size_t cg_its;
+
+		dim = atoi(argv[2]);
+		start_level = atoi(argv[3]);
+		refine = assign(argv[4]);
+		max_ref_level = atoi(argv[5]);
+		num_refines = atoi(argv[6]);
+		refine_thres = atof(argv[7]);
+		bound_left = atof(argv[8]);
+		bound_right = atof(argv[9]);
+		initFunc.assign(argv[10]);
+		cg_eps = atof(argv[11]);
+		cg_its = atoi(argv[12]);
+		testPoissonEquationAdapt(dim, start_level, refine, max_ref_level, num_refines, refine_thres, bound_left, bound_right, initFunc, cg_eps, cg_its);
 	}
 	else
 	{
