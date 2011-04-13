@@ -22,7 +22,7 @@ export I_MPI_PIN_MODE=mpd
 export I_MPI_DEBUG=4
 export I_MPI_PIN_DOMAIN=socket
 
-mpiexec -ppn 2 -genv OMP_NUM_THREADS 8 -genv I_MPI_PIN_DOMAIN socket -n 4 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 10 0.0 3.0 smooth 0.00001 400
+mpiexec -ppn 2 -genv OMP_NUM_THREADS 8 -genv I_MPI_PIN_DOMAIN socket -n 4 $HOME/SGpp/bin/HESolverMPI PoissonEquation 4 2 11 0.0 3.0 smooth 0.00001 4000
 
 jobperf -j $JOB_ID 
 
