@@ -152,6 +152,46 @@ void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu,
 	}
 }
 
+void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(DataVector& alpha, double mu, double sigma, double factor)
+{
+	if (this->bGridConstructed)
+	{
+		double tmp;
+		double* dblFuncValues = new double[this->dim];
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			tmp = 1.0;
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				tmp *=  factor*factor*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[j]-mu)/sigma)*((dblFuncValues[j]-mu)/sigma)));
+			}
+
+			alpha[i] = tmp;
+		}
+
+		delete[] dblFuncValues;
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("HeatEquationSolver::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
+	}
+}
+
 void PoissonEquationSolver::storeInnerMatrix(std::string tFilename)
 {
 	DataVector rhs(this->myGrid->getSize());

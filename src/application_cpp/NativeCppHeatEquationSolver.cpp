@@ -260,6 +260,28 @@ void writeHelp()
 	mySStream << "	poissonSolved.gnuplot: the numerical solution" << std::endl;
 	mySStream << std::endl << std::endl;
 
+	mySStream << "PoissonEquationAdapt" << std::endl << "------" << std::endl;
+	mySStream << "the following options must be specified:" << std::endl;
+	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+	mySStream << "	start_level: number of start-levels of the Sparse Grid" << std::endl;
+	mySStream << "	refinemode: method used for initial refinement: classic, maxLevel" << std::endl;
+	mySStream << "	max_ref_level: maxLevel used" << std::endl;
+	mySStream << "	num_refines: Number of initial refinements" << std::endl;
+	mySStream << "	refine_thres: Refinement threshold" << std::endl;
+	mySStream << "	left_bound: x_i of left boundary" << std::endl;
+	mySStream << "	right_bound: x_i of right boundary" << std::endl;
+	mySStream << "	initHeat: initial heat distribution" << std::endl;
+	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Example:" << std::endl;
+	mySStream << "HESolver PoissonEquationAdapt 3 2 maxLevel 5 5 1e-7 0.0 3.0 smooth 0.00001 400" << std::endl;
+	mySStream << std::endl;
+	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
+	mySStream << "	poissonStartAdapt.gnuplot: the start condition" << std::endl;
+	mySStream << "	poissonSolvedAdapt.gnuplot: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
 	std::cout << mySStream.str() << std::endl;
 }
 
@@ -711,32 +733,40 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 	alpha = new DataVector(myPoisSolver->getNumberGridPoints());
 	if (initFunc == "smooth")
 	{
+		std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Starting Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl << std::endl;
+
 		for (size_t i = 0; i < num_refines; i++)
 		{
 			std::cout << "Refining Grid..." << std::endl;
-			myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+			myPoisSolver->initGridWithSmoothHeatFullDomain(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+
 			if (refine == "classic")
 			{
-
-				myPoisSolver->refineInitialGridSurplus(*alpha, -1, num_refines);
+				myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
 			}
 			else
 			{
-				myPoisSolver->refineInitialGridSurplus(*alpha, -1, num_refines);
+				myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
 			}
+
 			std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
 			std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
 		}
+
+		std::cout << std::endl << std::endl;
 	}
 	else
 	{
 		writeHelp();
 	}
 
+	myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+
 	// Print the initial heat function into a gnuplot file
 	if (dim < 3)
 	{
-		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStart.gnuplot");
+		myPoisSolver->printSparseGrid(*alpha, "poissonStartAdapt.gnuplot", false);
 	}
 
 	// solve Poisson Equation
@@ -745,7 +775,42 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 	// Print the solved Heat Equation into a gnuplot file
 	if (dim < 3)
 	{
-		myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolved.gnuplot");
+		myPoisSolver->printSparseGrid(*alpha, "poissonSolvedAdapt.gnuplot", false);
+	}
+
+	// calculate relative errors
+	////////////////////////////
+	double maxNorm = 0.0;
+	double l2Norm = 0.0;
+
+	if (retCuboid == 0 && retCuboidValues == 0)
+	{
+		std::cout << "Calculating relative errors..." << std::endl;
+		// Evaluate Cuboid
+		DataVector curVals(EvalCuboid.getNrows());
+		myPoisSolver->evaluateCuboid(*alpha, curVals, EvalCuboid);
+
+		DataVector relError(curVals);
+
+		// calculate relative error
+		relError.sub(EvalCuboidValues);
+		relError.componentwise_div(EvalCuboidValues);
+
+		// calculate max. norm of relative error
+		maxNorm = relError.maxNorm();
+
+		// calculate two norm of relative error
+		l2Norm = relError.RMSNorm();
+
+		// Printing norms
+		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+
+		// reprint data with prefix -> can be easily grep-ed
+		std::cout << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
 	}
 
 	// cleanup
@@ -843,7 +908,7 @@ int main(int argc, char *argv[])
 		std::string refine;
 		size_t max_ref_level;
 		size_t num_refines;
-		size_t refine_thres;
+		double refine_thres;
 
 		double bound_left;
 		double bound_right;
@@ -862,6 +927,7 @@ int main(int argc, char *argv[])
 		initFunc.assign(argv[10]);
 		cg_eps = atof(argv[11]);
 		cg_its = atoi(argv[12]);
+
 		testPoissonEquationAdapt(dim, start_level, refine, max_ref_level, num_refines, refine_thres, bound_left, bound_right, initFunc, cg_eps, cg_its);
 	}
 	else
