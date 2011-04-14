@@ -711,8 +711,6 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 	sg::PoissonEquationSolver* myPoisSolver = new sg::PoissonEquationSolver();
 	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
-
-	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
 	DataVector* alpha = NULL;
 
 	// read Evaluation cuboid
