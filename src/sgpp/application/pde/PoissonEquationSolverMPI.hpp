@@ -65,6 +65,9 @@ public:
 	 * Inits the grid with a smooth heat distribution (based on
 	 * a std-normal distribution) on its boundaries
 	 *
+	 * Coefficients of inner grid points are set to zero
+	 * since an elliptical PDE is solved
+	 *
 	 * @param alpha reference to the coefficients vector
 	 * @param mu the exspected value of the normal distribution
 	 * @param sigma the sigma of the normal distribution
@@ -72,6 +75,20 @@ public:
 	 */
 	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
 
+	/**
+	 * Inits the grid with a smooth heat distribution (based on
+	 * a std-normal distribution) on its boundaries
+	 *
+	 * Coefficients of inner grid points aren't set to zero
+	 * since they are used to hint an adaptive refinement
+	 * of the grid BEFORE solving the PDE.
+	 *
+	 * @param alpha reference to the coefficients vector
+	 * @param mu the exspected value of the normal distribution
+	 * @param sigma the sigma of the normal distribution
+	 * @param factor a factor that is used to stretch the function values
+	 */
+	void initGridWithSmoothHeatFullDomain(DataVector& alpha, double mu, double sigma, double factor);
 	/**
 	 * Inits the screen object
 	 */
