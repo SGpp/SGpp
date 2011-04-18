@@ -89,6 +89,22 @@ public:
 	void initGridWithSmoothHeatFullDomain(DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
+	 * Inits the grid with a heat distribution based on
+	 * the e-function
+	 *
+	 * @param alpha reference to the coefficient's vector
+	 */
+	void initGridWithExpHeat(DataVector& alpha);
+
+	/**
+	 * Inits the grid with a heat distribution based on
+	 * the e-function
+	 *
+	 * @param alpha reference to the coefficient's vector
+	 */
+	void initGridWithExpHeatFullDomain(DataVector& alpha);
+
+	/**
 	 * Routine to export the matrix of the inner system in matrix
 	 * market format
 	 *

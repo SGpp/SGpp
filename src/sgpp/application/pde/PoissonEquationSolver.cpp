@@ -192,6 +192,122 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(DataVector& alpha, 
 	}
 }
 
+void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha)
+{
+	if (this->bGridConstructed)
+	{
+		double tmp;
+		double* dblFuncValues = new double[this->dim];
+		double* rightBound = new double[this->dim];
+
+		BoundingBox* tmpBB = this->myGrid->getBoundingBox();
+
+		for (size_t j = 0; j < this->dim; j++)
+		{
+			rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
+		}
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+			bool isInner = true;
+			tmp = 0.0;
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				// determine if a grid point is an inner grid point
+				if ((tmp != this->myBoundingBox->getBoundary(j).leftBoundary && tmp != this->myBoundingBox->getBoundary(j).rightBoundary))
+				{
+					// Nothtin to do, test is that qay hence == for floating point values is unsave
+				}
+				else
+				{
+					isInner = false;
+				}
+
+				dblFuncValues[j] = tmp;
+			}
+
+			if (isInner == false)
+			{
+				tmp = 1.0;
+				for (size_t j = 0; j < this->dim; j++)
+				{
+					tmp *= exp(dblFuncValues[j]-rightBound[j]);
+				}
+			}
+			else
+			{
+				tmp = 0.0;
+			}
+
+			alpha[i] = tmp;
+		}
+
+		delete[] dblFuncValues;
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
+	}
+}
+
+void PoissonEquationSolver::initGridWithExpHeatFullDomain(DataVector& alpha)
+{
+	if (this->bGridConstructed)
+	{
+		double tmp;
+		double* dblFuncValues = new double[this->dim];
+		double* rightBound = new double[this->dim];
+
+		BoundingBox* tmpBB = this->myGrid->getBoundingBox();
+
+		for (size_t j = 0; j < this->dim; j++)
+		{
+			rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
+		}
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+			tmp = 0.0;
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			tmp = 1.0;
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				tmp *= exp(dblFuncValues[j]-rightBound[j]);
+			}
+
+			alpha[i] = tmp;
+		}
+
+		delete[] dblFuncValues;
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
+	}
+}
+
 void PoissonEquationSolver::storeInnerMatrix(std::string tFilename)
 {
 	DataVector rhs(this->myGrid->getSize());

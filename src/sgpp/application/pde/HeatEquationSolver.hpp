@@ -72,7 +72,7 @@ public:
 	void setHeatCoefficient(double a);
 
 	/**
-	 * Inits the grid with an smooth heat distribution based the
+	 * Inits the grid with a smooth heat distribution based on the
 	 * normal distribution formula
 	 *
 	 * @param alpha reference to the coefficient's vector
@@ -81,6 +81,14 @@ public:
 	 * @param factor a factor that is used to stretch the function values
 	 */
 	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
+
+	/**
+	 * Inits the grid with a heat distribution based on
+	 * the e-function
+	 *
+	 * @param alpha reference to the coefficient's vector
+	 */
+	void initGridWithExpHeat(DataVector& alpha);
 
 	/**
 	 * Inits the screen object
