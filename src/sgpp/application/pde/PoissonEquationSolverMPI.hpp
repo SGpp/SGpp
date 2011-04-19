@@ -89,6 +89,31 @@ public:
 	 * @param factor a factor that is used to stretch the function values
 	 */
 	void initGridWithSmoothHeatFullDomain(DataVector& alpha, double mu, double sigma, double factor);
+
+	/**
+	 * Inits the grid with a heat distribution based on
+	 * the e-function
+	 *
+	 * The e-function is shifted in that way the right boundary
+	 * values becomes 1 (in case of factor = 1)
+	 *
+	 * @param alpha reference to the coefficient's vector
+	 * @param factor a constant factor used to enlarge the exp-functions input parameter
+	 */
+	void initGridWithExpHeat(DataVector& alpha, double factor = 1.0);
+
+	/**
+	 * Inits the grid with a heat distribution based on
+	 * the e-function
+	 *
+	 * The e-function is shifted in that way the right boundary
+	 * values becomes 1 (in case of factor = 1)
+	 *
+	 * @param alpha reference to the coefficient's vector
+	 * @param factor a constant factor used to enlarge the exp-functions input parameter
+	 */
+	void initGridWithExpHeatFullDomain(DataVector& alpha, double factor = 1.0);
+
 	/**
 	 * Inits the screen object
 	 */

@@ -171,7 +171,7 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeat(DataVector& alpha, double 
 	}
 	else
 	{
-		throw new application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
+		throw new application_exception("PoissonEquationSolverMPI::initGridWithSmoothHeat : A grid wasn't constructed before!");
 	}
 }
 
@@ -211,7 +211,123 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(DataVector& alph
 	}
 	else
 	{
-		throw new application_exception("HeatEquationSolver::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
+		throw new application_exception("HeatEquationSolverMPI::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
+	}
+}
+
+void PoissonEquationSolverMPI::initGridWithExpHeat(DataVector& alpha, double factor)
+{
+	if (this->bGridConstructed)
+	{
+		double tmp;
+		double* dblFuncValues = new double[this->dim];
+		double* rightBound = new double[this->dim];
+
+		BoundingBox* tmpBB = this->myGrid->getBoundingBox();
+
+		for (size_t j = 0; j < this->dim; j++)
+		{
+			rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
+		}
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+			bool isInner = true;
+			tmp = 0.0;
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				// determine if a grid point is an inner grid point
+				if ((tmp != this->myBoundingBox->getBoundary(j).leftBoundary && tmp != this->myBoundingBox->getBoundary(j).rightBoundary))
+				{
+					// Nothtin to do, test is that qay hence == for floating point values is unsave
+				}
+				else
+				{
+					isInner = false;
+				}
+
+				dblFuncValues[j] = tmp;
+			}
+
+			if (isInner == false)
+			{
+				tmp = 1.0;
+				for (size_t j = 0; j < this->dim; j++)
+				{
+					tmp *= exp((dblFuncValues[j]-rightBound[j])*factor);
+				}
+			}
+			else
+			{
+				tmp = 0.0;
+			}
+
+			alpha[i] = tmp;
+		}
+
+		delete[] dblFuncValues;
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
+	}
+}
+
+void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(DataVector& alpha, double factor)
+{
+	if (this->bGridConstructed)
+	{
+		double tmp;
+		double* dblFuncValues = new double[this->dim];
+		double* rightBound = new double[this->dim];
+
+		BoundingBox* tmpBB = this->myGrid->getBoundingBox();
+
+		for (size_t j = 0; j < this->dim; j++)
+		{
+			rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
+		}
+
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+			tmp = 0.0;
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			tmp = 1.0;
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				tmp *= exp((dblFuncValues[j]-rightBound[j])*factor);
+			}
+
+			alpha[i] = tmp;
+		}
+
+		delete[] dblFuncValues;
+
+		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
 	}
 }
 

@@ -13,6 +13,8 @@
 #define DIV_SIGMA 4.0
 #define DISTRI_FACTOR 5.0
 
+#define EXP_FACTOR 2.0
+
 #define NUMEVALPOINTS 11
 
 #include <mpi.h>
@@ -522,10 +524,18 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 			{
 				myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
 			}
+			else if (initFunc == "exp")
+			{
+				myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
+			}
 			else
 			{
 				writeHelp();
 				sg::myGlobalMPIComm->Abort();
+				delete alpha,
+				delete myPoisSolver;
+				delete myBoundingBox;
+				return;
 			}
 
 			delete myBoundingBox;
@@ -698,14 +708,45 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 			}
 
 			std::cout << std::endl << std::endl;
+
+			myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+		}
+		else if (initFunc == "exp")
+		{
+			std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+			std::cout << "Starting Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl << std::endl;
+
+			for (size_t i = 0; i < num_refines; i++)
+			{
+				std::cout << "Refining Grid..." << std::endl;
+				myPoisSolver->initGridWithExpHeatFullDomain(*alpha, EXP_FACTOR);
+
+				if (refine == "classic")
+				{
+					myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
+				}
+				else
+				{
+					myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
+				}
+
+				std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+				std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
+			}
+
+			std::cout << std::endl << std::endl;
+
+			myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
 		}
 		else
 		{
 			writeHelp();
 			sg::myGlobalMPIComm->Abort();
+			delete alpha,
+			delete myPoisSolver;
+			delete myBoundingBox;
+			return;
 		}
-
-		myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
 
 		delete myBoundingBox;
 	}
