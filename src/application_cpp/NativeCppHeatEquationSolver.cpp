@@ -15,6 +15,8 @@
 
 #define NUMEVALPOINTS 11
 
+#define EXP_FACTOR 2.0
+
 //#define EXPORT_MATRIX_FILES
 
 #include <cstdlib>
@@ -334,10 +336,6 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 		{
 			myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
 		}
-		else if (initFunc == "exp")
-		{
-			myHESolver->initGridWithExpHeat(*alpha);
-		}
 		else
 		{
 			writeHelp();
@@ -566,7 +564,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 		}
 		else if (initFunc == "exp")
 		{
-			myPoisSolver->initGridWithExpHeat(*alpha);
+			myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
 		}
 		else
 		{
@@ -780,7 +778,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 		for (size_t i = 0; i < num_refines; i++)
 		{
 			std::cout << "Refining Grid..." << std::endl;
-			myPoisSolver->initGridWithExpHeatFullDomain(*alpha);
+			myPoisSolver->initGridWithExpHeatFullDomain(*alpha, EXP_FACTOR);
 
 			if (refine == "classic")
 			{
@@ -797,7 +795,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 
 		std::cout << std::endl << std::endl;
 
-		myPoisSolver->initGridWithExpHeat(*alpha);
+		myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
 	}
 	else
 	{
