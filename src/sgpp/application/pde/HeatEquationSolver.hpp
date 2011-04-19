@@ -83,14 +83,6 @@ public:
 	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
-	 * Inits the grid with a heat distribution based on
-	 * the e-function
-	 *
-	 * @param alpha reference to the coefficient's vector
-	 */
-	void initGridWithExpHeat(DataVector& alpha);
-
-	/**
 	 * Inits the screen object
 	 */
 	virtual void initScreen();

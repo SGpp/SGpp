@@ -192,7 +192,7 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(DataVector& alpha, 
 	}
 }
 
-void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha)
+void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha, double factor)
 {
 	if (this->bGridConstructed)
 	{
@@ -236,7 +236,7 @@ void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha)
 				tmp = 1.0;
 				for (size_t j = 0; j < this->dim; j++)
 				{
-					tmp *= exp(dblFuncValues[j]-rightBound[j]);
+					tmp *= exp((dblFuncValues[j]-rightBound[j])*factor);
 				}
 			}
 			else
@@ -259,7 +259,7 @@ void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha)
 	}
 }
 
-void PoissonEquationSolver::initGridWithExpHeatFullDomain(DataVector& alpha)
+void PoissonEquationSolver::initGridWithExpHeatFullDomain(DataVector& alpha, double factor)
 {
 	if (this->bGridConstructed)
 	{
@@ -290,7 +290,7 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(DataVector& alpha)
 			tmp = 1.0;
 			for (size_t j = 0; j < this->dim; j++)
 			{
-				tmp *= exp(dblFuncValues[j]-rightBound[j]);
+				tmp *= exp((dblFuncValues[j]-rightBound[j])*factor);
 			}
 
 			alpha[i] = tmp;

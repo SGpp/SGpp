@@ -221,56 +221,6 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 	}
 }
 
-void HeatEquationSolver::initGridWithExpHeat(DataVector& alpha)
-{
-	if (this->bGridConstructed)
-	{
-		double tmp;
-		double* dblFuncValues = new double[this->dim];
-		double* rightBound = new double[this->dim];
-
-		BoundingBox* tmpBB = this->myGrid->getBoundingBox();
-
-		for (size_t j = 0; j < this->dim; j++)
-		{
-			rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
-		}
-
-		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-		{
-			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-			std::stringstream coordsStream(coords);
-
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				coordsStream >> tmp;
-
-				dblFuncValues[j] = tmp;
-			}
-
-			tmp = 1.0;
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				std::cout << dblFuncValues[j] << " " << rightBound[j] << " ";
-				tmp *= exp(dblFuncValues[j]-rightBound[j]);
-			}
-			std::cout << std::endl;
-
-			alpha[i] = tmp;
-		}
-
-		delete[] dblFuncValues;
-
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
-		myHierarchisation->doHierarchisation(alpha);
-		delete myHierarchisation;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
-	}
-}
-
 void HeatEquationSolver::initScreen()
 {
 	this->myScreen = new ScreenOutput();
