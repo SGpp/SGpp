@@ -15,7 +15,7 @@
 
 #define NUMEVALPOINTS 11
 
-#define EXP_FACTOR 2.0
+#define EXP_FACTOR 3.0
 
 //#define EXPORT_MATRIX_FILES
 
