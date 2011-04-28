@@ -110,7 +110,7 @@ class Runner:
       alpha_vx[i] = self.node_value_vx[i] 
       alpha_vy[i] = self.node_value_vy[i] 
       
-    hierarchisation = self.grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(self.grid)
 
     hierarchisation.doHierarchisation(alpha_vx)
     hierarchisation.doHierarchisation(alpha_vy)
@@ -131,8 +131,8 @@ class Runner:
             p[1] = float(y) / (resolution - 1)
             p[2] = 1
             p[3] = 0.01 * z
-            vx = grid.createOperationEval().eval(alpha_vx, p)
-            vy = grid.createOperationEval().eval(alpha_vy, p)
+            vx = createOperationEval(grid).eval(alpha_vx, p)
+            vy = createOperationEval(grid).eval(alpha_vy, p)
             fout.write("%f %f %f %f\n" % (p[0], p[1], vx, vy))
     fout.close()
     return

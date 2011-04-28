@@ -6,7 +6,7 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #ifndef OPERATIONMULTIPLEEVALPOLY_HPP
-#define OPERATIONMULITPLEEVALPOLY_HPP
+#define OPERATIONMULTIPLEEVALPOLY_HPP
 
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "grid/GridStorage.hpp"

@@ -10,7 +10,29 @@ pysgpp.i
 """)
 
 Import('env')
-Import('src_objs')
+
+src_objs = []
+if env['SG_BASE']:
+	Import('src_objs_base')
+	src_objs += src_objs_base
+if env['SG_DATADRIVEN']:
+	Import('src_objs_datadriven')
+	src_objs += src_objs_datadriven
+if env['SG_SOLVER']:
+	Import('src_objs_solver')
+	src_objs += src_objs_solver
+if env['SG_FINANCE']:
+	Import('src_objs_finance')
+	src_objs += src_objs_finance
+if env['SG_PDE']:
+	Import('src_objs_pde')
+	src_objs += src_objs_pde
+if env['SG_PARALLEL']:
+	Import('src_objs_parallel')
+	src_objs += src_objs_parallel
+if env['SG_COMBIGRID']:
+	Import('src_objs_combigrid')
+	src_objs += src_objs_combigrid
 
 py_env = env.Clone()
 

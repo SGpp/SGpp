@@ -293,7 +293,7 @@ def writeGnuplot(filename, grid, alpha, resolution):
         for y in xrange(resolution):
             p[0] = float(x) / (resolution - 1)
             p[1] = float(y) / (resolution - 1)
-            pc = grid.createOperationEval().eval(alpha, p)
+            pc = createOperationEval(grid).eval(alpha, p)
             fout.write("%f %f %f\n" % (p[0], p[1], pc))
         fout.write("\n")
     fout.close()
@@ -793,7 +793,7 @@ class Matrix:
         self.CMode = mode.lower()
         
         if self.CMode == "laplace":
-            self.C = grid.createOperationLaplace()
+            self.C = createOperationLaplace(grid)
         elif self.CMode == "identity":
             pass
         elif self.CMode == "ratio":

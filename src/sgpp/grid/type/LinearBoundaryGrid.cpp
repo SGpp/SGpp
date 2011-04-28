@@ -11,36 +11,23 @@
 #include "grid/generation/BoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.hpp"
-#include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.hpp"
+
+//#include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 
-#ifdef USEOCL
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
-#endif
 
-#ifdef USEARBB
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
-#endif
 
-#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
+/*#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.hpp"*/
+//#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
 
 #include "exception/factory_exception.hpp"
@@ -91,12 +78,12 @@ GridGenerator* LinearBoundaryGrid::createGridGenerator()
 	return new BoundaryGridGenerator(this->storage);
 }
 
-OperationMultipleEval* LinearBoundaryGrid::createOperationMultipleEval(DataMatrix* dataset)
+/*OperationMultipleEval* LinearBoundaryGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalLinearBoundary(this->storage, dataset);
-}
+}*/
 
-OperationMultipleEvalVectorized* LinearBoundaryGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
+/*OperationMultipleEvalVectorized* LinearBoundaryGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	if (VecType == "SSE")
 	{
@@ -126,9 +113,9 @@ OperationMultipleEvalVectorized* LinearBoundaryGrid::createOperationMultipleEval
 	{
 		throw factory_exception("Unsupported vectorization type");
 	}
-}
+}*/
 
-OperationMultipleEvalVectorizedSP* LinearBoundaryGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
+/*OperationMultipleEvalVectorizedSP* LinearBoundaryGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	if (VecType == "SSE")
 	{
@@ -158,33 +145,33 @@ OperationMultipleEvalVectorizedSP* LinearBoundaryGrid::createOperationMultipleEv
 	{
 		throw factory_exception("Unsupported vectorization type");
 	}
-}
+}*/
 
-OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
+/*OperationMatrix* LinearBoundaryGrid::createOperationLaplace()
 {
 	return new OperationLaplaceLinearBoundary(this->storage);
-}
-
+}*/
+/*
 OperationEval* LinearBoundaryGrid::createOperationEval()
 {
 	return new OperationEvalLinearBoundary(this->storage);
-}
+}*/
 
-OperationTest* LinearBoundaryGrid::createOperationTest()
-{
-	return new OperationTestLinearBoundary(this->storage);
-}
+//OperationTest* LinearBoundaryGrid::createOperationTest()
+//{
+//	return new OperationTestLinearBoundary(this->storage);
+//}
 
-OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearBoundary(this->storage);
-}
+//OperationHierarchisation* LinearBoundaryGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationLinearBoundary(this->storage);
+//}
 
-OperationMatrix* LinearBoundaryGrid::createOperationLTwoDotProduct()
+/*OperationMatrix* LinearBoundaryGrid::createOperationLTwoDotProduct()
 {
 	return new OperationLTwoDotProductLinearBoundary(this->storage);
-}
-
+}*/
+/*
 OperationMatrix* LinearBoundaryGrid::createOperationLE()
 {
 	return new OperationLELinearBoundary(this->storage);
@@ -203,40 +190,41 @@ OperationMatrix* LinearBoundaryGrid::createOperationLF()
 OperationMatrix* LinearBoundaryGrid::createOperationLD()
 {
 	return new OperationLDLinearBoundary(this->storage);
-}
+}*/
 
 // @todo (heinecke) removed this when done
+/*
 OperationMatrix* LinearBoundaryGrid::createOperationUpDownTest()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
 // finance operations
 /////////////////////
-OperationMatrix* LinearBoundaryGrid::createOperationDelta(DataVector& coef)
-{
-	return new OperationDeltaLinearBoundary(this->storage, coef);
-}
-
+//OperationMatrix* LinearBoundaryGrid::createOperationDelta(DataVector& coef)
+//{
+//	return new OperationDeltaLinearBoundary(this->storage, coef);
+//}
+/*
 OperationMatrix* LinearBoundaryGrid::createOperationGamma(DataMatrix& coef)
 {
 	return new OperationGammaLinearBoundary(this->storage, coef);
-}
+}*/
 
-OperationMatrix* LinearBoundaryGrid::createOperationDeltaLog(DataVector& coef)
-{
-	return new OperationDeltaLogLinearBoundary(this->storage, coef);
-}
+//OperationMatrix* LinearBoundaryGrid::createOperationDeltaLog(DataVector& coef)
+//{
+//	return new OperationDeltaLogLinearBoundary(this->storage, coef);
+//}
 
-OperationMatrix* LinearBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
+/*OperationMatrix* LinearBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	return new OperationGammaLogLinearBoundary(this->storage, coef);
-}
+}*/
 
-OperationConvert* LinearBoundaryGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationConvert* LinearBoundaryGrid::createOperationConvert()
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
 }
 }

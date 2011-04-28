@@ -1,0 +1,61 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+env.Append(CPPDEFINES=['SG_PDE'])
+
+
+srcs = Split("""
+algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
+algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
+algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+algorithm/pde/StdUpDown.cpp
+algorithm/pde/UpDownOneOpDim.cpp
+algorithm/pde/UpDownOneOpDimWithShadow.cpp
+algorithm/pde/UpDownTwoOpDims.cpp
+application/pde/EllipticPDESolver.cpp
+application/pde/HeatEquationSolver.cpp
+application/pde/ParabolicPDESolver.cpp
+application/pde/PDESolver.cpp
+application/pde/PoissonEquationSolver.cpp
+basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp
+basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
+basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
+basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
+basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
+basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
+basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
+basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
+basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
+basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
+basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
+basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
+operation/pde/OperationEllipticPDESolverSystem.cpp
+operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
+operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
+operation/pde/OperationParabolicPDESolverSystem.cpp
+operation/pde/OperationParabolicPDESolverSystemDirichlet.cpp
+operation/pde/OperationParabolicPDESolverSystemNeumann.cpp
+""")
+
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_pde = sg_env.SharedObject(srcs)
+Export('src_objs_pde')
+
+libsgpppde = sg_env.SharedLibrary(target="sgpppde", source = src_objs_pde, SHLIBPREFIX = 'lib')
+#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+Export('libsgpppde')

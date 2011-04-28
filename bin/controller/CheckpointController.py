@@ -21,7 +21,7 @@
 #############################################################################
 
 # @version $HEAD$
-
+from pysgpp import createOperationLaplace, createOperationIdentity
 from bin.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
 from bin.controller.LearnerEventController import LearnerEventController
 #from bin.data.ARFFAdapter import ARFFAdapter
@@ -162,11 +162,11 @@ class CheckpointController(LearnerEventController):
         # recreation of B operator is not necessary since it will be set in learnData()
         cOperatorType = self.__getCOperatorType(iteration)
         if cOperatorType == 'laplace':
-            self.learner.specification.setCOperator(self.learner.grid.createOperationLaplace())
+            self.learner.specification.setCOperator(createOperationLaplace(self.learner.grid))
             self.learner.specification.setCOperatorType('laplace')
 
         elif cOperatorType == 'identity':
-            self.learner.specification.setCOperator(self.learner.grid.createOperationIdentity())
+            self.learner.specification.setCOperator(createOperationIdentity(self.learner.grid))
             self.learner.specification.setCOperatorType('identity')
 
         else:

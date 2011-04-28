@@ -7,6 +7,7 @@
 
 
 import unittest
+from pysgpp import *
 
 class TestGridFactory(unittest.TestCase):
     def testCreation(self):
@@ -519,7 +520,7 @@ class TestLinearGrid(unittest.TestCase):
         p.set(0,0,0.25)
         beta[0] = 1.0
         
-        opb = factory.createOperationMultipleEval(p)
+        opb = createOperationMultipleEval(factory, p)
         opb.multTranspose(beta, alpha)
         
         self.failUnlessAlmostEqual(alpha[0], 0.5)
@@ -550,7 +551,7 @@ class TestLinearGrid(unittest.TestCase):
         classes = DataVector(1)
         classes.setAll(1.0)
 
-        testOP = factory.createOperationTest()
+        testOP = createOperationTest(factory)
 
         alpha.setAll(1.0)
         c = testOP.test(alpha, data, classes)
@@ -573,7 +574,7 @@ class TestLinearGrid(unittest.TestCase):
         p = DataVector(1)
         p.setAll(0.25)
         
-        eval = factory.createOperationEval()
+        eval = createOperationEval(factory)
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 0.5)
 
@@ -651,7 +652,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         p.set(0,0,0.25)
         beta[0] = 1.0
         
-        opb = factory.createOperationMultipleEval(p)
+        opb = createOperationMultipleEval(factory, p)
         opb.multTranspose(beta, alpha)
         
         self.failUnlessAlmostEqual(alpha[0], 0.75)
@@ -684,7 +685,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         classes = DataVector(1)
         classes.setAll(1.0)
 
-        testOP = factory.createOperationTest()
+        testOP = createOperationTest(factory)
 
         alpha[0] = 0.0
         alpha[1] = 0.0
@@ -712,7 +713,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         p = DataVector(1)
         p.setAll(0.25)
         
-        eval = factory.createOperationEval()
+        eval = createOperationEval(factory)
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 1.5)
 
@@ -944,7 +945,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         p.set(0,0,0.25)
         beta[0] = 1.0
         
-        opb = factory.createOperationMultipleEval(p)
+        opb = createOperationMultipleEval(factory, p)
         opb.multTranspose(beta, alpha)
         
         self.failUnlessAlmostEqual(alpha[0], 0.75)
@@ -977,7 +978,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         classes = DataVector(1)
         classes.setAll(1.0)
 
-        testOP = factory.createOperationTest()
+        testOP = createOperationTest(factory)
 
         alpha[0] = 0.0
         alpha[1] = 0.0
@@ -1005,6 +1006,6 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         p = DataVector(1)
         p.setAll(0.25)
         
-        eval = factory.createOperationEval()
+        eval = createOperationEval(factory)
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 1.5)

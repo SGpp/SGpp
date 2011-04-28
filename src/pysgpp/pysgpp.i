@@ -64,11 +64,14 @@ namespace std {
 %include "src/sgpp/grid/generation/SurplusRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
+
 %include "GridFactory.i"
 
+#ifdef SG_COMBIGRID
 %include "FullGrid.i"
 %include "src/sgpp/grid/combination/FullGridSet.hpp"
 %include "FullGridSet.i"
+#endif
 
 // the Bad
 
@@ -79,31 +82,38 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
+#ifdef SG_PDE
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystem.hpp"
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
+%include "src/sgpp/application/pde/PDESolver.hpp"
+%include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
+%include "src/sgpp/application/pde/HeatEquationSolver.hpp"
+#endif
 
-%include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
-%include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
+#ifdef SG_DATADRIVEN
 %include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
-%include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
-%include "src/sgpp/algorithm/common/AlgorithmEvaluation.hpp"
-%include "src/sgpp/algorithm/common/AlgorithmEvaluationTransposed.hpp"
-%include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
+#endif
+
+#ifdef SG_FINANCE
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
+%include "src/sgpp/application/pde/BlackScholesSolver.hpp"
+%include "src/sgpp/application/finance/VariableDiscountFactor.hpp"
+#endif
+
+%include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
+%include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
+
+%include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluation.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluationTransposed.hpp"
+%include "src/sgpp/algorithm/common/sweep.hpp"
 
 %include "src/sgpp/application/common/ScreenOutput.hpp"
-
-%include "src/sgpp/application/pde/PDESolver.hpp"
-%include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
-%include "src/sgpp/application/pde/BlackScholesSolver.hpp"
-%include "src/sgpp/application/pde/HeatEquationSolver.hpp"
-
-%include "src/sgpp/application/finance/VariableDiscountFactor.hpp"
 
 %include "src/sgpp/basis/linear/noboundary/linear_base.hpp"
 %include "src/sgpp/basis/linear/boundary/linearboundaryBase.hpp"
@@ -114,6 +124,7 @@ namespace std {
 %include "src/sgpp/basis/modbspline/modified_bspline_base.hpp"
 %include "src/sgpp/basis/prewavelet/prewavelet_base.hpp"
 
+#ifdef SG_SOLVER
 %include "src/sgpp/solver/SGSolver.hpp"
 %include "src/sgpp/solver/SLESolver.hpp"
 %include "src/sgpp/solver/ODESolver.hpp"
@@ -122,6 +133,9 @@ namespace std {
 %include "src/sgpp/solver/sle/BiCGStab.hpp"
 %include "src/sgpp/solver/ode/Euler.hpp"
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
+#endif
+
+%include "src/sgpp/basis/operations_factory.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 

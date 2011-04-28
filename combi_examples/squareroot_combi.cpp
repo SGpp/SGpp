@@ -15,6 +15,7 @@
 #include <iostream>
 #include <math.h>
 #include "sgpp.hpp"
+
 using namespace sg;
 const double PI = 3.14159265;
 /**
@@ -93,9 +94,9 @@ int main()
      * This step can also be replaced by the direct assignment of function values to the sparse grid points as we showed it before
      * */
     fgs.reCompose(gridStorage,&beta);
-    OperationHierarchisation* oh=grid->createOperationHierarchisation();
+    OperationHierarchisation* oh=sg::GridOperationFactory::createOperationHierarchisation(*grid);
     oh->doHierarchisation(beta);
-    OperationEval* opEval = grid->createOperationEval();
+    OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*grid);
     /**
      * We print the value interpolated on the sparse grid and also the real value of the function in the given point
      * */

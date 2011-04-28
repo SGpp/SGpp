@@ -7,6 +7,7 @@
 
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 #include "exception/operation_exception.hpp"
+#include "basis/operations_factory.hpp"
 using namespace sg::base;
 
 
@@ -21,7 +22,7 @@ DMSystemMatrix::DMSystemMatrix(Grid& SparseGrid, DataMatrix& trainData, Operatio
 	this->C = &C;
 	this->lamb = lambda;
 	this->data = &trainData;
-	this->B = SparseGrid.createOperationMultipleEval(this->data);
+	this->B = sg::GridOperationFactory::createOperationMultipleEval(SparseGrid, this->data);
 }
 
 DMSystemMatrix::~DMSystemMatrix()

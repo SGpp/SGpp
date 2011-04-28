@@ -38,6 +38,8 @@
 
 #include "basis/basis.hpp"
 
+
+
 // @todo (heinecke) check if this can be removed
 #include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
@@ -101,5 +103,7 @@ typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;
 typedef AlgorithmDGEMV<SModLinearBase> SGridModOperationB;
 
 }
+
+#include "basis/operations_factory.hpp"
 
 #endif /*SGPP_HPP_*/

@@ -254,7 +254,7 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
     if grid.getStorage().dim() == 1:
         for x in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
-                pc = grid.createOperationEval().eval(alpha, p)
+                pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
     # evaluate 2d function
     elif grid.getStorage().dim() == 2:
@@ -262,7 +262,7 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
             for y in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
                 p[1] = float(y) / (resolution - 1)
-                pc = grid.createOperationEval().eval(alpha, p)
+                pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
     # can't plot anything else
@@ -1000,7 +1000,7 @@ class Matrix:
         self.CMode = mode.lower()
         
         if self.CMode == "laplace":
-            self.C = grid.createOperationLaplace()
+            self.C = createOperationLaplace(grid)
         elif self.CMode == "identity":
             pass
         elif self.CMode == "identity_no_level1":
@@ -1018,7 +1018,7 @@ class Matrix:
         elif self.CMode == "copy":
 #            self.C = OpPseudo(grid)
 #            self.C.initCopyFrom()
-            self.C = grid.createOperationLaplace()
+            self.C = createOperationLaplace(grid)
         elif self.CMode == "pseudounit":
             self.C = OpPseudo(grid)
             self.C.initPseudoUnit()

@@ -11,6 +11,7 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+#include "basis/operations_factory.hpp"
 #include "stdlib.h"
 #include <sstream>
 using namespace sg::solver;
@@ -145,7 +146,7 @@ void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu,
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

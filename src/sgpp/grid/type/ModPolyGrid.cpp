@@ -11,10 +11,10 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod poly grid
-#include "basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.hpp"
-#include "basis/modpoly/operation/datadriven/OperationTestModPoly.hpp"
-#include "basis/modpoly/operation/common/OperationEvalModPoly.hpp"
-#include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
+//#include "basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.hpp"
+//#include "basis/modpoly/operation/datadriven/OperationTestModPoly.hpp"
+//#include "basis/modpoly/operation/common/OperationEvalModPoly.hpp"
+//#include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -48,6 +48,11 @@ const char* ModPolyGrid::getType()
 	return "modpoly";
 }
 
+const size_t ModPolyGrid::getDegree()
+{
+	return this->degree;
+}
+
 Grid* ModPolyGrid::unserialize(std::istream& istr)
 {
 	return new ModPolyGrid(istr);
@@ -69,12 +74,12 @@ GridGenerator* ModPolyGrid::createGridGenerator()
 	return new StandardGridGenerator(this->storage);
 }
 
-OperationMultipleEval* ModPolyGrid::createOperationMultipleEval(DataMatrix* dataset)
+/*OperationMultipleEval* ModPolyGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalModPoly(this->storage, this->degree, dataset);
-}
+}*/
 
-OperationMultipleEvalVectorized* ModPolyGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
+/*OperationMultipleEvalVectorized* ModPolyGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }
@@ -82,33 +87,33 @@ OperationMultipleEvalVectorized* ModPolyGrid::createOperationMultipleEvalVectori
 OperationMultipleEvalVectorizedSP* ModPolyGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* ModPolyGrid::createOperationLaplace()
+/*OperationMatrix* ModPolyGrid::createOperationLaplace()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationEval* ModPolyGrid::createOperationEval()
+/*OperationEval* ModPolyGrid::createOperationEval()
 {
 	return new OperationEvalModPoly(this->storage, this->degree);
-}
+}*/
 
-OperationTest* ModPolyGrid::createOperationTest()
-{
-	return new OperationTestModPoly(this->storage, this->degree);
-}
+//OperationTest* ModPolyGrid::createOperationTest()
+//{
+//	return new OperationTestModPoly(this->storage, this->degree);
+//}
 
-OperationHierarchisation* ModPolyGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationModPoly(this->storage, this->degree);
-}
-
+//OperationHierarchisation* ModPolyGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationModPoly(this->storage, this->degree);
+//}
+/*
 OperationMatrix* ModPolyGrid::createOperationLTwoDotProduct()
 {
 	throw factory_exception("Unsupported operation");
-}
-
+}*/
+/*
 OperationMatrix*  ModPolyGrid::createOperationLB()
 {
 	throw factory_exception("Unsupported operation");
@@ -128,39 +133,40 @@ OperationMatrix*  ModPolyGrid::createOperationLF()
 {
 	throw factory_exception("Unsupported operation");
 }
-
+*/
 // @todo (heinecke) removed this when done
+/*
 OperationMatrix* ModPolyGrid::createOperationUpDownTest()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
 // finance operations
 /////////////////////
-OperationMatrix* ModPolyGrid::createOperationDelta(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationMatrix* ModPolyGrid::createOperationDelta(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
-OperationMatrix* ModPolyGrid::createOperationGamma(DataMatrix& coef)
+/*OperationMatrix* ModPolyGrid::createOperationGamma(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* ModPolyGrid::createOperationDeltaLog(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationMatrix* ModPolyGrid::createOperationDeltaLog(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
-OperationMatrix* ModPolyGrid::createOperationGammaLog(DataMatrix& coef)
+/*OperationMatrix* ModPolyGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationConvert* ModPolyGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationConvert* ModPolyGrid::createOperationConvert()
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
 }
 }

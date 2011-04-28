@@ -11,17 +11,17 @@
 #include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 
 // Include all operations on the linear boundary grid
-#include "basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.hpp"
+//#include "basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.hpp"
+/*#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.hpp"
-#include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.hpp"*/
+//#include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 // @todo (heinecke) removed this when done
 #include "basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.hpp"
-
+/*
 #ifdef USEOCL
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
@@ -33,17 +33,17 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #endif
-
-#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.hpp"
+*/
+//#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+/*#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.hpp"
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
+#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.hpp"*/
+//#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -98,12 +98,12 @@ GridGenerator* LinearTrapezoidBoundaryGrid::createGridGenerator()
 	return new TrapezoidBoundaryGridGenerator(this->storage);
 }
 
-OperationMultipleEval* LinearTrapezoidBoundaryGrid::createOperationMultipleEval(DataMatrix* dataset)
+/*OperationMultipleEval* LinearTrapezoidBoundaryGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalLinearBoundary(this->storage, dataset);
-}
+}*/
 
-OperationMultipleEvalVectorized* LinearTrapezoidBoundaryGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
+/*OperationMultipleEvalVectorized* LinearTrapezoidBoundaryGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	if (VecType == "SSE")
 	{
@@ -165,33 +165,33 @@ OperationMultipleEvalVectorizedSP* LinearTrapezoidBoundaryGrid::createOperationM
 	{
 		throw factory_exception("Unsupported vectorization type");
 	}
-}
+}*/
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
+/*OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLaplace()
 {
 	return new OperationLaplaceLinearBoundary(this->storage);
-}
-
+}*/
+/*
 OperationEval* LinearTrapezoidBoundaryGrid::createOperationEval()
 {
 	return new OperationEvalLinearBoundary(this->storage);
-}
+}*/
 
-OperationTest* LinearTrapezoidBoundaryGrid::createOperationTest()
-{
-	return new OperationTestLinearBoundary(this->storage);
-}
+//OperationTest* LinearTrapezoidBoundaryGrid::createOperationTest()
+//{
+//	return new OperationTestLinearBoundary(this->storage);
+//}
 
-OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearBoundary(this->storage);
-}
+//OperationHierarchisation* LinearTrapezoidBoundaryGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationLinearBoundary(this->storage);
+//}
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
+/*OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
 {
 	return new OperationLTwoDotProductLinearBoundary(this->storage);
-}
-
+}*/
+/*
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLB()
 {
 	return new OperationLBLinearBoundary(this->storage);
@@ -210,40 +210,41 @@ OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLE()
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationLF()
 {
 	return new OperationLFLinearBoundary(this->storage);
-}
+}*/
 
 // @todo (heinecke) removed this when done
+/*
 OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationUpDownTest()
 {
 	return new OperationUpDownTestLinearBoundary(this->storage);
-}
+}*/
 
 // finance operations
 /////////////////////
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& coef)
-{
-	return new OperationDeltaLinearBoundary(this->storage, coef);
-}
+//OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDelta(DataVector& coef)
+//{
+//	return new OperationDeltaLinearBoundary(this->storage, coef);
+//}
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataMatrix& coef)
+/*OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGamma(DataMatrix& coef)
 {
 	return new OperationGammaLinearBoundary(this->storage, coef);
-}
+}*/
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDeltaLog(DataVector& coef)
-{
-	return new OperationDeltaLogLinearBoundary(this->storage, coef);
-}
+//OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationDeltaLog(DataVector& coef)
+//{
+//	return new OperationDeltaLogLinearBoundary(this->storage, coef);
+//}
 
-OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
+/*OperationMatrix* LinearTrapezoidBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	return new OperationGammaLogLinearBoundary(this->storage, coef);
-}
+}*/
 
-OperationConvert* LinearTrapezoidBoundaryGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationConvert* LinearTrapezoidBoundaryGrid::createOperationConvert()
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
 
 }

@@ -129,7 +129,7 @@ class Learner(object):
     # @return: DataVector of alpha
     def learnDataWithTest(self, dataset = None):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
-        self.specification.setBOperator(self.grid.createOperationMultipleEval(
+        self.specification.setBOperator(createOperationMultipleEval(self.grid,
                   self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         #self.specification.setCOperator(self.grid.createOperationLaplace())
         
@@ -192,7 +192,7 @@ class Learner(object):
     # @return: DataVector of alpha
     def learnData(self):
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
-        self.specification.setBOperator(self.grid.createOperationMultipleEval(
+        self.specification.setBOperator(createOperationMultipleEval(self.grid,
                     self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         
         while True: #repeat until policy says "stop"
@@ -217,7 +217,7 @@ class Learner(object):
     # @return: list of DataVector alpha in different folds
     def learnDataWithFolding(self,):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_FOLDING_STARTED)
-        self.specification.setBOperator(self.grid.createOperationMultipleEval(
+        self.specification.setBOperator(createOperationMultipleEval(self.grid,
                   self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
      
         alphas = []

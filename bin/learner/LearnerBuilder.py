@@ -248,7 +248,7 @@ class LearnerBuilder(object):
             self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
             self.__learner.specification.setBOperator(
-            self.__learner.grid.createOperationMultipleEval(self.__learner.\
+            createOperationMultipleEval(self.__learner.grid, self.__learner.\
             dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         return self.__learner
 
@@ -597,7 +597,7 @@ class LearnerBuilder(object):
             # if method called is not a object method of this Descriptor, most probably it's a method of
             # LearnerBuilder so we try to call the method from our builder 
             if self.__specification.getCOperator() == None: #use laplace operator default
-                self.__specification.setCOperator(self.__builder.getLearner().grid.createOperationLaplace())
+                self.__specification.setCOperator(createOperationLaplace(self.__builder.getLearner().grid))
                 self.__specification.setCOperatorType('laplace')
             self.__builder.getLearner().setSpecification(self.__specification)
             return getattr(self.__builder, attr)
@@ -650,7 +650,7 @@ class LearnerBuilder(object):
         # @return: SpecificationDescriptor itself
         ##
         def withLaplaceOperator(self, ):
-            self.__specification.setCOperator(self.__builder.getLearner().grid.createOperationLaplace())
+            self.__specification.setCOperator(createOperationLaplace(self.__builder.getLearner().grid))
             self.__specification.setCOperatorType('laplace')
             return self
         
@@ -660,7 +660,7 @@ class LearnerBuilder(object):
         # @return: SpecificationDescriptor itself
         ##
         def withIdentityOperator(self, ):
-            self.__specification.setCOperator(self.__builder.getLearner().grid.createOperationIdentity())
+            self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
             self.__specification.setCOperatorType('identity')
             return self
         

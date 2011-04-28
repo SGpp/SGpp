@@ -18,7 +18,7 @@ import sys
 import re
 # append trunk/bin to search path for modules
 sys.path.append('../lib/pysgpp')
-from pysgpp import DataVector, Grid, FullGrid, FullGridSet
+from pysgpp import DataVector, Grid, FullGrid, FullGridSet, createOperationHierarchisation
 from ctypes import *
 
 
@@ -82,9 +82,9 @@ beta = DataVector(gridStorage.size())
 #We will recompose the values of the gridpoints into the sparse grid structure using the same coefficients as with the combinedResult function
 #This step can also be replaced by the direct assignment of function values to the sparse grid points as we showed it before
 fgs.reCompose(gridStorage,beta)
-grid.createOperationHierarchisation().doHierarchisation(beta)    
+createOperationHierarchisation(grid).doHierarchisation(beta)    
 # evaluate
-opEval = grid.createOperationEval()
+opEval = createOperationEval(grid)
 #We print the value interpolated on the sparse grid and also the real value of the function in the given point
 print "Usg(p) =", opEval.eval(beta, p)
 print "f(p)=",f(p[0],p[1],p[2])

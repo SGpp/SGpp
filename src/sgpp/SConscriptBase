@@ -1,0 +1,91 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+env.Append(CPPDEFINES=['SG_BASE'])
+
+
+srcs = Split("""
+application/common/ScreenOutput.cpp
+basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
+basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
+basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.cpp
+basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
+basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
+basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
+basis/modbspline/operation/common/OperationEvalModBspline.cpp
+basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
+basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.cpp
+basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
+basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
+basis/modlinear/operation/common/OperationEvalModLinear.cpp
+basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
+basis/modpoly/operation/common/OperationEvalModPoly.cpp
+basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
+basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.cpp
+basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
+basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
+basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.cpp
+basis/poly/operation/common/OperationEvalPoly.cpp
+basis/poly/operation/common/OperationHierarchisationPoly.cpp
+basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
+basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
+basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
+basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
+basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.cpp
+common/AlignedMemory.cpp
+data/DataMatrix.cpp
+data/DataMatrixSP.cpp
+data/DataVector.cpp
+data/DataVectorSP.cpp
+grid/common/BoundingBox.cpp
+grid/common/DirichletGridConverter.cpp
+grid/common/DirichletUpdateVector.cpp
+grid/generation/BoundaryGridGenerator.cpp
+grid/generation/PrewaveletGridGenerator.cpp
+grid/generation/SquareRootGridGenerator.cpp
+grid/generation/StandardGridGenerator.cpp
+grid/generation/SurplusCoarseningFunctor.cpp
+grid/generation/SurplusRefinementFunctor.cpp
+grid/generation/TrapezoidBoundaryGridGenerator.cpp
+grid/generation/TruncatedTrapezoidGridGenerator.cpp
+grid/Grid.cpp
+grid/type/LinearBoundaryGrid.cpp
+grid/type/LinearGrid.cpp
+grid/type/LinearTrapezoidBoundaryGrid.cpp
+grid/type/ModBsplineGrid.cpp
+grid/type/ModLinearGrid.cpp
+grid/type/ModPolyGrid.cpp
+grid/type/ModWaveletGrid.cpp
+grid/type/PolyGrid.cpp
+grid/type/PrewaveletGrid.cpp
+grid/type/SquareRootGrid.cpp
+grid/type/TruncatedTrapezoidGrid.cpp
+tools/common/EvalCuboidGenerator.cpp
+tools/common/GridPrinter.cpp
+tools/common/SGppStopwatch.cpp
+tools/common/StdNormalDistribution.cpp
+""")
+
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_base = sg_env.SharedObject(srcs)
+Export('src_objs_base')
+
+libsgppbase = sg_env.SharedLibrary(target="sgppbase", source = src_objs_base, SHLIBPREFIX = 'lib')
+#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+Export('libsgppbase')

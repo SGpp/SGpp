@@ -11,10 +11,10 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod wavelet grid
-#include "basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.hpp"
-#include "basis/modwavelet/operation/datadriven/OperationTestModWavelet.hpp"
-#include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
-#include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
+//#include "basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.hpp"
+//#include "basis/modwavelet/operation/datadriven/OperationTestModWavelet.hpp"
+//#include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
+//#include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -60,11 +60,11 @@ GridGenerator* ModWaveletGrid::createGridGenerator()
 	return new StandardGridGenerator(this->storage);
 }
 
-OperationMultipleEval* ModWaveletGrid::createOperationMultipleEval(DataMatrix* dataset)
+/*OperationMultipleEval* ModWaveletGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalModWavelet(this->storage, dataset);
-}
-
+}*/
+/*
 OperationMultipleEvalVectorized* ModWaveletGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
@@ -73,34 +73,34 @@ OperationMultipleEvalVectorized* ModWaveletGrid::createOperationMultipleEvalVect
 OperationMultipleEvalVectorizedSP* ModWaveletGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* ModWaveletGrid::createOperationLaplace()
+/*OperationMatrix* ModWaveletGrid::createOperationLaplace()
 {
 	throw factory_exception("Unsupported operation");
-}
-
+}*/
+/*
 OperationEval* ModWaveletGrid::createOperationEval()
 {
 	return new OperationEvalModWavelet(this->storage);
-}
+}*/
 
-OperationTest* ModWaveletGrid::createOperationTest()
-{
-	return new OperationTestModWavelet(this->storage);
-}
+//OperationTest* ModWaveletGrid::createOperationTest()
+//{
+//	return new OperationTestModWavelet(this->storage);
+//}
 
-OperationHierarchisation* ModWaveletGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationModWavelet(this->storage);
-}
+//OperationHierarchisation* ModWaveletGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationModWavelet(this->storage);
+//}
 
-OperationMatrix* ModWaveletGrid::createOperationLTwoDotProduct()
+/*OperationMatrix* ModWaveletGrid::createOperationLTwoDotProduct()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* ModWaveletGrid::createOperationLB()
+/*OperationMatrix* ModWaveletGrid::createOperationLB()
 {
 	throw factory_exception("Unsupported operation");
 }
@@ -118,40 +118,35 @@ OperationMatrix* ModWaveletGrid::createOperationLE()
 OperationMatrix* ModWaveletGrid::createOperationLF()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-// @todo (heinecke) removed this when done
-OperationMatrix* ModWaveletGrid::createOperationUpDownTest()
-{
-	throw factory_exception("Unsupported operation");
-}
 
 // finance operations
 /////////////////////
-OperationMatrix* ModWaveletGrid::createOperationDelta(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationMatrix* ModWaveletGrid::createOperationDelta(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
-OperationMatrix* ModWaveletGrid::createOperationGamma(DataMatrix& coef)
+/*OperationMatrix* ModWaveletGrid::createOperationGamma(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* ModWaveletGrid::createOperationDeltaLog(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationMatrix* ModWaveletGrid::createOperationDeltaLog(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
-OperationMatrix* ModWaveletGrid::createOperationGammaLog(DataMatrix& coef)
+/*OperationMatrix* ModWaveletGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
-
-OperationConvert* ModWaveletGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
+}*/
+//
+//OperationConvert* ModWaveletGrid::createOperationConvert()
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
 
 }

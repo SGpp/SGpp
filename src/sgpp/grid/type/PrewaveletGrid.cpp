@@ -27,12 +27,12 @@
 #include "grid/generation/PrewaveletGridGenerator.hpp"
 
 // Include all operations on the prewavelet grid
-#include "basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.hpp"
-#include "basis/prewavelet/operation/datadriven/OperationTestPrewavelet.hpp"
-#include "basis/prewavelet/operation/datadriven/OperationLaplacePrewavelet.hpp"
-#include "basis/prewavelet/operation/common/OperationEvalPrewavelet.hpp"
-#include "basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.hpp"
-#include "basis/prewavelet/operation/common/OperationConvertPrewavelet.hpp"
+//#include "basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.hpp"
+//#include "basis/prewavelet/operation/datadriven/OperationTestPrewavelet.hpp"
+//#include "basis/prewavelet/operation/datadriven/OperationLaplacePrewavelet.hpp"
+//#include "basis/prewavelet/operation/common/OperationEvalPrewavelet.hpp"
+//#include "basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.hpp"
+//#include "basis/prewavelet/operation/common/OperationConvertPrewavelet.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -80,42 +80,42 @@ GridGenerator* PrewaveletGrid::createGridGenerator()
 	return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
 }
 
-OperationMultipleEval* PrewaveletGrid::createOperationMultipleEval(DataMatrix* dataset)
+/*OperationMultipleEval* PrewaveletGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalPrewavelet(this->storage, dataset);
-}
+}*/
 
-OperationMultipleEvalVectorized* PrewaveletGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationMultipleEvalVectorized* PrewaveletGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
+//
+//OperationMultipleEvalVectorizedSP* PrewaveletGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
-OperationMultipleEvalVectorizedSP* PrewaveletGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* PrewaveletGrid::createOperationLaplace()
+/*OperationMatrix* PrewaveletGrid::createOperationLaplace()
 {
 	return new OperationLaplacePrewavelet(this->storage, this->shadowStorage);
-}
+}*/
 
-OperationEval* PrewaveletGrid::createOperationEval()
+/*OperationEval* PrewaveletGrid::createOperationEval()
 {
 	return new OperationEvalPrewavelet(this->storage);
-}
+}*/
 
-OperationHierarchisation* PrewaveletGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationPrewavelet(this->storage, this->shadowStorage);
-}
-
+//OperationHierarchisation* PrewaveletGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationPrewavelet(this->storage, this->shadowStorage);
+//}
+/*
 OperationMatrix* PrewaveletGrid::createOperationLTwoDotProduct()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* PrewaveletGrid::createOperationLE()
+/*OperationMatrix* PrewaveletGrid::createOperationLE()
 {
 	throw factory_exception("Unsupported operation");
 }
@@ -133,44 +133,43 @@ OperationMatrix* PrewaveletGrid::createOperationLF()
 OperationMatrix* PrewaveletGrid::createOperationLD()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationTest* PrewaveletGrid::createOperationTest()
-{
-	return new OperationTestPrewavelet(this->storage);
-}
-
-// @todo (heinecke) removed this when done
-OperationMatrix* PrewaveletGrid::createOperationUpDownTest()
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationTest* PrewaveletGrid::createOperationTest()
+//{
+//	return new OperationTestPrewavelet(this->storage);
+//}
 
 // finance operations
 /////////////////////
-OperationMatrix* PrewaveletGrid::createOperationDelta(DataVector& coef)
+//OperationMatrix* PrewaveletGrid::createOperationDelta(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
+
+/*OperationMatrix* PrewaveletGrid::createOperationGamma(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* PrewaveletGrid::createOperationGamma(DataMatrix& coef)
+//OperationMatrix* PrewaveletGrid::createOperationDeltaLog(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
+
+/*OperationMatrix* PrewaveletGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* PrewaveletGrid::createOperationDeltaLog(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationConvert* PrewaveletGrid::createOperationConvert()
+//{
+//	return new OperationConvertPrewavelet(this->storage,this->shadowStorage);
+//}
 
-OperationMatrix* PrewaveletGrid::createOperationGammaLog(DataMatrix& coef)
+GridStorage* PrewaveletGrid::getShadowStorage()
 {
-	throw factory_exception("Unsupported operation");
-}
-
-OperationConvert* PrewaveletGrid::createOperationConvert()
-{
-	return new OperationConvertPrewavelet(this->storage,this->shadowStorage);
+	return this->shadowStorage;
 }
 
 }

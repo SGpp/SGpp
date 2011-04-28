@@ -7,7 +7,9 @@
 
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
+#include "basis/operations_factory.hpp"
 using namespace sg::base;
+using namespace sg::GridOperationFactory;
 
 namespace sg
 {
@@ -27,15 +29,15 @@ HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(Grid&
 	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
 	this->GridConverter = new DirichletGridConverter();
 
-	this->OpLaplaceBound = SparseGrid.createOperationLaplace();
-	this->OpMassBound = SparseGrid.createOperationLTwoDotProduct();
+	this->OpLaplaceBound = createOperationLaplace(SparseGrid);
+	this->OpMassBound = sg::GridOperationFactory::createOperationLTwoDotProduct(SparseGrid);
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
 	//Create needed operations, on inner grid
-	this->OpLaplaceInner = this->InnerGrid->createOperationLaplace();
-	this->OpMassInner = this->InnerGrid->createOperationLTwoDotProduct();
+	this->OpLaplaceInner = createOperationLaplace(*this->InnerGrid);
+	this->OpMassInner = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->InnerGrid);
 
 	// right hand side if System
 	this->rhs = new DataVector(1);

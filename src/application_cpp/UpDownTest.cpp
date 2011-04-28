@@ -11,6 +11,7 @@
 #include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <iostream>
 #include <string>
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
 	DataMatrix UpDownMatrix(numGridPoints, numGridPoints);
 	UpDownMatrix.setAll(0.0);
 
-	myUpDown = myGrid->createOperationUpDownTest();
+	myUpDown = sg::GridOperationFactory::createOperationUpDownTest(myGrid);
 
 	std::cout << "start constructing the operator's matrix" << std::endl;
 	for (size_t i = 0; i < numGridPoints; i++)
