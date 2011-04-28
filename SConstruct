@@ -28,6 +28,17 @@ vars.Add('JNI_OS', 'JNI os path', None)
 # for compiling on LRZ without errors: omit unit tests
 vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
 
+# for compiling different modules
+vars.Add('SG_ALL', 'Build all modules', False)
+vars.Add('SG_BASE', 'Build Basis Module', True)
+vars.Add('SG_DATADRIVEN', 'Build Datadriven Module', False)
+vars.Add('SG_SOLVER', 'Build Solver Module', False)
+vars.Add('SG_FINANCE', 'Build Finance Module', False)
+vars.Add('SG_PDE', 'Build PDE Module', False)
+vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
+vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
+vars.Add('SG_PYTHON', 'Build Python Support', False)
+
 
 env = Environment(variables = vars, ENV = os.environ)
 
@@ -161,25 +172,62 @@ env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 
 Export('env')
 
+# Copy required files
+cpy = []
+
 #start build of pysgpp and jsgpp
-SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
-SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
+#SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
+
+if env['SG_ALL']:
+	env['SG_BASE'] = env['SG_PDE'] = env['SG_DATADRIVEN'] = env['SG_SOLVER'] = \
+	env['SG_FINANCE'] = env['SG_PARALLEL'] = env['SG_COMBIGRID'] = \
+	env['SG_PYTHON'] = True
+
+if env['SG_BASE']:
+	SConscript('src/sgpp/SConscriptBase', build_dir='tmp/build_sgbase', duplicate=0)
+	cpy += Command("#lib/sgpp/libsgppbase.so", "#/tmp/build_sgbase/libsgppbase.so", Copy("$TARGET", "$SOURCE"))
+if env['SG_PDE']:
+	SConscript('src/sgpp/SConscriptPde', build_dir='tmp/build_sgpde', duplicate=0)
+	cpy += Command("#lib/sgpp/libsgpppde.so", "#/tmp/build_sgpde/libsgpppde.so", Copy("$TARGET", "$SOURCE"))
+	
+if env['SG_DATADRIVEN']:
+	SConscript('src/sgpp/SConscriptDatadriven', build_dir='tmp/build_sgdatadriven', duplicate=0)
+	cpy += Command("#lib/sgpp/libsgppdatadriven.so", "#/tmp/build_sgdatadriven/libsgppdatadriven.so", Copy("$TARGET", "$SOURCE"))
+	
+if env['SG_SOLVER']:
+	SConscript('src/sgpp/SConscriptSolver', build_dir='tmp/build_sgsolver', duplicate=0)
+	cpy += Command("#lib/sgpp/libsgppsolver.so", "#/tmp/build_sgsolver/libsgppsolver.so", Copy("$TARGET", "$SOURCE"))
+	
+if env['SG_FINANCE']:
+	SConscript('src/sgpp/SConscriptFinance', build_dir='tmp/build_sgfinance', duplicate=0)
+	cpy += Command("#lib/sgpp/libsgppfinance.so", "#/tmp/build_sgfinance/libsgppfinance.so", Copy("$TARGET", "$SOURCE"))
+	
+if env['SG_PARALLEL']:
+	SConscript('src/sgpp/SConscriptParallel', build_dir='tmp/build_sgparallel', duplicate=0)
+	cpy += Command("#lib/sgpp/libsgppparallel.so", "#/tmp/build_sgparallel/libsgppparallel.so", Copy("$TARGET", "$SOURCE"))
+	
+if env['SG_COMBIGRID']:
+	SConscript('src/sgpp/SConscriptCombigrid', build_dir='tmp/build_sgcombigrid', duplicate=0)
+	cpy += Command("#lib/sgpp/libsgppcombigrid.so", "#/tmp/build_sgcombigrid/libsgppcombigrid.so", Copy("$TARGET", "$SOURCE"))
+	
+if env['SG_PYTHON']:
+	SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
+	cpy += Command("#lib/pysgpp/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
+	cpy += Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+	cpy += Command("#bin/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
+	cpy += Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
 if env['JSGPP']:
     SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
     SConscript('src/jsgpp_weka/SConscript', build_dir='tmp/build_jsgpp_weka', duplicate=0)
 
-# Copy required files
-cpy = []
-cpy += Command("#lib/pysgpp/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#bin/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#lib/sgpp/libsgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
-cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
+
+
+#cpy += Command("#lib/sgpp/libsgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
+#cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
 
 # Execute Unit Tests
-if not env['NO_UNIT_TESTS']:
-    SConscript('tests/SConscript')
+#if not env['NO_UNIT_TESTS']:
+#    SConscript('tests/SConscript')
 
 
 # Help Text

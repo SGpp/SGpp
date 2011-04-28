@@ -6,7 +6,7 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #ifndef OPERATIONEVALMODLINEAR_HPP
-#define OPERATIONEVELMODLINEAR_HPP
+#define OPERATIONEVALMODLINEAR_HPP
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"

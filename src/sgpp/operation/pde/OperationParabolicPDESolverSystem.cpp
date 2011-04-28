@@ -7,6 +7,7 @@
 
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
+#include "basis/operations_factory.hpp"
 using namespace sg::base;
 
 namespace sg
@@ -74,7 +75,7 @@ size_t OperationParabolicPDESolverSystem::getSumGridPointsInner()
 void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(DataVector& Values)
 {
 	Values = *(this->alpha_complete);
-	OperationHierarchisation* myHierarchisation = BoundGrid->createOperationHierarchisation();
+	OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*BoundGrid);
 	myHierarchisation->doDehierarchisation(Values);
 	delete myHierarchisation;
 }

@@ -10,6 +10,8 @@
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/Grid.hpp"
+#include "basis/operations_factory.hpp"
+
 #include <cmath>
 using namespace sg::base;
 
@@ -44,13 +46,13 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(Grid& Spars
 	this->HWalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
 	// Create needed operations, on boundary grid
-	this->OpBBound = this->BoundGrid->createOperationLB();
-	this->OpDBound = this->BoundGrid->createOperationLD();
-	this->OpEBound = this->BoundGrid->createOperationLE();
-	this->OpFBound = this->BoundGrid->createOperationLF();
+	this->OpBBound = sg::GridOperationFactory::createOperationLB(*this->BoundGrid);
+	this->OpDBound = sg::GridOperationFactory::createOperationLD(*this->BoundGrid);
+	this->OpEBound = sg::GridOperationFactory::createOperationLE(*this->BoundGrid);
+	this->OpFBound = sg::GridOperationFactory::createOperationLF(*this->BoundGrid);
 
 	// Create operations, independent bLogTransform
-	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
+	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;

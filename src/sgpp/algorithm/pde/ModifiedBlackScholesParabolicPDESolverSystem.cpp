@@ -11,6 +11,8 @@
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
+#include "basis/operations_factory.hpp"
+
 #include <cmath>
 using namespace sg::base;
 
@@ -40,7 +42,7 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
 		refineMode,
 		refineMaxLevel)
 {
-	this->OpFBound = this->BoundGrid->createOperationLF();
+	this->OpFBound = sg::GridOperationFactory::createOperationLF(*this->BoundGrid);
 	this->dim_r = dim_HW;
 	this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
 }

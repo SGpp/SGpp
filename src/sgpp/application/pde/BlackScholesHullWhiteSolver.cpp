@@ -15,6 +15,7 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "basis/operations_factory.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
@@ -326,7 +327,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

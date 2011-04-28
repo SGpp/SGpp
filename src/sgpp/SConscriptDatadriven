@@ -1,0 +1,36 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+env.Append(CPPDEFINES=['SG_DATADRIVEN'])
+
+
+srcs = Split("""
+algorithm/datadriven/DMSystemMatrix.cpp
+algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
+algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
+basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
+basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
+basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
+basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
+basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
+basis/poly/operation/datadriven/OperationTestPoly.cpp
+basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
+""")
+
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_datadriven = sg_env.SharedObject(srcs)
+Export('src_objs_datadriven')
+
+libsgppdatadriven = sg_env.SharedLibrary(target="sgppdatadriven", source = src_objs_datadriven, SHLIBPREFIX = 'lib')
+#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+Export('libsgppdatadriven')

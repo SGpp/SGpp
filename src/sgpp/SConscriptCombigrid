@@ -1,0 +1,29 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+env.Append(CPPDEFINES=['SG_COMBIGRID'])
+
+
+srcs = Split("""
+grid/combination/FullGrid.cpp
+grid/combination/FullGridSet.cpp
+grid/combination/LinearFullGrid.cpp
+""")
+
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_combigrid = sg_env.SharedObject(srcs)
+Export('src_objs_combigrid')
+
+libsgppcombigrid = sg_env.SharedLibrary(target="sgppcombigrid", source = src_objs_combigrid, SHLIBPREFIX = 'lib')
+#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+Export('libsgppcombigrid')

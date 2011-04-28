@@ -16,8 +16,8 @@
 #include "grid/type/SquareRootGrid.hpp"
 
 #include "grid/generation/SquareRootGridGenerator.hpp"
-#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 #include "sgpp.hpp"
 
 #include <iostream>
@@ -62,19 +62,19 @@ GridGenerator* SquareRootGrid::createGridGenerator()
 {
 	return new SquareRootGridGenerator(this->storage);
 }
-OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearBoundary(this->storage);
-}
-OperationEval* SquareRootGrid::createOperationEval()
-{
-	return new OperationEvalLinearBoundary(this->storage);
-}
+//OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationLinearBoundary(this->storage);
+//}
+//OperationEval* SquareRootGrid::createOperationEval()
+//{
+//	return new OperationEvalLinearBoundary(this->storage);
+//}
 
-OperationConvert* SquareRootGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationConvert* SquareRootGrid::createOperationConvert()
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
 }
 }

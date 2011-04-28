@@ -1,6 +1,7 @@
 #include <iostream>
 // All SG++ headers
 #include "sgpp.hpp"
+
 // Or, include only those that are required
 //#include "data/DataVector.hpp"
 //#include "grid/Grid.hpp"
@@ -43,14 +44,14 @@ int main() {
   cout << alpha.toString() << endl;
 
   // hierarchize
-  grid->createOperationHierarchisation()->doHierarchisation(alpha);
+  sg::GridOperationFactory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
   cout << alpha.toString() << endl;
 
   // evaluate
   DataVector p(dim);
   p[0] = 0.52;
   p[1] = 0.73;
-  OperationEval* opEval = grid->createOperationEval();
+  OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*grid);
   cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << endl;
 
   delete grid;

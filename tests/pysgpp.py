@@ -754,18 +754,6 @@ class Grid(_object):
     __swig_destroy__ = _pysgpp.delete_Grid
     __del__ = lambda self : None;
     def createGridGenerator(self): return _pysgpp.Grid_createGridGenerator(self)
-    def createOperationMultipleEval(self, *args): return _pysgpp.Grid_createOperationMultipleEval(self, *args)
-    def createOperationMultipleEvalVectorized(self, *args): return _pysgpp.Grid_createOperationMultipleEvalVectorized(self, *args)
-    def createOperationEval(self): return _pysgpp.Grid_createOperationEval(self)
-    def createOperationTest(self): return _pysgpp.Grid_createOperationTest(self)
-    def createOperationLaplace(self): return _pysgpp.Grid_createOperationLaplace(self)
-    def createOperationLTwoDotProduct(self): return _pysgpp.Grid_createOperationLTwoDotProduct(self)
-    def createOperationIdentity(self): return _pysgpp.Grid_createOperationIdentity(self)
-    def createOperationHierarchisation(self): return _pysgpp.Grid_createOperationHierarchisation(self)
-    def createOperationConvert(self): return _pysgpp.Grid_createOperationConvert(self)
-    def createOperationUpDownTest(self): return _pysgpp.Grid_createOperationUpDownTest(self)
-    def createOperationDelta(self, *args): return _pysgpp.Grid_createOperationDelta(self, *args)
-    def createOperationGamma(self, *args): return _pysgpp.Grid_createOperationGamma(self, *args)
     def getStorage(self): return _pysgpp.Grid_getStorage(self)
     def getBoundingBox(self): return _pysgpp.Grid_getBoundingBox(self)
     def getType(self): return _pysgpp.Grid_getType(self)
@@ -1460,6 +1448,82 @@ class CrankNicolson(ODESolver):
 CrankNicolson_swigregister = _pysgpp.CrankNicolson_swigregister
 CrankNicolson_swigregister(CrankNicolson)
 
+
+def createOperationLaplace(*args):
+  return _pysgpp.createOperationLaplace(*args)
+createOperationLaplace = _pysgpp.createOperationLaplace
+
+def createOperationGamma(*args):
+  return _pysgpp.createOperationGamma(*args)
+createOperationGamma = _pysgpp.createOperationGamma
+
+def createOperationGammaLog(*args):
+  return _pysgpp.createOperationGammaLog(*args)
+createOperationGammaLog = _pysgpp.createOperationGammaLog
+
+def createOperationLB(*args):
+  return _pysgpp.createOperationLB(*args)
+createOperationLB = _pysgpp.createOperationLB
+
+def createOperationLE(*args):
+  return _pysgpp.createOperationLE(*args)
+createOperationLE = _pysgpp.createOperationLE
+
+def createOperationLD(*args):
+  return _pysgpp.createOperationLD(*args)
+createOperationLD = _pysgpp.createOperationLD
+
+def createOperationLF(*args):
+  return _pysgpp.createOperationLF(*args)
+createOperationLF = _pysgpp.createOperationLF
+
+def createOperationLTwoDotProduct(*args):
+  return _pysgpp.createOperationLTwoDotProduct(*args)
+createOperationLTwoDotProduct = _pysgpp.createOperationLTwoDotProduct
+
+def createOperationUpDownTest(*args):
+  return _pysgpp.createOperationUpDownTest(*args)
+createOperationUpDownTest = _pysgpp.createOperationUpDownTest
+
+def createOperationEval(*args):
+  return _pysgpp.createOperationEval(*args)
+createOperationEval = _pysgpp.createOperationEval
+
+def createOperationMultipleEval(*args):
+  return _pysgpp.createOperationMultipleEval(*args)
+createOperationMultipleEval = _pysgpp.createOperationMultipleEval
+
+def createOperationTest(*args):
+  return _pysgpp.createOperationTest(*args)
+createOperationTest = _pysgpp.createOperationTest
+
+def createOperationMultipleEvalVectorized(*args):
+  return _pysgpp.createOperationMultipleEvalVectorized(*args)
+createOperationMultipleEvalVectorized = _pysgpp.createOperationMultipleEvalVectorized
+
+def createOperationMultipleEvalVectorizedSP(*args):
+  return _pysgpp.createOperationMultipleEvalVectorizedSP(*args)
+createOperationMultipleEvalVectorizedSP = _pysgpp.createOperationMultipleEvalVectorizedSP
+
+def createOperationHierarchisation(*args):
+  return _pysgpp.createOperationHierarchisation(*args)
+createOperationHierarchisation = _pysgpp.createOperationHierarchisation
+
+def createOperationConvert(*args):
+  return _pysgpp.createOperationConvert(*args)
+createOperationConvert = _pysgpp.createOperationConvert
+
+def createOperationDelta(*args):
+  return _pysgpp.createOperationDelta(*args)
+createOperationDelta = _pysgpp.createOperationDelta
+
+def createOperationDeltaLog(*args):
+  return _pysgpp.createOperationDeltaLog(*args)
+createOperationDeltaLog = _pysgpp.createOperationDeltaLog
+
+def createOperationIdentity(*args):
+  return _pysgpp.createOperationIdentity(*args)
+createOperationIdentity = _pysgpp.createOperationIdentity
 class GridIndex(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, GridIndex, name, value)

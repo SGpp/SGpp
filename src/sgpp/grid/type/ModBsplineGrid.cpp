@@ -11,10 +11,10 @@
 #include "grid/generation/StandardGridGenerator.hpp"
 
 // Include all operations on the mod bspline grid
-#include "basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.hpp"
-#include "basis/modbspline/operation/datadriven/OperationTestModBspline.hpp"
-#include "basis/modbspline/operation/common/OperationEvalModBspline.hpp"
-#include "basis/modbspline/operation/common/OperationHierarchisationModBspline.hpp"
+//#include "basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.hpp"
+//#include "basis/modbspline/operation/datadriven/OperationTestModBspline.hpp"
+//#include "basis/modbspline/operation/common/OperationEvalModBspline.hpp"
+//#include "basis/modbspline/operation/common/OperationHierarchisationModBspline.hpp"
 
 #include "exception/factory_exception.hpp"
 
@@ -48,6 +48,11 @@ const char* ModBsplineGrid::getType()
 	return "modBspline";
 }
 
+size_t ModBsplineGrid::getDegree()
+{
+	return this->degree;
+}
+
 Grid* ModBsplineGrid::unserialize(std::istream& istr)
 {
 	return new ModBsplineGrid(istr);
@@ -68,12 +73,12 @@ GridGenerator* ModBsplineGrid::createGridGenerator()
 	return new StandardGridGenerator(this->storage);
 }
 
-OperationMultipleEval* ModBsplineGrid::createOperationMultipleEval(DataMatrix* dataset)
+/*OperationMultipleEval* ModBsplineGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalModBspline(this->storage, this->degree, dataset);
-}
+}*/
 
-OperationMultipleEvalVectorized* ModBsplineGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
+/*OperationMultipleEvalVectorized* ModBsplineGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
 {
 	throw factory_exception("Unsupported operation");
 }
@@ -81,33 +86,33 @@ OperationMultipleEvalVectorized* ModBsplineGrid::createOperationMultipleEvalVect
 OperationMultipleEvalVectorizedSP* ModBsplineGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
-}
+}'/
 
-OperationMatrix* ModBsplineGrid::createOperationLaplace()
+/*OperationMatrix* ModBsplineGrid::createOperationLaplace()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationEval* ModBsplineGrid::createOperationEval()
+/*OperationEval* ModBsplineGrid::createOperationEval()
 {
 	return new OperationEvalModBspline(this->storage, this->degree);
-}
+}*/
 
-OperationTest* ModBsplineGrid::createOperationTest()
-{
-    return new OperationTestModBspline(this->storage, this->degree);
-}
+//OperationTest* ModBsplineGrid::createOperationTest()
+//{
+//    return new OperationTestModBspline(this->storage, this->degree);
+//}
 
-OperationHierarchisation* ModBsplineGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationModBspline(this->storage, this->degree);
-}
-
+//OperationHierarchisation* ModBsplineGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationModBspline(this->storage, this->degree);
+//}
+/*
 OperationMatrix* ModBsplineGrid::createOperationLTwoDotProduct()
 {
 	throw factory_exception("Unsupported operation");
-}
-OperationMatrix*  ModBsplineGrid::createOperationLB()
+}*/
+/*OperationMatrix*  ModBsplineGrid::createOperationLB()
 {
 	throw factory_exception("Unsupported operation");
 }
@@ -125,38 +130,39 @@ OperationMatrix*  ModBsplineGrid::createOperationLE()
 OperationMatrix*  ModBsplineGrid::createOperationLF()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
+/*
 OperationMatrix* ModBsplineGrid::createOperationUpDownTest()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
 // finance operations
 /////////////////////
-OperationMatrix* ModBsplineGrid::createOperationDelta(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationMatrix* ModBsplineGrid::createOperationDelta(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
-OperationMatrix* ModBsplineGrid::createOperationGamma(DataMatrix& coef)
+/*OperationMatrix* ModBsplineGrid::createOperationGamma(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
-OperationMatrix* ModBsplineGrid::createOperationDeltaLog(DataVector& coef)
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationMatrix* ModBsplineGrid::createOperationDeltaLog(DataVector& coef)
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
-OperationMatrix* ModBsplineGrid::createOperationGammaLog(DataMatrix& coef)
+/*OperationMatrix* ModBsplineGrid::createOperationGammaLog(DataMatrix& coef)
 {
 	throw factory_exception("Unsupported operation");
-}
-
-OperationConvert* ModBsplineGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
+}*/
+//
+//OperationConvert* ModBsplineGrid::createOperationConvert()
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
 }
 }

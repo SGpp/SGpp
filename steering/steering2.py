@@ -23,7 +23,7 @@ class Runner:
   def hierarchise(self):
     self.alpha_vx = DataVector(self.node_values_vx);
     self.alpha_vy = DataVector(self.node_values_vy);
-    hierarchisation = self.grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(self.grid)
 
     hierarchisation.doHierarchisation(self.alpha_vx)
     hierarchisation.doHierarchisation(self.alpha_vy)
@@ -80,8 +80,8 @@ class Runner:
         p[0] = float(x) / (resolution - 1)
         p[1] = float(y) / (resolution - 1)
         p[2] = parameterValue
-        vx = self.grid.createOperationEval().eval(self.alpha_vx, p)
-        vy = self.grid.createOperationEval().eval(self.alpha_vy, p)
+        vx = createOperationEval(self.grid).eval(self.alpha_vx, p)
+        vy = createOperationEval(self.grid).eval(self.alpha_vy, p)
         gridAsString = gridAsString + " " +  str(vx)
         gridAsString = gridAsString + " " +  str(vy)
     return gridAsString
@@ -96,8 +96,8 @@ class Runner:
             p[0] = float(x) / (resolution - 1)
             p[1] = float(y) / (resolution - 1)
             p[2] = 0.01 * z
-            vx = grid.createOperationEval().eval(alpha_vx, p)
-            vy = grid.createOperationEval().eval(alpha_vy, p)
+            vx = createOperationEval(grid).eval(alpha_vx, p)
+            vy = createOperationEval(grid).eval(alpha_vy, p)
             fout.write("%f %f %f %f\n" % (p[0], p[1], vx, vy))
     fout.close()
     return

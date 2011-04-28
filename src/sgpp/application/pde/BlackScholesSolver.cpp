@@ -17,6 +17,7 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "basis/operations_factory.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
@@ -694,7 +695,7 @@ void BlackScholesSolver::printPayoffInterpolationError2D(DataVector& alpha, std:
 				std::ofstream file;
 				file.open(tFilename.c_str());
 
-				OperationEval* myEval = this->myGrid->createOperationEval();
+				OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
 
 				for (size_t i = 0; i < numTestpoints; i++)
 				{
@@ -813,7 +814,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(DataVector& alpha, double s
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -868,7 +869,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(DataVector& alpha, dou
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

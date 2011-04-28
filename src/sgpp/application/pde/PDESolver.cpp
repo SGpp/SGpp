@@ -11,6 +11,7 @@
 #include "tools/common/StdNormalDistribution.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <sstream>
 #include <iostream>
@@ -287,7 +288,7 @@ void PDESolver::constructGridBonn(std::string tfilename, DataVector& emptyAlpha,
 
 	if (ishierarchized == false)
 	{
-		OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
 		myHierarchisation->doHierarchisation(emptyAlpha);
 		delete myHierarchisation;
 	}
@@ -306,7 +307,7 @@ void PDESolver::storeGridBonn(std::string tfilename, DataVector& alpha, bool ish
 	{
 		if (ishierarchized == false)
 		{
-			OperationHierarchisation* myHierarchisation = myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
 			myHierarchisation->doDehierarchisation(copyAlpha);
 			delete myHierarchisation;
 		}
@@ -351,7 +352,7 @@ double PDESolver::evaluatePoint(std::vector<double>& evalPoint, DataVector& alph
 
 	if (bGridConstructed)
 	{
-		OperationEval* myEval = myGrid->createOperationEval();
+		OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
 		result = myEval->eval(alpha, evalPoint);
 		delete myEval;
 	}
@@ -372,7 +373,7 @@ void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, Data
 			throw new application_exception("PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
 		}
 
-		OperationMultipleEval* myOpMultEval = myGrid->createOperationMultipleEval(&EvaluationPoints);
+		OperationMultipleEval* myOpMultEval = sg::GridOperationFactory::createOperationMultipleEval(*myGrid, &EvaluationPoints);
 		myOpMultEval->mult(alpha, OptionPrices);
 		delete myOpMultEval;
 	}
