@@ -46,6 +46,8 @@ public:
 	 * @param d [IN] the dimension */
 	const Domain1D& get1DDomain(int d) const { return axisDomains_[d]; }
 
+	void printDomain();
+
 private:
 
 	/** dimension of the domain */
