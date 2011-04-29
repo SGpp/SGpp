@@ -10,7 +10,9 @@
 %include "stl.i"
 %include "std_vector.i"
 %include "std_pair.i"
+%include "std_complex.i"
 
+%include "cpointer.i" 
 %include "typemaps.i"
 
 %include "exception.i"
@@ -29,14 +31,19 @@
 
 
 namespace std {
+	%template(IntVector) vector<int>;
+	%template(IntIntVector) vector< vector<int> >; 
+	%template(BoolVector) vector<bool>;
 	%template(DoubleVector) vector<double>;
 	%template(IndexValPair) pair<size_t, double>;
 	%template(IndexValVector) vector<pair<size_t, double> >;
+
 }
 
 // This should include all necessary header files
 %{
 #include "sgpp.hpp"
+#include "combigrid.hpp"
 %}
 
 // The Good, i.e. without any modifications
@@ -67,11 +74,13 @@ namespace std {
 %include "src/sgpp/grid/generation/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
+
+
 %include "GridFactory.i"
 
-%include "FullGrid.i"
-%include "src/sgpp/grid/combination/FullGridSet.hpp"
-%include "FullGridSet.i"
+// %include "FullGrid.i"
+// %include "src/sgpp/grid/combination/FullGridSet.hpp"
+// %include "FullGridSet.i"
 
 %include "src/sgpp/grid/GridDataBase.hpp"
 
@@ -161,3 +170,39 @@ namespace std {
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearStretchedBoundaryBase>;
 %template(DimensionBoundaryVector) std::vector<sg::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<sg::Stretching1D>;
+
+
+// the new combigrid!
+
+%include "src/sgpp/combigrid/utils/combigrid_ultils.hpp"
+%include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"
+%include "src/sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
+%include "src/sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp"
+%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
+%include "src/sgpp/combigrid/domain/AbstractStretchingMaker.hpp"
+%include "src/sgpp/combigrid/combischeme/CombiSchemeBasis.hpp" 
+%include "src/sgpp/combigrid/combischeme/CombiTS_CT.hpp"
+%include "src/sgpp/combigrid/combischeme/CombiS_CT.hpp"
+%include "src/sgpp/combigrid/combischeme/CombiArbitraryScheme.hpp"
+%include "src/sgpp/combigrid/combigridkernel/CombiGridKernel.hpp"
+%include "src/sgpp/combigrid/combigrid/AbstractCombiGrid.hpp"
+%include "src/sgpp/combigrid/combigrid/SerialCombiGrid.hpp"
+%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
+%include "src/sgpp/combigrid/domain/CombiDomain1D.hpp" 
+
+%rename(__add__) combigrid::CombigridLevelVector::operator+;
+%rename(__mul__) combigrid::CombigridLevelVector::operator*;
+%rename(__sub__) combigrid::CombigridLevelVector::operator-;
+%rename(__new__) combigrid::CombigridLevelVector::operator=; 
+
+
+
+%template(ComplexDouble) complex<double>;
+
+%include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
+%template(doubleFullGrid) combigrid::FullGrid<double>;
+%template(FullGridC) combigrid::FullGrid< complex<double> >;
+%template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
+%template(ComplexVector) std::vector< complex<double> >;
+
+

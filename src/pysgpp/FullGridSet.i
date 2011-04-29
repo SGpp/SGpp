@@ -1,3 +1,5 @@
+%include "carrays.i"
+%array_class(size_t, size_tArray);
 
 %feature("notabstract") FullGridSet;
 %rename(__len__) FullGridSet::getSize;
@@ -6,7 +8,8 @@
 
 /*namespace sg{
 class FullGridSet{
-    FullGridSet(size_t dimension,size_t n);   
+    FullGridSet(size_t dimension,size_t n);
+    FullGridSet(size_t dimension,size_t *n,const char *type);   
     FULLGRID* getGrids();
     FullGrid* at(size_t index);
     size_t getSize();   
@@ -16,5 +19,7 @@ class FullGridSet{
     void deCompose(GridStorage *storage,DataVector alpha);
     void reCompose(GridStorage *storage,DataVector *alpha);   
     FullGridSet(size_t dimension,size_t n,const char *type);
+    BoundingBox* getBoundingBox();
+    void getCoefs(DataVector &v);
 };
 }*/

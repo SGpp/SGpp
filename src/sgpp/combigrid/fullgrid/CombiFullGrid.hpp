@@ -104,13 +104,16 @@ public:
 	/** Deallocates the element vector, so the memory requirement should not be significant afer this*/
 	void deleteFullGrid(){
 		isFGcreated_ = false;
-		fullgridVector_.flush();
+//		fullgridVector_.flush();
+		fullgridVector_.clear();
 		delete sgppIndex_;
 		sgppIndex_ = new std::vector<int>(0);
 	}
 
 	/** sets the domain of the full grid */
 	void setDomain( GridDomain* gridDomain ) const { gridDomain_ = gridDomain; }
+
+	void addCustomDomain(std::vector<double> min, std::vector<double> max){gridDomain_ = new GridDomain(dim_,min,max);}
 
 	/** returns the domain of the full grid */
 	const GridDomain* getDomain() const { return gridDomain_; }
@@ -127,7 +130,7 @@ public:
 		 double intersect[127]; // alternatievly [127]
 		 int aindex[63]; // alternatievly [63]
 		 //int verb = 6;
-
+		 
 		 // if there is a transformation then transform to the unit coordinates
 		 if (gridDomain_ != NULL ) {
 			 for (ii = dim_-1 ; ii >=0; ii--){
@@ -165,7 +168,7 @@ public:
 	             }
 	             else{
 	               // make extrapolation at the last cell (where there is no boundary point)
-	               if (aindex[ii] >= (int)nrPoints_[ii]-1){
+	            	 if (aindex[ii] >= (int)nrPoints_[ii]-1){
 	                  aindex[ii] = (int)nrPoints_[ii]-1;
 	            	  // extrapolation to the right this will be a >=1 number
 	                  normcoord = coords[ii] * powerOfTwo[levels_[ii]] - (double)aindex[ii]; // this should be 1 + ...
@@ -309,6 +312,8 @@ public:
 	/** return the vector for faster combination of the full grids <br>
 	 * this will be used in the Converter */
 	inline std::vector<int>& getSGppIndex() const { return (*sgppIndex_); }
+
+	void setElementVector(std::vector<FG_ELEMENT> in) {fullgridVector_=in;}
 
 private:
 
