@@ -66,7 +66,11 @@ protected:
 	/// Pointer to the grid's storage object
 	GridStorage* storage;
 	/// algorithmic dimensions, operator is applied in this dimensions
-	std::vector<size_t> algoDims;
+	const std::vector<size_t> algoDims;
+	/// number of algorithmic dimensions
+	const size_t numAlgoDims_;
+	/// max number of parallel stages (dimension recursive calls)
+	static const size_t maxParallelDims_ = 3;
 
 	/**
 	 * Recursive procedure for updown

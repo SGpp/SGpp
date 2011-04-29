@@ -13,18 +13,12 @@ namespace sg
 namespace pde
 {
 
-UpDownOneOpDim::UpDownOneOpDim(GridStorage* storage, DataVector& coef)
+UpDownOneOpDim::UpDownOneOpDim(GridStorage* storage, DataVector& coef) : storage(storage), coefs(&coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
-	this->storage = storage;
-	this->coefs = &coef;
-	this->algoDims = this->storage->getAlgorithmicDimensions();
 }
 
-UpDownOneOpDim::UpDownOneOpDim(GridStorage* storage)
+UpDownOneOpDim::UpDownOneOpDim(GridStorage* storage): storage(storage), coefs(NULL), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
-	this->storage = storage;
-	this->coefs = NULL;
-	this->algoDims = this->storage->getAlgorithmicDimensions();
 }
 
 UpDownOneOpDim::~UpDownOneOpDim()
@@ -39,7 +33,7 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 	{
 		#pragma omp single nowait
 		{
-			for(size_t i = 0; i < this->algoDims.size(); i++)
+			for(size_t i = 0; i < this->numAlgoDims_; i++)
 			{
 				#pragma omp task firstprivate(i) shared(alpha, result)
 				{
@@ -49,7 +43,7 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 					{
 						if (this->coefs->get(i) != 0.0)
 						{
-							this->updown(alpha, beta, this->algoDims.size() - 1, i);
+							this->updown(alpha, beta, this->numAlgoDims_ - 1, i);
 
 							#pragma omp critical
 							{
@@ -59,7 +53,7 @@ void UpDownOneOpDim::mult(DataVector& alpha, DataVector& result)
 					}
 					else
 					{
-						this->updown(alpha, beta, this->algoDims.size() - 1, i);
+						this->updown(alpha, beta, this->numAlgoDims_ - 1, i);
 
 						#pragma omp critical
 						{
@@ -85,14 +79,14 @@ void UpDownOneOpDim::multParallelBuildingBlock(DataVector& alpha, DataVector& re
 	{
 		if (this->coefs->get(operationDim) != 0.0)
 		{
-			this->updown(alpha, beta, this->algoDims.size() - 1, operationDim);
+			this->updown(alpha, beta, this->numAlgoDims_ - 1, operationDim);
 
 			result.axpy(this->coefs->get(operationDim),beta);
 		}
 	}
 	else
 	{
-		this->updown(alpha, beta, this->algoDims.size() - 1, operationDim);
+		this->updown(alpha, beta, this->numAlgoDims_ - 1, operationDim);
 
 		result.add(beta);
 	}
@@ -114,14 +108,14 @@ void UpDownOneOpDim::updown(DataVector& alpha, DataVector& result, size_t dim, s
 			DataVector result_temp(alpha.getSize());
 			DataVector temp_two(alpha.getSize());
 
-			#pragma omp task shared(alpha, temp, result)
+			#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 			{
 				up(alpha, temp, this->algoDims[dim]);
 				updown(temp, result, dim-1, op_dim);
 			}
 
 			// Same from the other direction:
-			#pragma omp task shared(alpha, temp_two, result_temp)
+			#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp_two, result_temp)
 			{
 				updown(alpha, temp_two, dim-1, op_dim);
 				down(temp_two, result_temp, this->algoDims[dim]);
@@ -136,10 +130,10 @@ void UpDownOneOpDim::updown(DataVector& alpha, DataVector& result, size_t dim, s
 			// Terminates dimension recursion
 			DataVector temp(alpha.getSize());
 
-			#pragma omp task shared(alpha, result)
+			#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 			up(alpha, result, this->algoDims[dim]);
 
-			#pragma omp task shared(alpha, temp)
+			#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp)
 			down(alpha, temp, this->algoDims[dim]);
 
 			#pragma omp taskwait
@@ -160,14 +154,14 @@ void UpDownOneOpDim::specialOP(DataVector& alpha, DataVector& result, size_t dim
 		DataVector result_temp(alpha.getSize());
 		DataVector temp_two(alpha.getSize());
 
-		#pragma omp task shared(alpha, temp, result)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 		{
 			upOpDim(alpha, temp, this->algoDims[dim]);
 			updown(temp, result, dim-1, op_dim);
 		}
 
 		// Same from the other direction:
-		#pragma omp task shared(alpha, temp_two, result_temp)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp_two, result_temp)
 		{
 			updown(alpha, temp_two, dim-1, op_dim);
 			downOpDim(temp_two, result_temp, this->algoDims[dim]);
@@ -182,10 +176,10 @@ void UpDownOneOpDim::specialOP(DataVector& alpha, DataVector& result, size_t dim
 		// Terminates dimension recursion
 		DataVector temp(alpha.getSize());
 
-		#pragma omp task shared(alpha, result)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 		upOpDim(alpha, result, this->algoDims[dim]);
 
-		#pragma omp task shared(alpha, temp)
+		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp)
 		downOpDim(alpha, temp, this->algoDims[dim]);
 
 		#pragma omp taskwait

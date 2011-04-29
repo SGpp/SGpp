@@ -92,7 +92,11 @@ protected:
 	/// Pointer to the coefficients of this bilinear form
 	DataMatrix* coefs;
 	/// algorithmic dimensions, operator is applied in this dimensions
-	std::vector<size_t> algoDims;
+	const std::vector<size_t> algoDims;
+	/// number of algorithmic dimensions
+	const size_t numAlgoDims_;
+	/// max number of parallel stages (dimension recursive calls)
+	static const size_t maxParallelDims_ = 3;
 
 	/**
 	 * Recursive procedure for updown, parallel version using OpenMP 3

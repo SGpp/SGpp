@@ -5,26 +5,25 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP_HPP
-#define HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP_HPP
+#ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP
+#define HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP
 
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
-using namespace sg::base;
 
 namespace sg
 {
-namespace pde
+namespace parallel
 {
 
 /**
  * This class implements the ParabolicPDESolverSystem for the
- * Heat Equation.
+ * Heat Equation parallelized with MPI.
  */
-class HeatEquationParabolicPDESolverSystemParallelOMP : public OperationParabolicPDESolverSystemDirichlet
+class HeatEquationParabolicPDESolverSystemParallelMPI : public OperationParabolicPDESolverSystemDirichlet
 {
-protected:
+private:
 	/// the heat coefficient
 	double a;
 	/// the Laplace Operation (Stiffness Matrix), on boundary grid
@@ -55,16 +54,16 @@ public:
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	HeatEquationParabolicPDESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+	HeatEquationParabolicPDESolverSystemParallelMPI(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~HeatEquationParabolicPDESolverSystemParallelOMP();
+	virtual ~HeatEquationParabolicPDESolverSystemParallelMPI();
 
-	virtual void finishTimestep(bool isLastTimestep = false);
+	void finishTimestep(bool isLastTimestep = false);
 
-	virtual void startTimestep();
+	void startTimestep();
 
 	virtual void mult(DataVector& alpha, DataVector& result);
 
@@ -74,4 +73,4 @@ public:
 }
 }
 
-#endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP_HPP */
+#endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP */
