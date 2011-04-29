@@ -15,6 +15,10 @@
 #include <cstring>
 #include <cstdlib>
 #include "common/AlignedMemory.hpp"
+namespace sg
+{
+namespace base
+{
 
 DataVectorSP::DataVectorSP(size_t size) :
     size(size), unused(0), inc_elems(100) {
@@ -442,4 +446,6 @@ size_t DataVectorSP::getNumberNonZero()
         }
     }
     return nonZero;
+}
+}
 }

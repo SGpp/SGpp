@@ -12,6 +12,11 @@
 #include <vector>
 #include "data/DataVectorSP.hpp"
 
+namespace sg
+{
+namespace base
+{
+
 /**
  * A class to store two-dimensional data.
  * Typically, DataMatrixSP would contain a set of (d-dimensional) data or evaluation points, i.e.,
@@ -465,5 +470,7 @@ private:
     /// Number of rows by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
     size_t inc_rows;
 };
+}
+}
 
 #endif /* DATAMATRIXSP_HPP */

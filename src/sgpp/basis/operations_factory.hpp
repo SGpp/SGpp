@@ -127,27 +127,32 @@ namespace GridOperationFactory
 {
 #ifdef SG_PDE
 using namespace sg::pde;
+	/**
+	 * gets a pointer to OperationLaplace (OperationMatrix) object
+	 *
+	 * @return point to the OperationLaplace object
+	 */
 	static OperationMatrix* createOperationLaplace(Grid& grid_type)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationLaplaceLinear(grid_type.getStorage());
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new OperationLaplaceLinearBoundary(grid_type.getStorage());
 		}
 
-		// OperationLaplaceModLinear	Implementation of Laplace for mod linear functions
+
 		else if(strcmp(grid_type.getType(), "modlinear") == 0 )
 		{
 			return new OperationLaplaceModLinear(grid_type.getStorage());
 		}
 
-		// OperationLaplacePrewavelet
+
 		else if(strcmp(grid_type.getType(), "prewavelet") == 0 )
 		{
 			return new OperationLaplacePrewavelet(grid_type.getStorage(),
@@ -160,15 +165,20 @@ using namespace sg::pde;
 
 	}
 
+	/**
+	 * gets a pointer to OperationLTwoDotProduct (OperationMatrix) object
+	 *
+	 * @return pointer to OperationLTwoDotProduct object
+	 */
 	static OperationMatrix* createOperationLTwoDotProduct(Grid& grid_type)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationLTwoDotProductLinear(grid_type.getStorage());
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new OperationLTwoDotProductLinearBoundary(grid_type.getStorage());
@@ -177,7 +187,7 @@ using namespace sg::pde;
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
 	}
 
-#endif SG_PDE
+#endif //SG_PDE
 
 #ifdef SG_FINANCE
 using namespace sg::finance;
@@ -191,13 +201,13 @@ using namespace sg::finance;
 	 */
 	static OperationMatrix* createOperationGamma(Grid& grid_type, DataMatrix& coef)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationGammaLinear(grid_type.getStorage(), coef);
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new OperationGammaLinearBoundary(grid_type.getStorage(), coef);
@@ -217,13 +227,13 @@ using namespace sg::finance;
 	 */
 	static OperationMatrix* createOperationGammaLog(Grid& grid_type, DataMatrix& coef)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationGammaLogLinear(grid_type.getStorage(), coef);
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new OperationGammaLogLinearBoundary(grid_type.getStorage(), coef);
@@ -236,13 +246,13 @@ using namespace sg::finance;
 
 	static OperationMatrix* createOperationLB(Grid& grid_type)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationLBLinear(grid_type.getStorage());
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new  OperationLBLinearBoundary(grid_type.getStorage());
@@ -253,13 +263,13 @@ using namespace sg::finance;
 
 	static OperationMatrix* createOperationLE(Grid& grid_type)
 		{
-			// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 			if(strcmp(grid_type.getType(), "linear") == 0)
 			{
 				return new OperationLELinear(grid_type.getStorage());
 			}
 
-			// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 			else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 			{
 				return new  OperationLELinearBoundary(grid_type.getStorage());
@@ -270,13 +280,13 @@ using namespace sg::finance;
 
 	static OperationMatrix* createOperationLD(Grid& grid_type)
 		{
-			// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 			if(strcmp(grid_type.getType(), "linear") == 0)
 			{
 				return new OperationLDLinear(grid_type.getStorage());
 			}
 
-			// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 			else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 			{
 				return new  OperationLDLinearBoundary(grid_type.getStorage());
@@ -287,13 +297,13 @@ using namespace sg::finance;
 
 	static OperationMatrix* createOperationLF(Grid& grid_type)
 		{
-			// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 			if(strcmp(grid_type.getType(), "linear") == 0)
 			{
 				return new OperationLFLinear(grid_type.getStorage());
 			}
 
-			// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 			else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 			{
 				return new  OperationLFLinearBoundary(grid_type.getStorage());
@@ -311,13 +321,13 @@ using namespace sg::finance;
 	 */
 	static OperationMatrix* createOperationDelta(Grid& grid_type, DataVector& coef)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationDeltaLinear(grid_type.getStorage(), coef);
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
@@ -338,13 +348,13 @@ using namespace sg::finance;
 	 */
 	static OperationMatrix* createOperationDeltaLog(Grid& grid_type, DataVector& coef)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationDeltaLogLinear(grid_type.getStorage(), coef);
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0 )
 		{
@@ -372,13 +382,13 @@ using namespace sg::finance;
 	 */
 	static OperationEval* createOperationEval(Grid& grid_type)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationEvalLinear(grid_type.getStorage());
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0
 				|| strcmp(grid_type.getType(), "TruncatedTrapezoid") == 0
@@ -387,7 +397,6 @@ using namespace sg::finance;
 			return new OperationEvalLinearBoundary(grid_type.getStorage());
 		}
 
-		// OperationLaplaceModLinear	Implementation of Laplace for mod linear functions
 		else if(strcmp(grid_type.getType(), "modBspline") == 0 )
 		{
 			return new OperationEvalModBspline(grid_type.getStorage(),
@@ -411,7 +420,7 @@ using namespace sg::finance;
 			return new OperationEvalPoly(grid_type.getStorage(),
 					((PolyGrid*) &grid_type)->getDegree());
 		}
-		// OperationLaplacePrewavelet
+
 		else if(strcmp(grid_type.getType(), "prewavelet") == 0 )
 		{
 			return new OperationEvalPrewavelet(grid_type.getStorage());
@@ -430,20 +439,19 @@ using namespace sg::finance;
 	 */
 	static OperationMultipleEval* createOperationMultipleEval(Grid& grid_type, DataMatrix* dataset)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationMultipleEvalLinear(grid_type.getStorage(), dataset);
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new OperationMultipleEvalLinearBoundary(grid_type.getStorage(), dataset);
 		}
 
-		// OperationLaplaceModLinear	Implementation of Laplace for mod linear functions
 		else if(strcmp(grid_type.getType(), "modBspline") == 0 )
 		{
 			return new OperationMultipleEvalModBspline(grid_type.getStorage(),
@@ -467,7 +475,6 @@ using namespace sg::finance;
 			return new OperationMultipleEvalPoly(grid_type.getStorage(),
 					((PolyGrid*) &grid_type)->getDegree(), dataset);
 		}
-		// OperationLaplacePrewavelet
 		else if(strcmp(grid_type.getType(), "prewavelet") == 0 )
 		{
 			return new OperationMultipleEvalPrewavelet(grid_type.getStorage(), dataset);
@@ -487,20 +494,19 @@ using namespace sg::datadriven;
 	 */
 	static OperationTest* createOperationTest(Grid& grid_type)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationTestLinear(grid_type.getStorage());
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new OperationTestLinearBoundary(grid_type.getStorage());
 		}
 
-		// OperationLaplaceModLinear	Implementation of Laplace for mod linear functions
 		else if(strcmp(grid_type.getType(), "modBspline") == 0 )
 		{
 			return new OperationTestModBspline(grid_type.getStorage(),
@@ -535,8 +541,10 @@ using namespace sg::datadriven;
 	}
 #endif //SG_DATADRIVEN
 
+
+
 #ifdef SG_PARALLEL
-using namespace sg::parallel;
+//using namespace sg::parallel;
 	/**
 	 * gets a pointer to OperationBVectorized object
 	 *
@@ -547,7 +555,7 @@ using namespace sg::parallel;
 	 */
 	static OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(Grid& grid_type, const std::string& VecType, DataMatrix* dataset)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			if (VecType == "SSE")
@@ -580,7 +588,7 @@ using namespace sg::parallel;
 			}
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
@@ -628,7 +636,7 @@ using namespace sg::parallel;
 	 */
 	static OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(Grid& grid_type, const std::string& VecType, DataMatrixSP* dataset)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			if (VecType == "SSE")
@@ -661,7 +669,7 @@ using namespace sg::parallel;
 			}
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
@@ -698,7 +706,7 @@ using namespace sg::parallel;
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
 	}
-#endif
+#endif //SG_PARALLEL
 
 	/**
 	 * gets a pointer to OperationHierarchisation object
@@ -707,13 +715,13 @@ using namespace sg::parallel;
 	 */
 	static OperationHierarchisation* createOperationHierarchisation(Grid& grid_type)
 	{
-		// OperationLaplaceLinear	Implementation for linear functions of Laplace Operation, linear grids without boundaries
+
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationHierarchisationLinear(grid_type.getStorage());
 		}
 
-		// OperationLaplaceLinearBoundary	Implementation of Laplace for linear functions with boundaries
+
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0
 				|| strcmp(grid_type.getType(), "TruncatedTrapezoid") == 0
@@ -722,7 +730,6 @@ using namespace sg::parallel;
 			return new OperationHierarchisationLinearBoundary(grid_type.getStorage());
 		}
 
-		// OperationLaplaceModLinear	Implementation of Laplace for mod linear functions
 		else if(strcmp(grid_type.getType(), "modBspline") == 0 )
 		{
 			return new OperationHierarchisationModBspline(grid_type.getStorage(),

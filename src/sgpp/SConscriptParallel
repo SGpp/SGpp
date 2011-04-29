@@ -6,9 +6,6 @@
 
 Import("env")
 
-env.Append(CPPDEFINES=['SG_PARALLEL'])
-
-
 srcs = Split("""
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp

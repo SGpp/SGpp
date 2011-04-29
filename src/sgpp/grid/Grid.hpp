@@ -25,7 +25,6 @@
 #include <iostream>
 #include <string>
 #include <map>
-using namespace sg::datadriven;
 
 namespace sg
 {

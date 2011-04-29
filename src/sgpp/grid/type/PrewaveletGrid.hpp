@@ -25,7 +25,6 @@
 #define PREWAVELETGRID_HPP
 
 #include "grid/Grid.hpp"
-using namespace sg::datadriven;
 
 namespace sg
 {

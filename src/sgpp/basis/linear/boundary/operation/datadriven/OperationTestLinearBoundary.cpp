@@ -12,11 +12,11 @@
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 
 #include "data/DataVector.hpp"
-using namespace sg::datadriven;
+using namespace sg::base;
 
 namespace sg
 {
-namespace base
+namespace datadriven
 {
 
 double OperationTestLinearBoundary::test(DataVector& alpha, DataMatrix& data, DataVector& classes)

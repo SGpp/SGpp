@@ -18,6 +18,11 @@
 
 #include "common/AlignedMemory.hpp"
 
+namespace sg
+{
+namespace base
+{
+
 DataMatrix::DataMatrix(size_t nrows, size_t ncols) :
 	nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {
 	// create new vector
@@ -622,4 +627,6 @@ size_t DataMatrix::getNumberNonZero() {
 		}
 	}
 	return nonZero;
+}
+}
 }

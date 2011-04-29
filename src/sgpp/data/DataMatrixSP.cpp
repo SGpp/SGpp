@@ -17,6 +17,10 @@
 #include <iostream>
 
 #include "common/AlignedMemory.hpp"
+namespace sg
+{
+namespace base
+{
 
 DataMatrixSP::DataMatrixSP(size_t nrows, size_t ncols) :
 	nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {
@@ -519,4 +523,6 @@ size_t DataMatrixSP::getNumberNonZero() {
 		}
 	}
 	return nonZero;
+}
+}
 }
