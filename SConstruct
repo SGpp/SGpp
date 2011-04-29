@@ -170,7 +170,7 @@ if not env.GetOption('clean'):
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 
-Export('env')
+
 
 # Copy required files
 cpy = []
@@ -183,51 +183,69 @@ if env['SG_ALL']:
 	env['SG_FINANCE'] = env['SG_PARALLEL'] = env['SG_COMBIGRID'] = \
 	env['SG_PYTHON'] = True
 
+cppdefines = []
+if env['SG_BASE']: cppdefines +=['SG_BASE']
+if env['SG_PDE']: cppdefines +=['SG_PDE']
+if env['SG_DATADRIVEN']: cppdefines +=['SG_DATADRIVEN']
+if env['SG_SOLVER']: cppdefines +=['SG_SOLVER']
+if env['SG_FINANCE']: cppdefines +=['SG_FINANCE']
+if env['SG_PARALLEL']: cppdefines +=['SG_PARALLEL']
+if env['SG_COMBIGRID']: cppdefines +=['SG_COMBIGRID']
+env.Append(CPPDEFINES=cppdefines)
+
+Export('env')
+lib_sgpp_targets = []
+
 if env['SG_BASE']:
 	SConscript('src/sgpp/SConscriptBase', build_dir='tmp/build_sgbase', duplicate=0)
-	cpy += Command("#lib/sgpp/libsgppbase.so", "#/tmp/build_sgbase/libsgppbase.so", Copy("$TARGET", "$SOURCE"))
+	Import('libsgppbase')
+	lib_sgpp_targets.append(libsgppbase)
 if env['SG_PDE']:
 	SConscript('src/sgpp/SConscriptPde', build_dir='tmp/build_sgpde', duplicate=0)
-	cpy += Command("#lib/sgpp/libsgpppde.so", "#/tmp/build_sgpde/libsgpppde.so", Copy("$TARGET", "$SOURCE"))
+	Import('libsgpppde')
+	lib_sgpp_targets.append(libsgpppde)
 	
 if env['SG_DATADRIVEN']:
 	SConscript('src/sgpp/SConscriptDatadriven', build_dir='tmp/build_sgdatadriven', duplicate=0)
-	cpy += Command("#lib/sgpp/libsgppdatadriven.so", "#/tmp/build_sgdatadriven/libsgppdatadriven.so", Copy("$TARGET", "$SOURCE"))
+	Import('libsgppdatadriven')
+	lib_sgpp_targets.append(libsgppdatadriven)
 	
 if env['SG_SOLVER']:
 	SConscript('src/sgpp/SConscriptSolver', build_dir='tmp/build_sgsolver', duplicate=0)
-	cpy += Command("#lib/sgpp/libsgppsolver.so", "#/tmp/build_sgsolver/libsgppsolver.so", Copy("$TARGET", "$SOURCE"))
+	Import('libsgppsolver')
+	lib_sgpp_targets.append(libsgppsolver)
 	
 if env['SG_FINANCE']:
 	SConscript('src/sgpp/SConscriptFinance', build_dir='tmp/build_sgfinance', duplicate=0)
-	cpy += Command("#lib/sgpp/libsgppfinance.so", "#/tmp/build_sgfinance/libsgppfinance.so", Copy("$TARGET", "$SOURCE"))
+	Import('libsgppfinance')
+	lib_sgpp_targets.append(libsgppfinance)
 	
 if env['SG_PARALLEL']:
 	SConscript('src/sgpp/SConscriptParallel', build_dir='tmp/build_sgparallel', duplicate=0)
-	cpy += Command("#lib/sgpp/libsgppparallel.so", "#/tmp/build_sgparallel/libsgppparallel.so", Copy("$TARGET", "$SOURCE"))
-	
+	Import('libsgppparallel')
+	lib_sgpp_targets.append(libsgppparallel)
+
 if env['SG_COMBIGRID']:
 	SConscript('src/sgpp/SConscriptCombigrid', build_dir='tmp/build_sgcombigrid', duplicate=0)
-	cpy += Command("#lib/sgpp/libsgppcombigrid.so", "#/tmp/build_sgcombigrid/libsgppcombigrid.so", Copy("$TARGET", "$SOURCE"))
+	Import('libsgppcombigrid')
+	lib_sgpp_targets.append(libsgppcombigrid)
 	
 if env['SG_PYTHON']:
 	SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
-	cpy += Command("#lib/pysgpp/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-	cpy += Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-	cpy += Command("#bin/_pysgpp.so", "#/tmp/build_pysgpp/_pysgpp.so", Copy("$TARGET", "$SOURCE"))
-	cpy += Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+	Import('pysgpp')
+	env.Install('#lib/pysgpp', pysgpp)
+	env.Install('#bin', pysgpp)
+	Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+	Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
 if env['JSGPP']:
     SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
     SConscript('src/jsgpp_weka/SConscript', build_dir='tmp/build_jsgpp_weka', duplicate=0)
 
-
-
-#cpy += Command("#lib/sgpp/libsgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
-#cpy += Command("#bin/sgpp.a", "#/tmp/build_sg/libsgpp.a", Copy("$TARGET", "$SOURCE"))
+env.Install('#lib/sgpp', lib_sgpp_targets)
 
 # Execute Unit Tests
-#if not env['NO_UNIT_TESTS']:
-#    SConscript('tests/SConscript')
+if not env['NO_UNIT_TESTS']:
+    SConscript('tests/SConscript')
 
 
 # Help Text
