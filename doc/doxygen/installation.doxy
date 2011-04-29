@@ -115,10 +115,33 @@ the default compilation with gcc is selected. For all other cases please execute
   scons TARGETCPU=ia64ICC
 @endverbatim
 
-Additionally you can pass some specific flags to compiler using CPPFLAGS environment variable:
+You are able to compile different SG++ modules independently. The currently available
+modules are:
+- SG_BASE basic functionality
+- SG_DATADRIVEN operations on data
+- SG_SOLVER classes for solving the systems of equations
+- SG_PDE partial differential equations
+- SG_FINANCE financial module
+- SG_PARALLEL classes for parallel computing
+- SG_COMBIGRID combigrid classes
+- SG_PYTHON integration of SG++ in Python
+
+For example, the command @verbatim
+  scons SG_BASE=1
+@endverbatim will create the library libsgbase.so which can be used by linker.
+
+Use @verbatim scons SG_ALL=1 @endverbatim to compile all modules.
+
+However, you should take into account the dependencies between the modules to 
+avoid "undefined symbol" errors. The figure below illustrates these dependencies.
+
+\image html module_dependencies.png
+
+Additionally, you can pass some specific flags to compiler using CPPFLAGS environment variable:
 @verbatim
   scons CPPFLAGS='-g -O0'
 @endverbatim
+
 
 
 @subsection sconsEclipse Configuration for use of Scons within Eclipse
