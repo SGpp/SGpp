@@ -82,19 +82,25 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
-#ifdef SG_PDE
-%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystem.hpp"
-%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
-%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
-%include "src/sgpp/application/pde/PDESolver.hpp"
-%include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
-%include "src/sgpp/application/pde/HeatEquationSolver.hpp"
-#endif
-
 #ifdef SG_DATADRIVEN
 %include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 #endif
+
+#ifdef SG_PDE
+%include "src/sgpp/application/pde/PDESolver.hpp"
+%include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
+#endif
+
+
+
+#ifdef SG_PDE
+%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystem.hpp"
+%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
+%include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
+%include "src/sgpp/application/pde/HeatEquationSolver.hpp"
+#endif
+
 
 #ifdef SG_FINANCE
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
@@ -104,6 +110,7 @@ namespace std {
 %include "src/sgpp/application/pde/BlackScholesSolver.hpp"
 %include "src/sgpp/application/finance/VariableDiscountFactor.hpp"
 #endif
+
 
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
 %include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"

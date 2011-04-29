@@ -6,9 +6,6 @@
 
 Import("env")
 
-env.Append(CPPDEFINES=['SG_COMBIGRID'])
-
-
 srcs = Split("""
 grid/combination/FullGrid.cpp
 grid/combination/FullGridSet.cpp

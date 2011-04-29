@@ -11,6 +11,7 @@ pysgpp.i
 
 Import('env')
 
+
 src_objs = []
 if env['SG_BASE']:
 	Import('src_objs_base')
@@ -36,9 +37,11 @@ if env['SG_COMBIGRID']:
 
 py_env = env.Clone()
 
-py_env.Append(SWIGFLAGS=['-c++','-python'])
+
+
+py_env.Append(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']])
 py_env.Append(CPPPATH=['#/src/sgpp'])
 
-pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs+srcs, SHLIBPREFIX = '_')
 
 Export('pysgpp')

@@ -6,9 +6,6 @@
 
 Import("env")
 
-env.Append(CPPDEFINES=['SG_PDE'])
-
-
 srcs = Split("""
 algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
 algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp

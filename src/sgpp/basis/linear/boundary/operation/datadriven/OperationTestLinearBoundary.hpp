@@ -10,11 +10,11 @@
 
 #include "operation/datadriven/OperationTest.hpp"
 #include "grid/GridStorage.hpp"
-using namespace sg::datadriven;
+using namespace sg::base;
 
 namespace sg
 {
-namespace base
+namespace datadriven
 {
 
 /**

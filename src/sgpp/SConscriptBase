@@ -6,9 +6,6 @@
 
 Import("env")
 
-env.Append(CPPDEFINES=['SG_BASE'])
-
-
 srcs = Split("""
 application/common/ScreenOutput.cpp
 basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
@@ -16,7 +13,6 @@ basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
 basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.cpp
-basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
 basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
 basis/linear/noboundary/operation/common/OperationEvalLinear.cpp

@@ -13,6 +13,11 @@
 #include <vector>
 #include "data/DataVectorDefinition.hpp"
 
+namespace sg
+{
+namespace base
+{
+
 
 /**
  * A class to store one-dimensional data.
@@ -521,5 +526,7 @@ private:
     /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
     size_t inc_elems;
 };
+}
+}
 
 #endif /*DATAVECTOR_H_*/
