@@ -14,12 +14,8 @@ namespace sg
 namespace pde
 {
 
-OperationEllipticPDESolverSystem::OperationEllipticPDESolverSystem(Grid& SparseGrid, DataVector& rhs)
+OperationEllipticPDESolverSystem::OperationEllipticPDESolverSystem(Grid& SparseGrid, DataVector& rhs) : BoundGrid(&SparseGrid), rhs(&rhs), numGridpointsComplete(SparseGrid.getSize())
 {
-	this->BoundGrid = &SparseGrid;
-	this->rhs = &rhs;
-
-	this->numGridpointsComplete = this->BoundGrid->getSize();
 }
 
 OperationEllipticPDESolverSystem::~OperationEllipticPDESolverSystem()
