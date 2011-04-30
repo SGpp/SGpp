@@ -1009,3 +1009,189 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         eval = createOperationEval(factory)
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 1.5)
+
+class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
+    def testGeneration(self):
+        from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary, DimensionBoundaryVector, Stretching1DVector 
+	str1d = Stretching1D()
+	str1d.type='log'
+	str1d.x_0=1
+	str1d.xsi=10
+	dimBound = DimensionBoundary() 
+ 	dimBound.leftBoundary=0.5
+	dimBound.rightBoundary=7
+	dimBoundaryVector=DimensionBoundaryVector(2)
+	dimBoundaryVector[0]=dimBound;
+	dimBoundaryVector[1]=dimBound;
+	str1dvector = Stretching1DVector(2)
+	str1dvector[0]=str1d
+	str1dvector[1]=str1d
+	stretch = Stretching(2, dimBoundaryVector, str1dvector)
+
+        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        self.failIfEqual(gen, None)
+        
+        self.failUnlessEqual(storage.size(), 0)
+        gen.regular(3)
+        self.failUnlessEqual(storage.size(), 49)
+        
+        #This should fail
+        self.failUnlessRaises(Exception, gen.regular, 3)
+        
+    def testRefinement2d(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor 
+        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(2)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        self.failUnlessEqual(storage.size(), 9)
+        alpha = DataVector(9)
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = 0.0
+        alpha[3] = 0.0
+        alpha[4] = 0.0
+        alpha[5] = 0.0
+        alpha[6] = 0.0
+        alpha[7] = 0.0
+        alpha[8] = 1.0
+        func = SurplusRefinementFunctor(alpha)
+        
+        gen.refine(func)
+        self.failUnlessEqual(storage.size(), 21)
+        
+    def testRefinement3d(self):
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
+        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(3)
+        storage = factory.getStorage()
+        
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        self.failUnlessEqual(storage.size(), 27)
+        alpha = DataVector(27)
+        for i in xrange(len(alpha)):
+             alpha[i] = 0.0
+
+        alpha[26] = 1.0
+        func = SurplusRefinementFunctor(alpha)
+        
+        gen.refine(func)
+        self.failUnlessEqual(storage.size(), 81)
+
+    def testOperationMultipleEval(self):
+        from pysgpp import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
+
+#Create Stretching
+	str1d = Stretching1D()
+	str1d.type='log'
+	str1d.x_0=1
+	str1d.xsi=10
+	dimBound = DimensionBoundary() 
+ 	dimBound.leftBoundary=0.5
+	dimBound.rightBoundary=7
+	stretch=Stretching(1,dimBound,str1d)
+
+        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+	factory.getStorage().setStretching(stretch)
+        gen = factory.createGridGenerator()
+        gen.regular(2)
+        
+        alpha = DataVector(factory.getStorage().size())
+        p = DataMatrix(1,1)
+        beta = DataVector(1)
+        
+        
+        alpha.setAll(0.0)
+        p.set(0,0,0.25)
+        beta[0] = 1.0
+        
+        opb = factory.createOperationMultipleEval(p)
+        opb.multTranspose(beta, alpha)
+        
+        self.failUnlessAlmostEqual(alpha[0], 1.038461538)
+        self.failUnlessAlmostEqual(alpha[1], -0.0384615)
+        self.failUnlessAlmostEqual(alpha[2], -0.1823714)
+        self.failUnlessAlmostEqual(alpha[3], -0.53513915)
+        self.failUnlessAlmostEqual(alpha[4], 0.0)
+        
+        alpha.setAll(0.0)
+        alpha[2] = 1.0
+        
+        p.set(0,0, 0.25)
+        
+        beta[0] = 0.0
+        
+        opb.mult(alpha, beta)
+        self.failUnlessAlmostEqual(beta[0],-0.182371437)
+
+    def testOperationTest_test(self):
+        from pysgpp import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
+
+     	str1d = Stretching1D()
+	str1d.type='log'
+	str1d.x_0=1
+	str1d.xsi=10
+	dimBound = DimensionBoundary() 
+ 	dimBound.leftBoundary=0.5
+	dimBound.rightBoundary=7
+	stretch=Stretching(1,dimBound,str1d)
+
+        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+	factory.getStorage().setStretching(stretch)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        
+        data = DataMatrix(1,1)
+        data.setAll(0.25)
+        classes = DataVector(1)
+        classes.setAll(1.0)
+
+        testOP = factory.createOperationTest()
+
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = 1.0
+        
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c > 0.0)
+        
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = -1.0
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c == 0.0)
+        
+    def testOperationEval_eval(self):
+        from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary
+
+     	str1d = Stretching1D()
+	str1d.type='log'
+	str1d.x_0=1
+	str1d.xsi=10
+	dimBound = DimensionBoundary() 
+ 	dimBound.leftBoundary=0.5
+	dimBound.rightBoundary=7
+	stretch=Stretching(1,dimBound,str1d)
+
+        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+	factory.getStorage().setStretching(stretch)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        alpha.setAll(1.0)
+
+        p = DataVector(1)
+        p.setAll(0.25)
+        
+        eval = factory.createOperationEval()
+
+        self.failUnlessAlmostEqual(eval.eval(alpha, p), 0.8176285620)
