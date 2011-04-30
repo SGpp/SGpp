@@ -292,7 +292,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 						double cg_eps, size_t cg_its)
 {
 	size_t timesteps = (size_t)(T/dt);
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	DataMatrix EvalPoints(1, dim);
 	std::string tFileEvalCuboid = "EvalPointsHeatEquation.data";
 	std::string tFileEvalCuboidValues = "EvalValuesHeatEquation.data";
@@ -518,7 +518,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, double bound_left, double bound_right,
 						std::string initFunc, double cg_eps, size_t cg_its)
 {
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	DataMatrix EvalPoints(1, dim);
 	std::string tFileEvalCuboid = "EvalPointsPoisson.data";
 	std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
@@ -709,7 +709,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine, size_t max_ref_level, size_t num_refines, double refine_thres, double bound_left, double bound_right,
 						std::string initFunc, double cg_eps, size_t cg_its)
 {
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	std::string tFileEvalCuboid = "EvalPointsPoisson.data";
 	std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
 

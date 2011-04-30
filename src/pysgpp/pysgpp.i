@@ -174,6 +174,6 @@ namespace std {
 %template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::SLinearBase>;
 %template(SAlgorithmEvaluation) sg::base::AlgorithmEvaluation<sg::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;
-%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sg::DimensionBoundary>;
-%template(Stretching1DVector) std::vector<sg::Stretching1D>;
+%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearStretchedBoundaryBase>;
+%template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
+%template(Stretching1DVector) std::vector<sg::base::Stretching1D>;

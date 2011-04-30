@@ -303,7 +303,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 	{
 		if (sg::myGlobalMPIComm->getMyRank() == 0)
 		{
-			sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+			sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
 			// set the bounding box
 			for (size_t i = 0; i < dim; i++)
@@ -490,7 +490,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 	{
 		if (sg::myGlobalMPIComm->getMyRank() == 0)
 		{
-			sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+			sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
 			// set the bounding box
 			for (size_t i = 0; i < dim; i++)
@@ -662,7 +662,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 
 	if (sg::myGlobalMPIComm->getMyRank() == 0)
 	{
-		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+		sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
 		// set the bounding box
 		for (size_t i = 0; i < dim; i++)

@@ -14,7 +14,7 @@
 
 #define CRNIC_IMEUL_STEPS 3
 
-int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
+int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::DimensionBoundary* BoundaryArray)
 {
 	std::fstream file;
 	double cur_right;
@@ -73,7 +73,7 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 		double CGepsilon = CGeps;
 
 
-		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[1];
+		sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[1];
 		if (readBoudingBoxData(fileBound, 1, myBoundaries) != 0)
 		{
 			return;

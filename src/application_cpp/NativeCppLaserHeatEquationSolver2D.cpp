@@ -60,7 +60,7 @@ void testLaserHeatEquation(	size_t level, size_t maxLevel, size_t initialRefines
 {
 	size_t timesteps = (size_t)(T/dt);
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[2];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[2];
 
 	// set the bounding box
 	for (size_t i = 0; i < 2; i++)

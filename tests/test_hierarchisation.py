@@ -100,7 +100,7 @@ def testHierarchisationDehierarchisationStretching(obj, grid, level, function):
 
     # test hierarchisation
     p = DataVector(storage.dim())
-    evalOp = grid.createOperationEval()
+    evalOp = createOperationEval(grid)
     for n in xrange(storage.size()):
         storage.get(n).getCoordsStretching(p,stretch)
         obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
