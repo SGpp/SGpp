@@ -106,7 +106,7 @@ void PDESolver::setGrid(const std::string& serializedGrid)
 	bGridConstructed = true;
 }
 
-std::string PDESolver::getGrid()
+std::string PDESolver::getGrid() const
 {
 	std::string gridSer = "";
 
@@ -322,25 +322,25 @@ void PDESolver::storeGridBonn(std::string tfilename, DataVector& alpha, bool ish
 	delete myExporter;
 }
 
-void PDESolver::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename)
+void PDESolver::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const
 {
 	GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void PDESolver::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename)
+void PDESolver::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const
 {
 	GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
-void PDESolver::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus)
+void PDESolver::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
 	GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
 }
 
-void PDESolver::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus)
+void PDESolver::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
 	GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
@@ -383,7 +383,7 @@ void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, Data
 	}
 }
 
-size_t PDESolver::getNumberGridPoints()
+size_t PDESolver::getNumberGridPoints() const
 {
 	if (bGridConstructed)
 	{
@@ -395,7 +395,7 @@ size_t PDESolver::getNumberGridPoints()
 	}
 }
 
-size_t PDESolver::getNumberInnerGridPoints()
+size_t PDESolver::getNumberInnerGridPoints() const
 {
 	if (bGridConstructed)
 	{
@@ -407,7 +407,7 @@ size_t PDESolver::getNumberInnerGridPoints()
 	}
 }
 
-size_t PDESolver::getNumberDimensions()
+size_t PDESolver::getNumberDimensions() const
 {
 	if (bGridConstructed)
 	{
