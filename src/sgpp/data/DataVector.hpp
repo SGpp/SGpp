@@ -37,15 +37,6 @@ public:
 	DataVector(size_t size);
 
 	/**
-	 * Constructor: multi-dimensional DataVector with <it>size</it> rows and
-	 * <it>dim</it> columns.
-	 *
-	 * @param size number of elements per dimension
-	 * @param dim dimension of Vector
-	 */
-//	DataVector(size_t size, size_t dim);
-
-	/**
 	 * Create a new DataVector that is a copy of vec.
 	 *
 	 * @param vec Reference to another instance of DataMatrix
@@ -119,7 +110,7 @@ public:
 	 * Corresponds to a resize to size+inc_elems new elements while leaving
 	 * the current vector's size unchanged.
 	 *
-	 * @param inc_nrows Number of additional elements for which storage is to be reserved.
+	 * @param inc_elems Number of additional elements for which storage is to be reserved.
 	 */
 	void addSize(size_t inc_elems);
 
@@ -208,39 +199,6 @@ public:
 	 */
 	void set(size_t i, double value);
 
-	/**
-	 * gets a row of the DataVector
-	 *
-	 * @param row the row that should be read
-	 * @param vec DataVector into which the data is written
-	 */
-// 	void getRow(size_t row, DataVector& vec) const;
-
-	/**
-	 * sets a row of the DataVector
-	 *
-	 * @param row the row that should be written
-	 * @param vec DataVector from which the data is read
-	 */
-// 	void setRow(int row, DataVector& vec);
-
-	/**
-	 * gets a col of the DataVector
-	 *
-	 * @param col the col that should be read
-	 * @param vec DataVector into which the data is written
-	 */
-// 	void getColumn(int col, DataVector& vec) const;
-
-	/**
-	 * sets a row of the DataVector
-	 *
-	 * @param col the row that should be written
-	 * @param vec DataVector from which the data is read
-	 */
-// 	void setColumn(int col, DataVector& vec);
-
-
  	/**
  	 * Adds the values from another DataVector to the current values.
  	 * Modifies the current values.
@@ -322,17 +280,20 @@ public:
 	double maxNorm();
 
 	/**
-	 * calculates the vectors L two norm
-	 * function based two norm
+	 * Returns the vector's root mean square (RMS)-norm, i.e.,
+	 * @f$\sqrt{ 1/N \sum_{i=1}^N x_i^2 }@f$. If the vector's entries
+	 * correspond to function values on a full grid, this is the 
+	 * discrete @f$L^2@f$-norm of the corresponding function.
 	 *
-	 * @return the vector's L two norm
+	 * @return The vector's root mean square-norm.
 	 */
 	double RMSNorm();
 
 	/**
-	 * calculates the vectors two norm
+	 * Returns the vector's @f$l^2@f$-norm, i.e., 
+	 * @f$\sqrt{ \sum_i x_i^2 }@f$.
 	 *
-	 * @return the vector's two norm
+	 * @return The vector's @f$l^2@f$-norm.
 	 */
 	double l2Norm();
 
@@ -340,7 +301,7 @@ public:
 	/**
 	 * Returns the minimum over all entries.
 	 *
-	 * @return global minimum
+	 * @return Minimal value
 	 */
 	double min();
 
@@ -368,22 +329,6 @@ public:
 	 * @param x Reference to the DataVector
 	 */
 	void axpy(double a, DataVector& x);
-
-	/**
-	 * gets a line of the DataVector
-	 *
-	 * @param row the line that should be read
-	 * @param vec DataVector into which the data is written
-	 */
-//	void getLine(int row, DataVector& vec);
-
-	/**
-	 * gets a line of the DataVector
-	 *
-	 * @param row the line that should be read
-	 * @param vec std vector into which the data is written
-	 */
-//	void getLine(int row, std::vector<double>& vec);
 
 	/**
 	 * Returns the dot product of the two vectors.
@@ -452,20 +397,6 @@ public:
 
 
 	/**
-	 * get the dimension of the DataVector
-	 *
-	 * @return dimension of the DataVector
-	 */
-//	size_t getDim() const;
-
-	/**
-	 * gets number of elements in all dimensions
-	 *
-	 * @return number of elements in all dimensions
-	 */
-//	size_t getTotalSize() const;
-
-	/**
 	 * Partitions vector into two classes using a choosen border.
 	 *
 	 * @param threshold value of the border
@@ -473,17 +404,15 @@ public:
 	void partitionClasses(double threshold);
 
 	/**
-	 * Normalizes d-th dimension with border 0.0
+	 * Normalizes vector entries to [0,1]
 	 *
-	 * @param d the dimension that should be normalized
 	 */
 	void normalize();
 
 	/**
-	 * Normalizes d-th dimension with border
+	 * Normalizes vector entries to [border, 1-border]
 	 *
-	 * @param d the dimension that should be normalized
-	 * @param border value ot the border
+	 * @param border width of border
 	 */
 	void normalize(double border);
 
@@ -519,12 +448,10 @@ private:
 	double* data;
 	/// Number of elements of the data vector
 	size_t size;
-	/// number of dimensions of one element in this vector
-//	int dim;
 	/// Number of additional rows for which memory has already been reserved
 	size_t unused;
-    /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
-    size_t inc_elems;
+  /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
+  size_t inc_elems;
 };
 }
 }

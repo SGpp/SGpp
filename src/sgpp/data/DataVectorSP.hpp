@@ -97,7 +97,7 @@ public:
 	 * Corresponds to a resize to size+inc_elems new elements while leaving
 	 * the current vector's size unchanged.
 	 *
-	 * @param inc_nrows Number of additional elements for which storage is to be reserved.
+	 * @param inc_elems Number of additional elements for which storage is to be reserved.
 	 */
 	void addSize(size_t inc_elems);
 
@@ -374,17 +374,15 @@ public:
 	void partitionClasses(float threshold);
 
 	/**
-	 * Normalizes d-th dimension with border 0.0
+	 * Normalizes vector entries to [0,1]
 	 *
-	 * @param d the dimension that should be normalized
 	 */
 	void normalize();
 
 	/**
-	 * Normalizes d-th dimension with border
+	 * Normalizes vector entries to [border, 1-border]
 	 *
-	 * @param d the dimension that should be normalized
-	 * @param border value ot the border
+	 * @param border width of border
 	 */
 	void normalize(float border);
 
