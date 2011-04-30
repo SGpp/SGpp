@@ -195,6 +195,14 @@ using namespace sg::pde;
 			return new OperationLaplacePrewavelet(grid_type.getStorage(),
 					((PrewaveletGrid*) &grid_type)->getShadowStorage());
 		}
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0 )
+		{
+			return new OperationLaplaceLinearStretched(grid_type.getStorage());
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0 )
+		{
+			return new OperationLaplaceLinearStretchedBoundary(grid_type.getStorage());
+		}
 
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
@@ -220,6 +228,14 @@ using namespace sg::pde;
 		{
 			return new OperationLTwoDotProductLinearBoundary(grid_type.getStorage());
 		}
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0)
+		{
+			return new OperationLTwoDotProductLinearStretched(grid_type.getStorage());
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
+		{
+			return new OperationLTwoDotProductLinearStretchedBoundary(grid_type.getStorage());
+		}
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
 	}
@@ -243,7 +259,14 @@ using namespace sg::finance;
 		{
 			return new OperationGammaLinear(grid_type.getStorage(), coef);
 		}
-
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0)
+		{
+			return new OperationGammaLinearStretched(grid_type.getStorage(), coef);
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
+		{
+			return new OperationGammaLinearStretchedBoundary(grid_type.getStorage(), coef);
+		}
 
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
@@ -269,7 +292,14 @@ using namespace sg::finance;
 		{
 			return new OperationGammaLogLinear(grid_type.getStorage(), coef);
 		}
-
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0)
+		{
+			return new OperationGammaLogLinearStretched(grid_type.getStorage(), coef);
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
+		{
+			return new OperationGammaLogLinearStretchedBoundary(grid_type.getStorage(), coef);
+		}
 
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
@@ -363,7 +393,14 @@ using namespace sg::finance;
 		{
 			return new OperationDeltaLinear(grid_type.getStorage(), coef);
 		}
-
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0)
+		{
+			return new OperationDeltaLinearStretched(grid_type.getStorage(), coef);
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
+		{
+			return new OperationDeltaLinearStretchedBoundary(grid_type.getStorage(), coef);
+		}
 
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
@@ -390,8 +427,14 @@ using namespace sg::finance;
 		{
 			return new OperationDeltaLogLinear(grid_type.getStorage(), coef);
 		}
-
-
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0)
+		{
+			return new OperationDeltaLogLinearStretched(grid_type.getStorage(), coef);
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
+		{
+			return new OperationDeltaLogLinearStretchedBoundary(grid_type.getStorage(), coef);
+		}
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0 )
 		{
@@ -408,8 +451,12 @@ using namespace sg::finance;
 
 	static OperationMatrix* createOperationUpDownTest(Grid& grid_type)
 	{
-		throw factory_exception("OperationLaplace is not implemented for this grid type.");
-		return NULL;
+		if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
+		{
+			return new OperationUpDownTestLinearStretchedBoundary(grid_type.getStorage());
+		}
+		else
+			throw factory_exception("OperationLaplace is not implemented for this grid type.");
 	}
 
 	/**
@@ -462,7 +509,14 @@ using namespace sg::finance;
 		{
 			return new OperationEvalPrewavelet(grid_type.getStorage());
 		}
-
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0 )
+		{
+			return new OperationEvalLinearStretched(grid_type.getStorage());
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0 )
+		{
+			return new OperationEvalLinearStretchedBoundary(grid_type.getStorage());
+		}
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
 	}
@@ -516,6 +570,14 @@ using namespace sg::finance;
 		{
 			return new OperationMultipleEvalPrewavelet(grid_type.getStorage(), dataset);
 		}
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0 )
+		{
+			return new OperationMultipleEvalLinearStretched(grid_type.getStorage(), dataset);
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0 )
+		{
+			return new OperationMultipleEvalLinearStretchedBoundary(grid_type.getStorage(), dataset);
+		}
 
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
@@ -567,11 +629,19 @@ using namespace sg::datadriven;
 			return new OperationTestPoly(grid_type.getStorage(),
 					((PolyGrid*) &grid_type)->getDegree());
 		}
-		// OperationLaplacePrewavelet
 		else if(strcmp(grid_type.getType(), "prewavelet") == 0 )
 		{
 			return new OperationTestPrewavelet(grid_type.getStorage());
 		}
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0 )
+		{
+			return new OperationTestLinearStretched(grid_type.getStorage());
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0 )
+		{
+			return new OperationTestLinearStretchedBoundary(grid_type.getStorage());
+		}
+
 
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
@@ -785,12 +855,19 @@ using namespace sg::datadriven;
 		{
 			return new OperationHierarchisationModWavelet(grid_type.getStorage());
 		}
+		else if(strcmp(grid_type.getType(), "linearStretched") == 0 )
+		{
+			return new OperationHierarchisationLinearStretched(grid_type.getStorage());
+		}
+		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0 )
+		{
+			return new OperationHierarchisationLinearStretchedBoundary(grid_type.getStorage());
+		}
 		else if(strcmp(grid_type.getType(), "poly") == 0 )
 		{
 			return new OperationHierarchisationPoly(grid_type.getStorage(),
 					((PolyGrid*) &grid_type)->getDegree());
 		}
-		// OperationLaplacePrewavelet
 		else if(strcmp(grid_type.getType(), "prewavelet") == 0 )
 		{
 			return new OperationHierarchisationPrewavelet(grid_type.getStorage(),
