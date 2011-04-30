@@ -68,7 +68,50 @@ def testHierarchisationDehierarchisation(obj, grid, level, function):
     obj.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),
                               0.0)
 
+#-------------------------------------------------------------------------------
+## Hierarchise and dechierarchise a regular sparse grid for a given function and test
+# Difference from the function above is the getCoordsStretching function usage.
+# @param obj reference to unittest
+# @param grid the grid object
+# @param level the number of levels used in the grid
+# @param function string of function which to use for test
+def testHierarchisationDehierarchisationStretching(obj, grid, level, function):
+    node_values = None
+    node_values_back = None
+    alpha = None
+    points = None
+    p = None
 
+    # generate a regular test grid
+    generator = grid.createGridGenerator()
+    generator.regular(level)
+
+    storage = grid.getStorage()
+    dim = storage.dim()
+    stretch= storage.getStretching()
+    # generate the node_values vector
+    node_values = DataVector(storage.size())
+    for n in xrange(storage.size()):
+        points = storage.get(n).getCoordsStringStretching(stretch).split()
+        node_values[n] = evalFunction(function, points)
+
+    # do hierarchisation
+    alpha = doHierarchisation(node_values, grid)
+
+    # test hierarchisation
+    p = DataVector(storage.dim())
+    evalOp = grid.createOperationEval()
+    for n in xrange(storage.size()):
+        storage.get(n).getCoordsStretching(p,stretch)
+        obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
+                                  node_values[n])
+        
+    # do dehierarchisation
+    node_values_back = doDehierarchisation(alpha, grid)
+
+    # test dehierarchisation
+    obj.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),
+                              0.0)
 
 #-------------------------------------------------------------------------------
 ## hierarchisation of the node base values on a grid
@@ -266,6 +309,70 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         function = buildParableBoundary(dim)
         grid = Grid.createLinearBoundaryGrid(dim)
         testHierarchisationDehierarchisation(self, grid, level, function)
+
+class TestHierarchisationLinearStretchedTrapezoidBoundary(unittest.TestCase):
+    ##
+    # Test hierarchisation for 1D
+    def testHierarchisation1DLinearStretchedTrapezoidBoundary(self):
+        from pysgpp import Grid
+	from pysgpp import Stretching, Stretching1D, DimensionBoundary
+
+        
+        dim = 1
+        level = 5
+        function = buildParableBoundary(dim)
+	str1d = Stretching1D()
+	str1d.type='log'
+	str1d.x_0=0
+	str1d.xsi=10
+	dimBound = DimensionBoundary() 
+	dimBound.leftBoundary=0.00001
+	dimBound.rightBoundary=1
+	stretch=Stretching(1,dimBound,str1d)
+
+        grid = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+	grid.getStorage().setStretching(stretch)
+
+        testHierarchisationDehierarchisationStretching(self, grid, level, function)
+
+
+    ##
+    # Test regular sparse grid dD, stretched hat basis functions.
+    def testHierarchisationDLinearStretchedTrapezoidBoundary(self):
+        from pysgpp import Grid
+        from pysgpp import Stretching, Stretching1D, DimensionBoundary
+	from pysgpp import Stretching1DVector, DimensionBoundaryVector
+
+	str1d = Stretching1D()
+	str1d.type='sinh'
+	str1d.x_0=1
+	str1d.xsi=10
+	dimBound = DimensionBoundary() 
+ 	dimBound.leftBoundary=0.001
+	dimBound.rightBoundary=1
+
+        dim = 3
+        level = 5
+
+	dimBoundVector = DimensionBoundaryVector(3)
+	dimBoundVector[0]=dimBound
+	dimBoundVector[1]=dimBound
+	dimBoundVector[2]=dimBound
+
+	str1dVector=Stretching1DVector(3)
+	str1dVector[0]=str1d
+	str1dVector[1]=str1d
+	str1dVector[2]=str1d
+
+	stretch = Stretching(dim, dimBoundVector, str1dVector)
+
+        function = buildParableBoundary(dim)
+        grid = Grid.createLinearStretchedTrapezoidBoundaryGrid(dim)
+	grid.getStorage().setStretching(stretch)
+	
+        testHierarchisationDehierarchisationStretching(self, grid, level, function)
+
+        
 
 class TestHierarchisationPrewavelet(unittest.TestCase):
     ##

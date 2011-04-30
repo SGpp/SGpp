@@ -74,6 +74,20 @@ class TestBase(unittest.TestCase):
                   ]
         
         self.baseTest(b, points)
+
+    def testLinearStretched(self):
+        from pysgpp import SLinearStretchedBase
+        
+        b = SLinearStretchedBase()
+        
+# Point data format: C, L, R, value 
+# (1,1) and (2,1) tried
+        points = [(1.312631659, 0.5, 7, 0.125020255230769),
+		  (0.96716821, 0.5, 7, 0.071872032307692)
+                  ]
+        
+        self.baseTest(b, points)
+        
         
 
 #    def testPoly(self):
@@ -223,7 +237,41 @@ class TestFunctions(unittest.TestCase):
         self.failUnlessEqual(x[1][0], 1)
         self.failUnlessEqual(x[1][1], 0.5)
         self.failUnlessEqual(x[2][0], 2)
-        self.failUnlessEqual(x[2][1], 1.0)        
+        self.failUnlessEqual(x[2][1], 1.0)   
+
+    def testGetAffectedLinearStretched(self):
+        from pysgpp import GridIndex, GridStorage, SLinearStretchedBoundaryBase
+        from pysgpp import SGetAffectedBasisFunctionsLinearStretchedBoundaries
+	from pysgpp import Stretching, Stretching1D, DimensionBoundary
+        
+	str1d = Stretching1D()
+	str1d.type='log'
+	str1d.x_0=1
+	str1d.xsi=10
+	dimBound = DimensionBoundary() 
+ 	dimBound.leftBoundary=0.5
+	dimBound.rightBoundary=7
+	stretch=Stretching(1,dimBound,str1d)
+
+        i = GridIndex(1)
+        s = GridStorage(1)
+	s.setStretching(stretch)
+        
+        b = SLinearStretchedBoundaryBase()
+        
+        i.set(0,0,0)
+        s.insert(i)
+        i.set(0,0,1)
+        s.insert(i)        
+        i.set(0,1,1)
+        s.insert(i)
+        
+        ga = SGetAffectedBasisFunctionsLinearStretchedBoundaries(s)
+        
+        x = ga(b, [0.25])
+        
+        self.failUnlessEqual(x[0][0], 0)
+        self.failUnlessEqual(x[0][1], 1.0384615384615385)     
 
 # Run tests for this file if executed as application 
 if __name__=='__main__':
