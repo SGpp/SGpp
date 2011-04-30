@@ -12,6 +12,7 @@
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
 #include "combigrid/combigridkernel/CombiGridKernel.hpp"
 #include "combigrid/combischeme/CombiSchemeBasis.hpp"
+#include "combigrid/domain/CombiGridDomain.hpp"
 
 // ------ SGpp includes -------------
 #include "data/DataVector.hpp"
@@ -38,7 +39,7 @@ namespace combigrid{
     	 * @param combischeme combi schme of the combi grid
     	 * @param hasBoundaryPts array of flag to indicate weather we have boundary points in the dimension*/
 		AbstractCombiGrid(const CombiSchemeBasis* combischeme ,
-				const std::vector<bool>& hasBoundaryPts ) :combischeme_(combischeme){
+				const std::vector<bool>& hasBoundaryPts ) :combischeme_(combischeme) , gridDomain_(0){
 			// create the combi kernel which has the non initialized
 			combikernel_ = new CombiGridKernelD( combischeme , hasBoundaryPts );
 		}
@@ -47,7 +48,7 @@ namespace combigrid{
     	 * @param combischeme combi schme of the combi grid
     	 * @param hasBoundaryPts array of flag to indicate weather we have boundary points in the dimension*/
 		AbstractCombiGrid(const CombiSchemeBasis* combischeme ,
-				bool hasBoundaryPts = true ) :combischeme_(combischeme){
+				bool hasBoundaryPts = true ) :combischeme_(combischeme) , gridDomain_(0){
 			// create the combi kernel which has the non initialized
 			std::vector<bool> boundaryTmp( combischeme->getDim() , hasBoundaryPts);
 			combikernel_ = new CombiGridKernelD( combischeme , boundaryTmp );
@@ -58,6 +59,20 @@ namespace combigrid{
 			// delete the kernel, and with it all the full grids
 			delete combikernel_;
 		}
+
+		/** sets the domain of the combi grid, this sets globaly for the combi grid,
+		 *  and not for each full grid */
+		void setDomain( GridDomain* gridDomain ) const { gridDomain_ = gridDomain; }
+
+		/** sets the domain of all the full grids, this is the correct way for extrapolation */
+		virtual void setDomainAllFG( GridDomain* gridDomain ) const = 0;
+
+		/** returns the domain of the combi grid */
+		const GridDomain* getDomain() const { return gridDomain_; }
+
+		/** returns the array, size of the dimension, for each dimensions indicates weather there are
+		 * boundary points */
+		const std::vector<bool>& getBoundaryFlags() const { return combikernel_->getBoundaryFlags(); }
 
 		/** create the actual vector for the full grids. <br>
 		 * This is be different for serial and parallel implementations */
@@ -79,13 +94,13 @@ namespace combigrid{
 
 		/** evaluate the combi grid at one specified point
 		 * @param coords , the coordinates on the unit form [0,1]^D */
-		virtual double eval( const std::vector<double>& coords ) const = 0;
+		virtual double eval( std::vector<double>& coords ) const = 0;
 
 		/** evaluate the combi grid at one specified point. Buffered evaluation
 		 * which might be faster than one evaluation point.
 		 * @param coords , the coordinates on the unit form [0,1]^D
 		 * @param results , the result vector */
-		virtual void eval( const std::vector< std::vector<double> >& coords , std::vector<double>& results ) const = 0;
+		virtual void eval( std::vector< std::vector<double> >& coords , std::vector<double>& results ) const = 0;
 
 		/** create SGpp grid storage out of the combi grid <br>
 		 * @return the created grid storage for the SGpp grid */
@@ -104,19 +119,23 @@ namespace combigrid{
 		 * @param alpha , the coefficient vector with which the combi grid values will be set */
 		virtual void deCompose(GridStorage* gridstorageSGpp , DataVector* alpha) = 0;
 
+
+	protected:
+
 		/** return the combi kernel, needed for the combination of the full grids */
 		inline const CombiGridKernelD* getCombiKernel() const { return combikernel_; }
 
 		/** return the combi scheme */
 		inline const CombiSchemeBasis* getCombiScheme() const { return combischeme_; }
 
-protected:
-
 		/** pointer to the combi scheme which is set from the constructor argument */
 		const CombiSchemeBasis* combischeme_;
 
 		/** the combi kernel which stores the full grids */
 		CombiGridKernelD* combikernel_;
+
+		/** grid domain for the combi grid */
+		mutable GridDomain* gridDomain_;
 
 	};
 }

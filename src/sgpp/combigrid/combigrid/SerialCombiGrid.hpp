@@ -29,32 +29,35 @@ namespace combigrid{
 		SerialCombiGrid(const CombiSchemeBasis* combischeme , bool hasBoundaryPts = true ) :
 			AbstractCombiGrid( combischeme , hasBoundaryPts ) { ; }
 
-		/** see supercalss for docu */
+		/** see superclass for docu */
 		virtual void createFullGrids() ;
 
-		/** see supercalss for docu */
+		/** sets the domain for all fullgrids */
+		virtual void setDomainAllFG( GridDomain* gridDomain ) const;
+
+		/** see superclass for docu */
 		virtual FullGridD* getFullGrid( int i ) { return combikernel_->getFullGrid(i); }
 
-		/** see supercalss for docu */
+		/** see superclass for docu */
 		virtual const FullGridD* getFullGrid( int i ) const { return combikernel_->getFullGrid(i); }
 
-		/** see supercalss for docu */
+		/** see superclass for docu */
 		virtual int getNrFullGrid() const { return combikernel_->getNrFullGrids(); }
 
-		/** see supercalss for docu */
-		virtual double eval( const std::vector<double>& coords ) const ;
+		/** see superclass for docu */
+		virtual double eval( std::vector<double>& coords ) const ;
 
-		/** see supercalss for docu */
-		virtual void eval( const std::vector< std::vector<double> >& coords , std::vector<double>& results ) const ;
+		/** see superclass for docu */
+		virtual void eval( std::vector< std::vector<double> >& coords , std::vector<double>& results ) const ;
 
-		/** see supercalss for docu */
+		/** see superclass for docu */
 		virtual GridStorage* createSGppGridStorage() const ;
 
-		/** see supercalss for docu */
+		/** see superclass for docu */
 		virtual void reCompose(GridStorage* gridstorageSGpp , DataVector* alpha,
 				DataVector* minAlpha = NULL , DataVector* maxAlpha = NULL) const ;
 
-		/** see supercalss for docu */
+		/** see superclass for docu */
 		virtual void deCompose(GridStorage* gridstorageSGpp , DataVector* alpha) ;
 
     };
