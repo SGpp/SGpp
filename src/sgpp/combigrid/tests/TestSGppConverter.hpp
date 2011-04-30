@@ -8,10 +8,7 @@
 #ifndef TESTSGPPCONVERTER_HPP_
 #define TESTSGPPCONVERTER_HPP_
 
-#include "combigrid/combigrid/SerialCombiGrid.hpp"
-#include "combigrid/combischeme/CombiTS_CT.hpp"
-#include "combigrid/combischeme/CombiS_CT.hpp"
-#include "combigrid/converter/CombiSGppConverter.hpp"
+#include "combigrid.hpp"
 using namespace sg::base;
 
 namespace combigrid{

@@ -71,6 +71,7 @@ sourceFiles = [
    Glob(buildpath + './combischeme/*.cpp'),
    Glob(buildpath + './combikernel/*.cpp'),
    Glob(buildpath + './converter/*.cpp'),
+   Glob(buildpath + './domain/*.cpp'),
    Glob(buildpath + './fullgrid/*.cpp'),
    Glob(buildpath + './utils/*.cpp'),
 # SGpp objcets which are needed, in order to build a binary
@@ -85,3 +86,8 @@ testFile = ['./tests/test_main.cpp']
 
 # build the tester and the two binaries code 
 env.Program('test',[ testFile , sourceFiles ])
+env.Library('combigrid', [sourceFiles])
+
+#Command(["lib/libcombigrid.a"], ["libcombigrid.a"], Copy("$TARGET", "$SOURCE"))
+#Command("#././lib/sgpp/libcombigrid.a", "#libcombigrid.a", Copy("$TARGET", "$SOURCE"))
+#Command("cp libcombigrid.a ../../../lib/sgpp/libcombigrid.a")

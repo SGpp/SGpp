@@ -8,8 +8,7 @@
 #ifndef TESTSERIALCOMBIGRID_HPP_
 #define TESTSERIALCOMBIGRID_HPP_
 
-#include "combigrid/combigrid/SerialCombiGrid.hpp"
-#include "combigrid/combischeme/CombiTS_CT.hpp"
+#include "combigrid.hpp"
 
 namespace combigrid{
 
