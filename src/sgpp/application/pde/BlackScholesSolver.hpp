@@ -8,7 +8,6 @@
 #ifndef BLACKSCHOLESSOLVER_HPP
 #define BLACKSCHOLESSOLVER_HPP
 
-#include "sgpp.hpp"
 
 #include "application/pde/ParabolicPDESolver.hpp"
 
@@ -17,9 +16,13 @@
 #include "grid/common/BoundingBox.hpp"
 #include "solver/ODESolver.hpp"
 
+#include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "grid/generation/SurplusCoarseningFunctor.hpp"
+
 #include "tools/common/StdNormalDistribution.hpp"
 
 #include "application/common/ScreenOutput.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 #include <iostream>
 #include <string>
@@ -35,6 +38,7 @@ namespace sg
 namespace finance
 {
 
+
 /**
  * This class provides a simple-to-use solver of the multi dimensional Black
  * Scholes Equation that uses Sparse Grids.
@@ -46,7 +50,7 @@ namespace finance
  */
 class BlackScholesSolver : public ParabolicPDESolver
 {
-private:
+protected:
 	/// vector that contains the assets' weight
 	DataVector* mus;
 	/// vector that contains the standard deviations
@@ -96,7 +100,7 @@ private:
 	 *
 	 * @return the call premium
 	 */
-	double get1DEuroCallPayoffValue(double assetValue, double strike);
+	virtual double get1DEuroCallPayoffValue(double assetValue, double strike);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option.
@@ -106,7 +110,7 @@ private:
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	void initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -116,7 +120,7 @@ private:
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	void initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * This function calculates for every grid point the value
@@ -145,7 +149,7 @@ public:
 	 */
 	virtual ~BlackScholesSolver();
 
-	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	virtual void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
 	/**
 	 * This function tries to refine the grid such that
@@ -161,7 +165,7 @@ public:
 	 * @param payoffType the type of payoff Function used ONLY supported: avgM
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 */
-	void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
+	virtual void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
 
 	/**
 	 * This function tries to refine the grid such that
@@ -179,7 +183,7 @@ public:
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 * @param maxLevel maximum level of refinement
 	 */
-	void refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
+	virtual void refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
@@ -191,7 +195,7 @@ public:
 	 * @param rhos a DataMatrix that contains the correlations between the underlyings
 	 * @param r the riskfree rate used in the market model
 	 */
-	void setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r);
+	virtual void setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r);
 
 	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
@@ -227,7 +231,7 @@ public:
 	 * @param t time to maturity
 	 * @param isCall set this to true to calculate call, false calculates put
 	 */
-	void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t, bool isCall);
+	virtual void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t, bool isCall);
 
 	/**
 	 * Writes the premiums into a file that can be easily plot with gnuplot
@@ -235,20 +239,23 @@ public:
 	 * @param premiums the result vector, here the combinations of stock price and premium are stored
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename);
+	virtual void print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+
+
+
 	/**
 	 * Inits the screen object
 	 */
-	void initScreen();
+	virtual void initScreen();
 
 	/**
 	 * returns the algorithmic dimensions (the dimensions in which the Up Down
@@ -256,15 +263,15 @@ public:
 	 *
 	 * @return the algorithmic dimensions
 	 */
-	std::vector<size_t> getAlgorithmicDimensions();
+	virtual std::vector<size_t> getAlgorithmicDimensions();
 
 	/**
 	 * sets the algorithmic dimensions (the dimensions in which the Up Down
 	 * operations (need for space discretization) should be applied)
 	 *
-	 * @param algoDims std::vector containing the algorithmic dimensions
+	 * @param newAlgoDims std::vector containing the algorithmic dimensions
 	 */
-	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
+	virtual void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 
 	/**
 	 *	enables coarsening of grid during solving the Black Scholes
@@ -278,7 +285,7 @@ public:
 	 *	@param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
 	 *	@param refineThreshold Threshold needed to determine if a grid point should be refined
 	 */
-	void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+	virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
 	/**
 	 * prints the 2D interpolation error at money into a file. This file is plotable via gnuplot. A bounding
@@ -288,10 +295,10 @@ public:
 	 *
 	 * @param alpha the sparse grid's coefficients
 	 * @param tFilename the name of file contain the interpolation error
-	 * @param numTestpoints Number of equal distribute testpoints @money
+	 * @param numTestpoints Number of equal distribute testpoints at money
 	 * @param strike the option's strike
 	 */
-	void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
+	virtual void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
 
 	/**
 	 * gets the number of gridpoints at money
@@ -301,45 +308,97 @@ public:
 	 * @param payoffType the payoff type
 	 * @param strike the option's strike
 	 * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
-	 *
-	 * @param number of gridpoints at money
+	 * @return number of gridpoints at money
 	 */
-	size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+	virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
 	/**
 	 * gets the number needed iterations to solve Black Scholes Equation
 	 *
 	 * @return number of iterations needed to solve Black Scholes Equation, if called before solving 0 is returned
 	 */
-	size_t getNeededIterationsToSolve();
+	virtual size_t getNeededIterationsToSolve();
 
 	/**
 	 * gets needed time in seconds to solve Black Scholes Equation
 	 *
 	 * @return needed time in seconds to solve Black Scholes Equation, if called before solving 0 is returned
 	 */
-	double getNeededTimeToSolve();
+	virtual double getNeededTimeToSolve();
 
 	/**
 	 * gets the number of points in start grid
 	 *
 	 * @returns the number of points in start grid, if called before constructing grid, 0 is returned
 	 */
-	size_t getStartInnerGridSize();
+	virtual size_t getStartInnerGridSize();
 
 	/**
 	 * gets the number of points in final grid
 	 *
 	 * @returns the number of points in final grid, if called before solving, 0 is returned
 	 */
-	size_t getFinalInnerGridSize();
+	virtual size_t getFinalInnerGridSize();
 
 	/**
 	 * gets the number of average gridpoints
 	 *
 	 * @returns the number of average gridpoints, if called before solving, 0 is returned
 	 */
-	size_t getAverageInnerGridSize();
+	virtual size_t getAverageInnerGridSize();
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the RHS of the inner system which has to be
+	 * solved in order to solve the Poisson equation
+	 *
+	 * @param alpha the start solution
+	 * @param tFilename file into which the rhs is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the solution of the inner system which
+	 * has been calculated by Up/Down scheme
+	 *
+	 * @param alpha the start solution
+	 * @param numTimesteps number timesteps
+	 * @param timestepsize size of timesteps
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the C
+	 * @param tFilename file into which the rhs is written
+	 */
+	void storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
 };
 
 }

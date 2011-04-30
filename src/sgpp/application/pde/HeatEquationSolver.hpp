@@ -8,8 +8,6 @@
 #ifndef HEATEQUATIONSOLVER_HPP
 #define HEATEQUATIONSOLVER_HPP
 
-#include "sgpp.hpp"
-
 #include "application/pde/ParabolicPDESolver.hpp"
 
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
@@ -19,6 +17,7 @@
 #include "tools/common/StdNormalDistribution.hpp"
 
 #include "application/common/ScreenOutput.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 #include <iostream>
 #include <string>
@@ -43,7 +42,7 @@ namespace pde
  */
 class HeatEquationSolver : public ParabolicPDESolver
 {
-private:
+protected:
 	/// the heat coefficient
 	double a;
 	/// screen object used in this solver
@@ -62,11 +61,11 @@ public:
 
 	void constructGrid(BoundingBox& myBoundingBox, size_t level);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
 
 	/**
 	 * This method sets the heat coefficient of the regarded material
@@ -76,10 +75,10 @@ public:
 	void setHeatCoefficient(double a);
 
 	/**
-	 * Inits the grid with an smooth heat distribution based the
+	 * Inits the grid with a smooth heat distribution based on the
 	 * normal distribution formula
 	 *
-	 * @param alpha reference to the coefficients vector
+	 * @param alpha reference to the coefficient's vector
 	 * @param mu the exspected value of the normal distribution
 	 * @param sigma the sigma of the normal distribution
 	 * @param factor a factor that is used to stretch the function values
@@ -89,7 +88,60 @@ public:
 	/**
 	 * Inits the screen object
 	 */
-	void initScreen();
+	virtual void initScreen();
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the matrix of the inner system in matrix
+	 * market format
+	 *
+	 * @param alpha the sparse grid's coefficients
+	 * @param tFilename file into which the matrix is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the RHS of the inner system which has to be
+	 * solved in order to solve the Poisson equation
+	 *
+	 * @param alpha the start solution
+	 * @param tFilename file into which the rhs is written
+	 * @param timestepsize the size of the timesteps
+	 */
+	void storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize);
+
+	/**
+	 * Routine to export the solution of the inner system which
+	 * has been calculated by Up/Down scheme
+	 *
+	 * @param alpha the start solution
+	 * @param numTimesteps number timesteps
+	 * @param timestepsize size of timesteps
+	 * @param maxCGIterations the maximum of interation in the CG solver
+	 * @param epsilonCG the epsilon used in the C
+	 * @param tFilename file into which the rhs is written
+	 */
+	void storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
 };
 
 }
