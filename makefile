@@ -1,24 +1,10 @@
-#############################################################################
-# This file is part of sgpp, a program package making use of spatially      #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU Lesser General Public License as published  #
-# by the Free Software Foundation; either version 3 of the License, or      #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU Lesser General Public License  #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
+#################################################################################
+# Copyright (C) 2009-2011 Technische Universitaet Muenchen                      #
+# This file is part of the SG++ project. For conditions of distribution and     #
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp            #
+#                                                                               #
+# author Alexander Heinecke (Alexander.Heinecke@mytum.de)                       #
+#################################################################################
 
 ###################################################################
 # Needed Pathes
@@ -42,6 +28,7 @@ OMP=0
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
 CC=g++
+#CC=icpc
 # vectorization option for intel compiler
 VEC=sse3
 # extensions, manages extensions to be included, possible values (only when using Intel Compiler):
@@ -153,6 +140,21 @@ ifeq ($(CC),icpc)
 	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC" "EXT=$(EXT)"
 endif
 
+
+###################################################################
+# Builds a Black Scholes Solver with Stretching
+###################################################################	
+BSSolverWithStretching: default
+
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/BSSolverWithStretching_gcc
+	make -f ./../../../src/makefileNativeBlackScholesSolverWithStretching --directory=./tmp/build_native/BSSolverWithStretching_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=BSSolverWithStretching_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/BSSolverWithStretching_icc
+	make -f ./../../../src/makefileNativeBlackScholesSolverWithStretching --directory=./tmp/build_native/BSSolverWithStretching_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolverWithStretching_ICC" "EXT=$(EXT)"
+endif
+
 ###################################################################
 # Builds a Hull White Solver
 ###################################################################	
@@ -197,6 +199,32 @@ ifeq ($(CC),mpiicpc)
 endif
 
 ###################################################################
+# Builds a simple Heat Equation Solver (rotating Laser test case)
+###################################################################	
+LaserHESolver2D: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/LaserHESolver2D_gcc
+	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver2D_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=LaserHESolver2D_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/LaserHESolver2D_icc
+	make -f ./../../../src/makefileNativeLaserHeatEquationSolver --directory=./tmp/build_native/LaserHESolver2D_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LaserHESolver2D_ICC" "EXT=$(EXT)"
+endif
+
+###################################################################
+# Builds a simple Heat Equation Solver with Stretching
+###################################################################	
+HESolverWithStretching: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/HESolverWithStretching_gcc
+	make -f ./../../../src/makefileNativeHeatEquationSolverWithStretching --directory=./tmp/build_native/HESolverWithStretching_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HESolverWithStretching_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/HESolverWithStretching_icc
+	make -f ./../../../src/makefileNativeHeatEquationSolverWithStretching --directory=./tmp/build_native/HESolverWithStretching_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HESolverWithStretching_ICC" "EXT=$(EXT)"
+endif
+
+###################################################################
 # Builds a ClassifyBenchmark Application
 ###################################################################	
 ClassifyBenchmark: default
@@ -216,6 +244,15 @@ UpDownTest: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/UpDownTest_gcc
 	make -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC" "EXT=$(EXT)"
+endif
+
+###################################################################
+# Builds a Up/Down Test Application
+###################################################################	
+UpDownTestForStretching: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/UpDownTestForStretching_gcc
+	make -f ./../../../src/makefileUpDownTestForStretching --directory=./tmp/build_native/UpDownTestForStretching_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTestForStretching_GCC" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -250,6 +287,31 @@ test_BS_3d:
 	./test_BSSolver_3d.sh;
 	
 test_BS_all: test_BS_1d test_BS_2d test_BS_3d
+	echo "executed all BS tests!"
+
+###################################################################
+# test Black Scholes Solver with Stretching
+###################################################################	
+		
+test_BSS_1d:
+	cd bin; \
+	./copyBSSolverWithStretchingToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolverWithStretching/1d; \
+	./test_BSSolverWithStretching_1d.sh;
+	
+test_BSS_2d:
+	cd bin; \
+	./copyBSSolverWithStretchingToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolverWithStretching/2d; \
+	./test_BSSolverWithStretching_2d.sh;
+		
+test_BSS_3d:
+	cd bin; \
+	./copyBSSolverWithStretchingToTest.sh; \
+	cd ./../tests/CPP_Apps/BSSolverWithStretching/3d; \
+	./test_BSSolverWithStretching_3d.sh;
+	
+test_BSS_all: test_BSS_1d test_BSS_2d test_BSS_3d
 	echo "executed all BS tests!"
 		
 ###################################################################
