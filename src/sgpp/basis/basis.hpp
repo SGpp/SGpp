@@ -10,6 +10,8 @@
 
 #include "basis/linear/noboundary/linear_base.hpp"
 #include "basis/linear/boundary/linearboundaryBase.hpp"
+#include "basis/linearstretched/noboundary/linearstretched_base.hpp"
+#include "basis/linearstretched/boundary/linearstretchedboundaryBase.hpp"
 #include "basis/modlinear/modified_linear_base.hpp"
 #include "basis/poly/poly_base.hpp"
 #include "basis/modpoly/modified_poly_base.hpp"
