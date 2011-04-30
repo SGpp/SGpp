@@ -5,12 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef GRIDPRINTER_HPP
-#define GRIDPRINTER_HPP
+#ifndef GRIDPRINTERFORSTRETCHING_HPP
+#define GRIDPRINTERFORSTRETCHING_HPP
 
-#include "grid/Grid.hpp"
-
-#include "data/DataVector.hpp"
+#include "tools/common/GridPrinter.hpp"
 
 #include <string>
 
@@ -23,24 +21,20 @@ namespace base
  * This class implements a utility that allows you to print a grid
  * to file. These files can be plotted with gnuplot.
  */
-class GridPrinter
+class GridPrinterForStretching: public GridPrinter
 {
-protected:
-	/// Pointer to the grid Object, which should be printed
-	Grid* myGrid;
-
 public:
 	/**
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid Reference to a Spare Grid, that should be printed
 	 */
-	GridPrinter(Grid& SparseGrid);
+	GridPrinterForStretching(Grid& SparseGrid);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~GridPrinter();
+	virtual ~GridPrinterForStretching();
 
 	/**
 	 * Print the grid with its function to a file; front end
@@ -51,6 +45,12 @@ public:
 	 */
 	virtual void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
 
+
+	/**
+	 * This function is not used for stretching grid printing, use printGridDomainStretching instead
+
+	 */
+	virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension);
 	/**
 	 * Print the grid with its function to a file; front end
 	 *
@@ -59,7 +59,7 @@ public:
 	 * @param GridArea The area in which the function should be plotted
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
-	virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension);
+	virtual void printGridDomainStretching(DataVector& alpha, std::string tFilename, Stretching& GridArea, double PointsPerDimension);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -88,4 +88,4 @@ public:
 }
 }
 
-#endif /* GRIDPRINTER */
+#endif /* GRIDPRINTERFORSTRETCHING */
