@@ -30,7 +30,7 @@ public:
 	/** Returns the gridpoint for given index vector
 	 *@param index the indexes of the gridpoint in every direction
 	 *@return access to the gridpoint value in the data vector */
-	virtual inline double& at(index_t *index){
+	virtual double& at(size_t *index){
 		size_t ind=0;
 		for (int i=dim-1;i>=0;i--)
     	    	ind=(powOfTwo[level[i]]-1)*ind+index[i];

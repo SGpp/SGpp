@@ -12,6 +12,7 @@
 #include "data/DataVector.hpp"
 
 #include "grid/common/BoundingBox.hpp"
+#include "grid/common/Stretching.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -242,7 +243,6 @@ public:
 	 * gets level <i>l</i> in dimension <i>d</i>
 	 *
 	 * @param d the dimension in which the ansatz function should be read
-	 * @param l reference parameter for the level of the ansatz function
 	 */
 	int getLevel(size_t d) const
 	{
@@ -254,7 +254,6 @@ public:
 	 * gets index <i>i</i> in dimension <i>d</i>
 	 *
 	 * @param d the dimension in which the ansatz function should be read
-	 * @param i reference parameter for the index of the ansatz function
 	 */
 	int getIndex(size_t d) const
 	{
@@ -307,6 +306,17 @@ public:
 	double getCoordBB(size_t d, double q, double t) const
 	{
 		return q*(index[d] * pow(2.0, -static_cast<double>(level[d]))) + t;
+	}
+	/**
+	 * determines the coordinate in a given dimension
+	 *
+	 * @param d the dimension in which the coordinate should be calculated
+	 * @param stretch the stretching the index belongs to
+	 *
+	 * @return the coordinate in the given dimension
+	 */
+	double getCoordStretching(size_t d, Stretching* stretch){
+		return stretch->getCoordinates(level[d], index[d], d);
 	}
 
 	/**
@@ -392,43 +402,6 @@ public:
         }
 		return true;
     }
-
-#ifdef KNF
-    /**
-     * checks whether this gridpoints is identical to another one
-	 *
-	 * Running under LARRABEE this is defined the way around, MSDN 2009:
-	 * A binary predicate f(x,y) is a function object that has two
-	 * argument objects x and y and a return value of true or false.
-	 * An ordering imposed on a hash_map is a strict weak ordering
-	 * if the binary predicate is irreflexive, antisymmetric,
-	 * and transitive and if equivalence is transitive, where
-	 * two objects x and y are defined to be equivalent
-	 * when both f(x,y) and f(y,x) are false -> equalsSGLRBHash
-     *
-     * @param rhs reference the another HashGridIndex instance
-     *
-     * @return true if the gridpoints are identical otherwise false
-     */
-    bool equalsSGLRBHash(HashGridIndex<LT, IT> &rhs) const
-    {
-        for(size_t d = 0; d < DIM; d++)
-        {
-            if(level[d] != rhs.level[d])
-            {
-                return true;
-            }
-        }
-        for(size_t d = 0; d < DIM; d++)
-        {
-            if(index[d] != rhs.index[d])
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-#endif
 
 	/**
 	 * This is just wrapper for operator= until I cant get swig to wrap it
@@ -565,6 +538,26 @@ public:
 			}
 		}
     }
+    /**
+       * Sets the entries of DataVector p to the coordinates of the gridpoint with stretching
+       *
+       * @param p the (result) DataVector p that should be overwritten
+       * @param stretch reference to Stretching Object, that stores grid points in all dimensions
+       */
+    void getCoordsStretching(DataVector& p, Stretching & stretch)
+        {
+    		for(size_t i = 0; i < DIM; i++)
+    		{
+    			if(level[i] == 0)
+    			{
+    				p.set(i, (stretch.getIntervalWidth(i)*index[i])+stretch.getIntervalOffset(i));
+    			}
+    			else
+    			{
+    				p.set(i,stretch.getCoordinates(level[i],index[i], i));
+    			}
+    		}
+        }
 
     /**
      * Generates a string with all coordinates of the grid point.
@@ -634,6 +627,33 @@ public:
     }
 
     /**
+      * Generates a string with all coordinates of the grid point with bounding box
+      * The accuracy is up to 6 digits, i.e. beginning with level 8 there are rounding errors.
+      *
+      * This version scales the coordinates with q and t
+      *
+      * @param stretch reference to Stretching Object, that stores all boundaries for all dimensions
+      *
+      * @return returns a string with the coordinates of the grid point separated by whitespace
+      */
+     std::string getCoordsStringStretching(Stretching& stretch)
+     {
+     	std::stringstream return_stream;
+
+     	for(size_t i = 0; i < DIM; i++)
+     	{
+     		return_stream << std::scientific << stretch.getCoordinates(level[i],index[i], i);
+
+     		if (i < DIM-1)
+     	     		{
+     	     			return_stream << " ";
+     	     		}
+     	}
+
+     	return return_stream.str();
+     }
+
+    /**
       * Returns the sum of the one-dimensional levels, i.e. @f$ |\vec{l}|_1 @f$.
       *
       * @return the sum of the one-dimensional levels
@@ -676,7 +696,6 @@ private:
 	size_t hash_value;
 };
 
-#ifndef KNF
 template<class LT, class IT>
 struct hash<HashGridIndex<LT, IT>* > {
     size_t operator()(HashGridIndex<LT, IT>* index) const {
@@ -690,43 +709,6 @@ struct eqIndex<HashGridIndex<LT, IT>* > {
         return s1->equals(*s2);
     }
 };
-#endif
-
-#ifdef KNF
-#include <ext/hash_map>
-
-/**
- * hash_compare function needed on Larrabee
- * for configuring the hash_hap
- */
-template<class LT, class IT>
-class LRBSGHasher<HashGridIndex<LT, IT>*> : public std::hash_compare<HashGridIndex<LT, IT>*>
-{
-public:
-	/**
-	 * operator that calculates the hash values
-	 *
-	 * @param index pointer to an element of the hash_map
-	 * @return the hash value
-	 */
-	size_t operator() (HashGridIndex<LT, IT>* index) const
-	{
-		return index->hash();
-	}
-
-	/**
-	 * operator that compares to elements in the hash_map
-	 *
-	 * @param s1 first element
-	 * @param s2 second element
-	 * @return returns true if s1 == s2, otherwise false
-	 */
-	bool operator() (HashGridIndex<LT, IT>* s1, HashGridIndex<LT, IT>* s2) const
-	{
-		return s1->equalsSGLRBHash(*s2);
-	}
-};
-#endif
 
 }
 }

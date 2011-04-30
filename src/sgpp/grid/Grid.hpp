@@ -21,6 +21,7 @@
 
 #include "grid/generation/GridGenerator.hpp"
 #include "grid/common/BoundingBox.hpp"
+#include "grid/common/Stretching.hpp"
 
 #include <iostream>
 #include <string>
@@ -47,6 +48,13 @@ public:
 	static Grid* createLinearGrid(size_t dim);
 
 	/**
+	 * creates a linear stretched grid without boundaries
+	 *
+	 * @param dim the grid's dimension
+	 */
+	static Grid* createLinearStretchedGrid(size_t dim);
+
+	/**
 	 * creates a linear boundary grid
 	 *
 	 * @param dim the grid's dimension
@@ -60,6 +68,12 @@ public:
 	 */
 	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
 
+	/**
+	 * creates a linearstretched trapezoid boundary grid
+	 *
+	 * @param dim the grid's dimension
+	 */
+	static Grid* createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
 	/**
 	 * creates a mod linear grid
 	 *
@@ -114,11 +128,14 @@ public:
 	 * @param dim the grid's dimension
 	 * */
 	static Grid* createSquareRootGrid(size_t dim);
+
 	/**
-	 * creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have |l|<level and li>=l_user
+	 * creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have \f$|l|<level and li>=l_user\f$
+	 *
 	 * @param dim the grid's dimension
 	 * */
 	static Grid* createTruncatedTrapezoidGrid(size_t dim);
+
 	/**
 	 * reads a grid out of a string
 	 *
@@ -169,11 +186,25 @@ public:
 	virtual BoundingBox* getBoundingBox();
 
 	/**
+	 * gets a pointer to the GridStorage's Stretching object
+	 *
+	 * @return pointer to the GridStorage's Stretching object
+	 */
+	virtual Stretching* getStretching();
+
+	/**
 	 * sets the GridStorage's BoundingsBox pointer to a BoundingBox object
 	 *
 	 * @return pointer to the GridStorage's BoundingsBox object
 	 */
 	virtual void setBoundingBox(BoundingBox& bb);
+
+	/**
+	 * sets the GridStorage's Stretching pointer to a Stretching object
+	 *
+	 * @return pointer to the GridStorage's Stretching object
+	 */
+	virtual void setStretching(Stretching& bb);
 
 	/**
 	 * gets a pointer to GridGenerator object
@@ -384,7 +415,7 @@ public:
 	 * sets the algorithmic dimensions (the dimensions in which the Up Down
 	 * operations should be applied)
 	 *
-	 * @param algoDims std::vector containing the algorithmic dimensions
+	 * @param newAlgoDims std::vector containing the algorithmic dimensions
 	 */
 	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 
