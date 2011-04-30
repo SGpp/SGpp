@@ -113,6 +113,43 @@
 #include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
+
+#include "basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.hpp"
+// @todo (heinecke) removed this when done
+#include "basis/linearstretched/boundary/operation/common/OperationUpDownTestLinearStretchedBoundary.hpp"
+
+#include "basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.hpp"
+//#include "basis/linearstretched/boundary/operation/pde/financeHW1D/OperationLBLinearStretchedBoundary.hpp"
+//#include "basis/linearstretched/boundary/operation/pde/financeHW1D/OperationLDLinearStretchedBoundary.hpp"
+//#include "basis/linearstretched/boundary/operation/pde/financeHW1D/OperationLELinearStretchedBoundary.hpp"
+//#include "basis/linearstretched/boundary/operation/pde/financeHW1D/OperationLFLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/pde/OperationLTwoDotProductLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/pde/finance/OperationGammaLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.hpp"
+
+// Include all operations on the linearstretched grid
+#include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.hpp"
+#include "basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.hpp"
+#include "basis/linearstretched/noboundary/operation/common/OperationEvalLinearStretched.hpp"
+#include "basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.hpp"
+
+#include "basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.hpp"
+#include "basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.hpp"
+//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLELinearStretched.hpp"
+//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLBLinearStretched.hpp"
+//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLFLinearStretched.hpp"
+//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLDLinearStretched.hpp"
+
+#include "basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.hpp"
+#include "basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.hpp"
+#include "basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.hpp"
+#include "basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.hpp"
+
 using namespace sg::base;
 
 //using namespace sg::pde;
