@@ -304,6 +304,60 @@ class BoundingBox(_object):
 BoundingBox_swigregister = _pysgpp.BoundingBox_swigregister
 BoundingBox_swigregister(BoundingBox)
 
+LOOKUPSIZE = _pysgpp.LOOKUPSIZE
+LOOKUPMAX = _pysgpp.LOOKUPMAX
+class Stretching1D(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Stretching1D, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Stretching1D, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["type"] = _pysgpp.Stretching1D_type_set
+    __swig_getmethods__["type"] = _pysgpp.Stretching1D_type_get
+    if _newclass:type = _swig_property(_pysgpp.Stretching1D_type_get, _pysgpp.Stretching1D_type_set)
+    __swig_setmethods__["x_0"] = _pysgpp.Stretching1D_x_0_set
+    __swig_getmethods__["x_0"] = _pysgpp.Stretching1D_x_0_get
+    if _newclass:x_0 = _swig_property(_pysgpp.Stretching1D_x_0_get, _pysgpp.Stretching1D_x_0_set)
+    __swig_setmethods__["xsi"] = _pysgpp.Stretching1D_xsi_set
+    __swig_getmethods__["xsi"] = _pysgpp.Stretching1D_xsi_get
+    if _newclass:xsi = _swig_property(_pysgpp.Stretching1D_xsi_get, _pysgpp.Stretching1D_xsi_set)
+    __swig_setmethods__["lookup"] = _pysgpp.Stretching1D_lookup_set
+    __swig_getmethods__["lookup"] = _pysgpp.Stretching1D_lookup_get
+    if _newclass:lookup = _swig_property(_pysgpp.Stretching1D_lookup_get, _pysgpp.Stretching1D_lookup_set)
+    def __init__(self): 
+        this = _pysgpp.new_Stretching1D()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_Stretching1D
+    __del__ = lambda self : None;
+Stretching1D_swigregister = _pysgpp.Stretching1D_swigregister
+Stretching1D_swigregister(Stretching1D)
+
+class Stretching(BoundingBox):
+    __swig_setmethods__ = {}
+    for _s in [BoundingBox]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Stretching, name, value)
+    __swig_getmethods__ = {}
+    for _s in [BoundingBox]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Stretching, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _pysgpp.new_Stretching(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_Stretching
+    __del__ = lambda self : None;
+    def getCoordinates(self, *args): return _pysgpp.Stretching_getCoordinates(self, *args)
+    def getStretching1D(self, *args): return _pysgpp.Stretching_getStretching1D(self, *args)
+    def printLookupTable(self): return _pysgpp.Stretching_printLookupTable(self)
+    def getAdjacentPositions(self, *args): return _pysgpp.Stretching_getAdjacentPositions(self, *args)
+    def getStretchingMode(self): return _pysgpp.Stretching_getStretchingMode(self)
+    def getDiscreteVector(self, *args): return _pysgpp.Stretching_getDiscreteVector(self, *args)
+    def getDiscreteVectorLevel(self): return _pysgpp.Stretching_getDiscreteVectorLevel(self)
+    def calculateNeighborLookup(self, *args): return _pysgpp.Stretching_calculateNeighborLookup(self, *args)
+Stretching_swigregister = _pysgpp.Stretching_swigregister
+Stretching_swigregister(Stretching)
+
 class DirichletUpdateVector(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, DirichletUpdateVector, name, value)
@@ -630,6 +684,28 @@ class TrapezoidBoundaryGridGenerator(GridGenerator):
 TrapezoidBoundaryGridGenerator_swigregister = _pysgpp.TrapezoidBoundaryGridGenerator_swigregister
 TrapezoidBoundaryGridGenerator_swigregister(TrapezoidBoundaryGridGenerator)
 
+class StretchedTrapezoidBoundaryGridGenerator(GridGenerator):
+    __swig_setmethods__ = {}
+    for _s in [GridGenerator]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, StretchedTrapezoidBoundaryGridGenerator, name, value)
+    __swig_getmethods__ = {}
+    for _s in [GridGenerator]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, StretchedTrapezoidBoundaryGridGenerator, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _pysgpp.delete_StretchedTrapezoidBoundaryGridGenerator
+    __del__ = lambda self : None;
+    def regular(self, *args): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_regular(self, *args)
+    def refine(self, *args): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_refine(self, *args)
+    def getNumberOfRefinablePoints(self): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_getNumberOfRefinablePoints(self)
+    def coarsen(self, *args): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_coarsen(self, *args)
+    def coarsenNFirstOnly(self, *args): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_coarsenNFirstOnly(self, *args)
+    def getNumberOfRemoveablePoints(self): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_getNumberOfRemoveablePoints(self)
+    def refineMaxLevel(self, *args): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_refineMaxLevel(self, *args)
+    def getNumberOfRefinablePointsToMaxLevel(self, *args): return _pysgpp.StretchedTrapezoidBoundaryGridGenerator_getNumberOfRefinablePointsToMaxLevel(self, *args)
+StretchedTrapezoidBoundaryGridGenerator_swigregister = _pysgpp.StretchedTrapezoidBoundaryGridGenerator_swigregister
+StretchedTrapezoidBoundaryGridGenerator_swigregister(StretchedTrapezoidBoundaryGridGenerator)
+
 class TruncatedTrapezoidGridGenerator(GridGenerator):
     __swig_setmethods__ = {}
     for _s in [GridGenerator]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -699,6 +775,27 @@ class SurplusRefinementFunctor(RefinementFunctor):
 SurplusRefinementFunctor_swigregister = _pysgpp.SurplusRefinementFunctor_swigregister
 SurplusRefinementFunctor_swigregister(SurplusRefinementFunctor)
 
+class SurplusVolumeRefinementFunctor(RefinementFunctor):
+    __swig_setmethods__ = {}
+    for _s in [RefinementFunctor]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, SurplusVolumeRefinementFunctor, name, value)
+    __swig_getmethods__ = {}
+    for _s in [RefinementFunctor]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, SurplusVolumeRefinementFunctor, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _pysgpp.new_SurplusVolumeRefinementFunctor(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_SurplusVolumeRefinementFunctor
+    __del__ = lambda self : None;
+    def __call__(self, *args): return _pysgpp.SurplusVolumeRefinementFunctor___call__(self, *args)
+    def start(self): return _pysgpp.SurplusVolumeRefinementFunctor_start(self)
+    def getRefinementsNum(self): return _pysgpp.SurplusVolumeRefinementFunctor_getRefinementsNum(self)
+    def getRefinementThreshold(self): return _pysgpp.SurplusVolumeRefinementFunctor_getRefinementThreshold(self)
+SurplusVolumeRefinementFunctor_swigregister = _pysgpp.SurplusVolumeRefinementFunctor_swigregister
+SurplusVolumeRefinementFunctor_swigregister(SurplusVolumeRefinementFunctor)
+
 class SurplusCoarseningFunctor(CoarseningFunctor):
     __swig_setmethods__ = {}
     for _s in [CoarseningFunctor]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -729,10 +826,14 @@ class Grid(_object):
     __repr__ = _swig_repr
     __swig_getmethods__["createLinearGrid"] = lambda x: _pysgpp.Grid_createLinearGrid
     if _newclass:createLinearGrid = staticmethod(_pysgpp.Grid_createLinearGrid)
+    __swig_getmethods__["createLinearStretchedGrid"] = lambda x: _pysgpp.Grid_createLinearStretchedGrid
+    if _newclass:createLinearStretchedGrid = staticmethod(_pysgpp.Grid_createLinearStretchedGrid)
     __swig_getmethods__["createLinearBoundaryGrid"] = lambda x: _pysgpp.Grid_createLinearBoundaryGrid
     if _newclass:createLinearBoundaryGrid = staticmethod(_pysgpp.Grid_createLinearBoundaryGrid)
     __swig_getmethods__["createLinearTrapezoidBoundaryGrid"] = lambda x: _pysgpp.Grid_createLinearTrapezoidBoundaryGrid
     if _newclass:createLinearTrapezoidBoundaryGrid = staticmethod(_pysgpp.Grid_createLinearTrapezoidBoundaryGrid)
+    __swig_getmethods__["createLinearStretchedTrapezoidBoundaryGrid"] = lambda x: _pysgpp.Grid_createLinearStretchedTrapezoidBoundaryGrid
+    if _newclass:createLinearStretchedTrapezoidBoundaryGrid = staticmethod(_pysgpp.Grid_createLinearStretchedTrapezoidBoundaryGrid)
     __swig_getmethods__["createModLinearGrid"] = lambda x: _pysgpp.Grid_createModLinearGrid
     if _newclass:createModLinearGrid = staticmethod(_pysgpp.Grid_createModLinearGrid)
     __swig_getmethods__["createPolyGrid"] = lambda x: _pysgpp.Grid_createPolyGrid
@@ -756,6 +857,7 @@ class Grid(_object):
     def createGridGenerator(self): return _pysgpp.Grid_createGridGenerator(self)
     def getStorage(self): return _pysgpp.Grid_getStorage(self)
     def getBoundingBox(self): return _pysgpp.Grid_getBoundingBox(self)
+    def getStretching(self): return _pysgpp.Grid_getStretching(self)
     def getType(self): return _pysgpp.Grid_getType(self)
     def serialize(self): return _pysgpp.Grid_serialize(self)
     def refine(self, *args): return _pysgpp.Grid_refine(self, *args)
@@ -772,6 +874,10 @@ def Grid_createLinearGrid(*args):
   return _pysgpp.Grid_createLinearGrid(*args)
 Grid_createLinearGrid = _pysgpp.Grid_createLinearGrid
 
+def Grid_createLinearStretchedGrid(*args):
+  return _pysgpp.Grid_createLinearStretchedGrid(*args)
+Grid_createLinearStretchedGrid = _pysgpp.Grid_createLinearStretchedGrid
+
 def Grid_createLinearBoundaryGrid(*args):
   return _pysgpp.Grid_createLinearBoundaryGrid(*args)
 Grid_createLinearBoundaryGrid = _pysgpp.Grid_createLinearBoundaryGrid
@@ -779,6 +885,10 @@ Grid_createLinearBoundaryGrid = _pysgpp.Grid_createLinearBoundaryGrid
 def Grid_createLinearTrapezoidBoundaryGrid(*args):
   return _pysgpp.Grid_createLinearTrapezoidBoundaryGrid(*args)
 Grid_createLinearTrapezoidBoundaryGrid = _pysgpp.Grid_createLinearTrapezoidBoundaryGrid
+
+def Grid_createLinearStretchedTrapezoidBoundaryGrid(*args):
+  return _pysgpp.Grid_createLinearStretchedTrapezoidBoundaryGrid(*args)
+Grid_createLinearStretchedTrapezoidBoundaryGrid = _pysgpp.Grid_createLinearStretchedTrapezoidBoundaryGrid
 
 def Grid_createModLinearGrid(*args):
   return _pysgpp.Grid_createModLinearGrid(*args)
@@ -892,6 +1002,36 @@ class FullGridSet(_object):
 FullGridSet_swigregister = _pysgpp.FullGridSet_swigregister
 FullGridSet_swigregister(FullGridSet)
 
+class GridDataBase(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GridDataBase, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, GridDataBase, name)
+    __repr__ = _swig_repr
+    ascii = _pysgpp.GridDataBase_ascii
+    binary = _pysgpp.GridDataBase_binary
+    def __init__(self, *args): 
+        this = _pysgpp.new_GridDataBase(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_GridDataBase
+    __del__ = lambda self : None;
+    def clear(self): return _pysgpp.GridDataBase_clear(self)
+    def toString(self): return _pysgpp.GridDataBase_toString(self)
+    def hasKey(self, *args): return _pysgpp.GridDataBase_hasKey(self, *args)
+    def set(self, *args): return _pysgpp.GridDataBase_set(self, *args)
+    def setValuesFor(self, *args): return _pysgpp.GridDataBase_setValuesFor(self, *args)
+    def size(self): return _pysgpp.GridDataBase_size(self)
+    def dim(self): return _pysgpp.GridDataBase_dim(self)
+    def get(self, *args): return _pysgpp.GridDataBase_get(self, *args)
+    def remove(self, *args): return _pysgpp.GridDataBase_remove(self, *args)
+    def save(self, *args): return _pysgpp.GridDataBase_save(self, *args)
+    def load(self, *args): return _pysgpp.GridDataBase_load(self, *args)
+    def begin(self): return _pysgpp.GridDataBase_begin(self)
+    def end(self): return _pysgpp.GridDataBase_end(self)
+GridDataBase_swigregister = _pysgpp.GridDataBase_swigregister
+GridDataBase_swigregister(GridDataBase)
+
 class DataVector(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, DataVector, name, value)
@@ -991,6 +1131,74 @@ class DataMatrix(_object):
 DataMatrix_swigregister = _pysgpp.DataMatrix_swigregister
 DataMatrix_swigregister(DataMatrix)
 
+class DMSystemMatrix(OperationMatrix):
+    __swig_setmethods__ = {}
+    for _s in [OperationMatrix]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, DMSystemMatrix, name, value)
+    __swig_getmethods__ = {}
+    for _s in [OperationMatrix]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, DMSystemMatrix, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _pysgpp.new_DMSystemMatrix(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_DMSystemMatrix
+    __del__ = lambda self : None;
+    def mult(self, *args): return _pysgpp.DMSystemMatrix_mult(self, *args)
+    def generateb(self, *args): return _pysgpp.DMSystemMatrix_generateb(self, *args)
+DMSystemMatrix_swigregister = _pysgpp.DMSystemMatrix_swigregister
+DMSystemMatrix_swigregister(DMSystemMatrix)
+
+class PDESolver(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, PDESolver, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, PDESolver, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _pysgpp.delete_PDESolver
+    __del__ = lambda self : None;
+    def constructGrid(self, *args): return _pysgpp.PDESolver_constructGrid(self, *args)
+    def setGrid(self, *args): return _pysgpp.PDESolver_setGrid(self, *args)
+    def getGrid(self): return _pysgpp.PDESolver_getGrid(self)
+    def deleteGrid(self): return _pysgpp.PDESolver_deleteGrid(self)
+    def refineInitialGridSurplus(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplus(self, *args)
+    def refineInitialGridSurplusToMaxLevel(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplusToMaxLevel(self, *args)
+    def refineInitialGridSurplusSubDomain(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplusSubDomain(self, *args)
+    def refineInitialGridSurplusToMaxLevelSubDomain(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplusToMaxLevelSubDomain(self, *args)
+    def coarsenInitialGridSurplus(self, *args): return _pysgpp.PDESolver_coarsenInitialGridSurplus(self, *args)
+    def constructGridBonn(self, *args): return _pysgpp.PDESolver_constructGridBonn(self, *args)
+    def storeGridBonn(self, *args): return _pysgpp.PDESolver_storeGridBonn(self, *args)
+    def evaluatePoint(self, *args): return _pysgpp.PDESolver_evaluatePoint(self, *args)
+    def evaluateCuboid(self, *args): return _pysgpp.PDESolver_evaluateCuboid(self, *args)
+    def printGrid(self, *args): return _pysgpp.PDESolver_printGrid(self, *args)
+    def printGridDomain(self, *args): return _pysgpp.PDESolver_printGridDomain(self, *args)
+    def printSparseGrid(self, *args): return _pysgpp.PDESolver_printSparseGrid(self, *args)
+    def printSparseGridExpTransform(self, *args): return _pysgpp.PDESolver_printSparseGridExpTransform(self, *args)
+    def getNumberGridPoints(self): return _pysgpp.PDESolver_getNumberGridPoints(self)
+    def getNumberInnerGridPoints(self): return _pysgpp.PDESolver_getNumberInnerGridPoints(self)
+    def getNumberDimensions(self): return _pysgpp.PDESolver_getNumberDimensions(self)
+PDESolver_swigregister = _pysgpp.PDESolver_swigregister
+PDESolver_swigregister(PDESolver)
+
+class ParabolicPDESolver(PDESolver):
+    __swig_setmethods__ = {}
+    for _s in [PDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ParabolicPDESolver, name, value)
+    __swig_getmethods__ = {}
+    for _s in [PDESolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, ParabolicPDESolver, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _pysgpp.delete_ParabolicPDESolver
+    __del__ = lambda self : None;
+    def solveImplicitEuler(self, *args): return _pysgpp.ParabolicPDESolver_solveImplicitEuler(self, *args)
+    def solveExplicitEuler(self, *args): return _pysgpp.ParabolicPDESolver_solveExplicitEuler(self, *args)
+    def solveCrankNicolson(self, *args): return _pysgpp.ParabolicPDESolver_solveCrankNicolson(self, *args)
+ParabolicPDESolver_swigregister = _pysgpp.ParabolicPDESolver_swigregister
+ParabolicPDESolver_swigregister(ParabolicPDESolver)
+
 class OperationParabolicPDESolverSystem(OperationMatrix):
     __swig_setmethods__ = {}
     for _s in [OperationMatrix]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -1034,6 +1242,9 @@ class OperationParabolicPDESolverSystemDirichlet(OperationParabolicPDESolverSyst
     def mult(self, *args): return _pysgpp.OperationParabolicPDESolverSystemDirichlet_mult(self, *args)
     def generateRHS(self): return _pysgpp.OperationParabolicPDESolverSystemDirichlet_generateRHS(self)
     def getGridCoefficientsForCG(self): return _pysgpp.OperationParabolicPDESolverSystemDirichlet_getGridCoefficientsForCG(self)
+    def getInnerMatrix(self, *args): return _pysgpp.OperationParabolicPDESolverSystemDirichlet_getInnerMatrix(self, *args)
+    def getInnerMatrixDiagonal(self, *args): return _pysgpp.OperationParabolicPDESolverSystemDirichlet_getInnerMatrixDiagonal(self, *args)
+    def getInnerMatrixDiagonalRowSum(self, *args): return _pysgpp.OperationParabolicPDESolverSystemDirichlet_getInnerMatrixDiagonalRowSum(self, *args)
 OperationParabolicPDESolverSystemDirichlet_swigregister = _pysgpp.OperationParabolicPDESolverSystemDirichlet_swigregister
 OperationParabolicPDESolverSystemDirichlet_swigregister(OperationParabolicPDESolverSystemDirichlet)
 
@@ -1054,24 +1265,34 @@ class OperationParabolicPDESolverSystemNeumann(OperationParabolicPDESolverSystem
 OperationParabolicPDESolverSystemNeumann_swigregister = _pysgpp.OperationParabolicPDESolverSystemNeumann_swigregister
 OperationParabolicPDESolverSystemNeumann_swigregister(OperationParabolicPDESolverSystemNeumann)
 
-class DMSystemMatrix(OperationMatrix):
+class HeatEquationSolver(ParabolicPDESolver):
     __swig_setmethods__ = {}
-    for _s in [OperationMatrix]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, DMSystemMatrix, name, value)
+    for _s in [ParabolicPDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, HeatEquationSolver, name, value)
     __swig_getmethods__ = {}
-    for _s in [OperationMatrix]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, DMSystemMatrix, name)
+    for _s in [ParabolicPDESolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, HeatEquationSolver, name)
     __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _pysgpp.new_DMSystemMatrix(*args)
+    def __init__(self): 
+        this = _pysgpp.new_HeatEquationSolver()
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _pysgpp.delete_DMSystemMatrix
+    __swig_destroy__ = _pysgpp.delete_HeatEquationSolver
     __del__ = lambda self : None;
-    def mult(self, *args): return _pysgpp.DMSystemMatrix_mult(self, *args)
-    def generateb(self, *args): return _pysgpp.DMSystemMatrix_generateb(self, *args)
-DMSystemMatrix_swigregister = _pysgpp.DMSystemMatrix_swigregister
-DMSystemMatrix_swigregister(DMSystemMatrix)
+    def constructGrid(self, *args): return _pysgpp.HeatEquationSolver_constructGrid(self, *args)
+    def solveExplicitEuler(self, *args): return _pysgpp.HeatEquationSolver_solveExplicitEuler(self, *args)
+    def solveImplicitEuler(self, *args): return _pysgpp.HeatEquationSolver_solveImplicitEuler(self, *args)
+    def solveCrankNicolson(self, *args): return _pysgpp.HeatEquationSolver_solveCrankNicolson(self, *args)
+    def setHeatCoefficient(self, *args): return _pysgpp.HeatEquationSolver_setHeatCoefficient(self, *args)
+    def initGridWithSmoothHeat(self, *args): return _pysgpp.HeatEquationSolver_initGridWithSmoothHeat(self, *args)
+    def initScreen(self): return _pysgpp.HeatEquationSolver_initScreen(self)
+    def storeInnerMatrix(self, *args): return _pysgpp.HeatEquationSolver_storeInnerMatrix(self, *args)
+    def storeInnerMatrixDiagonal(self, *args): return _pysgpp.HeatEquationSolver_storeInnerMatrixDiagonal(self, *args)
+    def storeInnerMatrixDiagonalRowSum(self, *args): return _pysgpp.HeatEquationSolver_storeInnerMatrixDiagonalRowSum(self, *args)
+    def storeInnerRHS(self, *args): return _pysgpp.HeatEquationSolver_storeInnerRHS(self, *args)
+    def storeInnerSolution(self, *args): return _pysgpp.HeatEquationSolver_storeInnerSolution(self, *args)
+HeatEquationSolver_swigregister = _pysgpp.HeatEquationSolver_swigregister
+HeatEquationSolver_swigregister(HeatEquationSolver)
 
 class BlackScholesParabolicPDESolverSystem(OperationParabolicPDESolverSystemNeumann):
     __swig_setmethods__ = {}
@@ -1149,75 +1370,6 @@ class HeatEquationParabolicPDESolverSystem(OperationParabolicPDESolverSystemDiri
 HeatEquationParabolicPDESolverSystem_swigregister = _pysgpp.HeatEquationParabolicPDESolverSystem_swigregister
 HeatEquationParabolicPDESolverSystem_swigregister(HeatEquationParabolicPDESolverSystem)
 
-class ScreenOutput(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, ScreenOutput, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, ScreenOutput, name)
-    __repr__ = _swig_repr
-    def __init__(self): 
-        this = _pysgpp.new_ScreenOutput()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _pysgpp.delete_ScreenOutput
-    __del__ = lambda self : None;
-    def update(self, *args): return _pysgpp.ScreenOutput_update(self, *args)
-    def writeTitle(self, *args): return _pysgpp.ScreenOutput_writeTitle(self, *args)
-    def writeHelp(self, *args): return _pysgpp.ScreenOutput_writeHelp(self, *args)
-    def writeStartSolve(self, *args): return _pysgpp.ScreenOutput_writeStartSolve(self, *args)
-    def writeEmptyLines(self, *args): return _pysgpp.ScreenOutput_writeEmptyLines(self, *args)
-ScreenOutput_swigregister = _pysgpp.ScreenOutput_swigregister
-ScreenOutput_swigregister(ScreenOutput)
-
-class PDESolver(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, PDESolver, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, PDESolver, name)
-    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
-    __repr__ = _swig_repr
-    __swig_destroy__ = _pysgpp.delete_PDESolver
-    __del__ = lambda self : None;
-    def constructGrid(self, *args): return _pysgpp.PDESolver_constructGrid(self, *args)
-    def setGrid(self, *args): return _pysgpp.PDESolver_setGrid(self, *args)
-    def getGrid(self): return _pysgpp.PDESolver_getGrid(self)
-    def deleteGrid(self): return _pysgpp.PDESolver_deleteGrid(self)
-    def refineInitialGridSurplus(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplus(self, *args)
-    def refineInitialGridSurplusToMaxLevel(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplusToMaxLevel(self, *args)
-    def refineInitialGridSurplusSubDomain(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplusSubDomain(self, *args)
-    def refineInitialGridSurplusToMaxLevelSubDomain(self, *args): return _pysgpp.PDESolver_refineInitialGridSurplusToMaxLevelSubDomain(self, *args)
-    def coarsenInitialGridSurplus(self, *args): return _pysgpp.PDESolver_coarsenInitialGridSurplus(self, *args)
-    def constructGridBonn(self, *args): return _pysgpp.PDESolver_constructGridBonn(self, *args)
-    def storeGridBonn(self, *args): return _pysgpp.PDESolver_storeGridBonn(self, *args)
-    def evaluatePoint(self, *args): return _pysgpp.PDESolver_evaluatePoint(self, *args)
-    def evaluateCuboid(self, *args): return _pysgpp.PDESolver_evaluateCuboid(self, *args)
-    def printGrid(self, *args): return _pysgpp.PDESolver_printGrid(self, *args)
-    def printGridDomain(self, *args): return _pysgpp.PDESolver_printGridDomain(self, *args)
-    def printSparseGrid(self, *args): return _pysgpp.PDESolver_printSparseGrid(self, *args)
-    def printSparseGridExpTransform(self, *args): return _pysgpp.PDESolver_printSparseGridExpTransform(self, *args)
-    def getNumberGridPoints(self): return _pysgpp.PDESolver_getNumberGridPoints(self)
-    def getNumberInnerGridPoints(self): return _pysgpp.PDESolver_getNumberInnerGridPoints(self)
-    def getNumberDimensions(self): return _pysgpp.PDESolver_getNumberDimensions(self)
-PDESolver_swigregister = _pysgpp.PDESolver_swigregister
-PDESolver_swigregister(PDESolver)
-
-class ParabolicPDESolver(PDESolver):
-    __swig_setmethods__ = {}
-    for _s in [PDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, ParabolicPDESolver, name, value)
-    __swig_getmethods__ = {}
-    for _s in [PDESolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, ParabolicPDESolver, name)
-    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
-    __repr__ = _swig_repr
-    __swig_destroy__ = _pysgpp.delete_ParabolicPDESolver
-    __del__ = lambda self : None;
-    def solveImplicitEuler(self, *args): return _pysgpp.ParabolicPDESolver_solveImplicitEuler(self, *args)
-    def solveExplicitEuler(self, *args): return _pysgpp.ParabolicPDESolver_solveExplicitEuler(self, *args)
-    def solveCrankNicolson(self, *args): return _pysgpp.ParabolicPDESolver_solveCrankNicolson(self, *args)
-ParabolicPDESolver_swigregister = _pysgpp.ParabolicPDESolver_swigregister
-ParabolicPDESolver_swigregister(ParabolicPDESolver)
-
 class BlackScholesSolver(ParabolicPDESolver):
     __swig_setmethods__ = {}
     for _s in [ParabolicPDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -1259,32 +1411,116 @@ class BlackScholesSolver(ParabolicPDESolver):
     def getStartInnerGridSize(self): return _pysgpp.BlackScholesSolver_getStartInnerGridSize(self)
     def getFinalInnerGridSize(self): return _pysgpp.BlackScholesSolver_getFinalInnerGridSize(self)
     def getAverageInnerGridSize(self): return _pysgpp.BlackScholesSolver_getAverageInnerGridSize(self)
+    def storeInnerMatrix(self, *args): return _pysgpp.BlackScholesSolver_storeInnerMatrix(self, *args)
+    def storeInnerMatrixDiagonal(self, *args): return _pysgpp.BlackScholesSolver_storeInnerMatrixDiagonal(self, *args)
+    def storeInnerMatrixDiagonalRowSum(self, *args): return _pysgpp.BlackScholesSolver_storeInnerMatrixDiagonalRowSum(self, *args)
+    def storeInnerRHS(self, *args): return _pysgpp.BlackScholesSolver_storeInnerRHS(self, *args)
+    def storeInnerSolution(self, *args): return _pysgpp.BlackScholesSolver_storeInnerSolution(self, *args)
 BlackScholesSolver_swigregister = _pysgpp.BlackScholesSolver_swigregister
 BlackScholesSolver_swigregister(BlackScholesSolver)
 
-class HeatEquationSolver(ParabolicPDESolver):
+class BlackScholesSolverWithStretching(BlackScholesSolver):
     __swig_setmethods__ = {}
-    for _s in [ParabolicPDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, HeatEquationSolver, name, value)
+    for _s in [BlackScholesSolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, BlackScholesSolverWithStretching, name, value)
     __swig_getmethods__ = {}
-    for _s in [ParabolicPDESolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, HeatEquationSolver, name)
+    for _s in [BlackScholesSolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, BlackScholesSolverWithStretching, name)
     __repr__ = _swig_repr
-    def __init__(self): 
-        this = _pysgpp.new_HeatEquationSolver()
+    def __init__(self, useLogTransform = False, OptionType = "all"): 
+        this = _pysgpp.new_BlackScholesSolverWithStretching(useLogTransform, OptionType)
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _pysgpp.delete_HeatEquationSolver
+    __swig_destroy__ = _pysgpp.delete_BlackScholesSolverWithStretching
     __del__ = lambda self : None;
-    def constructGrid(self, *args): return _pysgpp.HeatEquationSolver_constructGrid(self, *args)
-    def solveExplicitEuler(self, *args): return _pysgpp.HeatEquationSolver_solveExplicitEuler(self, *args)
-    def solveImplicitEuler(self, *args): return _pysgpp.HeatEquationSolver_solveImplicitEuler(self, *args)
-    def solveCrankNicolson(self, *args): return _pysgpp.HeatEquationSolver_solveCrankNicolson(self, *args)
-    def setHeatCoefficient(self, *args): return _pysgpp.HeatEquationSolver_setHeatCoefficient(self, *args)
-    def initGridWithSmoothHeat(self, *args): return _pysgpp.HeatEquationSolver_initGridWithSmoothHeat(self, *args)
-    def initScreen(self): return _pysgpp.HeatEquationSolver_initScreen(self)
-HeatEquationSolver_swigregister = _pysgpp.HeatEquationSolver_swigregister
-HeatEquationSolver_swigregister(HeatEquationSolver)
+    def constructGridStretching(self, *args): return _pysgpp.BlackScholesSolverWithStretching_constructGridStretching(self, *args)
+    def constructGrid(self, *args): return _pysgpp.BlackScholesSolverWithStretching_constructGrid(self, *args)
+    def refineInitialGridWithPayoff(self, *args): return _pysgpp.BlackScholesSolverWithStretching_refineInitialGridWithPayoff(self, *args)
+    def refineInitialGridWithPayoffToMaxLevel(self, *args): return _pysgpp.BlackScholesSolverWithStretching_refineInitialGridWithPayoffToMaxLevel(self, *args)
+    def initGridWithPayoff(self, *args): return _pysgpp.BlackScholesSolverWithStretching_initGridWithPayoff(self, *args)
+    def initScreen(self): return _pysgpp.BlackScholesSolverWithStretching_initScreen(self)
+    def printPayoffInterpolationError2D(self, *args): return _pysgpp.BlackScholesSolverWithStretching_printPayoffInterpolationError2D(self, *args)
+    def getGridPointsAtMoney(self, *args): return _pysgpp.BlackScholesSolverWithStretching_getGridPointsAtMoney(self, *args)
+    def printGrid(self, *args): return _pysgpp.BlackScholesSolverWithStretching_printGrid(self, *args)
+    def printGridDomain(self, *args): return _pysgpp.BlackScholesSolverWithStretching_printGridDomain(self, *args)
+    def printGridDomainStretching(self, *args): return _pysgpp.BlackScholesSolverWithStretching_printGridDomainStretching(self, *args)
+    def printSparseGrid(self, *args): return _pysgpp.BlackScholesSolverWithStretching_printSparseGrid(self, *args)
+    def printSparseGridExpTransform(self, *args): return _pysgpp.BlackScholesSolverWithStretching_printSparseGridExpTransform(self, *args)
+BlackScholesSolverWithStretching_swigregister = _pysgpp.BlackScholesSolverWithStretching_swigregister
+BlackScholesSolverWithStretching_swigregister(BlackScholesSolverWithStretching)
+
+class HeatEquationSolverWithStretching(ParabolicPDESolver):
+    __swig_setmethods__ = {}
+    for _s in [ParabolicPDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, HeatEquationSolverWithStretching, name, value)
+    __swig_getmethods__ = {}
+    for _s in [ParabolicPDESolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, HeatEquationSolverWithStretching, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _pysgpp.new_HeatEquationSolverWithStretching()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_HeatEquationSolverWithStretching
+    __del__ = lambda self : None;
+    def constructGrid(self, *args): return _pysgpp.HeatEquationSolverWithStretching_constructGrid(self, *args)
+    def solveExplicitEuler(self, *args): return _pysgpp.HeatEquationSolverWithStretching_solveExplicitEuler(self, *args)
+    def solveImplicitEuler(self, *args): return _pysgpp.HeatEquationSolverWithStretching_solveImplicitEuler(self, *args)
+    def solveCrankNicolson(self, *args): return _pysgpp.HeatEquationSolverWithStretching_solveCrankNicolson(self, *args)
+    def setHeatCoefficient(self, *args): return _pysgpp.HeatEquationSolverWithStretching_setHeatCoefficient(self, *args)
+    def initGridWithSmoothHeat(self, *args): return _pysgpp.HeatEquationSolverWithStretching_initGridWithSmoothHeat(self, *args)
+    def initScreen(self): return _pysgpp.HeatEquationSolverWithStretching_initScreen(self)
+    def printGrid(self, *args): return _pysgpp.HeatEquationSolverWithStretching_printGrid(self, *args)
+    def printGridDomain(self, *args): return _pysgpp.HeatEquationSolverWithStretching_printGridDomain(self, *args)
+    def printGridDomainStretching(self, *args): return _pysgpp.HeatEquationSolverWithStretching_printGridDomainStretching(self, *args)
+    def printSparseGrid(self, *args): return _pysgpp.HeatEquationSolverWithStretching_printSparseGrid(self, *args)
+    def printSparseGridExpTransform(self, *args): return _pysgpp.HeatEquationSolverWithStretching_printSparseGridExpTransform(self, *args)
+HeatEquationSolverWithStretching_swigregister = _pysgpp.HeatEquationSolverWithStretching_swigregister
+HeatEquationSolverWithStretching_swigregister(HeatEquationSolverWithStretching)
+
+class EllipticPDESolver(PDESolver):
+    __swig_setmethods__ = {}
+    for _s in [PDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, EllipticPDESolver, name, value)
+    __swig_getmethods__ = {}
+    for _s in [PDESolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, EllipticPDESolver, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _pysgpp.delete_EllipticPDESolver
+    __del__ = lambda self : None;
+    def solvePDE(self, *args): return _pysgpp.EllipticPDESolver_solvePDE(self, *args)
+EllipticPDESolver_swigregister = _pysgpp.EllipticPDESolver_swigregister
+EllipticPDESolver_swigregister(EllipticPDESolver)
+
+class PoissonEquationSolver(EllipticPDESolver):
+    __swig_setmethods__ = {}
+    for _s in [EllipticPDESolver]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, PoissonEquationSolver, name, value)
+    __swig_getmethods__ = {}
+    for _s in [EllipticPDESolver]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, PoissonEquationSolver, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _pysgpp.new_PoissonEquationSolver()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_PoissonEquationSolver
+    __del__ = lambda self : None;
+    def constructGrid(self, *args): return _pysgpp.PoissonEquationSolver_constructGrid(self, *args)
+    def solvePDE(self, *args): return _pysgpp.PoissonEquationSolver_solvePDE(self, *args)
+    def initGridWithSmoothHeat(self, *args): return _pysgpp.PoissonEquationSolver_initGridWithSmoothHeat(self, *args)
+    def initGridWithSmoothHeatFullDomain(self, *args): return _pysgpp.PoissonEquationSolver_initGridWithSmoothHeatFullDomain(self, *args)
+    def initGridWithExpHeat(self, *args): return _pysgpp.PoissonEquationSolver_initGridWithExpHeat(self, *args)
+    def initGridWithExpHeatFullDomain(self, *args): return _pysgpp.PoissonEquationSolver_initGridWithExpHeatFullDomain(self, *args)
+    def storeInnerMatrix(self, *args): return _pysgpp.PoissonEquationSolver_storeInnerMatrix(self, *args)
+    def storeInnerMatrixDiagonal(self, *args): return _pysgpp.PoissonEquationSolver_storeInnerMatrixDiagonal(self, *args)
+    def storeInnerMatrixDiagonalRowSum(self, *args): return _pysgpp.PoissonEquationSolver_storeInnerMatrixDiagonalRowSum(self, *args)
+    def storeInnerRHS(self, *args): return _pysgpp.PoissonEquationSolver_storeInnerRHS(self, *args)
+    def storeInnerSolution(self, *args): return _pysgpp.PoissonEquationSolver_storeInnerSolution(self, *args)
+    def initScreen(self): return _pysgpp.PoissonEquationSolver_initScreen(self)
+PoissonEquationSolver_swigregister = _pysgpp.PoissonEquationSolver_swigregister
+PoissonEquationSolver_swigregister(PoissonEquationSolver)
 
 class VariableDiscountFactor(_object):
     __swig_setmethods__ = {}
@@ -1301,6 +1537,26 @@ class VariableDiscountFactor(_object):
     def getDiscountFactor(self, *args): return _pysgpp.VariableDiscountFactor_getDiscountFactor(self, *args)
 VariableDiscountFactor_swigregister = _pysgpp.VariableDiscountFactor_swigregister
 VariableDiscountFactor_swigregister(VariableDiscountFactor)
+
+class ScreenOutput(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ScreenOutput, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ScreenOutput, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _pysgpp.new_ScreenOutput()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_ScreenOutput
+    __del__ = lambda self : None;
+    def update(self, *args): return _pysgpp.ScreenOutput_update(self, *args)
+    def writeTitle(self, *args): return _pysgpp.ScreenOutput_writeTitle(self, *args)
+    def writeHelp(self, *args): return _pysgpp.ScreenOutput_writeHelp(self, *args)
+    def writeStartSolve(self, *args): return _pysgpp.ScreenOutput_writeStartSolve(self, *args)
+    def writeEmptyLines(self, *args): return _pysgpp.ScreenOutput_writeEmptyLines(self, *args)
+ScreenOutput_swigregister = _pysgpp.ScreenOutput_swigregister
+ScreenOutput_swigregister(ScreenOutput)
 
 class SGSolver(_object):
     __swig_setmethods__ = {}
@@ -1453,6 +1709,14 @@ def createOperationLaplace(*args):
   return _pysgpp.createOperationLaplace(*args)
 createOperationLaplace = _pysgpp.createOperationLaplace
 
+def createOperationLTwoDotProduct(*args):
+  return _pysgpp.createOperationLTwoDotProduct(*args)
+createOperationLTwoDotProduct = _pysgpp.createOperationLTwoDotProduct
+
+def createOperationUpDownTest(*args):
+  return _pysgpp.createOperationUpDownTest(*args)
+createOperationUpDownTest = _pysgpp.createOperationUpDownTest
+
 def createOperationGamma(*args):
   return _pysgpp.createOperationGamma(*args)
 createOperationGamma = _pysgpp.createOperationGamma
@@ -1477,13 +1741,13 @@ def createOperationLF(*args):
   return _pysgpp.createOperationLF(*args)
 createOperationLF = _pysgpp.createOperationLF
 
-def createOperationLTwoDotProduct(*args):
-  return _pysgpp.createOperationLTwoDotProduct(*args)
-createOperationLTwoDotProduct = _pysgpp.createOperationLTwoDotProduct
+def createOperationDelta(*args):
+  return _pysgpp.createOperationDelta(*args)
+createOperationDelta = _pysgpp.createOperationDelta
 
-def createOperationUpDownTest(*args):
-  return _pysgpp.createOperationUpDownTest(*args)
-createOperationUpDownTest = _pysgpp.createOperationUpDownTest
+def createOperationDeltaLog(*args):
+  return _pysgpp.createOperationDeltaLog(*args)
+createOperationDeltaLog = _pysgpp.createOperationDeltaLog
 
 def createOperationEval(*args):
   return _pysgpp.createOperationEval(*args)
@@ -1513,14 +1777,6 @@ def createOperationConvert(*args):
   return _pysgpp.createOperationConvert(*args)
 createOperationConvert = _pysgpp.createOperationConvert
 
-def createOperationDelta(*args):
-  return _pysgpp.createOperationDelta(*args)
-createOperationDelta = _pysgpp.createOperationDelta
-
-def createOperationDeltaLog(*args):
-  return _pysgpp.createOperationDeltaLog(*args)
-createOperationDeltaLog = _pysgpp.createOperationDeltaLog
-
 def createOperationIdentity(*args):
   return _pysgpp.createOperationIdentity(*args)
 createOperationIdentity = _pysgpp.createOperationIdentity
@@ -1547,6 +1803,7 @@ class GridIndex(_object):
     def isLeaf(self): return _pysgpp.GridIndex_isLeaf(self)
     def abs(self, *args): return _pysgpp.GridIndex_abs(self, *args)
     def getCoordBB(self, *args): return _pysgpp.GridIndex_getCoordBB(self, *args)
+    def getCoordStretching(self, *args): return _pysgpp.GridIndex_getCoordStretching(self, *args)
     def isInnerPoint(self): return _pysgpp.GridIndex_isInnerPoint(self)
     def getPointer(self): return _pysgpp.GridIndex_getPointer(self)
     def rehash(self): return _pysgpp.GridIndex_rehash(self)
@@ -1556,8 +1813,10 @@ class GridIndex(_object):
     def toString(self, *args): return _pysgpp.GridIndex_toString(self, *args)
     def getCoords(self, *args): return _pysgpp.GridIndex_getCoords(self, *args)
     def getCoordsBB(self, *args): return _pysgpp.GridIndex_getCoordsBB(self, *args)
+    def getCoordsStretching(self, *args): return _pysgpp.GridIndex_getCoordsStretching(self, *args)
     def getCoordsString(self): return _pysgpp.GridIndex_getCoordsString(self)
     def getCoordsStringBB(self, *args): return _pysgpp.GridIndex_getCoordsStringBB(self, *args)
+    def getCoordsStringStretching(self, *args): return _pysgpp.GridIndex_getCoordsStringStretching(self, *args)
     def getLevelSum(self): return _pysgpp.GridIndex_getLevelSum(self)
     def getLevelMax(self): return _pysgpp.GridIndex_getLevelMax(self)
 GridIndex_swigregister = _pysgpp.GridIndex_swigregister
@@ -1603,7 +1862,9 @@ class GridStorage(_object):
     def setAlgorithmicDimensions(self, *args): return _pysgpp.GridStorage_setAlgorithmicDimensions(self, *args)
     def recalcLeafProperty(self): return _pysgpp.GridStorage_recalcLeafProperty(self)
     def getBoundingBox(self): return _pysgpp.GridStorage_getBoundingBox(self)
+    def getStretching(self): return _pysgpp.GridStorage_getStretching(self)
     def setBoundingBox(self, *args): return _pysgpp.GridStorage_setBoundingBox(self, *args)
+    def setStretching(self, *args): return _pysgpp.GridStorage_setStretching(self, *args)
     def getLevelIndexArraysForEval(self, *args): return _pysgpp.GridStorage_getLevelIndexArraysForEval(self, *args)
 GridStorage_swigregister = _pysgpp.GridStorage_swigregister
 GridStorage_swigregister(GridStorage)
@@ -1640,6 +1901,38 @@ class SLinearBoundaryBase(_object):
     __del__ = lambda self : None;
 SLinearBoundaryBase_swigregister = _pysgpp.SLinearBoundaryBase_swigregister
 SLinearBoundaryBase_swigregister(SLinearBoundaryBase)
+
+class SLinearStretchedBase(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, SLinearStretchedBase, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, SLinearStretchedBase, name)
+    __repr__ = _swig_repr
+    def eval(self, *args): return _pysgpp.SLinearStretchedBase_eval(self, *args)
+    def __init__(self): 
+        this = _pysgpp.new_SLinearStretchedBase()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_SLinearStretchedBase
+    __del__ = lambda self : None;
+SLinearStretchedBase_swigregister = _pysgpp.SLinearStretchedBase_swigregister
+SLinearStretchedBase_swigregister(SLinearStretchedBase)
+
+class SLinearStretchedBoundaryBase(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, SLinearStretchedBoundaryBase, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, SLinearStretchedBoundaryBase, name)
+    __repr__ = _swig_repr
+    def eval(self, *args): return _pysgpp.SLinearStretchedBoundaryBase_eval(self, *args)
+    def __init__(self): 
+        this = _pysgpp.new_SLinearStretchedBoundaryBase()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_SLinearStretchedBoundaryBase
+    __del__ = lambda self : None;
+SLinearStretchedBoundaryBase_swigregister = _pysgpp.SLinearStretchedBoundaryBase_swigregister
+SLinearStretchedBoundaryBase_swigregister(SLinearStretchedBoundaryBase)
 
 class SModLinearBase(_object):
     __swig_setmethods__ = {}
@@ -1786,6 +2079,116 @@ class SGetAffectedBasisFunctionsBoundaries(_object):
     def __call__(self, *args): return _pysgpp.SGetAffectedBasisFunctionsBoundaries___call__(self, *args)
 SGetAffectedBasisFunctionsBoundaries_swigregister = _pysgpp.SGetAffectedBasisFunctionsBoundaries_swigregister
 SGetAffectedBasisFunctionsBoundaries_swigregister(SGetAffectedBasisFunctionsBoundaries)
+
+class SGetAffectedBasisFunctionsLinearStretchedBoundaries(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, SGetAffectedBasisFunctionsLinearStretchedBoundaries, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, SGetAffectedBasisFunctionsLinearStretchedBoundaries, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _pysgpp.new_SGetAffectedBasisFunctionsLinearStretchedBoundaries(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_SGetAffectedBasisFunctionsLinearStretchedBoundaries
+    __del__ = lambda self : None;
+    def __call__(self, *args): return _pysgpp.SGetAffectedBasisFunctionsLinearStretchedBoundaries___call__(self, *args)
+SGetAffectedBasisFunctionsLinearStretchedBoundaries_swigregister = _pysgpp.SGetAffectedBasisFunctionsLinearStretchedBoundaries_swigregister
+SGetAffectedBasisFunctionsLinearStretchedBoundaries_swigregister(SGetAffectedBasisFunctionsLinearStretchedBoundaries)
+
+class DimensionBoundaryVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, DimensionBoundaryVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, DimensionBoundaryVector, name)
+    __repr__ = _swig_repr
+    def iterator(self): return _pysgpp.DimensionBoundaryVector_iterator(self)
+    def __iter__(self): return self.iterator()
+    def __nonzero__(self): return _pysgpp.DimensionBoundaryVector___nonzero__(self)
+    def __bool__(self): return _pysgpp.DimensionBoundaryVector___bool__(self)
+    def __len__(self): return _pysgpp.DimensionBoundaryVector___len__(self)
+    def pop(self): return _pysgpp.DimensionBoundaryVector_pop(self)
+    def __getslice__(self, *args): return _pysgpp.DimensionBoundaryVector___getslice__(self, *args)
+    def __setslice__(self, *args): return _pysgpp.DimensionBoundaryVector___setslice__(self, *args)
+    def __delslice__(self, *args): return _pysgpp.DimensionBoundaryVector___delslice__(self, *args)
+    def __delitem__(self, *args): return _pysgpp.DimensionBoundaryVector___delitem__(self, *args)
+    def __getitem__(self, *args): return _pysgpp.DimensionBoundaryVector___getitem__(self, *args)
+    def __setitem__(self, *args): return _pysgpp.DimensionBoundaryVector___setitem__(self, *args)
+    def append(self, *args): return _pysgpp.DimensionBoundaryVector_append(self, *args)
+    def empty(self): return _pysgpp.DimensionBoundaryVector_empty(self)
+    def size(self): return _pysgpp.DimensionBoundaryVector_size(self)
+    def clear(self): return _pysgpp.DimensionBoundaryVector_clear(self)
+    def swap(self, *args): return _pysgpp.DimensionBoundaryVector_swap(self, *args)
+    def get_allocator(self): return _pysgpp.DimensionBoundaryVector_get_allocator(self)
+    def begin(self): return _pysgpp.DimensionBoundaryVector_begin(self)
+    def end(self): return _pysgpp.DimensionBoundaryVector_end(self)
+    def rbegin(self): return _pysgpp.DimensionBoundaryVector_rbegin(self)
+    def rend(self): return _pysgpp.DimensionBoundaryVector_rend(self)
+    def pop_back(self): return _pysgpp.DimensionBoundaryVector_pop_back(self)
+    def erase(self, *args): return _pysgpp.DimensionBoundaryVector_erase(self, *args)
+    def __init__(self, *args): 
+        this = _pysgpp.new_DimensionBoundaryVector(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _pysgpp.DimensionBoundaryVector_push_back(self, *args)
+    def front(self): return _pysgpp.DimensionBoundaryVector_front(self)
+    def back(self): return _pysgpp.DimensionBoundaryVector_back(self)
+    def assign(self, *args): return _pysgpp.DimensionBoundaryVector_assign(self, *args)
+    def resize(self, *args): return _pysgpp.DimensionBoundaryVector_resize(self, *args)
+    def insert(self, *args): return _pysgpp.DimensionBoundaryVector_insert(self, *args)
+    def reserve(self, *args): return _pysgpp.DimensionBoundaryVector_reserve(self, *args)
+    def capacity(self): return _pysgpp.DimensionBoundaryVector_capacity(self)
+    __swig_destroy__ = _pysgpp.delete_DimensionBoundaryVector
+    __del__ = lambda self : None;
+DimensionBoundaryVector_swigregister = _pysgpp.DimensionBoundaryVector_swigregister
+DimensionBoundaryVector_swigregister(DimensionBoundaryVector)
+
+class Stretching1DVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Stretching1DVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Stretching1DVector, name)
+    __repr__ = _swig_repr
+    def iterator(self): return _pysgpp.Stretching1DVector_iterator(self)
+    def __iter__(self): return self.iterator()
+    def __nonzero__(self): return _pysgpp.Stretching1DVector___nonzero__(self)
+    def __bool__(self): return _pysgpp.Stretching1DVector___bool__(self)
+    def __len__(self): return _pysgpp.Stretching1DVector___len__(self)
+    def pop(self): return _pysgpp.Stretching1DVector_pop(self)
+    def __getslice__(self, *args): return _pysgpp.Stretching1DVector___getslice__(self, *args)
+    def __setslice__(self, *args): return _pysgpp.Stretching1DVector___setslice__(self, *args)
+    def __delslice__(self, *args): return _pysgpp.Stretching1DVector___delslice__(self, *args)
+    def __delitem__(self, *args): return _pysgpp.Stretching1DVector___delitem__(self, *args)
+    def __getitem__(self, *args): return _pysgpp.Stretching1DVector___getitem__(self, *args)
+    def __setitem__(self, *args): return _pysgpp.Stretching1DVector___setitem__(self, *args)
+    def append(self, *args): return _pysgpp.Stretching1DVector_append(self, *args)
+    def empty(self): return _pysgpp.Stretching1DVector_empty(self)
+    def size(self): return _pysgpp.Stretching1DVector_size(self)
+    def clear(self): return _pysgpp.Stretching1DVector_clear(self)
+    def swap(self, *args): return _pysgpp.Stretching1DVector_swap(self, *args)
+    def get_allocator(self): return _pysgpp.Stretching1DVector_get_allocator(self)
+    def begin(self): return _pysgpp.Stretching1DVector_begin(self)
+    def end(self): return _pysgpp.Stretching1DVector_end(self)
+    def rbegin(self): return _pysgpp.Stretching1DVector_rbegin(self)
+    def rend(self): return _pysgpp.Stretching1DVector_rend(self)
+    def pop_back(self): return _pysgpp.Stretching1DVector_pop_back(self)
+    def erase(self, *args): return _pysgpp.Stretching1DVector_erase(self, *args)
+    def __init__(self, *args): 
+        this = _pysgpp.new_Stretching1DVector(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _pysgpp.Stretching1DVector_push_back(self, *args)
+    def front(self): return _pysgpp.Stretching1DVector_front(self)
+    def back(self): return _pysgpp.Stretching1DVector_back(self)
+    def assign(self, *args): return _pysgpp.Stretching1DVector_assign(self, *args)
+    def resize(self, *args): return _pysgpp.Stretching1DVector_resize(self, *args)
+    def insert(self, *args): return _pysgpp.Stretching1DVector_insert(self, *args)
+    def reserve(self, *args): return _pysgpp.Stretching1DVector_reserve(self, *args)
+    def capacity(self): return _pysgpp.Stretching1DVector_capacity(self)
+    __swig_destroy__ = _pysgpp.delete_Stretching1DVector
+    __del__ = lambda self : None;
+Stretching1DVector_swigregister = _pysgpp.Stretching1DVector_swigregister
+Stretching1DVector_swigregister(Stretching1DVector)
 
 
 

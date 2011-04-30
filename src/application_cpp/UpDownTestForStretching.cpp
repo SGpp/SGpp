@@ -43,11 +43,11 @@ int main(int argc, char *argv[])
 
 
 	sg::Stretching* myStretching;
-	sg::DimensionBoundary* myInterval;
+	sg::base::DimensionBoundary* myInterval;
 
 	if(dim==1){
 
-		myInterval = new sg::DimensionBoundary;
+		myInterval = new sg::base::DimensionBoundary;
 		myInterval->leftBoundary = 0.5;
 		myInterval->rightBoundary = 7.0;
 		myInterval->bDirichletLeft = false;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	else if(dim>1)
 	{
 
-		myInterval=new sg::DimensionBoundary[dim];
+		myInterval=new sg::base::DimensionBoundary[dim];
 		for(size_t j=0; j<dim;j++){
 			myInterval[j].leftBoundary = 0.5;
 			myInterval[j].rightBoundary = 7.0;
@@ -431,7 +431,7 @@ int main(int argc, char *argv[])
 
 
 
-	//		sg::DimensionBoundary myInterval;
+	//		sg::base::DimensionBoundary myInterval;
 	//
 	//		myInterval.leftBoundary = 0.001;
 	//		myInterval.rightBoundary = 100.0;

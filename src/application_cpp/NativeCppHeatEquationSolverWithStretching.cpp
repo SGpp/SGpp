@@ -157,7 +157,7 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 {
 	size_t timesteps = (size_t)(T/dt);
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
 	// set the bounding box
 	for (size_t i = 0; i < dim; i++)
