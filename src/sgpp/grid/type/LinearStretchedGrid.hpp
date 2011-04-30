@@ -52,11 +52,11 @@ public:
 //	virtual OperationB* createOperationB();
 //	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType);
 //	virtual OperationBVectorizedSP* createOperationBVectorizedSP(const std::string& VecType);
-	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset);
+/*	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset);
 	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset);
 	virtual OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset);
-	virtual GridGenerator* createGridGenerator();
-	virtual OperationMatrix* createOperationLaplace();
+*/	virtual GridGenerator* createGridGenerator();
+/*	virtual OperationMatrix* createOperationLaplace();
 	virtual OperationEval* createOperationEval();
 	virtual OperationTest* createOperationTest();
 	virtual OperationHierarchisation* createOperationHierarchisation();
@@ -78,7 +78,7 @@ public:
 	virtual OperationMatrix* createOperationLB();
 	virtual OperationMatrix* createOperationLF();
 	virtual OperationMatrix* createOperationLD();
-
+*/
 	static Grid* unserialize(std::istream& istr);
 };
 

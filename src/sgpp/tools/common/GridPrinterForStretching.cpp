@@ -7,6 +7,7 @@
 
 #include "tools/common/GridPrinterForStretching.hpp"
 #include "exception/tool_exception.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <fstream>
 #include <vector>
@@ -48,7 +49,7 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha, std:
 		{
 			// Open filehandle
 			fileout.open(tFilename.c_str());
-			OperationEval* myEval = myGrid->createOperationEval();
+			OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
 
 			dimOne = GridArea.getBoundary(0);
 			dimTwo = GridArea.getBoundary(1);
@@ -92,7 +93,7 @@ void GridPrinterForStretching::printGrid(DataVector& alpha, std::string tFilenam
 			{
 				// Open filehandle
 				fileout.open(tFilename.c_str());
-				OperationEval* myEval = myGrid->createOperationEval();
+				OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
 
 				if (myGrid->getStorage()->dim() == 1)
 				{
@@ -154,7 +155,7 @@ void GridPrinterForStretching::printSparseGrid(DataVector& alpha, std::string tF
 	// Do Dehierarchisation, is specified
 	if (bSurplus == false)
 	{
-		OperationHierarchisation* myHier = myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
 		myHier->doDehierarchisation(temp);
 		delete myHier;
 	}
