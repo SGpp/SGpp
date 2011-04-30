@@ -27,12 +27,6 @@ DataVector::DataVector(size_t size) :
 	this->data = new double[size];
 }
 
-/*
-DataVector::DataVector(size_t size, size_t dim) :
-    size(size), dim(dim), unused(0), inc_elems(100) {
-    this->data = new double[size * dim];
-}
-*/
 DataVector::DataVector(DataVector &vec) :
     unused(0), inc_elems(100) {
     this->size = vec.size;
@@ -104,10 +98,6 @@ void DataVector::resize(size_t size) {
     double* newdata = new double[size];
     // copy entries of old vector
     memcpy(newdata, this->data, std::min(this->size, size) * sizeof(double));
-//    // set new elements to zero
-//    for (size_t i = this->size; i < size; i++) {
-//        newdata[i] = 0.0;
-//    }
     delete[] this->data;
 
     this->data = newdata;
@@ -188,40 +178,10 @@ void DataVector::setAll(double value) {
     	data[i] = value;
     }
 }
-/*
-double DataVector::get(size_t i) const {
-    return data[i];
-}
-*/
+
 void DataVector::set(size_t i, double value) {
     data[i] = value;
 }
-
-/*
-void DataVector::getRow(int row, DataVector& vec) const {
-    for (int i = 0; i < this->dim; i++) {
-        vec[i] = data[row * dim + i];
-    }
-}
-
-void DataVector::setRow(int row, DataVector& vec) {
-    for (int i = 0; i < this->dim; i++) {
-        data[row * dim + i] = vec[i];
-    }
-}
-
-void DataVector::getColumn(int col, DataVector& vec) const {
-    for (int j = 0; j < this->size; j++) {
-        vec[j] = data[j * dim + col];
-    }
-}
-
-void DataVector::setColumn(int col, DataVector& vec) {
-    for (int j = 0; j < this->size; j++) {
-        data[j * dim + col] = vec[j];
-    }
-}
-*/
 
 void DataVector::copyFrom(const DataVector& vec) {
 	// don't copy from yourself
@@ -237,19 +197,6 @@ void DataVector::copyFrom(const DataVector& vec) {
     */
     memcpy(this->data, vec.data, std::min(size, vec.size) * sizeof(double));
 }
-
-/*
-void DataVector::copySmall(const DataVector& vec) {
-    if (this == &vec) {
-        return;
-    }
-
-    if (size < vec.size) {
-        return;
-    }
-    memcpy(this->data, vec.data, vec.size * sizeof(double));
-}
-*/
 
 DataVector& DataVector::operator=(const DataVector &vec) {
     if (this == &vec) {
@@ -326,32 +273,6 @@ void DataVector::componentwise_div(DataVector& vec) {
         data[i] /= vec.data[i];
     }
 }
-/*
-void DataVector::getLine(int row, DataVector& vec) {
-    for (int i = 0; i < this->dim; i++) {
-        vec[i] = data[row * dim + i];
-    }
-}
-
-void DataVector::getLine(int row, std::vector<double>& vec) {
-    vec.clear();
-
-    for (int i = 0; i < this->dim; i++) {
-        vec.push_back(data[row * dim + i]);
-    }
-}
-size_t DataVector::getSize() const {
-    return size;
-}
-
-size_t DataVector::getDim() const {
-    return dim;
-}
-
-size_t DataVector::getTotalSize() const {
-    return dim * size;
-}
-*/
 
 double DataVector::dotProduct(DataVector &vec) {
     double sum = 0.0;
@@ -428,15 +349,15 @@ double DataVector::maxNorm() {
 
 double DataVector::RMSNorm()
 {
-	double l2Norm;
+	double rmsNorm;
 	DataVector temp(*this);
 
-	temp.componentwise_mult(temp);
-	l2Norm = temp.sum();
-	l2Norm /= static_cast<double>(temp.getSize());
-	l2Norm = std::sqrt(l2Norm);
+	temp.sqr();
+	rmsNorm = temp.sum();
+	rmsNorm /= static_cast<double>(temp.getSize());
+	rmsNorm = std::sqrt(rmsNorm);
 
-    return l2Norm;
+    return rmsNorm;
 }
 
 double DataVector::l2Norm()
@@ -509,18 +430,6 @@ std::string DataVector::toString() {
 }
 
 #ifndef LARRABEE
-/*
-double DataVector::min(int d) {
-    int n = size * dim;
-    double min = data[d];
-    for (int i = d; i < n; i += dim) {
-        if (min > data[i]) {
-            min = data[i];
-        }
-    }
-    return min;
-}
-*/
 
 double DataVector::min() {
     double min = data[0];
@@ -531,19 +440,6 @@ double DataVector::min() {
     }
     return min;
 }
-
-/*
-double DataVector::max(int d) {
-    int n = size * dim;
-    double max = data[d];
-    for (int i = d; i < n; i += dim) {
-        if (max < data[i]) {
-            max = data[i];
-        }
-    }
-    return max;
-}
-*/
 
 double DataVector::max() {
     double max = data[0];
