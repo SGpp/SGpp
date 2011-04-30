@@ -39,9 +39,9 @@ py_env = env.Clone()
 
 
 
-py_env.Append(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']])
-py_env.Append(CPPPATH=['#/src/sgpp'])
+py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']], CPPPATH=['#/src/sgpp'])
 
 pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs+srcs, SHLIBPREFIX = '_')
 
 Export('pysgpp')
+Return('pysgpp')
