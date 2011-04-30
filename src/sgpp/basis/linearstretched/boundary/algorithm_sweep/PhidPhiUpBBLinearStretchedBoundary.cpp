@@ -12,8 +12,7 @@ namespace sg
 namespace finance
 {
 
-namespace detail
-{
+
 
 PhidPhiUpBBLinearStretchedBoundary::PhidPhiUpBBLinearStretchedBoundary(GridStorage* storage) : PhidPhiUpBBLinearStretched(storage)
 {
@@ -78,7 +77,7 @@ void PhidPhiUpBBLinearStretchedBoundary::operator()(DataVector& source, DataVect
 	index.left_levelzero(dim);
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }

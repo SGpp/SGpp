@@ -15,6 +15,7 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "stdlib.h"
+#include "basis/operations_factory.hpp"
 #include <sstream>
 
 namespace sg
@@ -211,7 +212,7 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(DataVector& alpha, double mu,
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

@@ -18,8 +18,7 @@ namespace sg
 namespace pde
 {
 
-namespace detail
-{
+
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -57,7 +56,7 @@ public:
 	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }

@@ -12,8 +12,7 @@ namespace sg
 namespace finance
 {
 
-namespace detail
-{
+
 
 DPhiPhiDownBBLinearStretchedBoundary::DPhiPhiDownBBLinearStretchedBoundary(GridStorage* storage) : DPhiPhiDownBBLinearStretched(storage)
 {
@@ -86,7 +85,7 @@ void DPhiPhiDownBBLinearStretchedBoundary::operator()(DataVector& source, DataVe
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }

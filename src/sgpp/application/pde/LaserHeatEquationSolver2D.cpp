@@ -15,8 +15,10 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "stdlib.h"
+#include "basis/operations_factory.hpp"
 #include <sstream>
 #include <fstream>
+using namespace sg::solver;
 
 namespace sg
 {
@@ -109,7 +111,7 @@ void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(DataVector& alpha
 			delete[] dblFuncValues;
 
 			// do hierarchisation
-			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
 
@@ -154,7 +156,7 @@ void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(DataVector& alpha
 		delete[] dblFuncValues;
 
 		// do hierarchisation
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

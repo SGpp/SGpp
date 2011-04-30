@@ -11,7 +11,6 @@ basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLi
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
-algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
 application/pde/HeatEquationSolverMPI.cpp
 """)
 

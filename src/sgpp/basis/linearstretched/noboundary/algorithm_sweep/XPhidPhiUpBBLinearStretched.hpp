@@ -18,8 +18,7 @@ namespace sg
 namespace finance
 {
 
-namespace detail
-{
+
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -75,7 +74,7 @@ protected:
 
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }

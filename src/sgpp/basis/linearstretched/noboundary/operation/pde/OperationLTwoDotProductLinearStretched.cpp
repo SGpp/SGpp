@@ -29,8 +29,8 @@ OperationLTwoDotProductLinearStretched::~OperationLTwoDotProductLinearStretched(
 void OperationLTwoDotProductLinearStretched::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearStretched> s(func, this->storage);
+	PhiPhiUpBBLinearStretched func(this->storage);
+	sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -38,8 +38,8 @@ void OperationLTwoDotProductLinearStretched::up(DataVector& alpha, DataVector& r
 void OperationLTwoDotProductLinearStretched::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearStretched> s(func, this->storage);
+	PhiPhiDownBBLinearStretched func(this->storage);
+	sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }

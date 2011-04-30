@@ -5,11 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONTESTLINEARBOUNDARY_HPP
-#define OPERATIONTESTLINEARBOUNDARY_HPP
+#ifndef OPERATIONTESTLINEARSTRETCHEDBOUNDARY_HPP
+#define OPERATIONTESTLINEARSTRETCHEDBOUNDARY_HPP
 
 #include "operation/datadriven/OperationTest.hpp"
 #include "grid/GridStorage.hpp"
+using namespace sg::base;
 
 namespace sg
 {
@@ -49,4 +50,4 @@ protected:
 }
 }
 
-#endif /* OPERATIONTESTLINEARBOUNDARY_HPP */
+#endif /* OPERATIONTESTLINEARSTRETCHEDBOUNDARY_HPP */

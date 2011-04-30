@@ -9,6 +9,7 @@
 #define OPERATIONDELTALOGLINEARSTRETCHED_HPP
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
+using namespace sg::pde;
 
 namespace sg
 {

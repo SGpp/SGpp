@@ -33,8 +33,8 @@ OperationDeltaLinearStretched::~OperationDeltaLinearStretched()
 void OperationDeltaLinearStretched::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearStretched> s(func, this->storage);
+	PhiPhiUpBBLinearStretched func(this->storage);
+	sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -42,8 +42,8 @@ void OperationDeltaLinearStretched::up(DataVector& alpha, DataVector& result, si
 void OperationDeltaLinearStretched::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearStretched> s(func, this->storage);
+	PhiPhiDownBBLinearStretched func(this->storage);
+	sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -51,8 +51,8 @@ void OperationDeltaLinearStretched::down(DataVector& alpha, DataVector& result, 
 void OperationDeltaLinearStretched::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiUpBBLinearStretched func(this->storage);
-	sweep<detail::XdPhiPhiUpBBLinearStretched> s(func, this->storage);
+	XdPhiPhiUpBBLinearStretched func(this->storage);
+	sweep<XdPhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -60,8 +60,8 @@ void OperationDeltaLinearStretched::upOpDim(DataVector& alpha, DataVector& resul
 void OperationDeltaLinearStretched::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiDownBBLinearStretched func(this->storage);
-	sweep<detail::XdPhiPhiDownBBLinearStretched> s(func, this->storage);
+	XdPhiPhiDownBBLinearStretched func(this->storage);
+	sweep<XdPhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
