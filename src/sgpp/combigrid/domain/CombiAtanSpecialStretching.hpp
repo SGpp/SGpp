@@ -9,7 +9,7 @@
 #define COMBIATANSPECIALSTRETCHING_HPP_
 
 #include "combigrid/domain/AbstractStretchingMaker.hpp"
-
+namespace sg {
 namespace combigrid {
 
 /** Stretching formula with the following matlab formula: <br>
@@ -33,6 +33,7 @@ public:
 			std::vector<double>& stretching) const;
 };
 
+}
 }
 
 #endif /* COMBIATANSPECIALSTRETCHING_HPP_ */
