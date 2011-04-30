@@ -31,6 +31,8 @@ protected:
 public:
 	/**
 	 * Constructor
+	 *
+	 * @param dataset data set that should be evaluated on the sparse grid
 	 */
 	OperationMultipleEval(DataMatrix* dataset) : dataset_(dataset) {}
 

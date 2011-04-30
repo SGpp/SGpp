@@ -36,7 +36,7 @@ protected:
 	 * applies the PDE's system matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param return reference to the DataVector into which the result is written
+	 * @param result reference to the DataVector into which the result is written
 	 */
 	virtual void applyLOperator(DataVector& alpha, DataVector& result) = 0;
 
