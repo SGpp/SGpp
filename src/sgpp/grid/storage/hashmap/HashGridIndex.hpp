@@ -696,6 +696,7 @@ private:
 	size_t hash_value;
 };
 
+
 template<class LT, class IT>
 struct hash<HashGridIndex<LT, IT>* > {
     size_t operator()(HashGridIndex<LT, IT>* index) const {

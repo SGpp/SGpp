@@ -71,6 +71,24 @@ tools/common/EvalCuboidGenerator.cpp
 tools/common/GridPrinter.cpp
 tools/common/SGppStopwatch.cpp
 tools/common/StdNormalDistribution.cpp
+basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.cpp
+basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
+basis/linearstretched/noboundary/operation/common/OperationEvalLinearStretched.cpp
+basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
+basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
+grid/common/Stretching.cpp
+grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
+grid/generation/SurplusVolumeRefinementFunctor.cpp
+grid/GridDataBase.cpp
+grid/type/LinearStretchedGrid.cpp
+grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
+tools/common/EvalCuboidGeneratorForStretching.cpp
+tools/common/GridPrinterForStretching.cpp
 """)
 
 

@@ -10,6 +10,11 @@ srcs = Split("""
 grid/combination/FullGrid.cpp
 grid/combination/FullGridSet.cpp
 grid/combination/LinearFullGrid.cpp
+combigrid/domain/CombiAtanSpecialStretching.cpp
+combigrid/domain/CombiDomain1D.cpp
+combigrid/domain/CombiGridDomain.cpp
+combigrid/domain/CombiTanStretching.cpp
+combigrid/domain/CombiUniformStretching.cpp
 """)
 
 

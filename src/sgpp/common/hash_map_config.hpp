@@ -37,11 +37,13 @@ namespace std {
 
 // forward declaration of hash function and hash comparison function
 namespace sg {
+namespace base {
 	template<class key>
 	struct hash { };
 
 	template<class key>
 	struct eqIndex { };
+}
 }
 
 #endif /* HASH_MAP_CONFIG */
