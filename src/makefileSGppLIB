@@ -1,25 +1,10 @@
-#############################################################################
-# This file is part of sgpp, a program package making use of spatially      #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU Lesser General Public License as published  #
-# by the Free Software Foundation; either version 3 of the License, or      #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU Lesser General Public License  #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
-
+#################################################################################
+# Copyright (C) 2009-2011 Technische Universitaet Muenchen                      #
+# This file is part of the SG++ project. For conditions of distribution and     #
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp            #
+#                                                                               #
+# author Alexander Heinecke (Alexander.Heinecke@mytum.de)                       #
+#################################################################################
 
 SRCDIR = ./../../../src/sgpp/
 OUTDIR = ./
@@ -33,21 +18,21 @@ ARBBLIB = /opt/intel/arbb/1.0.0.015/lib/intel64
 OCLINCLUDE = /opt/cuda/include
 OCLLIB = /usr/lib64
 
-OBJS := DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearGrid.o ModLinearGrid.o\
+OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearStretchedTrapezoidBoundaryGrid.o LinearGrid.o LinearStretchedGrid.o ModLinearGrid.o\
 	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
 	TruncatedTrapezoidGridGenerator.o SquareRootGridGenerator.o\
 	OperationMultipleEvalLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationMultipleEvalModLinear.o OperationEvalModLinear.o\
 	OperationHierarchisationModLinear.o OperationMultipleEvalModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
 	OperationMultipleEvalPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
-	OperationEvalLinearBoundary.o OperationMultipleEvalLinearBoundary.o BlackScholesParabolicPDESolverSystem.o HullWhiteParabolicPDESolverSystem.o BlackScholesSolver.o HullWhiteSolver.o\
-	BlackScholesHullWhiteSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
+	OperationEvalLinearBoundary.o OperationMultipleEvalLinearBoundary.o BlackScholesParabolicPDESolverSystem.o HullWhiteParabolicPDESolverSystem.o BlackScholesSolver.o BlackScholesSolverWithStretching.o HullWhiteSolver.o\
+	BlackScholesHullWhiteSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o Stretching.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
 	Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
-	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o\
+	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o GridPrinterForStretching.o\
 	OperationLBLinear.o OperationLDLinear.o OperationLELinear.o OperationLFLinear.o\
 	OperationLBLinearBoundary.o OperationLDLinearBoundary.o OperationLELinearBoundary.o OperationLFLinearBoundary.o\
 	OperationLaplaceLinearBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o\
 	OperationTestModWavelet.o OperationMultipleEvalModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
-	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o\
+	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o HeatEquationSolverWithStretching.o\
 	HeatEquationParabolicPDESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationMultipleEvalModBspline.o\
 	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
@@ -62,20 +47,39 @@ OBJS := DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o L
 	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
 	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
-	EvalCuboidGenerator.o OperationParabolicPDESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
+	EvalCuboidGenerator.o  EvalCuboidGeneratorForStretching.o OperationParabolicPDESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
 	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o\
 	OperationMultipleEvalIterativeSSELinear.o DMSystemMatrixVectorizedIdentity.o OperationDeltaLogLinear.o\
 	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
 	UpdPhidPhiBBIterativeLinearBoundary.o OperationMultipleEvalIterativeAVXLinear.o\
 	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationMultipleEvalIterativeSPSSELinear.o\
 	OperationMultipleEvalIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesParabolicPDESolverSystem.o BlackScholesParabolicPDESolverSystemEuropean.o\
+	StretchedTrapezoidBoundaryGridGenerator.o OperationMultipleEvalLinearStretched.o OperationEvalLinearStretched.o\
+	OperationHierarchisationLinearStretched.o OperationHierarchisationLinearStretchedBoundary.o OperationEvalLinearStretchedBoundary.o\
+	OperationMultipleEvalLinearStretchedBoundary.o OperationLaplaceLinearStretched.o OperationDeltaLinearStretchedBoundary.o OperationGammaLinearStretchedBoundary.o\
+	OperationLTwoDotProductLinearStretchedBoundary.o OperationLTwoDotProductLinearStretched.o\
+	OperationLaplaceLinearStretchedBoundary.o\
+	OperationTestLinearStretched.o OperationTestLinearStretchedBoundary.o OperationUpDownTestLinearStretchedBoundary.o OperationDeltaLinearStretched.o\
+	OperationGammaLinearStretched.o OperationDeltaLogLinearStretchedBoundary.o OperationGammaLogLinearStretchedBoundary.o HierarchisationLinearStretched.o\
+	DehierarchisationLinearStretched.o HierarchisationLinearStretchedBoundary.o DehierarchisationLinearStretchedBoundary.o PhiPhiUpBBLinearStretched.o\
+	PhiPhiDownBBLinearStretched.o SqXdPhidPhiDownBBLinearStretched.o SqXdPhidPhiUpBBLinearStretched.o XdPhiPhiDownBBLinearStretched.o XdPhiPhiUpBBLinearStretched.o\
+	XPhidPhiDownBBLinearStretched.o XPhidPhiUpBBLinearStretched.o PhiPhiUpBBLinearStretchedBoundary.o\
+	PhiPhiDownBBLinearStretchedBoundary.o SqXdPhidPhiDownBBLinearStretchedBoundary.o SqXdPhidPhiUpBBLinearStretchedBoundary.o XdPhiPhiDownBBLinearStretchedBoundary.o\
+	XdPhiPhiUpBBLinearStretchedBoundary.o XPhidPhiDownBBLinearStretchedBoundary.o XPhidPhiUpBBLinearStretchedBoundary.o DPhiPhiDownBBLinearStretchedBoundary.o\
+	DPhiPhiUpBBLinearStretchedBoundary.o PhidPhiDownBBLinearStretchedBoundary.o PhidPhiUpBBLinearStretchedBoundary.o\
+	DPhiPhiDownBBLinearStretched.o DPhiPhiUpBBLinearStretched.o PhidPhiDownBBLinearStretched.o PhidPhiUpBBLinearStretched.o\
+	OperationDeltaLogLinearStretched.o OperationGammaLogLinearStretched.o DowndPhidPhiBBIterativeLinearStretched.o\
+	DowndPhidPhiBBIterativeLinearStretchedBoundary.o\
+	UpdPhidPhiBBIterativeLinearStretchedBoundary.o\
+	DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesParabolicPDESolverSystem.o BlackScholesParabolicPDESolverSystemEuropean.o\
 	PrewaveletGrid.o PrewaveletGridGenerator.o OperationMultipleEvalPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
 	UpDownOneOpDimWithShadow.o OperationParabolicPDESolverSystemDirichlet.o OperationParabolicPDESolverSystemNeumann.o\
 	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
-	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o
+	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o\
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -88,7 +92,8 @@ OCLCC=g++
 endif
 ifeq ($(EXT), MPI)
 OBJS:=$(OBJS) MPICommunicator.o GlobalMPIComm.o ConjugateGradientsMPI.o PoissonEquationSolverMPI.o\
-	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o
+	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o HeatEquationParabolicPDESolverSystemParallelMPI.o\
+	HeatEquationSolverMPI.o
 endif
 
 default : $(OBJS)
@@ -129,8 +134,14 @@ LinearBoundaryGrid.o : $(SRCDIR)grid/type/LinearBoundaryGrid.cpp
 LinearTrapezoidBoundaryGrid.o : $(SRCDIR)grid/type/LinearTrapezoidBoundaryGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearTrapezoidBoundaryGrid.o $(SRCDIR)grid/type/LinearTrapezoidBoundaryGrid.cpp
 	
+LinearStretchedTrapezoidBoundaryGrid.o : $(SRCDIR)grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedTrapezoidBoundaryGrid.o $(SRCDIR)grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
+	
 LinearGrid.o : $(SRCDIR)grid/type/LinearGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearGrid.o $(SRCDIR)grid/type/LinearGrid.cpp
+	
+LinearStretchedGrid.o : $(SRCDIR)grid/type/LinearStretchedGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedGrid.o $(SRCDIR)grid/type/LinearStretchedGrid.cpp	
 	
 ModLinearGrid.o : $(SRCDIR)grid/type/ModLinearGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModLinearGrid.o $(SRCDIR)grid/type/ModLinearGrid.cpp
@@ -480,6 +491,165 @@ DowndPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/
 UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp	
 	
+StretchedTrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StretchedTrapezoidBoundaryGridGenerator.o $(SRCDIR)grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
+
+OperationMultipleEvalLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
+	
+OperationTestLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
+
+OperationEvalLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationEvalLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/common\/OperationEvalLinearStretched.cpp
+
+OperationHierarchisationLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
+
+OperationLTwoDotProductLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
+
+OperationLaplaceLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.cpp
+	
+OperationDeltaLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.cpp
+	
+OperationGammaLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.cpp
+
+OperationDeltaLogLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.cpp
+	
+OperationGammaLogLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.cpp
+
+HierarchisationLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
+
+DehierarchisationLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
+
+PhiPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
+
+PhiPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
+	
+SqXdPhidPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
+
+SqXdPhidPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
+	
+XdPhiPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
+	
+XdPhiPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp	
+	
+XPhidPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp	
+	
+XPhidPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp		
+	
+DPhiPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
+	
+DPhiPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp	
+	
+PhidPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp	
+	
+PhidPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp		
+	
+DowndPhidPhiBBIterativeLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.cpp
+
+OperationHierarchisationLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
+
+OperationEvalLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
+	
+OperationUpDownTestLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationUpDownTestLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationUpDownTestLinearStretchedBoundary.cpp
+
+OperationMultipleEvalLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.cpp
+
+OperationTestLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.cpp
+	
+OperationDeltaLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.cpp
+	
+OperationGammaLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationGammaLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance\/OperationGammaLinearStretchedBoundary.cpp
+	
+OperationDeltaLogLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.cpp
+	
+OperationGammaLogLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.cpp
+	
+OperationLTwoDotProductLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLTwoDotProductLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLTwoDotProductLinearStretchedBoundary.cpp
+	
+OperationLaplaceLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.cpp
+
+HierarchisationLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
+
+DehierarchisationLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
+
+PhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
+
+PhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
+	
+SqXdPhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
+
+SqXdPhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
+	
+XdPhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
+	
+XdPhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp	
+	
+XPhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp	
+	
+XPhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp		
+	
+DPhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
+	
+DPhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp	
+	
+PhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp	
+	
+PhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp	
+	
+DowndPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/common/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/common/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp	
+	
+UpdPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/common/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/common/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp	
+	
 ModifiedBlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModifiedBlackScholesParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 	
@@ -501,6 +671,9 @@ HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationPara
 HeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp	
 	
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o : $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp	
+
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 
@@ -555,6 +728,9 @@ EllipticPDESolver.o : $(SRCDIR)application/pde/EllipticPDESolver.cpp
 BlackScholesSolver.o : $(SRCDIR)application/pde/BlackScholesSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolver.o $(SRCDIR)application/pde/BlackScholesSolver.cpp
 	
+BlackScholesSolverWithStretching.o : $(SRCDIR)application/pde/BlackScholesSolverWithStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverWithStretching.o $(SRCDIR)application/pde/BlackScholesSolverWithStretching.cpp
+	
 HullWhiteSolver.o : $(SRCDIR)application/pde/HullWhiteSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteSolver.o $(SRCDIR)application/pde/HullWhiteSolver.cpp
 
@@ -564,6 +740,12 @@ BlackScholesHullWhiteSolver.o : $(SRCDIR)application/pde/BlackScholesHullWhiteSo
 HeatEquationSolver.o : $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolver.o $(SRCDIR)application/pde/HeatEquationSolver.cpp
 	
+LaserHeatEquationSolver2D.o : $(SRCDIR)application/pde/LaserHeatEquationSolver2D.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationSolver2D.o $(SRCDIR)application/pde/LaserHeatEquationSolver2D.cpp
+	
+HeatEquationSolverWithStretching.o : $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverWithStretching.o $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
+
 PoissonEquationSolver.o : $(SRCDIR)application/pde/PoissonEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolver.o $(SRCDIR)application/pde/PoissonEquationSolver.cpp
 
@@ -573,11 +755,17 @@ VariableDiscountFactor.o : $(SRCDIR)application/finance/VariableDiscountFactor.c
 BoundingBox.o : $(SRCDIR)grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundingBox.o $(SRCDIR)grid/common/BoundingBox.cpp
 	
+Stretching.o : $(SRCDIR)grid/common/Stretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Stretching.o $(SRCDIR)grid/common/Stretching.cpp
+    	
 IOToolBonnSG.o : $(SRCDIR)tools/finance/IOToolBonnSG.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)IOToolBonnSG.o $(SRCDIR)tools/finance/IOToolBonnSG.cpp
 
 GridPrinter.o : $(SRCDIR)tools/common/GridPrinter.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinter.o $(SRCDIR)tools/common/GridPrinter.cpp
+	
+GridPrinterForStretching.o : $(SRCDIR)tools/common/GridPrinterForStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinterForStretching.o $(SRCDIR)tools/common/GridPrinterForStretching.cpp
 	
 DirichletUpdateVector.o : $(SRCDIR)grid/common/DirichletUpdateVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DirichletUpdateVector.o $(SRCDIR)grid/common/DirichletUpdateVector.cpp	
@@ -596,6 +784,9 @@ SGppStopwatch.o : $(SRCDIR)tools/common/SGppStopwatch.cpp
 
 EvalCuboidGenerator.o : $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGenerator.o $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
+	
+EvalCuboidGeneratorForStretching.o : $(SRCDIR)tools/common/EvalCuboidGeneratorForStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGeneratorForStretching.o $(SRCDIR)tools/common/EvalCuboidGeneratorForStretching.cpp
 	
 ARFFTools.o : $(SRCDIR)tools/datadriven/ARFFTools.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ARFFTools.o $(SRCDIR)tools/datadriven/ARFFTools.cpp
@@ -671,6 +862,12 @@ PoissonEquationSolverMPI.o : $(SRCDIR)application/pde/PoissonEquationSolverMPI.c
 	
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
-		
+
+HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
+
+HeatEquationSolverMPI.o : $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
+	
 clean:
 	rm *

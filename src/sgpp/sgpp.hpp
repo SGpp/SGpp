@@ -3,12 +3,13 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 #ifndef SGPP_HPP_
 #define SGPP_HPP_
 
 #include "grid/GridStorage.hpp"
+#include "grid/GridDataBase.hpp"
 
 #include "application/common/ScreenOutput.hpp"
 
@@ -31,9 +32,12 @@
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 
 #include "application/pde/BlackScholesSolver.hpp"
+#include "application/pde/BlackScholesSolverWithStretching.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
 #include "application/pde/BlackScholesHullWhiteSolver.hpp"
 #include "application/pde/HeatEquationSolver.hpp"
+#include "application/pde/HeatEquationSolverWithStretching.hpp"
+#include "application/pde/LaserHeatEquationSolver2D.hpp"
 #include "application/pde/PoissonEquationSolver.hpp"
 
 #include "basis/basis.hpp"
@@ -43,6 +47,8 @@
 // @todo (heinecke) check if this can be removed
 #include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
 #include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
+#include "basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.hpp"
+#include "basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.hpp"
 #include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
 
 #include "data/DataVector.hpp"
@@ -50,12 +56,14 @@
 
 #include "grid/Grid.hpp"
 #include "grid/common/BoundingBox.hpp"
+#include "grid/common/Stretching.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/generation/RefinementFunctor.hpp"
 #include "grid/generation/CoarseningFunctor.hpp"
 #include "grid/generation/StandardGridGenerator.hpp"
 #include "grid/generation/BoundaryGridGenerator.hpp"
 #include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
+#include "grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
 #include "grid/generation/SquareRootGridGenerator.hpp"
 #include "grid/generation/TruncatedTrapezoidGridGenerator.hpp"
 #include "grid/generation/GridGenerator.hpp"
@@ -66,6 +74,7 @@
 #include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "grid/generation/SurplusVolumeRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 
 #include "grid/combination/FullGrid.hpp"
@@ -82,14 +91,18 @@
 
 #include "tools/finance/IOToolBonnSG.hpp"
 #include "tools/common/GridPrinter.hpp"
+#include "tools/common/GridPrinterForStretching.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 #include "tools/common/EvalCuboidGenerator.hpp"
+#include "tools/common/EvalCuboidGeneratorForStretching.hpp"
 
 namespace sg
 {
 
 typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
 typedef linear_base<unsigned int, unsigned int> SLinearBase;
+typedef linearstretchedboundaryBase<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
+typedef linearstretched_base<unsigned int, unsigned int> SLinearStretchedBase;
 typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
 typedef poly_base<unsigned int, unsigned int> SPolyBase;
 typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;

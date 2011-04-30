@@ -10,14 +10,14 @@ SRCDIR = ./../../../src/application_cpp/
 BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
-OBJS = NativeCppHeatEquationSolver.o
+OBJS = StretchingTest.o
 
-default : $(OBJS)
-	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppHeatEquationSolver.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
-	cp $(BINDIR)$(BINNAME) $(BINDIR)HESolver
+default: $(OBJS)
+	$(CC) $(LFLAGS) $(BUILDDIR)StretchingTest.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
+	cp $(BINDIR)$(BINNAME) $(BINDIR)StretchingTest
 	
-NativeCppHeatEquationSolver.o : $(SRCDIR)NativeCppHeatEquationSolver.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppHeatEquationSolver.o $(SRCDIR)NativeCppHeatEquationSolver.cpp
-		
-clean :
+StretchingTest.o : $(SRCDIR)StretchingTest.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)StretchingTest.o $(SRCDIR)StretchingTest.cpp
+			
+clean:
 	rm *
