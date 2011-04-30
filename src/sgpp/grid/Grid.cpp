@@ -3,12 +3,14 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 #include "grid/Grid.hpp"
 #include "grid/type/LinearGrid.hpp"
+#include "grid/type/LinearStretchedGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
+#include "grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
@@ -37,6 +39,11 @@ Grid* Grid::createLinearGrid(size_t dim)
 	return new LinearGrid(dim);
 }
 
+Grid* Grid::createLinearStretchedGrid(size_t dim)
+{
+	return new LinearStretchedGrid(dim);
+}
+
 Grid* Grid::createLinearBoundaryGrid(size_t dim)
 {
 	return new LinearBoundaryGrid(dim);
@@ -45,6 +52,11 @@ Grid* Grid::createLinearBoundaryGrid(size_t dim)
 Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim)
 {
 	return new LinearTrapezoidBoundaryGrid(dim);
+}
+
+Grid* Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim)
+{
+	return new LinearStretchedTrapezoidBoundaryGrid(dim);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim)
@@ -137,8 +149,10 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		 */
 		tMap->insert(std::make_pair("NULL",Grid::nullFactory));
 		tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
+		tMap->insert(std::make_pair("linearStretched", LinearStretchedGrid::unserialize));
 		tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
+		tMap->insert(std::make_pair("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
 		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
 		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
@@ -197,9 +211,19 @@ BoundingBox* Grid::getBoundingBox()
 	return this->storage->getBoundingBox();
 }
 
+Stretching* Grid::getStretching()
+{
+	return this->storage->getStretching();
+}
+
 void Grid::setBoundingBox(BoundingBox& bb)
 {
 	this->storage->setBoundingBox(bb);
+}
+
+void Grid::setStretching(Stretching& bb)
+{
+	this->storage->setStretching(bb);
 }
 
 void Grid::serialize(std::string& ostr)

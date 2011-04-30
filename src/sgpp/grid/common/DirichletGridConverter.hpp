@@ -1,9 +1,10 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
+
 
 #ifndef DIRICHLETGRIDCONVERTER_HPP
 #define DIRICHLETGRIDCONVERTER_HPP
@@ -23,7 +24,7 @@ namespace base
  * are needed during solving the system (they constant because dirichlet boundary
  * conditions), so a lot of work can be saved if only the inner points are used.
  *
- * @revision $HEAD$
+ * @version $HEAD$
  */
 class DirichletGridConverter
 {

@@ -23,8 +23,8 @@ double LinearFullGrid::eval(DataVector& p)
 	    double dist,baseVal,ofs,len;
 	    double normcoord;
 	    double ret_val = 0.0;
-		double intersect[2*dim];
-		int aindex[dim];
+		double intersect[127]; //2*dim
+		int aindex[63]; //dim
 	    /**If the boundingBox of the fullgrid is null we consider the default [0,1]^d hypercube*/
 	    if (boundingBox!=0){
 	    		 for ( ii = dim-1 ; ii >=0; ii--){
