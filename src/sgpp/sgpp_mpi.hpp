@@ -13,8 +13,10 @@
 #include "solver/sle/ConjugateGradientsMPI.hpp"
 
 #include "application/pde/PoissonEquationSolverMPI.hpp"
+#include "application/pde/HeatEquationSolverMPI.hpp"
 
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
+#include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
 
 #include "sgpp.hpp"
 

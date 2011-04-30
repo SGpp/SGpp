@@ -10,14 +10,14 @@ SRCDIR = ./../../../src/application_cpp/
 BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
-OBJS = NativeCppHeatEquationSolver.o
+OBJS = NativeCppLaserHeatEquationSolver2D.o
 
 default : $(OBJS)
-	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppHeatEquationSolver.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
-	cp $(BINDIR)$(BINNAME) $(BINDIR)HESolver
+	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppLaserHeatEquationSolver2D.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
+	cp $(BINDIR)$(BINNAME) $(BINDIR)LaserHESolver2D
 	
-NativeCppHeatEquationSolver.o : $(SRCDIR)NativeCppHeatEquationSolver.cpp
-	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppHeatEquationSolver.o $(SRCDIR)NativeCppHeatEquationSolver.cpp
+NativeCppLaserHeatEquationSolver2D.o : $(SRCDIR)NativeCppLaserHeatEquationSolver2D.cpp
+	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppLaserHeatEquationSolver2D.o $(SRCDIR)NativeCppLaserHeatEquationSolver2D.cpp
 		
 clean :
 	rm *
