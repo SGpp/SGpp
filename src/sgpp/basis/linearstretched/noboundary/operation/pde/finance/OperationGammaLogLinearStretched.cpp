@@ -39,8 +39,8 @@ OperationGammaLogLinearStretched::~OperationGammaLogLinearStretched()
 void OperationGammaLogLinearStretched::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearStretched> s(func, this->storage);
+	PhiPhiUpBBLinearStretched func(this->storage);
+	sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -48,8 +48,8 @@ void OperationGammaLogLinearStretched::up(DataVector& alpha, DataVector& result,
 void OperationGammaLogLinearStretched::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearStretched> s(func, this->storage);
+	PhiPhiDownBBLinearStretched func(this->storage);
+	sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -57,8 +57,8 @@ void OperationGammaLogLinearStretched::down(DataVector& alpha, DataVector& resul
 void OperationGammaLogLinearStretched::upOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * dphi
-	detail::PhidPhiUpBBLinearStretched func(this->storage);
-	sweep<detail::PhidPhiUpBBLinearStretched> s(func, this->storage);
+	PhidPhiUpBBLinearStretched func(this->storage);
+	sweep<PhidPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -66,8 +66,8 @@ void OperationGammaLogLinearStretched::upOpDimOne(DataVector& alpha, DataVector&
 void OperationGammaLogLinearStretched::downOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * dphi
-	detail::PhidPhiDownBBLinearStretched func(this->storage);
-	sweep<detail::PhidPhiDownBBLinearStretched> s(func, this->storage);
+	PhidPhiDownBBLinearStretched func(this->storage);
+	sweep<PhidPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -75,8 +75,8 @@ void OperationGammaLogLinearStretched::downOpDimOne(DataVector& alpha, DataVecto
 void OperationGammaLogLinearStretched::upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// dphi * phi
-	detail::DPhiPhiUpBBLinearStretched func(this->storage);
-	sweep<detail::DPhiPhiUpBBLinearStretched> s(func, this->storage);
+	DPhiPhiUpBBLinearStretched func(this->storage);
+	sweep<DPhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -84,8 +84,8 @@ void OperationGammaLogLinearStretched::upOpDimTwo(DataVector& alpha, DataVector&
 void OperationGammaLogLinearStretched::downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// dphi * phi
-	detail::DPhiPhiDownBBLinearStretched func(this->storage);
-	sweep<detail::DPhiPhiDownBBLinearStretched> s(func, this->storage);
+	DPhiPhiDownBBLinearStretched func(this->storage);
+	sweep<DPhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }

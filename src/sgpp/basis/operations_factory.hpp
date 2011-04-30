@@ -114,8 +114,8 @@
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.hpp"
 #include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
 
-#include "basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.hpp"
 #include "basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.hpp"
+#include "basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.hpp"
 #include "basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.hpp"
 #include "basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.hpp"
 // @todo (heinecke) removed this when done
@@ -235,6 +235,16 @@ using namespace sg::pde;
 		else if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
 		{
 			return new OperationLTwoDotProductLinearStretchedBoundary(grid_type.getStorage());
+		}
+		else
+			throw factory_exception("OperationLaplace is not implemented for this grid type.");
+	}
+
+	static OperationMatrix* createOperationUpDownTest(Grid& grid_type)
+	{
+		if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
+		{
+			return new OperationUpDownTestLinearStretchedBoundary(grid_type.getStorage());
 		}
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
@@ -448,17 +458,6 @@ using namespace sg::finance;
 
 
 
-
-	static OperationMatrix* createOperationUpDownTest(Grid& grid_type)
-	{
-		if(strcmp(grid_type.getType(), "linearStretchedTrapezoidBoundary") == 0)
-		{
-			return new OperationUpDownTestLinearStretchedBoundary(grid_type.getStorage());
-		}
-		else
-			throw factory_exception("OperationLaplace is not implemented for this grid type.");
-	}
-
 	/**
 	 * gets a pointer to OperationEval object
 	 *
@@ -593,7 +592,6 @@ using namespace sg::datadriven;
 	 */
 	static OperationTest* createOperationTest(Grid& grid_type)
 	{
-
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			return new OperationTestLinear(grid_type.getStorage());
@@ -641,7 +639,6 @@ using namespace sg::datadriven;
 		{
 			return new OperationTestLinearStretchedBoundary(grid_type.getStorage());
 		}
-
 
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");

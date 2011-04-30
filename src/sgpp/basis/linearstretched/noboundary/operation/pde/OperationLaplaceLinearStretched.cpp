@@ -47,15 +47,15 @@ void OperationLaplaceLinearStretched::specialOP(DataVector& alpha, DataVector& r
 
 void OperationLaplaceLinearStretched::up(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiUpBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearStretched> s(func, this->storage);
+	PhiPhiUpBBLinearStretched func(this->storage);
+	sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceLinearStretched::down(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiDownBBLinearStretched func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearStretched> s(func, this->storage);
+	PhiPhiDownBBLinearStretched func(this->storage);
+	sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 

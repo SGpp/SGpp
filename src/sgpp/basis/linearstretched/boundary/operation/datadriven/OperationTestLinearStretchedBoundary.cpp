@@ -13,6 +13,8 @@
 
 #include "data/DataVector.hpp"
 
+using namespace sg::base;
+
 namespace sg
 {
 namespace datadriven

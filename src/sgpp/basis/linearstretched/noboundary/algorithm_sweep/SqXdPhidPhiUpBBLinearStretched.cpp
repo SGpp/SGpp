@@ -13,8 +13,7 @@ namespace sg
 namespace finance
 {
 
-namespace detail
-{
+
 
 SqXdPhidPhiUpBBLinearStretched::SqXdPhidPhiUpBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
@@ -87,7 +86,7 @@ double c = 1.0/3.0*(posc+posr+posl);
 }
 
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }

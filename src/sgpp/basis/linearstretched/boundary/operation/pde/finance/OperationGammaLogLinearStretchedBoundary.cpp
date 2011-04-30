@@ -40,8 +40,8 @@ OperationGammaLogLinearStretchedBoundary::~OperationGammaLogLinearStretchedBound
 void OperationGammaLogLinearStretchedBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	PhiPhiUpBBLinearStretchedBoundary func(this->storage);
+	sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -49,8 +49,8 @@ void OperationGammaLogLinearStretchedBoundary::up(DataVector& alpha, DataVector&
 void OperationGammaLogLinearStretchedBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	PhiPhiDownBBLinearStretchedBoundary func(this->storage);
+	sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -58,8 +58,8 @@ void OperationGammaLogLinearStretchedBoundary::down(DataVector& alpha, DataVecto
 void OperationGammaLogLinearStretchedBoundary::upOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * dphi
-	detail::PhidPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	PhidPhiUpBBLinearStretchedBoundary func(this->storage);
+	sweep<PhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -67,8 +67,8 @@ void OperationGammaLogLinearStretchedBoundary::upOpDimOne(DataVector& alpha, Dat
 void OperationGammaLogLinearStretchedBoundary::downOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * dphi
-	detail::PhidPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	PhidPhiDownBBLinearStretchedBoundary func(this->storage);
+	sweep<PhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -76,8 +76,8 @@ void OperationGammaLogLinearStretchedBoundary::downOpDimOne(DataVector& alpha, D
 void OperationGammaLogLinearStretchedBoundary::upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// dphi * phi
-	detail::DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
+	sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -85,8 +85,8 @@ void OperationGammaLogLinearStretchedBoundary::upOpDimTwo(DataVector& alpha, Dat
 void OperationGammaLogLinearStretchedBoundary::downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// dphi * phi
-	detail::DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
+	sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

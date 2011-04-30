@@ -329,7 +329,7 @@ print "finished configuration"
 # ----------------------------
 # build c++ lib
 #(libsgpp, libsgppa) = env.SConscript('src/sgpp/SConscript',
-                                     build_dir='tmp/build_sg', duplicate=0)
+#                                     build_dir='tmp/build_sg', duplicate=0)
 # install
 #env.Install('lib/sgpp', [libsgpp, libsgppa])
 lib_sgpp_targets = []
@@ -368,21 +368,25 @@ if env['SG_COMBIGRID']:
 	Import('libsgppcombigrid')
 	lib_sgpp_targets.append(libsgppcombigrid)
 	
-if env['SG_PYTHON']:
-	SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
-	Import('pysgpp')
-	env.Install('#lib/pysgpp', pysgpp)
-	env.Install('#bin', pysgpp)
-	Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-	Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-	if swigAvail and pyAvail:
-	    libpysgpp = env.SConscript('src/pysgpp/SConscript',
-	                               build_dir='tmp/build_pysgpp', duplicate=0)
+if env['SG_PYTHON'] and swigAvail and pyAvail:
+	libpysgpp = SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
+	#Import('pysgpp')
+	pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	Depends(pyinst, libpysgpp)
+	dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	Depends(dep, libpysgpp)
+	#env.Install('#lib/pysgpp', pysgpp)
+	#env.Install('#bin', pysgpp)
+	#Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+	#Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+	#if swigAvail and pyAvail:
+	#    env.SConscript('src/pysgpp/SConscript',
+	#                               build_dir='tmp/build_pysgpp', duplicate=0)
 	    # install
-	    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	    Depends(pyinst, libpysgpp)
-	    dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	    Depends(dep, libpysgpp)
+	#    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	#   Depends(pyinst, libpysgpp)
+	#    dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	#    Depends(dep, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['JSGPP']:

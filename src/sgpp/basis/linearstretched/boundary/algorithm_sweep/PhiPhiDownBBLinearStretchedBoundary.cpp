@@ -12,8 +12,7 @@ namespace sg
 namespace pde
 {
 
-namespace detail
-{
+
 
 PhiPhiDownBBLinearStretchedBoundary::PhiPhiDownBBLinearStretchedBoundary(GridStorage* storage) : PhiPhiDownBBLinearStretched(storage)
 {
@@ -86,7 +85,7 @@ void PhiPhiDownBBLinearStretchedBoundary::operator()(DataVector& source, DataVec
 
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }

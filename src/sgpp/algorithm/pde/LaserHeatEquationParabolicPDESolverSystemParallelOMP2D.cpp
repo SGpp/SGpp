@@ -10,6 +10,7 @@
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "tools/common/StdNormalDistribution.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <string>
 #include <sstream>
@@ -39,7 +40,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool
 
 	// apply new laser position
 	StdNormalDistribution myNormDistr;
-	OperationHierarchisation* myHierarchisation = this->BoundGrid->createOperationHierarchisation();
+	OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
 	myHierarchisation->doDehierarchisation(*this->alpha_complete);
 
 	DataVector laser_update(this->BoundGrid->getStorage()->size());

@@ -8,7 +8,10 @@
 #include "exception/application_exception.hpp"
 #include "stdlib.h"
 #include <sstream>
+#include "basis/operations_factory.hpp"
+
 using namespace sg::base;
+using namespace sg::solver;
 
 namespace sg
 {
@@ -210,7 +213,7 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(DataVector& alpha,
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

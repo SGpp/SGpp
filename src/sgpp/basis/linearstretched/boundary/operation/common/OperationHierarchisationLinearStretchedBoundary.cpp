@@ -39,8 +39,8 @@ namespace base
 
 void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(DataVector& node_values)
 {
-	detail::HierarchisationLinearStretchedBoundary func(this->storage);
-	sweep<detail::HierarchisationLinearStretchedBoundary> s(func, this->storage);
+	HierarchisationLinearStretchedBoundary func(this->storage);
+	sweep<HierarchisationLinearStretchedBoundary> s(func, this->storage);
 
 	// N D case
 	if (this->storage->dim() > 1)
@@ -59,8 +59,8 @@ void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(DataVect
 
 void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(DataVector& alpha)
 {
-	detail::DehierarchisationLinearStretchedBoundary func(this->storage);
-	sweep<detail::DehierarchisationLinearStretchedBoundary> s(func, this->storage);
+	DehierarchisationLinearStretchedBoundary func(this->storage);
+	sweep<DehierarchisationLinearStretchedBoundary> s(func, this->storage);
 
 	// N D case
 	if (this->storage->dim() > 1)

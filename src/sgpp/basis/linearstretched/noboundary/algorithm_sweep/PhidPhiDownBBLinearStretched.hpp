@@ -18,8 +18,7 @@ namespace sg
 namespace finance
 {
 
-namespace detail
-{
+
 
 /**
  * Implementation of sweep operator (): 1D Down for
@@ -74,7 +73,7 @@ protected:
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
 }
