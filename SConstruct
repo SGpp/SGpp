@@ -226,9 +226,14 @@ if env.has_key('MARCH'):
 
 
 # boolean variables for environment 
-pyAvail = True
-swigAvail = True
-javaAvail = True
+if env['SG_PYTHON']:
+    pyAvail = True
+    swigAvail = True
+    javaAvail = True
+else:
+    pyAvail = False
+    swigAvail = False
+    javaAvail = False
 
 # configure environment
 # ---------------------
@@ -337,7 +342,9 @@ lib_sgpp_targets = []
 if env['SG_BASE']:
 	SConscript('src/sgpp/SConscriptBase', build_dir='tmp/build_sgbase', duplicate=0)
 	Import('libsgppbase')
+	Import('libsgppbasestatic')
 	lib_sgpp_targets.append(libsgppbase)
+	lib_sgpp_targets.append(libsgppbasestatic)
 if env['SG_PDE']:
 	SConscript('src/sgpp/SConscriptPde', build_dir='tmp/build_sgpde', duplicate=0)
 	Import('libsgpppde')
