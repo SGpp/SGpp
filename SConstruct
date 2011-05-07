@@ -226,7 +226,7 @@ if env.has_key('MARCH'):
 
 
 # boolean variables for environment 
-if env['SG_PYTHON']:
+if env['SG_PYTHON'] or env['SG_ALL']:
     pyAvail = True
     swigAvail = True
     javaAvail = True
