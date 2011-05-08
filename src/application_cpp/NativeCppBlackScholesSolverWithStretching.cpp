@@ -167,7 +167,7 @@ int readDiscreteStretchingData(std::string tFile, size_t numAssests, std::vector
 	return 0;
 }
 
-int readStretchingData(std::string tFile, size_t numAssests, sg::Stretching1D* streching1dArray )
+int readStretchingData(std::string tFile, size_t numAssests, sg::base::Stretching1D* streching1dArray )
 {
 	std::fstream file;
 	std::string stretchingType;
@@ -470,16 +470,16 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		return;
 	}
 
-	sg::BlackScholesSolverWithStretching* myBSSolver;
+	sg::finance::BlackScholesSolverWithStretching* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolverWithStretching(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolverWithStretching(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false, "European");
 	}
-	sg::Stretching* myStretching;
+	sg::base::Stretching* myStretching;
 
 	/*
 	 * Check the type of stretching;
@@ -487,7 +487,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	 * if discrete, read the points on the grid.
 	 */
 	if(stretchingMode == "analytic"){
-		sg::Stretching1D* stretching1dArray = new sg::Stretching1D[dim];
+		sg::base::Stretching1D* stretching1dArray = new sg::base::Stretching1D[dim];
 		int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 		if (readStretchData != 0)
 		{
@@ -495,7 +495,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 			return;
 		}
 
-		myStretching = new sg::Stretching(dim, myBoundaries,stretching1dArray);
+		myStretching = new sg::base::Stretching(dim, myBoundaries,stretching1dArray);
 		delete[] stretching1dArray;
 	}
 	else if(stretchingMode == "discrete"){
@@ -506,7 +506,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 			std::cout<<"Discrete Stretching Data cannot be read, exiting.\n";
 			return;
 		}
-		myStretching = new sg::Stretching(dim, discreteCoordinates);
+		myStretching = new sg::base::Stretching(dim, discreteCoordinates);
 		delete[] discreteCoordinates;
 	}
 	else{
@@ -718,17 +718,17 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	}
 
 
-	sg::BlackScholesSolverWithStretching* myBSSolver;
+	sg::finance::BlackScholesSolverWithStretching* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolverWithStretching(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolverWithStretching(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false, "European");
 	}
-	sg::Stretching* myStretching;
-	sg::Stretching* myEvalStretching;
+	sg::base::Stretching* myStretching;
+	sg::base::Stretching* myEvalStretching;
 
 	/*
 	 * Check the type of stretching;
@@ -736,7 +736,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	 * if discrete, read the points on the grid.
 	 */
 	if(stretchingMode == "analytic"){
-		sg::Stretching1D* stretching1dArray = new sg::Stretching1D[dim];
+		sg::base::Stretching1D* stretching1dArray = new sg::base::Stretching1D[dim];
 		int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 		if (readStretchData != 0)
 		{
@@ -745,8 +745,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 
 
-		myStretching = new sg::Stretching(dim, myBoundaries,stretching1dArray);
-		myEvalStretching = new sg::Stretching(dim, myEvalBoundaries,stretching1dArray);
+		myStretching = new sg::base::Stretching(dim, myBoundaries,stretching1dArray);
+		myEvalStretching = new sg::base::Stretching(dim, myEvalBoundaries,stretching1dArray);
 		delete[] stretching1dArray;
 	}
 	else if(stretchingMode == "discrete"){
@@ -757,14 +757,14 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			std::cout<<"Discrete Stretching Data cannot be read, exiting.\n";
 			return;
 		}
-		sg::Stretching1D* stretching1dArray = new sg::Stretching1D[dim];
+		sg::base::Stretching1D* stretching1dArray = new sg::base::Stretching1D[dim];
 		for(size_t i=0;i<dim;i++){
 			stretching1dArray[i].type.assign("id");
 			stretching1dArray[i].xsi=0;
 			stretching1dArray[i].x_0=1;
 		}
-		myStretching = new sg::Stretching(dim, discreteCoordinates);
-		myEvalStretching = new sg::Stretching(dim, myEvalBoundaries,stretching1dArray);
+		myStretching = new sg::base::Stretching(dim, discreteCoordinates);
+		myEvalStretching = new sg::base::Stretching(dim, myEvalBoundaries,stretching1dArray);
 		delete[] discreteCoordinates;
 		delete[] stretching1dArray;
 	}
@@ -773,7 +773,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		return;
 	}
 
-	sg::EvalCuboidGeneratorForStretching* myEvalCuboidGen = new sg::EvalCuboidGeneratorForStretching();
+	sg::base::EvalCuboidGeneratorForStretching* myEvalCuboidGen = new sg::base::EvalCuboidGeneratorForStretching();
 	delete[] myBoundaries;
 	delete[] myEvalBoundaries;
 	//	delete[] stretching1dArray;
@@ -1035,17 +1035,17 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		return;
 	}
 
-	sg::BlackScholesSolverWithStretching* myBSSolver;
+	sg::finance::BlackScholesSolverWithStretching* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolverWithStretching(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolverWithStretching(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false, "European");
 	}
 
-	sg::Stretching* myStretching;
+	sg::base::Stretching* myStretching;
 
 	/*
 	 * Check the type of stretching;
@@ -1053,7 +1053,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	 * if discrete, read the points on the grid.
 	 */
 	if(stretchingMode == "analytic"){
-		sg::Stretching1D* stretching1dArray = new sg::Stretching1D[dim];
+		sg::base::Stretching1D* stretching1dArray = new sg::base::Stretching1D[dim];
 		int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 		if (readStretchData != 0)
 		{
@@ -1061,7 +1061,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			return;
 		}
 
-		myStretching = new sg::Stretching(dim, myBoundaries,stretching1dArray);
+		myStretching = new sg::base::Stretching(dim, myBoundaries,stretching1dArray);
 		delete[] stretching1dArray;
 	}
 	else if(stretchingMode == "discrete"){
@@ -1072,7 +1072,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			std::cout<<"Discrete Stretching Data cannot be read, exiting.\n";
 			return;
 		}
-		myStretching = new sg::Stretching(dim, discreteCoordinates);
+		myStretching = new sg::base::Stretching(dim, discreteCoordinates);
 		delete[] discreteCoordinates;
 	}
 	else{
@@ -1393,7 +1393,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
  */
 void writeHelp()
 {
-	sg::BlackScholesSolverWithStretching* myBSSolver = new sg::BlackScholesSolverWithStretching();
+	sg::finance::BlackScholesSolverWithStretching* myBSSolver = new sg::finance::BlackScholesSolverWithStretching();
 
 	myBSSolver->initScreen();
 
