@@ -18,6 +18,9 @@
 #include "basis/operations_factory.hpp"
 #include <sstream>
 
+using namespace sg::solver;
+using namespace sg::base;
+
 namespace sg
 {
 namespace parallel
