@@ -98,5 +98,7 @@ src_objs_finance = sg_env.SharedObject(srcs)
 Export('src_objs_finance')
 
 libsgppfinance = sg_env.SharedLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
-#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+libsgppfinancestatic = sg_env.StaticLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
+
 Export('libsgppfinance')
+Export('libsgppfinancestatic')

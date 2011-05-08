@@ -70,10 +70,6 @@ def CheckJNI(context):
     return ret
 
 
-
-
-
-
 vars = Variables("custom.py")
 
 # define the flags 
@@ -345,35 +341,48 @@ if env['SG_BASE']:
 	Import('libsgppbasestatic')
 	lib_sgpp_targets.append(libsgppbase)
 	lib_sgpp_targets.append(libsgppbasestatic)
+	
 if env['SG_PDE']:
 	SConscript('src/sgpp/SConscriptPde', build_dir='tmp/build_sgpde', duplicate=0)
 	Import('libsgpppde')
+	Import('libsgpppdestatic')
 	lib_sgpp_targets.append(libsgpppde)
+	lib_sgpp_targets.append(libsgpppdestatic)
 	
 if env['SG_DATADRIVEN']:
 	SConscript('src/sgpp/SConscriptDatadriven', build_dir='tmp/build_sgdatadriven', duplicate=0)
 	Import('libsgppdatadriven')
+	Import('libsgppdatadrivenstatic')
 	lib_sgpp_targets.append(libsgppdatadriven)
+	lib_sgpp_targets.append(libsgppdatadrivenstatic)
 	
 if env['SG_SOLVER']:
 	SConscript('src/sgpp/SConscriptSolver', build_dir='tmp/build_sgsolver', duplicate=0)
 	Import('libsgppsolver')
+	Import('libsgppsolverstatic')
 	lib_sgpp_targets.append(libsgppsolver)
+	lib_sgpp_targets.append(libsgppsolverstatic)
 	
 if env['SG_FINANCE']:
 	SConscript('src/sgpp/SConscriptFinance', build_dir='tmp/build_sgfinance', duplicate=0)
 	Import('libsgppfinance')
+	Import('libsgppfinancestatic')
 	lib_sgpp_targets.append(libsgppfinance)
+	lib_sgpp_targets.append(libsgppfinancestatic)
 	
 if env['SG_PARALLEL']:
 	SConscript('src/sgpp/SConscriptParallel', build_dir='tmp/build_sgparallel', duplicate=0)
 	Import('libsgppparallel')
+	Import('libsgppparallelstatic')
 	lib_sgpp_targets.append(libsgppparallel)
+	lib_sgpp_targets.append(libsgppparallelstatic)
 
 if env['SG_COMBIGRID']:
 	SConscript('src/sgpp/SConscriptCombigrid', build_dir='tmp/build_sgcombigrid', duplicate=0)
 	Import('libsgppcombigrid')
+	Import('libsgppcombigridstatic')
 	lib_sgpp_targets.append(libsgppcombigrid)
+	lib_sgpp_targets.append(libsgppcombigridstatic)
 	
 if env['SG_PYTHON'] and swigAvail and pyAvail:
 	libpysgpp = SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)

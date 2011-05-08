@@ -27,5 +27,7 @@ src_objs_combigrid = sg_env.SharedObject(srcs)
 Export('src_objs_combigrid')
 
 libsgppcombigrid = sg_env.SharedLibrary(target="sgppcombigrid", source = src_objs_combigrid, SHLIBPREFIX = 'lib')
-#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+libsgppcombigridstatic = sg_env.StaticLibrary(target="sgppcombigrid", source = src_objs_combigrid, SHLIBPREFIX = 'lib')
+
 Export('libsgppcombigrid')
+Export('libsgppcombigridstatic')

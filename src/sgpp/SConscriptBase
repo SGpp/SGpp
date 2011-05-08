@@ -102,6 +102,6 @@ Export('src_objs_base')
 
 libsgppbase = sg_env.SharedLibrary(target="sgppbase", source = src_objs_base, SHLIBPREFIX = 'lib')
 libsgppbasestatic = sg_env.StaticLibrary(target="sgppbase", source = src_objs_base, SHLIBPREFIX = 'lib')
-#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+
 Export('libsgppbase')
 Export('libsgppbasestatic')

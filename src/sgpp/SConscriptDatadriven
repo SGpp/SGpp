@@ -32,5 +32,7 @@ src_objs_datadriven = sg_env.SharedObject(srcs)
 Export('src_objs_datadriven')
 
 libsgppdatadriven = sg_env.SharedLibrary(target="sgppdatadriven", source = src_objs_datadriven, SHLIBPREFIX = 'lib')
-#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+libsgppdatadrivenstatic = sg_env.StaticLibrary(target="sgppdatadriven", source = src_objs_datadriven, SHLIBPREFIX = 'lib')
+
 Export('libsgppdatadriven')
+Export('libsgppdatadrivenstatic')
