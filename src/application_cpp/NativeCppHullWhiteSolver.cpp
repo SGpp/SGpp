@@ -79,8 +79,8 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 			return;
 		}
 
-		sg::HullWhiteSolver* myHWSolver = new sg::HullWhiteSolver();
-		sg::BoundingBox* myBoundingBox = new sg::BoundingBox(1, myBoundaries);
+		sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
+		sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(1, myBoundaries);
 		delete[] myBoundaries;
 
 		// init Screen Object
@@ -182,7 +182,7 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 
 void writeHelp()
 {
-	sg::HullWhiteSolver* myHWSolver = new sg::HullWhiteSolver();
+	sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
 
 	myHWSolver->initScreen();
 
