@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	double coarsenThreshold = 0.01;
 	size_t numCoarsen = 2;
 
-	sg::Grid* myGrid;
+	sg::base::Grid* myGrid;
 
 	std::cout << std::endl;
 	std::cout << "Starting the Refine/Coarsen Test" << std::endl;
@@ -30,10 +30,10 @@ int main(int argc, char *argv[])
 	std::cout << std::endl;
 
 	std::cout << "start constructing regular grid" << std::endl;
-	myGrid = new sg::LinearTrapezoidBoundaryGrid(dim);
+	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(dim);
 	std::cout << "A LinearTrapezoidBoundaryGrid was created" << std::endl;
 
-	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
+	sg::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(levels);
 	delete myGenerator;
 	std::cout << levels << " levels were added to the above created grid" << std::endl;
@@ -62,8 +62,8 @@ int main(int argc, char *argv[])
 	std::cout << "Orig alpha:" << std::endl;
 	std::cout << alpha.toString() << std::endl << std::endl;
 
-	sg::GridGenerator* myGeneratorCoarsen = myGrid->createGridGenerator();
-	sg::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::SurplusCoarseningFunctor(&alpha, numCoarsen, coarsenThreshold);
+	sg::base::GridGenerator* myGeneratorCoarsen = myGrid->createGridGenerator();
+	sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(&alpha, numCoarsen, coarsenThreshold);
 
 	myGeneratorCoarsen->coarsen(myCoarsenFunctor, &alpha);
 
