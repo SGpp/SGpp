@@ -58,6 +58,10 @@ endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
 endif
+ifeq ($(EXT), OCL)
+CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -fopenmp
+LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
+endif
 endif
 
 ifeq ($(CC),icpc)

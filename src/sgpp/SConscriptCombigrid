@@ -17,8 +17,6 @@ combigrid/domain/CombiTanStretching.cpp
 combigrid/domain/CombiUniformStretching.cpp
 """)
 
-
-
 sg_env = env.Clone()
 
 sg_env.Append(CPPPATH=['#/src/sgpp'])
