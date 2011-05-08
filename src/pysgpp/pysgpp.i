@@ -3,14 +3,16 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de), J�rg Blank (blankj@in.tum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (alexander.heinecke@mytum.de)
 
 %module(directors="1") pysgpp
 
 %include "stl.i"
 %include "std_vector.i"
 %include "std_pair.i"
+%include "std_complex.i"
 
+%include "cpointer.i" 
 %include "typemaps.i"
 
 %include "exception.i"
@@ -29,14 +31,19 @@
 
 
 namespace std {
+	%template(IntVector) vector<int>;
+	%template(IntIntVector) vector< vector<int> >; 
+	%template(BoolVector) vector<bool>;
 	%template(DoubleVector) vector<double>;
 	%template(IndexValPair) pair<size_t, double>;
 	%template(IndexValVector) vector<pair<size_t, double> >;
+
 }
 
 // This should include all necessary header files
 %{
 #include "sgpp.hpp"
+#include "combigrid.hpp"
 %}
 
 // The Good, i.e. without any modifications
@@ -67,13 +74,12 @@ namespace std {
 %include "src/sgpp/grid/generation/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/grid/generation/SurplusCoarseningFunctor.hpp"
 
-
 %include "GridFactory.i"
 
 #ifdef SG_COMBIGRID
-%include "FullGrid.i"
-%include "src/sgpp/grid/combination/FullGridSet.hpp"
-%include "FullGridSet.i"
+//%include "FullGrid.i"
+//%include "src/sgpp/grid/combination/FullGridSet.hpp"
+//%include "FullGridSet.i"
 #endif
 
 %include "src/sgpp/grid/GridDataBase.hpp"
@@ -171,9 +177,41 @@ namespace std {
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
+
 %template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::SLinearBase>;
 %template(SAlgorithmEvaluation) sg::base::AlgorithmEvaluation<sg::SLinearBase>;
 %template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearStretchedBoundaryBase>;
 %template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
+
+// the new combigrid!
+
+%include "src/sgpp/combigrid/utils/combigrid_ultils.hpp"
+%include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"
+%include "src/sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
+%include "src/sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp"
+%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
+%include "src/sgpp/combigrid/domain/AbstractStretchingMaker.hpp"
+%include "src/sgpp/combigrid/combischeme/CombiSchemeBasis.hpp" 
+%include "src/sgpp/combigrid/combischeme/CombiTS_CT.hpp"
+%include "src/sgpp/combigrid/combischeme/CombiS_CT.hpp"
+%include "src/sgpp/combigrid/combischeme/CombiArbitraryScheme.hpp"
+%include "src/sgpp/combigrid/combigridkernel/CombiGridKernel.hpp"
+%include "src/sgpp/combigrid/combigrid/AbstractCombiGrid.hpp"
+%include "src/sgpp/combigrid/combigrid/SerialCombiGrid.hpp"
+%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
+%include "src/sgpp/combigrid/domain/CombiDomain1D.hpp" 
+
+%rename(__add__) combigrid::CombigridLevelVector::operator+;
+%rename(__mul__) combigrid::CombigridLevelVector::operator*;
+%rename(__sub__) combigrid::CombigridLevelVector::operator-;
+%rename(__new__) combigrid::CombigridLevelVector::operator=; 
+
+%template(ComplexDouble) complex<double>;
+
+%include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
+%template(doubleFullGrid) combigrid::FullGrid<double>;
+%template(FullGridC) combigrid::FullGrid< complex<double> >;
+%template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
+%template(ComplexVector) std::vector< complex<double> >;

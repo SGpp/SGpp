@@ -20,7 +20,9 @@
 
 #include "combigrid/combischeme/CombiSchemeBasis.hpp"
 #include "combigrid/combischeme/CombiS_CT.hpp"
+
 #include "combigrid/combischeme/CombiTS_CT.hpp"
+#include "combigrid/combischeme/CombiArbitraryScheme.hpp"
 
 #include "combigrid/domain/CombiGridDomain.hpp"
 #include "combigrid/domain/CombiTanStretching.hpp"

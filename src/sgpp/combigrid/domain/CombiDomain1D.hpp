@@ -35,7 +35,7 @@ public:
 	inline double getMinDomain() const { return min_; }
 
 	/** return the maximum of the domain */
-	inline double getMaxDomain() const { return min_; }
+	inline double getMaxDomain() const { return max_; }
 
 	/** return if the axis is scaled */
 	const std::vector<double>& axisScaling() const { return stretching_; }
