@@ -26,12 +26,12 @@ int main(int argc, char *argv[])
 	size_t dim = 3;
 	size_t numGridPoints;
 
-	sg::Grid* myGrid1;
-	sg::OperationMatrix* myUpDown1;
-	sg::OperationMatrix* myDelta1;
-	sg::OperationMatrix* myGamma1;
-	sg::OperationMatrix* myLaplace1;
-	sg::OperationMatrix* myL2Dot1;
+	sg::base::Grid* myGrid1;
+	sg::base::OperationMatrix* myUpDown1;
+	sg::base::OperationMatrix* myDelta1;
+	sg::base::OperationMatrix* myGamma1;
+	sg::base::OperationMatrix* myLaplace1;
+	sg::base::OperationMatrix* myL2Dot1;
 
 	std::cout << std::endl;
 	std::cout << "Starting the Up / Down Test" << std::endl;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	std::cout << std::endl;
 
 
-	sg::Stretching* myStretching;
+	sg::base::Stretching* myStretching;
 	sg::base::DimensionBoundary* myInterval;
 
 	if(dim==1){
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	sg::Stretching1D* stretching1Ds = new sg::Stretching1D[dim];
+	sg::base::Stretching1D* stretching1Ds = new sg::base::Stretching1D[dim];
 	string s0("id");
 	string s1("log");
 	string s2("sinh");
@@ -77,14 +77,14 @@ int main(int argc, char *argv[])
 		stretching1Ds[j].xsi=10;
 	}
 
-	myStretching = new sg::Stretching(dim, myInterval, stretching1Ds );
+	myStretching = new sg::base::Stretching(dim, myInterval, stretching1Ds );
 	//	myStretching->printLookupTable();
 
 	std::cout << "start constructing regular grid" << std::endl;
-	myGrid1 = new sg::LinearStretchedTrapezoidBoundaryGrid((*myStretching));
+	myGrid1 = new sg::base::LinearStretchedTrapezoidBoundaryGrid((*myStretching));
 	std::cout << "A LinearStretchedTrapezoidBoundaryGrid was created" << std::endl;
 
-	sg::GridGenerator* myGenerator1 = myGrid1->createGridGenerator();
+	sg::base::GridGenerator* myGenerator1 = myGrid1->createGridGenerator();
 	myGenerator1->regular(levels);
 	delete myGenerator1;
 	std::cout << levels << " levels were added to the above created grid" << std::endl;
@@ -406,16 +406,16 @@ int main(int argc, char *argv[])
 	delete myUpDown1;
 	delete myGrid1;
 #ifdef BOUNDING
-	sg::Grid* myGrid2;
-	sg::OperationMatrix* myUpDown2;
+	sg::base::Grid* myGrid2;
+	sg::base::OperationMatrix* myUpDown2;
 
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myInterval);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myInterval);
 
 	std::cout << "start constructing regular grid" << std::endl;
 	myGrid2 = new sg::LinearTrapezoidBoundaryGrid((*myBoundingBox));
 	std::cout << "A LinearTrapezoidBoundaryGrid was created" << std::endl;
 
-	sg::GridGenerator* myGenerator2 = myGrid2->createGridGenerator();
+	sg::base::GridGenerator* myGenerator2 = myGrid2->createGridGenerator();
 	myGenerator2->regular(levels);
 	delete myGenerator2;
 	std::cout << levels << " levels were added to the above created grid" << std::endl;
