@@ -69,5 +69,7 @@ src_objs_pde = sg_env.SharedObject(srcs)
 Export('src_objs_pde')
 
 libsgpppde = sg_env.SharedLibrary(target="sgpppde", source = src_objs_pde, SHLIBPREFIX = 'lib')
-#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+libsgpppdestatic = sg_env.StaticLibrary(target="sgpppde", source = src_objs_pde, SHLIBPREFIX = 'lib')
+
 Export('libsgpppde')
+Export('libsgpppdestatic')

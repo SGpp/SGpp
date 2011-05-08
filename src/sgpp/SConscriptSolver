@@ -29,5 +29,7 @@ src_objs_solver = sg_env.SharedObject(srcs)
 Export('src_objs_solver')
 
 libsgppsolver = sg_env.SharedLibrary(target="sgppsolver", source = src_objs_solver, SHLIBPREFIX = 'lib')
-#libsgpp = sg_env.SharedLibrary(target="sgpp", source = srcs + src_objs, SHLIBPREFIX = '_')
+libsgppsolverstatic = sg_env.StaticLibrary(target="sgppsolver", source = src_objs_solver, SHLIBPREFIX = 'lib')
+
 Export('libsgppsolver')
+Export('libsgppsolverstatic')
