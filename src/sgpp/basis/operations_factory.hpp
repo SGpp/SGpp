@@ -677,7 +677,7 @@ using namespace sg::datadriven;
 			}
 			else if (VecType == "HYBRID_SSE_OCL")
 			{
-				return new OperationMultipleEvalIterativeHybridSSEOCLLinear(grid_type.getStorage(), dataset);
+				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid_type.getStorage(), dataset);
 			}
 		#endif
 		#ifdef USEARBB
