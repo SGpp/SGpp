@@ -11,7 +11,6 @@
 
 #include "combigrid/utils/combigrid_ultils.hpp"
 #include "combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
-using namespace sg::base;
 
 using namespace std;
 

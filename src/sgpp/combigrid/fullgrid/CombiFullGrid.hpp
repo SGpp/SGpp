@@ -13,7 +13,6 @@
 #include "combigrid/basisfunction/CombiLinearBasisFunction.hpp"
 #include "combigrid/domain/CombiGridDomain.hpp"
 
-using namespace sg::base;
 using namespace std;
 
 namespace combigrid {
@@ -131,7 +130,7 @@ public:
 		 double intersect[127]; // alternatievly [127]
 		 int aindex[63]; // alternatievly [63]
 		 //int verb = 6;
-		 
+
 		 // if there is a transformation then transform to the unit coordinates
 		 if (gridDomain_ != NULL ) {
 			 for (ii = dim_-1 ; ii >=0; ii--){
