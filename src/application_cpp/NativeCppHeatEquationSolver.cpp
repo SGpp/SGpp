@@ -202,7 +202,7 @@ int writeDataVector(DataVector& data, std::string tFile)
  */
 void writeHelp()
 {
-	sg::HeatEquationSolver* myHESolver = new sg::HeatEquationSolver();
+	sg::pde::HeatEquationSolver* myHESolver = new sg::pde::HeatEquationSolver();
 
 	myHESolver->initScreen();
 
@@ -308,11 +308,11 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 		myBoundaries[i].bDirichletRight = true;
 	}
 
-	sg::HeatEquationSolver* myHESolver = new sg::HeatEquationSolver();
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::pde::HeatEquationSolver* myHESolver = new sg::pde::HeatEquationSolver();
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
-	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
+	sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
 
 	// init Screen Object
 	myHESolver->initScreen();
@@ -534,11 +534,11 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 		myBoundaries[i].bDirichletRight = true;
 	}
 
-	sg::PoissonEquationSolver* myPoisSolver = new sg::PoissonEquationSolver();
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::pde::PoissonEquationSolver* myPoisSolver = new sg::pde::PoissonEquationSolver();
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
-	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
+	sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
 
 	// init Screen Object
 	myPoisSolver->initScreen();
@@ -722,8 +722,8 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 		myBoundaries[i].bDirichletRight = true;
 	}
 
-	sg::PoissonEquationSolver* myPoisSolver = new sg::PoissonEquationSolver();
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::pde::PoissonEquationSolver* myPoisSolver = new sg::pde::PoissonEquationSolver();
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 	DataVector* alpha = NULL;
 
