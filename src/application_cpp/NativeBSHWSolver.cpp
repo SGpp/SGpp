@@ -272,16 +272,16 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	}
 	//std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
 	//std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
-	sg::BlackScholesHullWhiteSolver* myBSHWSolver;
+	sg::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 	if (isLogSolve == true)
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(true);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(true);
 		}
 		else
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(false);
 		}
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	//delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
 	// init Screen Object
@@ -321,7 +321,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 				myAreaBoundaries[i].leftBoundary = 0.9;
 				myAreaBoundaries[i].rightBoundary = 1.1;
 			}
-			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
+			sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
 
 			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
 
@@ -459,16 +459,16 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	}
 	//std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
 	//std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
-	sg::BlackScholesHullWhiteSolver* myBSHWSolver;
+	sg::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 	if (isLogSolve == true)
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(true);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(true);
 		}
 		else
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(false);
 		}
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	//delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
 	// init Screen Object
@@ -604,7 +604,7 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 				myAreaBoundaries[i].leftBoundary = 0.9;
 				myAreaBoundaries[i].rightBoundary = 1.1;
 			}
-			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
+			sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
 
 			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
 
