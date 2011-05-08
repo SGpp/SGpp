@@ -29,7 +29,7 @@
  */
 void writeHelp()
 {
-	sg::HeatEquationSolverWithStretching* myHESolver = new sg::HeatEquationSolverWithStretching();
+	sg::pde::HeatEquationSolverWithStretching* myHESolver = new sg::pde::HeatEquationSolverWithStretching();
 
 	myHESolver->initScreen();
 
@@ -122,7 +122,7 @@ int readDiscreteStretchingData(std::string tFile, size_t numAssests, std::vector
 	return 0;
 }
 
-int readStretchingData(std::string tFile, size_t numAssests, sg::Stretching1D* streching1dArray )
+int readStretchingData(std::string tFile, size_t numAssests, sg::base::Stretching1D* streching1dArray )
 {
 	std::fstream file;
 	std::string stretchingType;
@@ -168,12 +168,12 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 		myBoundaries[i].bDirichletRight = true;
 	}
 
-	sg::HeatEquationSolverWithStretching* myHESolver = new sg::HeatEquationSolverWithStretching();
+	sg::pde::HeatEquationSolverWithStretching* myHESolver = new sg::pde::HeatEquationSolverWithStretching();
 //	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-	sg::Stretching* myStretching;
+	sg::base::Stretching* myStretching;
 
 	if(stretchingMode == "analytic"){
-			sg::Stretching1D* stretching1dArray = new sg::Stretching1D[dim];
+			sg::base::Stretching1D* stretching1dArray = new sg::base::Stretching1D[dim];
 			int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 			if (readStretchData != 0)
 			{
@@ -181,7 +181,7 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 				return;
 			}
 
-			myStretching = new sg::Stretching(dim, myBoundaries,stretching1dArray);
+			myStretching = new sg::base::Stretching(dim, myBoundaries,stretching1dArray);
 			delete[] stretching1dArray;
 		}
 		else if(stretchingMode == "discrete"){
@@ -192,7 +192,7 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 				std::cout<<"Discrete Stretching Data cannot be read, exiting.\n";
 				return;
 			}
-			myStretching = new sg::Stretching(dim, discreteCoordinates);
+			myStretching = new sg::base::Stretching(dim, discreteCoordinates);
 			delete[] discreteCoordinates;
 		}
 		else{
@@ -255,7 +255,7 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 void testPoissonEquation(size_t dim, size_t level, double bound_left, double bound_right,
 						std::string initFunc, double cg_eps, size_t cg_its,  std::string fileStretch, std::string stretchingMode)
 {
-	std::cout<<"Poisson Equation for Stretching is not implemented yet, please use the non-stretched version".
+	std::cout << "Poisson Equation for Stretching is not implemented yet, please use the non-stretched version" << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -311,28 +311,28 @@ int main(int argc, char *argv[])
 	}
 	else if (option == "PoissonEquation")
 	{
-		if (argc != 9)
-		{
-			writeHelp();
-			return 0;
-		}
-
-		size_t dim;
-		size_t level;
-		double bound_left;
-		double bound_right;
-		std::string initFunc;
-		double cg_eps;
-		size_t cg_its;
-
-		dim = atoi(argv[2]);
-		level = atoi(argv[3]);
-		bound_left = atof(argv[4]);
-		bound_right = atof(argv[5]);
-		initFunc.assign(argv[6]);
-		cg_eps = atof(argv[7]);
-		cg_its = atoi(argv[8]);
-		testPoissonEquation(dim, level, bound_left, bound_right, initFunc, cg_eps, cg_its,fileStretch, stretchingMode);
+//		if (argc != 9)
+//		{
+//			writeHelp();
+//			return 0;
+//		}
+//
+//		size_t dim;
+//		size_t level;
+//		double bound_left;
+//		double bound_right;
+//		std::string initFunc;
+//		double cg_eps;
+//		size_t cg_its;
+//
+//		dim = atoi(argv[2]);
+//		level = atoi(argv[3]);
+//		bound_left = atof(argv[4]);
+//		bound_right = atof(argv[5]);
+//		initFunc.assign(argv[6]);
+//		cg_eps = atof(argv[7]);
+//		cg_its = atoi(argv[8]);
+//		testPoissonEquation(dim, level, bound_left, bound_right, initFunc, cg_eps, cg_its,fileStretch, stretchingMode);
 	}
 	else
 	{
