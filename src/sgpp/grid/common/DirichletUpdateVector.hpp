@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class is useful if you do some PDE calculations with Dirichlet Boundary
@@ -90,6 +92,7 @@ public:
 	void multiplyBoundary(DataVector& updateVector, double value);
 };
 
+}
 }
 
 #endif /* DIRICHLETUPDATEVECTOR_HPP */

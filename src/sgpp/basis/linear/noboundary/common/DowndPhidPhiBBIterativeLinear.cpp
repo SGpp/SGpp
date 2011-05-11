@@ -7,8 +7,11 @@
 
 #include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 #include "grid/common/BoundingBox.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 DowndPhidPhiBBIterativeLinear::DowndPhidPhiBBIterativeLinear(GridStorage* storage) : storage(storage)
@@ -55,4 +58,5 @@ void DowndPhidPhiBBIterativeLinear::operator()(DataVector& alpha, DataVector& re
 	}
 }
 
+}
 }

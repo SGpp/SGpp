@@ -15,8 +15,11 @@
 #include "tools/common/SGppStopwatch.hpp"
 
 #include <string>
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 /**
@@ -107,6 +110,7 @@ public:
 	void getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans);
 };
 
+}
 }
 
 #endif /* DMSYSTEMMATRIXSPVECTORIZEDIDENTITY_HPP */

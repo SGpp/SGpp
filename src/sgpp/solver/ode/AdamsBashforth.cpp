@@ -13,8 +13,12 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
@@ -96,4 +100,5 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationParabolicPDES
     this->nIterations = allIter;
 }
 
+}
 }

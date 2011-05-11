@@ -1,0 +1,104 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+srcs = Split("""
+algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
+algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
+algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
+algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
+algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
+application/finance/VariableDiscountFactor.cpp
+application/pde/BlackScholesHullWhiteSolver.cpp
+application/pde/BlackScholesSolver.cpp
+application/pde/HullWhiteSolver.cpp
+basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.cpp
+basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.cpp
+basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.cpp
+basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.cpp
+basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.cpp
+basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
+basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
+basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
+basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/operation/pde/financeHW1D/OperationLBLinear.cpp
+basis/linear/noboundary/operation/pde/financeHW1D/OperationLDLinear.cpp
+basis/linear/noboundary/operation/pde/financeHW1D/OperationLELinear.cpp
+basis/linear/noboundary/operation/pde/financeHW1D/OperationLFLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
+basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.cpp
+tools/finance/IOToolBonnSG.cpp
+application/pde/BlackScholesSolverWithStretching.cpp
+basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationGammaLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.cpp
+basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.cpp
+basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.cpp
+""")
+
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_finance = sg_env.SharedObject(srcs)
+Export('src_objs_finance')
+
+libsgppfinance = sg_env.SharedLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
+libsgppfinancestatic = sg_env.StaticLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
+
+Export('libsgppfinance')
+Export('libsgppfinancestatic')

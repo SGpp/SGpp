@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Exception that is thrown in case of a data failure (conversion, creation, ...).
@@ -63,6 +65,7 @@ protected:
 
 };
 
+}
 }
 
 #endif /* DATA_EXCEPTION_HPP */

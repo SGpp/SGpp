@@ -11,8 +11,11 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -57,6 +60,7 @@ public:
 	virtual void operator()(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* DOWNDPHIDPHIDOWNBBITERATIVELINEARSTRETCHED_HPP */

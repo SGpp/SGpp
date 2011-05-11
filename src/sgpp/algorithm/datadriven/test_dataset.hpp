@@ -14,8 +14,10 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+using namespace sg::base;
 
 namespace sg {
+namespace datadriven {
 
 /**
  * Returns the number of correctly classified instances in data without boundaries
@@ -211,6 +213,7 @@ double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis,
 	return correct;
 }
 
+}
 }
 
 #endif /* TEST_dataset_HPP */

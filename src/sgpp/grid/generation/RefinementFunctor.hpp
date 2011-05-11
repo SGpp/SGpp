@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Abstract class that defines the interface that refinement functors have to provide
@@ -71,6 +73,7 @@ public:
 	virtual double getRefinementThreshold() = 0;
 };
 
+}
 }
 
 #endif /* REFINEMENTFUNCTOR_HPP */

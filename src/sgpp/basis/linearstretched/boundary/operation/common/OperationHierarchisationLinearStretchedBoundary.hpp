@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Hierarchisation on sparse grid, linear stretched case with boundaries
@@ -42,6 +44,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONHIERARCHISATIONLINEARSTRETCHEDBOUNDARY_HPP */

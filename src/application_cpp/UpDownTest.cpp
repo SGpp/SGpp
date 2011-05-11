@@ -11,6 +11,7 @@
 #include "grid/type/LinearBoundaryGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "grid/type/ModLinearGrid.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <iostream>
 #include <string>
@@ -25,8 +26,8 @@ int main(int argc, char *argv[])
 	size_t dim = 1;
 	size_t numGridPoints;
 
-	sg::Grid* myGrid;
-	sg::OperationMatrix* myUpDown;
+	sg::base::Grid* myGrid;
+	sg::base::OperationMatrix* myUpDown;
 
 	std::cout << std::endl;
 	std::cout << "Starting the Up / Down Test" << std::endl;
@@ -37,10 +38,10 @@ int main(int argc, char *argv[])
 	std::cout << std::endl;
 
 	std::cout << "start constructing regular grid" << std::endl;
-	myGrid = new sg::LinearTrapezoidBoundaryGrid(dim);
+	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(dim);
 	std::cout << "A LinearTrapezoidBoundaryGrid was created" << std::endl;
 
-	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
+	sg::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(levels);
 	delete myGenerator;
 	std::cout << levels << " levels were added to the above created grid" << std::endl;
@@ -54,9 +55,9 @@ int main(int argc, char *argv[])
 	myGrid->serialize(ser);
 	//std::cout << ser << std::endl;
 
-	sg::BoundingBox* myBoundingBox;
+	sg::base::BoundingBox* myBoundingBox;
 	myBoundingBox = myGrid->getBoundingBox();
-	sg::DimensionBoundary myInterval;
+	sg::base::DimensionBoundary myInterval;
 
 	myInterval.leftBoundary = 0.0;
 	myInterval.rightBoundary = 100.0;
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
 	DataMatrix UpDownMatrix(numGridPoints, numGridPoints);
 	UpDownMatrix.setAll(0.0);
 
-	myUpDown = myGrid->createOperationUpDownTest();
+	myUpDown = sg::GridOperationFactory::createOperationUpDownTest(*myGrid);
 
 	std::cout << "start constructing the operator's matrix" << std::endl;
 	for (size_t i = 0; i < numGridPoints; i++)

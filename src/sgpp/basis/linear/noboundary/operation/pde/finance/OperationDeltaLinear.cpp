@@ -14,8 +14,12 @@
 #include "basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 OperationDeltaLinear::OperationDeltaLinear(GridStorage* storage, DataVector& coef) : UpDownOneOpDim(storage, coef)
@@ -29,8 +33,8 @@ OperationDeltaLinear::~OperationDeltaLinear()
 void OperationDeltaLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinear func(this->storage);
-	sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
+	PhiPhiUpBBLinear func(this->storage);
+	sweep<PhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -38,8 +42,8 @@ void OperationDeltaLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 void OperationDeltaLinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinear func(this->storage);
-	sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
+	PhiPhiDownBBLinear func(this->storage);
+	sweep<PhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -47,8 +51,8 @@ void OperationDeltaLinear::down(DataVector& alpha, DataVector& result, size_t di
 void OperationDeltaLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiUpBBLinear func(this->storage);
-	sweep<detail::XdPhiPhiUpBBLinear> s(func, this->storage);
+	XdPhiPhiUpBBLinear func(this->storage);
+	sweep<XdPhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -56,10 +60,11 @@ void OperationDeltaLinear::upOpDim(DataVector& alpha, DataVector& result, size_t
 void OperationDeltaLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// x * dphi * phi
-	detail::XdPhiPhiDownBBLinear func(this->storage);
-	sweep<detail::XdPhiPhiDownBBLinear> s(func, this->storage);
+	XdPhiPhiDownBBLinear func(this->storage);
+	sweep<XdPhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
+}
 }

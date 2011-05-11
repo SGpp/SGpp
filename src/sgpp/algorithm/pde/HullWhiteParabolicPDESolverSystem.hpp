@@ -14,8 +14,12 @@
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -105,6 +109,7 @@ private:
 	int dim_r;
 };
 
+}
 }
 
 #endif /* HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP */

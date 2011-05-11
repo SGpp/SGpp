@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * Implementation of Laplace for linear functions with boundaries
@@ -44,6 +46,7 @@ protected:
 	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONLAPLACELINEARBOUNDARYSTRETCHED_HPP */

@@ -6,12 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 XPhidPhiUpBBLinear::XPhidPhiUpBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
@@ -133,6 +135,7 @@ void XPhidPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iter
 	fr = (fm/2.0) + ((alpha_value*helper) + fr);
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

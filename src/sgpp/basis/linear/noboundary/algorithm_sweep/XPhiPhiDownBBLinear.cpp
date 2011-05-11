@@ -6,12 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de) Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 XPhiPhiDownBBLinear::XPhiPhiDownBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
@@ -123,6 +125,7 @@ void XPhiPhiDownBBLinear::recBB(DataVector& source, DataVector& result, grid_ite
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

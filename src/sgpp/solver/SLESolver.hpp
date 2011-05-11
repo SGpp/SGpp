@@ -10,8 +10,11 @@
 
 #include "solver/SGSolver.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 class SLESolver : public SGSolver
@@ -45,6 +48,7 @@ public:
 	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0) = 0;
 };
 
+}
 }
 
 #endif /* SLESOLVER_HPP */

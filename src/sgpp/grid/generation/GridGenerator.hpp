@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Abstract class that defines the interfaces for the different grid's GridGenerators
@@ -101,6 +103,7 @@ public:
 	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
 
+}
 }
 
 #endif /* GRIDGENERATOR_HPP */

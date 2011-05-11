@@ -12,13 +12,19 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "basis/operations_factory.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::pde;
+using namespace sg::solver;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 HullWhiteSolver::HullWhiteSolver() : ParabolicPDESolver()
@@ -210,7 +216,7 @@ void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::
 			//delete dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -236,5 +242,6 @@ void HullWhiteSolver::initScreen()
 	this->myScreen = new ScreenOutput();
 	this->myScreen->writeTitle("SGpp - Hull White Solver, 1.3.0", "TUM (C) 2009-2010, by Chao qi");
 	this->myScreen->writeStartSolve("One dimensional Hull White Solver");
+}
 }
 }

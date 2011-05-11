@@ -7,8 +7,12 @@
 
 #include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
 #include "exception/operation_exception.hpp"
+#include "basis/operations_factory.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseGrid, DataMatrix& trainData, double lambda, std::string vecMode)
@@ -78,7 +82,7 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(Grid& SparseG
 
 	this->myTimer = new SGppStopwatch();
 
-	this->B = SparseGrid.createOperationMultipleEvalVectorized(this->vecMode, this->data);
+	this->B = sg::GridOperationFactory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode, this->data);
 }
 
 DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity()
@@ -149,4 +153,5 @@ void DMSystemMatrixVectorizedIdentity::getTimers(double& timeMult, double& compu
 	computeMultTrans = this->computeTimeMultTrans;
 }
 
+}
 }

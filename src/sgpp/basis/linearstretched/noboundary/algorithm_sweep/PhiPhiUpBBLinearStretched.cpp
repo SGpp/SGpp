@@ -10,9 +10,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 PhiPhiUpBBLinearStretched::PhiPhiUpBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
@@ -81,6 +82,7 @@ void PhiPhiUpBBLinearStretched::rec(DataVector& source, DataVector& result, grid
 }
 
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

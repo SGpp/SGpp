@@ -6,12 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 SqXdPhidPhiUpBBLinearBoundary::SqXdPhidPhiUpBBLinearBoundary(GridStorage* storage) : SqXdPhidPhiUpBBLinear(storage)
 {
@@ -136,6 +138,7 @@ void SqXdPhidPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& r
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationEval for a grids with modified Bspline basis functions with a certain degree
@@ -46,6 +48,7 @@ protected:
 	SModBsplineBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONEVALMODBSPLINE_HPP */

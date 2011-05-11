@@ -28,6 +28,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Hierarchisation on sparse grid with prewavelets and no boundary. Please note, that there is
@@ -71,6 +73,7 @@ protected:
 	void shrinkGrid();
 };
 
+}
 }
 
 #endif /* OPERATIONHIERARCHISATIONPREWAVELET_HPP */

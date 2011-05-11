@@ -13,6 +13,11 @@
 #include <vector>
 #include "data/DataVector.hpp"
 
+namespace sg
+{
+namespace base
+{
+
 /**
  * A class to store two-dimensional data.
  * Typically, DataMatrix would contain a set of (d-dimensional) data or evaluation points, i.e.,
@@ -462,5 +467,7 @@ private:
     /// Number of rows by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
     size_t inc_rows;
 };
+}
+}
 
 #endif /*DATAMATRIX_H_*/

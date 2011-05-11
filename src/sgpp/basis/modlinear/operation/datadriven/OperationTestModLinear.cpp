@@ -13,8 +13,11 @@
 #include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 double OperationTestModLinear::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
@@ -35,4 +38,5 @@ double OperationTestModLinear::testWithCharacteristicNumber(DataVector& alpha, D
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
+}
 }

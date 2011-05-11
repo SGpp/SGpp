@@ -11,8 +11,11 @@
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/common/DirichletGridConverter.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -156,6 +159,7 @@ public:
 	void getInnerMatrixDiagonalRowSum(std::string& mtxString);
 };
 
+}
 }
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP */

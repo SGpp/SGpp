@@ -10,12 +10,14 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -67,8 +69,9 @@ protected:
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr);
 };
 
-}
 
+
+}
 }
 
 #endif /* PHIPHIUPMODLINEAR_HPP */

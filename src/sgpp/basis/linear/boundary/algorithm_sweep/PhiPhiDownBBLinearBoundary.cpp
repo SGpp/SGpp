@@ -6,12 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 PhiPhiDownBBLinearBoundary::PhiPhiDownBBLinearBoundary(GridStorage* storage) : PhiPhiDownBBLinear(storage)
 {
@@ -133,6 +135,7 @@ void PhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& resu
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

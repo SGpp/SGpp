@@ -10,12 +10,15 @@
 
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
+using namespace sg::base;
 
 #ifdef WINDOWS
 #pragma warning(disable: 4267)
 #endif
 
 namespace sg
+{
+namespace datadriven
 {
 
 /**
@@ -74,6 +77,7 @@ public:
 	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
 };
 
+}
 }
 
 #endif /* OPERATIONTEST_HPP */

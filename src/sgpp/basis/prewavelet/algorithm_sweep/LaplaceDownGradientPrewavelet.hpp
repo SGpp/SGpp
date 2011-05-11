@@ -26,12 +26,14 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 /**
  * Implements the downGradient Method needed for the Laplace operator on prewavelet grids.
@@ -339,8 +341,9 @@ public:
 
 };
 
-}
 
+
+}
 }
 
 #endif /* LAPLACEDOWNGRADIENTPREWAVELET_HPP */

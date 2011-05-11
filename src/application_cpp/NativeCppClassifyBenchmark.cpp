@@ -11,6 +11,7 @@
 #include "algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.hpp"
 #include "solver/sle/ConjugateGradientsSP.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <string>
 #include <iostream>
@@ -165,10 +166,11 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     double execTime = 0.0;
     double acc = 0.0;
     double accTest = 0.0;
+
     double GFlops = 0.0;
     double GBytes = 0.0;
 
-	sg::ARFFTools ARFFTool;
+	sg::datadriven::ARFFTools ARFFTool;
 	std::string tfileTrain = dataFile;
 	std::string tfileTest = testFile;
 
@@ -180,15 +182,15 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
 	// Create Grid
-	sg::Grid* myGrid;
+	sg::base::Grid* myGrid;
 #ifdef USE_BOUNDARIES
-	myGrid = new sg::LinearTrapezoidBoundaryGrid(nDim);
+	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
 #else
-	myGrid = new sg::LinearGrid(nDim);
+	myGrid = new sg::base::LinearGrid(nDim);
 #endif
 
 	// Generate regular Grid with LEVELS Levels
-	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
+	sg::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(start_level);
 	delete myGenerator;
 
@@ -215,33 +217,33 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 #endif
 
     // Generate CG to solve System
-    sg::ConjugateGradients* myCG = new sg::ConjugateGradients(cg_max, cg_eps);
+    sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(cg_max, cg_eps);
 #if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_SSE
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "SSE");
+    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "SSE");
 #endif
 #ifdef USE_AVX
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "AVX");
+    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new ssg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "AVX");
 #endif
 #ifdef USE_OCL
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");
+    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");
 #endif
 #ifdef USE_HYBRID_SSE_OCL
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_SSE_OCL");
+    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_SSE_OCL");
 #endif
 #ifdef USE_ARBB
-    sg::DMSystemMatrixVectorizedIdentity* mySystem = new sg::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
+    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
 #endif
 #else
-    sg::OperationMatrix* myC = myGrid->createOperationIdentity();
+    sg::base::OperationMatrix* myC = sg::GridOperationFactory::createOperationIdentity(*myGrid);
     //sg::OperationMatrix* myC = myGrid->createOperationLaplace();
-    sg::DMSystemMatrix* mySystem = new sg::DMSystemMatrix(*myGrid, data, *myC, lambda);
+    sg::datadriven::DMSystemMatrix* mySystem = new sg::datadriven::DMSystemMatrix(*myGrid, data, *myC, lambda);
 #endif
 
     std::cout << "Starting Learning...." << std::endl;
 
     // execute adaptsteps
-    sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
+    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
     myStopwatch->start();
     for (size_t i = 0; i < refine_count+1; i++)
     {
@@ -250,7 +252,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	// Do Refinements
     	if (i > 0)
     	{
-    		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, refine_points, refine_thresh);
+    		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha, refine_points, refine_thresh);
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
@@ -298,7 +300,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 		// Do tests on test data
     	if (isRegression)
     	{
-    		sg::OperationTest* myTest = myGrid->createOperationTest();
+    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 			acc = myTest->testMSE(alpha, data, classes);
 			std::cout << "MSE (train): " << acc << std::endl;
 			accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -315,7 +317,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	}
     	else
     	{
-    		sg::OperationTest* myTest = myGrid->createOperationTest();
+    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 			acc = myTest->test(alpha, data, classes);
 			acc /= static_cast<double>(classes.getSize());
 			std::cout << "train acc.: " << acc << std::endl;
@@ -342,7 +344,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << std::endl << std::endl;
     if (isRegression)
 	{
-		sg::OperationTest* myTest = myGrid->createOperationTest();
+		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 		acc = myTest->testMSE(alpha, data, classes);
 		std::cout << "MSE (train): " << acc << std::endl;
 		accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -351,7 +353,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	}
 	else
 	{
-		sg::OperationTest* myTest = myGrid->createOperationTest();
+		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 		acc = myTest->test(alpha, data, classes);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train acc.: " << acc << std::endl;
@@ -367,7 +369,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 #ifdef GNUPLOT
 	if (nDim <= 2)
 	{
-		sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
+		sg::base::GridPrinter* myPrinter = new sg::base::GridPrinter(*myGrid);
 		myPrinter->printGrid(alpha, "ClassifyBenchmark.gnuplot", GRDIRESOLUTION);
 		delete myPrinter;
 	}
@@ -427,7 +429,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     double accTest = 0.0;
     double GFlops = 0.0;
     double GBytes = 0.0;
-	sg::ARFFTools ARFFTool;
+	sg::datadriven::ARFFTools ARFFTool;
 	std::string tfileTrain = dataFile;
 	std::string tfileTest = testFile;
 
@@ -439,15 +441,15 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
 	// Create Grid
-	sg::Grid* myGrid;
+	sg::base::Grid* myGrid;
 #ifdef USE_BOUNDARIES
-	myGrid = new sg::LinearTrapezoidBoundaryGrid(nDim);
+	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
 #else
-	myGrid = new sg::LinearGrid(nDim);
+	myGrid = new sg::base::LinearGrid(nDim);
 #endif
 
 	// Generate regular Grid with LEVELS Levels
-	sg::GridGenerator* myGenerator = myGrid->createGridGenerator();
+	sg::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
 	myGenerator->regular(start_level);
 	delete myGenerator;
 
@@ -486,31 +488,31 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 #endif
 
     // Generate CG to solve System
-    sg::ConjugateGradientsSP* myCG = new sg::ConjugateGradientsSP(cg_max, cg_eps);
+    sg::solver::ConjugateGradientsSP* myCG = new sg::solver::ConjugateGradientsSP(cg_max, cg_eps);
 
 #if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_SSE
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
+    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
 #endif
 #ifdef USE_AVX
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "AVX");
+    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "AVX");
 #endif
 #ifdef USE_OCL
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "OCL");
+    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "OCL");
 #endif
 #ifdef USE_HYBRID_SSE_OCL
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_SSE_OCL");
+    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_SSE_OCL");
 #endif
 #ifdef USE_ARBB
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
+    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
 #endif
 #else
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
+    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
 #endif
 
     std::cout << "Starting Learning...." << std::endl;
     // execute adaptsteps
-    sg::SGppStopwatch* myStopwatch = new sg::SGppStopwatch();
+    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
     myStopwatch->start();
     for (size_t i = 0; i < refine_count+1; i++)
     {
@@ -520,7 +522,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	if (i > 0)
     	{
     		convertDataVectorSPToDataVector(alphaSP, alpha);
-    		sg::SurplusRefinementFunctor* myRefineFunc = new sg::SurplusRefinementFunctor(&alpha, refine_points, refine_thresh);
+    		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha, refine_points, refine_thresh);
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
@@ -569,7 +571,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	convertDataVectorSPToDataVector(alphaSP, alpha);
     	if (isRegression)
     	{
-    		sg::OperationTest* myTest = myGrid->createOperationTest();
+    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 			acc = myTest->testMSE(alpha, data, classes);
 			std::cout << "MSE (train): " << acc << std::endl;
 			accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -586,7 +588,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	}
     	else
     	{
-    		sg::OperationTest* myTest = myGrid->createOperationTest();
+    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 			acc = myTest->test(alpha, data, classes);
 			acc /= static_cast<double>(classes.getSize());
 			std::cout << "train acc.: " << acc << std::endl;
@@ -614,7 +616,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	std::cout << std::endl << std::endl;
 	if (isRegression)
 	{
-		sg::OperationTest* myTest = myGrid->createOperationTest();
+		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 		acc = myTest->testMSE(alpha, data, classes);
 		std::cout << "MSE (train): " << acc << std::endl;
 		accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -623,7 +625,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	}
 	else
 	{
-		sg::OperationTest* myTest = myGrid->createOperationTest();
+		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
 		acc = myTest->test(alpha, data, classes);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train acc.: " << acc << std::endl;
@@ -640,7 +642,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	if (nDim <= 2)
 	{
 		convertDataVectorSPToDataVector(alphaSP, alpha);
-		sg::GridPrinter* myPrinter = new sg::GridPrinter(*myGrid);
+		sg::base::GridPrinter* myPrinter = new sg::base::GridPrinter(*myGrid);
 		myPrinter->printGrid(alpha, "ClassifyBenchmark.gnuplot", GRDIRESOLUTION);
 //		myPrinter->printSparseGrid(alpha, "ClassifyBenchmark.gnuplot", false);
 		delete myPrinter;

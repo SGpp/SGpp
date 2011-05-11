@@ -24,8 +24,11 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -141,6 +144,7 @@ public:
 	void storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
 };
 
+}
 }
 
 #endif /* HEATEQUATIONSOLVER_HPP */

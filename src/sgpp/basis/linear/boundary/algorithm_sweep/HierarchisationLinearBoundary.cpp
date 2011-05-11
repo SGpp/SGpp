@@ -9,9 +9,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace base
 {
+
+
 
 HierarchisationLinearBoundary::HierarchisationLinearBoundary(GridStorage* storage) : HierarchisationLinear(storage)
 {
@@ -50,6 +51,7 @@ void HierarchisationLinearBoundary::operator()(DataVector& source, DataVector& r
 	}
 }
 
-}	// namespace detail
+	// namespace detail
 
 }	// namespace sg
+}

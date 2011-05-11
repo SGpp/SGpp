@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class provides a simple-to-use solver of the multi dimensional
@@ -74,6 +76,7 @@ public:
 	void initScreen();
 };
 
+}
 }
 
 #endif /* LASERHEATEQUATIONSOLVER2D_HPP */

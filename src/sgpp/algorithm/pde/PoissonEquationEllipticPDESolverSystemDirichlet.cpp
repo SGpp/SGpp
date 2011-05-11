@@ -7,14 +7,20 @@
 
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 #include "exception/algorithm_exception.hpp"
+#include "basis/operations_factory.hpp"
+
+using namespace sg::base;
+using namespace sg::GridOperationFactory;
 
 namespace sg
+{
+namespace pde
 {
 
 PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
 {
-	this->Laplace_Complete = this->BoundGrid->createOperationLaplace();
-	this->Laplace_Inner = this->InnerGrid->createOperationLaplace();
+	this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
+	this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
 }
 
 PoissonEquationEllipticPDESolverSystemDirichlet::~PoissonEquationEllipticPDESolverSystemDirichlet()
@@ -33,4 +39,5 @@ void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorComplete(Dat
 	Laplace_Complete->mult(alpha, result);
 }
 
+}
 }

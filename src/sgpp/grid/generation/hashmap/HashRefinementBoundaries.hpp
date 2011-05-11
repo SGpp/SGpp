@@ -18,6 +18,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Standard free refinement class for sparse grids with boundaries
@@ -478,6 +480,7 @@ protected:
 	}
 };
 
+}
 }
 
 #endif /* HASHREFINEMENTBOUNDARIES_HPP */

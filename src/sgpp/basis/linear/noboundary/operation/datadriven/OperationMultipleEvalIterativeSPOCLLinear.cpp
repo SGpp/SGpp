@@ -8,8 +8,11 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
 #include "exception/operation_exception.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace parallel
 {
 
 OperationMultipleEvalIterativeSPOCLLinear::OperationMultipleEvalIterativeSPOCLLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
@@ -124,4 +127,5 @@ double OperationMultipleEvalIterativeSPOCLLinear::multVectorized(DataVectorSP& a
    	return time;
 }
 
+}
 }

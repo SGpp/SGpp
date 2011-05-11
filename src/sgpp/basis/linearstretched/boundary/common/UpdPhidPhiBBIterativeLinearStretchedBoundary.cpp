@@ -7,8 +7,11 @@
 
 #include "basis/linearstretched/boundary/common/UpdPhidPhiBBIterativeLinearStretchedBoundary.hpp"
 #include "grid/common/Stretching.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 UpdPhidPhiBBIterativeLinearStretchedBoundary::UpdPhidPhiBBIterativeLinearStretchedBoundary(GridStorage* storage) : storage(storage)
@@ -78,4 +81,5 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(DataVector& alpha,
 	}
 }
 
+}
 }

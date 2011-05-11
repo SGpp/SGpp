@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Class that allows to keep a storage of arbitrary grid points. It has
@@ -199,6 +201,7 @@ public:
 
 };
 
+}
 }
 #endif /* GRIDDATABASE_HPP */
 

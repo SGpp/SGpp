@@ -6,12 +6,14 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@mytum.de)
 
 #ifndef OPERATIONEVALMODWAVELET_HPP
-#define OPERATIINEVALMODWAVELET_HPP
+#define OPERATIONEVALMODWAVELET_HPP
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
 
 namespace sg
+{
+namespace base
 {
 
 /**
@@ -39,6 +41,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIINEVALMODWAVELET_HPP */

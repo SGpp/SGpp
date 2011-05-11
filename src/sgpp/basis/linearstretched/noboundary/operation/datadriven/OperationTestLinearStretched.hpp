@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace datadriven
+{
 
 /**
  * This class implements OperationTest for a grids with linearstretched basis ansatzfunctions without boundaries
@@ -42,6 +44,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONTESTLINEARSTRETCHED_HPP */

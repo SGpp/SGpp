@@ -8,8 +8,11 @@
 
 #include "basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.hpp"
 #include "grid/common/Stretching.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 DowndPhidPhiBBIterativeLinearStretched::DowndPhidPhiBBIterativeLinearStretched(GridStorage* storage) : storage(storage)
@@ -76,4 +79,5 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(DataVector& alpha, DataV
 
 }
 
+}
 }

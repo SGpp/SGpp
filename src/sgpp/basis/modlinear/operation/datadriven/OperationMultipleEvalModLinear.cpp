@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationMultipleEvalModLinear::mult(DataVector& alpha, DataVector& result)
 {
@@ -34,4 +36,5 @@ void OperationMultipleEvalModLinear::multTranspose(DataVector& source, DataVecto
 	op.mult_transposed(storage, base, source, *(this->dataset_), result);
 }
 
+}
 }

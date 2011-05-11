@@ -18,6 +18,7 @@
 #include <immintrin.h>
 #else
 #include "common/avxintrin_emu.h"
+using namespace sg::base;
 #endif
 
 union floatAbsMaskAVX
@@ -44,6 +45,8 @@ static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x
 #define CHUNKGRIDPOINTS_AVX 12
 
 namespace sg
+{
+namespace parallel
 {
 
 OperationMultipleEvalIterativeSPAVXLinear::OperationMultipleEvalIterativeSPAVXLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
@@ -408,4 +411,5 @@ double OperationMultipleEvalIterativeSPAVXLinear::multVectorized(DataVectorSP& a
 	return myTimer->stop();
 }
 
+}
 }

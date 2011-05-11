@@ -13,7 +13,11 @@
 
 #include "data/DataVector.hpp"
 
+using namespace sg::base;
+
 namespace sg
+{
+namespace datadriven
 {
 
 double OperationTestLinearStretchedBoundary::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
@@ -34,5 +38,6 @@ double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(DataVe
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
+}
 }
 

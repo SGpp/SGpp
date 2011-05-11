@@ -9,8 +9,11 @@
 #define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP
 
 #include "operation/pde/OperationEllipticPDESolverSystemDirichlet.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -44,6 +47,7 @@ public:
 	virtual ~PoissonEquationEllipticPDESolverSystemDirichlet();
 };
 
+}
 }
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP */

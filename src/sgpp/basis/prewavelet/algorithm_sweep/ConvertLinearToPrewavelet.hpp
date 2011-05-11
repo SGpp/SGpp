@@ -28,9 +28,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace base
 {
+
+
 
 /**
  * Class that implements the transformation of a hierarchical linear sparse grid to a
@@ -263,8 +264,9 @@ public:
 
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}
 
 #endif /* CONVERTLINEARTOPREWAVELET_HPP */

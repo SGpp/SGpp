@@ -6,8 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 UpDownOneOpDim::UpDownOneOpDim(GridStorage* storage, DataVector& coef) : storage(storage), coefs(&coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
@@ -185,4 +188,5 @@ void UpDownOneOpDim::specialOP(DataVector& alpha, DataVector& result, size_t dim
 	}
 }
 
+}
 }

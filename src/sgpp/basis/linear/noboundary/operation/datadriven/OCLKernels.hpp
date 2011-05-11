@@ -18,6 +18,8 @@
 
 namespace sg
 {
+namespace parallel
+{
 
 class OCLKernels
 {
@@ -48,6 +50,7 @@ public:
 	double multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition);
 };
 
+}
 }
 
 #endif /* OCLKERNELS_HPP */

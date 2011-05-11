@@ -10,9 +10,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 XPhidPhiDownBBLinearStretched::XPhidPhiDownBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
@@ -72,6 +73,7 @@ void XPhidPhiDownBBLinearStretched::rec(DataVector& source, DataVector& result, 
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

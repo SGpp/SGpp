@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * A refinement functor, refining according to the maximal absolute values in a DataVector provided,
@@ -57,6 +59,7 @@ protected:
 	double threshold;
 };
 
+}
 }
 
 #endif /* SURPLUSVOLUMEREFINEMENTFUNCTOR_HPP */

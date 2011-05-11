@@ -138,6 +138,13 @@ public:
 			 }
 		 }
 
+		 // if there is a transformation then transform to the unit coordinates
+		 if (gridDomain_ != NULL ) {
+			 for (ii = dim_-1 ; ii >=0; ii--){
+				 (gridDomain_->get1DDomain(ii)).transformRealToUnit( coords[ii] , coords[ii] , levels_[ii] , (hasBoundaryPoints_[ii]==false));
+			 }
+		 }
+
 		// the coordinates are on the unit square
 		 for ( ii = dim_-1 ; ii >=0; ii--)
 		 {

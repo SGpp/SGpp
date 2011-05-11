@@ -19,6 +19,7 @@
 #include <iostream>
 
 namespace sg {
+namespace base {
 
 /**
  * Basic multiplaction with B and B^T on grids with no boundaries.
@@ -130,6 +131,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* ALGORTIHMDGEMV_HPP */

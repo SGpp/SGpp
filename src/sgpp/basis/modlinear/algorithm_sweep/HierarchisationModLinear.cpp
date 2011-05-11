@@ -12,9 +12,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace base
 {
+
+
 
 HierarchisationModLinear::HierarchisationModLinear(GridStorage* storage) : storage(storage)
 {
@@ -97,6 +98,7 @@ void HierarchisationModLinear::rec(DataVector& source, DataVector& result, grid_
 	result[seq] = fm - ((fl + fr)/2.0);
 }
 
-}	// namespace detail
+	// namespace detail
 
 }	// namespace sg
+}

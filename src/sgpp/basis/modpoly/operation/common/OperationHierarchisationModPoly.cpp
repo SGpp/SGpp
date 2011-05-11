@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationHierarchisationModPoly::doHierarchisation(DataVector& node_values)
 {
@@ -27,4 +29,5 @@ void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha)
 	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
 }
 
+}
 }

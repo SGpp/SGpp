@@ -13,10 +13,12 @@
 #include "data/DataMatrix.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
+namespace finance
+{
 /**
  * This class implements the Modified ParabolicPDESolverSystem for the BlackScholes
  * Equation just use for combination of BlackScholes and HullWhite.
@@ -83,6 +85,7 @@ protected:
 	VariableDiscountFactor* variableDiscountFactor;
 };
 
+}
 }
 
 #endif /* MODIFIEDBLACKSCHOLESParabolicPDESolverSystem_HPP */

@@ -25,7 +25,7 @@ import unittest
 import re
 import sys
 import random
-from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+from pysgpp import *
 
 #-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
@@ -71,8 +71,8 @@ def testFG(obj, grid, level, function):
              d=evalFunction(function, points)          
              fg.set(j,d) 
     fgs.reCompose(storage,node_values)     
-    grid.createOperationHierarchisation().doHierarchisation(node_values);
-    evalOp = grid.createOperationEval()
+    createOperationHierarchisation(grid).doHierarchisation(node_values);
+    evalOp = createOperationEval(grid)
     p=DataVector(dim)
 # Extensions in C and C++ -- Extension modules and extension types can be written by hand. There are also tools that help with this, for example, SWIG, sip, Pyrex. perationEval()
     for m in range(10):

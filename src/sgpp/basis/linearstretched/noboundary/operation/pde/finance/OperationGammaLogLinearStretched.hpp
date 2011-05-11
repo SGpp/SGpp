@@ -9,8 +9,11 @@
 #define OPERATIONGAMMALOGLINEARSTRETCHED_HPP
 
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
+using namespace sg::pde;
 
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -125,6 +128,7 @@ protected:
 	void upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONGAMMALOGLINEARSTRETCHED_HPP */

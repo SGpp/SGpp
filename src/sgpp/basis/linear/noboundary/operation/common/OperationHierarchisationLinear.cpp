@@ -18,11 +18,13 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
 {
-	detail::HierarchisationLinear func(this->storage);
-	sweep<detail::HierarchisationLinear> s(func, this->storage);
+	HierarchisationLinear func(this->storage);
+	sweep<HierarchisationLinear> s(func, this->storage);
 
 	// Execute hierarchisation in every dimension of the grid
 	for (size_t i = 0; i < this->storage->dim(); i++)
@@ -33,8 +35,8 @@ void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values)
 
 void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
 {
-	detail::DehierarchisationLinear func(this->storage);
-	sweep<detail::DehierarchisationLinear> s(func, this->storage);
+	DehierarchisationLinear func(this->storage);
+	sweep<DehierarchisationLinear> s(func, this->storage);
 
 	// Execute hierarchisation in every dimension of the grid
 	for (size_t i = 0; i < this->storage->dim(); i++)
@@ -43,4 +45,5 @@ void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha)
 	}
 }
 
+}
 }

@@ -14,8 +14,11 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 IOToolBonnSG::IOToolBonnSG()
@@ -309,4 +312,5 @@ void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector
 	fout.close();
 }
 
+}
 }

@@ -13,9 +13,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace base
 {
+
+
 
 HierarchisationLinearStretched::HierarchisationLinearStretched(GridStorage* storage) : storage(storage), stretch(storage->getStretching())
 {
@@ -77,6 +78,7 @@ void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result,
 
 }
 
-}	// namespace detail
+	// namespace detail
 
 }	// namespace sg
+}

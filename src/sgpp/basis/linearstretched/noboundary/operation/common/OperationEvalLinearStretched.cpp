@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 double OperationEvalLinearStretched::eval(DataVector& alpha, std::vector<double>& point)
 {
@@ -25,5 +27,6 @@ double OperationEvalLinearStretched::eval(DataVector& alpha, std::vector<double>
 	return AlgoEval(base, point, alpha);
 }
 
+}
 }
 

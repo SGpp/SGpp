@@ -49,7 +49,7 @@ class Runner:
       node_values[n] = self.evalFunction(function, points)
    
     alpha = DataVector(node_values);
-    hierarchisation = self.grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(self.grid)
     hierarchisation.doHierarchisation(alpha)
     #hierarchisation.doDehierarchisation(alpha)    
     
@@ -70,7 +70,7 @@ class Runner:
             p[0] = float(x) / (resolution - 1)
             p[1] = float(y) / (resolution - 1)
             p[2] = 0.01 * z
-            pc = grid.createOperationEval().eval(alpha, p)
+            pc = createOperationEval(grid).eval(alpha, p)
             fout.write("%f %f %f\n" % (p[0], p[1], pc))
     fout.close()
     return

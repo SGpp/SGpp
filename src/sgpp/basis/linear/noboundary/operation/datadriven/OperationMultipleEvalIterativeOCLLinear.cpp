@@ -8,8 +8,11 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
 #include "exception/operation_exception.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace parallel
 {
 
 OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
@@ -125,4 +128,5 @@ double OperationMultipleEvalIterativeOCLLinear::multVectorized(DataVector& alpha
    	return time;
 }
 
+}
 }

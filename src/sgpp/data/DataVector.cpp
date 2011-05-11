@@ -16,6 +16,11 @@
 #include <cstdlib>
 #include "common/AlignedMemory.hpp"
 
+namespace sg
+{
+namespace base
+{
+
 DataVector::DataVector(size_t size) :
     size(size), unused(0), inc_elems(100) {
 	// create new vector
@@ -67,7 +72,7 @@ void DataVector::restructure(std::vector<size_t>& remainingIndex)
 {
 	if (remainingIndex.size() > this->size)
 	{
-		throw sg::algorithm_exception("more indices than entries!");
+		throw sg::base::algorithm_exception("more indices than entries!");
 	}
 
 	double* newdata = new double[remainingIndex.size()];
@@ -199,7 +204,7 @@ DataVector& DataVector::operator=(const DataVector &vec) {
     }
 
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVector::add : Dimensions do not match");
 //        delete[] data;
 //        size = vec.size;
@@ -211,7 +216,7 @@ DataVector& DataVector::operator=(const DataVector &vec) {
 
 void DataVector::add(DataVector &vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVector::add : Dimensions do not match");
     }
 
@@ -226,7 +231,7 @@ void DataVector::add(DataVector &vec) {
 
 void DataVector::sub(DataVector &vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVector::sub : Dimensions do not match");
     }
 
@@ -241,7 +246,7 @@ void DataVector::sub(DataVector &vec) {
 
 void DataVector::componentwise_mult(DataVector& vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVector::componentwise_mult : Dimensions do not match");
     }
 
@@ -256,7 +261,7 @@ void DataVector::componentwise_mult(DataVector& vec) {
 
 void DataVector::componentwise_div(DataVector& vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVector::componentwise_div : Dimensions do not match");
     }
 
@@ -482,4 +487,6 @@ size_t DataVector::getNumberNonZero()
         }
     }
     return nonZero;
+}
+}
 }

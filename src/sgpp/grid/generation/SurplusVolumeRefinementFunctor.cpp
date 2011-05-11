@@ -10,6 +10,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 SurplusVolumeRefinementFunctor::SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
 {
@@ -40,4 +42,5 @@ double SurplusVolumeRefinementFunctor::getRefinementThreshold()
 	return this->threshold;
 }
 
+}
 }

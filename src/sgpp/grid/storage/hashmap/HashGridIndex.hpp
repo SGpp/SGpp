@@ -23,6 +23,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This Class represents one Gridpoint.
@@ -708,6 +710,7 @@ struct eqIndex<HashGridIndex<LT, IT>* > {
     }
 };
 
+}
 }
 
 #endif /* HASHGRIDINDEX_HPP */

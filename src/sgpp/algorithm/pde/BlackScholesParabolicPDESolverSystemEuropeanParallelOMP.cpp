@@ -14,9 +14,13 @@
 
 #ifdef _OPENMP
 #include "omp.h"
+using namespace sg::pde;
+using namespace sg::base;
 #endif
 
 namespace sg
+{
+namespace finance
 {
 
 BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
@@ -518,4 +522,5 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 	return this->rhs;
 }
 
+}
 }

@@ -10,6 +10,8 @@
 
 namespace sg
 {
+namespace solver
+{
 /**
  * This struct is needed for exchanging the SGSolver Settings
  * to another address space.
@@ -28,6 +30,7 @@ struct SGSolverInfo
 	std::string GridType;
 };
 
+}
 }
 
 #endif /* SGSOLVERINFO_HPP */

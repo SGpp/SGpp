@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 BoundingBox::BoundingBox(size_t dim)
 {
@@ -105,4 +107,5 @@ bool BoundingBox::hasDirichletBoundaryRight(size_t dimension)
 	return dimensionBoundaries[dimension].bDirichletRight;
 }
 
+}
 }

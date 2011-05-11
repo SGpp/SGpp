@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 EvalCuboidGenerator::EvalCuboidGenerator()
 {
@@ -78,4 +80,5 @@ void EvalCuboidGenerator::getEvaluationCuboid(DataMatrix& EvaluationPoints, Boun
 	}
 }
 
+}
 }

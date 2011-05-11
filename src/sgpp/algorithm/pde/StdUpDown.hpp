@@ -13,8 +13,11 @@
 #include "grid/GridStorage.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -97,6 +100,7 @@ protected:
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
 };
 
+}
 }
 
 #endif /* STDUPDOWN_HPP */

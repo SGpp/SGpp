@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
@@ -56,6 +58,7 @@ public:
 	virtual void multTranspose(DataVector& source, DataVector& result) = 0;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVAL_HPP */

@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace pde
+{
 
 /**
  * This class implements the ParabolicPDESolverSystem for the
@@ -67,6 +69,7 @@ public:
 	void startTimestep();
 };
 
+}
 }
 
 #endif /* LASERHEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP2D_HPP */

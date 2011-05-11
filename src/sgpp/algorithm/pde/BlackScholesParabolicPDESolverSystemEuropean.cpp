@@ -9,9 +9,13 @@
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "basis/operations_factory.hpp"
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
@@ -97,11 +101,11 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 		buildGammaCoefficients();
 
 		//Create needed operations, on inner grid
-		this->OpDeltaInner = this->InnerGrid->createOperationDelta(*this->deltaCoef);
-		this->OpGammaInner = this->InnerGrid->createOperationGamma(*this->gammaCoef);
+		this->OpDeltaInner = sg::GridOperationFactory::createOperationDelta(*this->InnerGrid, *this->deltaCoef);
+		this->OpGammaInner = sg::GridOperationFactory::createOperationGamma(*this->InnerGrid, *this->gammaCoef);
 		// Create needed operations, on boundary grid
-		this->OpDeltaBound = this->BoundGrid->createOperationDelta(*this->deltaCoef);
-		this->OpGammaBound = this->BoundGrid->createOperationGamma(*this->gammaCoef);
+		this->OpDeltaBound = sg::GridOperationFactory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::GridOperationFactory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
 	}
 	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
 	else
@@ -110,16 +114,16 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 		buildGammaCoefficientsLogTransform();
 
 		// operations on boundary grid
-		this->OpDeltaBound = this->BoundGrid->createOperationDeltaLog(*this->deltaCoef);
-		this->OpGammaBound = this->BoundGrid->createOperationGammaLog(*this->gammaCoef);
+		this->OpDeltaBound = sg::GridOperationFactory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::GridOperationFactory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
 		//operations on inner grid
-		this->OpDeltaInner = this->InnerGrid->createOperationDeltaLog(*this->deltaCoef);
-		this->OpGammaInner = this->InnerGrid->createOperationGammaLog(*this->gammaCoef);
+		this->OpDeltaInner = sg::GridOperationFactory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
+		this->OpGammaInner = sg::GridOperationFactory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
 	}
 
 	// Create operations, independent bLogTransform
-	this->OpLTwoInner = this->InnerGrid->createOperationLTwoDotProduct();
-	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
+	this->OpLTwoInner = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->InnerGrid);
+	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;
@@ -394,4 +398,5 @@ void BlackScholesParabolicPDESolverSystemEuropean::buildDeltaCoefficientsLogTran
 	}
 }
 
+}
 }

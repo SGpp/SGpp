@@ -6,12 +6,14 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 dPhidPhiUpModLinear::dPhidPhiUpModLinear(GridStorage* storage) : storage(storage)
 {
@@ -99,6 +101,7 @@ void dPhidPhiUpModLinear::rec(DataVector& source, DataVector& result, grid_itera
 	}
 }
 
-}
 
+
+}
 }

@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 BoundaryGridGenerator::BoundaryGridGenerator(GridStorage* storage) : storage(storage)
 {
@@ -69,4 +71,5 @@ size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int 
 	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
 }
 
+}
 }

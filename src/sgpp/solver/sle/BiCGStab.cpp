@@ -7,8 +7,11 @@
 
 #include "solver/sle/BiCGStab.hpp"
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 BiCGStab::BiCGStab(size_t imax, double epsilon) : SLESolver(imax, epsilon)
@@ -127,4 +130,5 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 	}
 }
 
+}
 }

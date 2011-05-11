@@ -10,8 +10,11 @@
 
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 /**
@@ -82,6 +85,7 @@ public:
 	void readClasses(std::string tfilename, DataVector& destination);
 };
 
+}
 }
 
 #endif /* ARFFTOOLS_HPP */

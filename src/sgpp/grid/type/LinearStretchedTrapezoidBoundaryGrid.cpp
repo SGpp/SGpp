@@ -34,8 +34,12 @@
 #include "sgpp.hpp"
 
 #include <iostream>
+using namespace sg::finance;
+using namespace sg::pde;
 
 namespace sg
+{
+namespace base
 {
 
 LinearStretchedTrapezoidBoundaryGrid::LinearStretchedTrapezoidBoundaryGrid(std::istream& istr) : Grid(istr)
@@ -76,7 +80,7 @@ GridGenerator* LinearStretchedTrapezoidBoundaryGrid::createGridGenerator()
 {
 	return new StretchedTrapezoidBoundaryGridGenerator(this->storage);
 }
-
+/*
 OperationMultipleEval* LinearStretchedTrapezoidBoundaryGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalLinearStretchedBoundary(this->storage, dataset);
@@ -168,6 +172,7 @@ OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationGammaLog(D
 OperationConvert* LinearStretchedTrapezoidBoundaryGrid::createOperationConvert()
 {
 	throw factory_exception("Unsupported operation");
-}
+}*/
 
+}
 }

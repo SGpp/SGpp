@@ -12,8 +12,11 @@
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
 
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 double OperationTestLinearBoundary::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
@@ -34,5 +37,6 @@ double OperationTestLinearBoundary::testWithCharacteristicNumber(DataVector& alp
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
+}
 }
 

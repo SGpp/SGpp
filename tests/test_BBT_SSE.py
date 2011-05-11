@@ -6,6 +6,7 @@
 ## @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 import unittest, tools
+from pysgpp import createOperationMultipleEvalVectorized
 
 #-------------------------------------------------------------------------------
 ## Builds the training data vector
@@ -41,7 +42,7 @@ def generateBBTSSEMatrix(factory, training, verbose=False):
     from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
        
-    b = factory.createOperationMultipleEvalVectorized("SSE", training)
+    b = createOperationMultipleEvalVectorized(factory, "SSE", training)
 
     alpha = DataVector(storage.size())
     erg = DataVector(len(alpha))

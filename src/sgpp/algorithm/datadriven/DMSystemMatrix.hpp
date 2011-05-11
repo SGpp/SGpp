@@ -12,8 +12,11 @@
 #include "grid/Grid.hpp"
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "operation/common/OperationMatrix.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 /**
@@ -59,6 +62,7 @@ public:
 	void generateb(DataVector& classes, DataVector& b);
 };
 
+}
 }
 
 #endif /* DMSYSTEMMATRIX_HPP */

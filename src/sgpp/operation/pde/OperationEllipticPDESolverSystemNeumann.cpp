@@ -7,8 +7,11 @@
 
 #include "operation/pde/OperationEllipticPDESolverSystemNeumann.hpp"
 #include "exception/algorithm_exception.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 OperationEllipticPDESolverSystemNeumann::OperationEllipticPDESolverSystemNeumann(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
@@ -29,5 +32,6 @@ DataVector* OperationEllipticPDESolverSystemNeumann::generateRHS()
 	return this->rhs;
 }
 
+}
 }
 

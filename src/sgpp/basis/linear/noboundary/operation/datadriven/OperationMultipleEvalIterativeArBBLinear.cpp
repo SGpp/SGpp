@@ -8,8 +8,11 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
 #include "exception/operation_exception.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace parallel
 {
 
 OperationMultipleEvalIterativeArBBLinear::OperationMultipleEvalIterativeArBBLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
@@ -92,4 +95,5 @@ double OperationMultipleEvalIterativeArBBLinear::multTransposeVectorized(DataVec
    	return time;
 }
 
+}
 }

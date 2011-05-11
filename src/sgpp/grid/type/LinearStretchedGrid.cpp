@@ -33,8 +33,12 @@
 #include "sgpp.hpp"
 
 #include <iostream>
+using namespace sg::finance;
+using namespace sg::pde;
 
 namespace sg
+{
+namespace base
 {
 
 LinearStretchedGrid::LinearStretchedGrid(std::istream& istr) : Grid(istr)
@@ -74,7 +78,7 @@ GridGenerator* LinearStretchedGrid::createGridGenerator()
 {
 	return new StandardGridGenerator(this->storage);
 }
-
+/*
 OperationMultipleEval* LinearStretchedGrid::createOperationMultipleEval(DataMatrix* dataset)
 {
 	return new OperationMultipleEvalLinearStretched(this->storage, dataset);
@@ -166,5 +170,6 @@ OperationConvert* LinearStretchedGrid::createOperationConvert()
 {
 	throw factory_exception("Unsupported operation");
 }
-
+*/
+}
 }

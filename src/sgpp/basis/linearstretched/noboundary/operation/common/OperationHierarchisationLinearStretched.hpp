@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Hierarchisation on sparse grid, linear grid without boundaries
@@ -41,6 +43,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONHIERARCHISATIONLINEARSTRETCHED_HPP */

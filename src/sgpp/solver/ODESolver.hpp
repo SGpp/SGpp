@@ -11,8 +11,12 @@
 #include "solver/SGSolver.hpp"
 #include "solver/SLESolver.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 class ODESolver : public SGSolver
@@ -44,6 +48,7 @@ public:
 	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
 };
 
+}
 }
 
 #endif /* ODESOLVER_HPP */

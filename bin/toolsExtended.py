@@ -187,7 +187,7 @@ def printRefNDFunction(filename, filenameValue, function, resolution, dim):
 # @param fout filehandle to result file, containing the coordinates and value
 # @param foutvalue filehandle to resultfile, containing only the value
 def printPoint(p, grid, alpha, fout, foutvalue):
-    pc = grid.createOperationEval().eval(alpha, p)
+    pc = createOperationEval(grid).eval(alpha, p)
     for y in xrange(grid.getStorage().dim()):
         fout.write("%s " % p[y])
     
@@ -283,7 +283,7 @@ def doHierarchisation(node_values, grid):
         tmp[i] = node_values[i]
     
     # create operation: hierarchisation
-    hierarchisation = grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(grid)
     
     # execute hierarchisation
     hierarchisation.doHierarchisation(tmp)    
@@ -302,7 +302,7 @@ def doDehierarchisation(alpha, grid):
         tmp[i] = alpha[i]
          
     # create operation: hierarchisation
-    hierarchisation = grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(grid)
     
     # execute hierarchisation
     hierarchisation.doDehierarchisation(tmp)
@@ -345,7 +345,7 @@ def generateCMatrix(factory, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
     
-    laplace = factory.createOperationLaplace()
+    laplace = createOperationLaplace(factory)
     
     # create vector
     alpha = DataVector(storage.size())

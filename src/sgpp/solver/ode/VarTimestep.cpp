@@ -14,8 +14,12 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 VarTimestep::VarTimestep(size_t imax, double timestepSize, double eps, ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
@@ -158,4 +162,5 @@ void VarTimestep::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolv
 
 }
 
+}
 }

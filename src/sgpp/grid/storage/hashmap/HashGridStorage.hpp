@@ -32,6 +32,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Generic hash table based index storage.
@@ -1092,6 +1094,7 @@ private:
     }
 };
 
+}
 }
 
 #endif /* HASHGRIDSTORAGE_HPP */

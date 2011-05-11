@@ -268,7 +268,7 @@ def doApply():
     # traverse Data
     for i in xrange(numData):
         x.getRow(i,q)
-        val = grid.createOperationEval().eval(alpha,q)
+        val = createOperationEval(grid).eval(alpha,q)
         if compute_accuracy:
             if (val >= 0 and data["classes"][i] >= 0) or (val < 0 and data["classes"][i] < 0):
                 acc += 1
@@ -339,7 +339,7 @@ def doEval():
         acc = 0
         for i in xrange(numData):
             x.getRow(i,q)
-            val = grid.createOperationEval().eval(alpha,q)
+            val = createOperationEval(grid).eval(alpha,q)
             if compute_accuracy:
                 if (val >= 0 and data["classes"][i] >= 0) or (val < 0 and data["classes"][i] < 0):
                     acc += 1
@@ -356,7 +356,7 @@ def doEval():
         # traverse Data
         for i in xrange(numData):
             x.getRow(i,q)
-            val = grid.createOperationEval().eval(alpha,q)
+            val = createOperationEval(grid).eval(alpha,q)
             classes.append(val)
         if compute_accuracy:
             # output accuracy:
@@ -1082,7 +1082,7 @@ def testVector(grid,alpha,test,classes):
     correct = 0
     for i in xrange(test.getNrows()):
         test.getRow(i,p)
-        val = grid.createOperationEval().eval(alpha,p)
+        val = createOperationEval(grid).eval(alpha,p)
         if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
             correct = correct + 1
             
@@ -1098,7 +1098,7 @@ def testVector(grid,alpha,test,classes):
 # @param classes DataVector of correct class values
 # @return classification accuracy
 def testVectorFast(grid, alpha, test, classes):
-    return grid.createOperationTest().test(alpha, test, classes)/float(test.getNrows())
+    return createOperationTest(grid).test(alpha, test, classes)/float(test.getNrows())
 
 
 #-------------------------------------------------------------------------------
@@ -1114,7 +1114,7 @@ def testVectorFast(grid, alpha, test, classes):
 def testVectorFastWithCharacteristicNumbers(grid, alpha, test, classes):
     charaNum = DataVector(4)
     acc = 0.0
-    acc = grid.createOperationTest().testWithCharacteristicNumber(alpha, test, classes, charaNum)
+    acc = createOperationTest(grid).testWithCharacteristicNumber(alpha, test, classes, charaNum)
     print "TP: " + str(charaNum[0])
     print "TN: " + str(charaNum[1])
     print "FP: " + str(charaNum[2])
@@ -1153,7 +1153,7 @@ def testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues):
     FN = 0
     for i in xrange(test.getNrows()):
         test.getRow(i,p)
-        val = grid.createOperationEval().eval(alpha, p)
+        val = createOperationEval(grid).eval(alpha, p)
         evalValues.append(val)
         if (val > 0 and classes[i] > 0 ):
             TP = TP + 1

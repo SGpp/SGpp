@@ -9,8 +9,12 @@
 #define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
 
 #include "operation/pde/OperationEllipticPDESolverSystemDirichlet.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace parallel
 {
 
 /**
@@ -51,6 +55,7 @@ public:
 	DataVector* generateRHS();
 };
 
+}
 }
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP */

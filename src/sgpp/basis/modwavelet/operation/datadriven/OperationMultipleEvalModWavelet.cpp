@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationMultipleEvalModWavelet::mult(DataVector& alpha, DataVector& result)
 {
@@ -34,4 +36,5 @@ void OperationMultipleEvalModWavelet::multTranspose(DataVector& source, DataVect
 	op.mult_transposed(storage, base, source, *(this->dataset_), result);
 }
 
+}
 }

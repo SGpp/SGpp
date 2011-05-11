@@ -11,11 +11,16 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+#include "basis/operations_factory.hpp"
 #include "stdlib.h"
 #include <sstream>
 #include <fstream>
+using namespace sg::solver;
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 PoissonEquationSolver::PoissonEquationSolver() : EllipticPDESolver()
@@ -142,7 +147,7 @@ void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu,
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -182,7 +187,7 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(DataVector& alpha, 
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -249,7 +254,7 @@ void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha, double factor
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -298,7 +303,7 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(DataVector& alpha, dou
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -428,4 +433,5 @@ void PoissonEquationSolver::initScreen()
 	this->myScreen->writeTitle("SGpp - Poisson Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
 }
 
+}
 }

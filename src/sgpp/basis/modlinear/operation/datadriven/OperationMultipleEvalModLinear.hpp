@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationMultipleEval for a grids with mod linear basis ansatzfunctions
@@ -45,6 +47,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALMODLINEAR_HPP */

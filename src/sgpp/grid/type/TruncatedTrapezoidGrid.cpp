@@ -16,13 +16,15 @@
 #include "grid/type/TruncatedTrapezoidGrid.hpp"
 
 #include "grid/generation/TruncatedTrapezoidGridGenerator.hpp"
-#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
-#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
+//#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 #include "sgpp.hpp"
 
 #include <iostream>
 
 namespace sg
+{
+namespace base
 {
 
 TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(std::istream& istr) : Grid(istr)
@@ -60,19 +62,20 @@ GridGenerator* TruncatedTrapezoidGrid::createGridGenerator()
 {
 	return new TruncatedTrapezoidGridGenerator(this->storage);
 }
-OperationHierarchisation* TruncatedTrapezoidGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearBoundary(this->storage);
-}
-OperationEval* TruncatedTrapezoidGrid::createOperationEval()
-{
-	return new OperationEvalLinearBoundary(this->storage);
-}
+//OperationHierarchisation* TruncatedTrapezoidGrid::createOperationHierarchisation()
+//{
+//	return new OperationHierarchisationLinearBoundary(this->storage);
+//}
+//OperationEval* TruncatedTrapezoidGrid::createOperationEval()
+//{
+//	return new OperationEvalLinearBoundary(this->storage);
+//}
 
-OperationConvert* TruncatedTrapezoidGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
+//OperationConvert* TruncatedTrapezoidGrid::createOperationConvert()
+//{
+//	throw factory_exception("Unsupported operation");
+//}
 
+}
 }
 

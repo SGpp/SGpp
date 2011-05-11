@@ -14,8 +14,11 @@
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -216,6 +219,7 @@ protected:
 	virtual void upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim) = 0;
 };
 
+}
 }
 
 #endif /* UPDOWNTWOOPDIMS_HPP */

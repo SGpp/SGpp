@@ -21,8 +21,12 @@
 #include "algorithm/common/sweep.hpp"
 
 #include <iostream>
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 OperationGammaLogLinear::OperationGammaLogLinear(GridStorage* storage, DataMatrix& coef) : UpDownTwoOpDims(storage, coef)
@@ -36,8 +40,8 @@ OperationGammaLogLinear::~OperationGammaLogLinear()
 void OperationGammaLogLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinear func(this->storage);
-	sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
+	PhiPhiUpBBLinear func(this->storage);
+	sweep<PhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -45,8 +49,8 @@ void OperationGammaLogLinear::up(DataVector& alpha, DataVector& result, size_t d
 void OperationGammaLogLinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinear func(this->storage);
-	sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
+	PhiPhiDownBBLinear func(this->storage);
+	sweep<PhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -54,8 +58,8 @@ void OperationGammaLogLinear::down(DataVector& alpha, DataVector& result, size_t
 void OperationGammaLogLinear::upOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * dphi
-	detail::PhidPhiUpBBLinear func(this->storage);
-	sweep<detail::PhidPhiUpBBLinear> s(func, this->storage);
+	PhidPhiUpBBLinear func(this->storage);
+	sweep<PhidPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -63,8 +67,8 @@ void OperationGammaLogLinear::upOpDimOne(DataVector& alpha, DataVector& result, 
 void OperationGammaLogLinear::downOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * dphi
-	detail::PhidPhiDownBBLinear func(this->storage);
-	sweep<detail::PhidPhiDownBBLinear> s(func, this->storage);
+	PhidPhiDownBBLinear func(this->storage);
+	sweep<PhidPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -72,8 +76,8 @@ void OperationGammaLogLinear::downOpDimOne(DataVector& alpha, DataVector& result
 void OperationGammaLogLinear::upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// dphi * phi
-	detail::DPhiPhiUpBBLinear func(this->storage);
-	sweep<detail::DPhiPhiUpBBLinear> s(func, this->storage);
+	DPhiPhiUpBBLinear func(this->storage);
+	sweep<DPhiPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -81,8 +85,8 @@ void OperationGammaLogLinear::upOpDimTwo(DataVector& alpha, DataVector& result, 
 void OperationGammaLogLinear::downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// dphi * phi
-	detail::DPhiPhiDownBBLinear func(this->storage);
-	sweep<detail::DPhiPhiDownBBLinear> s(func, this->storage);
+	DPhiPhiDownBBLinear func(this->storage);
+	sweep<DPhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
@@ -98,4 +102,5 @@ void OperationGammaLogLinear::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVec
 	myDown(alpha, result, dim);
 }
 
+}
 }

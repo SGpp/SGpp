@@ -15,9 +15,15 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "stdlib.h"
+#include "basis/operations_factory.hpp"
 #include <sstream>
 
+using namespace sg::solver;
+using namespace sg::base;
+
 namespace sg
+{
+namespace parallel
 {
 
 HeatEquationSolverMPI::HeatEquationSolverMPI() : ParabolicPDESolver()
@@ -209,7 +215,7 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(DataVector& alpha, double mu,
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -225,4 +231,5 @@ void HeatEquationSolverMPI::initScreen()
 	this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
 }
 
+}
 }

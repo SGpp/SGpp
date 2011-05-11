@@ -2,8 +2,10 @@
 
 #include <string.h>
 #include <stdlib.h>
+using namespace sg::base;
 
 namespace sg{
+namespace combigrid {
 
 void FullGridSet::generate(size_t dim,size_t n)
 {
@@ -706,5 +708,6 @@ double FullGridSet::eval(DataVector& p)
 	return val;
 }
 
+}
 }
 

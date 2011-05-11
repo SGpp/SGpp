@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationEval for a grids with mod poly basis ansatzfunctions with
@@ -43,9 +45,10 @@ protected:
 	/// Pointer to GridStorage object
 	GridStorage* storage;
 	/// Mod Poly Basis object
-	SModPolyBase base;
+	sg::SModPolyBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONEVALMODPOLY_HPP */

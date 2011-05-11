@@ -7,8 +7,11 @@
 
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 #include "exception/algorithm_exception.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 OperationParabolicPDESolverSystemNeumann::OperationParabolicPDESolverSystemNeumann()
@@ -225,5 +228,6 @@ DataVector* OperationParabolicPDESolverSystemNeumann::getGridCoefficientsForCG()
 	return this->alpha_complete;
 }
 
+}
 }
 

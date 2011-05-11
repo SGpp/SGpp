@@ -6,6 +6,7 @@
 ## @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 import unittest, tools
+from pysgpp import createOperationMultipleEvalVectorized
 
 #-------------------------------------------------------------------------------
 ## Builds the training data vector
@@ -41,7 +42,7 @@ def generateBBTAVXMatrix(factory, training, verbose=False):
     from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
        
-    b = factory.createOperationMultipleEvalVectorized("AVX", training)
+    b = createOperationMultipleEvalVectorized(factory,"AVX", training)
 
     alpha = DataVector(storage.size())
     erg = DataVector(len(alpha))

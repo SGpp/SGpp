@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * linearstretched basis functions with boundaries
@@ -119,6 +121,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* LINEARSTRETCHEDBOUNDARYBASE_HPP */

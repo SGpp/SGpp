@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  *	This is used to implement the output on the command line
@@ -86,6 +88,7 @@ private:
 	bool first_run;
 };
 
+}
 }
 
 #endif /* SCREENOUTPUT_HPP */

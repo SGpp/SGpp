@@ -16,6 +16,7 @@
 #ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
+using namespace sg::base;
 
 union floatAbsMaskHybrid
 {
@@ -30,6 +31,8 @@ static const __m128 abs2MaskHybrid = _mm_load1_ps( &absMaskHybrid.f );
 #endif
 
 namespace sg
+{
+namespace parallel
 {
 
 OperationMultipleEvalIterativeSPHybridSSEOCLLinear::OperationMultipleEvalIterativeSPHybridSSEOCLLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
@@ -375,4 +378,5 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(DataVe
    	return time;
 }
 
+}
 }

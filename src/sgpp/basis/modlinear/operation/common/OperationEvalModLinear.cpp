@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
@@ -37,4 +39,5 @@ double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& poin
 	return result;
 }
 
+}
 }

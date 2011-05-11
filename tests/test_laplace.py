@@ -6,6 +6,7 @@
 ## @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)####################################################################
 
 import unittest, tools
+from pysgpp import *
 
 def generateLaplaceMatrix(factory, level, verbose=False):
     from pysgpp import DataVector, DataMatrix
@@ -14,7 +15,7 @@ def generateLaplaceMatrix(factory, level, verbose=False):
     gen = factory.createGridGenerator()
     gen.regular(level)
     
-    laplace = factory.createOperationLaplace()
+    laplace = createOperationLaplace(factory)
     
     # create vector
     alpha = DataVector(storage.size())
@@ -133,7 +134,7 @@ class TestOperationLaplaceLinear(unittest.TestCase):
         gen = factory.createGridGenerator()
         gen.regular(7)
         
-        laplace = factory.createOperationLaplace()
+        laplace = createOperationLaplace(factory)
       
         
         alpha = DataVector(storage.size())
@@ -368,7 +369,7 @@ class TestOperationLaplacePrewavelet(unittest.TestCase):
 
         storage = factory.getStorage()
     
-        laplace = factory.createOperationLaplace()
+        laplace = createOperationLaplace(factory)
     
     # create vector
         alpha = DataVector(storage.size())

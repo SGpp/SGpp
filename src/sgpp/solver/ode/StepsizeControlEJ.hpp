@@ -9,8 +9,12 @@
 
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 /**
@@ -53,6 +57,7 @@ public:
 	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
+}
 }
 
 #endif /* STEPSIZECONTROLEJ_HPP */

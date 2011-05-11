@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Abstract class that defines the interfaces that coarsening functors have to provide.
@@ -70,6 +72,7 @@ public:
 	virtual double getCoarseningThreshold() = 0;
 };
 
+}
 }
 
 #endif /* COARSENINGFUNCTOR_HPP */

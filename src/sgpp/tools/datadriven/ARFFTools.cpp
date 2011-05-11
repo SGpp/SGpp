@@ -10,8 +10,11 @@
 #include <fstream>
 #include <stdlib.h>
 #include <iostream>
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 ARFFTools::ARFFTools()
@@ -192,4 +195,5 @@ void ARFFTools::writeNewClass(std::string& instance, DataVector& destination, si
 //
 //}
 
+}
 }

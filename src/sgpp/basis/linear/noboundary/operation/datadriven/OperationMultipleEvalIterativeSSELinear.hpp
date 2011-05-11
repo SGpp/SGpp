@@ -12,7 +12,11 @@
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 
+using namespace sg::base;
+
 namespace sg
+{
+namespace parallel
 {
 
 /**
@@ -61,6 +65,7 @@ protected:
 	SGppStopwatch* myTimer;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALITERATIVESSELINEAR_HPP */

@@ -18,6 +18,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 SquareRootGridGenerator::SquareRootGridGenerator(GridStorage* storage) : storage(storage)
 {
@@ -69,6 +71,7 @@ void SquareRootGridGenerator::regular(size_t level)
 //	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
 //}
 
+}
 }
 
 

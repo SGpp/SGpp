@@ -25,8 +25,11 @@
 
 #include "operation/datadriven/OperationTest.hpp"
 #include "grid/GridStorage.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 /**
@@ -56,6 +59,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* OPERATIONTESTPREWAVELET_HPP */

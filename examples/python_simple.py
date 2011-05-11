@@ -4,7 +4,7 @@
 import sys
 # append trunk/bin to search path for modules
 sys.path.append('../lib/pysgpp')
-from pysgpp import DataVector, Grid
+from pysgpp import DataVector, Grid, createOperationHierarchisation, createOperationEval
 
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
@@ -31,12 +31,12 @@ for i in xrange(gridStorage.size()):
 print alpha
 
 # hierarchize
-grid.createOperationHierarchisation().doHierarchisation(alpha)
+createOperationHierarchisation(grid).doHierarchisation(alpha)
 print alpha
 
 # evaluate
 p = DataVector(dim)
 p[0] = 0.52
 p[1] = 0.73
-opEval = grid.createOperationEval()
+opEval = createOperationEval(grid)
 print "u(0.52, 0.73) =", opEval.eval(alpha, p)

@@ -22,8 +22,11 @@
 
 #include "algorithm/pde/UpDownOneOpDimWithShadow.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(GridStorage* storage,
@@ -166,4 +169,5 @@ void UpDownOneOpDimWithShadow::specialOP(DataVector& alpha, DataVector& result,
 	}
 }
 
+}
 }

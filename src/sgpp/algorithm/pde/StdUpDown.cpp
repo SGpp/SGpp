@@ -6,8 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/StdUpDown.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 StdUpDown::StdUpDown(GridStorage* storage) : storage(storage), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
@@ -86,4 +89,5 @@ void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
 	}
 }
 
+}
 }

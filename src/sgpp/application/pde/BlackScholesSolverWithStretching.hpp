@@ -15,8 +15,11 @@
 #include "grid/type/LinearStretchedGrid.hpp"
 #include "grid/common/Stretching.hpp"
 #include "tools/common/GridPrinterForStretching.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -220,6 +223,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* BLACKSCHOLESSOLVERWITHSTRETCHING_HPP */

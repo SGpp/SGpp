@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace datadriven
+{
 
 double OperationTestLinearStretched::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
 {
@@ -35,5 +37,6 @@ double OperationTestLinearStretched::testWithCharacteristicNumber(DataVector& al
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
+}
 }
 

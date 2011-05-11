@@ -22,6 +22,8 @@
 #include "grid/common/BoundingBox.hpp"
 namespace sg
 {
+namespace base
+{
 
 struct Stretching1D{
 	std::string type;
@@ -259,6 +261,7 @@ public:
 	void calculateNeighborLookup(int maxlevel);
 };
 
+}
 }
 
 #endif /* STRETCHING_HPP */
