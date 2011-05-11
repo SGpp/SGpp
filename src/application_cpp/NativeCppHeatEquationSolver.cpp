@@ -313,7 +313,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
-	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
+	sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
 
 	// init Screen Object
 	myHESolver->initScreen();
@@ -520,11 +520,6 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 						std::string initFunc, double cg_eps, size_t cg_its)
 {
 	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
-	DataMatrix EvalPoints(1, dim);
-	std::string tFileEvalCuboid = "EvalPointsPoisson.data";
-	std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
-	size_t evalPoints = NUMEVALPOINTS;
-	std::vector<DataVector> results;
 	DataMatrix EvalPoints(1, dim);
 	std::string tFileEvalCuboid = "EvalPointsPoisson.data";
 	std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
