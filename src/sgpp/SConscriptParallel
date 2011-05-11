@@ -1,0 +1,29 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+srcs = Split("""
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
+""")
+
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_parallel = sg_env.SharedObject(srcs)
+Export('src_objs_parallel')
+
+libsgppparallel = sg_env.SharedLibrary(target="sgppparallel", source = src_objs_parallel, SHLIBPREFIX = 'lib')
+libsgppparallelstatic = sg_env.StaticLibrary(target="sgppparallel", source = src_objs_parallel, SHLIBPREFIX = 'lib')
+
+Export('libsgppparallel')
+Export('libsgppparallelstatic')

@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * linear base functions.
@@ -44,6 +46,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* LINEAR_BASE_HPP */

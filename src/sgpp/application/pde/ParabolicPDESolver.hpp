@@ -9,8 +9,11 @@
 #define PARABOLICPDESOLVER_HPP
 
 #include "application/pde/PDESolver.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -79,6 +82,7 @@ public:
 	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0) = 0;
 };
 
+}
 }
 
 #endif /* PARABOLICPDESOLVER_HPP */

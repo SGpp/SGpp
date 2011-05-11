@@ -70,10 +70,6 @@ def CheckJNI(context):
     return ret
 
 
-
-
-
-
 vars = Variables("custom.py")
 
 # define the flags 
@@ -94,6 +90,17 @@ vars.Add('JSGPP', 'Build jsgpp if set to True', False)
 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
+
+# for compiling different modules
+vars.Add('SG_ALL', 'Build all modules', False)
+vars.Add('SG_BASE', 'Build Basis Module', True)
+vars.Add('SG_DATADRIVEN', 'Build Datadriven Module', False)
+vars.Add('SG_SOLVER', 'Build Solver Module', False)
+vars.Add('SG_FINANCE', 'Build Finance Module', False)
+vars.Add('SG_PDE', 'Build PDE Module', False)
+vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
+vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
+vars.Add('SG_PYTHON', 'Build Python Support', False)
 
 
 env = Environment(variables = vars, ENV = os.environ)
@@ -159,6 +166,7 @@ if env['TARGETCPU'] == 'default':
                          '-funroll-loops', '-ffloat-store'])
     if env['OMP']:
 	env.Append(CPPFLAGS=['-fopenmp'])
+    	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
     	
 elif env['TARGETCPU'] == 'ia64ICC':
@@ -202,6 +210,7 @@ if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbI
     if env['OMP']:
 	env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp']) 
+        env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE', 'USEICCINTRINSICS'])
     
 # sets the architecture option for gcc
 if env.has_key('MARCH'):
@@ -213,9 +222,14 @@ if env.has_key('MARCH'):
 
 
 # boolean variables for environment 
-pyAvail = True
-swigAvail = True
-javaAvail = True
+if env['SG_PYTHON'] or env['SG_ALL']:
+    pyAvail = True
+    swigAvail = True
+    javaAvail = True
+else:
+    pyAvail = False
+    swigAvail = False
+    javaAvail = False
 
 # configure environment
 # ---------------------
@@ -286,29 +300,109 @@ if not env.GetOption('clean'):
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 
+
+
+# Copy required files
+cpy = []
+
+#start build of pysgpp and jsgpp
+#SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
+
+if env['SG_ALL']:
+	env['SG_BASE'] = env['SG_PDE'] = env['SG_DATADRIVEN'] = env['SG_SOLVER'] = \
+	env['SG_FINANCE'] = env['SG_PARALLEL'] = env['SG_COMBIGRID'] = \
+	env['SG_PYTHON'] = True
+
+cppdefines = []
+if env['SG_BASE']: cppdefines +=['SG_BASE']
+if env['SG_PDE']: cppdefines +=['SG_PDE']
+if env['SG_DATADRIVEN']: cppdefines +=['SG_DATADRIVEN']
+if env['SG_SOLVER']: cppdefines +=['SG_SOLVER']
+if env['SG_FINANCE']: cppdefines +=['SG_FINANCE']
+if env['SG_PARALLEL']: cppdefines +=['SG_PARALLEL']
+if env['SG_COMBIGRID']: cppdefines +=['SG_COMBIGRID']
+env.Append(CPPDEFINES=cppdefines)
+
 Export('env')
-
 print "finished configuration"
-
 
 # Now start for compilation...
 # ----------------------------
-
 # build c++ lib
-(libsgpp, libsgppa) = env.SConscript('src/sgpp/SConscript',
-                                     build_dir='tmp/build_sg', duplicate=0)
+#(libsgpp, libsgppa) = env.SConscript('src/sgpp/SConscript',
+#                                     build_dir='tmp/build_sg', duplicate=0)
 # install
-env.Install('lib/sgpp', [libsgpp, libsgppa])
+#env.Install('lib/sgpp', [libsgpp, libsgppa])
+lib_sgpp_targets = []
 
-# build python lib
-if swigAvail and pyAvail:
-    libpysgpp = env.SConscript('src/pysgpp/SConscript',
-                               build_dir='tmp/build_pysgpp', duplicate=0)
-    # install
-    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-    Depends(pyinst, libpysgpp)
-    dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-    Depends(dep, libpysgpp)
+if env['SG_BASE']:
+	SConscript('src/sgpp/SConscriptBase', build_dir='tmp/build_sgbase', duplicate=0)
+	Import('libsgppbase')
+	Import('libsgppbasestatic')
+	lib_sgpp_targets.append(libsgppbase)
+	lib_sgpp_targets.append(libsgppbasestatic)
+	
+if env['SG_PDE']:
+	SConscript('src/sgpp/SConscriptPde', build_dir='tmp/build_sgpde', duplicate=0)
+	Import('libsgpppde')
+	Import('libsgpppdestatic')
+	lib_sgpp_targets.append(libsgpppde)
+	lib_sgpp_targets.append(libsgpppdestatic)
+	
+if env['SG_DATADRIVEN']:
+	SConscript('src/sgpp/SConscriptDatadriven', build_dir='tmp/build_sgdatadriven', duplicate=0)
+	Import('libsgppdatadriven')
+	Import('libsgppdatadrivenstatic')
+	lib_sgpp_targets.append(libsgppdatadriven)
+	lib_sgpp_targets.append(libsgppdatadrivenstatic)
+	
+if env['SG_SOLVER']:
+	SConscript('src/sgpp/SConscriptSolver', build_dir='tmp/build_sgsolver', duplicate=0)
+	Import('libsgppsolver')
+	Import('libsgppsolverstatic')
+	lib_sgpp_targets.append(libsgppsolver)
+	lib_sgpp_targets.append(libsgppsolverstatic)
+	
+if env['SG_FINANCE']:
+	SConscript('src/sgpp/SConscriptFinance', build_dir='tmp/build_sgfinance', duplicate=0)
+	Import('libsgppfinance')
+	Import('libsgppfinancestatic')
+	lib_sgpp_targets.append(libsgppfinance)
+	lib_sgpp_targets.append(libsgppfinancestatic)
+	
+if env['SG_PARALLEL']:
+	SConscript('src/sgpp/SConscriptParallel', build_dir='tmp/build_sgparallel', duplicate=0)
+	Import('libsgppparallel')
+	Import('libsgppparallelstatic')
+	lib_sgpp_targets.append(libsgppparallel)
+	lib_sgpp_targets.append(libsgppparallelstatic)
+
+if env['SG_COMBIGRID']:
+	SConscript('src/sgpp/SConscriptCombigrid', build_dir='tmp/build_sgcombigrid', duplicate=0)
+	Import('libsgppcombigrid')
+	Import('libsgppcombigridstatic')
+	lib_sgpp_targets.append(libsgppcombigrid)
+	lib_sgpp_targets.append(libsgppcombigridstatic)
+	
+if env['SG_PYTHON'] and swigAvail and pyAvail:
+	libpysgpp = SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
+	#Import('pysgpp')
+	pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	Depends(pyinst, libpysgpp)
+	dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	Depends(dep, libpysgpp)
+	#env.Install('#lib/pysgpp', pysgpp)
+	#env.Install('#bin', pysgpp)
+	#Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+	#Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
+	#if swigAvail and pyAvail:
+	#    env.SConscript('src/pysgpp/SConscript',
+	#                               build_dir='tmp/build_pysgpp', duplicate=0)
+	    # install
+	#    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	#   Depends(pyinst, libpysgpp)
+	#    dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	#    Depends(dep, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['JSGPP']:
@@ -318,6 +412,12 @@ if swigAvail and javaAvail and env['JSGPP']:
                              build_dir='tmp/build_jsgpp_weka', duplicate=0)
     # install
     jinst = env.Install('lib/jsgpp', [libjsgpp])
+	
+#if env['JSGPP']:
+#    SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
+#    SConscript('src/jsgpp_weka/SConscript', build_dir='tmp/build_jsgpp_weka', duplicate=0)
+
+env.Install('#lib/sgpp', lib_sgpp_targets)
 
 # Execute Unit Tests
 if not env['NO_UNIT_TESTS'] and pyAvail:

@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Exception that is thrown in case of a grid generation failure
@@ -62,6 +64,7 @@ protected:
 	const char* msg;
 };
 
+}
 }
 
 #endif /* GENERATION_EXCEPTION_HPP */

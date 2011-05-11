@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
@@ -24,5 +26,6 @@ double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
 	return AlgoEval(base, point, alpha);
 }
 
+}
 }
 

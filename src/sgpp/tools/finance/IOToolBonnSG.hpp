@@ -13,8 +13,11 @@
 #include "data/DataVector.hpp"
 
 #include <string>
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -61,6 +64,7 @@ public:
 	void writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha, bool ishierarchized);
 };
 
+}
 }
 
 #endif /* IOTOOLBONNSG_HPP */

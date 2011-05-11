@@ -11,8 +11,11 @@
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -68,6 +71,7 @@ public:
 	virtual DataVector* generateRHS();
 };
 
+}
 }
 
 #endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP_HPP */

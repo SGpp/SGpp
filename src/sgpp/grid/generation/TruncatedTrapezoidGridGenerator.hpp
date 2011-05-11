@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class provides the interface for the grid generation
@@ -57,6 +59,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* TRUNCATEDTRAPEZOIDGRIDGENERATOR_HPP_ */

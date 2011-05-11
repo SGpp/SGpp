@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de), J�rg Blank (blankj@in.tum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (alexander.heinecke@mytum.de)
 
 %module(directors="1") pysgpp
 
@@ -78,9 +78,11 @@ namespace std {
 
 %include "GridFactory.i"
 
-// %include "FullGrid.i"
-// %include "src/sgpp/grid/combination/FullGridSet.hpp"
-// %include "FullGridSet.i"
+#ifdef SG_COMBIGRID
+//%include "FullGrid.i"
+//%include "src/sgpp/grid/combination/FullGridSet.hpp"
+//%include "FullGridSet.i"
+#endif
 
 %include "src/sgpp/grid/GridDataBase.hpp"
 
@@ -93,36 +95,44 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
+#ifdef SG_DATADRIVEN
+%include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
+%include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
+#endif
+
+#ifdef SG_PDE
+%include "src/sgpp/application/pde/PDESolver.hpp"
+%include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystem.hpp"
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
+%include "src/sgpp/application/pde/HeatEquationSolver.hpp"
+#endif
 
-%include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
-%include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
-%include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
-%include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
-%include "src/sgpp/algorithm/common/AlgorithmEvaluation.hpp"
-%include "src/sgpp/algorithm/common/AlgorithmEvaluationTransposed.hpp"
-%include "src/sgpp/algorithm/common/sweep.hpp"
-%include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
+
+#ifdef SG_FINANCE
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
-
-
-%include "src/sgpp/application/common/ScreenOutput.hpp"
-
-%include "src/sgpp/application/pde/PDESolver.hpp"
-%include "src/sgpp/application/pde/ParabolicPDESolver.hpp"
 %include "src/sgpp/application/pde/BlackScholesSolver.hpp"
 %include "src/sgpp/application/pde/BlackScholesSolverWithStretching.hpp"
 %include "src/sgpp/application/pde/HeatEquationSolver.hpp"
 %include "src/sgpp/application/pde/HeatEquationSolverWithStretching.hpp"
 %include "src/sgpp/application/pde/EllipticPDESolver.hpp"
 %include "src/sgpp/application/pde/PoissonEquationSolver.hpp"
-
 %include "src/sgpp/application/finance/VariableDiscountFactor.hpp"
+#endif
+
+%include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
+%include "src/sgpp/algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
+
+%include "src/sgpp/algorithm/common/GetAffectedBasisFunctions.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluation.hpp"
+%include "src/sgpp/algorithm/common/AlgorithmEvaluationTransposed.hpp"
+%include "src/sgpp/algorithm/common/sweep.hpp"
+
+%include "src/sgpp/application/common/ScreenOutput.hpp"
 
 %include "src/sgpp/basis/linear/noboundary/linear_base.hpp"
 %include "src/sgpp/basis/linear/boundary/linearboundaryBase.hpp"
@@ -135,6 +145,7 @@ namespace std {
 %include "src/sgpp/basis/modbspline/modified_bspline_base.hpp"
 %include "src/sgpp/basis/prewavelet/prewavelet_base.hpp"
 
+#ifdef SG_SOLVER
 %include "src/sgpp/solver/SGSolver.hpp"
 %include "src/sgpp/solver/SLESolver.hpp"
 %include "src/sgpp/solver/ODESolver.hpp"
@@ -143,34 +154,37 @@ namespace std {
 %include "src/sgpp/solver/sle/BiCGStab.hpp"
 %include "src/sgpp/solver/ode/Euler.hpp"
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
+#endif
+
+%include "src/sgpp/basis/operations_factory.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
-%template(GridIndex) sg::HashGridIndex<unsigned int, unsigned int>;
-%template(GridStorage) sg::HashGridStorage<sg::GridIndex>;
+%template(GridIndex) sg::base::HashGridIndex<unsigned int, unsigned int>;
+%template(GridStorage) sg::base::HashGridStorage<sg::base::GridIndex>;
 
-%template(SLinearBase) sg::linear_base<unsigned int, unsigned int>;
-%template(SLinearBoundaryBase) sg::linearboundaryBase<unsigned int, unsigned int>;
-%template(SLinearStretchedBase) sg::linearstretched_base<unsigned int, unsigned int>;
-%template(SLinearStretchedBoundaryBase) sg::linearstretchedboundaryBase<unsigned int, unsigned int>;
-%template(SModLinearBase) sg::modified_linear_base<unsigned int, unsigned int>;
-%template(SPolyBase) sg::poly_base<unsigned int, unsigned int>;
-%template(SModPolyBase) sg::modified_poly_base<unsigned int, unsigned int>;
-%template(SModWaveletBase) sg::modified_wavelet_base<unsigned int, unsigned int>;
-%template(SModBsplineBase) sg::modified_bspline_base<unsigned int, unsigned int>;
-%template(SPrewaveletBase) sg::prewavelet_base<unsigned int, unsigned int>;
+%template(SLinearBase) sg::base::linear_base<unsigned int, unsigned int>;
+%template(SLinearBoundaryBase) sg::base::linearboundaryBase<unsigned int, unsigned int>;
+%template(SLinearStretchedBase) sg::base::linearstretched_base<unsigned int, unsigned int>;
+%template(SLinearStretchedBoundaryBase) sg::base::linearstretchedboundaryBase<unsigned int, unsigned int>;
+%template(SModLinearBase) sg::base::modified_linear_base<unsigned int, unsigned int>;
+%template(SPolyBase) sg::base::poly_base<unsigned int, unsigned int>;
+%template(SModPolyBase) sg::base::modified_poly_base<unsigned int, unsigned int>;
+%template(SModWaveletBase) sg::base::modified_wavelet_base<unsigned int, unsigned int>;
+%template(SModBsplineBase) sg::base::modified_bspline_base<unsigned int, unsigned int>;
+%template(SPrewaveletBase) sg::base::prewavelet_base<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
-%template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
-%template(SAlgorithmEvaluation) sg::AlgorithmEvaluation<sg::SLinearBase>;
-%template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;
-%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sg::DimensionBoundary>;
-%template(Stretching1DVector) std::vector<sg::Stretching1D>;
 
+%template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::SLinearBase>;
+%template(SAlgorithmEvaluation) sg::base::AlgorithmEvaluation<sg::SLinearBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearStretchedBoundaryBase>;
+%template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
+%template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
 
 // the new combigrid!
 
@@ -195,8 +209,6 @@ namespace std {
 %rename(__sub__) combigrid::CombigridLevelVector::operator-;
 %rename(__new__) combigrid::CombigridLevelVector::operator=; 
 
-
-
 %template(ComplexDouble) complex<double>;
 
 %include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
@@ -204,5 +216,3 @@ namespace std {
 %template(FullGridC) combigrid::FullGrid< complex<double> >;
 %template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
 %template(ComplexVector) std::vector< complex<double> >;
-
-

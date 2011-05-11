@@ -9,9 +9,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace base
 {
+
+
 
 DehierarchisationLinearStretchedBoundary::DehierarchisationLinearStretchedBoundary(GridStorage* storage) : DehierarchisationLinearStretched(storage)
 {
@@ -50,6 +51,7 @@ void DehierarchisationLinearStretchedBoundary::operator()(DataVector& source, Da
 	}
 }
 
-}	// namespace detail
+	// namespace detail
 
 }	// namespace sg
+}

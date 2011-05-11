@@ -13,8 +13,12 @@
 #include "data/DataVector.hpp"
 
 #include <iostream>
+using namespace sg::solver;
+using namespace sg::base;
 
 namespace sg
+{
+namespace parallel
 {
 
 class ConjugateGradientsMPI : public SLESolver
@@ -37,6 +41,7 @@ public:
 	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
 };
 
+}
 }
 
 #endif /* CONJUGATEGRADIENTSMPI_HPP */

@@ -9,8 +9,11 @@
 #define OPERATIONPARABOLICPDESOLVERSYSTEMNEUMANN_HPP
 
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -64,6 +67,7 @@ public:
 	virtual DataVector* getGridCoefficientsForCG();
 };
 
+}
 }
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEMNEUMANN_HPP */

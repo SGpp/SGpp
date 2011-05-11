@@ -28,6 +28,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  *
@@ -61,6 +63,7 @@ protected:
 	GridStorage* shadowstorage;
 };
 
+}
 }
 
 #endif /* OPERATIONCONVERTPREWAVELET_HPP */

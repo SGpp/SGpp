@@ -11,8 +11,12 @@
 //#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
 #include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 #include "algorithm/common/sweep.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 OperationLELinear::OperationLELinear(GridStorage* storage) : StdUpDown(storage)
@@ -35,4 +39,5 @@ void OperationLELinear::down(DataVector& alpha, DataVector& result, size_t dim)
 	myDown(alpha, result, dim);
 }
 
+}
 }

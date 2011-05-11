@@ -26,8 +26,12 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -224,6 +228,7 @@ public:
 	size_t getAverageInnerGridSize();
 };
 
+}
 }
 
 #endif /* BLACKSCHOLESHULLWHITESOLVER_HPP */

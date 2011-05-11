@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * modified linear base functions.
@@ -44,6 +46,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* MODIFIED_LINEAR_BASE_HPP */

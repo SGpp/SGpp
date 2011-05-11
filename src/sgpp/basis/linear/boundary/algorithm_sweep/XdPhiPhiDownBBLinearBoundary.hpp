@@ -12,12 +12,14 @@
 #include "data/DataVector.hpp"
 
 #include "basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 /**
  * Implementation of sweep operator (): 1D Down for
@@ -57,8 +59,9 @@ public:
 	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}
 
 #endif /* XDPHIPHIDOWNBBLINEARBOUNDARY_HPP */

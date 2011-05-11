@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements OperationMultipleEval for a grid with modified Bspline basis functions
@@ -50,6 +52,7 @@ protected:
 	SModBsplineBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALMODBSPLINE_HPP */

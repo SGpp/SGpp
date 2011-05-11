@@ -10,9 +10,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 PhiPhiDownBBLinearStretched::PhiPhiDownBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
@@ -71,6 +72,7 @@ void PhiPhiDownBBLinearStretched::rec(DataVector& source, DataVector& result, gr
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

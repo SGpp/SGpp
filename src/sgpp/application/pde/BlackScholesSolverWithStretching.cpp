@@ -17,13 +17,17 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "basis/operations_factory.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(bool useLogTransform, std::string OptionType) : BlackScholesSolver(useLogTransform, OptionType)
@@ -321,7 +325,7 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(DataVecto
 				std::ofstream file;
 				file.open(tFilename.c_str());
 
-				OperationEval* myEval = this->myGrid->createOperationEval();
+				OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
 
 				for (size_t i = 0; i < numTestpoints; i++)
 				{
@@ -439,7 +443,7 @@ void BlackScholesSolverWithStretching::initCartesianGridWithPayoff(DataVector& a
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -494,7 +498,7 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(DataVect
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -533,4 +537,5 @@ void BlackScholesSolverWithStretching::printSparseGridExpTransform(DataVector& a
 	myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
 }
 
+}
 }

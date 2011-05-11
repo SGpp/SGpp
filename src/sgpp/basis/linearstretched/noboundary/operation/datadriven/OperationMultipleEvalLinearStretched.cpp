@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationMultipleEvalLinearStretched::mult(DataVector& alpha, DataVector& result)
 {
@@ -32,4 +34,5 @@ void OperationMultipleEvalLinearStretched::multTranspose(DataVector& source, Dat
 	op.mult_transposed(storage, base, source, *(this->dataset_), result);
 }
 
+}
 }

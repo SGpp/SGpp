@@ -15,10 +15,14 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "stdlib.h"
+#include "basis/operations_factory.hpp"
 #include <sstream>
 #include <fstream>
+using namespace sg::solver;
 
 namespace sg
+{
+namespace pde
 {
 
 LaserHeatEquationSolver2D::LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, size_t max_level, double refine_threshold, double coarsen_threshold, double heat) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), heat_(heat), HeatEquationSolver()
@@ -107,7 +111,7 @@ void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(DataVector& alpha
 			delete[] dblFuncValues;
 
 			// do hierarchisation
-			OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+			OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
 
@@ -152,7 +156,7 @@ void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(DataVector& alpha
 		delete[] dblFuncValues;
 
 		// do hierarchisation
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -168,4 +172,5 @@ void LaserHeatEquationSolver2D::initScreen()
 	this->myScreen->writeTitle("SGpp - Laser Heat Solver, 1.0.0", "Alexander Heinecke, (C) 2011");
 }
 
+}
 }

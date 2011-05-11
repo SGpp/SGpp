@@ -13,6 +13,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 StdNormalDistribution::StdNormalDistribution()
 {
@@ -66,4 +68,5 @@ double StdNormalDistribution::getDensity(const double x, const double mu, const 
 	return result;
 }
 
+}
 }

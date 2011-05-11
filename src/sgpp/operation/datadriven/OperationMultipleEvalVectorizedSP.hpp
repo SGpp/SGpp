@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
@@ -92,6 +94,7 @@ public:
 	virtual void rebuildLevelAndIndex() = 0;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP */

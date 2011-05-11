@@ -9,6 +9,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 EvalCuboidGeneratorForStretching::EvalCuboidGeneratorForStretching()
 {
@@ -78,4 +80,5 @@ void EvalCuboidGeneratorForStretching::getEvaluationCuboid(DataMatrix& Evaluatio
 	}
 }
 
+}
 }

@@ -8,6 +8,7 @@
 #include "tools/common/GridPrinter.hpp"
 #include "operation/common/OperationEval.hpp"
 #include "exception/tool_exception.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <fstream>
 #include <vector>
@@ -16,6 +17,8 @@
 #include <cmath>
 
 namespace sg
+{
+namespace base
 {
 
 GridPrinter::GridPrinter(Grid& SparseGrid): myGrid(&SparseGrid)
@@ -42,7 +45,7 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename, Boun
 		{
 			// Open filehandle
 			fileout.open(tFilename.c_str());
-			OperationEval* myEval = myGrid->createOperationEval();
+			OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
 
 			dimOne = GridArea.getBoundary(0);
 			dimTwo = GridArea.getBoundary(1);
@@ -86,7 +89,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 		{
 			// Open filehandle
 			fileout.open(tFilename.c_str());
-			OperationEval* myEval = myGrid->createOperationEval();
+			OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
 
 			if (myGrid->getStorage()->dim() == 1)
 			{
@@ -147,7 +150,7 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename, bool
 	// Do Dehierarchisation, is specified
 	if (bSurplus == false)
 	{
-		OperationHierarchisation* myHier = myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
 		myHier->doDehierarchisation(temp);
 		delete myHier;
 	}
@@ -180,7 +183,7 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha, std::string tFi
 	// Do Dehierarchisation, is specified
 	if (bSurplus == false)
 	{
-		OperationHierarchisation* myHier = myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
 		myHier->doDehierarchisation(temp);
 		delete myHier;
 	}
@@ -203,4 +206,5 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha, std::string tFi
 	fileout.close();
 }
 
+}
 }

@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Hierarchisation on sparse grid, mod bspline case
@@ -62,6 +64,7 @@ protected:
 	SModBsplineBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONHIERARCHISATIONMODBSPLINE_HPP */

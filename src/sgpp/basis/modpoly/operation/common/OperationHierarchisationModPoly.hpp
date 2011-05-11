@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Hierarchisation on sparse grid, mod poly case
@@ -62,6 +64,7 @@ protected:
 	SModPolyBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONHIERARCHISATIONMODPOLY_HPP */

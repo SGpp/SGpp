@@ -15,9 +15,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace base
 {
+
+
 
 /**
  * Class that implements the dehierarchisation on a linear sparse grid with boundaries. Therefore
@@ -56,8 +57,9 @@ public:
 	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
 };
 
-}	// namespace detail
+	// namespace detail
 
 }	// namespace sg
+}
 
 #endif /* DEHIERARCHISATIONLINEARSTRETCHEDBOUNDARY_HPP */

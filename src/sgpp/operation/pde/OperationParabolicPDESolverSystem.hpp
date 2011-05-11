@@ -11,8 +11,11 @@
 #include "grid/Grid.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -172,6 +175,7 @@ public:
 	void getGridCoefficientsForSC(DataVector& Values);
 };
 
+}
 }
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEM_HPP */

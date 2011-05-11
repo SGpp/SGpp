@@ -7,7 +7,7 @@
 
 import unittest
 import re
-from pysgpp import DataVector
+from pysgpp import DataVector, createOperationEval, createOperationHierarchisation
 
 #-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
@@ -55,7 +55,7 @@ def testHierarchisationDehierarchisation(obj, grid, level, function):
 
     # test hierarchisation
     p = DataVector(storage.dim())
-    evalOp = grid.createOperationEval()
+    evalOp = createOperationEval(grid)
     for n in xrange(storage.size()):
         storage.get(n).getCoords(p)
         obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
@@ -100,7 +100,7 @@ def testHierarchisationDehierarchisationStretching(obj, grid, level, function):
 
     # test hierarchisation
     p = DataVector(storage.dim())
-    evalOp = grid.createOperationEval()
+    evalOp = createOperationEval(grid)
     for n in xrange(storage.size()):
         storage.get(n).getCoordsStretching(p,stretch)
         obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
@@ -121,7 +121,7 @@ def doHierarchisation(node_values, grid):
     tmp = DataVector(node_values)
     
     # create operation: hierarchisation
-    hierarchisation = grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(grid)
     
     # execute hierarchisation
     hierarchisation.doHierarchisation(tmp)    
@@ -140,7 +140,7 @@ def doDehierarchisation(alpha, grid):
         tmp[i] = alpha[i]
          
     # create operation: hierarchisation
-    hierarchisation = grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(grid)
     
     # execute hierarchisation
     hierarchisation.doDehierarchisation(tmp)

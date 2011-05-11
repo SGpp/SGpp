@@ -7,8 +7,12 @@
 
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen)
@@ -83,4 +87,5 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESo
     this->nIterations = allIter;
 }
 
+}
 }

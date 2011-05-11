@@ -13,11 +13,17 @@
 #include "solver/sle/ConjugateGradients.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "basis/operations_factory.hpp"
 #include "stdlib.h"
 #include <sstream>
 #include <fstream>
 
+using namespace sg::solver;
+using namespace sg::base;
+
 namespace sg
+{
+namespace pde
 {
 
 HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver()
@@ -211,7 +217,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, do
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -369,4 +375,5 @@ void HeatEquationSolver::storeInnerSolution(DataVector& alpha, size_t numTimeste
 }
 
 
+}
 }

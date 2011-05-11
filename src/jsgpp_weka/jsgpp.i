@@ -127,6 +127,6 @@ namespace std {
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
-%template(SGetAffectedBasisFunctions) sg::GetAffectedBasisFunctions<sg::SLinearBase>;
+%template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::SLinearBase>;
 %template(SAlgorithmEvaluation) sg::AlgorithmEvaluation<sg::SLinearBase>;
-%template(SGetAffectedBasisFunctionsBoundaries) sg::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::SLinearBoundaryBase>;

@@ -11,12 +11,14 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 /**
  * Implementation of sweep operator (): 1D Down for
@@ -72,8 +74,9 @@ protected:
 
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}
 
 #endif /* PHIPHIDOWNBBLINEARSTRETCHED_HPP */

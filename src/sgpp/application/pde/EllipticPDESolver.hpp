@@ -9,8 +9,11 @@
 #define ELLIPTICPDESOLVER_HPP
 
 #include "application/pde/PDESolver.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -47,6 +50,7 @@ public:
 	virtual void solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
 };
 
+}
 }
 
 #endif /* ELLIPTICPDESOLVER_HPP */

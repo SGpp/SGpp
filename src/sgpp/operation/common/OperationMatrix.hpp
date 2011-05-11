@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Abstract definition of a matrix operator interface.
@@ -40,6 +42,7 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
+}
 }
 
 #endif /* OPERATIONMATRIX_HPP */

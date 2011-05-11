@@ -29,6 +29,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * abstract base class for all types grids used in sgpp
@@ -218,7 +220,7 @@ public:
 	 *
 	 * @return pointer to the OperationB object
 	 */
-	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
+	//virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
 
 	/**
 	 * gets a pointer to OperationBVectorized object
@@ -228,8 +230,8 @@ public:
 	 *
 	 * @return pointer to the OperationB object
 	 */
-	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(
-			const std::string& VecType, DataMatrix* dataset) = 0;
+//	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(
+//			const std::string& VecType, DataMatrix* dataset) = 0;
 
 	/**
 	 * gets a pointer to OperationBVectorizedSP object
@@ -239,61 +241,54 @@ public:
 	 *
 	 * @return pointer to the OperationBSP object
 	 */
-	virtual OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(
-			const std::string& VecType, DataMatrixSP* dataset) = 0;
+//	virtual OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(
+//			const std::string& VecType, DataMatrixSP* dataset) = 0;
 
 	/**
 	 * gets a pointer to OperationConvert object
 	 *
 	 * @return pointer to the OperationConvert object
 	 */
-	virtual OperationConvert* createOperationConvert() = 0;
+	//virtual OperationConvert* createOperationConvert() = 0;
 
 	/**
 	 * gets a pointer to OperationEval object
 	 *
 	 * @return pointer to the OperationEval object
 	 */
-	virtual OperationEval* createOperationEval() = 0;
+	//virtual OperationEval* createOperationEval() = 0;
 
 	/**
 	 * gets a pointer to OperationTest object
 	 *
 	 * @return pointer to the OperationTest object
 	 */
-	virtual OperationTest* createOperationTest() = 0;
+	//virtual OperationTest* createOperationTest() = 0;
 
 	/**
 	 * gets a pointer to OperationHierarchisation object
 	 *
 	 * @return pointer to the OperationHierarchisation object
 	 */
-	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
+	//virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 
 	/**
 	 * gets a pointer to OperationLaplace (OperationMatrix) object
 	 *
 	 * @return point to the OperationLaplace object
 	 */
-	virtual OperationMatrix* createOperationLaplace() = 0;
+	//virtual OperationMatrix* createOperationLaplace() = 0;
 
 	/**
 	 * gets a pointer to OperationLTwoDotProduct (OperationMatrix) object
 	 *
 	 * @return pointer to OperationLTwoDotProduct object
 	 */
-	virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
-	virtual OperationMatrix* createOperationLB() = 0;
+	//virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
+	/*virtual OperationMatrix* createOperationLB() = 0;
 	virtual OperationMatrix* createOperationLD() = 0;
 	virtual OperationMatrix* createOperationLE() = 0;
-	virtual OperationMatrix* createOperationLF() = 0;
-
-	/**
-	 * (heinecke) temporal function
-	 *
-	 * @todo remove this when done
-	 */
-	virtual OperationMatrix* createOperationUpDownTest() = 0;
+	virtual OperationMatrix* createOperationLF() = 0;*/
 
 	/**
 	 * this operation allows you to calculate the following bilinear form
@@ -303,7 +298,7 @@ public:
 	 *
 	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
+	//virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
 
 	/**
 	 * this operation allows you to calculate the following bilinear form
@@ -313,7 +308,7 @@ public:
 	 *
 	 * @param coef reference to a DataMatrix object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
+	//virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
 
 	/**
 	 * this operation allows you to calculate the following bilinear form
@@ -323,7 +318,7 @@ public:
 	 *
 	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationDeltaLog(DataVector& coef) = 0;
+	//virtual OperationMatrix* createOperationDeltaLog(DataVector& coef) = 0;
 
 	/**
 	 * this operation allows you to calculate the following bilinear form
@@ -333,14 +328,14 @@ public:
 	 *
 	 * @param coef reference to a DataVector object that contains the constant coeffecients of this bilinear from
 	 */
-	virtual OperationMatrix* createOperationGammaLog(DataMatrix& coef) = 0;
+	//virtual OperationMatrix* createOperationGammaLog(DataMatrix& coef) = 0;
 
 	/**
 	 * gets a pointer to OperationIdentity (OperationMatrix) object
 	 *
 	 * @return point to the OperationIdentity object
 	 */
-	OperationMatrix* createOperationIdentity();
+	//OperationMatrix* createOperationIdentity();
 
 	/**
 	 * Returns a string that identifies the grid type uniquely
@@ -445,6 +440,7 @@ private:
 	static OperationEval* evalOp;
 };
 
+}
 }
 
 #endif /* GRID_HPP */

@@ -7,8 +7,11 @@
 
 #include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 #include "exception/algorithm_exception.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 OperationParabolicPDESolverSystemDirichlet::OperationParabolicPDESolverSystemDirichlet()
@@ -396,4 +399,5 @@ void OperationParabolicPDESolverSystemDirichlet::getInnerMatrixDiagonalRowSum(st
 	mtxString = mtxHeaderStream.str() + mtxStream.str();
 }
 
+}
 }

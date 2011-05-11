@@ -13,8 +13,11 @@
 #include "basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 OperationLaplaceModLinear::OperationLaplaceModLinear(GridStorage* storage) : UpDownOneOpDim(storage)
@@ -28,34 +31,35 @@ OperationLaplaceModLinear::~OperationLaplaceModLinear()
 void OperationLaplaceModLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	result.setAll(0.0);
-	detail::PhiPhiUpModLinear func(this->storage);
-	sweep<detail::PhiPhiUpModLinear> s(func, this->storage);
+	PhiPhiUpModLinear func(this->storage);
+	sweep<PhiPhiUpModLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceModLinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	result.setAll(0.0);
-	detail::PhiPhiDownModLinear func(this->storage);
-	sweep<detail::PhiPhiDownModLinear> s(func, this->storage);
+	PhiPhiDownModLinear func(this->storage);
+	sweep<PhiPhiDownModLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceModLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	result.setAll(0.0);
-	detail::dPhidPhiDownModLinear func(this->storage);
-	sweep<detail::dPhidPhiDownModLinear> s(func, this->storage);
+	dPhidPhiDownModLinear func(this->storage);
+	sweep<dPhidPhiDownModLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceModLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
 {
 	result.setAll(0.0);
-	detail::dPhidPhiUpModLinear func(this->storage);
-	sweep<detail::dPhidPhiUpModLinear> s(func, this->storage);
+	dPhidPhiUpModLinear func(this->storage);
+	sweep<dPhidPhiUpModLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
+}
 }
 

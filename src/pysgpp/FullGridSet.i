@@ -6,7 +6,7 @@
 %rename(__getitem__) FullGridSet::get(unsigned int index,unsigned int pos);
 %rename(__setitem__) FullGridSet::set(unsigned int index,unsigned int pos, double val );
 
-/*namespace sg{
+namespace sg{
 class FullGridSet{
     FullGridSet(size_t dimension,size_t n);
     FullGridSet(size_t dimension,size_t *n,const char *type);   
@@ -22,4 +22,4 @@ class FullGridSet{
     BoundingBox* getBoundingBox();
     void getCoefs(DataVector &v);
 };
-}*/
+}

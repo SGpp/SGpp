@@ -7,8 +7,11 @@
 
 #include "basis/linearstretched/boundary/common/DowndPhidPhiBBIterativeLinearStretchedBoundary.hpp"
 #include "grid/common/Stretching.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(GridStorage* storage) : storage(storage)
@@ -122,4 +125,5 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(DataVector& alph
 	}
 }
 
+}
 }

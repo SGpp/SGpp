@@ -2,8 +2,10 @@
 #define LINEARFULLGRID_HPP
 
 #include "FullGrid.hpp"
+using namespace sg::base;
 
 namespace sg{
+namespace combigrid {
 
 /**
   *A  linear fullgrid without boundary
@@ -121,5 +123,6 @@ public:
 	/** Evaluates the value of the function in a given point */
 	double eval(DataVector& p);
 };
+}
 }
 #endif /* LINEARFULLGRID_HPP */

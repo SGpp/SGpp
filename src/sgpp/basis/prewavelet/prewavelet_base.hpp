@@ -29,6 +29,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Class representing a prewavelet base.
@@ -159,6 +161,7 @@ template<class LT, class IT>
 const double prewavelet_base<LT, IT>::border_stamp[] =
 { 0.9, -0.6, 0.1 };
 
+}
 }
 
 #endif /* PREWAVELET_BASE_HPP */

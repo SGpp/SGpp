@@ -15,13 +15,19 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
+#include "basis/operations_factory.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+using namespace sg::pde;
+using namespace sg::solver;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) : ParabolicPDESolver()
@@ -121,10 +127,10 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 
-		//sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[2];
+		//DimensionBoundary* myBoundaries = new DimensionBoundary[2];
 		BoundingBox* t = this->myGrid->getBoundingBox();
 
-		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+		DimensionBoundary* myBoundaries = new DimensionBoundary[dim];
 
 		myBoundaries[0].leftBoundary = t->getIntervalOffset(0);
 		myBoundaries[0].rightBoundary = t->getIntervalOffset(0) + t->getIntervalWidth(0);
@@ -321,7 +327,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -356,4 +362,5 @@ size_t BlackScholesHullWhiteSolver::getAverageInnerGridSize()
 	return this->avgInnerGridSize;
 }
 
+}
 }

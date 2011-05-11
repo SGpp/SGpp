@@ -21,14 +21,17 @@
 #include "grid/type/PrewaveletGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
-#include "operation/common/OperationIdentity.hpp"
+//#include "operation/common/OperationIdentity.hpp"
 
 #include "exception/factory_exception.hpp"
+#include "basis/operations_factory.hpp"
 
 #include <iostream>
 #include <sstream>
 
 namespace sg
+{
+namespace base
 {
 
 Grid* Grid::createLinearGrid(size_t dim)
@@ -91,10 +94,10 @@ Grid* Grid::createTruncatedTrapezoidGrid(size_t dim)
     return new TruncatedTrapezoidGrid(dim);
 }
 
-OperationMatrix* Grid::createOperationIdentity()
-{
-	return new OperationIdentity();
-}
+//OperationMatrix* Grid::createOperationIdentity()
+//{
+//	return new OperationIdentity();
+//}
 
 Grid* Grid::createModPolyGrid(size_t dim, size_t degree)
 {
@@ -262,7 +265,7 @@ void Grid::refine(DataVector* vector, int numOfPoints)
 OperationEval* Grid::evalOp(NULL);
 
 double Grid::eval(DataVector& alpha, DataVector& point){
-	if(this->evalOp == NULL) this->evalOp = this->createOperationEval();
+	if(this->evalOp == NULL) this->evalOp = sg::GridOperationFactory::createOperationEval(*this);
 	return this->evalOp->eval(alpha, point);
 }
 
@@ -292,4 +295,5 @@ void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
 	this->storage->setAlgorithmicDimensions(newAlgoDims);
 }
 
+}
 }

@@ -27,6 +27,8 @@
 
 namespace sg
 {
+namespace parallel
+{
 
 /**
  * This class provides a simple-to-use solver of the multi dimensional
@@ -90,6 +92,7 @@ public:
 	void initScreen();
 };
 
+}
 }
 
 #endif /* HEATEQUATIONSOLVERMPI_HPP */

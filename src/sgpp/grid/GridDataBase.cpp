@@ -19,6 +19,8 @@
 
 namespace sg
 {
+namespace base
+{
 
   GridDataBase::GridDataBase(size_t dim) : _map(), _dim(dim) {}
 
@@ -95,7 +97,7 @@ namespace sg
     grid_map_const_iterator ind = _map.find(gi);
     if (ind == _map.end()) {
       std::cerr << gi->toString() << " not in database" << std::endl;
-      throw new sg::data_exception("GridDataBase::get : grid point not in database");
+      throw new sg::base::data_exception("GridDataBase::get : grid point not in database");
     }
     return ind->second;
   }
@@ -258,5 +260,6 @@ namespace sg
     return _map.end();
   }
 
+}
 }
 

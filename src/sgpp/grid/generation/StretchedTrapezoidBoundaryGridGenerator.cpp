@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 StretchedTrapezoidBoundaryGridGenerator::StretchedTrapezoidBoundaryGridGenerator(GridStorage* storage) : storage(storage)
 {
@@ -69,4 +71,5 @@ size_t StretchedTrapezoidBoundaryGridGenerator::getNumberOfRefinablePointsToMaxL
 	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
 }
 
+}
 }

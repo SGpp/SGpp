@@ -23,6 +23,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 template<typename GIT>
 class HashGridStorage;
@@ -397,6 +399,7 @@ private:
 	size_t seq_;
 };
 
+}
 }
 
 #endif /* HASHGRIDITERATOR_HPP */

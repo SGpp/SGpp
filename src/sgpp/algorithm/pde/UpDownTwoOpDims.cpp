@@ -6,8 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 UpDownTwoOpDims::UpDownTwoOpDims(GridStorage* storage, DataMatrix& coef) : storage(storage), coefs(&coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
@@ -290,4 +293,5 @@ void UpDownTwoOpDims::specialOpOneAndOpTwo(DataVector& alpha, DataVector& result
 	}
 }
 
+}
 }

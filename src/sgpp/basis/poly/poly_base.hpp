@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Polynomial base functions.
@@ -217,6 +219,7 @@ private:
 
 };
 
+}
 }
 
 #endif /* POLY_BASE_HPP */

@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationMultipleEvalModPoly::mult(DataVector& alpha, DataVector& result)
 {
@@ -32,4 +34,5 @@ void OperationMultipleEvalModPoly::multTranspose(DataVector& source, DataVector&
 	op.mult_transposed(storage, base, source, *(this->dataset_), result);
 }
 
+}
 }

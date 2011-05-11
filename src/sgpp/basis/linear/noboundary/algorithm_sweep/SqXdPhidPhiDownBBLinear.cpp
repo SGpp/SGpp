@@ -6,12 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 SqXdPhidPhiDownBBLinear::SqXdPhidPhiDownBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
@@ -123,6 +125,7 @@ void SqXdPhidPhiDownBBLinear::recBB(DataVector& source, DataVector& result, grid
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

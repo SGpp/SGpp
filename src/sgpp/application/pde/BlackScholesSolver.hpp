@@ -30,8 +30,12 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 
@@ -397,6 +401,7 @@ public:
 	void storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
 };
 
+}
 }
 
 #endif /* BLACKSCHOLESSOLVER_HPP */

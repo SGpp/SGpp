@@ -13,7 +13,11 @@
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 
+#include "basis/operations_factory.hpp"
+
 namespace sg
+{
+namespace parallel
 {
 
 HeatEquationParabolicPDESolverSystemParallelMPI::HeatEquationParabolicPDESolverSystemParallelMPI(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
@@ -29,15 +33,15 @@ HeatEquationParabolicPDESolverSystemParallelMPI::HeatEquationParabolicPDESolverS
 	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
 	this->GridConverter = new DirichletGridConverter();
 
-	this->OpLaplaceBound = SparseGrid.createOperationLaplace();
-	this->OpMassBound = SparseGrid.createOperationLTwoDotProduct();
+	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(SparseGrid);
+	this->OpMassBound = sg::GridOperationFactory::createOperationLTwoDotProduct(SparseGrid);
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
 	//Create needed operations, on inner grid
-	this->OpLaplaceInner = this->InnerGrid->createOperationLaplace();
-	this->OpMassInner = this->InnerGrid->createOperationLTwoDotProduct();
+	this->OpLaplaceInner = sg::GridOperationFactory::createOperationLaplace(*this->InnerGrid);
+	this->OpMassInner = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->InnerGrid);
 
 	// right hand side if System
 	this->rhs = NULL;
@@ -461,4 +465,5 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	return this->rhs;
 }
 
+}
 }

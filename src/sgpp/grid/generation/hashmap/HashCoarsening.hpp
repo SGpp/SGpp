@@ -24,6 +24,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Standard free coarsening class for sparse grids, only
@@ -203,6 +205,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* HASHCOARSENING_HPP */

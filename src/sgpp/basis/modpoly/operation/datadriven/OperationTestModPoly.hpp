@@ -12,8 +12,11 @@
 #include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 /**
@@ -48,6 +51,7 @@ protected:
 	SModPolyBase base;
 };
 
+}
 }
 
 #endif /* OPERATIONTESTMODPOLY_HPP */

@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Modified polynomial base functions.
@@ -184,6 +186,7 @@ private:
 	}
 };
 
+}
 }
 
 #endif /* MODIFIED_POLY_BASE_HPP */

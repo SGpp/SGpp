@@ -10,8 +10,12 @@
 #endif
 
 #include "solver/sle/ConjugateGradientsMPI.hpp"
+using namespace sg::solver;
+using namespace sg::base;
 
 namespace sg
+{
+namespace parallel
 {
 
 ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax, double epsilon) : SLESolver(imax, epsilon)
@@ -170,4 +174,5 @@ void ConjugateGradientsMPI::waitForTask(OperationMatrix& SystemMatrix, DataVecto
 	} while (ctrl != 'T');
 }
 
+}
 }

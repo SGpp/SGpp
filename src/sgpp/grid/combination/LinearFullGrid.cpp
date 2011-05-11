@@ -11,8 +11,10 @@
 
 #include <string.h>
 #include <stdlib.h>
+using namespace sg::base;
 
 namespace sg{
+namespace combigrid {
 
 double LinearFullGrid::eval(DataVector& p)
 {
@@ -118,4 +120,5 @@ double LinearFullGrid::eval(DataVector& p)
 	    return ret_val;
 }
 
+}
 }

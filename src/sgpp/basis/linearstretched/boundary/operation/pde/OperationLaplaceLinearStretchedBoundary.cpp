@@ -16,8 +16,11 @@
 #include "algorithm/common/sweep.hpp"
 
 #include "grid/common/Stretching.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 OperationLaplaceLinearStretchedBoundary::OperationLaplaceLinearStretchedBoundary(GridStorage* storage) : UpDownOneOpDim(storage)
@@ -30,15 +33,15 @@ OperationLaplaceLinearStretchedBoundary::~OperationLaplaceLinearStretchedBoundar
 
 void OperationLaplaceLinearStretchedBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	PhiPhiUpBBLinearStretchedBoundary func(this->storage);
+	sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
 void OperationLaplaceLinearStretchedBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	PhiPhiDownBBLinearStretchedBoundary func(this->storage);
+	sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
@@ -54,4 +57,5 @@ void OperationLaplaceLinearStretchedBoundary::upOpDim(DataVector& alpha, DataVec
 	myUp(alpha, result, dim);
 }
 
+}
 }

@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 double OperationEvalModWavelet::eval(DataVector& alpha, std::vector<double>& point)
 {
@@ -37,4 +39,5 @@ double OperationEvalModWavelet::eval(DataVector& alpha, std::vector<double>& poi
 	return result;
 }
 
+}
 }

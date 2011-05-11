@@ -9,9 +9,13 @@
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
+#include "basis/operations_factory.hpp"
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
@@ -91,8 +95,8 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(Grid&
 		buildGammaCoefficients();
 
 		// Create needed operations, on boundary grid
-		this->OpDeltaBound = this->BoundGrid->createOperationDelta(*this->deltaCoef);
-		this->OpGammaBound = this->BoundGrid->createOperationGamma(*this->gammaCoef);
+		this->OpDeltaBound = sg::GridOperationFactory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::GridOperationFactory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
 	}
 	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
 	else
@@ -101,11 +105,11 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(Grid&
 		buildGammaCoefficientsLogTransform();
 
 		// operations on boundary grid
-		this->OpDeltaBound = this->BoundGrid->createOperationDeltaLog(*this->deltaCoef);
-		this->OpGammaBound = this->BoundGrid->createOperationGammaLog(*this->gammaCoef);
+		this->OpDeltaBound = sg::GridOperationFactory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::GridOperationFactory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
 	}
 
-	this->OpLTwoBound = this->BoundGrid->createOperationLTwoDotProduct();
+	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;
@@ -328,4 +332,5 @@ void BlackScholesParabolicPDESolverSystem::buildDeltaCoefficientsLogTransform()
 	}
 }
 
+}
 }

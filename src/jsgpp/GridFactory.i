@@ -28,13 +28,13 @@
 
 %newobject sg::Grid::unserialize(const std::string& istr);
 
-%newobject sg::Grid::createOperationMultipleEval(DataMatrix* dataset);
-%newobject sg::Grid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset);
+//%newobject sg::Grid::createOperationMultipleEval(DataMatrix* dataset);
+//%newobject sg::Grid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset);
 %newobject sg::Grid::createGridGenerator();
-%newobject sg::Grid::createOperationLaplace();
-%newobject sg::Grid::createOperationEval();
-%newobject sg::Grid::createOperationTest();
-%newobject sg::Grid::createOperationHierarchisation();
+//%newobject sg::Grid::createOperationLaplace();
+//%newobject sg::Grid::createOperationEval();
+//%newobject sg::Grid::createOperationTest();
+//%newobject sg::Grid::createOperationHierarchisation();
 
 %include "stl.i"
 %include "typemaps.i"
@@ -74,19 +74,16 @@ public:
 
 public:	
 	virtual GridGenerator* createGridGenerator() = 0;
-	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
-	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset) = 0;
-	virtual OperationEval* createOperationEval() = 0;
-	virtual OperationTest* createOperationTest() = 0;
-	virtual OperationMatrix* createOperationLaplace() = 0;
-	virtual OperationMatrix* createOperationIdentity() = 0;
-	virtual OperationHierarchisation* createOperationHierarchisation() = 0;
+	//virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
+	//virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset) = 0;
+	//virtual OperationEval* createOperationEval() = 0;
+	//virtual OperationTest* createOperationTest() = 0;
+	//virtual OperationMatrix* createOperationLaplace() = 0;
+	//virtual OperationMatrix* createOperationIdentity() = 0;
+	//virtual OperationHierarchisation* createOperationHierarchisation() = 0;
 	
-	// @todo remove this when done
-	virtual OperationMatrix* createOperationUpDownTest() = 0;
-	
-	virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
-	virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
+	//virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
+	//virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
 	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();

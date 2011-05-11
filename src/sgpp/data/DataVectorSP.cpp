@@ -15,6 +15,10 @@
 #include <cstring>
 #include <cstdlib>
 #include "common/AlignedMemory.hpp"
+namespace sg
+{
+namespace base
+{
 
 DataVectorSP::DataVectorSP(size_t size) :
     size(size), unused(0), inc_elems(100) {
@@ -53,7 +57,7 @@ void DataVectorSP::restructure(std::vector<size_t>& remainingIndex)
 {
 	if (remainingIndex.size() > this->size)
 	{
-		throw sg::algorithm_exception("more indices than entries!");
+		throw sg::base::algorithm_exception("more indices than entries!");
 	}
 
 	float* newdata = new float[remainingIndex.size()];
@@ -165,7 +169,7 @@ DataVectorSP& DataVectorSP::operator=(const DataVectorSP &vec) {
     }
 
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVectorSP::add : Dimensions do not match");
     }
     memcpy(this->data, vec.data, size * sizeof(float));
@@ -174,7 +178,7 @@ DataVectorSP& DataVectorSP::operator=(const DataVectorSP &vec) {
 
 void DataVectorSP::add(DataVectorSP &vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVectorSP::add : Dimensions do not match");
     }
 
@@ -189,7 +193,7 @@ void DataVectorSP::add(DataVectorSP &vec) {
 
 void DataVectorSP::sub(DataVectorSP &vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVectorSP::sub : Dimensions do not match");
     }
 
@@ -204,7 +208,7 @@ void DataVectorSP::sub(DataVectorSP &vec) {
 
 void DataVectorSP::componentwise_mult(DataVectorSP& vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVectorSP::componentwise_mult : Dimensions do not match");
     }
 
@@ -219,7 +223,7 @@ void DataVectorSP::componentwise_mult(DataVectorSP& vec) {
 
 void DataVectorSP::componentwise_div(DataVectorSP& vec) {
     if (size != vec.size) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataVectorSP::componentwise_div : Dimensions do not match");
     }
 
@@ -442,4 +446,6 @@ size_t DataVectorSP::getNumberNonZero()
         }
     }
     return nonZero;
+}
+}
 }

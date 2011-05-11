@@ -29,8 +29,11 @@
 #include "data/DataVector.hpp"
 
 #include "data/DataMatrix.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace datadriven
 {
 
 double OperationTestPrewavelet::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
@@ -51,5 +54,6 @@ double OperationTestPrewavelet::testWithCharacteristicNumber(DataVector& alpha, 
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
 
+}
 }
 

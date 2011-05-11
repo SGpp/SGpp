@@ -22,7 +22,7 @@
  */
 void writeHelp()
 {
-	sg::LaserHeatEquationSolver2D* myHESolver = new sg::LaserHeatEquationSolver2D(1.0, 0.4, 5, 0.1, 0.001, 4.0);
+	sg::pde::LaserHeatEquationSolver2D* myHESolver = new sg::pde::LaserHeatEquationSolver2D(1.0, 0.4, 5, 0.1, 0.001, 4.0);
 
 	myHESolver->initScreen();
 
@@ -60,7 +60,7 @@ void testLaserHeatEquation(	size_t level, size_t maxLevel, size_t initialRefines
 {
 	size_t timesteps = (size_t)(T/dt);
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[2];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[2];
 
 	// set the bounding box
 	for (size_t i = 0; i < 2; i++)
@@ -71,8 +71,8 @@ void testLaserHeatEquation(	size_t level, size_t maxLevel, size_t initialRefines
 		myBoundaries[i].bDirichletRight = true;
 	}
 
-	sg::LaserHeatEquationSolver2D* myHESolver = new sg::LaserHeatEquationSolver2D(v, heat_sigma, maxLevel, refine_threshold, coarsen_threshold, heat);
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(2, myBoundaries);
+	sg::pde::LaserHeatEquationSolver2D* myHESolver = new sg::pde::LaserHeatEquationSolver2D(v, heat_sigma, maxLevel, refine_threshold, coarsen_threshold, heat);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(2, myBoundaries);
 	delete[] myBoundaries;
 
 	// init Screen Object

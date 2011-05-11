@@ -11,8 +11,13 @@
 #include "solver/ODESolver.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include <string>
+//using namespace sg::finance;
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 /**
@@ -51,6 +56,7 @@ public:
 	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
+}
 }
 
 #endif /* VARTIMESTEP_HPP */

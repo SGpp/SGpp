@@ -9,6 +9,7 @@
 #define TESTFULLGRID_HPP_
 
 #include "combigrid.hpp"
+using namespace sg::base;
 
 namespace combigrid{
 

@@ -15,6 +15,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * linearstretched base functions.
@@ -55,6 +57,7 @@ public:
 	}
 };
 
+}
 }
 
 #endif /* LINEARSTRETCHED_BASE_HPP */

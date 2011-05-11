@@ -9,8 +9,11 @@
 #define OPERATIONLAPLACEMODLINEAR_HPP
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -43,6 +46,7 @@ protected:
 	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONLAPLACEMODLINEAR_HPP */

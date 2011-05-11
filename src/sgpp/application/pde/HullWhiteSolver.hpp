@@ -23,8 +23,12 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -199,6 +203,7 @@ public:
 	//void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
 };
 
+}
 }
 
 #endif /* BLACKSCHOLESSOLVER_HPP */

@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class implements a utility that allows you to print a grid
@@ -83,6 +85,7 @@ public:
 	virtual void printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus);
 };
 
+}
 }
 
 #endif /* GRIDPRINTERFORSTRETCHING */

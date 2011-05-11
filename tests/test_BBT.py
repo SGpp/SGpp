@@ -6,6 +6,7 @@
 ## @author Alexander Heinecke (Alexander.Heinecke@mytum.de)####################################################################
 
 import unittest, tools
+from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------
 ## Builds the training data vector
@@ -41,7 +42,7 @@ def generateBBTMatrix(factory, training, verbose=False):
     from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
        
-    b = factory.createOperationMultipleEval(training)
+    b = createOperationMultipleEval(factory, training)
     
     alpha = DataVector(storage.size())
     erg = DataVector(len(alpha))

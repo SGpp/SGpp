@@ -16,6 +16,7 @@
 #ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
+using namespace sg::base;
 
 union floatAbsMask
 {
@@ -38,6 +39,8 @@ const __m128 _mm_abs_ps( const __m128& x)
 #define CHUNKGRIDPOINTS 12
 
 namespace sg
+{
+namespace parallel
 {
 
 OperationMultipleEvalIterativeSPSSELinear::OperationMultipleEvalIterativeSPSSELinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
@@ -444,4 +447,5 @@ double OperationMultipleEvalIterativeSPSSELinear::multVectorized(DataVectorSP& a
 	return myTimer->stop();
 }
 
+}
 }

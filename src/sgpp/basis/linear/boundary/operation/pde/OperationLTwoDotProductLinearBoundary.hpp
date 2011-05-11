@@ -9,8 +9,11 @@
 #define OPERATIONLTWODOTPRODUCTLINEARBOUNDARY_HPP
 
 #include "algorithm/pde/StdUpDown.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -57,6 +60,7 @@ protected:
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONLTWODOTPRODUCTLINEARBOUNDARY_HPP */

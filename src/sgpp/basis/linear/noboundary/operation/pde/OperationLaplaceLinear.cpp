@@ -13,8 +13,11 @@
 #include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 OperationLaplaceLinear::OperationLaplaceLinear(GridStorage* storage) : UpDownOneOpDim(storage)
@@ -44,15 +47,15 @@ void OperationLaplaceLinear::specialOP(DataVector& alpha, DataVector& result, si
 
 void OperationLaplaceLinear::up(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiUpBBLinear func(this->storage);
-	sweep<detail::PhiPhiUpBBLinear> s(func, this->storage);
+	PhiPhiUpBBLinear func(this->storage);
+	sweep<PhiPhiUpBBLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceLinear::down(DataVector& alpha, DataVector& result, size_t dim)
 {
-	detail::PhiPhiDownBBLinear func(this->storage);
-	sweep<detail::PhiPhiDownBBLinear> s(func, this->storage);
+	PhiPhiDownBBLinear func(this->storage);
+	sweep<PhiPhiDownBBLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
@@ -66,4 +69,5 @@ void OperationLaplaceLinear::upOpDim(DataVector& alpha, DataVector& result, size
 {
 }
 
+}
 }

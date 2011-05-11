@@ -6,12 +6,14 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 dPhidPhiDownModLinear::dPhidPhiDownModLinear(GridStorage* storage) : storage(storage)
 {
@@ -79,6 +81,7 @@ void dPhidPhiDownModLinear::rec(DataVector& source, DataVector& result, grid_ite
 
 }
 
-}
 
+
+}
 }

@@ -18,6 +18,11 @@
 
 #include "common/AlignedMemory.hpp"
 
+namespace sg
+{
+namespace base
+{
+
 DataMatrix::DataMatrix(size_t nrows, size_t ncols) :
 	nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {
 	// create new vector
@@ -148,7 +153,7 @@ void DataMatrix::transpose()
 
 size_t DataMatrix::appendRow(DataVector& vec) {
 	if (vec.getSize() != this->ncols) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::appendRow : Dimensions do not match");
 	}
 	size_t x = appendRow();
@@ -171,7 +176,7 @@ void DataMatrix::setAll(double value) {
 
 void DataMatrix::getRow(size_t row, DataVector& vec) {
 	if (vec.getSize() != this->ncols) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::getRow : Dimensions do not match");
 	}
 	for (size_t i = 0; i < this->ncols; i++) {
@@ -189,7 +194,7 @@ void DataMatrix::getRow(size_t row, std::vector<double>& vec) {
 
 void DataMatrix::setRow(size_t row, DataVector& vec) {
 	if (vec.getSize() != this->ncols) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::setRow : Dimensions do not match");
 	}
 #ifdef __ICC
@@ -202,7 +207,7 @@ void DataMatrix::setRow(size_t row, DataVector& vec) {
 
 void DataMatrix::getColumn(size_t col, DataVector& vec) {
 	if (vec.getSize() != this->nrows) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::getColumn : Dimensions do not match");
 	}
 #ifdef __ICC
@@ -215,7 +220,7 @@ void DataMatrix::getColumn(size_t col, DataVector& vec) {
 
 void DataMatrix::setColumn(size_t col, DataVector& vec) {
 	if (vec.getSize() != this->nrows) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::setColumn : Dimensions do not match");
 	}
 #ifdef __ICC
@@ -275,7 +280,7 @@ DataMatrix& DataMatrix::operator=(const DataMatrix &matr) {
     }
 
     if (nrows*ncols != matr.ncols*matr.nrows) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::= : Dimensions do not match");
     }
     memcpy(this->data, matr.data, nrows*ncols * sizeof(double));
@@ -285,7 +290,7 @@ DataMatrix& DataMatrix::operator=(const DataMatrix &matr) {
 
 void DataMatrix::add(DataMatrix &matr) {
 	if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::add : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
@@ -300,7 +305,7 @@ void DataMatrix::add(DataMatrix &matr) {
 
 void DataMatrix::sub(DataMatrix& matr) {
 	if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::sub : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
@@ -316,7 +321,7 @@ void DataMatrix::sub(DataMatrix& matr) {
 
 void DataMatrix::componentwise_mult(DataMatrix& matr) {
 	if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::componentwise_mult : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
@@ -332,7 +337,7 @@ void DataMatrix::componentwise_mult(DataMatrix& matr) {
 
 void DataMatrix::componentwise_div(DataMatrix& matr) {
 	if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::componentwise_div : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
@@ -471,7 +476,7 @@ void DataMatrix::normalizeDimension(size_t d) {
 void DataMatrix::normalizeDimension(size_t d, double border) {
 	size_t n = nrows * ncols;
 	if (ncols <= d) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::normalizeDimension : Not enough columns in DataMatrix");
 	}
 	// determine min and max
@@ -566,7 +571,7 @@ double DataMatrix::max() {
 void DataMatrix::minmax(size_t col, double* min, double* max) {
 	size_t n = nrows * ncols;
 	if (ncols <= col) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::minmax : Not enough entries in DataMatrix");
 	}
 	// find min and max of column col
@@ -587,7 +592,7 @@ void DataMatrix::minmax(size_t col, double* min, double* max) {
 void DataMatrix::minmax(double* min, double* max) {
 	size_t n = nrows * ncols;
 	if (n == 0) {
-		throw new sg::data_exception(
+		throw new sg::base::data_exception(
 				"DataMatrix::minmax : Empty DataMatrix");
 	}
 	double min_t = data[0];
@@ -622,4 +627,6 @@ size_t DataMatrix::getNumberNonZero() {
 		}
 	}
 	return nonZero;
+}
+}
 }

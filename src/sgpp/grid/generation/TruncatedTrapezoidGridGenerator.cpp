@@ -18,6 +18,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 TruncatedTrapezoidGridGenerator::TruncatedTrapezoidGridGenerator(GridStorage* storage) : storage(storage)
 {
@@ -74,6 +76,7 @@ void TruncatedTrapezoidGridGenerator::truncated(size_t level,size_t l_user)
 //	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
 //}
 
+}
 }
 
 

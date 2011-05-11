@@ -29,9 +29,10 @@
 
 namespace sg
 {
-
-namespace detail
+namespace base
 {
+
+
 
 /**
  * Class that implements the transformation of a hierarchical prewavelet sparse grid to a
@@ -224,8 +225,9 @@ public:
 
 };
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}
 
 #endif /* CONVERTPREWAVELETTOLINEAR_HPP */

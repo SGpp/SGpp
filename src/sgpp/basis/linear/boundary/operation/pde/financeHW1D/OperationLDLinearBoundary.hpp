@@ -9,8 +9,12 @@
 #define OPERATIONLDLINEARBOUNDARY_HPP
 
 #include "algorithm/pde/StdUpDown.hpp"
+using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -57,6 +61,7 @@ protected:
 	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONLDLINEARBOUNDARY_HPP */

@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * Exception that is thrown in case of an application failure
@@ -63,6 +65,7 @@ protected:
 
 };
 
+}
 }
 
 #endif /* ALGORITHM_EXCEPTION_HPP */

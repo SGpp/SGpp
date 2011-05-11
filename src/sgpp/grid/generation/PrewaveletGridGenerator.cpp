@@ -29,8 +29,11 @@
 #include "sgpp.hpp"
 
 #include <iostream>
+//using namespace sg::pde;
 
 namespace sg
+{
+namespace base
 {
 
 /**
@@ -297,5 +300,6 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 		unsigned int maxLevel)
 {
 	return 0;
+}
 }
 }

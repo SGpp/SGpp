@@ -12,6 +12,11 @@
 #include <string>
 #include <vector>
 
+namespace sg
+{
+namespace base
+{
+
 /**
  * A class to store one-dimensional data.
  * Typically, an object of type DataVector will contain an array
@@ -413,4 +418,6 @@ private:
     size_t inc_elems;
 };
 
+}
+}
 #endif /* DATAVECTORSP_HPP */

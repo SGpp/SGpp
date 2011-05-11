@@ -14,7 +14,7 @@
 
 #define CRNIC_IMEUL_STEPS 3
 
-int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
+int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::DimensionBoundary* BoundaryArray)
 {
 	std::fstream file;
 	double cur_right;
@@ -73,14 +73,14 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 		double CGepsilon = CGeps;
 
 
-		sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[1];
+		sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[1];
 		if (readBoudingBoxData(fileBound, 1, myBoundaries) != 0)
 		{
 			return;
 		}
 
-		sg::HullWhiteSolver* myHWSolver = new sg::HullWhiteSolver();
-		sg::BoundingBox* myBoundingBox = new sg::BoundingBox(1, myBoundaries);
+		sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
+		sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(1, myBoundaries);
 		delete[] myBoundaries;
 
 		// init Screen Object
@@ -182,7 +182,7 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 
 void writeHelp()
 {
-	sg::HullWhiteSolver* myHWSolver = new sg::HullWhiteSolver();
+	sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
 
 	myHWSolver->initScreen();
 

@@ -9,17 +9,23 @@
 
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
 #include "exception/algorithm_exception.hpp"
+#include "basis/operations_factory.hpp"
 
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
+using namespace sg::pde;
+using namespace sg::base;
+using namespace sg::GridOperationFactory;
 
 namespace sg
+{
+namespace parallel
 {
 
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
 {
-	this->Laplace_Complete = this->BoundGrid->createOperationLaplace();
-	this->Laplace_Inner = this->InnerGrid->createOperationLaplace();
+	this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
+	this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
 }
 
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI()
@@ -169,4 +175,5 @@ DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generate
 	return this->rhs_inner;
 }
 
+}
 }

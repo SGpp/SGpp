@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#ifndef OPERATIONUPDOWNTESTLINEARTRAPEZOIDBOUNDARY_HPP
-#define OPERATIONUPDOWNTESTLINEARTRAPEZOIDBOUNDARY_HPP
+#ifndef OPERATIONUPDOWNTESTLINEARSTRECHEDBOUNDARY_HPP
+#define OPERATIONUPDOWNTESTLINEARSTRECHEDBOUNDARY_HPP
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
@@ -27,7 +27,11 @@
 
 #include "algorithm/common/sweep.hpp"
 
+using namespace sg::base;
+
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -82,5 +86,6 @@ protected:
 };
 
 }
+}
 
-#endif /* OPERATIONUPDOWNTESTLINEARBOUNDARY_HPP */
+#endif /* OPERATIONUPDOWNTESTLINEARSTRECHEDBOUNDARY_HPP */

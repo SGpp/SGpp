@@ -10,7 +10,11 @@
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 
+using namespace sg::pde;
+
 namespace sg
+{
+namespace finance
 {
 
 /**
@@ -81,6 +85,7 @@ protected:
 	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
 };
 
+}
 }
 
 #endif /* OPERATIONDELTALOGLINEARSTRETCHEDBOUNDARY_HPP */

@@ -79,7 +79,7 @@ int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, Dat
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readBoudingBoxData(std::string tFile, size_t numAssests, sg::DimensionBoundary* BoundaryArray)
+int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::DimensionBoundary* BoundaryArray)
 {
 	std::fstream file;
 	double cur_right;
@@ -265,23 +265,23 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 			return;
 		}
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 	{
 		return;
 	}
 	//std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
 	//std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
-	sg::BlackScholesHullWhiteSolver* myBSHWSolver;
+	sg::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 	if (isLogSolve == true)
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(true);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(true);
 		}
 		else
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(false);
 		}
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	//delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
 	// init Screen Object
@@ -314,14 +314,14 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	{
 		if (dim == 2)
 		{
-			sg::DimensionBoundary* myAreaBoundaries = new sg::DimensionBoundary[dim];
+			sg::base::DimensionBoundary* myAreaBoundaries = new sg::base::DimensionBoundary[dim];
 
 			for (size_t i = 0; i < 2; i++)
 			{
 				myAreaBoundaries[i].leftBoundary = 0.9;
 				myAreaBoundaries[i].rightBoundary = 1.1;
 			}
-			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
+			sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
 
 			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
 
@@ -452,23 +452,23 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 			return;
 		}
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 	{
 		return;
 	}
 	//std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
 	//std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
-	sg::BlackScholesHullWhiteSolver* myBSHWSolver;
+	sg::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 	if (isLogSolve == true)
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(true);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(true);
 		}
 		else
 		{
-			myBSHWSolver = new sg::BlackScholesHullWhiteSolver(false);
+			myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(false);
 		}
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	//delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
 	// init Screen Object
@@ -597,14 +597,14 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	{
 		if (dim == 2)
 		{
-			sg::DimensionBoundary* myAreaBoundaries = new sg::DimensionBoundary[dim];
+			sg::base::DimensionBoundary* myAreaBoundaries = new sg::base::DimensionBoundary[dim];
 
 			for (size_t i = 0; i < 2; i++)
 			{
 				myAreaBoundaries[i].leftBoundary = 0.9;
 				myAreaBoundaries[i].rightBoundary = 1.1;
 			}
-			sg::BoundingBox* myGridArea = new sg::BoundingBox(dim, myAreaBoundaries);
+			sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
 
 			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
 

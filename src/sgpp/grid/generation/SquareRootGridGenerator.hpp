@@ -12,6 +12,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class provides the interface for the grid generation
@@ -48,6 +50,7 @@ protected:
 	GridStorage* storage;
 };
 
+}
 }
 
 #endif /* SQUAREROOTGRIDGENERATOR_HPP_ */

@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 double OperationEvalPoly::eval(DataVector& alpha, std::vector<double>& point)
 {
@@ -36,4 +38,5 @@ double OperationEvalPoly::eval(DataVector& alpha, std::vector<double>& point)
 	return result;
 }
 
+}
 }

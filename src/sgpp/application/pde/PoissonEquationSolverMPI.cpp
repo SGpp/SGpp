@@ -14,10 +14,17 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+#include "basis/operations_factory.hpp"
 #include "stdlib.h"
 #include <sstream>
 
+using namespace sg::pde;
+using namespace sg::solver;
+using namespace sg::base;
+
 namespace sg
+{
+namespace parallel
 {
 
 PoissonEquationSolverMPI::PoissonEquationSolverMPI() : EllipticPDESolver()
@@ -165,7 +172,7 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeat(DataVector& alpha, double 
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -337,4 +344,5 @@ void PoissonEquationSolverMPI::initScreen()
 	this->myScreen->writeTitle("SGpp - Poisson Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
 }
 
+}
 }

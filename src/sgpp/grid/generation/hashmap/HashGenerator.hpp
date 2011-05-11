@@ -17,6 +17,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class provides the generation functionality of sparse grids
@@ -872,6 +874,7 @@ protected:
 		}
 };
 
+}
 }
 
 #endif /* HASHGENERATOR_HPP */

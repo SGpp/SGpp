@@ -6,8 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "solver/sle/ConjugateGradients.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : SLESolver(imax, epsilon)
@@ -153,4 +156,5 @@ void ConjugateGradients::complete()
 {
 }
 
+}
 }

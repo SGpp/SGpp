@@ -32,7 +32,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
  */
 void writeHelp()
 {
-	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver();
 
 	myBSSolver->initScreen();
 
@@ -264,7 +264,7 @@ int readStochasticData(std::string tFile, size_t numAssets, DataVector& mu, Data
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readBoudingBoxData(std::string tFile, size_t numAssets, sg::DimensionBoundary* BoundaryArray)
+int readBoudingBoxData(std::string tFile, size_t numAssets, sg::base::DimensionBoundary* BoundaryArray)
 {
 	std::fstream file;
 	double cur_right;
@@ -320,7 +320,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets, sg::DimensionBoundar
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readAnalyzeData(std::string tFile, size_t numAssets, sg::DimensionBoundary* BoundaryArray, size_t& points)
+int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoundary* BoundaryArray, size_t& points)
 {
 	std::fstream file;
 	double cur_right;
@@ -576,22 +576,22 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		return;
 	}
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 	{
 		return;
 	}
 
-	sg::BlackScholesSolver* myBSSolver;
+	sg::finance::BlackScholesSolver* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolver(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolver(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
 	}
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	if (dim == 1)
 	{
 		maxStock = myBoundaries[0].rightBoundary;
@@ -779,32 +779,32 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		return;
 	}
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 	{
 		return;
 	}
 
 	size_t points = 0;
- 	sg::DimensionBoundary* myEvalBoundaries = new sg::DimensionBoundary[dim];
+ 	sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
  	if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0)
 	{
 		return;
 	}
 
-	sg::BlackScholesSolver* myBSSolver;
+	sg::finance::BlackScholesSolver* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolver(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolver(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
 	}
 
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
-	sg::BoundingBox* myEvalBoundingBox = new sg::BoundingBox(dim, myEvalBoundaries);
-	sg::EvalCuboidGenerator* myEvalCuboidGen = new sg::EvalCuboidGenerator();
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
+	sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
 	delete[] myBoundaries;
 	delete[] myEvalBoundaries;
 
@@ -1057,22 +1057,22 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		return;
 	}
 
-	sg::DimensionBoundary* myBoundaries = new sg::DimensionBoundary[dim];
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 	{
 		return;
 	}
 
-	sg::BlackScholesSolver* myBSSolver;
+	sg::finance::BlackScholesSolver* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::BlackScholesSolver(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
 	}
 	else
 	{
-		myBSSolver = new sg::BlackScholesSolver(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
 	}
-	sg::BoundingBox* myBoundingBox = new sg::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
 	delete[] myBoundaries;
 
 	// init Screen Object
@@ -1456,7 +1456,7 @@ void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, d
 
 	double r = riskfree;
 
-	sg::BlackScholesSolver* myBSSolver = new sg::BlackScholesSolver();
+	sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver();
 	DataVector* alpha = new DataVector(0);
 
 	// init Screen Object

@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 /**
  * This class builds a cuboid in the d-dimension space. This
@@ -64,6 +66,7 @@ public:
 	void getEvaluationCuboid(DataMatrix& EvaluationPoints, Stretching& SubDomain, size_t points);
 };
 
+}
 }
 
 #endif /* EVALCUBOIDGENERATORFORSTRETCHING_HPP */

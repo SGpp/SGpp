@@ -54,7 +54,7 @@ class Storage:
     self.alpha_vy = DataVector(self.node_values_vy);
     self.alpha_vz = DataVector(self.node_values_vz);
 
-    hierarchisation = self.grid.createOperationHierarchisation()
+    hierarchisation = createOperationHierarchisation(self.grid)
 
     hierarchisation.doHierarchisation(self.alpha_vx)
     hierarchisation.doHierarchisation(self.alpha_vy)
@@ -68,7 +68,7 @@ class Storage:
     p = DataVector(1,5)
     values = []
 
-    evaluator = self.grid.createOperationEval()
+    evaluator = createOperationEval(self.grid)
     
     for z in xrange(resolution):
       for x in xrange(resolution):
@@ -98,8 +98,8 @@ class Storage:
         p[1] = float(y) / (resolution)
         p[2] = parameters[0]
         p[3] = parameters[1]
-        vx = grid.createOperationEval().eval(alpha_vx, p)
-        vy = grid.createOperationEval().eval(alpha_vy, p)
+        vx = createOperationEval(grid).eval(alpha_vx, p)
+        vy = createOperationEval(grid).eval(alpha_vy, p)
         fout.write("%f %f %f %f\n" % (p[0], p[1], vx, vy))
     fout.close()
     return

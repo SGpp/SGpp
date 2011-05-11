@@ -8,6 +8,10 @@
 #ifndef DATAVECTORDEFINITION_HPP
 #define DATAVECTORDEFINITION_HPP
 
+namespace sg
+{
+namespace base
+{
 /**
  * This struct is needed for exporting a DataVector
  * to another address space, so it contains all
@@ -29,5 +33,7 @@ struct DataVectorDefinition
     size_t inc_elems;
 
 };
+}
+}
 
 #endif /* DATAVECTORDEFINITION_HPP */

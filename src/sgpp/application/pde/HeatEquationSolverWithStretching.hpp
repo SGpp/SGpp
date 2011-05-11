@@ -30,8 +30,11 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -172,6 +175,7 @@ public:
 
 };
 
+}
 }
 
 #endif /* HEATEQUATIONSOLVERWITHSTRETCHING_HPP */

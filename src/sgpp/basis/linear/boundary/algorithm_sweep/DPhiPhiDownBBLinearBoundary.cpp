@@ -6,12 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace finance
 {
+
+
 
 DPhiPhiDownBBLinearBoundary::DPhiPhiDownBBLinearBoundary(GridStorage* storage) : DPhiPhiDownBBLinear(storage)
 {
@@ -84,6 +86,7 @@ void DPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& res
 	}
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

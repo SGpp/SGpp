@@ -14,6 +14,8 @@
 
 namespace sg
 {
+namespace pde
+{
 
 OperationLTwoDotProductLinearStretchedBoundary::OperationLTwoDotProductLinearStretchedBoundary(GridStorage* storage) : StdUpDown(storage)
 {
@@ -26,8 +28,8 @@ OperationLTwoDotProductLinearStretchedBoundary::~OperationLTwoDotProductLinearSt
 void OperationLTwoDotProductLinearStretchedBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	PhiPhiUpBBLinearStretchedBoundary func(this->storage);
+	sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -35,10 +37,11 @@ void OperationLTwoDotProductLinearStretchedBoundary::up(DataVector& alpha, DataV
 void OperationLTwoDotProductLinearStretchedBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
 {
 	// phi * phi
-	detail::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<detail::PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	PhiPhiDownBBLinearStretchedBoundary func(this->storage);
+	sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
+}
 }

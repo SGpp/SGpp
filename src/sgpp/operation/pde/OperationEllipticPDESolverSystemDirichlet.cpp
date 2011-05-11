@@ -7,10 +7,13 @@
 
 #include "operation/pde/OperationEllipticPDESolverSystemDirichlet.hpp"
 #include "exception/algorithm_exception.hpp"
+using namespace sg::base;
 
 #include <sstream>
 
 namespace sg
+{
+namespace pde
 {
 
 OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDirichlet(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
@@ -265,4 +268,5 @@ void OperationEllipticPDESolverSystemDirichlet::getInnerMatrixDiagonalRowSum(std
 	getMatrixDiagonalRowSum(mtxString, false);
 }
 
+}
 }

@@ -6,12 +6,14 @@
 // @author Dirk Pflueger (dirk.pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
+using namespace sg::base;
 
 namespace sg
 {
-
-namespace detail
+namespace pde
 {
+
+
 
 PhiPhiUpBBLinear::PhiPhiUpBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
@@ -131,6 +133,7 @@ void PhiPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iterat
 	fr = ((fm/2.0) + ((alpha_value*(h/2.0))*q)) + fr;
 }
 
-} // namespace detail
+ // namespace detail
 
 } // namespace sg
+}

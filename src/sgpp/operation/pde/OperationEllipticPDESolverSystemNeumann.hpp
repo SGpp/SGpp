@@ -9,8 +9,11 @@
 #define OPERATIONELLITPICPDESOLVERSYSTEMNEUMANN_HPP
 
 #include "operation/pde/OperationEllipticPDESolverSystem.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace pde
 {
 
 /**
@@ -56,6 +59,7 @@ public:
 	virtual DataVector* generateRHS();
 };
 
+}
 }
 
 #endif /* OPERATIONELLITPTICPDESOLVERMATRIXNEUMANN_HPP */

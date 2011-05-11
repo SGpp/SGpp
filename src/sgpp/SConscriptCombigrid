@@ -1,0 +1,39 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import("env")
+
+srcs = Split("""
+grid/combination/FullGrid.cpp
+grid/combination/FullGridSet.cpp
+grid/combination/LinearFullGrid.cpp
+combigrid/basisfunction/CombiLinearBasisFunction.cpp
+combigrid/combigrid/SerialCombiGrid.cpp
+combigrid/combischeme/CombiS_CT.cpp  
+combigrid/combischeme/CombiSchemeBasis.cpp  
+combigrid/combischeme/CombiTS_CT.cpp
+combigrid/combischeme/CombiArbitraryScheme.cpp
+combigrid/converter/CombiSGppConverter.cpp
+combigrid/domain/CombiDomain1D.cpp
+combigrid/domain/CombiGridDomain.cpp
+combigrid/domain/CombiUniformStretching.cpp
+combigrid/domain/CombiTanStretching.cpp
+combigrid/domain/CombiAtanSpecialStretching.cpp
+combigrid/utils/CombigridLevelVector.cpp
+""")
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_combigrid = sg_env.SharedObject(srcs)
+Export('src_objs_combigrid')
+
+libsgppcombigrid = sg_env.SharedLibrary(target="sgppcombigrid", source = src_objs_combigrid, SHLIBPREFIX = 'lib')
+libsgppcombigridstatic = sg_env.StaticLibrary(target="sgppcombigrid", source = src_objs_combigrid, SHLIBPREFIX = 'lib')
+
+Export('libsgppcombigrid')
+Export('libsgppcombigridstatic')

@@ -6,8 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "solver/sle/ConjugateGradientsSP.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace solver
 {
 
 ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon) : nMaxIterations(imax), myEpsilon(epsilon)
@@ -158,4 +161,5 @@ float ConjugateGradientsSP::getEpsilon()
 	return myEpsilon;
 }
 
+}
 }

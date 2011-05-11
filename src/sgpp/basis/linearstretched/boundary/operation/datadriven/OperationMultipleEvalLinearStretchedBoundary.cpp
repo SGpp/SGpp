@@ -16,6 +16,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 void OperationMultipleEvalLinearStretchedBoundary::mult(DataVector& alpha, DataVector& result)
 {
@@ -33,4 +35,5 @@ void OperationMultipleEvalLinearStretchedBoundary::multTranspose(DataVector& sou
 	op.mult_transposed(storage, base, source, *(this->dataset_), result);
 }
 
+}
 }

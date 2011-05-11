@@ -12,8 +12,11 @@
 #include "basis/linear/noboundary/operation/datadriven/OCLKernels.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+using namespace sg::base;
 
 namespace sg
+{
+namespace parallel
 {
 
 /**
@@ -64,6 +67,7 @@ protected:
 	OCLKernels* myOCLKernels;
 };
 
+}
 }
 
 #endif /* OPERATIONMULTIPLEEVALITERATIVESPOCLLINEAR_HPP */
