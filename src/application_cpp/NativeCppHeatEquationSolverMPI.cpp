@@ -235,7 +235,7 @@ void writeHelp()
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "HESolver HeatEquation 3 2 5 0.0 3.0 1.0 smooth 1.0 0.1 ImEul 0.00001 400" << std::endl;
+	mySStream << "HESolverMPI HeatEquation 3 2 5 0.0 3.0 1.0 smooth 1.0 0.1 ImEul 0.00001 400" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
 	mySStream << "	heatStart.gnuplot: the start condition" << std::endl;
@@ -254,7 +254,7 @@ void writeHelp()
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "HESolver PoissonEquation 3 2 5 0.0 3.0 smooth 0.00001 400" << std::endl;
+	mySStream << "HESolverMPI PoissonEquation 3 2 5 0.0 3.0 smooth 0.00001 400" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
 	mySStream << "	poissonStart.gnuplot: the start condition" << std::endl;
@@ -276,7 +276,7 @@ void writeHelp()
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Example:" << std::endl;
-	mySStream << "HESolver PoissonEquationAdapt 3 2 maxLevel 5 5 1e-7 0.0 3.0 smooth 0.00001 400" << std::endl;
+	mySStream << "HESolverMPI PoissonEquationAdapt 3 2 maxLevel 5 5 1e-7 0.0 3.0 smooth 0.00001 400" << std::endl;
 	mySStream << std::endl;
 	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
 	mySStream << "	poissonStartAdapt.gnuplot: the start condition" << std::endl;

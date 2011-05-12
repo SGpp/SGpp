@@ -212,7 +212,7 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(DataVector& alph
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -279,7 +279,7 @@ void PoissonEquationSolverMPI::initGridWithExpHeat(DataVector& alpha, double fac
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -328,7 +328,7 @@ void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(DataVector& alpha, 
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = this->myGrid->createOperationHierarchisation();
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
