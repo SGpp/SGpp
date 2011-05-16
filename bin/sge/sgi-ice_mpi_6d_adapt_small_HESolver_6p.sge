@@ -1,5 +1,5 @@
 #!/bin/bash 
-#$-o $HOME/SGpp/bin/sge/sgpp_6d_adapt_hesolver_ice_2p.$JOB_ID.out -j y 
+#$-o $HOME/SGpp/bin/sge/sgpp_6d_adapt_small_hesolver_ice_2p.$JOB_ID.out -j y 
 #$-N sgpp_6d_adapt_hesolver_ice_2p 
 #$-l h_rt=24:00:00 
 #$-S /bin/bash 
