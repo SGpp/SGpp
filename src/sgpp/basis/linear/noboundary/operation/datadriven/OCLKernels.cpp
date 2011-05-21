@@ -19,8 +19,6 @@
 
 namespace sg
 {
-namespace parallel
-{
 
 cl_int err;
 cl_platform_id platform_id;
@@ -52,7 +50,7 @@ OCLKernels::OCLKernels()
 	err = clGetPlatformIDs(1, &platform_id, &num_platforms);
 	if (err != CL_SUCCESS)
 	{
-		std::cout << "Unable to get Platform ID. Error Code: " << err << std::endl;
+		std::cout << "OCL: Unable to get Platform ID. Error Code: " << err << std::endl;
 	}
 
 	// Find out how many devices there are
@@ -61,7 +59,7 @@ OCLKernels::OCLKernels()
 	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, MAX_OCL_DEVICE_COUNT, device_ids, &num_devices);
 	if (err != CL_SUCCESS)
     {
-    	std::cout << "Unable to get Device ID. Error Code: " << err << std::endl;
+    	std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
     }
 	// set max number of devices
 	if (num_devices > MAX_OCL_DEVICE_COUNT)
@@ -72,7 +70,7 @@ OCLKernels::OCLKernels()
 	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, MAX_OCL_DEVICE_COUNT, NULL, &num_devices);
 	if (num_devices == 0)
     {
-    	std::cout << "NO GPU OpenCL devices have been found!" << std::endl;
+    	std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
     }
 	// set max number of devices
 	if (num_devices > MAX_OCL_DEVICE_COUNT)
@@ -83,16 +81,27 @@ OCLKernels::OCLKernels()
 	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
 	if (err != CL_SUCCESS)
     {
-    	std::cout << "Unable to get Device ID. Error Code: " << err << std::endl;
+    	std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
     }
 #endif
-	//std::cout << num_devices << " OpenCL devices have been found!" << std::endl;
+	std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
+
+	char vendor_name[128] = {0};
+	err = clGetPlatformInfo(platform_id, CL_PLATFORM_VENDOR, 128 * sizeof(char), vendor_name, NULL);
+	if (CL_SUCCESS != err)
+	{
+		std::cout << "OCL Error: Can't get platform vendor!" << std::endl;
+	}
+	if (vendor_name != NULL)
+	{
+		std::cout << "OCL Info: Platform vendor name: " << vendor_name << std::endl;
+	}
 
     // Create GPU context
     context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
     if (err != CL_SUCCESS)
 	{
-    	std::cout << "Failed to create OpenCL context! Error Code: " << err << std::endl;
+    	std::cout << "OCL Error: Failed to create OpenCL context! Error Code: " << err << std::endl;
 	}
 
     // Creating the command queues
@@ -101,9 +110,11 @@ OCLKernels::OCLKernels()
     	command_queue[i] = clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
     	if (err != CL_SUCCESS)
     	{
-    		std::cout << "Failed to create command queue! Error Code: " << err << std::endl;
+    		std::cout << "OCL Error: Failed to create command queue! Error Code: " << err << std::endl;
     	}
     }
+
+    std::cout << std::endl;
 
     isFirstTimeMultTransSP = true;
     isFirstTimeMultSP = true;
@@ -250,7 +261,7 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 	    program_multTransDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
-	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
 	    	return 0.0;
 		}
 
@@ -259,7 +270,7 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 
 	    if (err != CL_SUCCESS)
 	    {
-	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: OpenCL Build Error. Error Code: " << err << std::endl;
 
 	    	size_t len;
 	    	char buffer[2048];
@@ -277,7 +288,7 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 			kernel_multTransDP[i] = clCreateKernel(program_multTransDP, "multTransOCL", &err);
 			if (err != CL_SUCCESS)
 			{
-				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
+				std::cout << "OCL Error: Failed to create kernel! Error Code: " << err << std::endl;
 				return 0.0;
 			}
 	    }
@@ -335,7 +346,7 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 				clSetKernelArg(kernel_multTransDP[i], 5, sizeof(cl_uint), &clSourceSize) ||
 				clSetKernelArg(kernel_multTransDP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
-			std::cout << "Failed to create kernel Args for kernel " << i << "!" << std::endl;
+			std::cout << "OCL Error: Failed to create kernel Args for kernel " << i << "!" << std::endl;
 			return 0.0;
 		}
 
@@ -351,7 +362,7 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransDP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue kernel command! Error Code: " << err << std::endl;
 			return 0.0;
 		}
     }
@@ -363,7 +374,7 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
     	err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global, &ptrGlobalResult[offset], 0, NULL, &GPUDone[i]);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
 			return 0.0;
 		}
 		offset += global;
@@ -380,13 +391,13 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read start-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read end-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		tmpTime = (double)(endTime - startTime);
@@ -521,7 +532,7 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 	    program_multDP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
-	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
 	    	return 0.0;
 		}
 
@@ -530,7 +541,7 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 
 	    if (err != CL_SUCCESS)
 	    {
-	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: OpenCL Build Error. Error Code: " << err << std::endl;
 
 	    	size_t len;
 	    	char buffer[2048];
@@ -548,7 +559,7 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 			kernel_multDP[i] = clCreateKernel(program_multDP, "multOCL", &err);
 			if (err != CL_SUCCESS)
 			{
-				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
+				std::cout << "OCL Error: Failed to create kernel! Error Code: " << err << std::endl;
 				return 0.0;
 			}
 	    }
@@ -604,7 +615,7 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 				clSetKernelArg(kernel_multDP[i], 6, sizeof(cl_uint), &clStorageSize) ||
 				clSetKernelArg(kernel_multDP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
-			std::cout << "Failed to create kernel Args!" << std::endl;
+			std::cout << "OCL Error: Failed to create kernel Args!" << std::endl;
 			return 0.0;
 		}
 		offset += global;
@@ -619,7 +630,7 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multDP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue kernel command! Error Code: " << err << std::endl;
 			return 0.0;
 		}
     }
@@ -631,7 +642,7 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 		err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global, &(ptrResult[offset]), 0, NULL, &(GPUDone[i]));
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
 			return 0.0;
 		}
 		offset += global;
@@ -648,13 +659,13 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read start-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read end-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		tmpTime = (double)(endTime - startTime);
@@ -766,7 +777,7 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
 	    program_multTransSP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
-	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
 	    	return 0.0;
 		}
 
@@ -776,7 +787,7 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
 	    //err = clBuildProgram(program_multTransSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
-	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: OpenCL Build Error. Error Code: " << err << std::endl;
 
 	    	size_t len;
 	    	char buffer[2048];
@@ -794,7 +805,7 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
 			kernel_multTransSP[i] = clCreateKernel(program_multTransSP, "multTransSPOCL", &err);
 			if (err != CL_SUCCESS)
 			{
-				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
+				std::cout << "OCL Error: Failed to create kernel! Error Code: " << err << std::endl;
 				return 0.0;
 			}
 	    }
@@ -852,7 +863,7 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
 				clSetKernelArg(kernel_multTransSP[i], 5, sizeof(cl_uint), &clSourceSize) ||
 				clSetKernelArg(kernel_multTransSP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
-			std::cout << "Failed to create kernel Args for kernel " << i << "!" << std::endl;
+			std::cout << "OCL Error: Failed to create kernel Args for kernel " << i << "!" << std::endl;
 			return 0.0;
 		}
 
@@ -868,7 +879,7 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
 		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransSP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue kernel command! Error Code: " << err << std::endl;
 			return 0.0;
 		}
     }
@@ -880,7 +891,7 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
     	err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(float)*offset, sizeof(float)*global, &ptrGlobalResult[offset], 0, NULL, &GPUDone[i]);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
 			return 0.0;
 		}
 		offset += global;
@@ -897,13 +908,13 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read start-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read end-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		tmpTime = (double)(endTime - startTime);
@@ -1040,7 +1051,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 	    program_multSP = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 	    if (err != CL_SUCCESS)
 		{
-	    	std::cout << "Failed to create program! Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
 	    	return 0.0;
 		}
 
@@ -1050,7 +1061,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 	    //err = clBuildProgram(program_multSP, 0, NULL, NULL, NULL, NULL);
 	    if (err != CL_SUCCESS)
 	    {
-	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
+	    	std::cout << "OCL Error: OpenCL Build Error. Error Code: " << err << std::endl;
 
 	    	size_t len;
 	    	char buffer[2048];
@@ -1068,7 +1079,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 			kernel_multSP[i] = clCreateKernel(program_multSP, "multSPOCL", &err);
 			if (err != CL_SUCCESS)
 			{
-				std::cout << "Failed to create kernel! Error Code: " << err << std::endl;
+				std::cout << "OCL Error: Failed to create kernel! Error Code: " << err << std::endl;
 				return 0.0;
 			}
 	    }
@@ -1124,7 +1135,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 				clSetKernelArg(kernel_multSP[i], 6, sizeof(cl_uint), &clStorageSize) ||
 				clSetKernelArg(kernel_multSP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
 		{
-			std::cout << "Failed to create kernel Args!" << std::endl;
+			std::cout << "OCL Error: Failed to create kernel Args!" << std::endl;
 			return 0.0;
 		}
 		offset += global;
@@ -1139,7 +1150,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multSP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue kernel command! Error Code: " << err << std::endl;
 			return 0.0;
 		}
     }
@@ -1151,7 +1162,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 		err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(float)*offset, sizeof(float)*global, &(ptrResult[offset]), 0, NULL, &(GPUDone[i]));
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
 			return 0.0;
 		}
 		offset += global;
@@ -1168,13 +1179,13 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read start-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
 		if (err != CL_SUCCESS)
 		{
-			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			std::cout << "OCL Error: Failed to read end-time from command queue! Error Code: " << err << std::endl;
 		}
 
 		tmpTime = (double)(endTime - startTime);
@@ -1292,5 +1303,4 @@ void OCLKernels::resetData()
 	}
 }
 
-}
 }
