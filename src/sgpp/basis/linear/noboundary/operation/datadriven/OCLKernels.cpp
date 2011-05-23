@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <cstring>
 
 // include OpenCL
 #include "CL/cl.h"
@@ -22,6 +23,7 @@ namespace sg
 
 cl_int err;
 cl_platform_id platform_id;
+cl_platform_id* platform_ids;
 cl_device_id* device_ids;
 cl_uint num_platforms;
 cl_uint num_devices;
@@ -46,12 +48,52 @@ cl_program program_multSP;
 
 OCLKernels::OCLKernels()
 {
-	// Check for OCL Platforms
-	err = clGetPlatformIDs(1, &platform_id, &num_platforms);
+	// determine number of available OpenCL platforms
+	err = clGetPlatformIDs(0, NULL, &num_platforms);
 	if (err != CL_SUCCESS)
 	{
-		std::cout << "OCL: Unable to get Platform ID. Error Code: " << err << std::endl;
+		std::cout << "OCL Error: Unable to get number of OpenCL platforms. Error Code: " << err << std::endl;
 	}
+	std::cout << "OCL Info: " << num_platforms << " OpenCL Platforms have been found" << std::endl;
+
+	// get available platforms
+	platform_ids = new cl_platform_id[num_platforms];
+	err = clGetPlatformIDs(num_platforms, platform_ids, NULL);
+	if (err != CL_SUCCESS)
+	{
+		std::cout << "OCL Error: Unable to get Platform ID. Error Code: " << err << std::endl;
+	}
+
+	for (cl_uint ui = 0; ui < num_platforms; ui++)
+	{
+		char vendor_name[128] = {0};
+		err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR, 128 * sizeof(char), vendor_name, NULL);
+		if (CL_SUCCESS != err)
+		{
+			std::cout << "OCL Error: Can't get platform vendor!" << std::endl;
+		}
+		else
+		{
+			if (vendor_name != NULL)
+			{
+				std::cout << "OCL Info: Platform " << ui << " vendor name: " << vendor_name << std::endl;
+			}
+#ifdef USEOCL_CPU
+			if (strcmp(vendor_name, "Intel(R) Corporation") == 0)
+			{
+				std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
+				platform_id = platform_ids[ui];
+			}
+#else
+			if (strcmp(vendor_name, "Intel(R) Corporation") != 0)
+			{
+				std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
+				platform_id = platform_ids[ui];
+			}
+#endif
+		}
+	}
+	std::cout << std::endl;
 
 	// Find out how many devices there are
 #ifdef USEOCL_CPU
@@ -86,18 +128,7 @@ OCLKernels::OCLKernels()
 #endif
 	std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
 
-	char vendor_name[128] = {0};
-	err = clGetPlatformInfo(platform_id, CL_PLATFORM_VENDOR, 128 * sizeof(char), vendor_name, NULL);
-	if (CL_SUCCESS != err)
-	{
-		std::cout << "OCL Error: Can't get platform vendor!" << std::endl;
-	}
-	if (vendor_name != NULL)
-	{
-		std::cout << "OCL Info: Platform vendor name: " << vendor_name << std::endl;
-	}
-
-    // Create GPU context
+    // Create OpenCL context
     context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
     if (err != CL_SUCCESS)
 	{
@@ -107,7 +138,11 @@ OCLKernels::OCLKernels()
     // Creating the command queues
     for (size_t i = 0; i < num_devices; i++)
     {
+#ifdef USEOCL_CPU
+    	command_queue[i] = clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE , &err);
+#else
     	command_queue[i] = clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
+#endif
     	if (err != CL_SUCCESS)
     	{
     		std::cout << "OCL Error: Failed to create command queue! Error Code: " << err << std::endl;
