@@ -21,6 +21,9 @@
 namespace sg
 {
 
+namespace parallel
+{
+
 cl_int err;
 cl_platform_id platform_id;
 cl_platform_id* platform_ids;
@@ -1336,6 +1339,8 @@ void OCLKernels::resetData()
 
 		isVeryFirstTimeDP = true;
 	}
+}
+
 }
 
 }
