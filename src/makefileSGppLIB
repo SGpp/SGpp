@@ -90,6 +90,12 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o OperationMultipleEvalIte
 OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL
 OCLCC=g++
 endif
+ifeq ($(EXT), IOCL)
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o OperationMultipleEvalIterativeHybridSSEOCLLinear.o OCLKernels.o
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL
+OCLCC=g++
+endif
 ifeq ($(EXT), MPI)
 OBJS:=$(OBJS) MPICommunicator.o GlobalMPIComm.o ConjugateGradientsMPI.o PoissonEquationSolverMPI.o\
 	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o HeatEquationParabolicPDESolverSystemParallelMPI.o\

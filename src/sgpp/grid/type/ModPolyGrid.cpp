@@ -47,7 +47,7 @@ const char* ModPolyGrid::getType()
 	return "modpoly";
 }
 
-const size_t ModPolyGrid::getDegree()
+size_t ModPolyGrid::getDegree() const
 {
 	return this->degree;
 }

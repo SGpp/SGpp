@@ -68,7 +68,7 @@ public:
 	virtual OperationMatrix* createOperationLF();*/
 
 	static Grid* unserialize(std::istream& istr);
-	virtual const size_t getDegree();
+	virtual size_t getDegree() const;
 
 protected:
 	/// max. polynom's degree

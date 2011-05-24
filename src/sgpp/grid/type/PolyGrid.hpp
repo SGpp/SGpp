@@ -66,7 +66,7 @@ public:
 
 
 	static Grid* unserialize(std::istream& istr);
-	const size_t getDegree();
+	size_t getDegree() const;
 
 protected:
 	/// max. polynom's degree
