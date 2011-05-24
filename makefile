@@ -13,11 +13,14 @@ SRCDIR=./../../../src/sgpp
 #only for extensions:
 #####################
 # Intel Array Building Blocks
-ARBBINCLUDE = /opt/intel/arbb/1.0.0.015/include
-ARBBLIB = /opt/intel/arbb/1.0.0.015/lib/intel64
+ARBBINCLUDE = /opt/intel/arbb/1.0.0.022/include
+ARBBLIB = /opt/intel/arbb/1.0.0.022/lib/intel64
 # NVidia OpenCL
 OCLINCLUDE = /opt/cuda/include
 OCLLIB = /usr/lib64
+# Intel OpenCL
+IOCLINCLUDE = /usr/include
+IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 
 ###################################################################
 # Default Variables, overwirtten by CLI
@@ -62,6 +65,10 @@ ifeq ($(EXT), OCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
 endif
+ifeq ($(EXT), IOCL)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -fopenmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
 endif
 
 ifeq ($(CC),icpc)
@@ -90,6 +97,10 @@ endif
 ifeq ($(EXT), OCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -openmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -openmp
+endif
+ifeq ($(EXT), IOCL)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -openmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -openmp
 endif
 endif
 

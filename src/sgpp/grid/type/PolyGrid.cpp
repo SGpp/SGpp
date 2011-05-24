@@ -46,7 +46,7 @@ const char* PolyGrid::getType()
 	return "poly";
 }
 
-const size_t PolyGrid::getDegree()
+size_t PolyGrid::getDegree() const
 {
 	return this->degree;
 }
