@@ -12,11 +12,14 @@ BINDIR = ./../../../lib/sgpp/
 #only for extensions:
 #####################
 # Intel Array Building Blocks
-ARBBINCLUDE = /opt/intel/arbb/1.0.0.015/include
-ARBBLIB = /opt/intel/arbb/1.0.0.015/lib/intel64
+ARBBINCLUDE = /opt/intel/arbb/1.0.0.022/include
+ARBBLIB = /opt/intel/arbb/1.0.0.022/lib/intel64
 # NVidia OpenCL
 OCLINCLUDE = /opt/cuda/include
 OCLLIB = /usr/lib64
+# Intel OpenCL
+IOCLINCLUDE = /usr/include
+IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 
 OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearStretchedTrapezoidBoundaryGrid.o LinearGrid.o LinearStretchedGrid.o ModLinearGrid.o\
 	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
@@ -93,7 +96,7 @@ endif
 ifeq ($(EXT), IOCL)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o OperationMultipleEvalIterativeSPOCLLinear.o\
 	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o OperationMultipleEvalIterativeHybridSSEOCLLinear.o OCLKernels.o
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU
 OCLCC=g++
 endif
 ifeq ($(EXT), MPI)
