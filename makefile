@@ -154,7 +154,10 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/BSSolver_icc
 	make -f ./../../../src/makefileNativeBlackScholesSolver --directory=./tmp/build_native/BSSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolver_ICC" "EXT=$(EXT)"
 endif
-
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/BSSolver_mpiicc
+	make -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=BSSolver_ICC_MPI" "EXT=$(EXT)"
+endif
 
 ###################################################################
 # Builds a Black Scholes Solver with Stretching
