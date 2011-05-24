@@ -472,7 +472,6 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 	}
 
 	delete myHESolver;
-	delete alpha;
 }
 
 void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, double bound_left, double bound_right,

@@ -102,7 +102,8 @@ endif
 ifeq ($(EXT), MPI)
 OBJS:=$(OBJS) MPICommunicator.o GlobalMPIComm.o ConjugateGradientsMPI.o PoissonEquationSolverMPI.o\
 	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o HeatEquationParabolicPDESolverSystemParallelMPI.o\
-	HeatEquationSolverMPI.o
+	HeatEquationSolverMPI.o BlackScholesSolverMPI.o BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o\
+	BiCGStabMPI.o
 endif
 
 default : $(OBJS)
@@ -878,5 +879,14 @@ HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)algorithm/pde/HeatE
 HeatEquationSolverMPI.o : $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
 	
+BlackScholesSolverMPI.o : $(SRCDIR)application/pde/BlackScholesSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverMPI.o $(SRCDIR)application/pde/BlackScholesSolverMPI.cpp
+	
+BiCGStabMPI.o : $(SRCDIR)solver/sle/BiCGStabMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)solver/sle/BiCGStabMPI.cpp
+	
+BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.cpp	
+		
 clean:
 	rm *
