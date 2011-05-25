@@ -408,8 +408,8 @@ if env['SG_PYTHON'] and swigAvail and pyAvail:
 if swigAvail and javaAvail and env['JSGPP']:
     libjsgpp = env.SConscript('src/jsgpp/SConscript',
                               build_dir='tmp/build_jsgpp', duplicate=0)
-    libweka = env.SConscript('src/jsgpp_weka/SConscript',
-                             build_dir='tmp/build_jsgpp_weka', duplicate=0)
+#    libweka = env.SConscript('src/jsgpp_weka/SConscript',
+#                             build_dir='tmp/build_jsgpp_weka', duplicate=0)
     # install
     jinst = env.Install('lib/jsgpp', [libjsgpp])
 	

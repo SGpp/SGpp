@@ -7,6 +7,8 @@
 
 namespace sg
 {
+namespace base
+{
 
 class RefinementFunctor
 {
@@ -30,15 +32,15 @@ class GridGenerator
 {
 public:
 	virtual void regular(size_t level) = 0;
+	virtual void truncated(size_t level,size_t l_user) = 0;
 	virtual void refine(RefinementFunctor* func) = 0;
 	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
 	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) = 0;
-	virtual size_t getNumberOfRefinablePoints() = 0;
-	virtual size_t getNumberOfRemoveablePoints() = 0;
+	virtual int getNumberOfRefinablePoints() = 0;
+	virtual int getNumberOfRemoveablePoints() = 0;
 	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;
-	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
+	virtual int getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
-
 
 class OperationMultipleEval
 {
@@ -61,12 +63,22 @@ public:
 	virtual void mult(DataVector& alpha, DataVector& result) = 0;
 };
 
+class OperationConvert
+{
+public:
+	virtual void doConvertToLinear(DataVector& alpha) = 0;
+	virtual void doConvertFromLinear(DataVector& alpha) = 0;
+};
+
 class OperationEval
 {
 public:
 	virtual double eval(DataVector& alpha, DataVector& point) = 0;
 };
+}
 
+namespace datadriven {
+%nodefaultdtor sg::datadriven::OperationTest;
 class OperationTest
 {
 public:
@@ -74,7 +86,9 @@ public:
 	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues) = 0;
 	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
 };
+}
 
+namespace base {
 class OperationHierarchisation
 {
 public:
@@ -82,4 +96,5 @@ public:
 	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
 
+}
 }
