@@ -156,6 +156,7 @@ namespace std {
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
 #endif
 
+ // static factory methods
 %include "src/sgpp/basis/operations_factory.hpp"
 
 %apply std::string *INPUT { std::string& istr };
