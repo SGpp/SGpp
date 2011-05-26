@@ -60,7 +60,7 @@ public:
 	static Grid* createTruncatedTrapezoidGrid(size_t dim);
 	static Grid* createPrewaveletGrid(size_t dim);
 	
-	static Grid* unserialize(std::string& istr);
+	static Grid* unserialize(const std::string& istr); 
 	
 protected:
 	Grid();
@@ -89,7 +89,7 @@ public:
 	virtual Stretching* getStretching();
 
 	virtual const char* getType() = 0;	
-	virtual void serialize(std::string& ostr);
+	virtual void serialize(std::string& ostr); 
 	void refine(DataVector* vector, int num);
 	double eval(DataVector& alpha, DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
