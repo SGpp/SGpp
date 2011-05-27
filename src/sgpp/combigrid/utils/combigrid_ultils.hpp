@@ -89,6 +89,17 @@ namespace combigrid{
 			1.0/524288.0 , 1.0/1048576.0 , 1.0/2097152.0 , 1.0/4194304.0 , 1.0/8388608.0 , 1.0/16777216.0 ,
 			1.0/33554432.0 , 1.0/67108864.0 , 1.0/134217728.0 , 1.0/268435456.0 };
 
+    /** the maximum double value */
+    inline double COMBIGRID_DMAX(double v1 , double v2)   { return (v1<v2)?v2:v1; }
+
+    /** the maximum int value */
+    inline int COMBIGRID_IMAX(int v1 , int v2)   { return (v1<v2)?v2:v1; }
+
+    /** the minimum double value */
+    inline double COMBIGRID_DMIN(double v1 , double v2)   { return (v1>v2)?v2:v1; }
+
+    /** the minimum int value */
+    inline int COMBIGRID_IMIN(int v1 , int v2)   { return (v1>v2)?v2:v1; }
 
 	/** the function C_{N}^K , combination of N,K*/
 	static int combination(int n, int k)
@@ -102,7 +113,46 @@ namespace combigrid{
 		return combination(n-1,k)+combination(n-1,k-1);
 	}
 
+	 /** calculates the L2 norm of one vector*/
+	 inline double l2_norm(std::vector<double>* v1)
+	 {
+		double diff = 0.0;
+		for (unsigned int i = 0; i < v1->size() ; i++){
+			diff = diff + v1->at(i)*v1->at(i);
+		}
+		return sqrt(diff/double(v1->size()));
+	 }
 
+	 /** calculates the Inf norm of one vector*/
+	 inline double inf_norm(std::vector<double>* v1 )
+	 {
+		double diff = 0.0 , tmp;
+		for (unsigned int i = 0; i < v1->size() ; i++){
+			tmp = fabs(v1->at(i));
+			diff = (tmp > diff) ? tmp : diff;
+		}
+		return diff;
+	 }
+
+	/** multiply two vectors, result will be in the first vector */
+	inline void vect_mul(std::vector<double>* v1 , std::vector<double>* v2)
+	{
+		COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_mul , size do not match v1->size():"
+				<< v1->size() << " , v2->size():" << v2->size());
+		for (unsigned int i = 0; i < v1->size() ; i++){
+			v1->at(i) = v1->at(i) * v2->at(i);
+		}
+	}
+
+	/** difference of two vectors, result will be in the first vector */
+	inline void vect_diff(std::vector<double>* v1 , std::vector<double>* v2)
+	{
+		COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_diff , size do not match v1->size():"
+				<< v1->size() << " , v2->size():" << v2->size());
+		for (unsigned int i = 0; i < v1->size() ; i++){
+			v1->at(i) = v1->at(i) - v2->at(i);
+		}
+	}
 }
 
 #endif /* COMBIGRID_ULTILS_HPP_ */

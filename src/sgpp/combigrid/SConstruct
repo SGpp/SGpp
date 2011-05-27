@@ -74,6 +74,10 @@ sourceFiles = [
    Glob(buildpath + './domain/*.cpp'),
    Glob(buildpath + './fullgrid/*.cpp'),
    Glob(buildpath + './utils/*.cpp'),
+# Solvers(e.g. multigrid) which work on full grids or on combi grid  
+   Glob(buildpath + '../solver/multigridFG/interface/*.cpp'),
+   Glob(buildpath + '../solver/multigridFG/multigrid/*.cpp'),
+   Glob(buildpath + '../solver/multigridFG/operators/*.cpp'),   
 # SGpp objcets which are needed, in order to build a binary
    Glob(buildpath + '../data/DataVector.cpp'),
    Glob(buildpath + '../grid/common/BoundingBox.cpp')
