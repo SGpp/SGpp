@@ -120,3 +120,56 @@ void Domain1D::transformUnitToReal( int level , int index ,
 		realCoord = min_ + (max_ - min_)*((double)index)*oneOverPowOfTwo[level];
 	}
 }
+
+
+void Domain1D::findEntry(double coordReal, int level_in ,
+		int& startIndex , double& intersect) const {
+	if (isStretched_)
+	{
+		int startInd = 0 ,mid = 0;
+		int endInd = stretching_.size() - 1;
+		double intersec = 0.0;
+		int level_diff = (level_ < level_in)? 0 : level_ - level_in;
+		// stop when the difference is one, which means we found the cell
+		while ( endInd - startInd > combigrid::powerOfTwo[level_diff] )
+		{
+			mid = ((endInd + startInd)/2);
+			// make the bisection
+			if ( stretching_[mid] < coordReal){
+				startInd = mid;
+			} else {
+				endInd = mid;
+			}
+		}
+		// startInd should be now at the beginning of the cell
+		intersec = (stretching_[endInd] - coordReal) /
+				(stretching_[endInd] - stretching_[startInd]);
+		// this must be the start index of the grid, not from the stretching (the levels could be different)
+		startIndex = startInd/combigrid::powerOfTwo[level_diff];
+	}
+	else
+	{
+		// for the non-stretched case
+		double unitC = (coordReal - min_)/(max_ - min_);
+		startIndex = ::floor( (double)combigrid::powerOfTwo[level_in]*unitC );
+		startIndex = (startIndex < 0) ? 0 : startIndex;
+		startIndex = (startIndex >= combigrid::powerOfTwo[level_in]-1) ? combigrid::powerOfTwo[level_in]-1 : startIndex;
+		intersect =  (unitC*(double)combigrid::powerOfTwo[level_in]  - (double)(startIndex));
+	}
+}
+
+
+void Domain1D::getMeshWidth(int index , int level_in , double& h0 , double& h1) const {
+	if (isStretched_)
+	{
+		int level_diff = (level_ < level_in)? 0 : level_ - level_in;
+		// index checking should be done in the debug mode
+		h0 = stretching_[ index*combigrid::powerOfTwo[level_diff] ] - stretching_[ (index-1)*combigrid::powerOfTwo[level_diff] ];
+		h1 = stretching_[ (index+1)*combigrid::powerOfTwo[level_diff] ] - stretching_[ index*combigrid::powerOfTwo[level_diff] ];
+	}
+	else
+	{
+		h1 = h0 = (max_ - min_) * ( 1 / (double)combigrid::powerOfTwo[level_in] );
+	}
+}
+

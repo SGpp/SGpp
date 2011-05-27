@@ -19,7 +19,14 @@ namespace combigrid {
 
 /** The full grid class which is the main building block of the combi grid <br>
  *  It is important that the grid will actually occupy memory when the createFullGrid()
- *  method is called
+ *  method is called. <br>
+ *  The index of a gridpoint in the full grid is given by the formula : <br>
+ *  ind = i0 + i1*N0 + i2*N0*N1 + ... + id*N0*N1*N2*...*Nd, where i0,i1,i2,... are the indexes in every dimension,
+ *  and Nk is the number of gridpoints in direction k. <br>
+ *  For more infos you can look at the "getVectorIndex" and "getLinearIndex" functions and their implementation. <br>
+ *  Nk=2^level[k]+1 for every k for the directions with boundary points and Nk=2^level[k]-1 for the directions without boundary. <br>
+ *  <br>
+ *  The full grid can also be scaled which is done with a separate "combigrid::GridDomain" object. <br>
  * */
 template<typename FG_ELEMENT>
 class FullGrid {
@@ -109,14 +116,6 @@ public:
 		delete sgppIndex_;
 		sgppIndex_ = new std::vector<int>(0);
 	}
-
-	/** sets the domain of the full grid */
-	void setDomain( GridDomain* gridDomain ) const { gridDomain_ = gridDomain; }
-
-	void addCustomDomain(std::vector<double> min, std::vector<double> max){gridDomain_ = new GridDomain(dim_,min,max);}
-
-	/** returns the domain of the full grid */
-	const GridDomain* getDomain() const { return gridDomain_; }
 
 	/** evaluates the full grid on the specified coordinates
 	 * @param coords ND coordinates on the unit square [0,1]^D*/
@@ -291,6 +290,42 @@ public:
 	      }
     }
 
+    /** returns the vector index for one linear index
+     * @param linIndex [IN] the linear index
+     * @param axisIndex [OUT] the returned vector index */
+    inline void getVectorIndex(const int linIndex, std::vector<int>& axisIndex) const {
+    	int tmp = linIndex;
+    	for (int i = dim_-1 ; i >= 0 ; i--) {
+    		axisIndex[i] = tmp / (this->getOffset(i));
+    		tmp = tmp % this->getOffset(i);
+    	}
+    }
+
+    /** returns the linear index for one linear index
+     * @param axisIndex [IN] the vector index */
+    inline int getLinearIndex(const std::vector<int>& axisIndex) const {
+    	int tmp = 0;
+    	for (int i = dim_-1 ; i >= 0 ; i--) {
+    		tmp = tmp +  offsets_[i] * axisIndex[i];
+    	}
+    	return tmp;
+    }
+
+	/** sets the domain of the full grid */
+	inline void setDomain( GridDomain* gridDomain ) const { gridDomain_ = gridDomain; }
+
+	/** returns the domain of the full grid */
+	inline const GridDomain* getDomain() const { return gridDomain_; }
+
+	/** returns the domain of the full grid */
+	inline GridDomain* getDomain() { return gridDomain_; }
+
+	/** */
+	void addCustomDomain(std::vector<double> min, std::vector<double> max){gridDomain_ = new GridDomain(dim_,min,max);}
+
+	/** returns pointer to the basis function */
+	inline const BasisFunctionBasis* getBasisFct() const { return basis_;}
+
 	/** returns the dimension of the full grid */
 	inline int getDimension() const { return dim_; }
 
@@ -320,6 +355,11 @@ public:
 	 * this will be used in the Converter */
 	inline std::vector<int>& getSGppIndex() const { return (*sgppIndex_); }
 
+	/** vector of flags to show if the dimension has boundary points*/
+	inline const std::vector<bool>& returnBoundaryFlags() const { return hasBoundaryPoints_; }
+
+	/** copies the input vector to the full grid vector
+	 * @param in [IN] input vector*/
 	void setElementVector(std::vector<FG_ELEMENT> in) {fullgridVector_=in;}
 
 private:
