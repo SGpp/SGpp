@@ -119,7 +119,7 @@ Grid* Grid::unserialize(std::istream& istr)
 
 	if(typeMap().count(gridtype) > 0)
 	{
-		// This is pretty esoteric. It calls a function pointer out of a map.
+		// it calls a function pointer out of a map.
 		return typeMap()[gridtype](istr);
 	}
 	else

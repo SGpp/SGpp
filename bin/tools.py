@@ -255,7 +255,7 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
         for x in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
                 pc = createOperationEval(grid).eval(alpha, p)
-                fout.write("%f %f %f\n" % (p[0], p[1], pc))
+                fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
     elif grid.getStorage().dim() == 2:
         for x in xrange(resolution):
@@ -291,7 +291,7 @@ def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
         for x in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
                 pc = fctn(p)
-                fout.write("%f %f %f\n" % (p[0], p[1], pc))
+                fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
     elif dim == 2:
         for x in xrange(resolution):
