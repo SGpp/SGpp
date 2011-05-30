@@ -37,6 +37,12 @@ public:
 	 * @param errorTol [IN] the error tolerance for the solver */
     void solveFAS( std::vector<double>& unknowns , double errorTol);
 
+	/** solves the problem using just the smoothing
+	 * @param unknowns [IN/OUT] the unknown vector, which will be the initial solution
+	 * and later the output for the solution
+	 * @param errorTol [IN] the error tolerance for the solver*/
+    void solveSmoothing( std::vector<double>& unknowns , double errorTol);
+
 private:
 
     /** the hierarchy of grids for the multigrid,

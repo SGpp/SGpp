@@ -23,11 +23,13 @@ Multigrid::Multigrid(OperatorFG* op, FullGridD* fg) {
 	nrGSPre_ = 1;
 	nrGSPost_ = 1;
 	bool refine = false;
+	int verb = 6;
 
 	const std::vector<bool>& boundaryFlag = fg_tmp->returnBoundaryFlags();
 	std::vector<int> levels = fg_tmp->getLevels();
 	int dim = fg_tmp->getDimension() , i , maxNrPoint , maxLevel;
 
+	COMBIGRID_OUT_LEVEL2(verb,"Multigrid::Multigrid ... START");
 	// create the grids for the
 	do {
 		fullgrids_.push_back(fg_tmp);
@@ -36,6 +38,7 @@ Multigrid::Multigrid(OperatorFG* op, FullGridD* fg) {
 		correction_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
 		rhs_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
 		op_tmp->getRHS( *(rhs_[depth_]) , i );
+		COMBIGRID_OUT_LEVEL2(verb,"Created depth_:" << depth_);
 
 		depth_++;
 		// look for the levels
@@ -48,12 +51,14 @@ Multigrid::Multigrid(OperatorFG* op, FullGridD* fg) {
 		}
 		// only if we have more than
 		if (maxNrPoint > 3) { refine = true; }
+		COMBIGRID_OUT_LEVEL2(verb,"refine =" << refine);
 		// create a new full grid
         if (refine){
         	for ( i = 0 ; i < dim ; i++){
         		// decrease the levels for cases
         		if ( (levels[i] >= maxLevel) || (fg_tmp->length(i) > maxNrPoint) ) {
         			levels[i] = levels[i] - 1;
+        			COMBIGRID_OUT_LEVEL2(verb,"levels["<<i<<"]" << levels[i]);
         		}
         	}
         	// create a full grid with smaller levels
@@ -62,6 +67,7 @@ Multigrid::Multigrid(OperatorFG* op, FullGridD* fg) {
         	op_tmp = op_tmp->factory(fg_tmp);
         }
 	} while (refine);
+	COMBIGRID_OUT_LEVEL2(verb,"Multigrid::Multigrid ... END");
 }
 
 Multigrid::~Multigrid() {
@@ -119,6 +125,7 @@ void Multigrid::solveCS( std::vector<double>& unknowns , double errorTol){
 		operators_[0]->multiplyVector( (*unknowns_[0]) , errVect);
 		combigrid::vect_diff( &errVect , rhs_[0] );
 		errorAct = combigrid::l2_norm( &errVect );
+		COMBIGRID_OUT_LEVEL2(verb," error:" << errorAct << " vCycle:" << vCycle )
 		// if the smoother is not working properly than increase the
 		if ( errorAct > error ){
 			nrGSPost_ = nrGSPost_ + 5;
@@ -132,6 +139,44 @@ void Multigrid::solveCS( std::vector<double>& unknowns , double errorTol){
 		error = errorAct;
 		vCycle++;
 	}
+
+	// copy the solution vector back
+	for (i = 0 ; i < (int)unknowns.size() ; i++) { unknowns[i] = (*unknowns_[0])[i]; }
+}
+
+void Multigrid::solveSmoothing( std::vector<double>& unknowns , double errorTol){
+	int  i , vCycle = 0 , verb = 4;
+	double  error , errorAct;
+
+	COMBIGRID_OUT_LEVEL2(verb,"Multigrid::solveSmoothing ... START");
+
+	// copy the unknown vector
+	for (i = 0 ; i < (int)unknowns.size() ; i++) { (*unknowns_[0])[i] = unknowns[i]; }
+
+	std::vector<double> errVect( unknowns_[0]->size() );
+	// measure the error at the beginning
+	operators_[0]->multiplyVector( *(unknowns_[0]) , errVect );
+	combigrid::vect_diff( &errVect , rhs_[0] );
+	errorAct = error = combigrid::l2_norm( &errVect );
+	COMBIGRID_OUT_LEVEL2(verb,"Initial error : " << error)
+
+	// do the VCycles as long the residuum is below threshold
+	while ( error > errorTol ){
+		// do smoothing
+		operators_[0]->doSmoothing( 10 , *(unknowns_[0]) , *(rhs_[0]) );
+		// calculate error
+		operators_[0]->multiplyVector( (*unknowns_[0]) , errVect);
+		combigrid::vect_diff( &errVect , rhs_[0] );
+		errorAct = combigrid::l2_norm( &errVect );
+		COMBIGRID_OUT_LEVEL2(verb," error:" << errorAct << " vCycle:" << vCycle );
+		error = errorAct;
+		vCycle++;
+	}
+
+	// copy the solution vector back
+	for (i = 0 ; i < (int)unknowns.size() ; i++) { unknowns[i] = (*unknowns_[0])[i]; }
+
+	COMBIGRID_OUT_LEVEL2(verb,"Multigrid::solveSmoothing ... END error:" << errorAct);
 }
 
 void Multigrid::solveFAS( std::vector<double>& unknowns , double errorTol){

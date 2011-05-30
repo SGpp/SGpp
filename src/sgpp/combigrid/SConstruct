@@ -78,18 +78,21 @@ sourceFiles = [
    Glob(buildpath + '../solver/multigridFG/interface/*.cpp'),
    Glob(buildpath + '../solver/multigridFG/multigrid/*.cpp'),
    Glob(buildpath + '../solver/multigridFG/operators/*.cpp'),   
+   Glob(buildpath + '../solver/multigridFG/utils/*.cpp'),
 # SGpp objcets which are needed, in order to build a binary
    Glob(buildpath + '../data/DataVector.cpp'),
    Glob(buildpath + '../grid/common/BoundingBox.cpp')
    ]
 
 testFile = ['./tests/test_main.cpp']
+testFileSolv = ['../solver/multigridFG/test/test_main.cpp']
 
 ################################################################################
 
 
 # build the tester and the two binaries code 
 env.Program('test',[ testFile , sourceFiles ])
+env.Program('Solvertest',[ testFileSolv , sourceFiles ])
 env.Library('combigrid', [sourceFiles])
 
 #Command(["lib/libcombigrid.a"], ["libcombigrid.a"], Copy("$TARGET", "$SOURCE"))
