@@ -100,7 +100,7 @@ vars.Add('SG_FINANCE', 'Build Finance Module', False)
 vars.Add('SG_PDE', 'Build PDE Module', False)
 vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
 vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
-vars.Add('SG_PYTHON', 'Build Python Support', False)
+vars.Add('SG_PYTHON', 'Build Python Support', True)
 
 
 env = Environment(variables = vars, ENV = os.environ)
@@ -383,7 +383,8 @@ if env['SG_COMBIGRID']:
 	Import('libsgppcombigridstatic')
 	lib_sgpp_targets.append(libsgppcombigrid)
 	lib_sgpp_targets.append(libsgppcombigridstatic)
-	
+
+# build python lib
 if env['SG_PYTHON'] and swigAvail and pyAvail:
 	libpysgpp = SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
 	#Import('pysgpp')
@@ -391,18 +392,6 @@ if env['SG_PYTHON'] and swigAvail and pyAvail:
 	Depends(pyinst, libpysgpp)
 	dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
 	Depends(dep, libpysgpp)
-	#env.Install('#lib/pysgpp', pysgpp)
-	#env.Install('#bin', pysgpp)
-	#Command("#lib/pysgpp/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-	#Command("#bin/pysgpp.py", "#/tmp/build_pysgpp/pysgpp.py", Copy("$TARGET", "$SOURCE"))
-	#if swigAvail and pyAvail:
-	#    env.SConscript('src/pysgpp/SConscript',
-	#                               build_dir='tmp/build_pysgpp', duplicate=0)
-	    # install
-	#    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	#   Depends(pyinst, libpysgpp)
-	#    dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	#    Depends(dep, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['JSGPP']:
@@ -420,7 +409,7 @@ if swigAvail and javaAvail and env['JSGPP']:
 env.Install('#lib/sgpp', lib_sgpp_targets)
 
 # Execute Unit Tests
-if not env['NO_UNIT_TESTS'] and pyAvail:
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail:
     dep = env.SConscript('tests/SConscript')
     # execute after all installations (even where not necessary)
     if javaAvail and env['JSGPP']:
