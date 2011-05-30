@@ -128,7 +128,6 @@ void Domain1D::findEntry(double coordReal, int level_in ,
 	{
 		int startInd = 0 ,mid = 0;
 		int endInd = stretching_.size() - 1;
-		double intersec = 0.0;
 		int level_diff = (level_ < level_in)? 0 : level_ - level_in;
 		// stop when the difference is one, which means we found the cell
 		while ( endInd - startInd > combigrid::powerOfTwo[level_diff] )
@@ -142,7 +141,7 @@ void Domain1D::findEntry(double coordReal, int level_in ,
 			}
 		}
 		// startInd should be now at the beginning of the cell
-		intersec = (stretching_[endInd] - coordReal) /
+		intersect = ( coordReal - stretching_[startInd] ) / //stretching_[endInd] -
 				(stretching_[endInd] - stretching_[startInd]);
 		// this must be the start index of the grid, not from the stretching (the levels could be different)
 		startIndex = startInd/combigrid::powerOfTwo[level_diff];
