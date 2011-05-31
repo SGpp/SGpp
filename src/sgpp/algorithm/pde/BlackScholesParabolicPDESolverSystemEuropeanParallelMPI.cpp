@@ -5,6 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#include "tools/MPI/SGppMPITools.hpp"
+
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.hpp"
 #include "exception/algorithm_exception.hpp"
 
@@ -48,38 +50,44 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorInne
 	DataVector GammaResult(result);
 
 	// Apply the riskfree rate
-	#pragma omp task shared(alpha, result)
+	if (0 % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 	{
-		if (this->r != 0.0)
+		#pragma omp task shared(alpha, result)
 		{
-			DataVector myResult(result.getSize());
+			if (this->r != 0.0)
+			{
+				DataVector myResult(result.getSize());
 
-			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
+				/// @todo (heinecke) discuss methods in order to avoid this cast
+				((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
 
-			// no semaphore needed
-			result.axpy((-1.0)*this->r, myResult);
+				// no semaphore needed
+				result.axpy((-1.0)*this->r, myResult);
+			}
 		}
 	}
 
 	// Apply the delta method
 	for (size_t i = 0; i < nDims; i++)
 	{
-		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
+		if ((i+1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 		{
-			DataVector myResult(result.getSize());
+			#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
+			{
+				DataVector myResult(result.getSize());
 
-			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+				/// @todo (heinecke) discuss methods in order to avoid this cast
+				((UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
-			// semaphore
+				// semaphore
 #ifdef _OPENMP
-			omp_set_lock(&DeltaMutex);
+				omp_set_lock(&DeltaMutex);
 #endif
-			DeltaResult.add(myResult);
+				DeltaResult.add(myResult);
 #ifdef _OPENMP
-			omp_unset_lock(&DeltaMutex);
+				omp_unset_lock(&DeltaMutex);
 #endif
+			}
 		}
 	}
 
@@ -88,24 +96,29 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorInne
 	{
 		for (size_t j = 0; j < nDims; j++)
 		{
-			// symmetric
-			if (j <= i)
+			size_t job = (((i*(i+1))/2)+j)+(nDims);
+
+			if (job % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 			{
-				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
+				// symmetric
+				if (j <= i)
 				{
-					DataVector myResult(result.getSize());
+					#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
+					{
+						DataVector myResult(result.getSize());
 
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
+						/// @todo (heinecke) discuss methods in order to avoid this cast
+						((UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
-					// semaphore
+						// semaphore
 #ifdef _OPENMP
-					omp_set_lock(&GammaMutex);
+						omp_set_lock(&GammaMutex);
 #endif
-					GammaResult.add(myResult);
+						GammaResult.add(myResult);
 #ifdef _OPENMP
-					omp_unset_lock(&GammaMutex);
+						omp_unset_lock(&GammaMutex);
 #endif
+					}
 				}
 			}
 		}
@@ -127,8 +140,9 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorComp
 {
 	result.setAll(0.0);
 
-	std::vector<size_t> algoDims = this->BoundGrid->getStorage()->getAlgorithmicDimensions();
+	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
 	size_t nDims = algoDims.size();
+
 #ifdef _OPENMP
 	omp_lock_t DeltaMutex;
 	omp_lock_t GammaMutex;
@@ -139,38 +153,44 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorComp
 	DataVector GammaResult(result);
 
 	// Apply the riskfree rate
-	#pragma omp task shared(alpha, result)
+	if (0 % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 	{
-		if (this->r != 0.0)
+		#pragma omp task shared(alpha, result)
 		{
-			DataVector myResult(result.getSize());
+			if (this->r != 0.0)
+			{
+				DataVector myResult(result.getSize());
 
-			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
+				/// @todo (heinecke) discuss methods in order to avoid this cast
+				((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
 
-			// no semaphore needed
-			result.axpy((-1.0)*this->r, myResult);
+				// no semaphore needed
+				result.axpy((-1.0)*this->r, myResult);
+			}
 		}
 	}
 
 	// Apply the delta method
 	for (size_t i = 0; i < nDims; i++)
 	{
-		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
+		if ((i+1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 		{
-			DataVector myResult(result.getSize());
+			#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
+			{
+				DataVector myResult(result.getSize());
 
-			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+				/// @todo (heinecke) discuss methods in order to avoid this cast
+				((UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
-			// semaphore
+				// semaphore
 #ifdef _OPENMP
-			omp_set_lock(&DeltaMutex);
+				omp_set_lock(&DeltaMutex);
 #endif
-			DeltaResult.add(myResult);
+				DeltaResult.add(myResult);
 #ifdef _OPENMP
-			omp_unset_lock(&DeltaMutex);
+				omp_unset_lock(&DeltaMutex);
 #endif
+			}
 		}
 	}
 
@@ -179,24 +199,29 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorComp
 	{
 		for (size_t j = 0; j < nDims; j++)
 		{
-			// symmetric
-			if (j <= i)
+			size_t job = (((i*(i+1))/2)+j)+(nDims);
+
+			if (job % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 			{
-				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
+				// symmetric
+				if (j <= i)
 				{
-					DataVector myResult(result.getSize());
+					#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
+					{
+						DataVector myResult(result.getSize());
 
-					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
+						/// @todo (heinecke) discuss methods in order to avoid this cast
+						((UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
-					// semaphore
+						// semaphore
 #ifdef _OPENMP
-					omp_set_lock(&GammaMutex);
+						omp_set_lock(&GammaMutex);
 #endif
-					GammaResult.add(myResult);
+						GammaResult.add(myResult);
 #ifdef _OPENMP
-					omp_unset_lock(&GammaMutex);
+						omp_unset_lock(&GammaMutex);
 #endif
+					}
 				}
 			}
 		}
@@ -217,35 +242,53 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorComp
 void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyMassMatrixInner(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
-
 	result.setAll(0.0);
+	size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+	size_t jobs = (((nDims*nDims)+3*nDims)/2)+2;
 
-	((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
+	if ((jobs-1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
+	{
+		((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
 
-	result.add(temp);
+		result.add(temp);
+	}
 }
 
 void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
 {
 	DataVector temp(alpha.getSize());
-
 	result.setAll(0.0);
+	size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+	size_t jobs = (((nDims*nDims)+3*nDims)/2)+2;
 
-	((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
+	if ((jobs-1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
+	{
+		((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
 
-	result.add(temp);
+		result.add(temp);
+	}
 }
 
 void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::mult(DataVector& alpha, DataVector& result)
 {
+	// distribute the current grid coefficients
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		myGlobalMPIComm->broadcastGridCoefficients(alpha);
+	}
+	else
+	{
+		myGlobalMPIComm->receiveGridCoefficients(alpha);
+	}
+
+	result.setAll(0.0);
+
 	if (this->tOperationMode == "ExEul")
 	{
 		applyMassMatrixInner(alpha, result);
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		result.setAll(0.0);
-
 		DataVector temp(result.getSize());
 		DataVector temp2(result.getSize());
 
@@ -272,8 +315,6 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::mult(DataVector& a
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		result.setAll(0.0);
-
 		DataVector temp(result.getSize());
 		DataVector temp2(result.getSize());
 
@@ -308,10 +349,30 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::mult(DataVector& a
 	{
 		throw new algorithm_exception(" BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
 	}
+
+	// aggregate all results
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		myGlobalMPIComm->aggregateGridCoefficients(result);
+	}
+	else
+	{
+		myGlobalMPIComm->sendGridCoefficients(result, 0);
+	}
 }
 
 DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS()
 {
+	// distribute the current grid coefficients
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		myGlobalMPIComm->broadcastGridCoefficients(*(this->alpha_complete));
+	}
+	else
+	{
+		myGlobalMPIComm->receiveGridCoefficients(*(this->alpha_complete));
+	}
+
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
 	if (this->tOperationMode == "ExEul")
@@ -430,6 +491,16 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS
 		throw new algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
+	// aggregate all results
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		myGlobalMPIComm->aggregateGridCoefficients(rhs_complete);
+	}
+	else
+	{
+		myGlobalMPIComm->sendGridCoefficients(rhs_complete, 0);
+	}
+
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
 	this->startTimestep();
 
@@ -507,6 +578,16 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS
 		throw new algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
+	// aggregate all results
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		myGlobalMPIComm->aggregateGridCoefficients(result_complete);
+	}
+	else
+	{
+		myGlobalMPIComm->sendGridCoefficients(result_complete, 0);
+	}
+
 	rhs_complete.sub(result_complete);
 
 	if (this->rhs != NULL)
@@ -515,7 +596,15 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS
 	}
 
 	this->rhs = new DataVector(this->alpha_inner->getSize());
-	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
+
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
+	}
+	else
+	{
+		this->rhs->setAll(0.0);
+	}
 
 	return this->rhs;
 }
