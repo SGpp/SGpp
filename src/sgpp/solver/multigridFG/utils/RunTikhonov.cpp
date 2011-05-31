@@ -18,6 +18,7 @@ void RunTikhonov::readInInput(
 		std::vector<double>& XCoords,
 		std::vector<double>& YPoint) {
 
+	int verb = 3;
     dimensions = 0; nrPoints = 0;
 
     std::ifstream Xfile;
@@ -76,15 +77,15 @@ void RunTikhonov::readInInput(
 
     // print the results
     int j = 0;
-    for( i = 0 ; i < nrPoints ; i++){
-       std::cout << " X["<<i<<"] ( " << XCoords[i*dimensions];
-       for ( j = 1 ; j < dimensions ; j++) {
-          std::cout << "," << XCoords[i*dimensions+j];
-       }
-       std::cout << " ) Y = " << YPoint[i] << std::endl;
+    if (verb > 3){
+    	for( i = 0 ; i < nrPoints ; i++){
+    		std::cout << " X["<<i<<"] ( " << XCoords[i*dimensions];
+    		for ( j = 1 ; j < dimensions ; j++) {
+    			std::cout << "," << XCoords[i*dimensions+j];
+    		}
+    		std::cout << " ) Y = " << YPoint[i] << std::endl;
+    	}
     }
-
-
 }
 
 FullGridD* RunTikhonov::computeFGTikhonov(
@@ -121,15 +122,15 @@ FullGridD* RunTikhonov::computeFGTikhonov(
 
 	// solve using only the smoother
 	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... solve multigird");
-	unknowns.resize(fg->getNrElements(),0.2);
-	//multigrid.solveSmoothing( unknowns , 1e-10);
-	multigrid.solveCS( unknowns , 1e-10 );
+	unknowns.resize(fg->getNrElements(),0.0);
+	//multigrid.solveSmoothing( unknowns , 1e-8);
+	multigrid.solveCS( unknowns , 1e-8 );
 
 	// copy the solution back
 	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... write solution back and return");
 	for (int i = 0 ; i < fg->getNrElements() ; i++){
 		fg->getElementVector()[i] = unknowns[i];
-		COMBIGRID_OUT_LEVEL2( verb , "unknowns["<<i<<"]="<<unknowns[i]);
+		//COMBIGRID_OUT_LEVEL2( verb , "unknowns["<<i<<"]="<<unknowns[i]);
 	}
 
 	// return full grid

@@ -19,8 +19,11 @@ public:
 
 	/** Ctor
 	 * @param op [IN] the operator which defines the problem
-	 * @param fg [IN] the full grid on which the problem should be solved */
-	Multigrid(OperatorFG* op, FullGridD* fg);
+	 * @param fg [IN] the full grid on which the problem should be solved
+	 * @param createHierarchy [IN] if a hierarchy of grids should be created */
+	Multigrid(OperatorFG* op ,
+			  FullGridD* fg ,
+			  bool createHierarchy = true );
 
 	/** */
 	virtual ~Multigrid();
