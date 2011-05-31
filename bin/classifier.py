@@ -14,7 +14,7 @@
 from optparse import OptionParser
 import sys,os
 
-if os.environ["SGPP"]:
+if os.environ.has_key("SGPP"):
     sys.path.append(os.path.join(os.environ["SGPP"], "bin"))
 from tools import *
 from pysgpp import *

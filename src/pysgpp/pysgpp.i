@@ -78,12 +78,6 @@ namespace std {
 
 %include "GridFactory.i"
 
-#ifdef SG_COMBIGRID
-//%include "FullGrid.i"
-//%include "src/sgpp/grid/combination/FullGridSet.hpp"
-//%include "FullGridSet.i"
-#endif
-
 %include "src/sgpp/grid/GridDataBase.hpp"
 
 // the Bad
@@ -189,6 +183,11 @@ namespace std {
 
 // the new combigrid!
 
+#ifdef SG_COMBIGRID
+//%include "FullGrid.i"
+//%include "src/sgpp/grid/combination/FullGridSet.hpp"
+//%include "FullGridSet.i"
+
 %include "src/sgpp/combigrid/utils/combigrid_ultils.hpp"
 %include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"
 %include "src/sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
@@ -217,3 +216,4 @@ namespace std {
 %template(FullGridC) combigrid::FullGrid< complex<double> >;
 %template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
 %template(ComplexVector) std::vector< complex<double> >;
+#endif

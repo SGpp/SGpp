@@ -402,10 +402,6 @@ if swigAvail and javaAvail and env['JSGPP']:
     # install
     jinst = env.Install('lib/jsgpp', [libjsgpp])
 	
-#if env['JSGPP']:
-#    SConscript('src/jsgpp/SConscript', build_dir='tmp/build_jsgpp', duplicate=0)
-#    SConscript('src/jsgpp_weka/SConscript', build_dir='tmp/build_jsgpp_weka', duplicate=0)
-
 env.Install('#lib/sgpp', lib_sgpp_targets)
 
 # Execute Unit Tests
