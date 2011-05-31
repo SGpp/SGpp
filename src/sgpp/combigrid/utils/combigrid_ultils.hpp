@@ -153,6 +153,36 @@ namespace combigrid{
 			v1->at(i) = v1->at(i) - v2->at(i);
 		}
 	}
+
+	/** v1 = coefv1*v1 + coefv2 * v2 */
+	inline void vect_add_mul(double coefv1 , std::vector<double>* v1 , double coefv2 , std::vector<double>* v2)
+	{
+		COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_add_mul , size do not match v1->size():"
+				<< v1->size() << " , v2->size():" << v2->size());
+		for (unsigned int i = 0; i < v1->size() ; i++){
+			v1->at(i) = coefv1 * v1->at(i) + coefv2 * v2->at(i);
+		}
+	}
+
+	/** sets the values of the vector to a given value */
+	inline void vect_setvalue(std::vector<double>* v1 , double newValue )
+	{
+		for (unsigned int i = 0; i < v1->size() ; i++){
+			v1->at(i) = newValue;
+		}
+	}
+
+	/** plot one vector */
+	inline void plot_vect(int level , int verb , std::vector<double>* v1 , const char* stri)
+	{
+		if (verb > level ){
+		   std::cout << stri <<"=[" <<v1->at(0);
+			for (unsigned int i = 1; i < v1->size() ; i++){
+				std::cout << "," <<v1->at(i);
+			}
+		   std::cout << "];" << std::endl;
+		}
+	}
 }
 
 #endif /* COMBIGRID_ULTILS_HPP_ */

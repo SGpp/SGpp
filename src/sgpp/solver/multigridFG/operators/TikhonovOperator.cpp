@@ -17,7 +17,7 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 		const std::vector<double>* yCoords ) : OperatorFG(fg , 1) ,
 		xCoords_(xCoords) , yCoords_(yCoords) {
 
-	const int verb = 6;
+	const int verb = 4;
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::TikhonovOperator START");
 	// the full grid must have boundary points
 	// consistency check for the grid (boundary points, at least 3 points per axis)
@@ -79,10 +79,10 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 		for (i = dim_-1 ; i >= 0 ; i--) {
 		   axisIndex[i] = tmp / (getFG()->getOffset(i));
 		   tmp = tmp % getFG()->getOffset(i);
-		   COMBIGRID_OUT_LEVEL2( verb , "axisIndex["<<i<<"]=" << axisIndex[i] << "  tmp = " << tmp);
+		   COMBIGRID_OUT_LEVEL5( verb , "axisIndex["<<i<<"]=" << axisIndex[i] << "  tmp = " << tmp);
 	    }
 		row_ptr_[e] = actualP;
-		COMBIGRID_OUT_LEVEL2( verb , " row_ptr_[" << e << "] = " << actualP );
+		COMBIGRID_OUT_LEVEL5( verb , " row_ptr_[" << e << "] = " << actualP );
 		nrElPerRow = 0;
 		// for each node we test each possible neighbor points (due to boundary not all might exist)
 		for(i = 0 ; i < perm ; i++){
@@ -128,7 +128,7 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::TikhonovOperator  Fill matrix and the right hand side ... ");
 	for (e = 0 ; e < nrRegPoints_ ; e++)
 	{
-		COMBIGRID_OUT_LEVEL4( verb , " Point e=" << e );
+		COMBIGRID_OUT_LEVEL5( verb , " Point e=" << e );
 		// find the cell, and get the intersection point, in each dimension
 		startInd = 0; // the index of the 0th node in the found cell
 		for (d = 0 ; d < dim_ ; d++){
@@ -155,14 +155,14 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 				//add to the basis function if the bit is one
 				basisIndex[i] = basisIndex[i] + offs*getFG()->getOffset(d);
 			}
-			COMBIGRID_OUT_LEVEL2( verb , "basisFuncVal[" << i << "]=" << basisFuncVal[i] );
-			COMBIGRID_OUT_LEVEL2( verb , "basisIndex[" << i << "]=" << basisIndex[i] );
+			COMBIGRID_OUT_LEVEL5( verb , "basisFuncVal[" << i << "]=" << basisFuncVal[i] );
+			COMBIGRID_OUT_LEVEL5( verb , "basisIndex[" << i << "]=" << basisIndex[i] );
 		}
 
 		// B*BT to all (i,j)
 		for (i = 0 ; i < nrNode ; i++) {
 			// add i to the right hand side
-			COMBIGRID_OUT_LEVEL2( verb , " add to rhs_[ " <<  basisIndex[i] << " ] +=" << (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*(*yCoords_)[e]);
+			COMBIGRID_OUT_LEVEL5( verb , " add to rhs_[ " <<  basisIndex[i] << " ] +=" << (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*(*yCoords_)[e]);
 			rhs_[ basisIndex[i] ] = rhs_[ basisIndex[i] ] + (1.0/(double)(nrRegPoints_)) * basisFuncVal[i] * (*yCoords_)[e];
 			// here add B*BT to all (i,j)
 			for (j = 0 ; j < nrNode ; j++) {
@@ -178,7 +178,7 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 						COMBIGRID_OUT_LEVEL5( verb , " FOUND startSearch="<<startSearch << "  tmp=" << tmp);
 					}
 				}
-				COMBIGRID_OUT_LEVEL4( verb , " add to B*B^T(" << i << "," << j <<") , tmp = "
+				COMBIGRID_OUT_LEVEL5( verb , " add to B*B^T(" << i << "," << j <<") , tmp = "
 						<< tmp << " +=" << (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*basisFuncVal[j]);
 				// add this entry to the matrix
 				matrixVal_[tmp] = matrixVal_[tmp] + (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*basisFuncVal[j];
@@ -201,7 +201,7 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 					{ p_e = startSearch; }
 			}
 
-			COMBIGRID_OUT_LEVEL2( verb , "element position e=" << e << " , p_e=" << p_e );
+			COMBIGRID_OUT_LEVEL5( verb , "element position e=" << e << " , p_e=" << p_e );
 			tmp = e;
 		    for (i = dim_ - 1 ; i >= 0 ; i--)
 		    {
@@ -246,7 +246,7 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 
 	// todo: go to the corner points of the hyper cube and add the \laplace u = 0 boundary condition , multiplied with alpha
 
-	if (verb > 4){
+	if (verb > 3){
 		// visialize the matrix and the right hand side
 		tmp = 0;
 		COMBIGRID_OUT_LEVEL5( verb , " ============ START MATRIX PLOTT ============ ");
@@ -306,18 +306,34 @@ void TikhonovOperator::doSmoothing(int nrIt ,
 	// make a simple Gauss-Seidel
 	int i , of , aii , verb = 6;
 	double tmp = 0.0;
-	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::doSmoothing ... START");
-	for (i = 0 ; i < nrElem_ ; i++)
-	{
-		tmp = 0.0;
-		aii = -2;
-		for ( of = row_ptr_[i] ; of < row_ptr_[i + 1] ; of++ )
+	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::doSmoothing ... START it:" << nrIt);
+	for (int it = 0 ; it < nrIt ; it++){
+		// one forward
+		for (i = 0 ; i < nrElem_ ; i++)
 		{
-			tmp = tmp + matrixVal_[of] * u[col_ind_[of]];
-			if ( col_ind_[of] == i ) { aii = of; }
+			tmp = 0.0;
+			aii = -2;
+			for ( of = row_ptr_[i] ; of < row_ptr_[i + 1] ; of++ )
+			{
+				tmp = tmp + matrixVal_[of] * u[col_ind_[of]];
+				if ( col_ind_[of] == i ) { aii = of; }
+			}
+			// because this matrix is symmetric
+			u[i] = ( 1.0/matrixVal_[aii] ) * ( rhs[i] - tmp + u[i]*matrixVal_[aii] );
 		}
-		// because this matrix is symmetric
-		u[i] = ( 1.0/matrixVal_[aii] ) * ( rhs[i] - tmp + u[i]*matrixVal_[aii] );
+		/*// one backward
+		for (i = nrElem_-1 ; i >= 0 ; i--)
+		{
+			tmp = 0.0;
+			aii = -2;
+			for ( of = row_ptr_[i] ; of < row_ptr_[i + 1] ; of++ )
+			{
+				tmp = tmp + matrixVal_[of] * u[col_ind_[of]];
+				if ( col_ind_[of] == i ) { aii = of; }
+			}
+			// because this matrix is symmetric
+			u[i] = ( 1.0/matrixVal_[aii] ) * ( rhs[i] - tmp + u[i]*matrixVal_[aii] );
+		}*/
 	}
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::doSmoothing ... END");
 }

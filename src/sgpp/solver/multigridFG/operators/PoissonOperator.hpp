@@ -1,37 +1,58 @@
 /*
- * TikhonovOperator.hpp
+ * PoissonOperator.hpp
  *
  *  Created on: May 16, 2011
  *      Author: benk
  */
 
-#ifndef TIKHONOVOPERATOR_HPP_
-#define TIKHONOVOPERATOR_HPP_
+#ifndef POISSONOPERATOR_HPP_
+#define POISSONOPERATOR_HPP_
 
 #include "combigrid.hpp"
 #include "solver/multigridFG/interface/OperatorFG.hpp"
 
 namespace combigrid {
 
-/** The Tikhonov operator calss, which contains all the problem specific informations
- * and operations.*/
-class TikhonovOperator: public combigrid::OperatorFG {
+/** abstract interface for the right hand side. */
+class CallBackRHS {
+public:
+	/** empty CTor*/
+	CallBackRHS(){;}
+
+	/** the callback function for the right hand side
+	 * @param coords [IN] the coordinates */
+	virtual double eval(std::vector<double>&  coords) const {return 1.0;}
+};
+
+/** Class for constant right hand side*/
+class ConstRHS : public CallBackRHS {
+public:
+	/** Ctor
+	 * @param v [IN] the constant value for the RHS*/
+	ConstRHS(double v) : CallBackRHS() , constVal_(v) {;}
+	/** the callback function for the right hand side
+	 * @param coords [IN] the coordinates */
+	virtual double eval(std::vector<double>&  coords) const { return constVal_; }
+private:
+	/** const value for the right hand side*/
+	double constVal_;
+};
+
+
+/** Poisson operator, solves the stationary Poisson equation with constant Dirichlet boundary condition */
+class PoissonOperator: public combigrid::OperatorFG {
 public:
 
-	/** Ctor for a Tikhonov regularization problem (operator) on a given full grid
-	 * @param fg the full grid on which this problem should be set up
-	 * @param nrInputPoints nmber of input (e.g. Monte-Carlo) points
-	 * @param xCoords the coordinates of the input points for the regression (e.g. Monte-Carlo points). <br>
-	 *        the length of the vector is nrInputPoints*dimension , the small index is the dimension
-	 * @param yCoords the points values at the specified coordinates, the vector length is nrInputPoints */
-	TikhonovOperator(const FullGridD* fg ,
-			int nrInputPoints ,
-			double lambda ,
-			const std::vector<double>* xCoords ,
-			const std::vector<double>* yCoords );
+	/** Ctor
+	 * @param fg [IN] the full grid on which this problem should be set up
+	 * @param sigma [IN] vector with the sigma values
+	 * @param callbackRHS [IN] the callback object for the right hand side*/
+	PoissonOperator(const FullGridD* fg ,
+			const std::vector<double>& sigma ,
+			const CallBackRHS* callbackRHS );
 
 	/** Dtor*/
-	virtual ~TikhonovOperator();
+	virtual ~PoissonOperator();
 
 	/** method to create a new operator which acts on a given full grid
 	 * @param fg [IN] */
@@ -54,16 +75,17 @@ public:
     virtual void doSmoothing(int nrIt ,
     		std::vector<double>& u, std::vector<double>& rhs) const;
 
-    /** reset the lambda parameter */
-    void setNewLambda(double lambda);
 
 private:
 
     /** lambda value used for regression*/
-    double lambda_;
+    std::vector<double> sigma_;
 
     /** dimension of the problem*/
     int dim_;
+
+    /** */
+    const CallBackRHS* callbackRHS_;
 
 // --------- CRS storage ----------
     /** number of rows an columns */
@@ -84,16 +106,8 @@ private:
 // ------------ the RHS (right hand side) ----
     std::vector<double> rhs_;
 
-// -------- the regression -------
-    /** number of regression points */
-    int nrRegPoints_;
-
-    /** regression points */
-	const std::vector<double>* xCoords_;
-	/** values at the regression points */
-	const std::vector<double>* yCoords_;
 };
 
 }
 
-#endif /* TIKHONOVOPERATOR_HPP_ */
+#endif /* POISSONOPERATOR_HPP_ */
