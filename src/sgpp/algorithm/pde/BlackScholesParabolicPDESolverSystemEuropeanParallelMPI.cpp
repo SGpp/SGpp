@@ -272,14 +272,7 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyMassMatrixCom
 void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::mult(DataVector& alpha, DataVector& result)
 {
 	// distribute the current grid coefficients
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->broadcastGridCoefficients(alpha);
-	}
-	else
-	{
-		myGlobalMPIComm->receiveGridCoefficients(alpha);
-	}
+	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
 	result.setAll(0.0);
 
@@ -351,27 +344,13 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::mult(DataVector& a
 	}
 
 	// aggregate all results
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->aggregateGridCoefficients(result);
-	}
-	else
-	{
-		myGlobalMPIComm->sendGridCoefficients(result, 0);
-	}
+	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
 }
 
 DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS()
 {
 	// distribute the current grid coefficients
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->broadcastGridCoefficients(*(this->alpha_complete));
-	}
-	else
-	{
-		myGlobalMPIComm->receiveGridCoefficients(*(this->alpha_complete));
-	}
+	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*(this->alpha_complete));
 
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
@@ -492,14 +471,7 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS
 	}
 
 	// aggregate all results
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->aggregateGridCoefficients(rhs_complete);
-	}
-	else
-	{
-		myGlobalMPIComm->sendGridCoefficients(rhs_complete, 0);
-	}
+	myGlobalMPIComm->reduceGridCoefficientsOnRank0(rhs_complete);
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
 	this->startTimestep();
@@ -579,14 +551,7 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS
 	}
 
 	// aggregate all results
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->aggregateGridCoefficients(result_complete);
-	}
-	else
-	{
-		myGlobalMPIComm->sendGridCoefficients(result_complete, 0);
-	}
+	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result_complete);
 
 	rhs_complete.sub(result_complete);
 

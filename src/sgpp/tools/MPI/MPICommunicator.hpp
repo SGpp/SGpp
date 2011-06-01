@@ -52,36 +52,52 @@ public:
 	 */
 	~MPICommunicator();
 
-	/**
-	 * sends grid coefficients to a specfic destination rank
-	 *
-	 * @param alpha grid coefficients that should be sent
-	 * @param dest_rank rank to which the data should be sent
-	 */
-	void sendGridCoefficients(DataVector& alpha, int dest_rank);
+//	/**
+//	 * sends grid coefficients to a specfic destination rank
+//	 *
+//	 * @param alpha grid coefficients that should be sent
+//	 * @param dest_rank rank to which the data should be sent
+//	 */
+//	void sendGridCoefficients(DataVector& alpha, int dest_rank);
 
 	/**
 	 * sends grid coefficients to all ranks greater zero
+	 * here MPI_Bcast is used.
 	 *
 	 * @param alpha grid coefficients that should be sent
 	 */
-	void broadcastGridCoefficients(DataVector& alpha);
+	void broadcastGridCoefficientsFromRank0(DataVector& alpha);
+
+//	/**
+//	 * sends grid coefficients to all ranks greater zero
+//	 *
+//	 * @param alpha grid coefficients that should be sent
+//	 */
+//	void broadcastGridCoefficients(DataVector& alpha);
+
+//	/**
+//	 * receives the grid's coefficients and store them into a pre-allocated DataVector
+//	 * Length of this DataVector must match message length (not checked!!!)
+//	 *
+//	 * @param alpha DataVector into which the received data is stored
+//	 */
+//	void receiveGridCoefficients(DataVector& alpha);
+//
+//	/**
+//	 * receives the grid's coefficients from all ranks and add them to alpha
+//	 * Length of this DataVector must match message length (not checked!!!)
+//	 *
+//	 * @param alpha DataVector to which all other rank's grid coefficients should be added
+//	 */
+//	void aggregateGridCoefficients(DataVector& alpha);
 
 	/**
-	 * receives the grid's coefficients and store them into a pre-allocated DataVector
-	 * Length of this DataVector must match message length (not checked!!!)
-	 *
-	 * @param alpha DataVector into which the received data is stored
-	 */
-	void receiveGridCoefficients(DataVector& alpha);
-
-	/**
-	 * receives the grid's coefficients from all ranks and add them to alpha
-	 * Length of this DataVector must match message length (not checked!!!)
+	 * Reduces the grid coefficients on rank 0 using
+	 * MPI's reduce routine
 	 *
 	 * @param alpha DataVector to which all other rank's grid coefficients should be added
 	 */
-	void aggregateGridCoefficients(DataVector& alpha);
+	void reduceGridCoefficientsOnRank0(DataVector& alpha);
 
 	/**
 	 * sends a serialized grid to a specific rank

@@ -111,26 +111,12 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
 void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(DataVector& alpha, DataVector& result)
 {
 	// distribute the current grid coefficients
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->broadcastGridCoefficients(alpha);
-	}
-	else
-	{
-		myGlobalMPIComm->receiveGridCoefficients(alpha);
-	}
+	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
 	this->applyLOperatorInner(alpha, result);
 
 	// aggregate all results
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->aggregateGridCoefficients(result);
-	}
-	else
-	{
-		myGlobalMPIComm->sendGridCoefficients(result, 0);
-	}
+	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
 }
 
 DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS()
@@ -140,28 +126,14 @@ DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generate
 		DataVector alpha_tmp_complete(*(this->rhs));
 		DataVector rhs_tmp_complete(*(this->rhs));
 
+		this->BoundaryUpdate->setInnerPointsToZero(alpha_tmp_complete);
 		// distribute the current grid coefficients
-		if (myGlobalMPIComm->getMyRank() == 0)
-		{
-			this->BoundaryUpdate->setInnerPointsToZero(alpha_tmp_complete);
-			myGlobalMPIComm->broadcastGridCoefficients(alpha_tmp_complete);
-		}
-		else
-		{
-			myGlobalMPIComm->receiveGridCoefficients(alpha_tmp_complete);
-		}
+		myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha_tmp_complete);
 
 		applyLOperatorComplete(alpha_tmp_complete, rhs_tmp_complete);
 
 		// aggregate all results
-		if (myGlobalMPIComm->getMyRank() == 0)
-		{
-			myGlobalMPIComm->aggregateGridCoefficients(rhs_tmp_complete);
-		}
-		else
-		{
-			myGlobalMPIComm->sendGridCoefficients(rhs_tmp_complete, 0);
-		}
+		myGlobalMPIComm->reduceGridCoefficientsOnRank0(rhs_tmp_complete);
 
 		this->GridConverter->calcInnerCoefs(rhs_tmp_complete, *(this->rhs_inner));
 		this->rhs_inner->mult(-1.0);

@@ -368,14 +368,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 		sg::parallel::myGlobalMPIComm->Barrier();
 
 		// Communicate coefficients
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			sg::parallel::myGlobalMPIComm->broadcastGridCoefficients(*alpha);
-		}
-		else
-		{
-			sg::parallel::myGlobalMPIComm->receiveGridCoefficients(*alpha);
-		}
+		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
 		sg::parallel::myGlobalMPIComm->Barrier();
 
@@ -561,14 +554,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 		sg::parallel::myGlobalMPIComm->Barrier();
 
 		// Communicate coefficients
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			sg::parallel::myGlobalMPIComm->broadcastGridCoefficients(*alpha);
-		}
-		else
-		{
-			sg::parallel::myGlobalMPIComm->receiveGridCoefficients(*alpha);
-		}
+		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
 		sg::parallel::myGlobalMPIComm->Barrier();
 
@@ -771,14 +757,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 	sg::parallel::myGlobalMPIComm->Barrier();
 
 	// Communicate coefficients
-	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-	{
-		sg::parallel::myGlobalMPIComm->broadcastGridCoefficients(*alpha);
-	}
-	else
-	{
-		sg::parallel::myGlobalMPIComm->receiveGridCoefficients(*alpha);
-	}
+	sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
 	sg::parallel::myGlobalMPIComm->Barrier();
 

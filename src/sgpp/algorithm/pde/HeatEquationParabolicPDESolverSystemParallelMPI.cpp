@@ -185,14 +185,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::startTimestep()
 void HeatEquationParabolicPDESolverSystemParallelMPI::mult(DataVector& alpha, DataVector& result)
 {
 	// distribute the current grid coefficients
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->broadcastGridCoefficients(alpha);
-	}
-	else
-	{
-		myGlobalMPIComm->receiveGridCoefficients(alpha);
-	}
+	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
 	result.setAll(0.0);
 
@@ -255,31 +248,17 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::mult(DataVector& alpha, Da
 	else
 	{
 		myGlobalMPIComm->Abort();
-		throw new algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelOMP::mult : An unknown operation mode was specified!");
+		throw new algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelMPI::mult : An unknown operation mode was specified!");
 	}
 
 	// aggregate all results
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->aggregateGridCoefficients(result);
-	}
-	else
-	{
-		myGlobalMPIComm->sendGridCoefficients(result, 0);
-	}
+	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
 }
 
 DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 {
 	// distribute the current grid coefficients
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->broadcastGridCoefficients(*(this->alpha_complete));
-	}
-	else
-	{
-		myGlobalMPIComm->receiveGridCoefficients(*(this->alpha_complete));
-	}
+	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*(this->alpha_complete));
 
 	DataVector rhs_complete(this->alpha_complete->getSize());
 
@@ -349,18 +328,11 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// aggregate all results
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->aggregateGridCoefficients(rhs_complete);
-	}
-	else
-	{
-		myGlobalMPIComm->sendGridCoefficients(rhs_complete, 0);
-	}
+	myGlobalMPIComm->reduceGridCoefficientsOnRank0(rhs_complete);
 
 	this->startTimestep();
 
@@ -431,18 +403,11 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// aggregate all results
-	if (myGlobalMPIComm->getMyRank() == 0)
-	{
-		myGlobalMPIComm->aggregateGridCoefficients(result_complete);
-	}
-	else
-	{
-		myGlobalMPIComm->sendGridCoefficients(result_complete, 0);
-	}
+	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result_complete);
 
 	rhs_complete.sub(result_complete);
 
