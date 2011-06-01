@@ -68,7 +68,7 @@ public:
     	std::vector<double> min(2); min[0] = 0.4; min[1] = 0.4;
     	std::vector<double> max(2); max[0] = 1.6; max[1] = 1.6;
     	std::vector<double> sigma(2); sigma[0] = 1.0; sigma[1] = 1.0;
-    	std::vector<int> levels(2); levels[0] = 7; levels[1] = 8;
+    	std::vector<int> levels(2); levels[0] = 5; levels[1] = 6;
 
     	AbstractStretchingMaker* stretchingMaker = new TanStretching(0.7); //new UniformStretching(); //new AtanSpecialStretching(); //new UniformStretching();
     	GridDomain* domain = new GridDomain( 2 , levels , min , max , (*stretchingMaker) );
@@ -96,7 +96,7 @@ public:
     	std::vector<double> min(3); min[0] = 0.0; min[1] = 0.0; min[2] = 0.0;
     	std::vector<double> max(3); max[0] = 1.0; max[1] = 1.0; max[2] = 1.0;
     	std::vector<double> sigma(3); sigma[0] = 1.0; sigma[1] = 1.0; sigma[2] = 1.0;
-    	std::vector<int> levels(3); levels[0] = 5; levels[1] = 6; levels[2] = 4;
+    	std::vector<int> levels(3); levels[0] = 4; levels[1] = 5; levels[2] = 3;
     	std::vector<int> levelsDom(3); levelsDom[0] = 7; levelsDom[1] = 7; levelsDom[2] = 7;
 
     	AbstractStretchingMaker* stretchingMaker = new TanStretching(0.7); //new UniformStretching(); //new AtanSpecialStretching(); //new UniformStretching();

@@ -10,6 +10,7 @@
 
 #include "combigrid.hpp"
 #include "solver/multigridFG/utils/RunTikhonov.hpp"
+#include "combigrid/plotter/GridPlotter.hpp"
 
 namespace combigrid{
 
@@ -25,11 +26,13 @@ public:
     	test1();
     	test12();
     	test13();
+    	test14();
 
     	// 2D tests
     	test2();
     	test201();
     	test21();
+    	test22();
     }
 
     static double testfunction2D( double x1, double x2){
@@ -56,6 +59,9 @@ public:
     	COMBIGRID_ERROR_TEST_EQUAL( fg->getElementVector()[3] , 1.1 , 1e-7 , "" );
     	COMBIGRID_ERROR_TEST_EQUAL( fg->getElementVector()[4] , 1.2 , 1e-7 , "" );
 
+    	std::vector<double> globalC(1,0.0);
+    	GridPlotter::plotFullGrid( "line1D.m" , fg , globalC );
+
     	delete fg;
     	delete domain;
     	delete stretchingMaker;
@@ -67,16 +73,19 @@ public:
     	std::vector<double> max(1); max[0] = 1.2;
     	std::vector<int> levels(1); levels[0] = 5;
 
-    	AbstractStretchingMaker* stretchingMaker = new UniformStretching();
+    	AbstractStretchingMaker* stretchingMaker = new AtanSpecialStretching(); //new UniformStretching();
     	GridDomain* domain = new GridDomain( 1 , levels , min , max , (*stretchingMaker) );
 
     	// make the Tikhonov computations
-    	FullGridD* fg = RunTikhonov::computeFGTikhonov( *domain , levels , 3e-6 ,
+    	FullGridD* fg = RunTikhonov::computeFGTikhonov( *domain , levels , 3e-5 ,
     			"../../../datasets/regression/1DOption/X.txt" , "../../../datasets/regression/1DOption/Y.txt");
 
     	// test directly the unknowns
     	std::vector<double> coord(1); coord[0] = 0.81;
     	COMBIGRID_ERROR_TEST_EQUAL( fg->eval(coord) , 0.05 , 1e-1 , "" );
+
+    	std::vector<double> globalC(1,0.0);
+    	GridPlotter::plotFullGrid( "option1D.m" , fg , globalC );
 
     	delete fg;
     	delete domain;
@@ -105,6 +114,31 @@ public:
     	delete stretchingMaker;
     }
 
+    static void test14(){
+
+    	std::vector<double> min(1); min[0] = 0.5;
+    	std::vector<double> max(1); max[0] = 1.5;
+    	std::vector<int> levels(1); levels[0] = 5;
+
+    	AbstractStretchingMaker* stretchingMaker = new TanStretching(0.5); //new AtanSpecialStretching(); //new UniformStretching(); //new AtanSpecialStretching();
+    	GridDomain* domain = new GridDomain( 1 , levels , min , max , (*stretchingMaker) );
+
+    	// make the Tikhonov computations
+    	FullGridD* fg = RunTikhonov::computeFGTikhonov( *domain , levels , 3e-5 ,
+    			"../../../datasets/regression/1DOption_1Y/X.txt" , "../../../datasets/regression/1DOption_1Y/Y.txt");
+
+    	// test directly the unknowns
+    	std::vector<double> coord(1); coord[0] = 0.81;
+    	COMBIGRID_ERROR_TEST_EQUAL( fg->eval(coord) , 0.05 , 1e-1 , "" );
+
+    	std::vector<double> globalC(1,0.0);
+    	GridPlotter::plotFullGrid( "option1D_1Y.m" , fg , globalC );
+
+    	delete fg;
+    	delete domain;
+    	delete stretchingMaker;
+    }
+
     static void test2(){
 
     	std::vector<double> min(2); min[0] = 0.9; min[1] = 0.9;
@@ -121,6 +155,9 @@ public:
     	// test the unkowns
     	COMBIGRID_ERROR_TEST_EQUAL( fg->getElementVector()[0] , 1.8 , 1e-2 , "" );
     	COMBIGRID_ERROR_TEST_EQUAL( fg->getElementVector()[fg->getElementVector().size()-1] , 2.2 , 1e-5 , "" );
+
+    	std::vector<double> globalC(2,0.0);
+    	GridPlotter::plotFullGrid( "plane2D.m" , fg , globalC );
 
     	delete fg;
     	delete domain;
@@ -164,6 +201,33 @@ public:
 
     	std::vector<double> coord(2); coord[0] = 0.81; coord[1] = 0.81;
     	COMBIGRID_ERROR_TEST_EQUAL( fg->eval(coord) , 0.05 , 1e-1 , "" );
+
+    	std::vector<double> globalC(2,0.0);
+    	GridPlotter::plotFullGrid( "option2D.m" , fg , globalC );
+
+    	delete fg;
+    	delete domain;
+    	delete stretchingMaker;
+    }
+
+    static void test22(){
+
+    	std::vector<double> min(2); min[0] = 0.6; min[1] = 0.6;
+    	std::vector<double> max(2); max[0] = 1.4; max[1] = 1.4;
+    	std::vector<int> levels(2); levels[0] = 4; levels[1] = 4;
+
+    	AbstractStretchingMaker* stretchingMaker = new AtanSpecialStretching();
+    	GridDomain* domain = new GridDomain( 2 , levels , min , max , (*stretchingMaker) );
+
+    	// make the Tikhonov computations
+    	FullGridD* fg = RunTikhonov::computeFGTikhonov( *domain , levels , 2e-5 ,
+    			"../../../datasets/regression/2DOption_1Y/X.txt" , "../../../datasets/regression/2DOption_1Y/Y.txt");
+
+    	std::vector<double> coord(2); coord[0] = 0.81; coord[1] = 0.81;
+    	COMBIGRID_ERROR_TEST_EQUAL( fg->eval(coord) , 0.05 , 1e-1 , "" );
+
+    	std::vector<double> globalC(2,0.0);
+    	GridPlotter::plotFullGrid( "option2D_1Y.m" , fg , globalC );
 
     	delete fg;
     	delete domain;

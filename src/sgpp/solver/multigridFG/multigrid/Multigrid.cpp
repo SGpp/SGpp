@@ -160,7 +160,7 @@ void Multigrid::solveCS( std::vector<double>& unknowns ,
 			nrGSPost_ = 2*nrGSPost_;
 			nrGSPre_ = nrGSPre_ + 1;
 		}
-		if (vCycle > 10) {
+		if ( (vCycle >= 10) && (vCycle % 10 == 0)) {
 			nrGSPost_ = nrGSPost_ + 2;
 			nrGSPre_ = nrGSPre_ + 1;
 		}

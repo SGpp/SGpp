@@ -73,6 +73,7 @@ sourceFiles = [
    Glob(buildpath + './converter/*.cpp'),
    Glob(buildpath + './domain/*.cpp'),
    Glob(buildpath + './fullgrid/*.cpp'),
+   Glob(buildpath + './plotter/*.cpp'),
    Glob(buildpath + './utils/*.cpp'),
 # Solvers(e.g. multigrid) which work on full grids or on combi grid  
    Glob(buildpath + '../solver/multigridFG/interface/*.cpp'),
