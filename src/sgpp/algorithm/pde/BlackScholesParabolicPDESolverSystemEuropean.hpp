@@ -69,6 +69,8 @@ protected:
 	size_t refineMaxLevel;
 	/// the algorithmic dimensions used in this system
 	std::vector<size_t> BSalgoDims;
+	/// store number of executed timesteps
+	size_t nExecTimesteps;
 
 	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
 
