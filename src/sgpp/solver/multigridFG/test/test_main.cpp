@@ -13,11 +13,12 @@ using namespace combigrid;
 
 int main(int argc, char** argv)
 {
-	// test the Tikhonov solver
-	TestTikhonov::test_all_cases();
 
 	// test the Poisson problem solver
 	TestPoisson::test_all_cases();
+
+	// test the Tikhonov solver
+	TestTikhonov::test_all_cases();
 
 	return 0;
 }

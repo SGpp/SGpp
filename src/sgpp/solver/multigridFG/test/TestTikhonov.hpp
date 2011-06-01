@@ -151,9 +151,9 @@ public:
 
     static void test21(){
 
-    	std::vector<double> min(2); min[0] = 0.8; min[1] = 0.8;
-    	std::vector<double> max(2); max[0] = 1.2; max[1] = 1.2;
-    	std::vector<int> levels(2); levels[0] = 4; levels[1] = 5;
+    	std::vector<double> min(2); min[0] = 0.9; min[1] = 0.9;
+    	std::vector<double> max(2); max[0] = 1.1; max[1] = 1.1;
+    	std::vector<int> levels(2); levels[0] = 4; levels[1] = 3;
 
     	AbstractStretchingMaker* stretchingMaker = new AtanSpecialStretching();
     	GridDomain* domain = new GridDomain( 2 , levels , min , max , (*stretchingMaker) );

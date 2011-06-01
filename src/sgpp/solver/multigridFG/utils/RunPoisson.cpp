@@ -7,6 +7,7 @@
 
 #include "RunPoisson.hpp"
 #include "solver/multigridFG/multigrid/Multigrid.hpp"
+#include "solver/multigridFG/multigrid/MultigridFAS.hpp"
 
 using namespace combigrid;
 
@@ -42,7 +43,10 @@ FullGridD* RunPoisson::computeFGPoisson(
 	// solve using only the smoother
 	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... solve multigird");
 	unknowns.resize( fg->getNrElements() , startValue );
-	multigrid.solveCS( unknowns , 1e-8 );
+	multigrid.solveCS( unknowns , 1e-8 , true );
+	//multigrid.solveSmoothing( unknowns , 1e-8);
+	//multigrid.solveCG( unknowns , 1e-6 );
+	//multigridFAS.solveFAS( unknowns , 1e-8 );
 
 	// copy the solution back
 	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... write solution back and return");
