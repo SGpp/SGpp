@@ -34,6 +34,7 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 	}
 	else
 	{
+		char ctrl;
 		this->nIterations = 1;
 		double epsilonSqd = this->myEpsilon* this->myEpsilon;
 
@@ -45,7 +46,8 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 
 		//Calculate r0
 		DataVector r(alpha.getSize());
-		myGlobalMPIComm->broadcastControl('M');
+		ctrl = 'M';
+		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 		SystemMatrix.mult(alpha, r);
 		r.sub(b);
 
@@ -81,7 +83,8 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 		{
 			// s  = Ap
 			s.setAll(0.0);
-			myGlobalMPIComm->broadcastControl('M');
+			ctrl = 'M';
+			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 			SystemMatrix.mult(p, s);
 
 			//std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
@@ -100,7 +103,8 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 
 			// v = Aw
 			v.setAll(0.0);
-			myGlobalMPIComm->broadcastControl('M');
+			ctrl = 'M';
+			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 			SystemMatrix.mult(w, v);
 
 			//std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
@@ -143,7 +147,8 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 		}
 
 		// Let other ranks exit BiCGStab solver
-		myGlobalMPIComm->broadcastControl('T');
+		ctrl = 'T';
+		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 	}
 }
 
@@ -154,7 +159,7 @@ void BiCGStabMPI::waitForTask(base::OperationMatrix& SystemMatrix, DataVector& a
 
 	do
 	{
-		ctrl = myGlobalMPIComm->receiveControl();
+		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 
 		if (ctrl == 'M')
 		{

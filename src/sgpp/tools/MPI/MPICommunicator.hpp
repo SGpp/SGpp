@@ -123,17 +123,25 @@ public:
 
 	/**
 	 * sends a control character to all ranks greater the zero
+	 * MPI_Bcast is used.
 	 *
 	 * @param ctrl Control character that should be sent
 	 */
-	void broadcastControl(char ctrl);
+	void broadcastControlFromRank0(char* ctrl);
 
-	/**
-	 * receives a control character send by rank 0
-	 *
-	 * @return the received Control Parameter
-	 */
-	char receiveControl();
+//	/**
+//	 * sends a control character to all ranks greater the zero
+//	 *
+//	 * @param ctrl Control character that should be sent
+//	 */
+//	void broadcastControl(char ctrl);
+//
+//	/**
+//	 * receives a control character send by rank 0
+//	 *
+//	 * @return the received Control Parameter
+//	 */
+//	char receiveControl();
 
 	/**
 	 * Implements a Barrier for all tasks

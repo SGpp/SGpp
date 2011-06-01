@@ -111,22 +111,27 @@ void MPICommunicator::Abort()
 	MPI_Abort(MPI_COMM_WORLD, -1);
 }
 
-void MPICommunicator::broadcastControl(char ctrl)
+//void MPICommunicator::broadcastControl(char ctrl)
+//{
+//	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
+//	{
+//		MPI_Send((void*)&ctrl, 1, MPI_CHAR, dest_rank, this->myid_, MPI_COMM_WORLD);
+//	}
+//}
+//
+//char MPICommunicator::receiveControl()
+//{
+//	MPI_Status status;
+//	char result;
+//
+//	MPI_Recv((void*)&result, 1, MPI_CHAR, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+//
+//	return result;
+//}
+
+void MPICommunicator::broadcastControlFromRank0(char* ctrl)
 {
-	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
-	{
-		MPI_Send((void*)&ctrl, 1, MPI_CHAR, dest_rank, this->myid_, MPI_COMM_WORLD);
-	}
-}
-
-char MPICommunicator::receiveControl()
-{
-	MPI_Status status;
-	char result;
-
-	MPI_Recv((void*)&result, 1, MPI_CHAR, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-
-	return result;
+	MPI_Bcast((void*)ctrl, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 int MPICommunicator::getMyRank()
