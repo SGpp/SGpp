@@ -313,21 +313,23 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
-		std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
 
-		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-
-		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-
-		if (this->myScreen != NULL)
+		if (myGlobalMPIComm->getMyRank() == 0)
 		{
-			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
+			std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
+			std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+			std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+			std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+			std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+
+			if (this->myScreen != NULL)
+			{
+				std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
+				this->myScreen->writeEmptyLines(2);
+			}
 		}
 
 		this->finInnerGridSize = getNumberInnerGridPoints();
@@ -358,21 +360,23 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
-		std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
 
-		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-
-		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-
-		if (this->myScreen != NULL)
+		if (myGlobalMPIComm->getMyRank() == 0)
 		{
-			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
+			std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
+			std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+			std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+			std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+			std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+
+			if (this->myScreen != NULL)
+			{
+				std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
+				this->myScreen->writeEmptyLines(2);
+			}
 		}
 
 		this->finInnerGridSize = getNumberInnerGridPoints();
@@ -418,25 +422,35 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
 		myStopwatch->start();
 		if (numIESteps > 0)
 		{
-			std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl;
+			if (myGlobalMPIComm->getMyRank() == 0)
+			{
+				std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl;
+			}
 			myBSSystem->setODESolver("ImEul");
 			myEuler->solve(*myCG, *myBSSystem, false, false);
 		}
+
+		if (myGlobalMPIComm->getMyRank() == 0)
+		{
+			std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
+		}
+
 		myBSSystem->setODESolver("CrNic");
-		std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" << std::endl << std::endl << std::endl << std::endl;
 		myCN->solve(*myCG, *myBSSystem, true, false);
 		this->dNeededTime = myStopwatch->stop();
 
-		std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-		std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-
-		std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-		std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-
-		if (this->myScreen != NULL)
+		if (myGlobalMPIComm->getMyRank() == 0)
 		{
-			std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
+			std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+			std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+			std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
+			std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+
+			if (this->myScreen != NULL)
+			{
+				std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
+				this->myScreen->writeEmptyLines(2);
+			}
 		}
 
 		this->finInnerGridSize = getNumberInnerGridPoints();
