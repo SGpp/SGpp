@@ -670,14 +670,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		sg::parallel::myGlobalMPIComm->Barrier();
 
 		// Communicate coefficients
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			sg::parallel::myGlobalMPIComm->broadcastGridCoefficients(*alpha);
-		}
-		else
-		{
-			sg::parallel::myGlobalMPIComm->receiveGridCoefficients(*alpha);
-		}
+		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
 		sg::parallel::myGlobalMPIComm->Barrier();
 

@@ -17,38 +17,56 @@ MPICommunicator::MPICommunicator(int myid, int ranks) : myid_(myid), ranks_(rank
 
 MPICommunicator::~MPICommunicator() { }
 
-void MPICommunicator::sendGridCoefficients(DataVector& alpha, int dest_rank)
+//void MPICommunicator::sendGridCoefficients(DataVector& alpha, int dest_rank)
+//{
+//	MPI_Send((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, dest_rank, this->myid_, MPI_COMM_WORLD);
+//}
+//
+//void MPICommunicator::broadcastGridCoefficients(DataVector& alpha)
+//{
+//	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
+//	{
+//		MPI_Send((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, dest_rank, this->myid_, MPI_COMM_WORLD);
+//	}
+//}
+
+void MPICommunicator::broadcastGridCoefficientsFromRank0(DataVector& alpha)
 {
-	MPI_Send((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, dest_rank, this->myid_, MPI_COMM_WORLD);
+	MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
 
-void MPICommunicator::broadcastGridCoefficients(DataVector& alpha)
+//void MPICommunicator::receiveGridCoefficients(DataVector& alpha)
+//{
+//	MPI_Status status;
+//
+//	MPI_Recv((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+//}
+//
+//void MPICommunicator::aggregateGridCoefficients(DataVector& alpha)
+//{
+//	for (int recv_rank = 1; recv_rank < this->ranks_; recv_rank++)
+//	{
+//		DataVector tmp(alpha);
+//		MPI_Status status;
+//
+//		MPI_Recv((void*)tmp.getPointer(), (int)tmp.getSize(), MPI_DOUBLE, recv_rank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+//
+//		alpha.add(tmp);
+//	}
+//}
+
+void MPICommunicator::reduceGridCoefficientsOnRank0(DataVector& alpha)
 {
-	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
+	if (myid_ == 0)
 	{
-		MPI_Send((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, dest_rank, this->myid_, MPI_COMM_WORLD);
+		MPI_Reduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	}
+	else
+	{
+		MPI_Reduce((void*)alpha.getPointer(), NULL, (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	}
 }
 
-void MPICommunicator::receiveGridCoefficients(DataVector& alpha)
-{
-	MPI_Status status;
-
-	MPI_Recv((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-}
-
-void MPICommunicator::aggregateGridCoefficients(DataVector& alpha)
-{
-	for (int recv_rank = 1; recv_rank < this->ranks_; recv_rank++)
-	{
-		DataVector tmp(alpha);
-		MPI_Status status;
-
-		MPI_Recv((void*)tmp.getPointer(), (int)tmp.getSize(), MPI_DOUBLE, recv_rank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-
-		alpha.add(tmp);
-	}
-}
 
 void MPICommunicator::sendGrid(std::string& serialized_grid, int dest_rank)
 {
