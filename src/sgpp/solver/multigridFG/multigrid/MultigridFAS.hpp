@@ -5,8 +5,8 @@
  *      Author: benk
  */
 
-#ifndef MULTIGRID_HPP_
-#define MULTIGRID_HPP_
+#ifndef MULTIGRIDFAS_HPP_
+#define MULTIGRIDFAS_HPP_
 
 #include "solver/multigridFG/interface/OperatorFG.hpp"
 
@@ -17,43 +17,27 @@ namespace combigrid {
  * (hierarchical and non-hierarchical)
  * <br>
  * It uses an operator which contains the problem specific operators */
-class Multigrid {
+class MultigridFAS {
 public:
 
 	/** Ctor
 	 * @param op [IN] the operator which defines the problem
 	 * @param fg [IN] the full grid on which the problem should be solved
 	 * @param createHierarchy [IN] if a hierarchy of grids should be created */
-	Multigrid(OperatorFG* op ,
+	MultigridFAS(OperatorFG* op ,
 			  FullGridD* fg ,
 			  bool createHierarchy = true );
 
 	/** */
-	virtual ~Multigrid();
+	virtual ~MultigridFAS();
 
-	/** solves the problem using the correction scheme
+    /** solves the problem using the full approximation scheme
 	 * @param unknowns [IN/OUT] the unknown vector, which will be the initial solution
 	 * and later the output for the solution
-	 * @param errorTol [IN] the error tolerance for the solver
-	 * @param makeFullMG [IN] default = false if a full multigrid should performed at the beginning */
-    void solveCS( std::vector<double>& unknowns , double errorTol , bool makeFullMG = false );
-
-	/** solves the problem using just the smoothing
-	 * @param unknowns [IN/OUT] the unknown vector, which will be the initial solution
-	 * and later the output for the solution
-	 * @param errorTol [IN] the error tolerance for the solver*/
-    void solveSmoothing( std::vector<double>& unknowns , double errorTol);
-
-	/** solves the problem using the CG method
-	 * @param unknowns [IN/OUT] the unknown vector, which will be the initial solution
-	 * and later the output for the solution
-	 * @param errorTol [IN] the error tolerance for the solver*/
-    void solveCG( std::vector<double>& unknowns , double errorTol);
+	 * @param errorTol [IN] the error tolerance for the solver */
+    void solveFAS( std::vector<double>& unknowns , double errorTol);
 
 private:
-
-    /** makes an F-cycle, which is ususal for stationary problems */
-    void makeFullMultigrid( std::vector<double>& unknowns );
 
     /** the hierarchy of grids for the multigrid,
      * the first one is the input grid, the rest will be created*/
@@ -68,6 +52,12 @@ private:
 
     std::vector< std::vector<double>* > rhs_;
 
+    std::vector< std::vector<double>* > rhs_tmp_;
+
+    std::vector< std::vector<double>* > u_hH_;
+
+    std::vector< std::vector<double>* > lh_;
+
     /** */
     int depth_;
 
@@ -78,4 +68,4 @@ private:
 
 }
 
-#endif /* MULTIGRID_HPP_ */
+#endif /* MULTIGRIDFAS_HPP_ */

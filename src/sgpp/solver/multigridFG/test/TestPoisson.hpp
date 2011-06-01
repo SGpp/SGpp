@@ -97,9 +97,10 @@ public:
     	std::vector<double> max(3); max[0] = 1.0; max[1] = 1.0; max[2] = 1.0;
     	std::vector<double> sigma(3); sigma[0] = 1.0; sigma[1] = 1.0; sigma[2] = 1.0;
     	std::vector<int> levels(3); levels[0] = 5; levels[1] = 6; levels[2] = 4;
+    	std::vector<int> levelsDom(3); levelsDom[0] = 7; levelsDom[1] = 7; levelsDom[2] = 7;
 
     	AbstractStretchingMaker* stretchingMaker = new TanStretching(0.7); //new UniformStretching(); //new AtanSpecialStretching(); //new UniformStretching();
-    	GridDomain* domain = new GridDomain( 3 , levels , min , max , (*stretchingMaker) );
+    	GridDomain* domain = new GridDomain( 3 , levelsDom , min , max , (*stretchingMaker) );
     	ConstRHS* rhs = new ConstRHS(1.0);
 
     	// make the Poisson computations

@@ -17,7 +17,7 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 		const std::vector<double>* yCoords ) : OperatorFG(fg , 1) ,
 		xCoords_(xCoords) , yCoords_(yCoords) {
 
-	const int verb = 4;
+	const int verb = 0;
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::TikhonovOperator START");
 	// the full grid must have boundary points
 	// consistency check for the grid (boundary points, at least 3 points per axis)
@@ -249,22 +249,22 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 	if (verb > 3){
 		// visialize the matrix and the right hand side
 		tmp = 0;
-		COMBIGRID_OUT_LEVEL5( verb , " ============ START MATRIX PLOTT ============ ");
+		COMBIGRID_OUT_LEVEL3( verb , " ============ START MATRIX PLOTT ============ ");
 		for ( e = 0 ; e < nrElem_ ; e++)
 		{
 			startSearch = row_ptr_[ e ];
 			endSearch = row_ptr_[ e + 1];
 			// for each element in the row
 			for ( ; startSearch < endSearch ; startSearch++){
-				COMBIGRID_OUT_LEVEL5( verb , " A("<<e+1<< "," << col_ind_[tmp]+1 <<") = " << matrixVal_[tmp] << ";");
+				COMBIGRID_OUT_LEVEL3( verb , " A("<<e+1<< "," << col_ind_[tmp]+1 <<") = " << matrixVal_[tmp] << ";");
 				tmp++;
 			}
 		}
 		for ( e = 0 ; e < nrElem_ ; e++)
 		{
-			COMBIGRID_OUT_LEVEL5( verb , "b("<<e+1<<")= " << rhs_[e] << ";");
+			COMBIGRID_OUT_LEVEL3( verb , "b("<<e+1<<")= " << rhs_[e] << ";");
 		}
-		COMBIGRID_OUT_LEVEL5( verb , " ============ END MATRIX PLOTT ============ ");
+		COMBIGRID_OUT_LEVEL3( verb , " ============ END MATRIX PLOTT ============ ");
 	}
 }
 
@@ -281,14 +281,14 @@ OperatorFG* TikhonovOperator::factory(const FullGridD* fg) const {
 void TikhonovOperator::getRHS(std::vector<double>& rhs , int& nrSpace) const {
 	nrSpace = this->getNrSpace();
 	rhs.resize(nrElem_);
-	COMBIGRID_OUT_LEVEL2( 6 , "TikhonovOperator::getRHS ... START");
+	COMBIGRID_OUT_LEVEL2( 2 , "TikhonovOperator::getRHS ... START");
 	for (int i = 0 ; i < nrElem_ ; i++)  { rhs[i] = rhs_[i]; }
-	COMBIGRID_OUT_LEVEL2( 6 , "TikhonovOperator::getRHS ... END");
+	COMBIGRID_OUT_LEVEL2( 2 , "TikhonovOperator::getRHS ... END");
 }
 
 void TikhonovOperator::multiplyVector(std::vector<double>& inVect , std::vector<double>& outVect) const {
 	// implement this
-	int i , of , verb = 6;
+	int i , of , verb = 2;
 	double tmp = 0.0;
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::multiplyVector ... START");
 	for (i = 0 ; i < nrElem_ ; i++){
@@ -304,7 +304,7 @@ void TikhonovOperator::multiplyVector(std::vector<double>& inVect , std::vector<
 void TikhonovOperator::doSmoothing(int nrIt ,
 		std::vector<double>& u, std::vector<double>& rhs) const {
 	// make a simple Gauss-Seidel
-	int i , of , aii , verb = 6;
+	int i , of , aii , verb = 2;
 	double tmp = 0.0;
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::doSmoothing ... START it:" << nrIt);
 	for (int it = 0 ; it < nrIt ; it++){

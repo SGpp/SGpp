@@ -123,8 +123,10 @@ FullGridD* RunTikhonov::computeFGTikhonov(
 	// solve using only the smoother
 	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... solve multigird");
 	unknowns.resize(fg->getNrElements(),0.0);
+	multigrid.solveCS( unknowns , 1e-8 , false );
 	//multigrid.solveSmoothing( unknowns , 1e-8);
-	multigrid.solveCS( unknowns , 1e-8 );
+	//multigrid.solveCG( unknowns , 1e-6 );
+	//multigridFAS.solveFAS( unknowns , 1e-8 );
 
 	// copy the solution back
 	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... write solution back and return");

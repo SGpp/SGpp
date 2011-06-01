@@ -30,7 +30,7 @@ void ProlongationRestriction::prolongation(
 	const int nrFinePoints = fgFine->getNrElements();
 	const int nrCellPoints = combigrid::powerOfTwo[dim];
 	bool hasDomain = true;
-	int tmp_I , linearIndexC , tmp_I2 , verb = 5 , i , axis , d;
+	int tmp_I , linearIndexC , tmp_I2 , verb = 0 , i , axis , d;
 	double tmp_D;
 	int tOffs = 0;
     std::vector<int> axisIndexC(dim);
@@ -186,7 +186,7 @@ void ProlongationRestriction::restriction( const FullGridD* fgFine ,
 			" nrSpace:"<<nrSpace << " fgCoarse->getNrElements():" << fgCoarse->getNrElements() );
 
 	// variable declaration
-	const int verb = 6;
+	const int verb = 0;
 	const int dim = fgFine->getDimension();
 	const int nrCoarsePoints = fgCoarse->getNrElements();
 	int tmp_I , linearIndexC , linearIndexF , i , s ;
