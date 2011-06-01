@@ -846,19 +846,23 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 
+	double refineSigma = DFLT_SIGMA_REFINE_NORMDIST;
+
 	DataVector mu(dim);
 	DataVector sigma(dim);
 	DataMatrix rho(dim,dim);
 
+	DataVector* alpha = NULL;
+
+	DataVector EvalCuboidValues(1);
+	DataMatrix EvalCuboid(1, dim);
+
+	int retCuboid = -1;
+	int retCuboidValues = -1;
+
 	double r = riskfree;
 
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
-	{
-		return;
-	}
-
-	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
-	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 	{
 		return;
 	}
@@ -872,14 +876,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		myBSSolver = new sg::parallel::BlackScholesSolverMPI(false, "European");
 	}
-	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-	delete[] myBoundaries;
-
-	// init Screen Object
-	myBSSolver->initScreen();
-
-	// Construct a grid
-	myBSSolver->constructGrid(*myBoundingBox, level);
 
 	// Enable Coarsening
 	if (useCoarsen == true)
@@ -887,136 +883,159 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
 	}
 
-	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
-
-	// Init the grid with on payoff function
-	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-
-	std::vector<double> norm_mu;
-	std::vector<double> norm_sigma;
-	double refineSigma = DFLT_SIGMA_REFINE_NORMDIST;
-
-	// estimate refine sigma from evaluation cuboid
-	// read Evaluation cuboid
-	DataMatrix EvalCuboid(1, dim);
-	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
-
-	// read reference values for evaluation cuboid
-	DataVector EvalCuboidValues(1);
-	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
-
-	if (EvalCuboid.getNrows() != EvalCuboidValues.getSize())
+	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
 	{
-		retCuboid = 1;
-		retCuboidValues = 1;
-	}
-
-	if (retCuboid == 0 && retCuboidValues == 0)
-	{
-		refineSigma = EvalCuboid.max(0) - EvalCuboid.min(0);
-	}
-
-	if (useNormalDist == true)
-	{
-		for (size_t i = 0; i < d; i++)
+		sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+		if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
 		{
-			norm_mu.push_back(dStrike);
-			norm_sigma.push_back(refineSigma);
+			return;
 		}
-	}
+		sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+		delete[] myBoundaries;
 
-//	if (useCoarsen == true)
-//	{
-//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-//		{
-//			myBSSolver->coarsenInitialGridSurplus(*alpha, coarsenThreshold);
-//		}
-//	}
+		// init Screen Object
+		myBSSolver->initScreen();
 
-	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+		// Construct a grid
+		myBSSolver->constructGrid(*myBoundingBox, level);
+		delete myBoundingBox;
 
-	// refine the grid to approximate the singularity in the start solution better
-	if (refinementMode == "classic")
-	{
-		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+		// init the basis functions' coefficient vector
+		alpha = new DataVector(myBSSolver->getNumberGridPoints());
+
+		// Init the grid with on payoff function
+		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+
+		std::vector<double> norm_mu;
+		std::vector<double> norm_sigma;
+
+		// estimate refine sigma from evaluation cuboid
+		// read Evaluation cuboid
+		retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+
+		// read reference values for evaluation cuboid
+		retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+
+		if (EvalCuboid.getNrows() != EvalCuboidValues.getSize())
 		{
-			std::cout << "Refining Grid..." << std::endl;
-			if (useNormalDist == true)
-			{
-				myBSSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
-			}
-			else
-			{
-				myBSSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
-			}
-			myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-			std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-			std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+			retCuboid = -1;
+			retCuboidValues = -1;
 		}
 
-	}
-	else if (refinementMode == "maxLevel")
-	{
-		size_t oldGridSize = 0;
-		size_t newGridSize = myBSSolver->getNumberGridPoints();
-		size_t addedGridPoint = 0;
-		size_t stepCounter = 0;
-		if (nIterAdaptSteps > 0)
+		if (retCuboid == 0 && retCuboidValues == 0)
 		{
-			do
+			refineSigma = EvalCuboid.max(0) - EvalCuboid.min(0);
+		}
+
+		if (useNormalDist == true)
+		{
+			for (size_t i = 0; i < d; i++)
 			{
-				oldGridSize = newGridSize;
+				norm_mu.push_back(dStrike);
+				norm_sigma.push_back(refineSigma);
+			}
+		}
+
+		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+		// refine the grid to approximate the singularity in the start solution better
+		if (refinementMode == "classic")
+		{
+			for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+			{
 				std::cout << "Refining Grid..." << std::endl;
 				if (useNormalDist == true)
 				{
-					myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha, dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
+					myBSSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
 				}
 				else
 				{
-					myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, maxRefineLevel);
+					myBSSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
 				}
 				myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 				std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 				std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-				newGridSize = myBSSolver->getNumberGridPoints();
-				addedGridPoint = newGridSize - oldGridSize;
-				stepCounter++;
-			} while ((addedGridPoint > 0) && (stepCounter < nIterAdaptSteps));
+			}
+
 		}
+		else if (refinementMode == "maxLevel")
+		{
+			size_t oldGridSize = 0;
+			size_t newGridSize = myBSSolver->getNumberGridPoints();
+			size_t addedGridPoint = 0;
+			size_t stepCounter = 0;
+			if (nIterAdaptSteps > 0)
+			{
+				do
+				{
+					oldGridSize = newGridSize;
+					std::cout << "Refining Grid..." << std::endl;
+					if (useNormalDist == true)
+					{
+						myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha, dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
+					}
+					else
+					{
+						myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, maxRefineLevel);
+					}
+					myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+					std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+					std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+					newGridSize = myBSSolver->getNumberGridPoints();
+					addedGridPoint = newGridSize - oldGridSize;
+					stepCounter++;
+				} while ((addedGridPoint > 0) && (stepCounter < nIterAdaptSteps));
+			}
+		}
+		else
+		{
+			std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+			std::cout << "Skipping initial grid refinement!" << std::endl;
+		}
+		std::cout << std::endl << std::endl << std::endl;
+
+		// Print the payoff function into a gnuplot file
+		if (dim < 3)
+		{
+			myBSSolver->printGrid(*alpha, 20, "payoff.MPI.gnuplot");
+		}
+		if (dim < 4)
+		{
+			myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.MPI.gnuplot", true);
+			myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.MPI.gnuplot", false);
+
+			if (isLogSolve == true)
+			{
+				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.MPI.gnuplot", true);
+				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.MPI.gnuplot", false);
+			}
+		}
+	}
+
+	// Communicate grid
+	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
+	{
+		std::string serialized_grid = myBSSolver->getGrid();
+
+		sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
 	}
 	else
 	{
-		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
-		std::cout << "Skipping initial grid refinement!" << std::endl;
-	}
-	std::cout << std::endl << std::endl << std::endl;
+		// Now receive the grid
+		std::string serialized_grid = "";
 
-//	if (useCoarsen == true)
-//	{
-//		myBSSolver->coarsenInitialGridSurplus(*alpha, coarsenThreshold);
-//		std::cout << "Coarsened Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-//		std::cout << "Coarsened Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-//		std::cout << std::endl << std::endl << std::endl;
-//	}
+		sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
+		myBSSolver->setGrid(serialized_grid);
 
-	// Print the payoff function into a gnuplot file
-	if (dim < 3)
-	{
-		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+		alpha = new DataVector(myBSSolver->getNumberGridPoints());
 	}
-	if (dim < 4)
-	{
-		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
 
-		if (isLogSolve == true)
-		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
-		}
-	}
+	sg::parallel::myGlobalMPIComm->Barrier();
+
+	// Communicate coefficients
+	sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
+	sg::parallel::myGlobalMPIComm->Barrier();
 
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -1059,117 +1078,119 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	if (dim < 3)
+	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
 	{
-		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
-	}
-	if (dim < 4)
-	{
-		myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
-
-		if (isLogSolve == true)
+		if (dim < 3)
 		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
+			// Print the solved Black Scholes Equation into a gnuplot file
+			myBSSolver->printGrid(*alpha, 20, "solvedBS.MPI.gnuplot");
 		}
-	}
-
-	std::vector<double> point;
-	for (size_t i = 0; i < d; i++)
-	{
-		if (isLogSolve == true)
+		if (dim < 4)
 		{
-			point.push_back(log(dStrike));
-		}
-		else
-		{
-			point.push_back(dStrike);
-		}
-	}
-	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.MPI.gnuplot", true);
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.MPI.gnuplot", false);
 
-	// calculate relative errors
-	////////////////////////////
-	double maxNorm = 0.0;
-	double l2Norm = 0.0;
-
-	if (retCuboid == 0 && retCuboidValues == 0)
-	{
-		// If the log-transformed Black Scholes Equation is used -> transform Eval-cuboid
-		if (isLogSolve == true)
-		{
-			for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
+			if (isLogSolve == true)
 			{
-				for (size_t w = 0; w < EvalCuboid.getNcols(); w++)
-				{
-					EvalCuboid.set(v, w, log(EvalCuboid.get(v,w)));
-				}
+				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.MPI.gnuplot", true);
+				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.MPI.gnuplot", false);
 			}
 		}
 
-		std::cout << "Calculating relative errors..." << std::endl;
-		// Evaluate Cuboid
-		DataVector Prices(EvalCuboid.getNrows());
-		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
+		std::vector<double> point;
+		for (size_t i = 0; i < d; i++)
+		{
+			if (isLogSolve == true)
+			{
+				point.push_back(log(dStrike));
+			}
+			else
+			{
+				point.push_back(dStrike);
+			}
+		}
+		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
-		DataVector relError(Prices);
+		// calculate relative errors
+		////////////////////////////
+		double maxNorm = 0.0;
+		double l2Norm = 0.0;
 
-		// calculate relative error
-		relError.sub(EvalCuboidValues);
-		relError.componentwise_div(EvalCuboidValues);
+		if (retCuboid == 0 && retCuboidValues == 0)
+		{
+			// If the log-transformed Black Scholes Equation is used -> transform Eval-cuboid
+			if (isLogSolve == true)
+			{
+				for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
+				{
+					for (size_t w = 0; w < EvalCuboid.getNcols(); w++)
+					{
+						EvalCuboid.set(v, w, log(EvalCuboid.get(v,w)));
+					}
+				}
+			}
 
-		// calculate max. norm of relative error
-		maxNorm = relError.maxNorm();
+			std::cout << "Calculating relative errors..." << std::endl;
+			// Evaluate Cuboid
+			DataVector Prices(EvalCuboid.getNrows());
+			myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
-		// calculate two norm of relative error
-		l2Norm = relError.RMSNorm();
+			DataVector relError(Prices);
 
-		// Printing norms
-		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+			// calculate relative error
+			relError.sub(EvalCuboidValues);
+			relError.componentwise_div(EvalCuboidValues);
 
-		// reprint data with prefix -> can be easily grep-ed
+			// calculate max. norm of relative error
+			maxNorm = relError.maxNorm();
+
+			// calculate two norm of relative error
+			l2Norm = relError.RMSNorm();
+
+			// Printing norms
+			std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+
+			// reprint data with prefix -> can be easily grep-ed
+			std::cout << std::endl << std::endl;
+		}
+		else
+		{
+			std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
+		}
+
+		std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
+		std::string normDistrefine;
+		if (useNormalDist == true)
+		{
+			std::stringstream normDistRefineStream;
+			normDistRefineStream << "solveNDadaptSurplusSubDomain;" << dStrike << ";" << refineSigma;
+			normDistrefine = normDistRefineStream.str();
+			std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
+			std::cout << "$ Refine mu = " << dStrike << "; Refine sigma = " << refineSigma << std::endl;
+		}
+		else
+		{
+			normDistrefine = "solveNDadaptSurplus;-1.0;1.0";
+			std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
+		}
+
+		std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
+		std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
+		std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize() << std::endl;
+		std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize() << std::endl;
+		std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
+		std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
+		std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+		std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl;
+		std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
+			<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
+			<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
+			<< ";" << myBSSolver->getAverageInnerGridSize() << ";" << myBSSolver->getNeededIterationsToSolve()
+			<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << l2Norm << std::endl;
 		std::cout << std::endl << std::endl;
 	}
-	else
-	{
-		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
-	}
-
-	std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
-	std::string normDistrefine;
-	if (useNormalDist == true)
-	{
-		std::stringstream normDistRefineStream;
-		normDistRefineStream << "solveNDadaptSurplusSubDomain;" << dStrike << ";" << refineSigma;
-		normDistrefine = normDistRefineStream.str();
-		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
-		std::cout << "$ Refine mu = " << dStrike << "; Refine sigma = " << refineSigma << std::endl;
-	}
-	else
-	{
-		normDistrefine = "solveNDadaptSurplus;-1.0;1.0";
-		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
-	}
-
-	std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
-	std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
-	std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize() << std::endl;
-	std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize() << std::endl;
-	std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
-	std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
-	std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
-	std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl;
-	std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
-		<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
-		<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
-		<< ";" << myBSSolver->getAverageInnerGridSize() << ";" << myBSSolver->getNeededIterationsToSolve()
-		<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << l2Norm << std::endl;
-	std::cout << std::endl << std::endl;
 
 	delete myBSSolver;
-	delete myBoundingBox;
 	delete alpha;
 }
 
@@ -1303,7 +1324,11 @@ int main(int argc, char *argv[])
 			{
 				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
 				std::cout << std::endl << std::endl;
-				writeHelp();
+				if (mpi_myid == 0)
+				{
+					writeHelp();
+				}
+				sg::parallel::myGlobalMPIComm->Abort();
 				return 0;
 			}
 
@@ -1311,7 +1336,11 @@ int main(int argc, char *argv[])
 			{
 				std::cout << "Unsupported refinement type! classic or maxLevel are supported!" << std::endl;
 				std::cout << std::endl << std::endl;
-				writeHelp();
+				if (mpi_myid == 0)
+				{
+					writeHelp();
+				}
+				sg::parallel::myGlobalMPIComm->Abort();
 				return 0;
 			}
 
@@ -1328,7 +1357,11 @@ int main(int argc, char *argv[])
 			{
 				std::cout << "Unsupported adapt solve mode! none, coarsen, refine or coarsenNrefine are supported!" << std::endl;
 				std::cout << std::endl << std::endl;
-				writeHelp();
+				if (mpi_myid == 0)
+				{
+					writeHelp();
+				}
+				sg::parallel::myGlobalMPIComm->Abort();
 				return 0;
 			}
 

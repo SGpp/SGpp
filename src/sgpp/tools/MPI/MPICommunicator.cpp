@@ -101,6 +101,32 @@ void MPICommunicator::receiveGrid(std::string& serialized_grid)
 	delete recv_buffer;
 }
 
+void MPICommunicator::broadcastGridStorage(std::string& serialized_grid_storage)
+{
+	int nChars = (int)serialized_grid_storage.length();
+	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
+	{
+		MPI_Send(&nChars, 1, MPI_INT, dest_rank, this->myid_, MPI_COMM_WORLD);
+		MPI_Send((void*)serialized_grid_storage.c_str(), (int)serialized_grid_storage.length(), MPI_CHAR, dest_rank, this->myid_, MPI_COMM_WORLD);
+	}
+}
+
+void MPICommunicator::receiveGridStorage(std::string& serialized_grid_storage)
+{
+	char* recv_buffer;
+	int count;
+	MPI_Status status;
+
+	MPI_Recv((void*)(&count), 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+	recv_buffer = new char[count];
+	MPI_Recv((void*)recv_buffer, count, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+	serialized_grid_storage = "";
+	serialized_grid_storage.assign(recv_buffer);
+
+	delete recv_buffer;
+}
+
 void MPICommunicator::Barrier()
 {
 	MPI_Barrier(MPI_COMM_WORLD);

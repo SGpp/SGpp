@@ -9,7 +9,8 @@
 
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.hpp"
 #include "exception/algorithm_exception.hpp"
-
+#include "grid/generation/SurplusCoarseningFunctor.hpp"
+#include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
@@ -572,6 +573,107 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS
 	}
 
 	return this->rhs;
+}
+
+void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::finishTimestep(bool isLastTimestep)
+{
+	// Adaptivity stuff is done on rank 0 only
+	if (myGlobalMPIComm->getMyRank() == 0)
+	{
+		// Replace the inner coefficients on the boundary grid
+		this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
+
+	#ifndef NOBOUNDARYDISCOUNT
+		// Adjust the boundaries with the riskfree rate
+		if (this->r != 0.0)
+		{
+			if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
+			{
+				this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
+			}
+		}
+	#endif
+
+		// add number of Gridpoints
+		this->numSumGridpointsInner += this->InnerGrid->getSize();
+		this->numSumGridpointsComplete += this->BoundGrid->getSize();
+
+		if (this->useCoarsen == true && isLastTimestep == false)
+		{
+			///////////////////////////////////////////////////
+			// Start integrated refinement & coarsening
+			///////////////////////////////////////////////////
+
+			size_t originalGridSize = this->BoundGrid->getStorage()->size();
+
+			// Coarsen the grid
+			base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+
+			//std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
+			//std::cout << "Grid Size: " << originalGridSize << std::endl;
+
+			if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine")
+			{
+				size_t numRefines = myGenerator->getNumberOfRefinablePoints();
+				base::SurplusRefinementFunctor* myRefineFunc = new base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
+				if (this->refineMode == "maxLevel")
+				{
+					myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+					this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+				}
+				if (this->refineMode == "classic")
+				{
+					myGenerator->refine(myRefineFunc);
+					this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+				}
+				delete myRefineFunc;
+			}
+
+			if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
+			{
+				size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+				base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
+				myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
+				delete myCoarsenFunctor;
+			}
+
+			delete myGenerator;
+
+			///////////////////////////////////////////////////
+			// End integrated refinement & coarsening
+			///////////////////////////////////////////////////
+		}
+	}
+
+	// only communicate if adaptivity is switched on
+	if (this->useCoarsen == true && isLastTimestep == false)
+	{
+		// Communicate new grid
+		if (myGlobalMPIComm->getMyRank() == 0)
+		{
+			std::string bound_grid_storage = this->BoundGrid->getStorage()->serialize();
+
+			myGlobalMPIComm->broadcastGridStorage(bound_grid_storage);
+
+			// rebuild the inner grid + coefficients
+			this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+		}
+		else
+		{
+			std::string bound_grid_storage = "";
+
+			myGlobalMPIComm->receiveGridStorage(bound_grid_storage);
+
+			this->BoundGrid->getStorage()->emptyStorage();
+			this->BoundGrid->getStorage()->unserialize_noAlgoDims(bound_grid_storage);
+			this->alpha_complete->resize(this->BoundGrid->getStorage()->size());
+
+			// rebuild the inner grid + coefficients
+			this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+		}
+
+		myGlobalMPIComm->Barrier();
+	}
 }
 
 }

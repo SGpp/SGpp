@@ -112,6 +112,7 @@ public:
 			algoDims.push_back(i);
 		}
 	}
+
 	/**
 	 * Constructor that reads the data from a string
 	 *
@@ -264,6 +265,25 @@ public:
 		// return indices of "surviver"
 		return remainingPoints;
 	}
+
+	/**
+	 * unserializes the grid from a string, algorithmic dimensions are not reseted
+	 *
+	 * @param istr the string that contains the data
+	 */
+	void unserialize_noAlgoDims(std::string& istr)
+	{
+    	std::istringstream istream;
+    	istream.str(istr);
+
+		parseGridDescription(istream);
+
+//		for (size_t i = 0; i < DIM; i++)
+//		{
+//			algoDims.push_back(i);
+//		}
+	}
+
 
 	/**
 	 * serialize the gridstorage into a string

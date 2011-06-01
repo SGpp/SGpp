@@ -142,7 +142,7 @@ public:
 	 */
 	virtual ~BlackScholesParabolicPDESolverSystemEuropean();
 
-	void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep(bool isLastTimestep = false);
 
 	void startTimestep();
 };
