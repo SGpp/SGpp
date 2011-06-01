@@ -84,6 +84,8 @@ public:
 	 * @return returns the rhs
 	 */
 	virtual DataVector* generateRHS();
+
+	void finishTimestep(bool isLastTimestep = false);
 };
 
 }

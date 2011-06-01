@@ -122,6 +122,20 @@ public:
 	void receiveGrid(std::string& serialized_grid);
 
 	/**
+	 * sends a serialized grid storage to all ranks
+	 *
+	 * @param serialized_grid_storage serialized grid storage that should be sent
+	 */
+	void broadcastGridStorage(std::string& serialized_grid_storage);
+
+	/**
+	 * receives a serialized grid storage an stores it into serialized_grid_storage
+	 *
+	 * @param serialized_grid_storage the serialized grid storage
+	 */
+	void receiveGridStorage(std::string& serialized_grid_storage);
+
+	/**
 	 * sends a control character to all ranks greater the zero
 	 * MPI_Bcast is used.
 	 *
