@@ -39,6 +39,7 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 			std::cout << "Starting Conjugated Gradients" << std::endl;
 		}
 
+		char ctrl = 'M';
 		// needed for residuum calculation
 		double epsilonSquared = this->myEpsilon*this->myEpsilon;
 		// number off current iterations
@@ -64,7 +65,8 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 		{
 			q.setAll(0.0);
 
-			myGlobalMPIComm->broadcastControl('M');
+			ctrl = 'M';
+			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 			SystemMatrix.mult(q, temp);
 
 			r.sub(temp);
@@ -76,7 +78,8 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 		}
 
 		// calculate the starting residuum
-		myGlobalMPIComm->broadcastControl('M');
+		ctrl = 'M';
+		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 		SystemMatrix.mult(alpha, temp);
 
 		r.sub(temp);
@@ -102,7 +105,8 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 		while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold))
 		{
 			// q = A*d
-			myGlobalMPIComm->broadcastControl('M');
+			ctrl = 'M';
+			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 			SystemMatrix.mult(d, q);
 
 			// a = d_new / d.q
@@ -115,7 +119,8 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 			if ((this->nIterations % 50) == 0)
 			{
 				// r = b - A*x
-				myGlobalMPIComm->broadcastControl('M');
+				ctrl = 'M';
+				myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 				SystemMatrix.mult(alpha, temp);
 
 				r.copyFrom(b);
@@ -148,7 +153,8 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 
 		this->residuum = delta_new;
 
-		myGlobalMPIComm->broadcastControl('T');
+		ctrl = 'T';
+		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 
 		if (verbose == true)
 		{
@@ -165,7 +171,7 @@ void ConjugateGradientsMPI::waitForTask(OperationMatrix& SystemMatrix, DataVecto
 
 	do
 	{
-		ctrl = myGlobalMPIComm->receiveControl();
+		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 
 		if (ctrl == 'M')
 		{
