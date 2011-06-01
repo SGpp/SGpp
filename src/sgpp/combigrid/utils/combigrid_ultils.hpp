@@ -164,6 +164,17 @@ namespace combigrid{
 		}
 	}
 
+	/** computes the scalar product of two vectors */
+	inline void scalar_product(std::vector<double>* v1 , std::vector<double>* v2 , double& result )
+	{
+		COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_add_mul , size do not match v1->size():"
+				<< v1->size() << " , v2->size():" << v2->size());
+		result = 0.0;
+		for (unsigned int i = 0; i < v1->size() ; i++){
+			result = result + v1->at(i)* v2->at(i);
+		}
+	}
+
 	/** sets the values of the vector to a given value */
 	inline void vect_setvalue(std::vector<double>* v1 , double newValue )
 	{
