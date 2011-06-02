@@ -50,7 +50,8 @@ def CheckJNI(context):
     else:
         print "... JAVA_HOME not set"
         # not found, try guessing:
-        # look, where java and javac are located: include/ directory might be 1 or 2 dirs below
+        # look, where java and javac are located:
+        # include/ directory might be 1 or 2 dirs below
         print "... trying to guess"
         for f in ['java', 'javacc']:
             fdir = context.env.WhereIs(f)
@@ -82,11 +83,10 @@ vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means 
 vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
 vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
 
-# for building the the jsgpp lib
+# for building Java support (jsgpp lib)
 vars.Add('JSGPP', 'Build jsgpp if set to True', False)
 #vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
 #vars.Add('JNI_OS', 'JNI os path', None)
-
 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
@@ -218,8 +218,11 @@ if env.has_key('MARCH'):
         env.Append(CPPFLAGS=('-march=' + env['MARCH']))
     else:
         print "Warning: Ignoring option MARCH"
-         
 
+# compile all if nothing set
+if len(sys.argv) < 2:
+    env['SG_ALL'] = True
+    env['SG_PYTHON'] = True
 
 # boolean variables for environment 
 if env['SG_PYTHON'] or env['SG_ALL']:
