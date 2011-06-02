@@ -14,8 +14,6 @@
 
 #ifdef _OPENMP
 #include "omp.h"
-using namespace sg::pde;
-using namespace sg::base;
 #endif
 
 namespace sg
@@ -23,8 +21,8 @@ namespace sg
 namespace finance
 {
 
-BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
-			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
+			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesParabolicPDESolverSystemEuropean(SparseGrid, alpha, mu, sigma, rho,
 			r, TimestepSize, OperationMode, bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
@@ -34,7 +32,7 @@ BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::~BlackScholesParabolicP
 {
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -46,18 +44,18 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInne
 	omp_init_lock(&DeltaMutex);
 	omp_init_lock(&GammaMutex);
 #endif
-	DataVector DeltaResult(result);
-	DataVector GammaResult(result);
+	sg::base::DataVector DeltaResult(result);
+	sg::base::DataVector GammaResult(result);
 
 	// Apply the riskfree rate
 	#pragma omp task shared(alpha, result)
 	{
 		if (this->r != 0.0)
 		{
-			DataVector myResult(result.getSize());
+			sg::base::DataVector myResult(result.getSize());
 
 			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
+			((sg::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
 
 			// no semaphore needed
 			result.axpy((-1.0)*this->r, myResult);
@@ -69,10 +67,10 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInne
 	{
 		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
 		{
-			DataVector myResult(result.getSize());
+			sg::base::DataVector myResult(result.getSize());
 
 			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+			((sg::pde::UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
 #ifdef _OPENMP
@@ -95,10 +93,10 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInne
 			{
 				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
 				{
-					DataVector myResult(result.getSize());
+					sg::base::DataVector myResult(result.getSize());
 
 					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
+					((sg::pde::UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
 					// semaphore
 #ifdef _OPENMP
@@ -125,7 +123,7 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInne
 	result.sub(GammaResult);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -137,18 +135,18 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComp
 	omp_init_lock(&DeltaMutex);
 	omp_init_lock(&GammaMutex);
 #endif
-	DataVector DeltaResult(result);
-	DataVector GammaResult(result);
+	sg::base::DataVector DeltaResult(result);
+	sg::base::DataVector GammaResult(result);
 
 	// Apply the riskfree rate
 	#pragma omp task shared(alpha, result)
 	{
 		if (this->r != 0.0)
 		{
-			DataVector myResult(result.getSize());
+			sg::base::DataVector myResult(result.getSize());
 
 			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
+			((sg::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
 
 			// no semaphore needed
 			result.axpy((-1.0)*this->r, myResult);
@@ -160,10 +158,10 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComp
 	{
 		#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
 		{
-			DataVector myResult(result.getSize());
+			sg::base::DataVector myResult(result.getSize());
 
 			/// @todo (heinecke) discuss methods in order to avoid this cast
-			((UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+			((sg::pde::UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 			// semaphore
 #ifdef _OPENMP
@@ -186,10 +184,10 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComp
 			{
 				#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
 				{
-					DataVector myResult(result.getSize());
+					sg::base::DataVector myResult(result.getSize());
 
 					/// @todo (heinecke) discuss methods in order to avoid this cast
-					((UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
+					((sg::pde::UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
 					// semaphore
 #ifdef _OPENMP
@@ -216,29 +214,29 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComp
 	result.sub(GammaResult);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixInner(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
 
-	((StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
+	((sg::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
 
 	result.add(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
 
-	((StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
+	((sg::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
 
 	result.add(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -248,8 +246,8 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult(DataVector& a
 	{
 		result.setAll(0.0);
 
-		DataVector temp(result.getSize());
-		DataVector temp2(result.getSize());
+		sg::base::DataVector temp(result.getSize());
+		sg::base::DataVector temp2(result.getSize());
 
 		#pragma omp parallel shared(alpha, result)
 		{
@@ -276,8 +274,8 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult(DataVector& a
 	{
 		result.setAll(0.0);
 
-		DataVector temp(result.getSize());
-		DataVector temp2(result.getSize());
+		sg::base::DataVector temp(result.getSize());
+		sg::base::DataVector temp2(result.getSize());
 
 		#pragma omp parallel shared(alpha, result)
 		{
@@ -308,21 +306,21 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult(DataVector& a
 	}
 	else
 	{
-		throw new algorithm_exception(" BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception(" BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS()
+sg::base::DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS()
 {
-	DataVector rhs_complete(this->alpha_complete->getSize());
+	sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
 	if (this->tOperationMode == "ExEul")
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(rhs_complete.getSize());
-		DataVector temp2(rhs_complete.getSize());
-		DataVector myAlpha(*this->alpha_complete);
+		sg::base::DataVector temp(rhs_complete.getSize());
+		sg::base::DataVector temp2(rhs_complete.getSize());
+		sg::base::DataVector myAlpha(*this->alpha_complete);
 
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
@@ -355,9 +353,9 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(rhs_complete.getSize());
-		DataVector temp2(rhs_complete.getSize());
-		DataVector myAlpha(*this->alpha_complete);
+		sg::base::DataVector temp(rhs_complete.getSize());
+		sg::base::DataVector temp2(rhs_complete.getSize());
+		sg::base::DataVector myAlpha(*this->alpha_complete);
 
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
@@ -384,9 +382,9 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
-		DataVector myAlpha(*this->alpha_complete);
-		DataVector myOldAlpha(*this->alpha_complete_old);
+		sg::base::DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector myAlpha(*this->alpha_complete);
+		sg::base::DataVector myOldAlpha(*this->alpha_complete_old);
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 
@@ -406,7 +404,7 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 		rhs_complete.add(temp);
 		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
 
-		DataVector temp_old(this->alpha_complete->getSize());
+		sg::base::DataVector temp_old(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
@@ -429,15 +427,15 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 	}
 	else
 	{
-		throw new algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
 	this->startTimestep();
 
 	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-	DataVector result_complete(this->alpha_complete->getSize());
-	DataVector alpha_bound(*this->alpha_complete);
+	sg::base::DataVector result_complete(this->alpha_complete->getSize());
+	sg::base::DataVector alpha_bound(*this->alpha_complete);
 
 	result_complete.setAll(0.0);
 
@@ -450,8 +448,8 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		DataVector temp(alpha_bound.getSize());
-		DataVector temp2(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp2(alpha_bound.getSize());
 
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
@@ -476,8 +474,8 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		DataVector temp(alpha_bound.getSize());
-		DataVector temp2(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp2(alpha_bound.getSize());
 
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
@@ -506,7 +504,7 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 	}
 	else
 	{
-		throw new algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	rhs_complete.sub(result_complete);
@@ -516,7 +514,7 @@ DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS
 		delete this->rhs;
 	}
 
-	this->rhs = new DataVector(this->alpha_inner->getSize());
+	this->rhs = new sg::base::DataVector(this->alpha_inner->getSize());
 	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 
 	return this->rhs;

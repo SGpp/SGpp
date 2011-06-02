@@ -9,8 +9,6 @@
 #define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
 
 #include "operation/pde/OperationEllipticPDESolverSystemDirichlet.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -18,7 +16,7 @@ namespace parallel
 {
 
 /**
- * This class uses OperationEllipticPDESolverSystemDirichlet
+ * This class uses sg::pde::OperationEllipticPDESolverSystemDirichlet
  * to define a solver system for the Poission Equation.
  *
  * For the mult-routine only the Laplace-Operator is required
@@ -26,15 +24,15 @@ namespace parallel
  * There is a parallelization over all operators, required
  * to solve the poisson equation.
  */
-class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public OperationEllipticPDESolverSystemDirichlet
+class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public sg::pde::OperationEllipticPDESolverSystemDirichlet
 {
 protected:
-	OperationMatrix* Laplace_Inner;
-	OperationMatrix* Laplace_Complete;
+	sg::base::OperationMatrix* Laplace_Inner;
+	sg::base::OperationMatrix* Laplace_Complete;
 
-	void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+	void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	void applyLOperatorInner(DataVector& alpha, DataVector& result);
+	void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 public:
 	/**
@@ -43,16 +41,16 @@ public:
 	 * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
 	 * @param rhs the right hand side for solving the elliptic PDE
 	 */
-	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(Grid& SparseGrid, DataVector& rhs);
+	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI();
 
-	void mult(DataVector& alpha, DataVector& result);
+	void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	DataVector* generateRHS();
+	sg::base::DataVector* generateRHS();
 };
 
 }

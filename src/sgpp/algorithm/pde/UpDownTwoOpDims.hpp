@@ -14,7 +14,6 @@
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -34,30 +33,30 @@ namespace pde
  *
  * @version $HEAD$
  */
-class UpDownTwoOpDims: public OperationMatrix
+class UpDownTwoOpDims: public sg::base::OperationMatrix
 {
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	UpDownTwoOpDims(GridStorage* storage, DataMatrix& coef);
+	UpDownTwoOpDims(sg::base::GridStorage* storage, sg::base::DataMatrix& coef);
 
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	UpDownTwoOpDims(GridStorage* storage);
+	UpDownTwoOpDims(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~UpDownTwoOpDims();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * this functions provides the same functionality as the normal mult routine.
@@ -82,15 +81,15 @@ public:
 	 * @param operationDimOne Dimension in which the first special operator is applied
 	 * @param operationDimTwo Dimension in which the second special operator is applied
 	 */
-	void multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDimOne, size_t operationDimTwo);
+	void multParallelBuildingBlock(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t operationDimOne, size_t operationDimTwo);
 
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
+	typedef sg::base::GridStorage::grid_iterator grid_iterator;
 
 	/// Pointer to the grid's storage object
-	GridStorage* storage;
+	sg::base::GridStorage* storage;
 	/// Pointer to the coefficients of this bilinear form
-	DataMatrix* coefs;
+	sg::base::DataMatrix* coefs;
 	/// algorithmic dimensions, operator is applied in this dimensions
 	const std::vector<size_t> algoDims;
 	/// number of algorithmic dimensions
@@ -107,7 +106,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
+	void updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
 
 	/**
 	 * All calculations for gradient, parallel version using OpenMP 3
@@ -118,7 +117,7 @@ protected:
 	 * @param op_dim_one the dimension in which to use the first gradient
 	 * @param op_dim_two the dimension in which to use the second gradient
 	 */
-	void specialOpOne(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
+	void specialOpOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
 
 	/**
 	 * All calculations for gradient, Part 2, parallel version using OpenMP 3
@@ -129,7 +128,7 @@ protected:
 	 * @param op_dim_one the dimension in which to use the first gradient
 	 * @param op_dim_two the dimension in which to use the second gradient
 	 */
-	void specialOpTwo(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
+	void specialOpTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
 
 	/**
 	 * if the current dimension is equal to the both special operation dimensions
@@ -140,7 +139,7 @@ protected:
 	 * @param op_dim_one the dimension in which to use the first gradient
 	 * @param op_dim_two the dimension in which to use the second gradient
 	 */
-	void specialOpOneAndOpTwo(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
+	void specialOpOneAndOpTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two);
 
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -151,7 +150,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -162,7 +161,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * 1D down if the current dim is equal to i
@@ -171,7 +170,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	virtual void downOpDimOne(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * 1D up if the current dim is equal to i
@@ -180,7 +179,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	virtual void upOpDimOne(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * 1D down if the current dim is equal to j
@@ -189,7 +188,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	virtual void downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * 1D up if the current dim is equal to j
@@ -198,7 +197,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	virtual void upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * 1D down, if the current dim is equal to i and j
@@ -207,7 +206,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	virtual void downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * 1D up, if the current dim is equal to i and j
@@ -216,7 +215,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	virtual void upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 };
 
 }

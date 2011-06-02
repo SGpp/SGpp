@@ -6,14 +6,13 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/StdUpDown.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-StdUpDown::StdUpDown(GridStorage* storage) : storage(storage), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
+StdUpDown::StdUpDown(sg::base::GridStorage* storage) : storage(storage), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
 }
 
@@ -21,9 +20,9 @@ StdUpDown::~StdUpDown()
 {
 }
 
-void StdUpDown::mult(DataVector& alpha, DataVector& result)
+void StdUpDown::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector beta(result.getSize());
+	sg::base::DataVector beta(result.getSize());
 	result.setAll(0.0);
 	#pragma omp parallel
 	{
@@ -35,9 +34,9 @@ void StdUpDown::mult(DataVector& alpha, DataVector& result)
 	result.add(beta);
 }
 
-void StdUpDown::multParallelBuildingBlock(DataVector& alpha, DataVector& result)
+void StdUpDown::multParallelBuildingBlock(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector beta(result.getSize());
+	sg::base::DataVector beta(result.getSize());
 	result.setAll(0.0);
 
 	this->updown(alpha, beta, this->numAlgoDims_ - 1);
@@ -45,15 +44,15 @@ void StdUpDown::multParallelBuildingBlock(DataVector& alpha, DataVector& result)
 	result.add(beta);
 }
 
-void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
+void StdUpDown::updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	//Unidirectional scheme
 	if(dim > 0)
 	{
 		// Reordering ups and downs
-		DataVector temp(alpha.getSize());
-		DataVector result_temp(alpha.getSize());
-		DataVector temp_two(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
+		sg::base::DataVector result_temp(alpha.getSize());
+		sg::base::DataVector temp_two(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 		{
@@ -75,7 +74,7 @@ void StdUpDown::updown(DataVector& alpha, DataVector& result, size_t dim)
 	else
 	{
 		// Terminates dimension recursion
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 		up(alpha, result, this->algoDims[dim]);

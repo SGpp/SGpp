@@ -14,15 +14,14 @@
 #include "basis/operations_factory.hpp"
 
 #include <cmath>
-using namespace sg::base;
 
 namespace sg
 {
 namespace finance
 {
 
-ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
-			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
+			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel, int dim_HW)
 : BlackScholesParabolicPDESolverSystem(SparseGrid,
@@ -47,7 +46,7 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
 	this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
 }
 
-void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(DataVector& updateVector)
+void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(sg::base::DataVector& updateVector)
 {
 	double tmp;
 	for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
@@ -73,9 +72,9 @@ ModifiedBlackScholesParabolicPDESolverSystem::~ModifiedBlackScholesParabolicPDES
 	delete this->variableDiscountFactor;
 }
 
-void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(DataVector& alpha, DataVector& result)
+void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
 
@@ -100,7 +99,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(DataVector& al
 }
 void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
-	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
+	   sg::base::DataVector* factor = new sg::base::DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
 	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
 
@@ -121,7 +120,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTim
 		size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
 		// Coarsen the grid
-		GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+		sg::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
 		//std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
 		//std::cout << "Grid Size: " << originalGridSize << std::endl;
@@ -129,7 +128,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTim
 		if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine")
 		{
 			size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
+			sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
 			if (this->refineMode == "maxLevel")
 			{
 				myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
@@ -146,7 +145,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTim
 		if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
 		{
 			size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
-			SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
+			sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
 			myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 			delete myCoarsenFunctor;
 		}
@@ -161,7 +160,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTim
 
 void ModifiedBlackScholesParabolicPDESolverSystem::startTimestep()
 {
-	   DataVector* factor = new DataVector(this->alpha_complete->getSize());
+	   sg::base::DataVector* factor = new sg::base::DataVector(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
 	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
 

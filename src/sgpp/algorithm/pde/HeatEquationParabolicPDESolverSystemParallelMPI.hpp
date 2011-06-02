@@ -11,7 +11,6 @@
 #include "data/DataVector.hpp"
 #include "grid/Grid.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
-using namespace sg::pde;
 
 namespace sg
 {
@@ -22,7 +21,7 @@ namespace parallel
  * This class implements the ParabolicPDESolverSystem for the
  * Heat Equation parallelized with MPI.
  */
-class HeatEquationParabolicPDESolverSystemParallelMPI : public OperationParabolicPDESolverSystemDirichlet
+class HeatEquationParabolicPDESolverSystemParallelMPI : public sg::pde::OperationParabolicPDESolverSystemDirichlet
 {
 private:
 	/// the heat coefficient

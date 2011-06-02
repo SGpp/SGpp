@@ -28,7 +28,6 @@
 #include "operation/common/OperationMatrix.hpp"
 
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 
 namespace sg
@@ -44,16 +43,16 @@ namespace pde
  *
  * @version $HEAD$
  */
-class UpDownOneOpDimWithShadow: public OperationMatrix
+class UpDownOneOpDimWithShadow: public sg::base::OperationMatrix
 {
 public:
 
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	UpDownOneOpDimWithShadow(GridStorage* storage, GridStorage* shadowStorage);
+	UpDownOneOpDimWithShadow(sg::base::GridStorage* storage, sg::base::GridStorage* shadowStorage);
 
 	/**
 	 * Destructor
@@ -61,14 +60,14 @@ public:
 	virtual ~UpDownOneOpDimWithShadow();
 
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
+	typedef sg::base::GridStorage::grid_iterator grid_iterator;
 
 	/// Pointer to the grid's storage object
-	GridStorage* storage;
-	GridStorage* shadowStorage;
+	sg::base::GridStorage* storage;
+	sg::base::GridStorage* shadowStorage;
 
 	/**
 	 * Recursive procedure for updown().
@@ -78,7 +77,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void updown(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
+	void updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim);
 
 	/**
 	 * This functions adds all grid points of the shadow storage into the actual grid.
@@ -99,7 +98,7 @@ protected:
 	 * @param dim the current dimension in the recursion
 	 * @param op_dim the dimension in that a special operation is applied
 	 */
-	virtual void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim);
+	virtual void specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim);
 
 
 	/**
@@ -109,7 +108,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * std 1D down operation
@@ -118,7 +117,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * special 1D down operation that is only executed in one direction
@@ -127,7 +126,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * special 1D up operation that is only executed in one direction
@@ -136,7 +135,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 };
 
 }

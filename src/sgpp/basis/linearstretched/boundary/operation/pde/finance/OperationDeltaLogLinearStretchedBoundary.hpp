@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef OPERATIONDELTALOGLINEARSTRETCHEDBOUNDARY_HPP
 #define OPERATIONDELTALOGLINEARSTRETCHEDBOUNDARY_HPP
@@ -11,6 +11,7 @@
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 
 using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
 {

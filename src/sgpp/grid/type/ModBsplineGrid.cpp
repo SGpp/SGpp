@@ -85,7 +85,7 @@ GridGenerator* ModBsplineGrid::createGridGenerator()
 OperationMultipleEvalVectorizedSP* ModBsplineGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
 {
 	throw factory_exception("Unsupported operation");
-}'/
+}'*/
 
 /*OperationMatrix* ModBsplineGrid::createOperationLaplace()
 {

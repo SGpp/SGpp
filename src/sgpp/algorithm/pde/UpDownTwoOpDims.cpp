@@ -6,18 +6,17 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-UpDownTwoOpDims::UpDownTwoOpDims(GridStorage* storage, DataMatrix& coef) : storage(storage), coefs(&coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
+UpDownTwoOpDims::UpDownTwoOpDims(sg::base::GridStorage* storage, sg::base::DataMatrix& coef) : storage(storage), coefs(&coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
 }
 
-UpDownTwoOpDims::UpDownTwoOpDims(GridStorage* storage) : storage(storage), coefs(NULL), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
+UpDownTwoOpDims::UpDownTwoOpDims(sg::base::GridStorage* storage) : storage(storage), coefs(NULL), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
 }
 
@@ -25,7 +24,7 @@ UpDownTwoOpDims::~UpDownTwoOpDims()
 {
 }
 
-void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
+void UpDownTwoOpDims::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -42,7 +41,7 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 					{
 						#pragma omp task firstprivate(i, j) shared(alpha, result)
 						{
-							DataVector beta(result.getSize());
+							sg::base::DataVector beta(result.getSize());
 
 							if (this->coefs != NULL)
 							{
@@ -75,10 +74,10 @@ void UpDownTwoOpDims::mult(DataVector& alpha, DataVector& result)
 	}
 }
 
-void UpDownTwoOpDims::multParallelBuildingBlock(DataVector& alpha, DataVector& result, size_t operationDimOne, size_t operationDimTwo)
+void UpDownTwoOpDims::multParallelBuildingBlock(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t operationDimOne, size_t operationDimTwo)
 {
 	result.setAll(0.0);
-	DataVector beta(result.getSize());
+	sg::base::DataVector beta(result.getSize());
 
 	// use the operator's symmetry
 	if ( operationDimTwo <= operationDimOne)
@@ -99,7 +98,7 @@ void UpDownTwoOpDims::multParallelBuildingBlock(DataVector& alpha, DataVector& r
 	}
 }
 
-void UpDownTwoOpDims::updown(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
+void UpDownTwoOpDims::updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
 {
 	if((dim == op_dim_one) && (dim == op_dim_two))
 	{
@@ -122,9 +121,9 @@ void UpDownTwoOpDims::updown(DataVector& alpha, DataVector& result, size_t dim, 
 		if(dim > 0)
 		{
 			// Reordering ups and downs
-			DataVector temp(alpha.getSize());
-			DataVector result_temp(alpha.getSize());
-			DataVector temp_two(alpha.getSize());
+			sg::base::DataVector temp(alpha.getSize());
+			sg::base::DataVector result_temp(alpha.getSize());
+			sg::base::DataVector temp_two(alpha.getSize());
 
 			#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 			{
@@ -146,7 +145,7 @@ void UpDownTwoOpDims::updown(DataVector& alpha, DataVector& result, size_t dim, 
 		else
 		{
 			// Terminates dimension recursion
-			DataVector temp(alpha.getSize());
+			sg::base::DataVector temp(alpha.getSize());
 
 			#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 			up(alpha, result, this->algoDims[dim]);
@@ -161,15 +160,15 @@ void UpDownTwoOpDims::updown(DataVector& alpha, DataVector& result, size_t dim, 
 	}
 }
 
-void UpDownTwoOpDims::specialOpOne(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
+void UpDownTwoOpDims::specialOpOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
 {
 	//Unidirectional scheme
 	if(dim > 0)
 	{
 		// Reordering ups and downs
-		DataVector temp(alpha.getSize());
-		DataVector result_temp(alpha.getSize());
-		DataVector temp_two(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
+		sg::base::DataVector result_temp(alpha.getSize());
+		sg::base::DataVector temp_two(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 		{
@@ -191,7 +190,7 @@ void UpDownTwoOpDims::specialOpOne(DataVector& alpha, DataVector& result, size_t
 	else
 	{
 		// Terminates dimension recursion
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 		upOpDimOne(alpha, result, this->algoDims[dim]);
@@ -205,15 +204,15 @@ void UpDownTwoOpDims::specialOpOne(DataVector& alpha, DataVector& result, size_t
 	}
 }
 
-void UpDownTwoOpDims::specialOpTwo(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
+void UpDownTwoOpDims::specialOpTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
 {
 	//Unidirectional scheme
 	if(dim > 0)
 	{
 		// Reordering ups and downs
-		DataVector temp(alpha.getSize());
-		DataVector result_temp(alpha.getSize());
-		DataVector temp_two(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
+		sg::base::DataVector result_temp(alpha.getSize());
+		sg::base::DataVector temp_two(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 		{
@@ -235,7 +234,7 @@ void UpDownTwoOpDims::specialOpTwo(DataVector& alpha, DataVector& result, size_t
 	else
 	{
 		// Terminates dimension recursion
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 		upOpDimTwo(alpha, result, this->algoDims[dim]);
@@ -249,15 +248,15 @@ void UpDownTwoOpDims::specialOpTwo(DataVector& alpha, DataVector& result, size_t
 	}
 }
 
-void UpDownTwoOpDims::specialOpOneAndOpTwo(DataVector& alpha, DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
+void UpDownTwoOpDims::specialOpOneAndOpTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two)
 {
 	//Unidirectional scheme
 	if(dim > 0)
 	{
 		// Reordering ups and downs
-		DataVector temp(alpha.getSize());
-		DataVector result_temp(alpha.getSize());
-		DataVector temp_two(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
+		sg::base::DataVector result_temp(alpha.getSize());
+		sg::base::DataVector temp_two(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, temp, result)
 		{
@@ -279,7 +278,7 @@ void UpDownTwoOpDims::specialOpOneAndOpTwo(DataVector& alpha, DataVector& result
 	else
 	{
 		// Terminates dimension recursion
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		#pragma omp task if(this->numAlgoDims_ - dim <= this->maxParallelDims_) shared(alpha, result)
 		upOpDimOneAndOpDimTwo(alpha, result, this->algoDims[dim]);
