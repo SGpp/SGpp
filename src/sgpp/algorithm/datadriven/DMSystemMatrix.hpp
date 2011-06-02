@@ -12,7 +12,6 @@
 #include "grid/Grid.hpp"
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "operation/common/OperationMatrix.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -20,38 +19,38 @@ namespace datadriven
 {
 
 /**
- * Class that implements the virtual class OperationMatrix for the
+ * Class that implements the virtual class sg::base::OperationMatrix for the
  * application of classification for the Systemmatrix
  */
-class DMSystemMatrix : public OperationMatrix
+class DMSystemMatrix : public sg::base::OperationMatrix
 {
 private:
 	/// the lambda, the regularisation parameter
 	double lamb;
-	/// OperationMatrix, the regularisation mehtod
-	OperationMatrix* C;
+	/// sg::base::OperationMatrix, the regularisation mehtod
+	sg::base::OperationMatrix* C;
 	/// OperationB for calculating the data matrix
-	OperationMultipleEval* B;
+	sg::base::OperationMultipleEval* B;
 	/// Pointer to the data vector
-	DataMatrix* data;
+	sg::base::DataMatrix* data;
 
 public:
 	/**
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
-	 * @param trainData reference to DataVector that contains the training data
+	 * @param trainData reference to sg::base::DataVector that contains the training data
 	 * @param C the regression functional
 	 * @param lambda the lambda, the regression parameter
 	 */
-	DMSystemMatrix(Grid& SparseGrid, DataMatrix& trainData, OperationMatrix& C, double lambda);
+	DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~DMSystemMatrix();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * Generates the right hand side of the classification equation
@@ -59,7 +58,7 @@ public:
 	 * @param classes the class information of the training data
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
-	void generateb(DataVector& classes, DataVector& b);
+	void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
 };
 
 }

@@ -8,19 +8,18 @@
 #include "algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.hpp"
 #include "exception/operation_exception.hpp"
 #include "basis/operations_factory.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace datadriven
 {
 
-DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda, std::string vecMode)
+DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, std::string vecMode)
 {
 	// handle unsupported vector extensions
 	if (vecMode != "SSE" && vecMode != "AVX" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_SSE_OCL")
 	{
-		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
+		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
 	}
 
 	resetTimers();
@@ -28,7 +27,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	// create the operations needed in ApplyMatrix
 	this->vecMode = vecMode;
 	this->lamb = lambda;
-	this->data = new DataMatrixSP(trainData);
+	this->data = new sg::base::DataMatrixSP(trainData);
 
 	if (this->vecMode == "SSE")
 	{
@@ -53,7 +52,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 	// should not happen because this exception should have been thrown some lines upwards!
 	else
 	{
-		throw new operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
+		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
 	}
 
 	numTrainingInstances = data->getNrows();
@@ -64,7 +63,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 
 	if (loopCount != this->vecWidth)
 	{
-		DataVectorSP lastRow(data->getNcols());
+		sg::base::DataVectorSP lastRow(data->getNcols());
 		for (size_t i = 0; i < loopCount; i++)
 		{
 			data->getRow(data->getNrows()-1, lastRow);
@@ -80,7 +79,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(Grid& Spa
 		data->transpose();
 	}
 
-	this->myTimer = new SGppStopwatch();
+	this->myTimer = new sg::base::SGppStopwatch();
 
 	this->B = sg::GridOperationFactory::createOperationMultipleEvalVectorizedSP(SparseGrid, this->vecMode, this->data);
 }
@@ -92,9 +91,9 @@ DMSystemMatrixSPVectorizedIdentity::~DMSystemMatrixSPVectorizedIdentity()
 	delete this->myTimer;
 }
 
-void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP& result)
+void DMSystemMatrixSPVectorizedIdentity::mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
-	DataVectorSP temp(numPatchedTrainingInstances);
+	sg::base::DataVectorSP temp(numPatchedTrainingInstances);
 
     // Operation B
 	this->myTimer->start();
@@ -117,9 +116,9 @@ void DMSystemMatrixSPVectorizedIdentity::mult(DataVectorSP& alpha, DataVectorSP&
     result.axpy(numTrainingInstances*this->lamb, alpha);
 }
 
-void DMSystemMatrixSPVectorizedIdentity::generateb(DataVectorSP& classes, DataVectorSP& b)
+void DMSystemMatrixSPVectorizedIdentity::generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b)
 {
-	DataVectorSP myClasses(classes);
+	sg::base::DataVectorSP myClasses(classes);
 
 	// Apply padding
 	if (numPatchedTrainingInstances != myClasses.getSize())

@@ -15,7 +15,6 @@
 #include "tools/common/SGppStopwatch.hpp"
 
 #include <string>
-using namespace sg::base;
 
 namespace sg
 {
@@ -23,7 +22,7 @@ namespace datadriven
 {
 
 /**
- * Class that implements the virtual class OperationMatrix for the
+ * Class that implements the virtual class sg::base::OperationMatrix for the
  * application of classification for the Systemmatrix
  *
  * The Identity matrix is used as regularization operator.
@@ -34,15 +33,15 @@ namespace datadriven
  *
  * In this class single precision DataVectors are used.
  */
-class DMSystemMatrixSPVectorizedIdentity : public OperationMatrixSP
+class DMSystemMatrixSPVectorizedIdentity : public sg::base::OperationMatrixSP
 {
 private:
 	/// the lambda, the regularisation parameter
 	float lamb;
 	/// OperationB for calculating the data matrix
-	OperationMultipleEvalVectorizedSP* B;
+	sg::base::OperationMultipleEvalVectorizedSP* B;
 	/// Pointer to the data matrix
-	DataMatrixSP* data;
+	sg::base::DataMatrixSP* data;
 	/// Number of original training instances
 	size_t numTrainingInstances;
 	/// Number of patched and used training instances
@@ -61,25 +60,25 @@ private:
 	/// time needed only for the computation of mult transposed, interesting on accelerator boards
 	double computeTimeMultTrans;
 	/// Stopwatch needed to determine the durations of mult and mult transposed
-	SGppStopwatch* myTimer;
+	sg::base::SGppStopwatch* myTimer;
 
 public:
 	/**
 	 * Std-Constructor
 	 *
 	 * @param SparseGrid reference to the sparse grid
-	 * @param trainData reference to DataMatrix that contains the training data
+	 * @param trainData reference to sg::base::DataMatrix that contains the training data
 	 * @param lambda the lambda, the regression parameter
 	 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	 */
-	DMSystemMatrixSPVectorizedIdentity(Grid& SparseGrid, DataMatrixSP& trainData, float lambda, std::string vecMode);
+	DMSystemMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, std::string vecMode);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~DMSystemMatrixSPVectorizedIdentity();
 
-	virtual void mult(DataVectorSP& alpha, DataVectorSP& result);
+	virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
 
 	/**
 	 * Generates the right hand side of the classification equation
@@ -87,10 +86,10 @@ public:
 	 * @param classes the class information of the training data
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
-	void generateb(DataVectorSP& classes, DataVectorSP& b);
+	void generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b);
 
 	/**
-	 * rebuilds the DataMatrix for Level and Index
+	 * rebuilds the sg::base::DataMatrix for Level and Index
 	 */
 	void rebuildLevelAndIndex();
 

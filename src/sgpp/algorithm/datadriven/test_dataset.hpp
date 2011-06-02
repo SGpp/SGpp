@@ -14,7 +14,6 @@
 #include <vector>
 #include <utility>
 #include <iostream>
-using namespace sg::base;
 
 namespace sg {
 namespace datadriven {
@@ -22,14 +21,14 @@ namespace datadriven {
 /**
  * Returns the number of correctly classified instances in data without boundaries
  *
- * @param storage GridStorage object that contains the grid points
+ * @param storage sg::base::GridStorage object that contains the grid points
  * @param basis reference to class that implements to current basis
  * @param alpha the coefficients of the grid points
  * @param data the data the should be tested
  * @param classes the reference classes
  */
 template<class BASIS>
-double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& classes)
+double test_dataset( sg::base::GridStorage* storage, BASIS& basis, sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -75,17 +74,17 @@ double test_dataset( GridStorage* storage, BASIS& basis, DataVector& alpha, Data
 /**
  * Returns the MSE for given functions values at the evaluation points
  *
- * @param storage GridStorage object that contains the grid points
+ * @param storage sg::base::GridStorage object that contains the grid points
  * @param basis reference to class that implements to current basis
  * @param alpha the coefficients of the grid points
  * @param data the data the should be tested
  * @param refValues the function values at the evaluation points
  */
 template<class BASIS>
-double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& refValues)
+double test_dataset_mse( sg::base::GridStorage* storage, BASIS& basis, sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
-	DataVector result(refValues.getSize());
+	sg::base::DataVector result(refValues.getSize());
 	double mse = 0;
 
 	#pragma omp parallel shared(result)
@@ -125,7 +124,7 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
 /**
  * Returns the number of correctly classified instances in data without boundaries
  *
- * @param storage GridStorage object that contains the grid points
+ * @param storage sg::base::GridStorage object that contains the grid points
  * @param basis reference to class that implements to current basis
  * @param alpha the coefficients of the grid points
  * @param data the data the should be tested
@@ -133,7 +132,7 @@ double test_dataset_mse( GridStorage* storage, BASIS& basis, DataVector& alpha, 
  * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
  */
 template<class BASIS>
-double test_datasetWithCharacteristicNumber( GridStorage* storage, BASIS& basis, DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double test_datasetWithCharacteristicNumber( sg::base::GridStorage* storage, BASIS& basis, sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
 {
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
