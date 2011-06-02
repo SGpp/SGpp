@@ -26,7 +26,6 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -60,17 +59,17 @@ namespace pde
 class LaplaceDownGradientPrewavelet
 {
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-	/// Pointer to GridStorage object
-	GridStorage* storage;
+	typedef sg::base::GridStorage::grid_iterator grid_iterator;
+	/// Pointer to sg::base::GridStorage object
+	sg::base::GridStorage* storage;
 
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	LaplaceDownGradientPrewavelet(GridStorage* storage) :
+	LaplaceDownGradientPrewavelet(sg::base::GridStorage* storage) :
 		storage(storage)
 	{
 	}
@@ -85,12 +84,12 @@ public:
 	/**
 	 * This operations performs the calculation of downGradient in the direction of dimension <i>dim</i>
 	 *
-	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-	 * @param result DataVector that contains the result of the down operation
+	 * @param source sg::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+	 * @param result sg::base::DataVector that contains the result of the down operation
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	void operator()(DataVector& source, DataVector& result,
+	void operator()(sg::base::DataVector& source, sg::base::DataVector& result,
 			grid_iterator& index, size_t dim)
 
 	{
@@ -98,8 +97,8 @@ public:
 		size_t _seql2, _seql1, _seq, _seqr1, _seqr2 = 0;
 		double _vall2, _vall1, _val, _valr1, _valr2 = 0;
 
-		GridStorage::index_type::level_type l, l_old, max_level;
-		GridStorage::index_type::index_type i, i_old;
+		sg::base::GridStorage::index_type::level_type l, l_old, max_level;
+		sg::base::GridStorage::index_type::index_type i, i_old;
 
 		double h;
 
@@ -177,7 +176,7 @@ public:
 				_seqr2 = index.seq();
 				_valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
 
-				temp_current[0] = 2.4 * h * _vall2// Grid-point
+				temp_current[0] = 2.4 * h * _vall2// sg::base::Grid-point
 						+ 0.8 * h * _vall1; //right neighbor
 
 				temp_current[1] = temp_old[0]//
@@ -187,7 +186,7 @@ public:
 
 				for (i = 2; (int)i < (1 << l) - 3; i++)
 				{
-					if (i % 2 == 0) //On Grid-Points
+					if (i % 2 == 0) //On sg::base::Grid-Points
 					{
 						if ((int)i == (1 << l) - 4)
 						{
@@ -226,7 +225,7 @@ public:
 						- 0.1 * h * _vall1; //left-left neighbor
 
 				temp_current[(1 << l) - 2] = 2.4 * h * _valr2 + 0.8 * h
-						* _valr1; //On Grid-point
+						* _valr1; //On sg::base::Grid-point
 
 
 			}

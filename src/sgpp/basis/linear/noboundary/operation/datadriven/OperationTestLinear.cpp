@@ -12,26 +12,25 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
 
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace datadriven
 {
 
-double OperationTestLinear::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
+double OperationTestLinear::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
 {
 	linear_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestLinear::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+double OperationTestLinear::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
 {
 	linear_base<unsigned int, unsigned int> base;
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestLinear::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestLinear::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
 {
 	linear_base<unsigned int, unsigned int> base;
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

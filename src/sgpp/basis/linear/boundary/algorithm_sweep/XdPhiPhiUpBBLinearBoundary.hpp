@@ -12,7 +12,6 @@
 #include "data/DataVector.hpp"
 
 #include "basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -32,9 +31,9 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	XdPhiPhiUpBBLinearBoundary(GridStorage* storage);
+	XdPhiPhiUpBBLinearBoundary(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
@@ -49,12 +48,12 @@ public:
 	 * result)
 	 * So please assure that both functions do exist!
 	 *
-	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-	 * @param result DataVector that contains the result of the up operation
+	 * @param source sg::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+	 * @param result sg::base::DataVector that contains the result of the up operation
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
+	virtual void operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim);
 };
 
  // namespace detail

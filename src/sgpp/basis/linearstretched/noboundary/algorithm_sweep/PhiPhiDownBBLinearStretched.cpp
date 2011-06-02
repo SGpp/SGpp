@@ -8,6 +8,7 @@
 
 #include "basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp"
 
+
 namespace sg
 {
 namespace pde
@@ -15,7 +16,7 @@ namespace pde
 
 
 
-PhiPhiDownBBLinearStretched::PhiPhiDownBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
+PhiPhiDownBBLinearStretched::PhiPhiDownBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
 }
 
@@ -23,21 +24,21 @@ PhiPhiDownBBLinearStretched::~PhiPhiDownBBLinearStretched()
 {
 }
 
-void PhiPhiDownBBLinearStretched::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void PhiPhiDownBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 		rec(source, result, index, dim, 0.0, 0.0);
 
 }
 
-void PhiPhiDownBBLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+void PhiPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 {
 
 	size_t seq = index.seq();
 
 	double alpha_value = source[seq];
 
-	GridStorage::index_type::level_type current_level;
-	GridStorage::index_type::index_type current_index;
+	sg::base::GridStorage::index_type::level_type current_level;
+	sg::base::GridStorage::index_type::index_type current_index;
 
 	index.get(dim, current_level, current_index);
 

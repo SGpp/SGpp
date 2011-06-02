@@ -23,14 +23,13 @@
 #include "algorithm/common/sweep.hpp"
 
 #include <iostream>
-using namespace sg::pde;
 
 namespace sg
 {
 namespace finance
 {
 
-OperationGammaLinearStretched::OperationGammaLinearStretched(GridStorage* storage, DataMatrix& coef) : UpDownTwoOpDims(storage, coef)
+OperationGammaLinearStretched::OperationGammaLinearStretched(sg::base::GridStorage* storage, sg::base::DataMatrix& coef) : sg::pde::UpDownTwoOpDims(storage, coef)
 {
 }
 
@@ -38,74 +37,74 @@ OperationGammaLinearStretched::~OperationGammaLinearStretched()
 {
 }
 
-void OperationGammaLinearStretched::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiUpBBLinearStretched func(this->storage);
-	sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
+	sg::pde::PhiPhiUpBBLinearStretched func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinearStretched::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiDownBBLinearStretched func(this->storage);
-	sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
+	sg::pde::PhiPhiDownBBLinearStretched func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinearStretched::upOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x * phi * dphi
 	XPhidPhiUpBBLinearStretched func(this->storage);
-	sweep<XPhidPhiUpBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<XPhidPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinearStretched::downOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x * phi * dphi
 	XPhidPhiDownBBLinearStretched func(this->storage);
-	sweep<XPhidPhiDownBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<XPhidPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinearStretched::upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x * dphi * phi
 	XdPhiPhiUpBBLinearStretched func(this->storage);
-	sweep<XdPhiPhiUpBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<XdPhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinearStretched::downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x * dphi * phi
 	XdPhiPhiDownBBLinearStretched func(this->storage);
-	sweep<XdPhiPhiDownBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<XdPhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinearStretched::upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x^2 * dphi * dphi
 	SqXdPhidPhiUpBBLinearStretched func(this->storage);
-	sweep<SqXdPhidPhiUpBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<SqXdPhidPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinearStretched::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLinearStretched::downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x^2 * dphi * dphi
 	SqXdPhidPhiDownBBLinearStretched func(this->storage);
-	sweep<SqXdPhidPhiDownBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<SqXdPhidPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }

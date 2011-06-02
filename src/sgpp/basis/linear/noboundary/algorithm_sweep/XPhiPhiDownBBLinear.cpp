@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de) Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace finance
 
 
 
-XPhiPhiDownBBLinear::XPhiPhiDownBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
+XPhiPhiDownBBLinear::XPhiPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
 }
 
@@ -23,7 +22,7 @@ XPhiPhiDownBBLinear::~XPhiPhiDownBBLinear()
 {
 }
 
-void XPhiPhiDownBBLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void XPhiPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = this->boundingBox->getIntervalWidth(dim);
 	double t = this->boundingBox->getIntervalOffset(dim);
@@ -45,14 +44,14 @@ void XPhiPhiDownBBLinear::operator()(DataVector& source, DataVector& result, gri
 	}
 }
 
-void XPhiPhiDownBBLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+void XPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 {
 	size_t seq = index.seq();
 
 	double alpha_value = source[seq];
 
-	GridStorage::index_type::level_type l;
-	GridStorage::index_type::index_type i;
+	sg::base::GridStorage::index_type::level_type l;
+	sg::base::GridStorage::index_type::index_type i;
 
 	index.get(dim, l, i);
 
@@ -85,14 +84,14 @@ void XPhiPhiDownBBLinear::rec(DataVector& source, DataVector& result, grid_itera
 	}
 }
 
-void XPhiPhiDownBBLinear::recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t)
+void XPhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t)
 {
 	size_t seq = index.seq();
 
 	double alpha_value = source[seq];
 
-	GridStorage::index_type::level_type l;
-	GridStorage::index_type::index_type i;
+	sg::base::GridStorage::index_type::level_type l;
+	sg::base::GridStorage::index_type::index_type i;
 
 	index.get(dim, l, i);
 

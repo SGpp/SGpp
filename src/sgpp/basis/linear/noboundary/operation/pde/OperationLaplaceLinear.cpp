@@ -13,14 +13,13 @@
 #include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-OperationLaplaceLinear::OperationLaplaceLinear(GridStorage* storage) : UpDownOneOpDim(storage)
+OperationLaplaceLinear::OperationLaplaceLinear(sg::base::GridStorage* storage) : UpDownOneOpDim(storage)
 {
 }
 
@@ -28,13 +27,13 @@ OperationLaplaceLinear::~OperationLaplaceLinear()
 {
 }
 
-void OperationLaplaceLinear::specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim)
+void OperationLaplaceLinear::specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t gradient_dim)
 {
 	// In direction gradient_dim we only calculate the norm of the gradient
 	// The up-part is empty, thus omitted
 	if(dim > 0)
 	{
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 		updown(alpha, temp, dim-1, gradient_dim);
 		downOpDim(temp, result, gradient_dim);
 	}
@@ -45,27 +44,27 @@ void OperationLaplaceLinear::specialOP(DataVector& alpha, DataVector& result, si
 	}
 }
 
-void OperationLaplaceLinear::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	PhiPhiUpBBLinear func(this->storage);
-	sweep<PhiPhiUpBBLinear> s(func, this->storage);
+	sg::base::sweep<PhiPhiUpBBLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationLaplaceLinear::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	PhiPhiDownBBLinear func(this->storage);
-	sweep<PhiPhiDownBBLinear> s(func, this->storage);
+	sg::base::sweep<PhiPhiDownBBLinear> s(func, this->storage);
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationLaplaceLinear::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	DowndPhidPhiBBIterativeLinear myDown(this->storage);
 	myDown(alpha, result, dim);
 }
 
-void OperationLaplaceLinear::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 }
 

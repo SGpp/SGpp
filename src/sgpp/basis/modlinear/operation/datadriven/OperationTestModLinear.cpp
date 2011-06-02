@@ -13,26 +13,25 @@
 #include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace datadriven
 {
 
-double OperationTestModLinear::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
+double OperationTestModLinear::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
 {
 	modified_linear_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestModLinear::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+double OperationTestModLinear::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
 {
 	modified_linear_base<unsigned int, unsigned int> base;
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestModLinear::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestModLinear::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
 {
 	modified_linear_base<unsigned int, unsigned int> base;
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

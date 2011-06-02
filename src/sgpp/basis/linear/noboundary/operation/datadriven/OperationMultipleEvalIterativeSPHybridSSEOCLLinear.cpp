@@ -16,7 +16,6 @@
 #ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
-using namespace sg::base;
 
 union floatAbsMaskHybrid
 {
@@ -35,16 +34,16 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPHybridSSEOCLLinear::OperationMultipleEvalIterativeSPHybridSSEOCLLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPHybridSSEOCLLinear::OperationMultipleEvalIterativeSPHybridSSEOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset)
 {
 	this->storage = storage;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new SGppStopwatch();
+	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 }
 
@@ -59,15 +58,15 @@ void OperationMultipleEvalIterativeSPHybridSSEOCLLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myOCLKernels->resetKernels();
 }
 
-double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectorized(DataVectorSP& source, DataVectorSP& result)
+double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
@@ -83,7 +82,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 
     if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows())
     {
-    	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
     // split result into GPU and CPU partition
@@ -223,7 +222,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 	return time;
 }
 
-double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(DataVectorSP& alpha, DataVectorSP& result)
+double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -239,7 +238,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(DataVe
 
     if (this->dataset_->getNrows() % 128 != 0 || result_size != this->dataset_->getNrows())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     // split result into GPU and CPU partition

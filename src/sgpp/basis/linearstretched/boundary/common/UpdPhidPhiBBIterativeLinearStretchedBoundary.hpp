@@ -10,7 +10,6 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -33,7 +32,7 @@ class UpdPhidPhiBBIterativeLinearStretchedBoundary
 {
 private:
 	/// Pointer to the grid's storage object
-	GridStorage* storage;
+	sg::base::GridStorage* storage;
 
 public:
 	/**
@@ -41,7 +40,7 @@ public:
 	 *
 	 * @param storage Pointer to the grid's storage object
 	 */
-	UpdPhidPhiBBIterativeLinearStretchedBoundary(GridStorage* storage);
+	UpdPhidPhiBBIterativeLinearStretchedBoundary(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
@@ -52,11 +51,11 @@ public:
 	 * This operations performs the calculation of Up in the direction of dimension <i>dim</i>
 	 * of following bilinearform: \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
 	 *
-	 * @param alpha DataVector that contains the gridpoint's coefficients
-	 * @param result DataVector that contains the result of the down operation
+	 * @param alpha sg::base::DataVector that contains the gridpoint's coefficients
+	 * @param result sg::base::DataVector that contains the result of the down operation
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	virtual void operator()(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void operator()(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 };
 
 }

@@ -12,7 +12,6 @@
 #include "basis/linear/noboundary/operation/datadriven/OCLKernels.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -32,13 +31,13 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeSPHybridSSEOCLLinear : public OperationMultipleEvalVectorizedSP
+class OperationMultipleEvalIterativeSPHybridSSEOCLLinear : public sg::base::OperationMultipleEvalVectorizedSP
 {
 public:
 	/**
 	 * Construtor of OperationMultipleEvalLinearSP
 	 *
-	 * Within the construct DataMatrixSP Level and DataMatrixSP Index are set up.
+	 * Within the construct sg::base::DataMatrixSP Level and sg::base::DataMatrixSP Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
 	 * a new instance of this class, you have to call rebuildLevelAndIndex before
 	 * doing any further mult or multTranspose calls.
@@ -46,24 +45,24 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeSPHybridSSEOCLLinear(GridStorage* storage, DataMatrixSP* dataset);
+	OperationMultipleEvalIterativeSPHybridSSEOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationMultipleEvalIterativeSPHybridSSEOCLLinear();
 
-	virtual double multVectorized(DataVectorSP& alpha, DataVectorSP& result);
+	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
 
-	virtual double multTransposeVectorized(DataVectorSP& source, DataVectorSP& result);
+	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result);
 
 	virtual void rebuildLevelAndIndex();
 
 protected:
 	/// Pointer to the grid's gridstorage object
-	GridStorage* storage;
+	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
-	SGppStopwatch* myTimer;
+	sg::base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
 };

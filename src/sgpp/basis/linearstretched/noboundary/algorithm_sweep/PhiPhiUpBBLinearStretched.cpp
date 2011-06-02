@@ -8,6 +8,7 @@
 
 #include "basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
 
+
 namespace sg
 {
 namespace pde
@@ -15,7 +16,7 @@ namespace pde
 
 
 
-PhiPhiUpBBLinearStretched::PhiPhiUpBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
+PhiPhiUpBBLinearStretched::PhiPhiUpBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
 }
 
@@ -23,7 +24,7 @@ PhiPhiUpBBLinearStretched::~PhiPhiUpBBLinearStretched()
 {
 }
 
-void PhiPhiUpBBLinearStretched::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void PhiPhiUpBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 
 	// get boundary values
@@ -34,7 +35,7 @@ void PhiPhiUpBBLinearStretched::operator()(DataVector& source, DataVector& resul
 
 }
 
-void PhiPhiUpBBLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+void PhiPhiUpBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
 {
 
 	size_t seq = index.seq();
@@ -43,8 +44,8 @@ void PhiPhiUpBBLinearStretched::rec(DataVector& source, DataVector& result, grid
 	double fml = 0.0;
 	double fmr = 0.0;
 
-	GridStorage::index_type::level_type current_level;
-	GridStorage::index_type::index_type current_index;
+	sg::base::GridStorage::index_type::level_type current_level;
+	sg::base::GridStorage::index_type::index_type current_index;
 
 	if(!index.hint())
 	{

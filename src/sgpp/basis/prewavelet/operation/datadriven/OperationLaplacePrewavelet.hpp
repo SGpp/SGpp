@@ -35,7 +35,6 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 #include<iostream>
 
@@ -59,7 +58,7 @@ public:
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
-	OperationLaplacePrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
+	OperationLaplacePrewavelet(sg::base::GridStorage* storage, sg::base::GridStorage* shadowstorage) :
 			UpDownOneOpDimWithShadow(storage,shadowstorage)
 	{
 
@@ -75,25 +74,25 @@ public:
 
 protected:
 
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim)
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 	{
 		LaplaceUpPrewavelet func(this->storage);
 		sweep<LaplaceUpPrewavelet> s(func, this->storage);
 		s.sweep1D(alpha, result, dim);
 	}
 
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim)
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 	{
 	}
 
-	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim)
+	virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 	{
 		LaplaceDownGradientPrewavelet func(this->storage);
 		sweep<LaplaceDownGradientPrewavelet> s(func, this->storage);
 		s.sweep1D(alpha, result, dim);
 	}
 
-	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim)
+	virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 	{
 		LaplaceUpGradientPrewavelet func(this->storage);
 		sweep<LaplaceUpGradientPrewavelet> s(func, this->storage);

@@ -14,7 +14,7 @@ namespace pde
 
 
 
-PhiPhiUpBBLinearStretchedBoundary::PhiPhiUpBBLinearStretchedBoundary(GridStorage* storage) : PhiPhiUpBBLinearStretched(storage)
+PhiPhiUpBBLinearStretchedBoundary::PhiPhiUpBBLinearStretchedBoundary(sg::base::GridStorage* storage) : PhiPhiUpBBLinearStretched(storage)
 {
 }
 
@@ -22,7 +22,7 @@ PhiPhiUpBBLinearStretchedBoundary::~PhiPhiUpBBLinearStretchedBoundary()
 {
 }
 
-void PhiPhiUpBBLinearStretchedBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void PhiPhiUpBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = this->stretching->getIntervalWidth(dim);
 	//	double t = this->stretching->getIntervalOffset(dim);

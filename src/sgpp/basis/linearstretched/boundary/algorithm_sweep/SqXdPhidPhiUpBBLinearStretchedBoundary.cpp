@@ -14,7 +14,7 @@ namespace finance
 
 
 
-SqXdPhidPhiUpBBLinearStretchedBoundary::SqXdPhidPhiUpBBLinearStretchedBoundary(GridStorage* storage) : SqXdPhidPhiUpBBLinearStretched(storage)
+SqXdPhidPhiUpBBLinearStretchedBoundary::SqXdPhidPhiUpBBLinearStretchedBoundary(sg::base::GridStorage* storage) : SqXdPhidPhiUpBBLinearStretched(storage)
 {
 }
 
@@ -22,7 +22,7 @@ SqXdPhidPhiUpBBLinearStretchedBoundary::~SqXdPhidPhiUpBBLinearStretchedBoundary(
 {
 }
 
-void SqXdPhidPhiUpBBLinearStretchedBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void SqXdPhidPhiUpBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = this->stretching->getIntervalWidth(dim);
 	double t = this->stretching->getIntervalOffset(dim);

@@ -26,7 +26,6 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -48,17 +47,17 @@ namespace pde
 class LaplaceUpPrewavelet
 {
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
-	/// Pointer to GridStorage object
-	GridStorage* storage;
+	typedef sg::base::GridStorage::grid_iterator grid_iterator;
+	/// Pointer to sg::base::GridStorage object
+	sg::base::GridStorage* storage;
 
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	LaplaceUpPrewavelet(GridStorage* storage) :
+	LaplaceUpPrewavelet(sg::base::GridStorage* storage) :
 		storage(storage)
 	{
 	}
@@ -73,21 +72,21 @@ public:
 	/**
 	 * This operations performs the calculation of down in the direction of dimension <i>dim</i>
 	 *
-	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-	 * @param result DataVector that contains the result of the up operation
+	 * @param source sg::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+	 * @param result sg::base::DataVector that contains the result of the up operation
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	void operator()(DataVector& source, DataVector& result,
+	void operator()(sg::base::DataVector& source, sg::base::DataVector& result,
 			grid_iterator& index, size_t dim)
 	{
 
 		size_t seq = index.seq();
-		GridStorage::index_type::level_type l;
-		GridStorage::index_type::index_type i;
-		GridStorage::index_type::level_type l_old;
-		GridStorage::index_type::index_type i_old;
-		GridStorage::index_type::index_type last_index;
+		sg::base::GridStorage::index_type::level_type l;
+		sg::base::GridStorage::index_type::index_type i;
+		sg::base::GridStorage::index_type::level_type l_old;
+		sg::base::GridStorage::index_type::index_type i_old;
+		sg::base::GridStorage::index_type::index_type last_index;
 		size_t _seq;
 		size_t _seql1;
 		size_t _seql2;

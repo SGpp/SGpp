@@ -18,7 +18,6 @@
 #include <immintrin.h>
 #else
 #include "common/avxintrin_emu.h"
-using namespace sg::base;
 #endif
 
 union doubleAbsMaskAVX
@@ -49,16 +48,16 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeAVXLinear::OperationMultipleEvalIterativeAVXLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeAVXLinear::OperationMultipleEvalIterativeAVXLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 
-	this->level_ = new DataMatrix(storage->size(), storage->dim());
-	this->index_ = new DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new SGppStopwatch();
+	myTimer = new sg::base::SGppStopwatch();
 }
 
 OperationMultipleEvalIterativeAVXLinear::~OperationMultipleEvalIterativeAVXLinear()
@@ -71,13 +70,13 @@ void OperationMultipleEvalIterativeAVXLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new DataMatrix(storage->size(), storage->dim());
-	this->index_ = new DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
-double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(DataVector& source, DataVector& result)
+double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
@@ -90,7 +89,7 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(DataVect
 
     if (this->dataset_->getNcols() % 24 != 0 || source_size != this->dataset_->getNcols())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     myTimer->start();
@@ -231,7 +230,7 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(DataVect
 	return myTimer->stop();
 }
 
-double OperationMultipleEvalIterativeAVXLinear::multVectorized(DataVector& alpha, DataVector& result)
+double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -244,7 +243,7 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(DataVector& alpha
 
     if (this->dataset_->getNcols() % 24 != 0 || result_size != this->dataset_->getNcols())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     myTimer->start();

@@ -15,7 +15,7 @@ namespace finance
 
 
 
-XdPhiPhiDownBBLinearStretched::XdPhiPhiDownBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
+XdPhiPhiDownBBLinearStretched::XdPhiPhiDownBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
 }
 
@@ -23,7 +23,7 @@ XdPhiPhiDownBBLinearStretched::~XdPhiPhiDownBBLinearStretched()
 {
 }
 
-void XdPhiPhiDownBBLinearStretched::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void XdPhiPhiDownBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 
 		rec(source, result, index, dim, 0.0, 0.0);
@@ -31,14 +31,14 @@ void XdPhiPhiDownBBLinearStretched::operator()(DataVector& source, DataVector& r
 }
 
 
-void XdPhiPhiDownBBLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+void XdPhiPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 {
 	size_t seq = index.seq();
 
 	double alpha_value = source[seq];
 
-	GridStorage::index_type::level_type l;
-	GridStorage::index_type::index_type i;
+	sg::base::GridStorage::index_type::level_type l;
+	sg::base::GridStorage::index_type::index_type i;
 
 	index.get(dim, l, i);
 	//get the positions of the current index as well as its left and right neighbors

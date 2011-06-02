@@ -18,7 +18,6 @@
 #include <immintrin.h>
 #else
 #include "common/avxintrin_emu.h"
-using namespace sg::base;
 #endif
 
 union floatAbsMaskAVX
@@ -49,16 +48,16 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPAVXLinear::OperationMultipleEvalIterativeSPAVXLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPAVXLinear::OperationMultipleEvalIterativeSPAVXLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset)
 {
 	this->storage = storage;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new SGppStopwatch();
+	myTimer = new sg::base::SGppStopwatch();
 }
 
 OperationMultipleEvalIterativeSPAVXLinear::~OperationMultipleEvalIterativeSPAVXLinear()
@@ -71,13 +70,13 @@ void OperationMultipleEvalIterativeSPAVXLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
-double OperationMultipleEvalIterativeSPAVXLinear::multTransposeVectorized(DataVectorSP& source, DataVectorSP& result)
+double OperationMultipleEvalIterativeSPAVXLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
@@ -90,7 +89,7 @@ double OperationMultipleEvalIterativeSPAVXLinear::multTransposeVectorized(DataVe
 
     if (this->dataset_->getNcols() % 48 != 0 || source_size != this->dataset_->getNcols())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     myTimer->start();
@@ -231,7 +230,7 @@ double OperationMultipleEvalIterativeSPAVXLinear::multTransposeVectorized(DataVe
 	return myTimer->stop();
 }
 
-double OperationMultipleEvalIterativeSPAVXLinear::multVectorized(DataVectorSP& alpha, DataVectorSP& result)
+double OperationMultipleEvalIterativeSPAVXLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -244,7 +243,7 @@ double OperationMultipleEvalIterativeSPAVXLinear::multVectorized(DataVectorSP& a
 
     if (this->dataset_->getNcols() % 48 != 0 || result_size != this->dataset_->getNcols())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     myTimer->start();

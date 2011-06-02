@@ -13,24 +13,23 @@
 #include "exception/operation_exception.hpp"
 
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace datadriven
 {
 
-double OperationTestModBspline::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
+double OperationTestModBspline::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
 {
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestModBspline::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+double OperationTestModBspline::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
 {
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestModBspline::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestModBspline::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
 {
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }

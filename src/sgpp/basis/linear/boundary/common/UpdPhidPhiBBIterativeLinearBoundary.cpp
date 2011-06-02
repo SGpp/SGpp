@@ -7,14 +7,13 @@
 
 #include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 #include "grid/common/BoundingBox.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-UpdPhidPhiBBIterativeLinearBoundary::UpdPhidPhiBBIterativeLinearBoundary(GridStorage* storage) : storage(storage)
+UpdPhidPhiBBIterativeLinearBoundary::UpdPhidPhiBBIterativeLinearBoundary(sg::base::GridStorage* storage) : storage(storage)
 {
 }
 
@@ -22,10 +21,10 @@ UpdPhidPhiBBIterativeLinearBoundary::~UpdPhidPhiBBIterativeLinearBoundary()
 {
 }
 
-void UpdPhidPhiBBIterativeLinearBoundary::operator()(DataVector& alpha, DataVector& result, size_t dim)
+void UpdPhidPhiBBIterativeLinearBoundary::operator()(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// Bounding Box handling
-	BoundingBox* boundingBox = this->storage->getBoundingBox();
+	sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
 	double q = boundingBox->getIntervalWidth(dim);
 	double Qqout = 1.0/q;
 
@@ -37,15 +36,15 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(DataVector& alpha, DataVect
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
+			sg::base::GridStorage::index_type::level_type level;
+			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			if (level == 0)
 			{
 				// up
 				if (index == 1)
 				{
-					GridIndex index_zero = (*storage)[i];
+					sg::base::GridIndex index_zero = (*storage)[i];
 					index_zero.set(dim, 0, 0);
 					if (!boundingBox->hasDirichletBoundaryLeft(dim))
 					{
@@ -60,15 +59,15 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(DataVector& alpha, DataVect
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
+			sg::base::GridStorage::index_type::level_type level;
+			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			if (level == 0)
 			{
 				// up
 				if (index == 1)
 				{
-					GridIndex index_zero = (*storage)[i];
+					sg::base::GridIndex index_zero = (*storage)[i];
 					index_zero.set(dim, 0, 0);
 					if (!boundingBox->hasDirichletBoundaryLeft(dim))
 					{

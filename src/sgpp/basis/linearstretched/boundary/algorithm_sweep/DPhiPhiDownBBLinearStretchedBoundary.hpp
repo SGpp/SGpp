@@ -21,7 +21,7 @@ namespace finance
 
 
 /**
- * Implementation of sweep operator (): 1D Down for
+ * Implementation of sg::base::sweep operator (): 1D Down for
  * Bilinearform \f$\int_{x} \frac{\partial \phi(x)}{x} \phi(x) dx\f$
  * on linear boundary grids
  */
@@ -31,9 +31,9 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	DPhiPhiDownBBLinearStretchedBoundary(GridStorage* storage);
+	DPhiPhiDownBBLinearStretchedBoundary(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
@@ -48,12 +48,12 @@ public:
 	 * result)
 	 * So please assure that both functions do exist!
 	 *
-	 * @param source DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-	 * @param result DataVector that contains the result of the down operation
+	 * @param source sg::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+	 * @param result sg::base::DataVector that contains the result of the down operation
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
 	 */
-	virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
+	virtual void operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim);
 };
 
  // namespace detail
