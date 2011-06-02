@@ -2,7 +2,6 @@
 #define LINEARFULLGRID_HPP
 
 #include "FullGrid.hpp"
-using namespace sg::base;
 
 namespace sg{
 namespace combigrid {
@@ -40,7 +39,7 @@ public:
 	/**Returns the coordinate vector for a given gridpoint
 	 *@param index the index of the gridpoint in the data vector
 	 *@param v the datavector in which the coordinates will be placed*/
-	void getCoords(size_t index,DataVector &v)
+	void getCoords(size_t index,sg::base::DataVector &v)
 	{
         int ind=0;
         int aux=index;
@@ -87,7 +86,7 @@ public:
 
     	// switch on scientific notation:
 		//return_stream << std::scientific;
-        DataVector coords(dim);
+        sg::base::DataVector coords(dim);
         getCoords(index,coords);
         //return_stream.precision(15);
     	for(size_t i = 0; i < dim; i++)
@@ -121,7 +120,7 @@ public:
 	}
 
 	/** Evaluates the value of the function in a given point */
-	double eval(DataVector& p);
+	double eval(sg::base::DataVector& p);
 };
 }
 }

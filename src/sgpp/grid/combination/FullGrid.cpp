@@ -1,7 +1,6 @@
 #include "FullGrid.hpp"
 #include "LinearFullGrid.hpp"
 using namespace std;
-using namespace sg::base;
 namespace sg{
 namespace combigrid {
 
@@ -20,7 +19,7 @@ namespace combigrid {
     }
 
 
-   void FullGrid::getCoords(size_t index,DataVector &v)
+   void FullGrid::getCoords(size_t index,sg::base::DataVector &v)
     {
         int ind=0;
         int aux=index;
@@ -51,7 +50,7 @@ namespace combigrid {
 
     	// switch on scientific notation:
 		//return_stream << std::scientific;
-        DataVector coords(dim);
+        sg::base::DataVector coords(dim);
         getCoords(index,coords);
         //return_stream.precision(15);
     	for(size_t i = 0; i < dim; i++)
@@ -67,7 +66,7 @@ namespace combigrid {
     }
 
 
-   double FullGrid::eval(DataVector& p)
+   double FullGrid::eval(sg::base::DataVector& p)
    {
   	 int ii,i,tmp_val,vv,nr;
   	 int jj;

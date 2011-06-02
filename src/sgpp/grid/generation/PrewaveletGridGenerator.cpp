@@ -29,8 +29,7 @@
 #include "sgpp.hpp"
 
 #include <iostream>
-//using namespace sg::pde;
-
+//
 namespace sg
 {
 namespace base
@@ -40,7 +39,7 @@ namespace base
  * An adaptive grid with prewavelet ansatz functions requires for operations
  * using the up-down algorithm shadow points. These shadow points a needed just
  * for data transport, thus they do not have an influence on the final function.
- * Please refer to UpDownOneOpDimWithShadow for more information.
+ * Please refer to sg::pde::UpDownOneOpDimWithShadow for more information.
  */
 PrewaveletGridGenerator::PrewaveletGridGenerator(GridStorage* storage,
 		GridStorage* shadowstorage) :

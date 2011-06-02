@@ -33,8 +33,6 @@
 #include "sgpp.hpp"
 
 #include <iostream>
-using namespace sg::finance;
-using namespace sg::pde;
 
 namespace sg
 {
@@ -95,7 +93,7 @@ OperationMultipleEvalVectorizedSP* LinearStretchedGrid::createOperationMultipleE
 }
 OperationMatrix* LinearStretchedGrid::createOperationLaplace()
 {
-	return new OperationLaplaceLinearStretched(this->storage);
+	return new sg::pde::OperationLaplaceLinearStretched(this->storage);
 }
 
 OperationEval* LinearStretchedGrid::createOperationEval()
@@ -115,7 +113,7 @@ OperationHierarchisation* LinearStretchedGrid::createOperationHierarchisation()
 
 OperationMatrix* LinearStretchedGrid::createOperationLTwoDotProduct()
 {
-	return new OperationLTwoDotProductLinearStretched(this->storage);
+	return new sg::pde::OperationLTwoDotProductLinearStretched(this->storage);
 }
 
 OperationMatrix* LinearStretchedGrid::createOperationLE()
@@ -148,22 +146,22 @@ OperationMatrix* LinearStretchedGrid::createOperationUpDownTest()
 /////////////////////
 OperationMatrix* LinearStretchedGrid::createOperationDelta(DataVector& coef)
 {
-	return new OperationDeltaLinearStretched(this->storage, coef);
+	return new sg::finance::OperationDeltaLinearStretched(this->storage, coef);
 }
 
 OperationMatrix* LinearStretchedGrid::createOperationGamma(DataMatrix& coef)
 {
-	return new OperationGammaLinearStretched(this->storage, coef);
+	return new sg::finance::OperationGammaLinearStretched(this->storage, coef);
 }
 
 OperationMatrix* LinearStretchedGrid::createOperationDeltaLog(DataVector& coef)
 {
-	return new OperationDeltaLogLinearStretched(this->storage, coef);
+	return new sg::finance::OperationDeltaLogLinearStretched(this->storage, coef);
 }
 
 OperationMatrix* LinearStretchedGrid::createOperationGammaLog(DataMatrix& coef)
 {
-	return new OperationGammaLogLinearStretched(this->storage, coef);
+	return new sg::finance::OperationGammaLogLinearStretched(this->storage, coef);
 }
 
 OperationConvert* LinearStretchedGrid::createOperationConvert()
