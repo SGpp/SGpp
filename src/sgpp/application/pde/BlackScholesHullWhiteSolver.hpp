@@ -26,8 +26,6 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -43,21 +41,21 @@ namespace finance
  *
  * @version $HEAD$
  */
-class BlackScholesHullWhiteSolver : public ParabolicPDESolver
+class BlackScholesHullWhiteSolver : public sg::pde::ParabolicPDESolver
 {
 private:
 	/// vector that contains the assets' weight
-	DataVector* mus;
+	sg::base::DataVector* mus;
 	/// vector that contains the standard deviations
-	DataVector* sigmas;
+	sg::base::DataVector* sigmas;
 	/// Matrix that contains the correlations
-	DataMatrix* rhos;
+	sg::base::DataMatrix* rhos;
 	/// the riskfree rate
 	double r;
 	/// stores if the stochastic asset data was passed to the solver
 	bool bStochasticDataAlloc;
 	/// screen object used in this solver
-	ScreenOutput* myScreen;
+	sg::base::ScreenOutput* myScreen;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// Threshold used to decide if a grid point should be deleted
@@ -78,11 +76,11 @@ private:
 	size_t nNeededIterations;
 	/// variable to store the solving time
 	double dNeededTime;
-	/// variable to store start grid size (Inner Grid)
+	/// variable to store start grid size (Inner sg::base::Grid)
 	size_t staInnerGridSize;
-	/// variable to store final grid size (Inner Grid)
+	/// variable to store final grid size (Inner sg::base::Grid)
 	size_t finInnerGridSize;
-	/// variable to store average grid size (Inner Grid)
+	/// variable to store average grid size (Inner sg::base::Grid)
 	size_t avgInnerGridSize;
 	/// Percent how many of the removable points should be tested for deletion
 	double coarsenPercent;
@@ -109,30 +107,30 @@ public:
 	 */
 	virtual ~BlackScholesHullWhiteSolver();
 
-	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
 
 	/**
 	 * In order to combine the Black Scholes Equation with the Hull White Equation you have to provided
 	 * some statistical data about the underlying (assets' weight, standard deviation
 	 * and the correlation between them). This function allows you to set this data for Black-Scholes.
 	 *
-	 * @param mus a DataVector that contains the underlyings' weight
-	 * @param sigmas a DataVector that contains the underlyings' standard deviations
-	 * @param rhos a DataMatrix that contains the correlations between the underlyings
+	 * @param mus a sg::base::DataVector that contains the underlyings' weight
+	 * @param sigmas a sg::base::DataVector that contains the underlyings' standard deviations
+	 * @param rhos a sg::base::DataMatrix that contains the correlations between the underlyings
 	 * @param r the riskfree rate used in the market model
 	 */
-	void setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r,double theta, double sigma, double a);
+	void setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r,double theta, double sigma, double a);
 
 	/**
 	 *  defines the dimension of the stoch. processes (BS and HW). default is BS:0, HW:1
 	 */
 	void setProcessDimensions(int dim_BS, int dim_HW);
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -143,7 +141,7 @@ public:
 	 * @param a is the mean reversion rate
 	 * @sigma is the volatility
 	 */
-	void initGridWithPayoffBSHW(DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
+	void initGridWithPayoffBSHW(sg::base::DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
 	/**
 	 * Inits the screen object
 	 */

@@ -9,7 +9,6 @@
 #define ELLIPTICPDESOLVER_HPP
 
 #include "application/pde/PDESolver.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -47,7 +46,7 @@ public:
 	 * @param epsilonCG the epsilon used in the CG
 	 * @param verbose enables verbose output during solving
 	 */
-	virtual void solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
+	virtual void solvePDE(sg::base::DataVector& alpha, sg::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
 };
 
 }

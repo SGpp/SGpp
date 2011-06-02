@@ -15,7 +15,6 @@
 #include "grid/type/LinearStretchedGrid.hpp"
 #include "grid/common/Stretching.hpp"
 #include "tools/common/GridPrinterForStretching.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -34,8 +33,8 @@ namespace finance
 class BlackScholesSolverWithStretching : public BlackScholesSolver
 {
 private:
-	/// Stores Pointer to the Grid's Stretching
-	Stretching* myStretching;
+	/// Stores Pointer to the sg::base::Grid's sg::base::Stretching
+	sg::base::Stretching* myStretching;
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option.
@@ -45,7 +44,7 @@ private:
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	virtual void initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initCartesianGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -55,7 +54,7 @@ private:
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	virtual void initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initLogTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * This function calculates for every grid point the value
@@ -68,7 +67,7 @@ private:
 	 * @param std_mu the expected values of the normal distribution for every grid dimension
 	 * @param std_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
-	virtual void getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+	virtual void getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 public:
 	/**
@@ -84,9 +83,9 @@ public:
 	 */
 	~BlackScholesSolverWithStretching();
 
-	void constructGridStretching(Stretching& myStretching, size_t level);
+	void constructGridStretching(sg::base::Stretching& myStretching, size_t level);
 
-	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
 
 	/**
 	 * This function tries to refine the grid such that
@@ -97,12 +96,12 @@ public:
 	 *
 	 * Only on Cartesian grids!
 	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
+	 * @param alpha reference to a sg::base::DataVector object that contains the gird ansatzfunction's coefficients
 	 * @param strike containing the option's strike
 	 * @param payoffType the type of payoff Function used ONLY supported: avgM
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 */
-	virtual void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
+	virtual void refineInitialGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
 
 	/**
 	 * This function tries to refine the grid such that
@@ -114,13 +113,13 @@ public:
 	 *
 	 * Only on Cartesian grids!
 	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
+	 * @param alpha reference to a sg::base::DataVector object that contains the gird ansatzfunction's coefficients
 	 * @param strike containing the option's strike
 	 * @param payoffType the type of payoff Function used ONLY supported: avgM
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 * @param maxLevel maximum level of refinement
 	 */
-	virtual void refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
+	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -129,7 +128,7 @@ public:
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	virtual void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 	/**
 	 * Inits the screen object
 	 */
@@ -147,7 +146,7 @@ public:
 	 * @param numTestpoints Number of equal distribute testpoints @money
 	 * @param strike the option's strike
 	 */
-	virtual void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
+	virtual void printPayoffInterpolationError2D(sg::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
 
 	/**
 	 * gets the number of gridpoints at money
@@ -173,12 +172,12 @@ public:
 	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+	virtual void printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
 	/**
 	 * This is not used, throws exception to inform about the function printGridDomainStretching
 	 */
-	virtual void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const;
+	virtual void printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
@@ -191,10 +190,10 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const;
+	virtual void printGridDomainStretching(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const;
 
 	/**
-	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
 	 * or their hierarchical surplus
 	 *
 	 * This function is available for all dimensions
@@ -203,10 +202,10 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	virtual void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	virtual void printSparseGrid(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
-	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
 	 * or their hierarchical surplus
 	 *
 	 * This function is available for all dimensions.
@@ -218,7 +217,7 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	virtual void printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	virtual void printSparseGridExpTransform(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 
 };

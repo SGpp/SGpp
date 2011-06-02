@@ -6,14 +6,13 @@
 // @author Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "application/finance/VariableDiscountFactor.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace finance
 {
 
-VariableDiscountFactor::VariableDiscountFactor(GridStorage* storage, int dim_r): myBoundingBox(storage->getBoundingBox()), storage(storage), dim_r(dim_r)
+VariableDiscountFactor::VariableDiscountFactor(sg::base::GridStorage* storage, int dim_r): myBoundingBox(storage->getBoundingBox()), storage(storage), dim_r(dim_r)
 {
 }
 
@@ -21,7 +20,7 @@ VariableDiscountFactor::~VariableDiscountFactor()
 {
 }
 
-void VariableDiscountFactor::getDiscountFactor(DataVector& factor, double T)
+void VariableDiscountFactor::getDiscountFactor(sg::base::DataVector& factor, double T)
 {
 	double tmp;
 	for (size_t i = 0; i < storage->size(); i++)

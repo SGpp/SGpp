@@ -11,7 +11,6 @@
 #include "grid/common/BoundingBox.hpp"
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -26,9 +25,9 @@ class VariableDiscountFactor
 
 private:
 	/// bounding box of the grid
-	BoundingBox* myBoundingBox;
-	/// Grid Storage object
-	GridStorage* storage;
+	sg::base::BoundingBox* myBoundingBox;
+	/// sg::base::Grid Storage object
+	sg::base::GridStorage* storage;
 	/// dimension of the risk-free rate (HW axis)
 	int dim_r;
 
@@ -39,7 +38,7 @@ public:
 	 * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
 	 * @param dim_r dimension of the risk-free rate (HW axis)
 	 */
-	VariableDiscountFactor(GridStorage* storage, int dim_r);
+	VariableDiscountFactor(sg::base::GridStorage* storage, int dim_r);
 
 	/**
 	 * Std-Destructor
@@ -50,7 +49,7 @@ public:
 	 *@param factor the vector that should be calculated to multiply with another vector
 	 *@param T timestepsize
 	 */
-	void getDiscountFactor(DataVector& factor, double T);
+	void getDiscountFactor(sg::base::DataVector& factor, double T);
 
 };
 

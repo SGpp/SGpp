@@ -23,8 +23,6 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -42,7 +40,7 @@ namespace finance
  */
 
 
-class HullWhiteSolver : public ParabolicPDESolver
+class HullWhiteSolver : public sg::pde::ParabolicPDESolver
 {
 private:
 	///  the theta value
@@ -56,7 +54,7 @@ private:
 	/// stores if the stochastic asset data was passed to the solver
     bool bStochasticDataAlloc;
 	/// screen object used in this solver
-	ScreenOutput* myScreen;
+	sg::base::ScreenOutput* myScreen;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// Threshold used to decide if a grid point should be deleted
@@ -95,20 +93,20 @@ public:
 	 */
 	virtual ~HullWhiteSolver();
 
-	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
 
 	void setStochasticData(double theta, double sigma, double a);
 
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
 
-	//void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	//void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	//void solveVarTimestep(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	//void solveVarTimestep(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
 	/**
 	 * Solves the closed form of the Hull White equation, the Hull White
@@ -145,7 +143,7 @@ public:
 	 * @param t the current time
 	 * @param T the maturity time
 	 */
-	void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType,double sigma, double a, double t, double T);
+	void initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType,double sigma, double a, double t, double T);
 
 	/**
 	 * Inits the screen object
@@ -185,11 +183,11 @@ public:
 	 * first.
 	 * The grid is refined to max. Level!
 	 *
-	 * @param alpha a DataVector containing the grids coefficients
+	 * @param alpha a sg::base::DataVector containing the grids coefficients
 	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 * @param maxLevel maxLevel of refinement
 	 */
-	//void refineSurplusToMaxLevel(DataVector& alpha, double dThreshold, unsigned int maxLevel);
+	//void refineSurplusToMaxLevel(sg::base::DataVector& alpha, double dThreshold, unsigned int maxLevel);
 
 	/**
 	 * prints the 2D interpolation error @money into a file. This file is plotable via gnuplot. A bounding
@@ -200,7 +198,7 @@ public:
 	 * @param numTestpoints Number of equal distribute testpoints @money
 	 * @param strike the option's strike
 	 */
-	//void printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
+	//void printPayoffInterpolationError2D(sg::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
 };
 
 }

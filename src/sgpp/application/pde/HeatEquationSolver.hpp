@@ -24,7 +24,6 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
-using namespace sg::base;
 
 namespace sg
 {
@@ -46,7 +45,7 @@ protected:
 	/// the heat coefficient
 	double a;
 	/// screen object used in this solver
-	ScreenOutput* myScreen;
+	sg::base::ScreenOutput* myScreen;
 
 public:
 	/**
@@ -59,13 +58,13 @@ public:
 	 */
 	virtual ~HeatEquationSolver();
 
-	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
 
-	virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
 
 	/**
 	 * This method sets the heat coefficient of the regarded material
@@ -83,7 +82,7 @@ public:
 	 * @param sigma the sigma of the normal distribution
 	 * @param factor a factor that is used to stretch the function values
 	 */
-	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
+	void initGridWithSmoothHeat(sg::base::DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
 	 * Inits the screen object
@@ -98,7 +97,7 @@ public:
 	 * @param tFilename file into which the matrix is written
 	 * @param timestepsize the size of the timesteps
 	 */
-	void storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize);
+	void storeInnerMatrix(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
 
 	/**
 	 * Routine to export the matrix of the inner system in matrix
@@ -108,7 +107,7 @@ public:
 	 * @param tFilename file into which the matrix is written
 	 * @param timestepsize the size of the timesteps
 	 */
-	void storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize);
+	void storeInnerMatrixDiagonal(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
 
 	/**
 	 * Routine to export the matrix of the inner system in matrix
@@ -118,7 +117,7 @@ public:
 	 * @param tFilename file into which the matrix is written
 	 * @param timestepsize the size of the timesteps
 	 */
-	void storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize);
+	void storeInnerMatrixDiagonalRowSum(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
 
 	/**
 	 * Routine to export the RHS of the inner system which has to be
@@ -128,7 +127,7 @@ public:
 	 * @param tFilename file into which the rhs is written
 	 * @param timestepsize the size of the timesteps
 	 */
-	void storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize);
+	void storeInnerRHS(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
 
 	/**
 	 * Routine to export the solution of the inner system which
@@ -141,7 +140,7 @@ public:
 	 * @param epsilonCG the epsilon used in the C
 	 * @param tFilename file into which the rhs is written
 	 */
-	void storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
+	void storeInnerSolution(sg::base::DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
 };
 
 }
