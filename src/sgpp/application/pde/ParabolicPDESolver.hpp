@@ -9,7 +9,6 @@
 #define PARABOLICPDESOLVER_HPP
 
 #include "application/pde/PDESolver.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -53,7 +52,7 @@ public:
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
 	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
 	 */
-	virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20) = 0;
+	virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20) = 0;
 
 	/**
 	 * Call this routine to use an explicit Euler algorithm to solve the parabolic PDE
@@ -67,7 +66,7 @@ public:
 	 * @param generateAnimation set this to true, if you want to generate a grid output in every timestep
 	 * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
 	 */
-	virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20) = 0;
+	virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20) = 0;
 
 	/**
 	 * Call this routine to use the Crank Nicolson algorithm to solve the parabolic PDE
@@ -79,7 +78,7 @@ public:
 	 * @param alpha the coefficients of the Sparse Gird's basis functions
 	 * @param NumImEul specifies how many ImEul steps should be executed before CrNic is used, default is 0
 	 */
-	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0) = 0;
+	virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0) = 0;
 };
 
 }

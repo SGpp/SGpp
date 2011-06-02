@@ -19,8 +19,6 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
-using namespace sg::finance;
-using namespace sg::base;
 
 namespace sg
 {
@@ -40,13 +38,13 @@ PDESolver::~PDESolver()
 	}
 }
 
-void PDESolver::getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+void PDESolver::getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
 {
 	if (bGridConstructed)
 	{
 		double tmp;
 		double value;
-		StdNormalDistribution myNormDistr;
+		sg::base::StdNormalDistribution myNormDistr;
 
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 		{
@@ -66,7 +64,7 @@ void PDESolver::getGridNormalDistribution(DataVector& alpha, std::vector<double>
 	}
 	else
 	{
-		throw new application_exception("PDESolver::getGridNormalDistribution : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::getGridNormalDistribution : The grid wasn't initialized before!");
 	}
 }
 
@@ -81,7 +79,7 @@ void PDESolver::deleteGrid()
 	}
 	else
 	{
-		throw new application_exception("PDESolver::deleteGrid : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::deleteGrid : The grid wasn't initialized before!");
 	}
 }
 
@@ -95,7 +93,7 @@ void PDESolver::setGrid(const std::string& serializedGrid)
 		myGridStorage = NULL;
 	}
 
-	myGrid = Grid::unserialize(serializedGrid);
+	myGrid = sg::base::Grid::unserialize(serializedGrid);
 
 	myBoundingBox = myGrid->getBoundingBox();
 	myGridStorage = myGrid->getStorage();
@@ -117,13 +115,13 @@ std::string PDESolver::getGrid() const
 	}
 	else
 	{
-		throw new application_exception("PDESolver::getGrid : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::getGrid : The grid wasn't initialized before!");
 	}
 
 	return gridSer;
 }
 
-void PDESolver::refineInitialGridSurplus(DataVector& alpha, int numRefinePoints, double dThreshold)
+void PDESolver::refineInitialGridSurplus(sg::base::DataVector& alpha, int numRefinePoints, double dThreshold)
 {
 	size_t nRefinements;
 
@@ -138,7 +136,7 @@ void PDESolver::refineInitialGridSurplus(DataVector& alpha, int numRefinePoints,
 
 	if (bGridConstructed)
 	{
-		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
+		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
 
 		myGrid->createGridGenerator()->refine(myRefineFunc);
 
@@ -148,11 +146,11 @@ void PDESolver::refineInitialGridSurplus(DataVector& alpha, int numRefinePoints,
 	}
 	else
 	{
-		throw new application_exception("PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
 	}
 }
 
-void PDESolver::refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefinePoints, double dThreshold, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+void PDESolver::refineInitialGridSurplusSubDomain(sg::base::DataVector& alpha, int numRefinePoints, double dThreshold, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
 {
 	size_t nRefinements;
 
@@ -167,7 +165,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefi
 
 	if (bGridConstructed)
 	{
-		DataVector stdNormDist(alpha.getSize());
+		sg::base::DataVector stdNormDist(alpha.getSize());
 
 		// calculate multidimensional normal distribution and apply to alpha on it
 		this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
@@ -175,7 +173,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefi
 		stdNormDist.componentwise_mult(alpha);
 		//printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
-		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
+		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
 
 		myGrid->createGridGenerator()->refine(myRefineFunc);
 
@@ -185,17 +183,17 @@ void PDESolver::refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefi
 	}
 	else
 	{
-		throw new application_exception("PDESolver::refineIntialGridSurplusSubDomain : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::refineIntialGridSurplusSubDomain : The grid wasn't initialized before!");
 	}
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dThreshold, size_t maxLevel)
+void PDESolver::refineInitialGridSurplusToMaxLevel(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel)
 {
 	if (bGridConstructed)
 	{
 		size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
-		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
+		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha, nRefinements, dThreshold);
 
 		myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
 
@@ -205,17 +203,17 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dTh
 	}
 	else
 	{
-		throw new application_exception("PDESolver::refineInitialGridSurplusToMaxLevel : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::refineInitialGridSurplusToMaxLevel : The grid wasn't initialized before!");
 	}
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
 {
 	if (bGridConstructed)
 	{
 		size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
-		DataVector stdNormDist(alpha.getSize());
+		sg::base::DataVector stdNormDist(alpha.getSize());
 
 		// calculate multidimensional normal distribution and apply to alpha on it
 		this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
@@ -223,7 +221,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, d
 		stdNormDist.componentwise_mult(alpha);
 		//printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
-		SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
+		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&stdNormDist, nRefinements, dThreshold);
 
 		myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
 
@@ -233,18 +231,18 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, d
 	}
 	else
 	{
-		throw new application_exception("PDESolver::refineInitialGridSurplusToMaxLevelSubDomain : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::refineInitialGridSurplusToMaxLevelSubDomain : The grid wasn't initialized before!");
 	}
 }
 
-void PDESolver::coarsenInitialGridSurplus(DataVector& alpha, double dThreshold)
+void PDESolver::coarsenInitialGridSurplus(sg::base::DataVector& alpha, double dThreshold)
 {
 	if (bGridConstructed)
 	{
-		GridGenerator* myGenerator =  myGrid->createGridGenerator();
+		sg::base::GridGenerator* myGenerator =  myGrid->createGridGenerator();
 		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
 		size_t originalGridSize = myGrid->getStorage()->size();
-		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(&alpha, numCoarsen, dThreshold);
+		sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(&alpha, numCoarsen, dThreshold);
 
 		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, &alpha, originalGridSize);
 
@@ -253,24 +251,24 @@ void PDESolver::coarsenInitialGridSurplus(DataVector& alpha, double dThreshold)
 	}
 	else
 	{
-		throw new application_exception("PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");
+		throw new sg::base::application_exception("PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");
 	}
 }
 
-void PDESolver::constructGridBonn(std::string tfilename, DataVector& emptyAlpha, bool& ishierarchized)
+void PDESolver::constructGridBonn(std::string tfilename, sg::base::DataVector& emptyAlpha, bool& ishierarchized)
 {
-	IOToolBonnSG* myImporter = new IOToolBonnSG();
+	sg::finance::IOToolBonnSG* myImporter = new sg::finance::IOToolBonnSG();
 	std::string serGrid;
 
 	// test if emptyAlpha is really empty
 	if (emptyAlpha.getSize() != 0)
 	{
-		throw new application_exception("PDESolver::constructGrid : A non-empty coefficients' vector was used in gird construction from file!");
+		throw new sg::base::application_exception("PDESolver::constructGrid : A non-empty coefficients' vector was used in gird construction from file!");
 	}
 
 	myImporter->readFile(tfilename, serGrid, emptyAlpha, ishierarchized);
 
-	myGrid = Grid::unserialize(serGrid);
+	myGrid = sg::base::Grid::unserialize(serGrid);
 
 	myBoundingBox = myGrid->getBoundingBox();
 	myGridStorage = myGrid->getStorage();
@@ -278,7 +276,7 @@ void PDESolver::constructGridBonn(std::string tfilename, DataVector& emptyAlpha,
 	// Set every boundary to dirichlet boundaries
 	for (size_t i = 0; i < myGridStorage->dim(); i++)
 	{
-		DimensionBoundary myDimBound = myBoundingBox->getBoundary(i);
+		sg::base::DimensionBoundary myDimBound = myBoundingBox->getBoundary(i);
 
 		myDimBound.bDirichletLeft = true;
 		myDimBound.bDirichletRight = true;
@@ -288,7 +286,7 @@ void PDESolver::constructGridBonn(std::string tfilename, DataVector& emptyAlpha,
 
 	if (ishierarchized == false)
 	{
-		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
 		myHierarchisation->doHierarchisation(emptyAlpha);
 		delete myHierarchisation;
 	}
@@ -298,16 +296,16 @@ void PDESolver::constructGridBonn(std::string tfilename, DataVector& emptyAlpha,
 	delete myImporter;
 }
 
-void PDESolver::storeGridBonn(std::string tfilename, DataVector& alpha, bool ishierarchized)
+void PDESolver::storeGridBonn(std::string tfilename, sg::base::DataVector& alpha, bool ishierarchized)
 {
-	IOToolBonnSG* myExporter = new IOToolBonnSG();
-	DataVector copyAlpha(alpha);
+	sg::finance::IOToolBonnSG* myExporter = new sg::finance::IOToolBonnSG();
+	sg::base::DataVector copyAlpha(alpha);
 
 	if (bGridConstructed)
 	{
 		if (ishierarchized == false)
 		{
-			OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+			sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
 			myHierarchisation->doDehierarchisation(copyAlpha);
 			delete myHierarchisation;
 		}
@@ -316,70 +314,70 @@ void PDESolver::storeGridBonn(std::string tfilename, DataVector& alpha, bool ish
 	}
 	else
 	{
-		throw new application_exception("PDESolver::storeGrid : A grid wasn't constructed before!");
+		throw new sg::base::application_exception("PDESolver::storeGrid : A grid wasn't constructed before!");
 	}
 
 	delete myExporter;
 }
 
-void PDESolver::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const
+void PDESolver::printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const
 {
-	GridPrinter myPrinter(*this->myGrid);
+	sg::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void PDESolver::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const
+void PDESolver::printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const
 {
-	GridPrinter myPrinter(*this->myGrid);
+	sg::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
-void PDESolver::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const
+void PDESolver::printSparseGrid(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
-	GridPrinter myPrinter(*this->myGrid);
+	sg::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
 }
 
-void PDESolver::printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const
+void PDESolver::printSparseGridExpTransform(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
-	GridPrinter myPrinter(*this->myGrid);
+	sg::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
 }
 
-double PDESolver::evaluatePoint(std::vector<double>& evalPoint, DataVector& alpha)
+double PDESolver::evaluatePoint(std::vector<double>& evalPoint, sg::base::DataVector& alpha)
 {
 	double result = 0.0;
 
 	if (bGridConstructed)
 	{
-		OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
+		sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
 		result = myEval->eval(alpha, evalPoint);
 		delete myEval;
 	}
 	else
 	{
-		throw new application_exception("PDESolver::evaluatePoint : A grid wasn't constructed before!");
+		throw new sg::base::application_exception("PDESolver::evaluatePoint : A grid wasn't constructed before!");
 	}
 
 	return result;
 }
 
-void PDESolver::evaluateCuboid(DataVector& alpha, DataVector& OptionPrices, DataMatrix& EvaluationPoints)
+void PDESolver::evaluateCuboid(sg::base::DataVector& alpha, sg::base::DataVector& OptionPrices, sg::base::DataMatrix& EvaluationPoints)
 {
 	if (bGridConstructed)
 	{
 		if (OptionPrices.getSize() != EvaluationPoints.getNrows())
 		{
-			throw new application_exception("PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
+			throw new sg::base::application_exception("PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
 		}
 
-		OperationMultipleEval* myOpMultEval = sg::GridOperationFactory::createOperationMultipleEval(*myGrid, &EvaluationPoints);
+		sg::base::OperationMultipleEval* myOpMultEval = sg::GridOperationFactory::createOperationMultipleEval(*myGrid, &EvaluationPoints);
 		myOpMultEval->mult(alpha, OptionPrices);
 		delete myOpMultEval;
 	}
 	else
 	{
-		throw new application_exception("PDESolver::evaluateCuboid : A grid wasn't constructed before!");
+		throw new sg::base::application_exception("PDESolver::evaluateCuboid : A grid wasn't constructed before!");
 	}
 }
 
@@ -391,7 +389,7 @@ size_t PDESolver::getNumberGridPoints() const
 	}
 	else
 	{
-		throw new application_exception("PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
+		throw new sg::base::application_exception("PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
 	}
 }
 
@@ -403,7 +401,7 @@ size_t PDESolver::getNumberInnerGridPoints() const
 	}
 	else
 	{
-		throw new application_exception("PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
+		throw new sg::base::application_exception("PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
 	}
 }
 
@@ -415,7 +413,7 @@ size_t PDESolver::getNumberDimensions() const
 	}
 	else
 	{
-		throw new application_exception("PDESolver::getNumberDimensions : A grid wasn't constructed before!");
+		throw new sg::base::application_exception("PDESolver::getNumberDimensions : A grid wasn't constructed before!");
 	}
 }
 

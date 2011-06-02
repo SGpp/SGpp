@@ -18,7 +18,6 @@
 #include "basis/operations_factory.hpp"
 #include <sstream>
 #include <fstream>
-using namespace sg::solver;
 
 namespace sg
 {
@@ -35,7 +34,7 @@ LaserHeatEquationSolver2D::~LaserHeatEquationSolver2D()
 
 void LaserHeatEquationSolver2D::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	throw new application_exception("LaserHeatEquationSolver::solveExplicitEuler : explicit Euler is not supported!");
+	throw new application_exception("LaserHeatEquationSolver::solveExplicitEuler : explicit sg::solver::Euler is not supported!");
 }
 
 void LaserHeatEquationSolver2D::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
@@ -44,8 +43,8 @@ void LaserHeatEquationSolver2D::solveImplicitEuler(size_t numTimesteps, double t
 	{
 		this->myScreen->writeStartSolve("2D Laser Heat Solver");
 		double dNeededTime;
-		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
-		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+		sg::solver::Euler* myEuler = new sg::solver::Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+		sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(maxCGIterations, epsilonCG);
 		LaserHeatEquationParabolicPDESolverSystemParallelOMP2D* myHESolver = new LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(this->beam_velocity_, this->heat_sigma_, this->max_level_, this->heat_, this->refine_threshold_, this->coarsen_threshold_, *this->myGrid, alpha, this->a, timestepsize, "ImEul");
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 

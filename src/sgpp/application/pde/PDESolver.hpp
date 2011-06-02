@@ -18,9 +18,7 @@
 #include "tools/common/GridPrinter.hpp"
 
 #include <vector>
-//using namespace sg::finance;
-using namespace sg::base;
-
+//
 namespace sg
 {
 namespace pde
@@ -36,18 +34,18 @@ namespace pde
 class PDESolver
 {
 protected:
-	/// The Sparse Grid needed in this classificator
-	Grid* myGrid;
+	/// The Sparse sg::base::Grid needed in this classificator
+	sg::base::Grid* myGrid;
 	/// the number of levels used for an regular grid
 	size_t levels;
 	/// the dimension of the grid
 	size_t dim;
 	/// stores if the grid was created inside the solver
 	bool bGridConstructed;
-	/// Stores Pointer to the Grid's Bounding Box
-	BoundingBox* myBoundingBox;
+	/// Stores Pointer to the sg::base::Grid's Bounding Box
+	sg::base::BoundingBox* myBoundingBox;
 	/// Stores Pointer to the Girs's Storage
-	GridStorage* myGridStorage;
+	sg::base::GridStorage* myGridStorage;
 
 	/**
 	 * This function calculates for every grid point the value
@@ -58,7 +56,7 @@ protected:
 	 * @param norm_mu the expected values of the normal distribution for every grid dimension
 	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
-	virtual void getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+	virtual void getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 public:
 	/**
@@ -77,7 +75,7 @@ public:
 	 * @param myBoundingBox reference to a bounding box that describes the grid
 	 * @param level number of the regular's grid levels
 	 */
-	virtual void constructGrid(BoundingBox& myBoundingBox, size_t level) = 0;
+	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level) = 0;
 
 	/**
 	 * Sets the grid used in this BlackScholes Solver by an given serialized string
@@ -104,11 +102,11 @@ public:
 	 * refines the grid based on the surplus by refining grid points with big surpluses
 	 * first. The number of grid points to refine may be specified by the numRefinePoints parameter.
 	 *
-	 * @param alpha a DataVector containing the grids coefficients
+	 * @param alpha a sg::base::DataVector containing the grids coefficients
 	 * @param numRefinePoints the number of grid points that should be refined; if this smaller than zero -> all refineable points will be refined
 	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 */
-	void refineInitialGridSurplus(DataVector& alpha, int numRefinePoints, double dThreshold);
+	void refineInitialGridSurplus(sg::base::DataVector& alpha, int numRefinePoints, double dThreshold);
 
 	/**
 	 * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -116,11 +114,11 @@ public:
 	 * first.
 	 * The grid is refined to max. Level!
 	 *
-	 * @param alpha a DataVector containing the grids coefficients
+	 * @param alpha a sg::base::DataVector containing the grids coefficients
 	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 * @param maxLevel maxLevel of refinement
 	 */
-	void refineInitialGridSurplusToMaxLevel(DataVector& alpha, double dThreshold, size_t maxLevel);
+	void refineInitialGridSurplusToMaxLevel(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel);
 
 	/**
 	 * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -131,13 +129,13 @@ public:
 	 * normal distribution. The normal distribution is given by the parameters norm_mu
 	 * and norm_sigma which are d-dimensional vectors.
 	 *
-	 * @param alpha a DataVector containing the grids coefficients
+	 * @param alpha a sg::base::DataVector containing the grids coefficients
 	 * @param numRefinePoints the number of grid points that should be refined; if this smaller than zero -> all refineable points will be refined
 	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 * @param norm_mu the expected values of the normal distribution for every grid dimension
 	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
-	void refineInitialGridSurplusSubDomain(DataVector& alpha, int numRefinePoints, double dThreshold, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+	void refineInitialGridSurplusSubDomain(sg::base::DataVector& alpha, int numRefinePoints, double dThreshold, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 	/**
 	 * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -149,23 +147,23 @@ public:
 	 * normal distribution. The normal distribution is given by the parameters norm_mu
 	 * and norm_sigma which are d-dimensional vectors.
 	 *
-	 * @param alpha a DataVector containing the grids coefficients
+	 * @param alpha a sg::base::DataVector containing the grids coefficients
 	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 * @param maxLevel maxLevel of refinement
 	 * @param norm_mu the expected values of the normal distribution for every grid dimension
 	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
-	void refineInitialGridSurplusToMaxLevelSubDomain(DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+	void refineInitialGridSurplusToMaxLevelSubDomain(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 	/**
 	 * Coarsens a grid by taking the grid's coefficients into account. This coarsen method
 	 * coarsens the grid based on the surplus by coarsening grid points with small surpluses
 	 * first.
 	 *
-	 * @param alpha a DataVector containing the grids coefficients
+	 * @param alpha a sg::base::DataVector containing the grids coefficients
 	 * @param dThreshold Threshold for a point's surplus for coarsening this point
 	 */
-	void coarsenInitialGridSurplus(DataVector& alpha, double dThreshold);
+	void coarsenInitialGridSurplus(sg::base::DataVector& alpha, double dThreshold);
 
 	/**
 	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
@@ -174,20 +172,20 @@ public:
 	 * released by the University of Bonn, Germany
 	 *
 	 * @param tfilename absolute path of the file
-	 * @param emptyAlpha reference to a DataVector object that contains no elements
+	 * @param emptyAlpha reference to a sg::base::DataVector object that contains no elements
 	 * @param ishierarchized is set to true if alpha contains surplus after reading the file, otherwise false
 	 */
-	void constructGridBonn(std::string tfilename, DataVector& emptyAlpha, bool& ishierarchized);
+	void constructGridBonn(std::string tfilename, sg::base::DataVector& emptyAlpha, bool& ishierarchized);
 
 	/**
 	 * Use this routine if you wnat to store a grid in the format provided by the solving system
 	 * released by the University of Bonn, Germany
 	 *
 	 * @param tfilename absolute path of the file
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
+	 * @param alpha reference to a sg::base::DataVector object that contains the gird ansatzfunction's coefficients
 	 * @param ishierarchized set to true, the export is done on the nodal basis
 	 */
-	void storeGridBonn(std::string tfilename, DataVector& alpha, bool ishierarchized);
+	void storeGridBonn(std::string tfilename, sg::base::DataVector& alpha, bool ishierarchized);
 
 	/**
 	 * Determines the value of the function in the d-dimensional space
@@ -197,17 +195,17 @@ public:
 	 *
 	 * @return price of option for given point
 	 */
-	double evaluatePoint(std::vector<double>& evalPoint, DataVector& alpha);
+	double evaluatePoint(std::vector<double>& evalPoint, sg::base::DataVector& alpha);
 
 	/**
 	 * Evaluates the sparse grid's function given by the stored grid and the alpha coefficients.
 	 * on different points specified in EvaluationPoints and stores the result into FunctionValues.
 	 *
 	 * @param alpha the sparse grid's coefficients
-	 * @param FunctionValues DataVector into the which the result of function's evaluation is stored
-	 * @param EvaluationPoints DataMatrix that contains the points at which the sparse grid's function is evaluated
+	 * @param FunctionValues sg::base::DataVector into the which the result of function's evaluation is stored
+	 * @param EvaluationPoints sg::base::DataMatrix that contains the points at which the sparse grid's function is evaluated
 	 */
-	void evaluateCuboid(DataVector& alpha, DataVector& FunctionValues, DataMatrix& EvaluationPoints);
+	void evaluateCuboid(sg::base::DataVector& alpha, sg::base::DataVector& FunctionValues, sg::base::DataMatrix& EvaluationPoints);
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
@@ -219,7 +217,7 @@ public:
 	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+	virtual void printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
@@ -232,10 +230,10 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const;
+	virtual void printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
 
 	/**
-	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
 	 * or their hierarchical surplus
 	 *
 	 * This function is available for all dimensions
@@ -244,10 +242,10 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	virtual void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	virtual void printSparseGrid(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
-	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
 	 * or their hierarchical surplus
 	 *
 	 * This function is available for all dimensions.
@@ -259,7 +257,7 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	virtual void printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	virtual void printSparseGridExpTransform(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
 	 * use this to determine the number of grid points, used to solve

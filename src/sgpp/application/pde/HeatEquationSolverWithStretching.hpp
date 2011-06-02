@@ -30,7 +30,6 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
-using namespace sg::base;
 
 namespace sg
 {
@@ -52,9 +51,9 @@ private:
 	/// the heat coefficient
 	double a;
 	/// screen object used in this solver
-	ScreenOutput* myScreen;
+	sg::base::ScreenOutput* myScreen;
 	////BoundingBox replacement
-	Stretching* myStretching;
+	sg::base::Stretching* myStretching;
 
 public:
 	/**
@@ -67,15 +66,15 @@ public:
 	 */
 	virtual ~HeatEquationSolverWithStretching();
 
-	void constructGrid(Stretching& myStretching, size_t level);
+	void constructGrid(sg::base::Stretching& myStretching, size_t level);
 
-	void constructGrid(BoundingBox& myStretching, size_t level);
+	void constructGrid(sg::base::BoundingBox& myStretching, size_t level);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
 
 	/**
 	 * This method sets the heat coefficient of the regarded material
@@ -90,7 +89,7 @@ public:
 	 * @param alpha reference to the coefficients vector
 	 * @param heat the value of the heat in the middle of the domain
 	 */
-//	void initGridWithSingleHeat(DataVector& alpha, double heat);
+//	void initGridWithSingleHeat(sg::base::DataVector& alpha, double heat);
 
 	/**
 	 * Inits the grid in the middle the domain with an smooth heat distribution that the
@@ -101,7 +100,7 @@ public:
 	 * @param sigma the sigma of the normal distribution
 	 * @param factor a factor that is used to stretch the function values
 	 */
-	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
+	void initGridWithSmoothHeat(sg::base::DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
 	 * Inits the grid with a constant heat
@@ -109,7 +108,7 @@ public:
 	 * @param alpha reference to the coefficients vector
 	 * @param constHeat the temperature of the constant heat
 	 */
-//	void initGridWithConstantHeat(DataVector& alpha, double constHeat);
+//	void initGridWithConstantHeat(sg::base::DataVector& alpha, double constHeat);
 
 	/**
 	 * Inits the screen object
@@ -126,12 +125,12 @@ public:
 	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+	void printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
 	/**
 	 This function is a placeholder, is not used.
 	 */
-	void printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const;
+	void printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
@@ -144,10 +143,10 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const;
+	void printGridDomainStretching(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const;
 
 	/**
-	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
 	 * or their hierarchical surplus
 	 *
 	 * This function is available for all dimensions
@@ -156,10 +155,10 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	void printSparseGrid(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
-	 * Prints the Grid Points of the Sparse Grid either with their node basis value
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
 	 * or their hierarchical surplus
 	 *
 	 * This function is available for all dimensions.
@@ -171,7 +170,7 @@ public:
 	 * @param tfilename absoulte path to the file the grid is written into
 	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
 	 */
-	void printSparseGridExpTransform(DataVector& alpha, std::string tfilename, bool bSurplus) const;
+	void printSparseGridExpTransform(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 };
 
