@@ -8,10 +8,9 @@
 #include "CombiTanStretching.hpp"
 #include <math.h>
 
-using namespace combigrid;
 using namespace std;
 
-void TanStretching::get1DStretching(
+void combigrid::TanStretching::get1DStretching(
 		int level , double min, double max,
 		std::vector<double>& stretching) const {
 

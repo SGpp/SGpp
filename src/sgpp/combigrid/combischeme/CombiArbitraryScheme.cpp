@@ -1,5 +1,5 @@
 /*
- * CombiArbitraryScheme.cpp
+ * combigrid::CombiArbitraryScheme.cpp
  *
  *  Created on: Apr 28, 2011
  *      Author: kowitz_local
@@ -7,12 +7,11 @@
 
 #include "CombiArbitraryScheme.hpp"
 
-using namespace combigrid;
 
-CombiArbitraryScheme::CombiArbitraryScheme(
+combigrid::CombiArbitraryScheme::CombiArbitraryScheme(
 		std::vector<std::vector<int> > level_vectors) :
-	CombiSchemeBasis(level_vectors[0].size(), level_vectors[0]) {
-	CombigridLevelVector buffer = CombigridLevelVector::getCombiLevels(
+	combigrid::CombiSchemeBasis(level_vectors[0].size(), level_vectors[0]) {
+	combigrid::CombigridLevelVector buffer = combigrid::CombigridLevelVector::getCombiLevels(
 			level_vectors);
 	levels_vector_ = buffer.getLevelVec();
 	cofficients_ = buffer.getCoef();

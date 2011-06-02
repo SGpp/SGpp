@@ -1,5 +1,5 @@
 /*
- * Multigrid.cpp
+ * combigrid::Multigrid.cpp
  *
  *  Created on: May 16, 2011
  *      Author: benk
@@ -8,17 +8,16 @@
 #include "Multigrid.hpp"
 #include "solver/multigridFG/multigrid/ProlongationRestriction.hpp"
 
-using namespace combigrid;
 
-Multigrid::Multigrid(OperatorFG* op , FullGridD* fg , bool createHierarchy) {
+combigrid::Multigrid::Multigrid(combigrid::OperatorFG* op , FullGridD* fg , bool createHierarchy) {
 
 	// - create the hierarchy of grids
 	//     - in each direction there should be at least 3 points
 	//     - if in each direction the number of points is <= 3 then stop with the hierarchy
 
 	FullGridD* fg_tmp = fg;
-	OperatorFG* op_tmp = op;
-	GridDomain* domain = fg->getDomain();
+	combigrid::OperatorFG* op_tmp = op;
+	combigrid::GridDomain* domain = fg->getDomain();
 	depth_ = 0;
 	nrGSPre_ = 2;
 	nrGSPost_ = 2;
@@ -73,7 +72,7 @@ Multigrid::Multigrid(OperatorFG* op , FullGridD* fg , bool createHierarchy) {
 	COMBIGRID_OUT_LEVEL2(verb,"Multigrid::Multigrid ... END depth_=" <<depth_);
 }
 
-Multigrid::~Multigrid() {
+combigrid::Multigrid::~Multigrid() {
 	for (unsigned int i = 1 ; i < fullgrids_.size() ; i++ ){
 		// delete the full grids which have been created
 		delete unknowns_[i];
@@ -88,7 +87,7 @@ Multigrid::~Multigrid() {
 }
 
 
-void Multigrid::solveCS( std::vector<double>& unknowns ,
+void combigrid::Multigrid::solveCS( std::vector<double>& unknowns ,
 		double errorTol , bool makeFullMG){
 
 	int  i , vCycle = 0 , verb = 3;
@@ -126,7 +125,7 @@ void Multigrid::solveCS( std::vector<double>& unknowns ,
 			operators_[i]->multiplyVector( *(unknowns_[i]) , *(correction_[i]) );
 			combigrid::vect_diff( correction_[i] , rhs_[i] );
 			//combigrid::plot_vect(3, verb , correction_[i] , "Correction[i]");
-			ProlongationRestriction::restriction( fullgrids_[i], *(correction_[i]), -1.0, fullgrids_[i+1], *(rhs_[i+1]), 0.0, operators_[i]->getNrSpace() );
+			combigrid::ProlongationRestriction::restriction( fullgrids_[i], *(correction_[i]), -1.0, fullgrids_[i+1], *(rhs_[i+1]), 0.0, operators_[i]->getNrSpace() );
 			//combigrid::plot_vect(3, verb , rhs_[i+1] , "rhs[i+1]");
 			// it is very important to set the lower level unknowns to "0" this is esential to the correction scheme
 			vect_setvalue(unknowns_[i+1] , 0.0 );
@@ -141,7 +140,7 @@ void Multigrid::solveCS( std::vector<double>& unknowns ,
 			// prolongation
 			//combigrid::plot_vect(3, verb , unknowns_[i+1] , "u[i+1]");
 			//ProlongationRestriction::prolongation( fullgrids_[i], *(unknowns_[i]), 1.0, fullgrids_[i+1], *(unknowns_[i+1]), -1.0, operators_[i]->getNrSpace() );
-			ProlongationRestriction::prolongation( fullgrids_[i], *(correction_[i]), 0.0, fullgrids_[i+1], *(unknowns_[i+1]), 1.0, operators_[i]->getNrSpace() );
+			combigrid::ProlongationRestriction::prolongation( fullgrids_[i], *(correction_[i]), 0.0, fullgrids_[i+1], *(unknowns_[i+1]), 1.0, operators_[i]->getNrSpace() );
 			//combigrid::plot_vect(3, verb , correction_[i] , "correction[i]");
 			combigrid::vect_add_mul( 1.0 , unknowns_[i] , 1.0 , correction_[i]);
 			COMBIGRID_OUT_LEVEL4(verb," Prolongation level" << i)
@@ -173,11 +172,11 @@ void Multigrid::solveCS( std::vector<double>& unknowns ,
 	for (i = 0 ; i < (int)unknowns.size() ; i++) { unknowns[i] = (*unknowns_[0])[i]; }
 }
 
-void Multigrid::makeFullMultigrid( std::vector<double>& unknowns )
+void combigrid::Multigrid::makeFullMultigrid( std::vector<double>& unknowns )
 {
 
 	int  i , verb = 3;
-	COMBIGRID_OUT_LEVEL2(verb," Multigrid::makeFullMultigrid ... START ");
+	COMBIGRID_OUT_LEVEL2(verb," combigrid::Multigrid::makeFullMultigrid ... START ");
 	for ( int depth = depth_-1; depth >= 1 ; depth--)
 	{
 		// here make a V cycle up to level "depth"
@@ -188,7 +187,7 @@ void Multigrid::makeFullMultigrid( std::vector<double>& unknowns )
 			// restriction
 			operators_[i]->multiplyVector( *(unknowns_[i]) , *(correction_[i]) );
 			combigrid::vect_diff( correction_[i] , rhs_[i] );
-			ProlongationRestriction::restriction( fullgrids_[i], *(correction_[i]), -1.0, fullgrids_[i+1], *(rhs_[i+1]), 0.0, operators_[i]->getNrSpace() );
+			combigrid::ProlongationRestriction::restriction( fullgrids_[i], *(correction_[i]), -1.0, fullgrids_[i+1], *(rhs_[i+1]), 0.0, operators_[i]->getNrSpace() );
 			// it is very important to set the lower level unknowns to "0" this is essential to the correction scheme
 			vect_setvalue(unknowns_[i+1] , 0.0 );
 			COMBIGRID_OUT_LEVEL4(verb," Restriction level" << i)
@@ -200,7 +199,7 @@ void Multigrid::makeFullMultigrid( std::vector<double>& unknowns )
 		// rising branch
 		for (i = depth_-2 ; i >= depth ; i-- ){
 			// prolongation
-			ProlongationRestriction::prolongation( fullgrids_[i], *(correction_[i]), 0.0, fullgrids_[i+1], *(unknowns_[i+1]), 1.0, operators_[i]->getNrSpace() );
+			combigrid::ProlongationRestriction::prolongation( fullgrids_[i], *(correction_[i]), 0.0, fullgrids_[i+1], *(unknowns_[i+1]), 1.0, operators_[i]->getNrSpace() );
 			combigrid::vect_add_mul( 1.0 , unknowns_[i] , 1.0 , correction_[i]);
 			COMBIGRID_OUT_LEVEL4(verb," Prolongation level" << i)
 			// post smoothing
@@ -210,17 +209,17 @@ void Multigrid::makeFullMultigrid( std::vector<double>& unknowns )
 		}
 
 		// project the solution from level depth to depth-1, and make some additional smoothing
-		ProlongationRestriction::prolongation( fullgrids_[depth-1], *(unknowns_[depth-1]), 0.0,
+		combigrid::ProlongationRestriction::prolongation( fullgrids_[depth-1], *(unknowns_[depth-1]), 0.0,
 				fullgrids_[depth], *(unknowns_[depth]), 1.0, operators_[depth]->getNrSpace() );
 		// additionally make some smoothing
 		operators_[depth-1]->doSmoothing( nrGSPre_ + nrGSPost_ , *(unknowns_[depth-1]) , *(rhs_[depth-1]) );
 	}
 	combigrid::vect_add_mul( 0.0 , &unknowns , 1.0 , unknowns_[0] );
 
-	COMBIGRID_OUT_LEVEL2(verb," Multigrid::makeFullMultigrid ... END ");
+	COMBIGRID_OUT_LEVEL2(verb," combigrid::Multigrid::makeFullMultigrid ... END ");
 }
 
-void Multigrid::solveSmoothing( std::vector<double>& unknowns , double errorTol){
+void combigrid::Multigrid::solveSmoothing( std::vector<double>& unknowns , double errorTol){
 	int  i , vCycle = 0 , verb = 4;
 	double  error , errorAct;
 
@@ -258,7 +257,7 @@ void Multigrid::solveSmoothing( std::vector<double>& unknowns , double errorTol)
 }
 
 
-void Multigrid::solveCG( std::vector<double>& unknowns , double errorTol) {
+void combigrid::Multigrid::solveCG( std::vector<double>& unknowns , double errorTol) {
 	int  ii , vCycle = 0 , verb = 4;
 	double  error , errorAct;
 	COMBIGRID_OUT_LEVEL2(verb,"Multigrid::solveCG ... START");

@@ -11,8 +11,6 @@
 #include "solver/SGSolver.hpp"
 #include "solver/SLESolver.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -41,11 +39,11 @@ public:
 	 * Pure virtual Function that defines a solve method for an ODE solver
 	 *
 	 * @param LinearSystemSolver reference to an instance of a linear system solver that is used by this ODE solver
-	 * @param System reference to an OperationMatrix Object that implements the matrix vector multiplication
+	 * @param System reference to an sg::base::OperationMatrix Object that implements the matrix vector multiplication
 	 * @param bIdentifyLastStep set this to true to tell System the last step
 	 * @param verbose prints information during execution of the solver
 	 */
-	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
+	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
 };
 
 }

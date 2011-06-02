@@ -10,7 +10,6 @@
 #include <fstream>
 #include <stdlib.h>
 #include <iostream>
-using namespace sg::base;
 
 namespace sg
 {
@@ -46,7 +45,7 @@ size_t ARFFTools::getDimension(std::string tfilename)
 	else
 	{
 		std::string msg = "Unable to open file: " + tfilename;
-		throw new file_exception(msg.c_str());
+		throw new sg::base::file_exception(msg.c_str());
 	}
 
 	// the class is not regarded when getting the dimension
@@ -83,13 +82,13 @@ size_t ARFFTools::getNumberInstances(std::string tfilename)
 	else
 	{
 		std::string msg = "Unable to open file: " + tfilename;
-		throw new file_exception(msg.c_str());
+		throw new sg::base::file_exception(msg.c_str());
 	}
 
 	return numInst;
 }
 
-void ARFFTools::readTrainingData(std::string tfilename, DataMatrix& destination)
+void ARFFTools::readTrainingData(std::string tfilename, sg::base::DataMatrix& destination)
 {
 	std::string line;
 	std::ifstream myfile (tfilename.c_str());
@@ -120,11 +119,11 @@ void ARFFTools::readTrainingData(std::string tfilename, DataMatrix& destination)
 	else
 	{
 		std::string msg = "Unable to open file: " + tfilename;
-		throw new file_exception(msg.c_str());
+		throw new sg::base::file_exception(msg.c_str());
 	}
 }
 
-void ARFFTools::readClasses(std::string tfilename, DataVector& destination)
+void ARFFTools::readClasses(std::string tfilename, sg::base::DataVector& destination)
 {
 	std::string line;
 	std::ifstream myfile (tfilename.c_str());
@@ -155,11 +154,11 @@ void ARFFTools::readClasses(std::string tfilename, DataVector& destination)
 	else
 	{
 		std::string msg = "Unable to open file: " + tfilename;
-		throw new file_exception(msg.c_str());
+		throw new sg::base::file_exception(msg.c_str());
 	}
 }
 
-void ARFFTools::writeNewElement(std::string& instance, DataMatrix& destination, size_t instanceNo)
+void ARFFTools::writeNewElement(std::string& instance, sg::base::DataMatrix& destination, size_t instanceNo)
 {
 	size_t cur_pos = 0;
 	size_t cur_find = 0;
@@ -177,7 +176,7 @@ void ARFFTools::writeNewElement(std::string& instance, DataMatrix& destination, 
 	}
 }
 
-void ARFFTools::writeNewClass(std::string& instance, DataVector& destination, size_t instanceNo)
+void ARFFTools::writeNewClass(std::string& instance, sg::base::DataVector& destination, size_t instanceNo)
 {
 	size_t cur_pos = instance.find_last_of(",");
 	std::string cur_value = instance.substr(cur_pos+1);
@@ -185,12 +184,12 @@ void ARFFTools::writeNewClass(std::string& instance, DataVector& destination, si
 	destination.set(instanceNo, dbl_cur_value);
 }
 
-//void ARFFTools::writeAlpha(std::string tfilename, DataVector& source)
+//void ARFFTools::writeAlpha(std::string tfilename, sg::base::DataVector& source)
 //{
 //
 //}
 
-//void ARFFTools::readAlpha(std::string tfilename, DataVector& destination)
+//void ARFFTools::readAlpha(std::string tfilename, sg::base::DataVector& destination)
 //{
 //
 //}

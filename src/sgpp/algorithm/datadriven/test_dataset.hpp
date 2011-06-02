@@ -15,6 +15,7 @@
 #include <utility>
 #include <iostream>
 
+using namespace sg::base;
 namespace sg {
 namespace datadriven {
 

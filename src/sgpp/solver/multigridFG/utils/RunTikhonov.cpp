@@ -1,5 +1,5 @@
 /*
- * RunTikhonov.cpp
+ * combigrid::RunTikhonov.cpp
  *
  *  Created on: May 30, 2011
  *      Author: benk
@@ -9,9 +9,8 @@
 #include "solver/multigridFG/operators/TikhonovOperator.hpp"
 #include "solver/multigridFG/multigrid/Multigrid.hpp"
 
-using namespace combigrid;
 
-void RunTikhonov::readInInput(
+void combigrid::RunTikhonov::readInInput(
 		const std::string& XfileS ,
 		const std::string& YFileS ,
 		int& dimensions ,  int& nrPoints ,
@@ -88,8 +87,8 @@ void RunTikhonov::readInInput(
     }
 }
 
-FullGridD* RunTikhonov::computeFGTikhonov(
-		GridDomain& domain ,
+FullGridD* combigrid::RunTikhonov::computeFGTikhonov(
+		combigrid::GridDomain& domain ,
 		const std::vector<int>& levels,
 		double lambda,
 		const std::string& Xfile ,
@@ -104,7 +103,7 @@ FullGridD* RunTikhonov::computeFGTikhonov(
 	FullGridD* fg;
 	// first read in the results
 	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... read INPUT");
-	RunTikhonov::readInInput(Xfile , YFile , dimensions , nrPoints , XCoords, YPoint);
+	combigrid::RunTikhonov::readInInput(Xfile , YFile , dimensions , nrPoints , XCoords, YPoint);
 
 	// create the full grid
 	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create Full Grid");
@@ -113,12 +112,12 @@ FullGridD* RunTikhonov::computeFGTikhonov(
 	fg->setDomain( &domain );
 
 	// create the Tikhonov operator
-	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create TikhonovOperator");
-	TikhonovOperator op( fg , nrPoints, lambda , &XCoords , &YPoint );
+	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create combigrid::TikhonovOperator");
+	combigrid::TikhonovOperator op( fg , nrPoints, lambda , &XCoords , &YPoint );
 
 	// create the multigrid method
-	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create Multigrid");
-	Multigrid multigrid( &(op) , fg );
+	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create combigrid::Multigrid");
+	combigrid::Multigrid multigrid( &(op) , fg );
 
 	// solve using only the smoother
 	COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... solve multigird");

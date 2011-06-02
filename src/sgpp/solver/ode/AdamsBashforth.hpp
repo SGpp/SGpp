@@ -10,8 +10,6 @@
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
 #include <string>
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -27,8 +25,8 @@ namespace solver
 class AdamsBashforth : public ODESolver
 {
 private:
-	/// Pointer to ScreenOutput object
-	ScreenOutput* myScreen;
+	/// Pointer to sg::base::ScreenOutput object
+	sg::base::ScreenOutput* myScreen;
 
 public:
 	/**
@@ -36,16 +34,16 @@ public:
 	 *
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
-	 * @param screen possible pointer to a ScreenOutput object
+	 * @param screen possible pointer to a sg::base::ScreenOutput object
 	 */
-	AdamsBashforth(size_t imax, double timestepSize, ScreenOutput* screen = NULL);
+	AdamsBashforth(size_t imax, double timestepSize, sg::base::ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~AdamsBashforth();
 
-	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }

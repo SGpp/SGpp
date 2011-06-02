@@ -1,19 +1,17 @@
 /*
- * SerialCombiGrid.hpp
+ * combigrid::SerialCombiGrid.hpp
  *
  *  Created on: Feb 24, 2011
  *      Author: benk
  */
 
 #include "combigrid/combigrid/SerialCombiGrid.hpp"
-using namespace sg::base;
 
 using namespace std;
 
-using namespace combigrid;
 
 
-void SerialCombiGrid::createFullGrids() {
+void combigrid::SerialCombiGrid::createFullGrids() {
 	// iterate over each grid and create the all the full grid
 	for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++){
 		combikernel_->getFullGrid(i)->createFullGrid();
@@ -21,7 +19,7 @@ void SerialCombiGrid::createFullGrids() {
 }
 
 
-void SerialCombiGrid::setDomainAllFG( GridDomain* gridDomain ) const{
+void combigrid::SerialCombiGrid::setDomainAllFG( combigrid::GridDomain* gridDomain ) const{
 	// sets the domain for all fullgrids
 	for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++){
 		combikernel_->getFullGrid(i)->setDomain(gridDomain);
@@ -29,7 +27,7 @@ void SerialCombiGrid::setDomainAllFG( GridDomain* gridDomain ) const{
 }
 
 
-double SerialCombiGrid::eval( std::vector<double>& coords ) const {
+double combigrid::SerialCombiGrid::eval( std::vector<double>& coords ) const {
 	double result = 0.0;
 	std::vector<double> coords_tmp = coords;
 
@@ -46,21 +44,21 @@ double SerialCombiGrid::eval( std::vector<double>& coords ) const {
 	return result;
 }
 
-void SerialCombiGrid::eval( std::vector< std::vector<double> >& coords , std::vector<double>& results ) const {
+void combigrid::SerialCombiGrid::eval( std::vector< std::vector<double> >& coords , std::vector<double>& results ) const {
 	// just iterate over each point and call the serial evaluation function
 	for ( int i = 0 ; i < (int)results.size() ; i++){
 		results[i] = eval(coords[i]);
 	}
 }
 
-GridStorage* SerialCombiGrid::createSGppGridStorage() const {
-	GridStorage* gridStoreSGpp = new GridStorage( combikernel_->getDim() );
-	CombiSGppConverter::createSGpp( gridStoreSGpp , combikernel_ );
+sg::base::GridStorage* combigrid::SerialCombiGrid::createSGppGridStorage() const {
+	sg::base::GridStorage* gridStoreSGpp = new sg::base::GridStorage( combikernel_->getDim() );
+	combigrid::CombiSGppConverter::createSGpp( gridStoreSGpp , combikernel_ );
 	return gridStoreSGpp;
 }
 
-void SerialCombiGrid::reCompose(GridStorage* gridstorageSGpp , DataVector* alpha,
-				DataVector* minAlpha , DataVector* maxAlpha ) const {
+void combigrid::SerialCombiGrid::reCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha,
+				sg::base::DataVector* minAlpha , sg::base::DataVector* maxAlpha ) const {
 	// for each full grid call the converter
 	if (minAlpha != NULL && maxAlpha != NULL){
 		// min and max will be computed
@@ -73,7 +71,7 @@ void SerialCombiGrid::reCompose(GridStorage* gridstorageSGpp , DataVector* alpha
 		// for each full grid just call the converter function which makes the conversion automatically
 		for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++){
 			const FullGridD* fg = combikernel_->getFullGrid(i);
-			CombiSGppConverter::FullGridToSGpp( fg , combikernel_->getCoef(i) , gridstorageSGpp , alpha , minAlpha , maxAlpha );
+			combigrid::CombiSGppConverter::FullGridToSGpp( fg , combikernel_->getCoef(i) , gridstorageSGpp , alpha , minAlpha , maxAlpha );
 		}
 	}
 	else
@@ -85,14 +83,14 @@ void SerialCombiGrid::reCompose(GridStorage* gridstorageSGpp , DataVector* alpha
 		// for each full grid just call the converter function which makes the conversion automatically
 		for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++){
 			const FullGridD* fg = combikernel_->getFullGrid(i);
-			CombiSGppConverter::FullGridToSGpp( fg , combikernel_->getCoef(i) , gridstorageSGpp , alpha );
+			combigrid::CombiSGppConverter::FullGridToSGpp( fg , combikernel_->getCoef(i) , gridstorageSGpp , alpha );
 		}
 	}
 }
 
-void SerialCombiGrid::deCompose(GridStorage* gridstorageSGpp , DataVector* alpha) {
+void combigrid::SerialCombiGrid::deCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha) {
 	for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++){
 		FullGridD* fg = combikernel_->getFullGrid(i);
-		CombiSGppConverter::SGppToFullGrid( gridstorageSGpp , alpha , fg );
+		combigrid::CombiSGppConverter::SGppToFullGrid( gridstorageSGpp , alpha , fg );
 	}
 }

@@ -28,20 +28,20 @@ public:
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
-	OperationTestLinearStretched(GridStorage* storage) : storage(storage) {}
+	OperationTestLinearStretched(sg::base::GridStorage* storage) : storage(storage) {}
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationTestLinearStretched() {}
 
-	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes);
-	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers);
+	virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
+	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
 
 protected:
 	/// Pointer to the grid's gridstorage object
-	GridStorage* storage;
+	sg::base::GridStorage* storage;
 };
 
 }

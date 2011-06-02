@@ -11,10 +11,7 @@
 #include "solver/ODESolver.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include <string>
-//using namespace sg::finance;
-using namespace sg::pde;
-using namespace sg::base;
-
+//
 namespace sg
 {
 namespace solver
@@ -29,8 +26,8 @@ namespace solver
 class VarTimestep : public ODESolver
 {
 private:
-	/// Pointer to ScreenOutput object
-	ScreenOutput* myScreen;
+	/// Pointer to sg::base::ScreenOutput object
+	sg::base::ScreenOutput* myScreen;
 
 	/// epsilon for the step size control
 	double myEps;
@@ -44,16 +41,16 @@ public:
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
 	 * @param eps the epsilon for the step size control
-	 * @param screen possible pointer to a ScreenOutput object
+	 * @param screen possible pointer to a sg::base::ScreenOutput object
 	 */
-	VarTimestep(size_t imax, double timestepSize, double eps, ScreenOutput* screen = NULL);
+	VarTimestep(size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~VarTimestep();
 
-	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }

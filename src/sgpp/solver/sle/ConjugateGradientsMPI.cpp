@@ -10,15 +10,13 @@
 #endif
 
 #include "solver/sle/ConjugateGradientsMPI.hpp"
-using namespace sg::solver;
-using namespace sg::base;
 
 namespace sg
 {
 namespace parallel
 {
 
-ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax, double epsilon) : SLESolver(imax, epsilon)
+ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax, double epsilon) : sg::solver::SLESolver(imax, epsilon)
 {
 }
 
@@ -26,7 +24,7 @@ ConjugateGradientsMPI::~ConjugateGradientsMPI()
 {
 }
 
-void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse, bool verbose, double max_threshold)
+void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
 	if (myGlobalMPIComm->getMyRank() != 0)
 	{
@@ -46,9 +44,9 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 		this->nIterations = 0;
 
 		// define temporal vectors
-		DataVector temp(alpha.getSize());
-		DataVector q(alpha.getSize());
-		DataVector r(b);
+		sg::base::DataVector temp(alpha.getSize());
+		sg::base::DataVector q(alpha.getSize());
+		sg::base::DataVector r(b);
 
 		double delta_0 = 0.0;
 		double delta_old = 0.0;
@@ -84,7 +82,7 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 
 		r.sub(temp);
 
-		DataVector d(r);
+		sg::base::DataVector d(r);
 
 		delta_old = 0.0;
 		delta_new = r.dotProduct(r);
@@ -164,10 +162,10 @@ void ConjugateGradientsMPI::solve(OperationMatrix& SystemMatrix, DataVector& alp
 	}
 }
 
-void ConjugateGradientsMPI::waitForTask(OperationMatrix& SystemMatrix, DataVector& alpha)
+void ConjugateGradientsMPI::waitForTask(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha)
 {
 	char ctrl;
-	DataVector result(alpha.getSize());
+	sg::base::DataVector result(alpha.getSize());
 
 	do
 	{

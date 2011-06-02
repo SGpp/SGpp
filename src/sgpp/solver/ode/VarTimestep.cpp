@@ -14,15 +14,13 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
 namespace solver
 {
 
-VarTimestep::VarTimestep(size_t imax, double timestepSize, double eps, ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
+VarTimestep::VarTimestep(size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
 {
 	this->residuum = 0.0;
 	this->myEps = eps;
@@ -33,12 +31,12 @@ VarTimestep::~VarTimestep()
 {
 }
 
-void VarTimestep::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
+void VarTimestep::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
-    DataVector* rhs;
-    DataVector YkAdBas(System.getGridCoefficients()->getSize());
-    DataVector YkImEul(System.getGridCoefficients()->getSize());
+    sg::base::DataVector* rhs;
+    sg::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());
+    sg::base::DataVector YkImEul(System.getGridCoefficients()->getSize());
 
     double tmp_timestepsize = this->myEpsilon;
     double tmp_timestepsize_old = tmp_timestepsize;

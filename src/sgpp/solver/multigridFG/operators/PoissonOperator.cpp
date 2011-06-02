@@ -1,5 +1,5 @@
 /*
- * PoissonOperator.cpp
+ * combigrid::PoissonOperator.cpp
  *
  *  Created on: May 16, 2011
  *      Author: benk
@@ -8,11 +8,10 @@
 #include "PoissonOperator.hpp"
 #include <math.h>
 
-using namespace combigrid;
 
-PoissonOperator::PoissonOperator(const FullGridD* fg ,
+combigrid::PoissonOperator::PoissonOperator(const FullGridD* fg ,
 		const std::vector<double>& sigma ,
-		const CallBackRHS* callbackRHS) : OperatorFG(fg , 1) , sigma_(sigma) , callbackRHS_(callbackRHS){
+		const combigrid::CallBackRHS* callbackRHS) : combigrid::OperatorFG(fg , 1) , sigma_(sigma) , callbackRHS_(callbackRHS){
 
 	const int verb = 0;
 	COMBIGRID_OUT_LEVEL2( verb , "PoissonOperator::PoissonOperator START");
@@ -186,15 +185,15 @@ PoissonOperator::PoissonOperator(const FullGridD* fg ,
 	}
 }
 
-PoissonOperator::~PoissonOperator() {
+combigrid::PoissonOperator::~PoissonOperator() {
 	// nothing to do, no object created on the heap
 }
 
-OperatorFG* PoissonOperator::factory(const FullGridD* fg) const {
-	return (new PoissonOperator( fg , sigma_ , callbackRHS_ ));
+combigrid::OperatorFG* combigrid::PoissonOperator::factory(const FullGridD* fg) const {
+	return (new combigrid::PoissonOperator( fg , sigma_ , callbackRHS_ ));
 }
 
-void PoissonOperator::getRHS(std::vector<double>& rhs , int& nrSpace) const {
+void combigrid::PoissonOperator::getRHS(std::vector<double>& rhs , int& nrSpace) const {
 	nrSpace = this->getNrSpace();
 	rhs.resize(nrElem_);
 	COMBIGRID_OUT_LEVEL2( 0 , "PoissonOperator::getRHS ... START");
@@ -202,7 +201,7 @@ void PoissonOperator::getRHS(std::vector<double>& rhs , int& nrSpace) const {
 	COMBIGRID_OUT_LEVEL2( 0 , "PoissonOperator::getRHS ... END");
 }
 
-void PoissonOperator::multiplyVector(std::vector<double>& inVect , std::vector<double>& outVect) const {
+void combigrid::PoissonOperator::multiplyVector(std::vector<double>& inVect , std::vector<double>& outVect) const {
 	// implement this
 	int i , of , verb = 0;
 	double tmp = 0.0;
@@ -217,7 +216,7 @@ void PoissonOperator::multiplyVector(std::vector<double>& inVect , std::vector<d
 	COMBIGRID_OUT_LEVEL2( verb , "PoissonOperator::multiplyVector ... END");
 }
 
-void PoissonOperator::doSmoothing(int nrIt ,
+void combigrid::PoissonOperator::doSmoothing(int nrIt ,
 		std::vector<double>& u, std::vector<double>& rhs) const {
 	// make a simple Gauss-Seidel
 	int i , of , aii , verb = 0;

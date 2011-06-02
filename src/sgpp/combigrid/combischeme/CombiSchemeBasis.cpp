@@ -10,9 +10,8 @@
 
 using namespace std;
 
-using namespace combigrid;
 
-void CombiSchemeBasis::removeDuplicates(){
+void combigrid::CombiSchemeBasis::removeDuplicates(){
 	// this is Alize's code 1 to 1
 	size_t i=0;
 	size_t j;

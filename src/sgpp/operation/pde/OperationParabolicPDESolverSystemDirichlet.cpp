@@ -7,7 +7,6 @@
 
 #include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 #include "exception/algorithm_exception.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -24,7 +23,7 @@ OperationParabolicPDESolverSystemDirichlet::~OperationParabolicPDESolverSystemDi
 {
 }
 
-void OperationParabolicPDESolverSystemDirichlet::mult(DataVector& alpha, DataVector& result)
+void OperationParabolicPDESolverSystemDirichlet::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -34,7 +33,7 @@ void OperationParabolicPDESolverSystemDirichlet::mult(DataVector& alpha, DataVec
 	{
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		applyMassMatrixInner(alpha, temp);
 		result.add(temp);
@@ -46,7 +45,7 @@ void OperationParabolicPDESolverSystemDirichlet::mult(DataVector& alpha, DataVec
 	{
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		applyMassMatrixInner(alpha, temp);
 		result.add(temp);
@@ -66,7 +65,7 @@ void OperationParabolicPDESolverSystemDirichlet::mult(DataVector& alpha, DataVec
 		double alpha0 = (2.0*tDiff+1.0)/(tDiff+1.0);
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		applyMassMatrixInner(alpha, temp);
 
@@ -88,19 +87,19 @@ void OperationParabolicPDESolverSystemDirichlet::mult(DataVector& alpha, DataVec
 	}
 	else
 	{
-		throw new algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
+sg::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 {
-	DataVector rhs_complete(this->alpha_complete->getSize());
+	sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
 	if (this->tOperationMode == "ExEul")
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 		rhs_complete.add(temp);
@@ -118,7 +117,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 		rhs_complete.add(temp);
@@ -130,7 +129,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 		rhs_complete.add(temp);
@@ -139,7 +138,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 
 		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
 
-		DataVector temp_old(this->alpha_complete->getSize());
+		sg::base::DataVector temp_old(this->alpha_complete->getSize());
 		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 		applyLOperatorComplete(*this->alpha_complete_old, temp_old);
 		temp_old.mult(this->TimestepSize/this->TimestepSize_old);
@@ -151,7 +150,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 
@@ -161,7 +160,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 		temp.mult(alpha1);
 		rhs_complete.add(temp);
 
-		DataVector temp_old(this->alpha_complete->getSize());
+		sg::base::DataVector temp_old(this->alpha_complete->getSize());
 		applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
 		double alpha2 = tDiff*tDiff/(1.0+tDiff);
@@ -177,8 +176,8 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 		double alpha2 = -alpha0*(tDiff*tDiff/(tDiff+1.0));
 
 
-		DataVector temp(this->alpha_complete->getSize());
-		DataVector temp_old(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp_old(this->alpha_complete->getSize());
 
 		applyMassMatrixComplete(*this->alpha_complete, temp);
 		temp.mult(alpha1);
@@ -195,15 +194,15 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
 	this->startTimestep();
 
 	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-	DataVector result_complete(this->alpha_complete->getSize());
-	DataVector alpha_bound(*this->alpha_complete);
+	sg::base::DataVector result_complete(this->alpha_complete->getSize());
+	sg::base::DataVector alpha_bound(*this->alpha_complete);
 
 	result_complete.setAll(0.0);
 
@@ -216,7 +215,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
 
 		applyMassMatrixComplete(alpha_bound, temp);
 		result_complete.add(temp);
@@ -226,7 +225,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
 
 		applyMassMatrixComplete(alpha_bound, temp);
 		result_complete.add(temp);
@@ -242,7 +241,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	{
 		double tDiff =this->TimestepSize/this->TimestepSize_old;
 		double alpha0 = (2.0*tDiff+1.0)/(tDiff+1.0);
-		DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
 		applyMassMatrixComplete(alpha_bound, temp);
 		temp.mult(alpha0);
 		result_complete.add(temp);
@@ -263,7 +262,7 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
 	}
 	rhs_complete.sub(result_complete);
 
@@ -272,13 +271,13 @@ DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 		delete this->rhs;
 	}
 
-	this->rhs = new DataVector(this->alpha_inner->getSize());
+	this->rhs = new sg::base::DataVector(this->alpha_inner->getSize());
 	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 
 	return this->rhs;
 }
 
-DataVector* OperationParabolicPDESolverSystemDirichlet::getGridCoefficientsForCG()
+sg::base::DataVector* OperationParabolicPDESolverSystemDirichlet::getGridCoefficientsForCG()
 {
 	this->GridConverter->calcInnerCoefs(*this->alpha_complete, *this->alpha_inner);
 
@@ -289,8 +288,8 @@ size_t OperationParabolicPDESolverSystemDirichlet::getInnerMatrix(std::string& m
 {
 	size_t vector_size = this->InnerGrid->getSize();
 
-	DataVector alpha(vector_size);
-	DataVector result(vector_size);
+	sg::base::DataVector alpha(vector_size);
+	sg::base::DataVector result(vector_size);
 	std::stringstream mtxStream;
 	std::stringstream mtxHeaderStream;
 	size_t nonZeros = 0;
@@ -331,8 +330,8 @@ void OperationParabolicPDESolverSystemDirichlet::getInnerMatrixDiagonal(std::str
 {
 	size_t vector_size = this->InnerGrid->getSize();
 
-	DataVector alpha(vector_size);
-	DataVector result(vector_size);
+	sg::base::DataVector alpha(vector_size);
+	sg::base::DataVector result(vector_size);
 	std::stringstream mtxStream;
 	std::stringstream mtxHeaderStream;
 
@@ -363,9 +362,9 @@ void OperationParabolicPDESolverSystemDirichlet::getInnerMatrixDiagonalRowSum(st
 {
 	size_t vector_size = this->InnerGrid->getSize();
 
-	DataVector alpha(vector_size);
-	DataVector result(vector_size);
-	DataVector sum(vector_size);
+	sg::base::DataVector alpha(vector_size);
+	sg::base::DataVector result(vector_size);
+	sg::base::DataVector sum(vector_size);
 	std::stringstream mtxStream;
 	std::stringstream mtxHeaderStream;
 

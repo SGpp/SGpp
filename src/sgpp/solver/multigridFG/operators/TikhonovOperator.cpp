@@ -1,5 +1,5 @@
 /*
- * TikhonovOperator.cpp
+ * combigrid::TikhonovOperator.cpp
  *
  *  Created on: May 16, 2011
  *      Author: benk
@@ -8,13 +8,12 @@
 #include "TikhonovOperator.hpp"
 #include <math.h>
 
-using namespace combigrid;
 
-TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
+combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 		int nrInputPoints ,
 		double lambda ,
 		const std::vector<double>* xCoords ,
-		const std::vector<double>* yCoords ) : OperatorFG(fg , 1) ,
+		const std::vector<double>* yCoords ) : combigrid::OperatorFG(fg , 1) ,
 		xCoords_(xCoords) , yCoords_(yCoords) {
 
 	const int verb = 0;
@@ -268,17 +267,17 @@ TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 	}
 }
 
-TikhonovOperator::~TikhonovOperator() {
+combigrid::TikhonovOperator::~TikhonovOperator() {
 	// nothing to do, no object created on the heap
 }
 
-OperatorFG* TikhonovOperator::factory(const FullGridD* fg) const {
+combigrid::OperatorFG* combigrid::TikhonovOperator::factory(const FullGridD* fg) const {
 
-	return (new TikhonovOperator( fg , nrRegPoints_ , lambda_ , xCoords_ , yCoords_ ));
+	return (new combigrid::TikhonovOperator( fg , nrRegPoints_ , lambda_ , xCoords_ , yCoords_ ));
 
 }
 
-void TikhonovOperator::getRHS(std::vector<double>& rhs , int& nrSpace) const {
+void combigrid::TikhonovOperator::getRHS(std::vector<double>& rhs , int& nrSpace) const {
 	nrSpace = this->getNrSpace();
 	rhs.resize(nrElem_);
 	COMBIGRID_OUT_LEVEL2( 2 , "TikhonovOperator::getRHS ... START");
@@ -286,7 +285,7 @@ void TikhonovOperator::getRHS(std::vector<double>& rhs , int& nrSpace) const {
 	COMBIGRID_OUT_LEVEL2( 2 , "TikhonovOperator::getRHS ... END");
 }
 
-void TikhonovOperator::multiplyVector(std::vector<double>& inVect , std::vector<double>& outVect) const {
+void combigrid::TikhonovOperator::multiplyVector(std::vector<double>& inVect , std::vector<double>& outVect) const {
 	// implement this
 	int i , of , verb = 2;
 	double tmp = 0.0;
@@ -301,7 +300,7 @@ void TikhonovOperator::multiplyVector(std::vector<double>& inVect , std::vector<
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::multiplyVector ... END");
 }
 
-void TikhonovOperator::doSmoothing(int nrIt ,
+void combigrid::TikhonovOperator::doSmoothing(int nrIt ,
 		std::vector<double>& u, std::vector<double>& rhs) const {
 	// make a simple Gauss-Seidel
 	int i , of , aii , verb = 2;
@@ -338,7 +337,7 @@ void TikhonovOperator::doSmoothing(int nrIt ,
 	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::doSmoothing ... END");
 }
 
-void TikhonovOperator::setNewLambda(double lambda){
+void combigrid::TikhonovOperator::setNewLambda(double lambda){
 	// todo: implement this
 	// reinitialize the matrix by subtracting the old_lambda*C and then adding the new_lambda*C
 }

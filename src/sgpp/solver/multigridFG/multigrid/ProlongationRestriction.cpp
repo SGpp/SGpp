@@ -1,5 +1,5 @@
 /*
- * ProlongationRestriction.cpp
+ * combigrid::ProlongationRestriction.cpp
  *
  *  Created on: May 16, 2011
  *      Author: benk
@@ -7,9 +7,8 @@
 
 #include "ProlongationRestriction.hpp"
 
-using namespace combigrid;
 
-void ProlongationRestriction::prolongation(
+void combigrid::ProlongationRestriction::prolongation(
 		                 const FullGridD* fgFine ,
 		                 std::vector<double>& vectFine ,
 		                 double coefFine ,
@@ -42,7 +41,7 @@ void ProlongationRestriction::prolongation(
     std::vector<double> val(nrSpace,0.0);
     const std::vector<bool>& boundaryFlag = fgFine->returnBoundaryFlags();
     // both grid have the same domain
-	const GridDomain* domain = fgFine->getDomain();
+	const combigrid::GridDomain* domain = fgFine->getDomain();
 
 	COMBIGRID_OUT_LEVEL2( verb , "ProlongationRestriction::prolongation ... START");
 
@@ -162,14 +161,14 @@ void ProlongationRestriction::prolongation(
 	   for (i=0 ; i < nrSpace ; i++ ){
 		   vectFine[ nrSpace*pInd + i ] = coefFine*vectFine[ nrSpace*pInd + i ] + coefCoarse*val[i];
 	   }
-       //COMBIGRID_OUT_LEVEL2( verb , " ProlongationRestriction::makeLinearProlongation , indexFine:"
+       //COMBIGRID_OUT_LEVEL2( verb , " combigrid::ProlongationRestriction::makeLinearProlongation , indexFine:"
     	//	   << pInd << " , val:"<<val);
     }// end loop over fine grid points
 	COMBIGRID_OUT_LEVEL2( verb , "ProlongationRestriction::prolongation ... END");
 }
 
 
-void ProlongationRestriction::restriction( const FullGridD* fgFine ,
+void combigrid::ProlongationRestriction::restriction( const FullGridD* fgFine ,
 		                 const std::vector<double>& vectFine ,
 		                 double coefFine ,
 		                 const FullGridD* fgCoarse ,
@@ -204,7 +203,7 @@ void ProlongationRestriction::restriction( const FullGridD* fgFine ,
     	if (!boundaryFlag[i]){
         	start_offs[i] = (mulFactors[i]>1) ? 1 : 0;
     	}
-        COMBIGRID_OUT_LEVEL2( verb , " ProlongationRestriction::makeDirectRestriction , mulFactors[i]:" << mulFactors[i] );
+        COMBIGRID_OUT_LEVEL2( verb , " combigrid::ProlongationRestriction::makeDirectRestriction , mulFactors[i]:" << mulFactors[i] );
     }
 
     //COMBIGRID_OUT_LEVEL2( verb , " nrCoarsePoints:" << nrCoarsePoints );
@@ -229,7 +228,7 @@ void ProlongationRestriction::restriction( const FullGridD* fgFine ,
 	   for (s = 0 ; s < nrSpace ; s++){
 		   vectCoarse[nrSpace*linearIndexC + s] = coefCoarse*vectCoarse[nrSpace*linearIndexC + s] + coefFine*vectFine[nrSpace*linearIndexF + s];
 	   }
-       //COMBIGRID_OUT_LEVEL2( verb , " ProlongationRestriction::makeDirectRestriction , linearIndexC:"
+       //COMBIGRID_OUT_LEVEL2( verb , " combigrid::ProlongationRestriction::makeDirectRestriction , linearIndexC:"
     	//	   << linearIndexC << " , linearIndexF:"<<linearIndexF);
     }// end loop over coarse grid points
 	COMBIGRID_OUT_LEVEL2( verb , "ProlongationRestriction::restriction ... END");

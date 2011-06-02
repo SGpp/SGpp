@@ -13,15 +13,13 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
 namespace solver
 {
 
-AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
+AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, sg::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
 {
 	this->residuum = 0.0;
 
@@ -31,10 +29,10 @@ AdamsBashforth::~AdamsBashforth()
 {
 }
 
-void AdamsBashforth::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
+void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
-    DataVector* rhs;
+    sg::base::DataVector* rhs;
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{

@@ -9,7 +9,6 @@
 #define TESTSTRETCHING_HPP_
 
 #include "combigrid.hpp"
-using namespace sg::base;
 
 namespace combigrid{
 
@@ -20,7 +19,7 @@ public:
 	TestStretching(){;}
 
 	   static void test_all_cases() {
-	    	COMBIGRID_OUT_LEVEL3( 4 , "Testing Stretching ... ");
+	    	COMBIGRID_OUT_LEVEL3( 4 , "Testing sg::base::Stretching ... ");
 	    	// test here all the functionalities of the full grid
 	    	// 2D test
 	    	test1();

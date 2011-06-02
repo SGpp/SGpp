@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "tools/MPI/MPICommunicator.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -17,12 +16,12 @@ MPICommunicator::MPICommunicator(int myid, int ranks) : myid_(myid), ranks_(rank
 
 MPICommunicator::~MPICommunicator() { }
 
-//void MPICommunicator::sendGridCoefficients(DataVector& alpha, int dest_rank)
+//void MPICommunicator::sendGridCoefficients(sg::base::DataVector& alpha, int dest_rank)
 //{
 //	MPI_Send((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, dest_rank, this->myid_, MPI_COMM_WORLD);
 //}
 //
-//void MPICommunicator::broadcastGridCoefficients(DataVector& alpha)
+//void MPICommunicator::broadcastGridCoefficients(sg::base::DataVector& alpha)
 //{
 //	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
 //	{
@@ -30,23 +29,23 @@ MPICommunicator::~MPICommunicator() { }
 //	}
 //}
 
-void MPICommunicator::broadcastGridCoefficientsFromRank0(DataVector& alpha)
+void MPICommunicator::broadcastGridCoefficientsFromRank0(sg::base::DataVector& alpha)
 {
 	MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
 
-//void MPICommunicator::receiveGridCoefficients(DataVector& alpha)
+//void MPICommunicator::receiveGridCoefficients(sg::base::DataVector& alpha)
 //{
 //	MPI_Status status;
 //
 //	MPI_Recv((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 //}
 //
-//void MPICommunicator::aggregateGridCoefficients(DataVector& alpha)
+//void MPICommunicator::aggregateGridCoefficients(sg::base::DataVector& alpha)
 //{
 //	for (int recv_rank = 1; recv_rank < this->ranks_; recv_rank++)
 //	{
-//		DataVector tmp(alpha);
+//		sg::base::DataVector tmp(alpha);
 //		MPI_Status status;
 //
 //		MPI_Recv((void*)tmp.getPointer(), (int)tmp.getSize(), MPI_DOUBLE, recv_rank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -55,7 +54,7 @@ void MPICommunicator::broadcastGridCoefficientsFromRank0(DataVector& alpha)
 //	}
 //}
 
-void MPICommunicator::reduceGridCoefficientsOnRank0(DataVector& alpha)
+void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha)
 {
 	if (myid_ == 0)
 	{

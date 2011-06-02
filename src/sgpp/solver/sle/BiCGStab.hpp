@@ -13,7 +13,6 @@
 #include "data/DataVector.hpp"
 
 #include <iostream>
-using namespace sg::base;
 
 namespace sg
 {
@@ -44,7 +43,7 @@ public:
 	 * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
 	 * http://netlib.org
 	 */
-	virtual void solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
+	virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
 };
 
 }

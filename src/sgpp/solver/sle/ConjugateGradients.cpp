@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "solver/sle/ConjugateGradients.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -21,7 +20,7 @@ ConjugateGradients::~ConjugateGradients()
 {
 }
 
-void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse, bool verbose, double max_threshold)
+void ConjugateGradients::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
 	this->starting();
 
@@ -36,9 +35,9 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 	this->nIterations = 0;
 
 	// define temporal vectors
-	DataVector temp(alpha.getSize());
-	DataVector q(alpha.getSize());
-	DataVector r(b);
+	sg::base::DataVector temp(alpha.getSize());
+	sg::base::DataVector q(alpha.getSize());
+	sg::base::DataVector r(b);
 
 	double delta_0 = 0.0;
 	double delta_old = 0.0;
@@ -67,7 +66,7 @@ void ConjugateGradients::solve(OperationMatrix& SystemMatrix, DataVector& alpha,
 	SystemMatrix.mult(alpha, temp);
 	r.sub(temp);
 
-	DataVector d(r);
+	sg::base::DataVector d(r);
 
 	delta_old = 0.0;
 	delta_new = r.dotProduct(r);

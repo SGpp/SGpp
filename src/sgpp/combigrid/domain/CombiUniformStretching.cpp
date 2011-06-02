@@ -7,9 +7,8 @@
 
 #include "CombiUniformStretching.hpp"
 
-using namespace combigrid;
 
-void UniformStretching::get1DStretching(
+void combigrid::UniformStretching::get1DStretching(
 		int level , double min, double max,
 		std::vector<double>& stretching) const{
 

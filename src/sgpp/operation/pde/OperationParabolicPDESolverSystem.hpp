@@ -11,7 +11,6 @@
 #include "grid/Grid.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -28,15 +27,15 @@ namespace pde
  * A: mass matrix
  * L: space discretization (L-Operator)
  */
-class OperationParabolicPDESolverSystem : public OperationMatrix
+class OperationParabolicPDESolverSystem : public sg::base::OperationMatrix
 {
 protected:
 	/// Pointer to the alphas (ansatzfunctions' coefficients)
-	DataVector* alpha_complete;
+	sg::base::DataVector* alpha_complete;
 	/// Pointer to the alphas from the last timestep, needed when using variable timestep sizes
-	DataVector* alpha_complete_old;
+	sg::base::DataVector* alpha_complete_old;
 	/// Pointer to temporary alphas, needed when using variable timestep sizes
-	DataVector* alpha_complete_tmp;
+	sg::base::DataVector* alpha_complete_tmp;
 
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
@@ -50,9 +49,9 @@ protected:
 	/// the size of the last timestep
 	double TimestepSize_old;
 
-	DataVector* rhs;
+	sg::base::DataVector* rhs;
 	/// Pointer to the grid object
-	Grid* BoundGrid;
+	sg::base::Grid* BoundGrid;
 	/// Stores number of average gridpoints, inner grid
 	size_t numSumGridpointsInner;
 	/// Stores number of average gridpoints, complete grid
@@ -72,17 +71,17 @@ public:
 	/**
 	 * Multiplicates a vector with the matrix
 	 *
-	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
-	 * @param result DataVector into which the result of the space discretization operation is stored
+	 * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
+	 * @param result sg::base::DataVector into which the result of the space discretization operation is stored
 	 */
-	virtual void mult(DataVector& alpha, DataVector& result) = 0;
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * generates the right hand side of the system
 	 *
 	 * @return returns the rhs
 	 */
-	virtual DataVector* generateRHS() = 0;
+	virtual sg::base::DataVector* generateRHS() = 0;
 
 	/**
 	 * performs some action that might be needed after a timestep has be finished in the ODE
@@ -102,7 +101,7 @@ public:
 	 *
 	 * @return returns a pointer to the underlying grid object
 	 */
-	Grid* getGrid();
+	sg::base::Grid* getGrid();
 
 	/**
 	 * gets a pointer to the sparse grids coefficients used in the CG method to solve
@@ -111,14 +110,14 @@ public:
 	 *
 	 * @return alpha vector for CG method
 	 */
-	virtual DataVector* getGridCoefficientsForCG() = 0;
+	virtual sg::base::DataVector* getGridCoefficientsForCG() = 0;
 
 	/**
 	 * gets a pointer to the sparse grids coefficients with evtl. boundaries
 	 *
 	 * @return alpha vector of complete grid
 	 */
-	DataVector* getGridCoefficients();
+	sg::base::DataVector* getGridCoefficients();
 
 	/**
 	 * defines the used ODE Solver for this instance, this is important because
@@ -168,11 +167,11 @@ public:
 	void saveAlpha();
 
 	/**
-	 * stores the values of the (dehierarchized) grid in the DataVector Values used by time step size control methods
+	 * stores the values of the (dehierarchized) grid in the sg::base::DataVector Values used by time step size control methods
 	 *
-	 * @param DataVector in which the values will be stored
+	 * @param sg::base::DataVector in which the values will be stored
 	 */
-	void getGridCoefficientsForSC(DataVector& Values);
+	void getGridCoefficientsForSC(sg::base::DataVector& Values);
 };
 
 }
