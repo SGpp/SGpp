@@ -2,7 +2,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-using namespace sg::base;
 
 namespace sg{
 namespace combigrid {
@@ -482,7 +481,7 @@ void FullGridSet::getTrapezoidsums(vector<level_t> *v,size_t dim,int sum,size_t*
 void FullGridSet::getSquare(vector<level_t> *v, size_t dim,size_t maxlevel)
 {
     size_t small_level=maxlevel/2;
-    /* Change here to the following code to take the [n/2]+1 grid as small level for odd numbers(and also change HashGenerator squareRoot method)
+    /* Change here to the following code to take the [n/2]+1 grid as small level for odd numbers(and also change sg::base::HashGenerator squareRoot method)
      * int small_level=ceil(level/2);
      * if (level%2==0) level--; */
     //we'll construct the fullgrids of level [n/2,n/2,...n,n/2,n/2] first;
@@ -516,9 +515,9 @@ void FullGridSet::getSquare(vector<level_t> *v, size_t dim,size_t maxlevel)
     size=dim+1;
 }
 
-void FullGridSet::initialize(GridStorage *storage,DataVector alpha)
+void FullGridSet::initialize(sg::base::GridStorage *storage,sg::base::DataVector alpha)
 {
-	GridIndex* gp;
+	sg::base::GridIndex* gp;
 	level_t *levels=new level_t[dim];
 	index_t *indexes=new index_t[dim];
 	level_t *gridLevels=new level_t[dim];
@@ -566,12 +565,12 @@ void FullGridSet::initialize(GridStorage *storage,DataVector alpha)
 	delete[] indexes;
 }
 
-void FullGridSet::deCompose(GridStorage *storage,DataVector alpha)
+void FullGridSet::deCompose(sg::base::GridStorage *storage,sg::base::DataVector alpha)
 {
 
 	index_t *ind=new index_t[dim];
 	int *putere=new int[dim];
-	GridIndex *hgi=new GridIndex(dim);
+	sg::base::GridIndex *hgi=new sg::base::GridIndex(dim);
 	level_t *lev;
 	size_t m;
 	size_t j,k;
@@ -620,10 +619,10 @@ void FullGridSet::deCompose(GridStorage *storage,DataVector alpha)
 	delete hgi;
 }
 
-void FullGridSet::reCompose(GridStorage *storage,DataVector *alpha)
+void FullGridSet::reCompose(sg::base::GridStorage *storage,sg::base::DataVector *alpha)
 {
 
-	GridIndex *hgi=new GridIndex(dim);
+	sg::base::GridIndex *hgi=new sg::base::GridIndex(dim);
 
 	index_t *ind=new index_t[dim];
 	int *putere=new int[dim];
@@ -693,7 +692,7 @@ double FullGridSet::combinedResult()
 	 return val;
 }
 
-double FullGridSet::eval(DataVector& p)
+double FullGridSet::eval(sg::base::DataVector& p)
 {
 	double val=0.0;
 	size_t j=0;

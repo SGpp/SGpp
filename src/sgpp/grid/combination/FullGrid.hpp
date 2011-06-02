@@ -6,7 +6,6 @@
 #include "grid/GridStorage.hpp"
 #include "grid/common/BoundingBox.hpp"
 using namespace std;
-using namespace sg::base;
 namespace sg{
 namespace combigrid {
 
@@ -17,7 +16,7 @@ const double negPowOfTwo[30]= {1.0/1,1.0/2,1.0/4,1.0/8,1.0/16,1.0/32,1.0/64,1.0/
 /**
  * Represents a single full grid of given dimension and level
  * The index of a gridpoint in the full grid is given by the formula ind=i0+i1*N0+i2*N0*N1+...+id*N0*N1*N2*...*Nd, where i0,i1,i2,... are the indexes in every dimension, and Nk is the number of gridpoints in direction k
- * Nk=2^level[k]+1 for every k for the LinearBoundaryFullGrid(default) and Nk=2^level[k]-1 for the LinearGrid without boundary
+ * Nk=2^level[k]+1 for every k for the LinearBoundaryFullGrid(default) and Nk=2^level[k]-1 for the sg::base::LinearGrid without boundary
  * */
 class FullGrid{
 
@@ -25,7 +24,7 @@ class FullGrid{
   public:
 
 	  // to simplify the types we declare here the types
-	  typedef GridStorage::index_type index_type;
+	  typedef sg::base::GridStorage::index_type index_type;
 	  typedef index_type::index_type index_t;
  	  typedef index_type::level_type level_t;
 
@@ -148,8 +147,8 @@ class FullGrid{
 
      /** Gives the coordinates of the gridpoint in a cartesian coord system and puts them in the corresponding Datavector
      * @param index the index of the gridpoint in the vector
-     * @param v a DataVector-will contain double values from the interval [0,1] representing the coordinates in all directions */
-    virtual void getCoords(size_t index,DataVector &v);
+     * @param v a sg::base::DataVector-will contain double values from the interval [0,1] representing the coordinates in all directions */
+    virtual void getCoords(size_t index,sg::base::DataVector &v);
 
     /** Gives the coordinates of the gridpoint in a cartesian coord system
      * @param d the dimension for which we search the coordinate
@@ -234,7 +233,7 @@ class FullGrid{
 
     /**Initializes the values of the data vector from a given vector
      *@param v the input vector*/
-     void fill(DataVector &v)
+     void fill(sg::base::DataVector &v)
      {
      	for (size_t i=0;i<vec.size();i++)
      		vec.at(i)=v[i];
@@ -261,20 +260,20 @@ class FullGrid{
      /** Evaluates the value of the function in a given point
       * @param p the coordinates of the point
       * @return the approximation of the function in the point p */
-     virtual double eval(DataVector& p);
+     virtual double eval(sg::base::DataVector& p);
 
  	/** Sets a bounding box for the fullgrid
  	 * Is equivalent with a scaling of the axes
  	 * @param boundingBox a pointer to the boudningbox of the grid
  	 * */
-     void setBoundingBox(BoundingBox* bBox)
+     void setBoundingBox(sg::base::BoundingBox* bBox)
      {
     	 boundingBox=bBox;
      }
 
 	/** Gets the boundingbox of the fullgrids
 	 * @return a pointer to the boundingbox*/
-     BoundingBox* getBoundingBox()
+     sg::base::BoundingBox* getBoundingBox()
 	 {
     	 return boundingBox;
 	 }
@@ -309,7 +308,7 @@ class FullGrid{
     double value;
 
   /**The boundingbox of the grid*/
-   BoundingBox* boundingBox;
+   sg::base::BoundingBox* boundingBox;
 
   /**Auxiliar variables for use with eval*/
 	 //double *intersect;

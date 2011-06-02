@@ -34,8 +34,6 @@
 #include "sgpp.hpp"
 
 #include <iostream>
-using namespace sg::finance;
-using namespace sg::pde;
 
 namespace sg
 {
@@ -98,7 +96,7 @@ OperationMultipleEvalVectorizedSP* LinearStretchedTrapezoidBoundaryGrid::createO
 
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationLaplace()
 {
-	return new OperationLaplaceLinearStretchedBoundary(this->storage);
+	return new sg::pde::OperationLaplaceLinearStretchedBoundary(this->storage);
 }
 
 OperationEval* LinearStretchedTrapezoidBoundaryGrid::createOperationEval()
@@ -118,7 +116,7 @@ OperationHierarchisation* LinearStretchedTrapezoidBoundaryGrid::createOperationH
 
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationLTwoDotProduct()
 {
-	return new OperationLTwoDotProductLinearStretchedBoundary(this->storage);
+	return new sg::pde::OperationLTwoDotProductLinearStretchedBoundary(this->storage);
 }
 
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationLB()
@@ -144,29 +142,29 @@ OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationLF()
 // @todo (heinecke) removed this when done
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationUpDownTest()
 {
-	return new OperationUpDownTestLinearStretchedBoundary(this->storage);
+	return new sg::pde::OperationUpDownTestLinearStretchedBoundary(this->storage);
 }
 
 // finance operations
 /////////////////////
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationDelta(DataVector& coef)
 {
-	return new OperationDeltaLinearStretchedBoundary(this->storage, coef);
+	return new sg::finance::OperationDeltaLinearStretchedBoundary(this->storage, coef);
 }
 
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationGamma(DataMatrix& coef)
 {
-	return new OperationGammaLinearStretchedBoundary(this->storage, coef);
+	return new sg::finance::OperationGammaLinearStretchedBoundary(this->storage, coef);
 }
 
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationDeltaLog(DataVector& coef)
 {
-	return new OperationDeltaLogLinearStretchedBoundary(this->storage, coef);
+	return new sg::finance::OperationDeltaLogLinearStretchedBoundary(this->storage, coef);
 }
 
 OperationMatrix* LinearStretchedTrapezoidBoundaryGrid::createOperationGammaLog(DataMatrix& coef)
 {
-	return new OperationGammaLogLinearStretchedBoundary(this->storage, coef);
+	return new sg::finance::OperationGammaLogLinearStretchedBoundary(this->storage, coef);
 }
 
 OperationConvert* LinearStretchedTrapezoidBoundaryGrid::createOperationConvert()

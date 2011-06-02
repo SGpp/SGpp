@@ -7,7 +7,6 @@
 #include "grid/Grid.hpp"
 #include "grid/GridStorage.hpp"
 #include "grid/common/BoundingBox.hpp"
-using namespace sg::base;
 
 using namespace std;
 
@@ -25,7 +24,7 @@ public:
 
 		typedef vector<FullGrid*> FULLGRID;
 
-		typedef GridStorage::index_type index_type;
+		typedef sg::base::GridStorage::index_type index_type;
 
 		typedef index_type::index_type index_t;
 
@@ -140,7 +139,7 @@ public:
 	 * @param storage pointer to the sparsegrid's storage which will be decomposed
 	 * @param alpha the vector which contains the function values
 	 * @note does the same thing as deCompose, but is slower */
-	void initialize(GridStorage *storage,DataVector alpha);
+	void initialize(sg::base::GridStorage *storage,sg::base::DataVector alpha);
 
 	/** Prints the data values for each FullGrid */
 	void printValues()
@@ -207,7 +206,7 @@ public:
 	 }
 
      /** sets the combination coefficients*/
-     void setCoefs(DataVector &v)
+     void setCoefs(sg::base::DataVector &v)
      {
       	 for (size_t i=0;i<size;i++)
       	 {
@@ -216,7 +215,7 @@ public:
      }
 
      /** returns the combination coefficients*/
-     void getCoefs(DataVector &v)
+     void getCoefs(sg::base::DataVector &v)
      {
        	 for (size_t i=0;i<size;i++)
        	 {
@@ -228,22 +227,22 @@ public:
 	 * the corresponing sparse grid point.
 	 * @param storage a pointer to the sparsegrid storage
 	 * @param alpha the source datavector */
-	void deCompose(GridStorage *storage,DataVector alpha);
+	void deCompose(sg::base::GridStorage *storage,sg::base::DataVector alpha);
 
 	/** Combines a set of fullgrids into a sparse grid using the combination formula
 	 * @param storage a pointer to the sparsegrid object
 	 * @param alpha a pointer to the destination datavector */
-	void reCompose(GridStorage *storage,DataVector *alpha);
+	void reCompose(sg::base::GridStorage *storage,sg::base::DataVector *alpha);
 
 	/** Evaluates all fullgrids and then combines the result
 	 * @param p a datavector containing the coordinates of the point to evaluate the fullgrids in
 	 * @return the value estimated on the set of fullgrids */
-	double eval(DataVector& p);
+	double eval(sg::base::DataVector& p);
 
 	/** Sets a bounding box for the fullgridset
 	 * Is equivalent with a scaling of the axes
 	 * @param boundingBox a pointer to the boudningbox of the set*/
-	void setBoundingBox(BoundingBox* boundingBox)
+	void setBoundingBox(sg::base::BoundingBox* boundingBox)
 	{
 		bbox=boundingBox;
 		for (size_t i=0;i<size;i++)
@@ -252,7 +251,7 @@ public:
 
 	/**  Gets the boundingbox of the fullgrids
 	 * @return a pointer to the boundingbox*/
-	BoundingBox* getBoundingBox()
+	sg::base::BoundingBox* getBoundingBox()
 	{
 		return bbox;
 	}
@@ -272,7 +271,7 @@ protected:
 	 * They are computed by the formula (20)
 	 * @param dim the dimension of the FullGrids
 	 * @param n the level of the sparse grid for which the full grids are computed
-     * @param type the type of the sparse grid which will be decomposed(returned by Grid::getType())
+     * @param type the type of the sparse grid which will be decomposed(returned by sg::base::Grid::getType())
      * @note currently implemented: linear, linearBoundary and linearTrapezoidBoundary*/
     void generate(size_t dim,size_t n,const char *type);
 
@@ -353,7 +352,7 @@ private:
     vector<double> coefs;
 
     /**The boundingbox of the grids*/
-    BoundingBox* bbox;
+    sg::base::BoundingBox* bbox;
 
     /** flag to indicate if the created full grids should be with or wothout boundary points*/
     bool gridsWithBonudaryPoints_;

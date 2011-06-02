@@ -13,19 +13,18 @@
 #include <time.h>
 
 #include "sgpp.hpp"
-using namespace sg::base;
 
 namespace sg {
 namespace combigrid {
 
 /** class to contain the methods to calculate the opticom coefficients */
 class OptiCom {
-	typedef GridStorage::index_type::level_type level_t;
+	typedef sg::base::GridStorage::index_type::level_type level_t;
 
 public:
 
   /** the static method to calculate the new coefficients for the combination technique (opticom) */
-  static void calc_coefs(DataVector &c, FullGridSet* fgs)
+  static void calc_coefs(sg::base::DataVector &c, FullGridSet* fgs)
   {
 	  double A2[4][4]={{2.0,1.0,-2.0,-1.0},{1.0,2.0,-1.0,-2.0},{-2.0,-1.0,2.0,1.0},{-1.0,-2.0,1.0,2.0}};
 	  double A1[4][4]={{2.0,-2.0,1.0,-1.0},{-2.0,2.0,-1.0,1.0},{1.0,-1.0,2.0,-2.0},{-1.0,1.0,-2.0,2.0}};
@@ -35,7 +34,7 @@ public:
 	  double* E=new double[size];
 	  int i,j,k,nr,ii,k0,k1;
 	  double sum;
-	  DataVector coords(dim);
+	  sg::base::DataVector coords(dim);
 	  vector<level_t>lev(dim);
 	  double c1,c2;
 	  for (i=0;i<size;i++){
@@ -49,8 +48,8 @@ public:
 			  FullGrid* w=FullGrid::createLinearBoundaryFullGrid(dim,&lev);
 			//  w->setBoundingBox(u.getBoundingBox());
 			  int m=w->getSize();
-			  DataVector a(m);
-			  DataVector b(m);
+			  sg::base::DataVector a(m);
+			  sg::base::DataVector b(m);
 			  for (k=0;k<m;k++)
 			  {
 				  w->getCoords(k,coords);
