@@ -152,11 +152,6 @@
 
 using namespace sg::base;
 
-//using namespace sg::pde;
-//using namespace sg::datadriven;
-//using namespace sg::finance;
-//using namespace sg::parallel;
-
 namespace sg
 {
 

@@ -10,6 +10,7 @@
 
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
 using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
 {

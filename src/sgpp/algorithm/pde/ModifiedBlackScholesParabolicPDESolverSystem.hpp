@@ -13,7 +13,6 @@
 #include "data/DataMatrix.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -27,9 +26,9 @@ class ModifiedBlackScholesParabolicPDESolverSystem  : public BlackScholesParabol
 {
 protected:
 
-	OperationMatrix* OpFBound;
+	sg::base::OperationMatrix* OpFBound;
 
-	virtual void applyLOperator(DataVector& alpha, DataVector& result);
+	virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 public:
 	/**
@@ -54,8 +53,8 @@ public:
 	 * @param refineMaxLevel max. level of refinement during solving
 	 * @param dimension of Hull-White (= where r value is taken)
 	 */
-   	ModifiedBlackScholesParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
-			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+   	ModifiedBlackScholesParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
+			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel,
 			int dim_HW);
@@ -65,7 +64,7 @@ public:
 	 *
 	 * @param updateVector the vector that should be updated
 	 */
-   	void multiplyrBSHW(DataVector& updateVector);
+   	void multiplyrBSHW(sg::base::DataVector& updateVector);
 
    	/**
 	 * Std-Destructor

@@ -16,7 +16,6 @@ using namespace sg::GridOperationFactory;
 
 #ifdef _OPENMP
 #include "omp.h"
-using namespace sg::base;
 #endif
 
 namespace sg
@@ -24,7 +23,7 @@ namespace sg
 namespace pde
 {
 
-HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverSystemParallelOMP(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
+HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverSystemParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
 {
 	this->a = a;
 	this->tOperationMode = OperationMode;
@@ -34,8 +33,8 @@ HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverS
 	this->InnerGrid = NULL;
 	this->alpha_inner = NULL;
 
-	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
-	this->GridConverter = new DirichletGridConverter();
+	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
+	this->GridConverter = new sg::base::DirichletGridConverter();
 
 	this->OpLaplaceBound = createOperationLaplace(SparseGrid);
 	this->OpMassBound = sg::GridOperationFactory::createOperationLTwoDotProduct(SparseGrid);
@@ -74,22 +73,22 @@ HeatEquationParabolicPDESolverSystemParallelOMP::~HeatEquationParabolicPDESolver
 	}
 }
 
-void HeatEquationParabolicPDESolverSystemParallelOMP::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	((StdUpDown*)(this->OpMassBound))->multParallelBuildingBlock(alpha, temp);
 
 	result.add(temp);
 }
 
-void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 	temp.setAll(0.0);
 
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
@@ -104,7 +103,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(Dat
 	{
 		#pragma omp task firstprivate(i) shared(alpha, temp, result, algoDims)
 		{
-			DataVector myResult(result.getSize());
+			sg::base::DataVector myResult(result.getSize());
 
 			/// @todo (heinecke) discuss methods in order to avoid this cast
 			((UpDownOneOpDim*)(this->OpLaplaceBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
@@ -129,22 +128,22 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(Dat
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationParabolicPDESolverSystemParallelOMP::applyMassMatrixInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	((StdUpDown*)(this->OpMassInner))->multParallelBuildingBlock(alpha, temp);
 
 	result.add(temp);
 }
 
-void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 	temp.setAll(0.0);
 
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
@@ -159,7 +158,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(DataVe
 	{
 		#pragma omp task firstprivate(i) shared(alpha, temp, result, algoDims)
 		{
-			DataVector myResult(result.getSize());
+			sg::base::DataVector myResult(result.getSize());
 
 			/// @todo (heinecke) discuss methods in order to avoid this cast
 			((UpDownOneOpDim*)(this->OpLaplaceInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
@@ -194,7 +193,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::startTimestep()
 {
 }
 
-void HeatEquationParabolicPDESolverSystemParallelOMP::mult(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelOMP::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -204,8 +203,8 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::mult(DataVector& alpha, Da
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		DataVector temp(result.getSize());
-		DataVector temp2(result.getSize());
+		sg::base::DataVector temp(result.getSize());
+		sg::base::DataVector temp2(result.getSize());
 
 		#pragma omp parallel shared(alpha, result, temp, temp2)
 		{
@@ -230,8 +229,8 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::mult(DataVector& alpha, Da
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		DataVector temp(result.getSize());
-		DataVector temp2(result.getSize());
+		sg::base::DataVector temp(result.getSize());
+		sg::base::DataVector temp2(result.getSize());
 
 		#pragma omp parallel shared(alpha, result, temp, temp2)
 		{
@@ -256,21 +255,21 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::mult(DataVector& alpha, Da
 	}
 	else
 	{
-		throw new algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelOMP::mult : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelOMP::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
+sg::base::DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 {
-	DataVector rhs_complete(this->alpha_complete->getSize());
+	sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
 	if (this->tOperationMode == "ExEul")
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(rhs_complete.getSize());
-		DataVector temp2(rhs_complete.getSize());
-		DataVector myAlpha(*this->alpha_complete);
+		sg::base::DataVector temp(rhs_complete.getSize());
+		sg::base::DataVector temp2(rhs_complete.getSize());
+		sg::base::DataVector myAlpha(*this->alpha_complete);
 
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
@@ -303,9 +302,9 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(rhs_complete.getSize());
-		DataVector temp2(rhs_complete.getSize());
-		DataVector myAlpha(*this->alpha_complete);
+		sg::base::DataVector temp(rhs_complete.getSize());
+		sg::base::DataVector temp2(rhs_complete.getSize());
+		sg::base::DataVector myAlpha(*this->alpha_complete);
 
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
@@ -330,14 +329,14 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	this->startTimestep();
 
 	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-	DataVector result_complete(this->alpha_complete->getSize());
-	DataVector alpha_bound(*this->alpha_complete);
+	sg::base::DataVector result_complete(this->alpha_complete->getSize());
+	sg::base::DataVector alpha_bound(*this->alpha_complete);
 
 	result_complete.setAll(0.0);
 
@@ -350,8 +349,8 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		DataVector temp(alpha_bound.getSize());
-		DataVector temp2(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp2(alpha_bound.getSize());
 
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
@@ -376,8 +375,8 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		DataVector temp(alpha_bound.getSize());
-		DataVector temp2(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp2(alpha_bound.getSize());
 
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
@@ -402,7 +401,7 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
 	rhs_complete.sub(result_complete);
@@ -412,7 +411,7 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS()
 		delete this->rhs;
 	}
 
-	this->rhs = new DataVector(this->alpha_inner->getSize());
+	this->rhs = new sg::base::DataVector(this->alpha_inner->getSize());
 	this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 
 	return this->rhs;

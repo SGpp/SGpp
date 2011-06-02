@@ -208,7 +208,7 @@ protected:
 		// Generate 1D grid
 		for (level_t l = 1; l <= n; l++)
 		{
-			for (index_t i = 1; i < (1 << l); i+=2)
+			for (index_t i = 1; i < static_cast<index_t>(1 << l); i+=2)
 			{
 				if (l == n)
 				{
@@ -242,7 +242,7 @@ protected:
 
 				for (level_t l = 1; l + level_sum <= n+storage->dim()-1; l++)
 				{
-					for (index_t i = 1; i < (1 << l); i+=2)
+					for (index_t i = 1; i < static_cast<index_t>(1 << l); i+=2)
 					{
 						if (first == false)
 						{
@@ -307,7 +307,7 @@ protected:
 			}
 
 			// generate inner basis function
-			for (index_t i = 1; i < (1 << l); i+=2)
+			for (index_t i = 1; i < static_cast<index_t>(1 << l); i+=2)
 			{
 				if (l == n)
 				{
@@ -358,7 +358,7 @@ protected:
 					}
 
 					// generate inner basis functions
-					for (index_t i = 1; i < (1 << l); i+=2)
+					for (index_t i = 1; i < static_cast<index_t>(1 << l); i+=2)
 					{
 						if ((l+level_sum) == n+storage->dim()-1)
 						{

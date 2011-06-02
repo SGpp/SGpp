@@ -9,7 +9,6 @@
 #define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELOMP_HPP
 
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -30,13 +29,13 @@ namespace finance
 class BlackScholesParabolicPDESolverSystemEuropeanParallelOMP : public BlackScholesParabolicPDESolverSystemEuropean
 {
 protected:
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 public:
 	/**
@@ -60,8 +59,8 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level for refinement during solving
 	 */
-	BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
-			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+	BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
+			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
@@ -73,17 +72,17 @@ public:
 	/**
 	 * Multiplicates a vector with the matrix, parallel
 	 *
-	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
-	 * @param result DataVector into which the result of the space discretization operation is stored
+	 * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
+	 * @param result sg::base::DataVector into which the result of the space discretization operation is stored
 	 */
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * generates the right hand side of the system, parallel
 	 *
 	 * @return returns the rhs
 	 */
-	virtual DataVector* generateRHS();
+	virtual sg::base::DataVector* generateRHS();
 };
 
 }

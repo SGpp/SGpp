@@ -12,8 +12,6 @@
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -26,33 +24,33 @@ namespace finance
  *
  * Here a European Option with fix Dirichlet boundaries is solved.
  */
-class BlackScholesParabolicPDESolverSystemEuropean : public OperationParabolicPDESolverSystemDirichlet
+class BlackScholesParabolicPDESolverSystemEuropean : public sg::pde::OperationParabolicPDESolverSystemDirichlet
 {
 protected:
 	/// the riskfree interest rate
 	double r;
 	/// the delta Operation, on boundary grid
-	OperationMatrix* OpDeltaBound;
+	sg::base::OperationMatrix* OpDeltaBound;
 	/// the Gamma Operation, on boundary grid
-	OperationMatrix* OpGammaBound;
+	sg::base::OperationMatrix* OpGammaBound;
 	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-	OperationMatrix* OpLTwoBound;
+	sg::base::OperationMatrix* OpLTwoBound;
 	/// the delta Operation, on Inner grid
-	OperationMatrix* OpDeltaInner;
+	sg::base::OperationMatrix* OpDeltaInner;
 	/// the Gamma Operation, on Inner grid
-	OperationMatrix* OpGammaInner;
+	sg::base::OperationMatrix* OpGammaInner;
 	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-	OperationMatrix* OpLTwoInner;
+	sg::base::OperationMatrix* OpLTwoInner;
 	/// Pointer to the mus
-	DataVector* mus;
+	sg::base::DataVector* mus;
 	/// Pointer to the sigmas
-	DataVector* sigmas;
+	sg::base::DataVector* sigmas;
 	/// Pointer to the rhos;
-	DataMatrix* rhos;
+	sg::base::DataMatrix* rhos;
 	/// Pointer to the coefficients of operation Delta
-	DataVector* deltaCoef;
+	sg::base::DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
-	DataMatrix* gammaCoef;
+	sg::base::DataMatrix* gammaCoef;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -72,13 +70,13 @@ protected:
 	/// store number of executed timesteps
 	size_t nExecTimesteps;
 
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * Build the coefficients for the Gamma Operation, which
@@ -134,8 +132,8 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
-	BlackScholesParabolicPDESolverSystemEuropean(Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
-			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+	BlackScholesParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
+			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 

@@ -14,8 +14,6 @@
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 #include "application/finance/VariableDiscountFactor.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -26,22 +24,22 @@ namespace finance
  * This class implements the ParabolicPDESolverSystem for the HullWhite
  * Equation.
  */
-class HullWhiteParabolicPDESolverSystem : public OperationParabolicPDESolverSystemNeumann
+class HullWhiteParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemNeumann
 {
 protected:
 	double theta;
 	double sigma;
 	double a;
 	/// the B matrix Operation, on boundary grid
-	OperationMatrix* OpBBound;
+	sg::base::OperationMatrix* OpBBound;
 	/// the D matrix Operation, on boundary grid
-	OperationMatrix* OpDBound;
+	sg::base::OperationMatrix* OpDBound;
 	/// the E matrix Operation, on boundary grid
-	OperationMatrix* OpEBound;
+	sg::base::OperationMatrix* OpEBound;
 	/// the F matrix Operation, on boundary grid
-	OperationMatrix* OpFBound;
+	sg::base::OperationMatrix* OpFBound;
 	/// the LTwoDotProduct Operation (Mass Matrix A), on boundary grid
-	OperationMatrix* OpLTwoBound;
+	sg::base::OperationMatrix* OpLTwoBound;
 
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
@@ -61,14 +59,14 @@ protected:
 
 	std::vector<size_t> HWalgoDims;
 	/// Routine to modify the boundaries/inner points of the grid
-	DirichletUpdateVector* BoundaryUpdate;
+	sg::base::DirichletUpdateVector* BoundaryUpdate;
 
 	/// access to the variable discount factor
 	VariableDiscountFactor* variableDiscountFactor;
 
-	virtual void applyLOperator(DataVector& alpha, DataVector& result);
+	virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrix(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 public:
 	/**
@@ -88,7 +86,7 @@ public:
 	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
 	 * @param dim_HW dimension of Hull-White (dimension of risk-free rate)
 	 */
-	HullWhiteParabolicPDESolverSystem(Grid& SparseGrid, DataVector& alpha, double sigma, double theta,
+	HullWhiteParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double sigma, double theta,
 		    double a, double TimestepSize, std::string OperationMode = "ExEul",
 		    bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 		    int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",

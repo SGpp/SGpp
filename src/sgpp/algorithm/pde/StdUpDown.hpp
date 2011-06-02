@@ -13,7 +13,6 @@
 #include "grid/GridStorage.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "data/DataVector.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -25,15 +24,15 @@ namespace pde
  *
  * @version $HEAD$
  */
-class StdUpDown: public OperationMatrix
+class StdUpDown: public sg::base::OperationMatrix
 {
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	StdUpDown(GridStorage* storage);
+	StdUpDown(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
@@ -41,7 +40,7 @@ public:
 	virtual ~StdUpDown();
 
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * this functions provides the same functionality as the normal mult routine.
@@ -57,14 +56,14 @@ public:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void multParallelBuildingBlock(DataVector& alpha, DataVector& result);
+	void multParallelBuildingBlock(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
+	typedef sg::base::GridStorage::grid_iterator grid_iterator;
 
 	/// Pointer to the grid's storage object
-	GridStorage* storage;
+	sg::base::GridStorage* storage;
 	/// algorithmic dimensions, operator is applied in this dimensions
 	const std::vector<size_t> algoDims;
 	/// number of algorithmic dimensions
@@ -79,7 +78,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void updown(DataVector& alpha, DataVector& result, size_t dim);
+	void updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * 1D up Operation
@@ -88,7 +87,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 
 	/**
 	 * 1D down Operation
@@ -97,7 +96,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim) = 0;
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
 };
 
 }

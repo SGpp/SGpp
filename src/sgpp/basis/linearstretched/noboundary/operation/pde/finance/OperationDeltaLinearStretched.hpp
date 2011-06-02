@@ -11,6 +11,7 @@
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 using namespace sg::pde;
+using namespace sg::base;
 
 namespace sg
 {

@@ -13,8 +13,6 @@
 
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 using namespace sg::GridOperationFactory;
 
 namespace sg
@@ -22,7 +20,7 @@ namespace sg
 namespace parallel
 {
 
-PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
+PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : sg::pde::OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
 {
 	this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
 	this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
@@ -34,7 +32,7 @@ PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::~PoissonEquationElli
 	delete this->Laplace_Inner;
 }
 
-void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -52,10 +50,10 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorI
 				{
 					#pragma omp task firstprivate(i) shared(alpha, result, algoDims)
 					{
-						DataVector myResult(result.getSize());
+						sg::base::DataVector myResult(result.getSize());
 
 						/// @todo (heinecke) discuss methods in order to avoid this cast
-						((UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+						((sg::pde::UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 						#pragma omp critical
 						{
@@ -71,7 +69,7 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorI
 
 }
 
-void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -90,10 +88,10 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
 					#pragma omp task firstprivate(i) shared(alpha, result, algoDims)
 					{
 
-						DataVector myResult(result.getSize());
+						sg::base::DataVector myResult(result.getSize());
 
 						/// @todo (heinecke) discuss methods in order to avoid this cast
-						((UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+						((sg::pde::UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 						#pragma omp critical
 						{
@@ -108,7 +106,7 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
 	}
 }
 
-void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(DataVector& alpha, DataVector& result)
+void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	// distribute the current grid coefficients
 	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
@@ -119,12 +117,12 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(DataVector
 	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
 }
 
-DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS()
+sg::base::DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS()
 {
 	if (this->InnerGrid != NULL)
 	{
-		DataVector alpha_tmp_complete(*(this->rhs));
-		DataVector rhs_tmp_complete(*(this->rhs));
+		sg::base::DataVector alpha_tmp_complete(*(this->rhs));
+		sg::base::DataVector rhs_tmp_complete(*(this->rhs));
 
 		this->BoundaryUpdate->setInnerPointsToZero(alpha_tmp_complete);
 		// distribute the current grid coefficients
@@ -141,7 +139,7 @@ DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generate
 	else
 	{
 		myGlobalMPIComm->Abort();
-		throw new algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
+		throw new sg::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
 	}
 
 	return this->rhs_inner;

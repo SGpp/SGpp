@@ -11,7 +11,6 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "basis/operations_factory.hpp"
 #include <cmath>
-using namespace sg::base;
 
 //#define HEDGE
 #define HEDGE_MESH_WIDTH 0.005
@@ -21,24 +20,24 @@ namespace sg
 namespace finance
 {
 
-BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean(Grid& SparseGrid, DataVector& alpha, DataVector& mu,
-			DataVector& sigma, DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
+			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
 
-	this->alpha_complete_old = new DataVector(*this->alpha_complete);
-	this->alpha_complete_tmp = new DataVector(*this->alpha_complete);
+	this->alpha_complete_old = new sg::base::DataVector(*this->alpha_complete);
+	this->alpha_complete_tmp = new sg::base::DataVector(*this->alpha_complete);
 
 	this->InnerGrid = NULL;
 	this->alpha_inner = NULL;
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
 	this->TimestepSize_old = TimestepSize;
-	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
-	this->GridConverter = new DirichletGridConverter();
+	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
+	this->GridConverter = new sg::base::DirichletGridConverter();
 	this->r = r;
 	this->mus = &mu;
 	this->sigmas = &sigma;
@@ -49,19 +48,19 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->BSalgoDims.size() != this->BoundGrid->getStorage()->dim())
 	{
-		throw algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Number of algorithmic dimensions is not equal to the number of grid's dimensions.");
+		throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Number of algorithmic dimensions is not equal to the number of grid's dimensions.");
 	}
 
 	// test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
 	if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize())
 	{
-		throw algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't match the grid's dimensions!");
+		throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't match the grid's dimensions!");
 	}
 
 	// test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
 	if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols())
 	{
-		throw algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Row or col of rho parameter don't match the grid's dimensions!");
+		throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Row or col of rho parameter don't match the grid's dimensions!");
 	}
 
 	// test if all algorithmic dimensions are inside the grid's dimensions
@@ -69,7 +68,7 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 	{
 		if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim())
 		{
-			throw algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Minimum one algorithmic dimension is not inside the grid's dimensions!");
+			throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Minimum one algorithmic dimension is not inside the grid's dimensions!");
 		}
 	}
 
@@ -88,13 +87,13 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 
 		if (dimCount > 1)
 		{
-			throw algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
+			throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
 		}
 	}
 
 	// build the coefficient vectors for the operations
-	this->gammaCoef = new DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
-	this->deltaCoef = new DataVector(this->BSalgoDims.size());
+	this->gammaCoef = new sg::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
+	this->deltaCoef = new sg::base::DataVector(this->BSalgoDims.size());
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
@@ -174,9 +173,9 @@ BlackScholesParabolicPDESolverSystemEuropean::~BlackScholesParabolicPDESolverSys
 	delete this->alpha_complete_tmp;
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
 
@@ -196,9 +195,9 @@ void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorComplete(DataVe
 	result.sub(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
 
@@ -218,9 +217,9 @@ void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorInner(DataVecto
 	result.sub(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
 
@@ -230,9 +229,9 @@ void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixComplete(DataV
 	result.add(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixInner(DataVector& alpha, DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 
 	result.setAll(0.0);
 
@@ -271,7 +270,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTim
 		size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
 		// Coarsen the grid
-		GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+		sg::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
 		//std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
 		//std::cout << "Grid Size: " << originalGridSize << std::endl;
@@ -279,7 +278,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTim
 		if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine")
 		{
 			size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
+			sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
 			if (this->refineMode == "maxLevel")
 			{
 				myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
@@ -296,7 +295,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTim
 		if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
 		{
 			size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
-			SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
+			sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
 			myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 			delete myCoarsenFunctor;
 		}
