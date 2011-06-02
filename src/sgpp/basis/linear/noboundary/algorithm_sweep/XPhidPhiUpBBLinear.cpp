@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace finance
 
 
 
-XPhidPhiUpBBLinear::XPhidPhiUpBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
+XPhidPhiUpBBLinear::XPhidPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
 }
 
@@ -23,7 +22,7 @@ XPhidPhiUpBBLinear::~XPhidPhiUpBBLinear()
 {
 }
 
-void XPhidPhiUpBBLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void XPhidPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = boundingBox->getIntervalWidth(dim);
 	double t = boundingBox->getIntervalOffset(dim);
@@ -49,7 +48,7 @@ void XPhidPhiUpBBLinear::operator()(DataVector& source, DataVector& result, grid
 	}
 }
 
-void XPhidPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+void XPhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
 {
 	size_t seq = index.seq();
 
@@ -57,8 +56,8 @@ void XPhidPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterat
 	double fml = 0.0;
 	double fmr = 0.0;
 
-	GridStorage::index_type::level_type current_level;
-	GridStorage::index_type::index_type current_index;
+	sg::base::GridStorage::index_type::level_type current_level;
+	sg::base::GridStorage::index_type::index_type current_index;
 
 	if(!index.hint())
 	{
@@ -92,7 +91,7 @@ void XPhidPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterat
 	fr = (fm/2.0) + ((alpha_value*helper) + fr);
 }
 
-void XPhidPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
+void XPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
 {
 	size_t seq = index.seq();
 
@@ -100,8 +99,8 @@ void XPhidPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iter
 	double fml = 0.0;
 	double fmr = 0.0;
 
-	GridStorage::index_type::level_type current_level;
-	GridStorage::index_type::index_type current_index;
+	sg::base::GridStorage::index_type::level_type current_level;
+	sg::base::GridStorage::index_type::index_type current_index;
 
 	if(!index.hint())
 	{

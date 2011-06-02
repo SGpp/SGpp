@@ -29,26 +29,25 @@
 #include "data/DataVector.hpp"
 
 #include "data/DataMatrix.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace datadriven
 {
 
-double OperationTestPrewavelet::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
+double OperationTestPrewavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
 {
 	prewavelet_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestPrewavelet::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+double OperationTestPrewavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
 {
 	prewavelet_base<unsigned int, unsigned int> base;
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestPrewavelet::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestPrewavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
 {
 	prewavelet_base<unsigned int, unsigned int> base;
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

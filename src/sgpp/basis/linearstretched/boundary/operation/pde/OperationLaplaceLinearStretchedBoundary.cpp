@@ -16,14 +16,13 @@
 #include "algorithm/common/sweep.hpp"
 
 #include "grid/common/Stretching.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-OperationLaplaceLinearStretchedBoundary::OperationLaplaceLinearStretchedBoundary(GridStorage* storage) : UpDownOneOpDim(storage)
+OperationLaplaceLinearStretchedBoundary::OperationLaplaceLinearStretchedBoundary(sg::base::GridStorage* storage) : UpDownOneOpDim(storage)
 {
 }
 
@@ -31,27 +30,27 @@ OperationLaplaceLinearStretchedBoundary::~OperationLaplaceLinearStretchedBoundar
 {
 }
 
-void OperationLaplaceLinearStretchedBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinearStretchedBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	sg::base::sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationLaplaceLinearStretchedBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinearStretchedBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	sg::base::sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationLaplaceLinearStretchedBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinearStretchedBoundary::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	DowndPhidPhiBBIterativeLinearStretchedBoundary myDown(this->storage);
 	myDown(alpha, result, dim);
 }
 
-void OperationLaplaceLinearStretchedBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLaplaceLinearStretchedBoundary::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	UpdPhidPhiBBIterativeLinearStretchedBoundary myUp(this->storage);
 	myUp(alpha, result, dim);

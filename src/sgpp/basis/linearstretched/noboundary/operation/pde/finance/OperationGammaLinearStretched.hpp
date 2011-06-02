@@ -11,8 +11,6 @@
 
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
 
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -26,16 +24,16 @@ namespace finance
  *
  * @version $HEAD$
  */
-class OperationGammaLinearStretched : public UpDownTwoOpDims
+class OperationGammaLinearStretched : public sg::pde::UpDownTwoOpDims
 {
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	OperationGammaLinearStretched(GridStorage* storage, DataMatrix& coef);
+	OperationGammaLinearStretched(sg::base::GridStorage* storage, sg::base::DataMatrix& coef);
 
 	/**
 	 * Destructor
@@ -52,7 +50,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -63,7 +61,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
@@ -73,7 +71,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	virtual void downOpDimOne(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
@@ -83,7 +81,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	virtual void upOpDimOne(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -93,7 +91,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	virtual void downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -103,7 +101,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	virtual void upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
@@ -113,7 +111,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	void downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
+	void downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
@@ -123,7 +121,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	void upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim);
+	void upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 };
 
 }

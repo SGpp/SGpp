@@ -13,26 +13,25 @@
 
 #include "data/DataVector.hpp"
 
-using namespace sg::base;
 
 namespace sg
 {
 namespace datadriven
 {
 
-double OperationTestLinearStretchedBoundary::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
+double OperationTestLinearStretchedBoundary::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestLinearStretchedBoundary::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+double OperationTestLinearStretchedBoundary::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
 {
 	linearboundaryBase<unsigned int, unsigned int> base;
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

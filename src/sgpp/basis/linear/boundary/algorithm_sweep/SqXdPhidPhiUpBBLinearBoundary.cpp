@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace finance
 
 
 
-SqXdPhidPhiUpBBLinearBoundary::SqXdPhidPhiUpBBLinearBoundary(GridStorage* storage) : SqXdPhidPhiUpBBLinear(storage)
+SqXdPhidPhiUpBBLinearBoundary::SqXdPhidPhiUpBBLinearBoundary(sg::base::GridStorage* storage) : SqXdPhidPhiUpBBLinear(storage)
 {
 }
 
@@ -23,7 +22,7 @@ SqXdPhidPhiUpBBLinearBoundary::~SqXdPhidPhiUpBBLinearBoundary()
 {
 }
 
-void SqXdPhidPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void SqXdPhidPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = this->boundingBox->getIntervalWidth(dim);
 	double t = this->boundingBox->getIntervalOffset(dim);

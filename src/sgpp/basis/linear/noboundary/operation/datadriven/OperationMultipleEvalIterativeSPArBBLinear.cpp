@@ -8,23 +8,22 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #include "exception/operation_exception.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPArBBLinear::OperationMultipleEvalIterativeSPArBBLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPArBBLinear::OperationMultipleEvalIterativeSPArBBLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset)
 {
 	this->storage = storage;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new SGppStopwatch();
+	myTimer = new sg::base::SGppStopwatch();
 	myArBBKernels = new ArBBKernels();
 }
 
@@ -39,15 +38,15 @@ void OperationMultipleEvalIterativeSPArBBLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myArBBKernels->resetKernels();
 }
 
-double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(DataVectorSP& source, DataVectorSP& result)
+double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
@@ -63,7 +62,7 @@ double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(DataV
 
     if (this->dataset_->getNrows() % 16 != 0 || source_size != this->dataset_->getNrows())
     {
-    	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
     double time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims);
@@ -71,7 +70,7 @@ double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(DataV
 	return time;
 }
 
-double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(DataVectorSP& alpha, DataVectorSP& result)
+double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -87,7 +86,7 @@ double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(DataVectorSP& 
 
     if (this->dataset_->getNrows() % 16 != 0 || result_size != this->dataset_->getNrows())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     double time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims);

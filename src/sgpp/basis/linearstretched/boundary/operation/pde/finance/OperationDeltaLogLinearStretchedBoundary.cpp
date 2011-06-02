@@ -14,14 +14,13 @@
 #include "basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
-using namespace sg::pde;
 
 namespace sg
 {
 namespace finance
 {
 
-OperationDeltaLogLinearStretchedBoundary::OperationDeltaLogLinearStretchedBoundary(GridStorage* storage, DataVector& coef) : UpDownOneOpDim(storage, coef)
+OperationDeltaLogLinearStretchedBoundary::OperationDeltaLogLinearStretchedBoundary(sg::base::GridStorage* storage, sg::base::DataVector& coef) : sg::pde::UpDownOneOpDim(storage, coef)
 {
 }
 
@@ -29,38 +28,38 @@ OperationDeltaLogLinearStretchedBoundary::~OperationDeltaLogLinearStretchedBound
 {
 }
 
-void OperationDeltaLogLinearStretchedBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLogLinearStretchedBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	sg::pde::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationDeltaLogLinearStretchedBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLogLinearStretchedBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	sg::pde::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationDeltaLogLinearStretchedBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLogLinearStretchedBoundary::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// dphi * phi
 	DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	sg::base::sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationDeltaLogLinearStretchedBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLogLinearStretchedBoundary::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// dphi * phi
 	DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	sg::base::sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

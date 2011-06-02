@@ -9,8 +9,6 @@
 #define OPERATIONLFLINEARBOUNDARY_HPP
 
 #include "algorithm/pde/StdUpDown.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -22,15 +20,15 @@ namespace finance
  *
  * @version $HEAD$
  */
-class OperationLFLinearBoundary: public StdUpDown
+class OperationLFLinearBoundary: public sg::pde::StdUpDown
 {
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	OperationLFLinearBoundary(GridStorage* storage);
+	OperationLFLinearBoundary(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
@@ -47,7 +45,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(x\phi_i(x),d\phi_j(x))\f$.
@@ -58,7 +56,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 };
 
 }

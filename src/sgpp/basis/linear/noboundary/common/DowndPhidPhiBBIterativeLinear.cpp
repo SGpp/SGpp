@@ -7,14 +7,13 @@
 
 #include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 #include "grid/common/BoundingBox.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-DowndPhidPhiBBIterativeLinear::DowndPhidPhiBBIterativeLinear(GridStorage* storage) : storage(storage)
+DowndPhidPhiBBIterativeLinear::DowndPhidPhiBBIterativeLinear(sg::base::GridStorage* storage) : storage(storage)
 {
 }
 
@@ -22,10 +21,10 @@ DowndPhidPhiBBIterativeLinear::~DowndPhidPhiBBIterativeLinear()
 {
 }
 
-void DowndPhidPhiBBIterativeLinear::operator()(DataVector& alpha, DataVector& result, size_t dim)
+void DowndPhidPhiBBIterativeLinear::operator()(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// Bounding Box handling
-	BoundingBox* boundingBox = this->storage->getBoundingBox();
+	sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
 	double q = boundingBox->getIntervalWidth(dim);
 	double Qqout = 1.0/q;
 
@@ -37,8 +36,8 @@ void DowndPhidPhiBBIterativeLinear::operator()(DataVector& alpha, DataVector& re
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
+			sg::base::GridStorage::index_type::level_type level;
+			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			//only affects the diagonal of the stiffness matrix
 			result[i] = alpha[i]*(Qqout*pow(2.0, static_cast<int>(level+1)));
@@ -49,8 +48,8 @@ void DowndPhidPhiBBIterativeLinear::operator()(DataVector& alpha, DataVector& re
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
+			sg::base::GridStorage::index_type::level_type level;
+			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			//only affects the diagonal of the stiffness matrix
 			result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));

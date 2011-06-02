@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace finance
 
 
 
-PhidPhiUpBBLinearBoundary::PhidPhiUpBBLinearBoundary(GridStorage* storage) : PhidPhiUpBBLinear(storage)
+PhidPhiUpBBLinearBoundary::PhidPhiUpBBLinearBoundary(sg::base::GridStorage* storage) : PhidPhiUpBBLinear(storage)
 {
 }
 
@@ -23,7 +22,7 @@ PhidPhiUpBBLinearBoundary::~PhidPhiUpBBLinearBoundary()
 {
 }
 
-void PhidPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void PhidPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	// get boundary values
 	double fl = 0.0;

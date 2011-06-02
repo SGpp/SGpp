@@ -14,15 +14,13 @@
 #include "basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
 namespace finance
 {
 
-OperationDeltaLinearBoundary::OperationDeltaLinearBoundary(GridStorage* storage, DataVector& coef) : UpDownOneOpDim(storage, coef)
+OperationDeltaLinearBoundary::OperationDeltaLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& coef) : sg::pde::UpDownOneOpDim(storage, coef)
 {
 }
 
@@ -30,38 +28,38 @@ OperationDeltaLinearBoundary::~OperationDeltaLinearBoundary()
 {
 }
 
-void OperationDeltaLinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLinearBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiUpBBLinearBoundary func(this->storage);
-	sweep<PhiPhiUpBBLinearBoundary> s(func, this->storage);
+	sg::pde::PhiPhiUpBBLinearBoundary func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationDeltaLinearBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLinearBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiDownBBLinearBoundary func(this->storage);
-	sweep<PhiPhiDownBBLinearBoundary> s(func, this->storage);
+	sg::pde::PhiPhiDownBBLinearBoundary func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationDeltaLinearBoundary::upOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLinearBoundary::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x * dphi * phi
 	XdPhiPhiUpBBLinearBoundary func(this->storage);
-	sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+	sg::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationDeltaLinearBoundary::downOpDim(DataVector& alpha, DataVector& result, size_t dim)
+void OperationDeltaLinearBoundary::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x * dphi * phi
 	XdPhiPhiDownBBLinearBoundary func(this->storage);
-	sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+	sg::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

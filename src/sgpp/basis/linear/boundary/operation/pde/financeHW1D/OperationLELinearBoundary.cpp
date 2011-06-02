@@ -14,15 +14,13 @@
 #include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
 namespace finance
 {
 
-OperationLELinearBoundary::OperationLELinearBoundary(GridStorage* storage) : StdUpDown(storage)
+OperationLELinearBoundary::OperationLELinearBoundary(sg::base::GridStorage* storage) : sg::pde::StdUpDown(storage)
 {
 }
 
@@ -30,17 +28,17 @@ OperationLELinearBoundary::~OperationLELinearBoundary()
 {
 }
 
-void OperationLELinearBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLELinearBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// Dphi * dphi
-	UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+	sg::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
 	myUp(alpha, result, dim);
 }
 
-void OperationLELinearBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLELinearBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// Dphi * dphi
-	DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+	sg::pde::DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
 	myDown(alpha, result, dim);
 }
 

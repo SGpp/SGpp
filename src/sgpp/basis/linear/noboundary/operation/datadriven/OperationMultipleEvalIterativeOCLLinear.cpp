@@ -8,23 +8,22 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
 #include "exception/operation_exception.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace parallel
 {
 
-OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 
-	this->level_ = new DataMatrix(storage->size(), storage->dim());
-	this->index_ = new DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new SGppStopwatch();
+	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 }
 
@@ -39,15 +38,15 @@ void OperationMultipleEvalIterativeOCLLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new DataMatrix(storage->size(), storage->dim());
-	this->index_ = new DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myOCLKernels->resetKernels();
 }
 
-double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(DataVector& source, DataVector& result)
+double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
@@ -63,7 +62,7 @@ double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(DataVect
 
     if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows())
     {
-    	throw operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
     double time = myOCLKernels->multTransOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
@@ -104,7 +103,7 @@ double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(DataVect
 	return time;
 }
 
-double OperationMultipleEvalIterativeOCLLinear::multVectorized(DataVector& alpha, DataVector& result)
+double OperationMultipleEvalIterativeOCLLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -120,7 +119,7 @@ double OperationMultipleEvalIterativeOCLLinear::multVectorized(DataVector& alpha
 
     if (this->dataset_->getNrows() % 128 != 0 || result_size != this->dataset_->getNrows())
     {
-    	throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+    	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     double time = myOCLKernels->multOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, result_size);

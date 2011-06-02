@@ -26,48 +26,47 @@
 #include "basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.hpp"
 
 #include "algorithm/common/sweep.hpp"
-using namespace sg::finance;
 
 namespace sg
 {
 namespace pde
 {
 
-OperationUpDownTestLinearStretchedBoundary::OperationUpDownTestLinearStretchedBoundary(GridStorage* storage) : storage(storage)
+sg::pde::OperationUpDownTestLinearStretchedBoundary::OperationUpDownTestLinearStretchedBoundary(sg::base::GridStorage* storage) : storage(storage)
 {
 }
 
-OperationUpDownTestLinearStretchedBoundary::~OperationUpDownTestLinearStretchedBoundary()
+sg::pde::OperationUpDownTestLinearStretchedBoundary::~OperationUpDownTestLinearStretchedBoundary()
 {
 }
 
-void OperationUpDownTestLinearStretchedBoundary::mult(DataVector& alpha, DataVector& result)
+void sg::pde::OperationUpDownTestLinearStretchedBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	this->updown(alpha, result);
 }
 
-void OperationUpDownTestLinearStretchedBoundary::updown(DataVector& alpha, DataVector& result)
+void sg::pde::OperationUpDownTestLinearStretchedBoundary::updown(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	DataVector beta(result.getSize());
+	sg::base::DataVector beta(result.getSize());
 
 	this->updown(alpha, beta, storage->dim() - 1);
 
 	result.add(beta);
 }
 
-void OperationUpDownTestLinearStretchedBoundary::updown(DataVector& alpha, DataVector& result, size_t dim)
+void sg::pde::OperationUpDownTestLinearStretchedBoundary::updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	//Unidirectional scheme
 	if(dim > 0)
 	{
 		// Reordering ups and downs
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 		up(alpha, temp, dim);
 		updown(temp, result, dim-1);
 
 
 		// Same from the other direction
-		DataVector result_temp(alpha.getSize());
+		sg::base::DataVector result_temp(alpha.getSize());
 		updown(alpha, temp, dim-1);
 		down(temp, result_temp, dim);
 
@@ -78,67 +77,67 @@ void OperationUpDownTestLinearStretchedBoundary::updown(DataVector& alpha, DataV
 		// Terminates dimension recursion
 		up(alpha, result, dim);
 
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 		down(alpha, temp, dim);
 
 		result.add(temp);
 	}
 }
 
-void OperationUpDownTestLinearStretchedBoundary::up(DataVector& alpha, DataVector& result, size_t dim)
+void sg::pde::OperationUpDownTestLinearStretchedBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-//	PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-//	sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::pde::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::pde::PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	// x^2 * dphi * dphi
-//	SqXdPhidPhiUpBBLinearStretchedBoundary func(this->storage);
-//	sweep<SqXdPhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::SqXdPhidPhiUpBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::SqXdPhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	// x * dphi * phi
-	XdPhiPhiUpBBLinearStretchedBoundary func(this->storage);
-	sweep<XdPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+	sg::finance::XdPhiPhiUpBBLinearStretchedBoundary func(this->storage);
+	sg::base::sweep<sg::finance::XdPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	// x * phi * dphi
-//	XPhidPhiUpBBLinearStretchedBoundary func(this->storage);
-//	sweep<XPhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::XPhidPhiUpBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::XPhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	// dphi * phi
-//	DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
-//	sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	// phi * dphi
-//	PhidPhiUpBBLinearStretchedBoundary func(this->storage);
-//	sweep<PhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::PhidPhiUpBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::PhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationUpDownTestLinearStretchedBoundary::down(DataVector& alpha, DataVector& result, size_t dim)
+void sg::pde::OperationUpDownTestLinearStretchedBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-//	PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-//	sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::pde::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::pde::PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	// x^2 * dphi * dphi
-//	SqXdPhidPhiDownBBLinearStretchedBoundary func(this->storage);
-//	sweep<SqXdPhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::SqXdPhidPhiDownBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::SqXdPhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	// x * dphi * phi
-	XdPhiPhiDownBBLinearStretchedBoundary func(this->storage);
-	sweep<XdPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+	sg::finance::XdPhiPhiDownBBLinearStretchedBoundary func(this->storage);
+	sg::base::sweep<sg::finance::XdPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	// x * phi * dphi
-//	XPhidPhiDownBBLinearStretchedBoundary func(this->storage);
-//	sweep<XPhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::XPhidPhiDownBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::XPhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	//  dphi * phi
-//	DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
-//	sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	//  phi * dphi
-//	PhidPhiDownBBLinearStretchedBoundary func(this->storage);
-//	sweep<PhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+//	sg::finance::PhidPhiDownBBLinearStretchedBoundary func(this->storage);
+//	sg::base::sweep<sg::finance::PhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
 	s.sweep1D_Boundary(alpha, result, dim);
 }

@@ -27,7 +27,6 @@
 
 #include "algorithm/common/sweep.hpp"
 
-using namespace sg::base;
 
 namespace sg
 {
@@ -39,28 +38,28 @@ namespace pde
  *
  * @version $HEAD$
  */
-class OperationUpDownTestLinearStretchedBoundary: public OperationMatrix
+class OperationUpDownTestLinearStretchedBoundary: public sg::base::OperationMatrix
 {
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	OperationUpDownTestLinearStretchedBoundary(GridStorage* storage);
+	OperationUpDownTestLinearStretchedBoundary(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationUpDownTestLinearStretchedBoundary();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 protected:
-	typedef GridStorage::grid_iterator grid_iterator;
+	typedef sg::base::GridStorage::grid_iterator grid_iterator;
 
 	/// Pointer to the grid's storage object
-	GridStorage* storage;
+	sg::base::GridStorage* storage;
 
 	/**
 	 * Starting point of the complete up-down scheme
@@ -68,7 +67,7 @@ protected:
 	 * @param alpha contains the grid points coefficients
 	 * @param result contains the result of the laplace operator
 	 */
-	void updown(DataVector& alpha, DataVector& result);
+	void updown(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * Recursive procedure for updown(). In dimension <i>gradient_dim</i> the L2 scalar product of the
@@ -78,11 +77,11 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	void updown(DataVector& alpha, DataVector& result, size_t dim);
+	void updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	void up(DataVector& alpha, DataVector& result, size_t dim);
+	void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	void down(DataVector& alpha, DataVector& result, size_t dim);
+	void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 };
 
 }

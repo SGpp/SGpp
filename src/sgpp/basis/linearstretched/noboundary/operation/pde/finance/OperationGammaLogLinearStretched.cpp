@@ -21,14 +21,13 @@
 #include "algorithm/common/sweep.hpp"
 
 #include <iostream>
-using namespace sg::pde;
 
 namespace sg
 {
 namespace finance
 {
 
-OperationGammaLogLinearStretched::OperationGammaLogLinearStretched(GridStorage* storage, DataMatrix& coef) : UpDownTwoOpDims(storage, coef)
+OperationGammaLogLinearStretched::OperationGammaLogLinearStretched(sg::base::GridStorage* storage, sg::base::DataMatrix& coef) : sg::pde::UpDownTwoOpDims(storage, coef)
 {
 }
 
@@ -36,68 +35,68 @@ OperationGammaLogLinearStretched::~OperationGammaLogLinearStretched()
 {
 }
 
-void OperationGammaLogLinearStretched::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiUpBBLinearStretched func(this->storage);
-	sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
+	sg::pde::PhiPhiUpBBLinearStretched func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretched::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
-	PhiPhiDownBBLinearStretched func(this->storage);
-	sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
+	sg::pde::PhiPhiDownBBLinearStretched func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretched::upOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * dphi
 	PhidPhiUpBBLinearStretched func(this->storage);
-	sweep<PhidPhiUpBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<PhidPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretched::downOpDimOne(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * dphi
 	PhidPhiDownBBLinearStretched func(this->storage);
-	sweep<PhidPhiDownBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<PhidPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretched::upOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// dphi * phi
 	DPhiPhiUpBBLinearStretched func(this->storage);
-	sweep<DPhiPhiUpBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<DPhiPhiUpBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretched::downOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// dphi * phi
 	DPhiPhiDownBBLinearStretched func(this->storage);
-	sweep<DPhiPhiDownBBLinearStretched> s(func, this->storage);
+	sg::base::sweep<DPhiPhiDownBBLinearStretched> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretched::upOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	result.setAll(0.0);
 }
 
-void OperationGammaLogLinearStretched::downOpDimOneAndOpDimTwo(DataVector& alpha, DataVector& result, size_t dim)
+void OperationGammaLogLinearStretched::downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
-	DowndPhidPhiBBIterativeLinearStretched myDown(this->storage);
+	sg::pde::DowndPhidPhiBBIterativeLinearStretched myDown(this->storage);
 	myDown(alpha, result, dim);
 }
 

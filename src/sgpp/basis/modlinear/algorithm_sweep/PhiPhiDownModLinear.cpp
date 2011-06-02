@@ -6,7 +6,6 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace pde
 
 
 
-PhiPhiDownModLinear::PhiPhiDownModLinear(GridStorage* storage) : storage(storage)
+PhiPhiDownModLinear::PhiPhiDownModLinear(sg::base::GridStorage* storage) : storage(storage)
 {
 }
 
@@ -23,19 +22,19 @@ PhiPhiDownModLinear::~PhiPhiDownModLinear()
 {
 }
 
-void PhiPhiDownModLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void PhiPhiDownModLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	rec(source, result, index, dim, 0.0, 0.0);
 }
 
-void PhiPhiDownModLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+void PhiPhiDownModLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 {
 	size_t seq = index.seq();
 
 	double alpha_value = source[seq];
 
-	GridStorage::index_type::level_type l;
-	GridStorage::index_type::index_type i;
+	sg::base::GridStorage::index_type::level_type l;
+	sg::base::GridStorage::index_type::index_type i;
 
 	index.get(dim, l, i);
 

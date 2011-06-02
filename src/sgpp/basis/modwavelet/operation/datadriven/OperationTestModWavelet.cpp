@@ -13,26 +13,25 @@
 #include "data/DataVector.hpp"
 
 #include "exception/operation_exception.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace datadriven
 {
 
-double OperationTestModWavelet::test(DataVector& alpha, DataMatrix& data, DataVector& classes)
+double OperationTestModWavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
 {
 	modified_wavelet_base<unsigned int, unsigned int> base;
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestModWavelet::testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues)
+double OperationTestModWavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
 {
 	modified_wavelet_base<unsigned int, unsigned int> base;
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestModWavelet::testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers)
+double OperationTestModWavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
 {
 	modified_wavelet_base<unsigned int, unsigned int> base;
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);

@@ -12,7 +12,6 @@
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 
-using namespace sg::base;
 
 namespace sg
 {
@@ -31,13 +30,13 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeSSELinear : public OperationMultipleEvalVectorized
+class OperationMultipleEvalIterativeSSELinear : public sg::base::OperationMultipleEvalVectorized
 {
 public:
 	/**
 	 * Construtor of OperationBLinear
 	 *
-	 * Within the construct DataMatrix Level and DataMatrix Index are set up.
+	 * Within the construct sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
 	 * a new instance of this class, you have to call rebuildLevelAndIndex before
 	 * doing any further mult or multTranspose calls.
@@ -45,24 +44,24 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeSSELinear(GridStorage* storage, DataMatrix* dataset);
+	OperationMultipleEvalIterativeSSELinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationMultipleEvalIterativeSSELinear();
 
-	virtual double multVectorized(DataVector& alpha, DataVector& result);
+	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual double multTransposeVectorized(DataVector& source, DataVector& result);
+	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
 
 	virtual void rebuildLevelAndIndex();
 
 protected:
 	/// Pointer to the grid's gridstorage object
-	GridStorage* storage;
+	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
-	SGppStopwatch* myTimer;
+	sg::base::SGppStopwatch* myTimer;
 };
 
 }

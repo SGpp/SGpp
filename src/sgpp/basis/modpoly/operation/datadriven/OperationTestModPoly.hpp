@@ -12,7 +12,6 @@
 #include "grid/GridStorage.hpp"
 
 #include "sgpp.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -30,23 +29,23 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 * @param degree the polynom's max. degree
 	 */
-	OperationTestModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+	OperationTestModPoly(sg::base::GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationTestModPoly() {}
 
-	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes);
-	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues);
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers);
+	virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
+	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
 
 protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
+	/// Pointer to sg::base::GridStorage object
+	sg::base::GridStorage* storage;
 	/// Mod Poly Basis object
 	SModPolyBase base;
 };

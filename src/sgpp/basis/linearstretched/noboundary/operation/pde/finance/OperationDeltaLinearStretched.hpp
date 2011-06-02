@@ -10,8 +10,6 @@
 #define OPERATIONDELTALINEARSTRETCHED_HPP
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -25,16 +23,16 @@ namespace finance
  *
  * @version $HEAD$
  */
-class OperationDeltaLinearStretched : public UpDownOneOpDim
+class OperationDeltaLinearStretched : public sg::pde::UpDownOneOpDim
 {
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
-	 * @param coef reference to a DataVector object that contains the bilinear form's constant coefficients
+	 * @param storage the grid's sg::base::GridStorage object
+	 * @param coef reference to a sg::base::DataVector object that contains the bilinear form's constant coefficients
 	 */
-	OperationDeltaLinearStretched(GridStorage* storage, DataVector& coef);
+	OperationDeltaLinearStretched(sg::base::GridStorage* storage, sg::base::DataVector& coef);
 
 	/**
 	 * Destructor
@@ -51,7 +49,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -62,7 +60,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -72,7 +70,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that down-Gradient is applied
 	 */
-	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -82,7 +80,7 @@ protected:
 	 * @param result vector with the result of this operation
 	 * @param dim the dimension in that up-Gradient is applied
 	 */
-	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 };
 
 }

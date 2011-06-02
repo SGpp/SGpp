@@ -14,7 +14,7 @@ namespace finance
 
 
 
-DPhiPhiDownBBLinearStretchedBoundary::DPhiPhiDownBBLinearStretchedBoundary(GridStorage* storage) : DPhiPhiDownBBLinearStretched(storage)
+DPhiPhiDownBBLinearStretchedBoundary::DPhiPhiDownBBLinearStretchedBoundary(sg::base::GridStorage* storage) : DPhiPhiDownBBLinearStretched(storage)
 {
 }
 
@@ -23,7 +23,7 @@ DPhiPhiDownBBLinearStretchedBoundary::~DPhiPhiDownBBLinearStretchedBoundary()
 }
 
 
-void DPhiPhiDownBBLinearStretchedBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void DPhiPhiDownBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	// get boundary values
 	double left_boundary;

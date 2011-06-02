@@ -7,14 +7,13 @@
 
 #include "basis/linearstretched/boundary/common/DowndPhidPhiBBIterativeLinearStretchedBoundary.hpp"
 #include "grid/common/Stretching.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(GridStorage* storage) : storage(storage)
+DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(sg::base::GridStorage* storage) : storage(storage)
 {
 }
 
@@ -22,11 +21,11 @@ DowndPhidPhiBBIterativeLinearStretchedBoundary::~DowndPhidPhiBBIterativeLinearSt
 {
 }
 
-void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(DataVector& alpha, DataVector& result, size_t dim)
+void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 
 	// Bounding Box handling
-	Stretching* stretching = this->storage->getStretching();
+	sg::base::Stretching* stretching = this->storage->getStretching();
 	double q = stretching->getIntervalWidth(dim);
 	double Qqout = 1.0/q;
 
@@ -38,8 +37,8 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(DataVector& alph
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
+			sg::base::GridStorage::index_type::level_type level;
+			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			if (level == 0)
 			{
@@ -53,7 +52,7 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(DataVector& alph
 						// down
 						if (index == 0)
 						{
-							GridIndex index_one = (*storage)[i];
+							sg::base::GridIndex index_one = (*storage)[i];
 							index_one.set(dim, 0, 1);
 							if (!stretching->hasDirichletBoundaryRight(dim))
 							{
@@ -83,8 +82,8 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(DataVector& alph
 		// traverse all basis function by sequence number
 		for(size_t i = 0; i < storage->size(); i++)
 		{
-			GridStorage::index_type::level_type level;
-			GridStorage::index_type::index_type index;
+			sg::base::GridStorage::index_type::level_type level;
+			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			if (level == 0)
 			{
@@ -98,7 +97,7 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(DataVector& alph
 						// down
 						if (index == 0)
 						{
-							GridIndex index_one = (*storage)[i];
+							sg::base::GridIndex index_one = (*storage)[i];
 							index_one.set(dim, 0, 1);
 							if (!stretching->hasDirichletBoundaryRight(dim))
 							{

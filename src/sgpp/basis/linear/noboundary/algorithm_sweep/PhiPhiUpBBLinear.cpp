@@ -6,7 +6,6 @@
 // @author Dirk Pflueger (dirk.pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace pde
 
 
 
-PhiPhiUpBBLinear::PhiPhiUpBBLinear(GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
+PhiPhiUpBBLinear::PhiPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
 }
 
@@ -23,7 +22,7 @@ PhiPhiUpBBLinear::~PhiPhiUpBBLinear()
 {
 }
 
-void PhiPhiUpBBLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void PhiPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = boundingBox->getIntervalWidth(dim);
 	double t = boundingBox->getIntervalOffset(dim);
@@ -49,7 +48,7 @@ void PhiPhiUpBBLinear::operator()(DataVector& source, DataVector& result, grid_i
 	}
 }
 
-void PhiPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+void PhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
 {
 	size_t seq = index.seq();
 
@@ -57,8 +56,8 @@ void PhiPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterator
 	double fml = 0.0;
 	double fmr = 0.0;
 
-	GridStorage::index_type::level_type current_level;
-	GridStorage::index_type::index_type current_index;
+	sg::base::GridStorage::index_type::level_type current_level;
+	sg::base::GridStorage::index_type::index_type current_index;
 
 	if(!index.hint())
 	{
@@ -91,7 +90,7 @@ void PhiPhiUpBBLinear::rec(DataVector& source, DataVector& result, grid_iterator
 	fr = ((fm/2.0) + (alpha_value*(h/2.0))) + fr;
 }
 
-void PhiPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
+void PhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
 {
 	size_t seq = index.seq();
 
@@ -99,8 +98,8 @@ void PhiPhiUpBBLinear::recBB(DataVector& source, DataVector& result, grid_iterat
 	double fml = 0.0;
 	double fmr = 0.0;
 
-	GridStorage::index_type::level_type current_level;
-	GridStorage::index_type::index_type current_index;
+	sg::base::GridStorage::index_type::level_type current_level;
+	sg::base::GridStorage::index_type::index_type current_index;
 
 	if(!index.hint())
 	{

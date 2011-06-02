@@ -11,7 +11,6 @@
 
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 
-using namespace sg::base;
 
 namespace sg
 {
@@ -31,7 +30,7 @@ public:
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
-	OperationLaplaceLinearStretched(GridStorage* storage);
+	OperationLaplaceLinearStretched(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
@@ -39,15 +38,15 @@ public:
 	virtual ~OperationLaplaceLinearStretched();
 
 protected:
-	virtual void specialOP(DataVector& alpha, DataVector& result, size_t dim, size_t gradient_dim);
+	virtual void specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t gradient_dim);
 
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	virtual void downOpDim(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	virtual void upOpDim(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 };
 
 }

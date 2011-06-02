@@ -11,15 +11,13 @@
 //#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
 #include "basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.hpp"
 #include "algorithm/common/sweep.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
 namespace finance
 {
 
-OperationLELinear::OperationLELinear(GridStorage* storage) : StdUpDown(storage)
+OperationLELinear::OperationLELinear(sg::base::GridStorage* storage) : sg::pde::StdUpDown(storage)
 {
 }
 
@@ -27,15 +25,15 @@ OperationLELinear::~OperationLELinear()
 {
 }
 
-void OperationLELinear::up(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLELinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 
 }
 
-void OperationLELinear::down(DataVector& alpha, DataVector& result, size_t dim)
+void OperationLELinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// Dphi * dphi
-	DowndPhidPhiBBIterativeLinear myDown(this->storage);
+	sg::pde::DowndPhidPhiBBIterativeLinear myDown(this->storage);
 	myDown(alpha, result, dim);
 }
 

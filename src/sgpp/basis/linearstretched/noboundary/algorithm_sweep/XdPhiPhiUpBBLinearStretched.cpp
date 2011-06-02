@@ -15,7 +15,7 @@ namespace finance
 
 
 
-XdPhiPhiUpBBLinearStretched::XdPhiPhiUpBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
+XdPhiPhiUpBBLinearStretched::XdPhiPhiUpBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
 }
 
@@ -23,7 +23,7 @@ XdPhiPhiUpBBLinearStretched::~XdPhiPhiUpBBLinearStretched()
 {
 }
 
-void XdPhiPhiUpBBLinearStretched::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void XdPhiPhiUpBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	// get boundary values
 	double fl = 0.0;
@@ -33,7 +33,7 @@ void XdPhiPhiUpBBLinearStretched::operator()(DataVector& source, DataVector& res
 
 }
 
-void XdPhiPhiUpBBLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+void XdPhiPhiUpBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
 {
 	size_t seq = index.seq();
 
@@ -41,8 +41,8 @@ void XdPhiPhiUpBBLinearStretched::rec(DataVector& source, DataVector& result, gr
 	double fml = 0.0;
 	double fmr = 0.0;
 
-	GridStorage::index_type::level_type current_level;
-	GridStorage::index_type::index_type current_index;
+	sg::base::GridStorage::index_type::level_type current_level;
+	sg::base::GridStorage::index_type::index_type current_index;
 
 	if(!index.hint())
 	{

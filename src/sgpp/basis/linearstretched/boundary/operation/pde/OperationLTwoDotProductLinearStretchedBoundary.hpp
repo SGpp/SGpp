@@ -10,7 +10,6 @@
 
 #include "algorithm/pde/StdUpDown.hpp"
 
-using namespace sg::base;
 
 namespace sg
 {
@@ -28,9 +27,9 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	OperationLTwoDotProductLinearStretchedBoundary(GridStorage* storage);
+	OperationLTwoDotProductLinearStretchedBoundary(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
@@ -47,7 +46,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void up(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
 	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -58,7 +57,7 @@ protected:
 	 * @param alpha vector of coefficients
 	 * @param result vector to store the results in
 	 */
-	virtual void down(DataVector& alpha, DataVector& result, size_t dim);
+	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 };
 
 }

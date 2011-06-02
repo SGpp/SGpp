@@ -6,7 +6,6 @@
 // @author Dirk Pflueger (dirk.pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace pde
 
 
 
-PhiPhiUpBBLinearBoundary::PhiPhiUpBBLinearBoundary(GridStorage* storage) : PhiPhiUpBBLinear(storage)
+PhiPhiUpBBLinearBoundary::PhiPhiUpBBLinearBoundary(sg::base::GridStorage* storage) : PhiPhiUpBBLinear(storage)
 {
 }
 
@@ -23,7 +22,7 @@ PhiPhiUpBBLinearBoundary::~PhiPhiUpBBLinearBoundary()
 {
 }
 
-void PhiPhiUpBBLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void PhiPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = this->boundingBox->getIntervalWidth(dim);
 	double t = this->boundingBox->getIntervalOffset(dim);

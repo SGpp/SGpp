@@ -14,15 +14,15 @@ namespace pde
 
 
 
-PhiPhiDownBBLinearStretchedBoundary::PhiPhiDownBBLinearStretchedBoundary(GridStorage* storage) : PhiPhiDownBBLinearStretched(storage)
+sg::pde::PhiPhiDownBBLinearStretchedBoundary::PhiPhiDownBBLinearStretchedBoundary(sg::base::GridStorage* storage) : sg::pde::PhiPhiDownBBLinearStretched(storage)
 {
 }
 
-PhiPhiDownBBLinearStretchedBoundary::~PhiPhiDownBBLinearStretchedBoundary()
+sg::pde::PhiPhiDownBBLinearStretchedBoundary::~PhiPhiDownBBLinearStretchedBoundary()
 {
 }
 
-void PhiPhiDownBBLinearStretchedBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void sg::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = this->stretching->getIntervalWidth(dim);
 	//	double t = this->stretching->getIntervalOffset(dim);

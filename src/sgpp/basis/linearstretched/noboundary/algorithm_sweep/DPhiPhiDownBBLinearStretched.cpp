@@ -14,7 +14,7 @@ namespace finance
 
 
 
-DPhiPhiDownBBLinearStretched::DPhiPhiDownBBLinearStretched(GridStorage* storage) : storage(storage), stretching(storage->getStretching())
+DPhiPhiDownBBLinearStretched::DPhiPhiDownBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
 {
 }
 
@@ -22,19 +22,19 @@ DPhiPhiDownBBLinearStretched::~DPhiPhiDownBBLinearStretched()
 {
 }
 
-void DPhiPhiDownBBLinearStretched::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void DPhiPhiDownBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	rec(source, result, index, dim, 0.0, 0.0);
 }
 
-void DPhiPhiDownBBLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+void DPhiPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 {
 	size_t seq = index.seq();
 
 	double alpha_value = source[seq];
 
-	GridStorage::index_type::level_type l;
-	GridStorage::index_type::index_type i;
+	sg::base::GridStorage::index_type::level_type l;
+	sg::base::GridStorage::index_type::index_type i;
 
 	index.get(dim, l, i);
 

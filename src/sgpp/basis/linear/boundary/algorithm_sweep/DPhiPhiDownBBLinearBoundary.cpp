@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -15,7 +14,7 @@ namespace finance
 
 
 
-DPhiPhiDownBBLinearBoundary::DPhiPhiDownBBLinearBoundary(GridStorage* storage) : DPhiPhiDownBBLinear(storage)
+DPhiPhiDownBBLinearBoundary::DPhiPhiDownBBLinearBoundary(sg::base::GridStorage* storage) : DPhiPhiDownBBLinear(storage)
 {
 }
 
@@ -24,7 +23,7 @@ DPhiPhiDownBBLinearBoundary::~DPhiPhiDownBBLinearBoundary()
 }
 
 
-void DPhiPhiDownBBLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void DPhiPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	// get boundary values
 	double left_boundary;
