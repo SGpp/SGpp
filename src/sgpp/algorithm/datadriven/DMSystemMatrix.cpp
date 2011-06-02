@@ -8,7 +8,6 @@
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 #include "exception/operation_exception.hpp"
 #include "basis/operations_factory.hpp"
-using namespace sg::base;
 
 
 namespace sg
@@ -16,7 +15,7 @@ namespace sg
 namespace datadriven
 {
 
-DMSystemMatrix::DMSystemMatrix(Grid& SparseGrid, DataMatrix& trainData, OperationMatrix& C, double lambda)
+DMSystemMatrix::DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda)
 {
 	// create the operations needed in ApplyMatrix
 	this->C = &C;
@@ -30,21 +29,21 @@ DMSystemMatrix::~DMSystemMatrix()
 	delete this->B;
 }
 
-void DMSystemMatrix::mult(DataVector& alpha, DataVector& result)
+void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-  DataVector temp((*data).getNrows());
+  sg::base::DataVector temp((*data).getNrows());
   size_t M = (*data).getNrows();
 
     // Operation B
     this->B->mult(alpha, temp);
     this->B->multTranspose(temp, result);
 
-	DataVector temptwo(alpha.getSize());
+	sg::base::DataVector temptwo(alpha.getSize());
 	this->C->mult(alpha, temptwo);
 	result.axpy(M*this->lamb, temptwo);
 }
 
-void DMSystemMatrix::generateb(DataVector& classes, DataVector& b)
+void DMSystemMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
 {
 	this->B->multTranspose(classes, b);
 }
