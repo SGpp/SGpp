@@ -1,5 +1,5 @@
 /*
- * RunPoisson.cpp
+ * combigrid::RunPoisson.cpp
  *
  *  Created on: May 30, 2011
  *      Author: benk
@@ -9,15 +9,14 @@
 #include "solver/multigridFG/multigrid/Multigrid.hpp"
 #include "solver/multigridFG/multigrid/MultigridFAS.hpp"
 
-using namespace combigrid;
 
 
-FullGridD* RunPoisson::computeFGPoisson(
-		GridDomain& domain,
+FullGridD* combigrid::RunPoisson::computeFGPoisson(
+		combigrid::GridDomain& domain,
 		const std::vector<int>& levels,
 		const std::vector<double>& sigma ,
 		double startValue ,
-		const CallBackRHS* callbackRHS) {
+		const combigrid::CallBackRHS* callbackRHS) {
 
 	int dimensions = (int)sigma.size();
 	int verb = 6;
@@ -33,12 +32,12 @@ FullGridD* RunPoisson::computeFGPoisson(
 	//fg->getElementVector()
 
 	// create the Tikhonov operator
-	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... create PoissonOperator");
-	PoissonOperator op( fg , sigma, callbackRHS );
+	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... create combigrid::PoissonOperator");
+	combigrid::PoissonOperator op( fg , sigma, callbackRHS );
 
 	// create the multigrid method
-	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... create Multigrid");
-	Multigrid multigrid( &(op) , fg );
+	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... create combigrid::Multigrid");
+	combigrid::Multigrid multigrid( &(op) , fg );
 
 	// solve using only the smoother
 	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... solve multigird");

@@ -7,7 +7,6 @@
 
 #include "operation/pde/OperationEllipticPDESolverSystemDirichlet.hpp"
 #include "exception/algorithm_exception.hpp"
-using namespace sg::base;
 
 #include <sstream>
 
@@ -16,10 +15,10 @@ namespace sg
 namespace pde
 {
 
-OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDirichlet(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
+OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
 {
-	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
-	this->GridConverter = new DirichletGridConverter();
+	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
+	this->GridConverter = new sg::base::DirichletGridConverter();
 
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->rhs, &(this->InnerGrid), &(this->rhs_inner));
 
@@ -37,17 +36,17 @@ OperationEllipticPDESolverSystemDirichlet::~OperationEllipticPDESolverSystemDiri
 	delete this->GridConverter;
 }
 
-void OperationEllipticPDESolverSystemDirichlet::mult(DataVector& alpha, DataVector& result)
+void OperationEllipticPDESolverSystemDirichlet::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	applyLOperatorInner(alpha, result);
 }
 
-DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS()
+sg::base::DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS()
 {
 	if (this->InnerGrid != NULL)
 	{
-		DataVector alpha_tmp_complete(*(this->rhs));
-		DataVector rhs_tmp_complete(*(this->rhs));
+		sg::base::DataVector alpha_tmp_complete(*(this->rhs));
+		sg::base::DataVector rhs_tmp_complete(*(this->rhs));
 
 		this->BoundaryUpdate->setInnerPointsToZero(alpha_tmp_complete);
 		applyLOperatorComplete(alpha_tmp_complete, rhs_tmp_complete);
@@ -57,13 +56,13 @@ DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
+		throw new sg::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
 	}
 
 	return this->rhs_inner;
 }
 
-DataVector* OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG()
+sg::base::DataVector* OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG()
 {
 	if (this->InnerGrid != NULL)
 	{
@@ -72,18 +71,18 @@ DataVector* OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG(
 			delete this->alpha_inner;
 		}
 
-		this->alpha_inner = new DataVector(this->InnerGrid->getSize());
+		this->alpha_inner = new sg::base::DataVector(this->InnerGrid->getSize());
 		this->alpha_inner->setAll(0.0);
 	}
 	else
 	{
-		throw new algorithm_exception("OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG : No inner grid exists!");
+		throw new sg::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG : No inner grid exists!");
 	}
 
 	return this->alpha_inner;
 }
 
-void OperationEllipticPDESolverSystemDirichlet::getSolutionBoundGrid(DataVector& Solution, DataVector& SolutionInner)
+void OperationEllipticPDESolverSystemDirichlet::getSolutionBoundGrid(sg::base::DataVector& Solution, sg::base::DataVector& SolutionInner)
 {
 	Solution = *(this->rhs);
 	this->GridConverter->updateBoundaryCoefs(Solution, SolutionInner);
@@ -101,8 +100,8 @@ size_t OperationEllipticPDESolverSystemDirichlet::getMatrix(std::string& mtxStri
 		vector_size = this->numGridpointsInner;
 	}
 
-	DataVector alpha(vector_size);
-	DataVector result(vector_size);
+	sg::base::DataVector alpha(vector_size);
+	sg::base::DataVector result(vector_size);
 	std::stringstream mtxStream;
 	std::stringstream mtxHeaderStream;
 	size_t nonZeros = 0;
@@ -158,8 +157,8 @@ void OperationEllipticPDESolverSystemDirichlet::getMatrixDiagonal(std::string& m
 		vector_size = this->numGridpointsInner;
 	}
 
-	DataVector alpha(vector_size);
-	DataVector result(vector_size);
+	sg::base::DataVector alpha(vector_size);
+	sg::base::DataVector result(vector_size);
 	std::stringstream mtxStream;
 	std::stringstream mtxHeaderStream;
 
@@ -205,9 +204,9 @@ void OperationEllipticPDESolverSystemDirichlet::getMatrixDiagonalRowSum(std::str
 		vector_size = this->numGridpointsInner;
 	}
 
-	DataVector alpha(vector_size);
-	DataVector result(vector_size);
-	DataVector sum(vector_size);
+	sg::base::DataVector alpha(vector_size);
+	sg::base::DataVector result(vector_size);
+	sg::base::DataVector sum(vector_size);
 	std::stringstream mtxStream;
 	std::stringstream mtxHeaderStream;
 

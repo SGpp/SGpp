@@ -59,11 +59,11 @@ public:
 	 */
 	virtual ~LaserHeatEquationSolver2D();
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
 
 	/**
 	 * grid initialization for rotating laser test case
@@ -71,7 +71,7 @@ public:
 	 * @param alpha reference to the coefficient's vector
 	 * @param nRefinements number of initial refinement before solving the heat equation
 	 */
-	void refineInitialGridWithLaserHeat(DataVector& alpha, size_t nRefinements);
+	void refineInitialGridWithLaserHeat(sg::base::DataVector& alpha, size_t nRefinements);
 
 	void initScreen();
 };

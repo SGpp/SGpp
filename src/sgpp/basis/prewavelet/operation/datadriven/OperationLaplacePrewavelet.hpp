@@ -38,6 +38,7 @@
 
 #include<iostream>
 
+using namespace sg::base;
 namespace sg
 {
 namespace pde

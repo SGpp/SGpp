@@ -7,14 +7,13 @@
 
 #include "operation/pde/OperationEllipticPDESolverSystemNeumann.hpp"
 #include "exception/algorithm_exception.hpp"
-using namespace sg::base;
 
 namespace sg
 {
 namespace pde
 {
 
-OperationEllipticPDESolverSystemNeumann::OperationEllipticPDESolverSystemNeumann(Grid& SparseGrid, DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
+OperationEllipticPDESolverSystemNeumann::OperationEllipticPDESolverSystemNeumann(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
 {
 }
 
@@ -22,12 +21,12 @@ OperationEllipticPDESolverSystemNeumann::~OperationEllipticPDESolverSystemNeuman
 {
 }
 
-void OperationEllipticPDESolverSystemNeumann::mult(DataVector& alpha, DataVector& result)
+void OperationEllipticPDESolverSystemNeumann::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	applyLOperator(alpha, result);
 }
 
-DataVector* OperationEllipticPDESolverSystemNeumann::generateRHS()
+sg::base::DataVector* OperationEllipticPDESolverSystemNeumann::generateRHS()
 {
 	return this->rhs;
 }

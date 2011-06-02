@@ -1,5 +1,5 @@
 /*
- * GridPlotter.cpp
+ * combigrid::GridPlotter.cpp
  *
  *  Created on: Jun 1, 2011
  *      Author: benk
@@ -12,28 +12,27 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-using namespace combigrid;
 
-void GridPlotter::plotFullGrid(const string& filePath , const FullGridD* fg ,
+void combigrid::GridPlotter::plotFullGrid(const string& filePath , const FullGridD* fg ,
 		std::vector<double>& globalCoord_in , int resolution)
 {
-	Evaluable obj(fg);
+	combigrid::Evaluable obj(fg);
 	int dim = fg->getDimension();
 	plotObject( dim , filePath , &obj , fg->getDomain() , globalCoord_in , resolution);
 }
 
-void GridPlotter::plotCombiGrid(const string& filePath , const AbstractCombiGrid* cg ,
+void combigrid::GridPlotter::plotCombiGrid(const string& filePath , const combigrid::AbstractCombiGrid* cg ,
 		std::vector<double>& globalCoord_in , int resolution)
 {
-	Evaluable obj(cg);
+	combigrid::Evaluable obj(cg);
 	int dim = cg->getFullGrid(0)->getDimension();
 	plotObject( dim , filePath , &obj , cg->getDomain() , globalCoord_in , resolution);
 }
 
-void GridPlotter::plotObject(int dim ,
+void combigrid::GridPlotter::plotObject(int dim ,
 		const string& filePath ,
-		const Evaluable* obj ,
-		const GridDomain* domain ,
+		const combigrid::Evaluable* obj ,
+		const combigrid::GridDomain* domain ,
 		std::vector<double>& globalCoord_in ,
 		int resolution)
 {

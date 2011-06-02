@@ -14,15 +14,13 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
 namespace solver
 {
 
-StepsizeControlH::StepsizeControlH(size_t imax, double timestepSize, double eps, ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
+StepsizeControlH::StepsizeControlH(size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
 {
 	this->residuum = 0.0;
 	this->myEps = eps;
@@ -32,12 +30,12 @@ StepsizeControlH::~StepsizeControlH()
 {
 }
 
-void StepsizeControlH::solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
+void StepsizeControlH::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
-    DataVector* rhs;
-    DataVector YkCrNic(System.getGridCoefficients()->getSize());
-    DataVector YkCrNicHalf(System.getGridCoefficients()->getSize());
+    sg::base::DataVector* rhs;
+    sg::base::DataVector YkCrNic(System.getGridCoefficients()->getSize());
+    sg::base::DataVector YkCrNicHalf(System.getGridCoefficients()->getSize());
 
     double tmp_timestepsize = this->myEpsilon;
     double tmp_timestepsize_old = tmp_timestepsize;

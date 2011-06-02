@@ -11,7 +11,6 @@
 #include "operation/pde/OperationEllipticPDESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/common/DirichletGridConverter.hpp"
-using namespace sg::base;
 
 #include <string>
 
@@ -41,31 +40,31 @@ class OperationEllipticPDESolverSystemDirichlet : public OperationEllipticPDESol
 {
 protected:
 	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
-	DataVector* alpha_inner;
+	sg::base::DataVector* alpha_inner;
 	/// Routine to modify the boundaries/inner points of the grid
-	DirichletUpdateVector* BoundaryUpdate;
+	sg::base::DirichletUpdateVector* BoundaryUpdate;
 	/// Class that allows a simple conversion between a grid with and a without boundary points
-	DirichletGridConverter* GridConverter;
+	sg::base::DirichletGridConverter* GridConverter;
 	/// Pointer to the inner grid object
-	Grid* InnerGrid;
+	sg::base::Grid* InnerGrid;
 	/// rhs for the inner grid
-	DataVector* rhs_inner;
+	sg::base::DataVector* rhs_inner;
 
 	/**
 	 * applies the PDE's system matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * applies the PDE's system matrix, on inner grid only
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * Use this function in order to obtain the system for
@@ -113,16 +112,16 @@ public:
 	 * @param SparseGrid the grid, for which the system should be solved
 	 * @param rhs the right hand side of the corresponding system
 	 */
-	OperationEllipticPDESolverSystemDirichlet(Grid& SparseGrid, DataVector& rhs);
+	OperationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationEllipticPDESolverSystemDirichlet();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual DataVector* generateRHS();
+	virtual sg::base::DataVector* generateRHS();
 
 	/**
 	 * gets a pointer to the sparse grids coefficients used in the CG method to solve
@@ -131,15 +130,15 @@ public:
 	 *
 	 * @return alpha vector for CG method
 	 */
-	virtual DataVector* getGridCoefficientsForCG();
+	virtual sg::base::DataVector* getGridCoefficientsForCG();
 
 	/**
 	 * Gets the solution for the complete grid
 	 *
-	 * @param Solution DataVector that must have a dimension equal to the bound's grid dimension, the result is written to Solution
+	 * @param Solution sg::base::DataVector that must have a dimension equal to the bound's grid dimension, the result is written to Solution
 	 * @param SolutionInner Solution on the inner grid
 	 */
-	virtual void getSolutionBoundGrid(DataVector& Solution, DataVector& SolutionInner);
+	virtual void getSolutionBoundGrid(sg::base::DataVector& Solution, sg::base::DataVector& SolutionInner);
 
 	/**
 	 * Use this function in order to obtain the system for

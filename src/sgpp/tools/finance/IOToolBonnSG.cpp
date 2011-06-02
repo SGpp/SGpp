@@ -14,7 +14,6 @@
 #include <fstream>
 #include <iostream>
 #include <list>
-using namespace sg::base;
 
 namespace sg
 {
@@ -29,7 +28,7 @@ IOToolBonnSG::~IOToolBonnSG()
 {
 }
 
-void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerialization, DataVector& alpha, bool& ishierarchized)
+void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerialization, sg::base::DataVector& alpha, bool& ishierarchized)
 {
 	size_t dim;
 	size_t gridpoints;
@@ -44,7 +43,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	file.open(tFilename.c_str());
 	if(!file.is_open())
 	{
-		throw new tool_exception("IOToolBonnSG::readFile : The specified grid file doesn't exists!");
+		throw new sg::base::tool_exception("IOToolBonnSG::readFile : The specified grid file doesn't exists!");
 	}
 
 	// parse the global grid information
@@ -90,7 +89,7 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	}
 	else
 	{
-		throw new tool_exception("IOToolBonnSG::readFile : The specified grid file contains an unknown basis!");
+		throw new sg::base::tool_exception("IOToolBonnSG::readFile : The specified grid file contains an unknown basis!");
 	}
 
 	sgppSerialization = "";
@@ -148,9 +147,9 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 		char* SGIndex_cstr;
 		SGPoint_cstr = (char *)SGPoint.c_str();
 
-		// contains all levels of Grid Point
+		// contains all levels of sg::base::Grid Point
 		SGLevel_cstr = strtok(SGPoint_cstr, "|");
-		// conatins all indeced of Grid Point
+		// conatins all indeced of sg::base::Grid Point
 		SGIndex_cstr = strtok (0, "|");
 
 		size_t* levels = new size_t[dim];
@@ -229,14 +228,14 @@ void IOToolBonnSG::readFile(std::string tFilename, std::string& sgppSerializatio
 	//std::cout << alpha.toString() << std::endl;
 }
 
-void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector& alpha, bool ishierarchized)
+void IOToolBonnSG::writeFile(std::string tFilename, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, bool ishierarchized)
 {
 	std::ofstream fout;
 
 	fout.open(tFilename.c_str());
 	if(!fout.is_open())
 	{
-		throw new tool_exception("IOToolBonnSG::writeFile : The specified grid file could not be open for writing!");
+		throw new sg::base::tool_exception("IOToolBonnSG::writeFile : The specified grid file could not be open for writing!");
 	}
 
 	// Write global gird information
@@ -256,8 +255,8 @@ void IOToolBonnSG::writeFile(std::string tFilename, Grid& SparseGrid, DataVector
 	{
 		std::stringstream strlevel;
 		std::stringstream strindex;
-		GridStorage::index_type::level_type level;
-		GridStorage::index_type::index_type index;
+		sg::base::GridStorage::index_type::level_type level;
+		sg::base::GridStorage::index_type::index_type index;
 		bool isBoundary = false;
 
 		// print the sparse grid index

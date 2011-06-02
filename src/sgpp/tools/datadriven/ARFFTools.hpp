@@ -10,7 +10,6 @@
 
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -24,22 +23,22 @@ class ARFFTools
 {
 private:
 	/**
-	 * stores the attribute info of one instance into a DataMatrix
+	 * stores the attribute info of one instance into a sg::base::DataMatrix
 	 *
 	 * @param instance the string that contains the instance's values
-	 * @param destination DataMatrix into which the instance is stored
+	 * @param destination sg::base::DataMatrix into which the instance is stored
 	 * @param instanceNo the number of the instance
 	 */
-	void writeNewElement(std::string& instance, DataMatrix& destination, size_t instanceNo);
+	void writeNewElement(std::string& instance, sg::base::DataMatrix& destination, size_t instanceNo);
 
 	/**
-	 * stores the class info of one instance into a DataVector
+	 * stores the class info of one instance into a sg::base::DataVector
 	 *
 	 * @param instance the string that contains the instance's class
-	 * @param destination DataVector into which the instance is stored
+	 * @param destination sg::base::DataVector into which the instance is stored
 	 * @param instanceNo the number of the instance
 	 */
-	void writeNewClass(std::string& instance, DataVector& destination, size_t instanceNo);
+	void writeNewClass(std::string& instance, sg::base::DataVector& destination, size_t instanceNo);
 
 public:
 	/**
@@ -69,20 +68,20 @@ public:
 	size_t getNumberInstances(std::string tfilename);
 
 	/**
-	 * reads an ARFF file (except the last attribute) and writes its content into a DataVector object
+	 * reads an ARFF file (except the last attribute) and writes its content into a sg::base::DataVector object
 	 *
 	 * @param tfilename the file's filename that should be opened
-	 * @param destination reference to a DataVector object into which the data should be stored
+	 * @param destination reference to a sg::base::DataVector object into which the data should be stored
 	 */
-	void readTrainingData(std::string tfilename, DataMatrix& destination);
+	void readTrainingData(std::string tfilename, sg::base::DataMatrix& destination);
 
 	/**
-	 * reads an ARFF file (only the last attribute) and writes its content into a DataVector object
+	 * reads an ARFF file (only the last attribute) and writes its content into a sg::base::DataVector object
 	 *
 	 * @param tfilename the file's filename that should be opened
-	 * @param destination reference to a DataVector object into which the data should be stored
+	 * @param destination reference to a sg::base::DataVector object into which the data should be stored
 	 */
-	void readClasses(std::string tfilename, DataVector& destination);
+	void readClasses(std::string tfilename, sg::base::DataVector& destination);
 };
 
 }

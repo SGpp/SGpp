@@ -7,7 +7,6 @@
 
 #include "solver/sle/BiCGStab.hpp"
 #include <cmath>
-using namespace sg::base;
 
 namespace sg
 {
@@ -22,7 +21,7 @@ BiCGStab::~BiCGStab()
 {
 }
 
-void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse, bool verbose, double max_threshold)
+void BiCGStab::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
 	this->nIterations = 1;
 	double epsilonSqd = this->myEpsilon* this->myEpsilon;
@@ -34,7 +33,7 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 	}
 
 	//Calculate r0
-	DataVector r(alpha.getSize());
+	sg::base::DataVector r(alpha.getSize());
 	SystemMatrix.mult(alpha, r);
 	r.sub(b);
 
@@ -47,9 +46,9 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 	}
 
 	//Choose r0 as r
-	DataVector rZero(r);
+	sg::base::DataVector rZero(r);
 	// Set p as r0
-	DataVector p(rZero);
+	sg::base::DataVector p(rZero);
 
 	double rho = rZero.dotProduct(r);
 	double rho_new = 0.0;
@@ -58,9 +57,9 @@ void BiCGStab::solve(OperationMatrix& SystemMatrix, DataVector& alpha, DataVecto
 	double omega = 0.0;
 	double beta = 0.0;
 
-	DataVector s(alpha.getSize());
-	DataVector v(alpha.getSize());
-	DataVector w(alpha.getSize());
+	sg::base::DataVector s(alpha.getSize());
+	sg::base::DataVector v(alpha.getSize());
+	sg::base::DataVector w(alpha.getSize());
 
 	s.setAll(0.0);
 	v.setAll(0.0);

@@ -7,12 +7,11 @@
 
 #include "combigrid/combischeme/CombiTS_CT.hpp"
 
-using namespace combigrid;
 using namespace std;
 
 
 
-TS_CT::TS_CT( int dim , int level ) : CombiSchemeBasis(dim,level) {
+combigrid::TS_CT::TS_CT( int dim , int level ) : combigrid::CombiSchemeBasis(dim,level) {
 	std::vector<int> level_small( dim , level/2 );
 	std::vector<int> level_tmp;
 	// add all the spaces for all dimensions
@@ -29,7 +28,7 @@ TS_CT::TS_CT( int dim , int level ) : CombiSchemeBasis(dim,level) {
 
 
 
-TS_CT::TS_CT( int dim , const std::vector<int>& levels ) : CombiSchemeBasis(dim,levels) {
+combigrid::TS_CT::TS_CT( int dim , const std::vector<int>& levels ) : combigrid::CombiSchemeBasis(dim,levels) {
 	std::vector<int> level_small( dim , 0 );
 	std::vector<int> level_tmp;
 	// calculate
@@ -50,8 +49,8 @@ TS_CT::TS_CT( int dim , const std::vector<int>& levels ) : CombiSchemeBasis(dim,
 
 
 
-TS_CT::TS_CT( int dim , const std::vector<int>& levels ,
-	 const std::vector<bool>& makeCombiInDimension ) : CombiSchemeBasis(dim,levels){
+combigrid::TS_CT::TS_CT( int dim , const std::vector<int>& levels ,
+	 const std::vector<bool>& makeCombiInDimension ) : combigrid::CombiSchemeBasis(dim,levels){
 	std::vector<int> level_small( dim , 0 );
 	std::vector<bool> dimActive( dim , true );
 	std::vector<int> level_tmp;
@@ -80,8 +79,8 @@ TS_CT::TS_CT( int dim , const std::vector<int>& levels ,
 
 
 
-TS_CT::TS_CT( const std::vector<int>& minlevels ,
-		 const std::vector<int>& maxlevels  ) : CombiSchemeBasis((int)minlevels.size(),maxlevels){
+combigrid::TS_CT::TS_CT( const std::vector<int>& minlevels ,
+		 const std::vector<int>& maxlevels  ) : combigrid::CombiSchemeBasis((int)minlevels.size(),maxlevels){
 
 	std::vector<int> level_small( getDim() , 0 );
 	std::vector<int> level_tmp;

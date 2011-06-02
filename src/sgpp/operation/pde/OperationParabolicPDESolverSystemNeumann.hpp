@@ -9,7 +9,6 @@
 #define OPERATIONPARABOLICPDESOLVERSYSTEMNEUMANN_HPP
 
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -37,17 +36,17 @@ protected:
 	 * applies the PDE's mass matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyMassMatrix(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * applies the PDE's system matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyLOperator(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 public:
 	/**
@@ -60,11 +59,11 @@ public:
 	 */
 	virtual ~OperationParabolicPDESolverSystemNeumann();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual DataVector* generateRHS();
+	virtual sg::base::DataVector* generateRHS();
 
-	virtual DataVector* getGridCoefficientsForCG();
+	virtual sg::base::DataVector* getGridCoefficientsForCG();
 };
 
 }

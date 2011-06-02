@@ -9,7 +9,6 @@
 #define TESTFULLGRID_HPP_
 
 #include "combigrid.hpp"
-using namespace sg::base;
 
 namespace combigrid{
 
@@ -20,7 +19,7 @@ public:
 	TestFullGrid();
 
     static void test_all_cases() {
-    	COMBIGRID_OUT_LEVEL3( 4 , "Testing Full Grid ... ");
+    	COMBIGRID_OUT_LEVEL3( 4 , "Testing Full sg::base::Grid ... ");
     	// test here all the functionalities of the full grid
     	test1();
 

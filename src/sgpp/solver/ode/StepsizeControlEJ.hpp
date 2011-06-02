@@ -9,8 +9,6 @@
 
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
-using namespace sg::pde;
-using namespace sg::base;
 
 namespace sg
 {
@@ -29,8 +27,8 @@ namespace solver
 class StepsizeControlEJ : public ODESolver
 {
 private:
-	/// Pointer to ScreenOutput object
-	ScreenOutput* myScreen;
+	/// Pointer to sg::base::ScreenOutput object
+	sg::base::ScreenOutput* myScreen;
 
 	/// epsilon for the stepsize control
 	double myEps;
@@ -45,16 +43,16 @@ public:
 	 * @param timestepSize the size of one timestep
 	 * @param eps the epsilon for the stepsize control
 	 * @param sc
-	 * @param screen possible pointer to a ScreenOutput object
+	 * @param screen possible pointer to a sg::base::ScreenOutput object
 	 */
-	StepsizeControlEJ(size_t nTimesteps, double timestepSize, double eps, double sc, ScreenOutput* screen = NULL);
+	StepsizeControlEJ(size_t nTimesteps, double timestepSize, double eps, double sc, sg::base::ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~StepsizeControlEJ();
 
-	virtual void solve(SLESolver& LinearSystemSolver, OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }

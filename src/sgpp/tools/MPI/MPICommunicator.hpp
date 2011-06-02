@@ -15,7 +15,6 @@
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 #include "grid/Grid.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -58,7 +57,7 @@ public:
 //	 * @param alpha grid coefficients that should be sent
 //	 * @param dest_rank rank to which the data should be sent
 //	 */
-//	void sendGridCoefficients(DataVector& alpha, int dest_rank);
+//	void sendGridCoefficients(sg::base::DataVector& alpha, int dest_rank);
 
 	/**
 	 * sends grid coefficients to all ranks greater zero
@@ -66,38 +65,38 @@ public:
 	 *
 	 * @param alpha grid coefficients that should be sent
 	 */
-	void broadcastGridCoefficientsFromRank0(DataVector& alpha);
+	void broadcastGridCoefficientsFromRank0(sg::base::DataVector& alpha);
 
 //	/**
 //	 * sends grid coefficients to all ranks greater zero
 //	 *
 //	 * @param alpha grid coefficients that should be sent
 //	 */
-//	void broadcastGridCoefficients(DataVector& alpha);
+//	void broadcastGridCoefficients(sg::base::DataVector& alpha);
 
 //	/**
-//	 * receives the grid's coefficients and store them into a pre-allocated DataVector
-//	 * Length of this DataVector must match message length (not checked!!!)
+//	 * receives the grid's coefficients and store them into a pre-allocated sg::base::DataVector
+//	 * Length of this sg::base::DataVector must match message length (not checked!!!)
 //	 *
-//	 * @param alpha DataVector into which the received data is stored
+//	 * @param alpha sg::base::DataVector into which the received data is stored
 //	 */
-//	void receiveGridCoefficients(DataVector& alpha);
+//	void receiveGridCoefficients(sg::base::DataVector& alpha);
 //
 //	/**
 //	 * receives the grid's coefficients from all ranks and add them to alpha
-//	 * Length of this DataVector must match message length (not checked!!!)
+//	 * Length of this sg::base::DataVector must match message length (not checked!!!)
 //	 *
-//	 * @param alpha DataVector to which all other rank's grid coefficients should be added
+//	 * @param alpha sg::base::DataVector to which all other rank's grid coefficients should be added
 //	 */
-//	void aggregateGridCoefficients(DataVector& alpha);
+//	void aggregateGridCoefficients(sg::base::DataVector& alpha);
 
 	/**
 	 * Reduces the grid coefficients on rank 0 using
 	 * MPI's reduce routine
 	 *
-	 * @param alpha DataVector to which all other rank's grid coefficients should be added
+	 * @param alpha sg::base::DataVector to which all other rank's grid coefficients should be added
 	 */
-	void reduceGridCoefficientsOnRank0(DataVector& alpha);
+	void reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha);
 
 	/**
 	 * sends a serialized grid to a specific rank

@@ -8,7 +8,6 @@
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "basis/operations_factory.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -25,12 +24,12 @@ OperationParabolicPDESolverSystem::~OperationParabolicPDESolverSystem()
 {
 }
 
-DataVector* OperationParabolicPDESolverSystem::getGridCoefficients()
+sg::base::DataVector* OperationParabolicPDESolverSystem::getGridCoefficients()
 {
 	return this->alpha_complete;
 }
 
-Grid* OperationParabolicPDESolverSystem::getGrid()
+sg::base::Grid* OperationParabolicPDESolverSystem::getGrid()
 {
 	return this->BoundGrid;
 }
@@ -72,10 +71,10 @@ size_t OperationParabolicPDESolverSystem::getSumGridPointsInner()
 	return this->numSumGridpointsInner;
 }
 
-void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(DataVector& Values)
+void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(sg::base::DataVector& Values)
 {
 	Values = *(this->alpha_complete);
-	OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*BoundGrid);
+	sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*BoundGrid);
 	myHierarchisation->doDehierarchisation(Values);
 	delete myHierarchisation;
 }

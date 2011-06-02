@@ -11,7 +11,6 @@
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 #include "grid/common/DirichletUpdateVector.hpp"
 #include "grid/common/DirichletGridConverter.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -41,45 +40,45 @@ class OperationParabolicPDESolverSystemDirichlet : public OperationParabolicPDES
 {
 protected:
 	/// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
-	DataVector* alpha_inner;
+	sg::base::DataVector* alpha_inner;
 	/// Routine to modify the boundaries/inner points of the grid
-	DirichletUpdateVector* BoundaryUpdate;
+	sg::base::DirichletUpdateVector* BoundaryUpdate;
 	/// Class that allows a simple conversion between a grid with and a without boundary points
-	DirichletGridConverter* GridConverter;
+	sg::base::DirichletGridConverter* GridConverter;
 	/// Pointer to the inner grid object
-	Grid* InnerGrid;
+	sg::base::Grid* InnerGrid;
 
 	/**
 	 * applies the PDE's mass matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * applies the PDE's system matrix, on complete grid - with boundaries
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * applies the PDE's mass matrix, on inner grid only
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * applies the PDE's system matrix, on inner grid only
 	 *
 	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
-	 * @param result reference to the DataVector into which the result is written
+	 * @param result reference to the sg::base::DataVector into which the result is written
 	 */
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result) = 0;
+	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 public:
 	/**
@@ -95,19 +94,19 @@ public:
 	/**
 	 * Multiplicates a vector with the matrix
 	 *
-	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
-	 * @param result DataVector into which the result of the space discretization operation is stored
+	 * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
+	 * @param result sg::base::DataVector into which the result of the space discretization operation is stored
 	 */
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * generates the right hand side of the system
 	 *
 	 * @return returns the rhs
 	 */
-	virtual DataVector* generateRHS();
+	virtual sg::base::DataVector* generateRHS();
 
-	virtual DataVector* getGridCoefficientsForCG();
+	virtual sg::base::DataVector* getGridCoefficientsForCG();
 
 	/**
 	 * Use this function in order to obtain the system for

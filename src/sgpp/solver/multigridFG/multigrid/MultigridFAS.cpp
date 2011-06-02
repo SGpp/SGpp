@@ -1,5 +1,5 @@
 /*
- * Multigrid.cpp
+ * combigrid::Multigrid.cpp
  *
  *  Created on: May 16, 2011
  *      Author: benk
@@ -8,17 +8,16 @@
 #include "MultigridFAS.hpp"
 #include "solver/multigridFG/multigrid/ProlongationRestriction.hpp"
 
-using namespace combigrid;
 
-MultigridFAS::MultigridFAS(OperatorFG* op , FullGridD* fg , bool createHierarchy) {
+combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op , FullGridD* fg , bool createHierarchy) {
 
 	// - create the hierarchy of grids
 	//     - in each direction there should be at least 3 points
 	//     - if in each direction the number of points is <= 3 then stop with the hierarchy
 
 	FullGridD* fg_tmp = fg;
-	OperatorFG* op_tmp = op;
-	GridDomain* domain = fg->getDomain();
+	combigrid::OperatorFG* op_tmp = op;
+	combigrid::GridDomain* domain = fg->getDomain();
 	depth_ = 0;
 	nrGSPre_ = 2;
 	nrGSPost_ = 2;
@@ -77,7 +76,7 @@ MultigridFAS::MultigridFAS(OperatorFG* op , FullGridD* fg , bool createHierarchy
 	COMBIGRID_OUT_LEVEL2(verb,"MultigridFAS::MultigridFAS ... END depth_=" <<depth_);
 }
 
-MultigridFAS::~MultigridFAS() {
+combigrid::MultigridFAS::~MultigridFAS() {
 	for (unsigned int i = 1 ; i < fullgrids_.size() ; i++ ){
 		// delete the full grids which have been created
 		delete unknowns_[i];
@@ -98,7 +97,7 @@ MultigridFAS::~MultigridFAS() {
 }
 
 
-void MultigridFAS::solveFAS( std::vector<double>& unknowns , double errorTol){
+void combigrid::MultigridFAS::solveFAS( std::vector<double>& unknowns , double errorTol){
 
 	// todo: get good starting value
 
@@ -127,10 +126,10 @@ void MultigridFAS::solveFAS( std::vector<double>& unknowns , double errorTol){
 			COMBIGRID_OUT_LEVEL2(verb," GS level" << i)
 			// restriction to the right hand side
 			operators_[i]->multiplyVector( *(unknowns_[i]) , *(correction_[i]) );
-			ProlongationRestriction::restriction( fullgrids_[i], *(correction_[i]), -1.0, fullgrids_[i+1], *(correction_[i+1]), 0.0, operators_[i]->getNrSpace() );
+			combigrid::ProlongationRestriction::restriction( fullgrids_[i], *(correction_[i]), -1.0, fullgrids_[i+1], *(correction_[i+1]), 0.0, operators_[i]->getNrSpace() );
 			combigrid::vect_add_mul( 0.0 , rhs_tmp_[i+1] , 1.0 , rhs_[i+1]);
 			combigrid::vect_add_mul( 1.0 , rhs_tmp_[i+1] , -1.0 , correction_[i+1]);
-			ProlongationRestriction::restriction( fullgrids_[i], *(unknowns_[i]), 1.0, fullgrids_[i+1], *(u_hH_[i+1]), 0.0, operators_[i]->getNrSpace() );
+			combigrid::ProlongationRestriction::restriction( fullgrids_[i], *(unknowns_[i]), 1.0, fullgrids_[i+1], *(u_hH_[i+1]), 0.0, operators_[i]->getNrSpace() );
 			combigrid::vect_add_mul( 0.0 , correction_[i+1] , 1.0 , u_hH_[i+1]);
 			operators_[i+1]->multiplyVector( *(correction_[i+1]) , *(lh_[i+1]) );
 			combigrid::vect_add_mul( 1.0 , rhs_tmp_[i+1] , 1.0 , lh_[i+1] );
@@ -143,7 +142,7 @@ void MultigridFAS::solveFAS( std::vector<double>& unknowns , double errorTol){
 		for (i = depth_-2 ; i >= 0 ; i-- ){
 			// prolongation
 			combigrid::vect_add_mul( -1.0 , u_hH_[i+1] , 1.0 , unknowns_[i+1] );
-			ProlongationRestriction::prolongation( fullgrids_[i], *(u_hH_[i]), 0.0, fullgrids_[i+1], *(u_hH_[i+1]), 1.0, operators_[i]->getNrSpace() );
+			combigrid::ProlongationRestriction::prolongation( fullgrids_[i], *(u_hH_[i]), 0.0, fullgrids_[i+1], *(u_hH_[i+1]), 1.0, operators_[i]->getNrSpace() );
 			combigrid::vect_add_mul( 1.0 , unknowns_[i] , 1.0 , u_hH_[i]);
 			COMBIGRID_OUT_LEVEL2(verb," Prolongation level" << i)
 			// post smoothing

@@ -7,7 +7,6 @@
 
 #include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 #include "exception/algorithm_exception.hpp"
-using namespace sg::base;
 
 namespace sg
 {
@@ -24,7 +23,7 @@ OperationParabolicPDESolverSystemNeumann::~OperationParabolicPDESolverSystemNeum
 {
 }
 
-void OperationParabolicPDESolverSystemNeumann::mult(DataVector& alpha, DataVector& result)
+void OperationParabolicPDESolverSystemNeumann::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -34,7 +33,7 @@ void OperationParabolicPDESolverSystemNeumann::mult(DataVector& alpha, DataVecto
 	{
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		applyMassMatrix(alpha, temp);
 		result.add(temp);
@@ -46,7 +45,7 @@ void OperationParabolicPDESolverSystemNeumann::mult(DataVector& alpha, DataVecto
 	{
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		applyMassMatrix(alpha, temp);
 		result.add(temp);
@@ -66,7 +65,7 @@ void OperationParabolicPDESolverSystemNeumann::mult(DataVector& alpha, DataVecto
 		double alpha0 = (2.0*tDiff+1.0)/(tDiff+1.0);
 		result.setAll(0.0);
 
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
 		applyMassMatrix(alpha, temp);
 
@@ -88,19 +87,19 @@ void OperationParabolicPDESolverSystemNeumann::mult(DataVector& alpha, DataVecto
 	}
 	else
 	{
-		throw new algorithm_exception("OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was specified!");
 	}
 }
 
-DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
+sg::base::DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 {
-	DataVector rhs_complete(this->alpha_complete->getSize());
+	sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
 	if (this->tOperationMode == "ExEul")
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrix(*this->alpha_complete, temp);
 		rhs_complete.add(temp);
@@ -118,7 +117,7 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrix(*this->alpha_complete, temp);
 		rhs_complete.add(temp);
@@ -130,7 +129,7 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrix(*this->alpha_complete, temp);
 		rhs_complete.add(temp);
@@ -139,7 +138,7 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 
 		temp.mult((2.0)+this->TimestepSize/this->TimestepSize_old);
 
-		DataVector temp_old(this->alpha_complete->getSize());
+		sg::base::DataVector temp_old(this->alpha_complete->getSize());
 		applyMassMatrix(*this->alpha_complete_old, temp_old);
 		applyLOperator(*this->alpha_complete_old, temp_old);
 		temp_old.mult(this->TimestepSize/this->TimestepSize_old);
@@ -151,7 +150,7 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
 
 		applyMassMatrix(*this->alpha_complete, temp);
 
@@ -161,7 +160,7 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 		temp.mult(alpha1);
 		rhs_complete.add(temp);
 
-		DataVector temp_old(this->alpha_complete->getSize());
+		sg::base::DataVector temp_old(this->alpha_complete->getSize());
 		applyMassMatrix(*this->alpha_complete_old, temp_old);
 
 		double alpha2 = tDiff*tDiff/(1.0+tDiff);
@@ -177,8 +176,8 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 		double alpha2 = -alpha0*(tDiff*tDiff/(tDiff+1.0));
 
 
-		DataVector temp(this->alpha_complete->getSize());
-		DataVector temp_old(this->alpha_complete->getSize());
+		sg::base::DataVector temp(this->alpha_complete->getSize());
+		sg::base::DataVector temp_old(this->alpha_complete->getSize());
 
 		applyMassMatrix(*this->alpha_complete, temp);
 		temp.mult(alpha1);
@@ -195,7 +194,7 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 	}
 	else
 	{
-		throw new algorithm_exception("OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was specified!");
+		throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -206,7 +205,7 @@ DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
 		delete this->rhs;
 	}
 
-	this->rhs = new DataVector(rhs_complete);
+	this->rhs = new sg::base::DataVector(rhs_complete);
 
 	return this->rhs;
 }
@@ -223,7 +222,7 @@ void OperationParabolicPDESolverSystemNeumann::startTimestep()
 }
 */
 
-DataVector* OperationParabolicPDESolverSystemNeumann::getGridCoefficientsForCG()
+sg::base::DataVector* OperationParabolicPDESolverSystemNeumann::getGridCoefficientsForCG()
 {
 	return this->alpha_complete;
 }

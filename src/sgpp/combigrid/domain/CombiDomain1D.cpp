@@ -9,10 +9,9 @@
 #include <vector>
 #include <algorithm>
 
-using namespace combigrid;
 
 
-Domain1D::Domain1D(double min, double max) {
+combigrid::Domain1D::Domain1D(double min, double max) {
 	isStretched_ = false;
 	level_ = -1;
 	min_ = min;
@@ -20,7 +19,7 @@ Domain1D::Domain1D(double min, double max) {
 }
 
 
-Domain1D::Domain1D(const std::vector<double>& inputStretching){
+combigrid::Domain1D::Domain1D(const std::vector<double>& inputStretching){
 	isStretched_ = true;
 	level_ = ceil( log((double)inputStretching.size())/log(2.0) );
 
@@ -37,7 +36,7 @@ Domain1D::Domain1D(const std::vector<double>& inputStretching){
 }
 
 
-Domain1D::Domain1D(int level, double min, double max, const AbstractStretchingMaker& stretching){
+combigrid::Domain1D::Domain1D(int level, double min, double max, const combigrid::AbstractStretchingMaker& stretching){
 	isStretched_ = true;
 	level_ = level;
 	stretching.get1DStretching( level , min , max , stretching_);
@@ -46,7 +45,7 @@ Domain1D::Domain1D(int level, double min, double max, const AbstractStretchingMa
 }
 
 
-void Domain1D::transformRealToUnit(double coordReal,
+void combigrid::Domain1D::transformRealToUnit(double coordReal,
 		 double& coordUnit ,
 		 int level_in ,
 		 bool noBoundary ) const{
@@ -84,31 +83,31 @@ void Domain1D::transformRealToUnit(double coordReal,
 				intersec = (stretching_[endInd] - coordReal)/h;
 				coordUnit = ( ((double)endInd)*combigrid::oneOverPowOfTwo[level_diff] - intersec) /
 						combigrid::powerOfTwo[ level_-level_diff];
-				//COMBIGRID_OUT_LEVEL3( verb , " Domain1D::tran 1");
+				//COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::tran 1");
 			}
 			if (endInd == (int)stretching_.size() - 1){
 				double h = stretching_[startInd] - stretching_[startInd-offs];
 				intersec = (coordReal - stretching_[startInd])/h;
 				coordUnit = ( ((double)(endInd-offs))*combigrid::oneOverPowOfTwo[level_diff] + intersec) /
 						combigrid::powerOfTwo[ level_-level_diff];
-				//COMBIGRID_OUT_LEVEL3( verb , " Domain1D::tran 2 , intersec:" << intersec << " , endInd:"<<endInd);
+				//COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::tran 2 , intersec:" << intersec << " , endInd:"<<endInd);
 				//COMBIGRID_OUT_LEVEL3( verb , " stretching_[startInd]:" << stretching_[startInd]<< " , stretching_[endInd]:" << stretching_[endInd]);
 				//COMBIGRID_OUT_LEVEL3( verb , " h:" << h << " , h_old:" << stretching_[endInd] - stretching_[startInd] );
 			}
 		}
-		//COMBIGRID_OUT_LEVEL3( verb , " Domain1D::transformRealToUnit coordReal:" << coordReal << " coordUnit:"
+		//COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::transformRealToUnit coordReal:" << coordReal << " coordUnit:"
 		//		<< coordUnit << "  level_in:"<<level_in);
 	}
 	else
 	{ // no stretching , just simple scaling
 		coordUnit = (coordReal - min_)/(max_ - min_);
-		//COMBIGRID_OUT_LEVEL3( verb , " Domain1D::transformRealToUnit NO STRETCH coordReal:" << coordReal << " coordUnit:"
+		//COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::transformRealToUnit NO STRETCH coordReal:" << coordReal << " coordUnit:"
 		//		<< coordUnit << "  level_in:"<<level_in);
 	}
 }
 
 
-void Domain1D::transformUnitToReal( int level , int index ,
+void combigrid::Domain1D::transformUnitToReal( int level , int index ,
 		double& realCoord) const {
 	if (isStretched_){
 		// get the stretched index
@@ -122,7 +121,7 @@ void Domain1D::transformUnitToReal( int level , int index ,
 }
 
 
-void Domain1D::findEntry(double coordReal, int level_in ,
+void combigrid::Domain1D::findEntry(double coordReal, int level_in ,
 		int& startIndex , double& intersect) const {
 	if (isStretched_)
 	{
@@ -158,7 +157,7 @@ void Domain1D::findEntry(double coordReal, int level_in ,
 }
 
 
-void Domain1D::getMeshWidth(int index , int level_in , double& h0 , double& h1) const {
+void combigrid::Domain1D::getMeshWidth(int index , int level_in , double& h0 , double& h1) const {
 	if (isStretched_)
 	{
 		int level_diff = (level_ < level_in)? 0 : level_ - level_in;

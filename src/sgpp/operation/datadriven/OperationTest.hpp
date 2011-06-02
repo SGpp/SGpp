@@ -10,7 +10,6 @@
 
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-using namespace sg::base;
 
 #ifdef WINDOWS
 #pragma warning(disable: 4267)
@@ -22,7 +21,7 @@ namespace datadriven
 {
 
 /**
- * Operation the tests the function that is applied the current Sparse Grid at a given point
+ * Operation the tests the function that is applied the current Sparse sg::base::Grid at a given point
  *
  * @version $HEAD$
  */
@@ -46,9 +45,9 @@ public:
 	 *
 	 * @param alpha the coefficients of the sparse grid's base functions
 	 * @param data the coordinates of the evaluation points
-	 * @param classes DataVector holding the class information
+	 * @param classes sg::base::DataVector holding the class information
 	 */
-	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes) = 0;
+	virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes) = 0;
 
 	/**
 	 * Computes the regression accuracy on some test data.
@@ -58,9 +57,9 @@ public:
 	 *
 	 * @param alpha the coefficients of the sparse grid's base functions
 	 * @param data the coordinates of the evaluation points
-	 * @param refValues DataVector holding the reference function values
+	 * @param refValues sg::base::DataVector holding the reference function values
 	 */
-	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues) = 0;
+	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues) = 0;
 
 	/**
 	 * Computes the classification accuracy on some test data.
@@ -71,10 +70,10 @@ public:
 	 *
 	 * @param alpha the coefficients of the sparse grid's base functions
 	 * @param data the coordinates of the evaluation points
-	 * @param classes DataVector the holds the class information
+	 * @param classes sg::base::DataVector the holds the class information
 	 * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
 	 */
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) = 0;
 };
 
 }
