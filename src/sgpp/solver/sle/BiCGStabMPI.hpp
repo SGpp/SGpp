@@ -19,7 +19,7 @@ namespace sg
 namespace parallel
 {
 
-class BiCGStabMPI : public solver::SLESolver
+class BiCGStabMPI : public sg::solver::SLESolver
 {
 private:
 	/**
@@ -29,7 +29,7 @@ private:
 	 * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector multiplication
 	 * @param alpha the sparse grid's coefficients which have to be determined
 	 */
-	virtual void waitForTask(base::OperationMatrix& SystemMatrix, DataVector& alpha);
+	virtual void waitForTask(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha);
 
 public:
 	/**
@@ -50,7 +50,7 @@ public:
 	 * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
 	 * http://netlib.org
 	 */
-	virtual void solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
+	virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
 };
 
 }

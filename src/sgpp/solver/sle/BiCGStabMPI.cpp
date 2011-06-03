@@ -18,7 +18,7 @@ namespace sg
 namespace parallel
 {
 
-BiCGStabMPI::BiCGStabMPI(size_t imax, double epsilon) : SLESolver(imax, epsilon)
+BiCGStabMPI::BiCGStabMPI(size_t imax, double epsilon) : sg::solver::SLESolver(imax, epsilon)
 {
 }
 
@@ -26,7 +26,7 @@ BiCGStabMPI::~BiCGStabMPI()
 {
 }
 
-void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, DataVector& b, bool reuse, bool verbose, double max_threshold)
+void BiCGStabMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
 	if (myGlobalMPIComm->getMyRank() != 0)
 	{
@@ -45,7 +45,7 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 		}
 
 		//Calculate r0
-		DataVector r(alpha.getSize());
+		sg::base::DataVector r(alpha.getSize());
 		ctrl = 'M';
 		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 		SystemMatrix.mult(alpha, r);
@@ -60,9 +60,9 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 		}
 
 		//Choose r0 as r
-		DataVector rZero(r);
+		sg::base::DataVector rZero(r);
 		// Set p as r0
-		DataVector p(rZero);
+		sg::base::DataVector p(rZero);
 
 		double rho = rZero.dotProduct(r);
 		double rho_new = 0.0;
@@ -71,9 +71,9 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 		double omega = 0.0;
 		double beta = 0.0;
 
-		DataVector s(alpha.getSize());
-		DataVector v(alpha.getSize());
-		DataVector w(alpha.getSize());
+		sg::base::DataVector s(alpha.getSize());
+		sg::base::DataVector v(alpha.getSize());
+		sg::base::DataVector w(alpha.getSize());
 
 		s.setAll(0.0);
 		v.setAll(0.0);
@@ -152,10 +152,10 @@ void BiCGStabMPI::solve(base::OperationMatrix& SystemMatrix, DataVector& alpha, 
 	}
 }
 
-void BiCGStabMPI::waitForTask(base::OperationMatrix& SystemMatrix, DataVector& alpha)
+void BiCGStabMPI::waitForTask(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha)
 {
 	char ctrl;
-	DataVector result(alpha.getSize());
+	sg::base::DataVector result(alpha.getSize());
 
 	do
 	{

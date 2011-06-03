@@ -50,21 +50,21 @@ namespace parallel
  *
  * @version $HEAD$
  */
-class BlackScholesSolverMPI : public pde::ParabolicPDESolver
+class BlackScholesSolverMPI : public sg::pde::ParabolicPDESolver
 {
 protected:
 	/// vector that contains the assets' weight
-	DataVector* mus;
+	sg::base::DataVector* mus;
 	/// vector that contains the standard deviations
-	DataVector* sigmas;
+	sg::base::DataVector* sigmas;
 	/// Matrix that contains the correlations
-	DataMatrix* rhos;
+	sg::base::DataMatrix* rhos;
 	/// the riskfree rate
 	double r;
 	/// stores if the stochastic asset data was passed to the solver
 	bool bStochasticDataAlloc;
 	/// screen object used in this solver
-	ScreenOutput* myScreen;
+	sg::base::ScreenOutput* myScreen;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// Threshold used to decide if a grid point should be deleted
@@ -112,7 +112,7 @@ protected:
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	virtual void initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initCartesianGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -122,7 +122,7 @@ protected:
 	 * @param strik the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	virtual void initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initLogTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * This function calculates for every grid point the value
@@ -135,7 +135,7 @@ protected:
 	 * @param std_mu the expected values of the normal distribution for every grid dimension
 	 * @param std_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
-	virtual void getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+	virtual void getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 public:
 	/**
@@ -151,7 +151,7 @@ public:
 	 */
 	virtual ~BlackScholesSolverMPI();
 
-	virtual void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
 
 	/**
 	 * This function tries to refine the grid such that
@@ -167,7 +167,7 @@ public:
 	 * @param payoffType the type of payoff Function used ONLY supported: avgM
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 */
-	virtual void refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
+	virtual void refineInitialGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
 
 	/**
 	 * This function tries to refine the grid such that
@@ -185,7 +185,7 @@ public:
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 * @param maxLevel maximum level of refinement
 	 */
-	virtual void refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
+	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
@@ -197,25 +197,25 @@ public:
 	 * @param rhos a DataMatrix that contains the correlations between the underlyings
 	 * @param r the riskfree rate used in the market model
 	 */
-	virtual void setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r);
+	virtual void setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r);
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
 
-	void solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, void *myODESolverV = NULL, std::string Solver = "ImEul");
+	void solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, void *myODESolverV = NULL, std::string Solver = "ImEul");
 
-	void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+	void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
-	void solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+	void solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
-	void solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+	void solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
-	void solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+	void solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
-	void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false);
+	void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -224,7 +224,7 @@ public:
 	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
-	virtual void initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType);
+	virtual void initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * Inits the screen object

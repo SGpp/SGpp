@@ -27,21 +27,21 @@ private:
 	/// the heat coefficient
 	double a;
 	/// the Laplace Operation (Stiffness Matrix), on boundary grid
-	OperationMatrix* OpLaplaceBound;
+	sg::base::OperationMatrix* OpLaplaceBound;
 	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-	OperationMatrix* OpMassBound;
+	sg::base::OperationMatrix* OpMassBound;
 	/// the Laplace Operation (Stiffness Matrix), on inner grid
-	OperationMatrix* OpLaplaceInner;
+	sg::base::OperationMatrix* OpLaplaceInner;
 	/// the LTwoDotProduct Operation (Mass Matrix), on inner grid
-	OperationMatrix* OpMassInner;
+	sg::base::OperationMatrix* OpMassInner;
 
-	void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
+	void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+	void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	void applyMassMatrixInner(DataVector& alpha, DataVector& result);
+	void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	void applyLOperatorInner(DataVector& alpha, DataVector& result);
+	void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 public:
 	/**
@@ -54,7 +54,7 @@ public:
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	HeatEquationParabolicPDESolverSystemParallelMPI(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+	HeatEquationParabolicPDESolverSystemParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor
@@ -65,9 +65,9 @@ public:
 
 	void startTimestep();
 
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual DataVector* generateRHS();
+	virtual sg::base::DataVector* generateRHS();
 };
 
 }
