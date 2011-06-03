@@ -31,7 +31,7 @@ namespace sg
 namespace parallel
 {
 
-BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, std::string OptionType) : pde::ParabolicPDESolver()
+BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, std::string OptionType) : sg::pde::ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -72,13 +72,13 @@ BlackScholesSolverMPI::~BlackScholesSolverMPI()
 	}
 }
 
-void BlackScholesSolverMPI::getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+void BlackScholesSolverMPI::getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
 {
 	if (this->bGridConstructed)
 	{
 		double tmp;
 		double value;
-		StdNormalDistribution myNormDistr;
+		sg::base::StdNormalDistribution myNormDistr;
 
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 		{
@@ -109,14 +109,14 @@ void BlackScholesSolverMPI::getGridNormalDistribution(DataVector& alpha, std::ve
 	}
 }
 
-void BlackScholesSolverMPI::constructGrid(BoundingBox& BoundingBox, size_t level)
+void BlackScholesSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, size_t level)
 {
 	this->dim = BoundingBox.getDimensions();
 	this->levels = level;
 
 	this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
 
-	GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+	sg::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
 	myGenerator->regular(this->levels);
 	delete myGenerator;
 
@@ -130,7 +130,7 @@ void BlackScholesSolverMPI::constructGrid(BoundingBox& BoundingBox, size_t level
 	this->bGridConstructed = true;
 }
 
-void BlackScholesSolverMPI::refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance)
+void BlackScholesSolverMPI::refineInitialGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance)
 {
 	size_t nRefinements = 0;
 
@@ -138,8 +138,7 @@ void BlackScholesSolverMPI::refineInitialGridWithPayoff(DataVector& alpha, doubl
 	{
 		if (this->bGridConstructed)
 		{
-
-			DataVector refineVector(alpha.getSize());
+			sg::base::DataVector refineVector(alpha.getSize());
 
 			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
 			{
@@ -187,7 +186,7 @@ void BlackScholesSolverMPI::refineInitialGridWithPayoff(DataVector& alpha, doubl
 
 				delete[] dblFuncValues;
 
-				SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+				sg::base::SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
 
 				this->myGrid->createGridGenerator()->refine(myRefineFunc);
 
@@ -210,7 +209,7 @@ void BlackScholesSolverMPI::refineInitialGridWithPayoff(DataVector& alpha, doubl
 	}
 }
 
-void BlackScholesSolverMPI::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel)
+void BlackScholesSolverMPI::refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel)
 {
 	size_t nRefinements = 0;
 
@@ -218,8 +217,7 @@ void BlackScholesSolverMPI::refineInitialGridWithPayoffToMaxLevel(DataVector& al
 	{
 		if (this->bGridConstructed)
 		{
-
-			DataVector refineVector(alpha.getSize());
+			sg::base::DataVector refineVector(alpha.getSize());
 
 			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
 			{
@@ -267,7 +265,7 @@ void BlackScholesSolverMPI::refineInitialGridWithPayoffToMaxLevel(DataVector& al
 
 				delete[] dblFuncValues;
 
-				SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+				sg::base::SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
 
 				this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
 
@@ -290,7 +288,7 @@ void BlackScholesSolverMPI::refineInitialGridWithPayoffToMaxLevel(DataVector& al
 	}
 }
 
-void BlackScholesSolverMPI::setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r)
+void BlackScholesSolverMPI::setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r)
 {
 	this->mus = new DataVector(mus);
 	this->sigmas = new DataVector(sigmas);
@@ -300,7 +298,7 @@ void BlackScholesSolverMPI::setStochasticData(DataVector& mus, DataVector& sigma
 	bStochasticDataAlloc = true;
 }
 
-void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
@@ -347,7 +345,7 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 	}
 }
 
-void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
@@ -394,7 +392,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
 	}
 }
 
-void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
+void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul)
 {
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
@@ -470,37 +468,37 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
 }
 
 
-void BlackScholesSolverMPI::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+void BlackScholesSolverMPI::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose)
 {
 	throw new application_exception("BlackScholesSolverMPI::solveAdamsBashforth : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+void BlackScholesSolverMPI::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose)
 {
 	throw new application_exception("BlackScholesSolverMPI::solveSCAC : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+void BlackScholesSolverMPI::solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose)
 {
 	throw new application_exception("BlackScholesSolverMPI::solveSCH : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+void BlackScholesSolverMPI::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose)
 {
 	throw new application_exception("BlackScholesSolverMPI::solveSCBDF : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose)
 {
 	throw new application_exception("BlackScholesSolverMPI::solveSCEJ : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, void *myODESolverV, std::string Solver)
+void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, void *myODESolverV, std::string Solver)
 {
 	throw new application_exception("BlackScholesSolverMPI::solveX : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
+void BlackScholesSolverMPI::initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType)
 {
 	if (this->useLogTransform)
 	{
@@ -559,7 +557,7 @@ void BlackScholesSolverMPI::setEnableCoarseningData(std::string adaptSolveMode, 
 	this->numCoarsenPoints = numCoarsenPoints;
 }
 
-void BlackScholesSolverMPI::initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
+void BlackScholesSolverMPI::initCartesianGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType)
 {
 	double tmp;
 

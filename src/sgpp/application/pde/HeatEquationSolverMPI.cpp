@@ -24,7 +24,7 @@ namespace sg
 namespace parallel
 {
 
-HeatEquationSolverMPI::HeatEquationSolverMPI() : ParabolicPDESolver()
+HeatEquationSolverMPI::HeatEquationSolverMPI() : sg::pde::ParabolicPDESolver()
 {
 	this->bGridConstructed = false;
 	this->myScreen = NULL;
@@ -38,12 +38,12 @@ HeatEquationSolverMPI::~HeatEquationSolverMPI()
 	}
 }
 
-void HeatEquationSolverMPI::constructGrid(sg::base::BoundingBox& sg::base::BoundingBox, size_t level)
+void HeatEquationSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, size_t level)
 {
-	this->dim = sg::base::BoundingBox.getDimensions();
+	this->dim = BoundingBox.getDimensions();
 	this->levels = level;
 
-	this->myGrid = new sg::base::LinearTrapezoidBoundaryGrid(sg::base::BoundingBox);
+	this->myGrid = new sg::base::LinearTrapezoidBoundaryGrid(BoundingBox);
 
 	sg::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
 	myGenerator->regular(this->levels);

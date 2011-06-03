@@ -38,12 +38,12 @@ PoissonEquationSolverMPI::~PoissonEquationSolverMPI()
 	}
 }
 
-void PoissonEquationSolverMPI::constructGrid(sg::base::BoundingBox& sg::base::BoundingBox, size_t level)
+void PoissonEquationSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, size_t level)
 {
-	this->dim = sg::base::BoundingBox.getDimensions();
+	this->dim = BoundingBox.getDimensions();
 	this->levels = level;
 
-	this->myGrid = new sg::base::LinearTrapezoidBoundaryGrid(sg::base::BoundingBox);
+	this->myGrid = new sg::base::LinearTrapezoidBoundaryGrid(BoundingBox);
 
 	sg::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
 	myGenerator->regular(this->levels);

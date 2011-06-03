@@ -20,7 +20,7 @@ namespace sg
 namespace parallel
 {
 
-HeatEquationParabolicPDESolverSystemParallelMPI::HeatEquationParabolicPDESolverSystemParallelMPI(Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
+HeatEquationParabolicPDESolverSystemParallelMPI::HeatEquationParabolicPDESolverSystemParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode)
 {
 	this->a = a;
 	this->tOperationMode = OperationMode;
@@ -30,8 +30,8 @@ HeatEquationParabolicPDESolverSystemParallelMPI::HeatEquationParabolicPDESolverS
 	this->InnerGrid = NULL;
 	this->alpha_inner = NULL;
 
-	this->BoundaryUpdate = new DirichletUpdateVector(SparseGrid.getStorage());
-	this->GridConverter = new DirichletGridConverter();
+	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
+	this->GridConverter = new sg::base::DirichletGridConverter();
 
 	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(SparseGrid);
 	this->OpMassBound = sg::GridOperationFactory::createOperationLTwoDotProduct(SparseGrid);
@@ -70,16 +70,16 @@ HeatEquationParabolicPDESolverSystemParallelMPI::~HeatEquationParabolicPDESolver
 	}
 }
 
-void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixComplete(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 	size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
 
 	if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 	{
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
-		((StdUpDown*)(this->OpMassBound))->multParallelBuildingBlock(alpha, temp);
+		((sg::pde::StdUpDown*)(this->OpMassBound))->multParallelBuildingBlock(alpha, temp);
 
 		result.add(temp);
 	}
@@ -89,7 +89,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(Dat
 {
 	result.setAll(0.0);
 
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 	temp.setAll(0.0);
 
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
@@ -102,10 +102,10 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(Dat
 		{
 			#pragma omp task firstprivate(i) shared(alpha, temp, result, algoDims)
 			{
-				DataVector myResult(result.getSize());
+				sg::base::DataVector myResult(result.getSize());
 
 				/// @todo (heinecke) discuss methods in order to avoid this cast
-				((UpDownOneOpDim*)(this->OpLaplaceBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+				((sg::pde::UpDownOneOpDim*)(this->OpLaplaceBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 				// semaphore
 				#pragma omp critical
@@ -128,9 +128,9 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixInner(DataV
 
 	if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank())
 	{
-		DataVector temp(alpha.getSize());
+		sg::base::DataVector temp(alpha.getSize());
 
-		((StdUpDown*)(this->OpMassInner))->multParallelBuildingBlock(alpha, temp);
+		((sg::pde::StdUpDown*)(this->OpMassInner))->multParallelBuildingBlock(alpha, temp);
 
 		result.add(temp);
 	}
@@ -140,7 +140,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorInner(DataVe
 {
 	result.setAll(0.0);
 
-	DataVector temp(alpha.getSize());
+	sg::base::DataVector temp(alpha.getSize());
 	temp.setAll(0.0);
 
 	std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
@@ -153,10 +153,10 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorInner(DataVe
 		{
 			#pragma omp task firstprivate(i) shared(alpha, temp, result, algoDims)
 			{
-				DataVector myResult(result.getSize());
+				sg::base::DataVector myResult(result.getSize());
 
 				/// @todo (heinecke) discuss methods in order to avoid this cast
-				((UpDownOneOpDim*)(this->OpLaplaceInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+				((sg::pde::UpDownOneOpDim*)(this->OpLaplaceInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 				// semaphore
 				#pragma omp critical
@@ -182,7 +182,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::startTimestep()
 {
 }
 
-void HeatEquationParabolicPDESolverSystemParallelMPI::mult(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	// distribute the current grid coefficients
 	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
@@ -195,8 +195,8 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::mult(DataVector& alpha, Da
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		DataVector temp(result.getSize());
-		DataVector temp2(result.getSize());
+		sg::base::DataVector temp(result.getSize());
+		sg::base::DataVector temp2(result.getSize());
 
 		#pragma omp parallel shared(alpha, result, temp, temp2)
 		{
@@ -221,8 +221,8 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::mult(DataVector& alpha, Da
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		DataVector temp(result.getSize());
-		DataVector temp2(result.getSize());
+		sg::base::DataVector temp(result.getSize());
+		sg::base::DataVector temp2(result.getSize());
 
 		#pragma omp parallel shared(alpha, result, temp, temp2)
 		{
@@ -255,7 +255,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::mult(DataVector& alpha, Da
 	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
 }
 
-DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
+sg::base::DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 {
 	// distribute the current grid coefficients
 	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*(this->alpha_complete));
@@ -266,9 +266,9 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(rhs_complete.getSize());
-		DataVector temp2(rhs_complete.getSize());
-		DataVector myAlpha(*this->alpha_complete);
+		sg::base::DataVector temp(rhs_complete.getSize());
+		sg::base::DataVector temp2(rhs_complete.getSize());
+		sg::base::DataVector myAlpha(*this->alpha_complete);
 
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
@@ -301,9 +301,9 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	{
 		rhs_complete.setAll(0.0);
 
-		DataVector temp(rhs_complete.getSize());
-		DataVector temp2(rhs_complete.getSize());
-		DataVector myAlpha(*this->alpha_complete);
+		sg::base::DataVector temp(rhs_complete.getSize());
+		sg::base::DataVector temp2(rhs_complete.getSize());
+		sg::base::DataVector myAlpha(*this->alpha_complete);
 
 		#pragma omp parallel shared(myAlpha, temp, temp2)
 		{
@@ -337,8 +337,8 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	this->startTimestep();
 
 	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-	DataVector result_complete(this->alpha_complete->getSize());
-	DataVector alpha_bound(*this->alpha_complete);
+	sg::base::DataVector result_complete(this->alpha_complete->getSize());
+	sg::base::DataVector alpha_bound(*this->alpha_complete);
 
 	result_complete.setAll(0.0);
 
@@ -351,8 +351,8 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		DataVector temp(alpha_bound.getSize());
-		DataVector temp2(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp2(alpha_bound.getSize());
 
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{
@@ -377,8 +377,8 @@ DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		DataVector temp(alpha_bound.getSize());
-		DataVector temp2(alpha_bound.getSize());
+		sg::base::DataVector temp(alpha_bound.getSize());
+		sg::base::DataVector temp2(alpha_bound.getSize());
 
 		#pragma omp parallel shared(alpha_bound, temp, temp2)
 		{

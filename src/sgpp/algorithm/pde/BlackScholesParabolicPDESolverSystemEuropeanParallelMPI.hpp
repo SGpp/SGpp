@@ -27,16 +27,16 @@ namespace parallel
  *
  * Parallelization of the FEM operators is done by using MPI.
  */
-class BlackScholesParabolicPDESolverSystemEuropeanParallelMPI : public finance::BlackScholesParabolicPDESolverSystemEuropean
+class BlackScholesParabolicPDESolverSystemEuropeanParallelMPI : public sg::finance::BlackScholesParabolicPDESolverSystemEuropean
 {
 protected:
-	virtual void applyLOperatorInner(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyLOperatorComplete(DataVector& alpha, DataVector& result);
+	virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrixInner(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrixComplete(DataVector& alpha, DataVector& result);
+	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 public:
 	/**
@@ -60,8 +60,8 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level for refinement during solving
 	 */
-	BlackScholesParabolicPDESolverSystemEuropeanParallelMPI(base::Grid& SparseGrid, DataVector& alpha, DataVector& mu, DataVector& sigma,
-			DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+	BlackScholesParabolicPDESolverSystemEuropeanParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
+			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
@@ -76,14 +76,14 @@ public:
 	 * @param alpha DataVector that contains the ansatzfunctions' coefficients
 	 * @param result DataVector into which the result of the space discretization operation is stored
 	 */
-	virtual void mult(DataVector& alpha, DataVector& result);
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
 	 * generates the right hand side of the system, parallel
 	 *
 	 * @return returns the rhs
 	 */
-	virtual DataVector* generateRHS();
+	virtual sg::base::DataVector* generateRHS();
 
 	void finishTimestep(bool isLastTimestep = false);
 };

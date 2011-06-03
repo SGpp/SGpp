@@ -41,13 +41,13 @@ namespace parallel
  *
  * @version $HEAD$
  */
-class HeatEquationSolverMPI : public ParabolicPDESolver
+class HeatEquationSolverMPI : public sg::pde::ParabolicPDESolver
 {
 private:
 	/// the heat coefficient
 	double a;
 	/// screen object used in this solver
-	ScreenOutput* myScreen;
+	sg::base::ScreenOutput* myScreen;
 
 public:
 	/**
@@ -60,13 +60,13 @@ public:
 	 */
 	virtual ~HeatEquationSolverMPI();
 
-	void constructGrid(BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
 
-	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul = 0);
+	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
 
 	/**
 	 * This method sets the heat coefficient of the regarded material
@@ -84,7 +84,7 @@ public:
 	 * @param sigma the sigma of the normal distribution
 	 * @param factor a factor that is used to stretch the function values
 	 */
-	void initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor);
+	void initGridWithSmoothHeat(sg::base::DataVector& alpha, double mu, double sigma, double factor);
 
 	/**
 	 * Inits the screen object
