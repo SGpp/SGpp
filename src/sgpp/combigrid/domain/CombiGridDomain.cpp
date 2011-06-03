@@ -7,7 +7,6 @@
 
 #include "CombiGridDomain.hpp"
 
-
 combigrid::GridDomain::GridDomain(int dim , const std::vector<int>& levels,
         const std::vector<double>& min ,
         const std::vector<double>& max ,
