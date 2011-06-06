@@ -156,7 +156,7 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 
 	sg::base::BoundingBox* myHedgeBB = new sg::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
 	// hedging
-	myHedge = new sg::finance::Hedging(*myHedgeBB, 75, HEDGE_EPS);
+	myHedge = new sg::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS);
 
 	delete myHedgeBB;
 	delete[] myBoundaries;
@@ -334,93 +334,10 @@ void BlackScholesParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTim
 
 #ifdef HEDGE
 	std::stringstream filename_ext;
-	filename_ext << this->nExecTimesteps;
+	filename_ext << (this->nExecTimesteps*this->TimestepSize);
 	this->nExecTimesteps++;
 
 	myHedge->calc_hedging(*this->BoundGrid, *this->alpha_complete, filename_ext.str());
-//	// Hedging (delta and gamma)
-//	size_t nDims = this->BoundGrid->getStorage()->dim();
-//	if (nDims <= 2)
-//	{
-//		std::stringstream filename_plot;
-//		std::stringstream filename_delta;
-//		std::stringstream filename_gamma;
-//
-//		filename_plot << "optionvalue_" << this->nExecTimesteps << ".plot";
-//		filename_delta << "delta_" << this->nExecTimesteps << ".plot";
-//		filename_gamma << "gamma_" << this->nExecTimesteps << ".plot";
-//		this->nExecTimesteps++;
-//
-//		// get grid domain
-//		base::BoundingBox* myBounds = this->BoundGrid->getBoundingBox();
-//
-//		// Plot option price
-//		base::GridPrinter* myPrinter = new base::GridPrinter(*this->BoundGrid);
-//		myPrinter->printGrid(*this->alpha_complete, filename_plot.str(), 100);
-//		delete myPrinter;
-//
-//		// Plot delta
-//		if (nDims == 1)
-//		{
-//			double left = myBounds->getBoundary(0).leftBoundary;
-//			double right = myBounds->getBoundary(0).rightBoundary;
-//			double diff_h = HEDGE_MESH_WIDTH;
-//			std::ofstream deltaout;
-//
-//			base::OperationEval* myEval = GridOperationFactory::createOperationEval(*this->BoundGrid);
-//			deltaout.open(filename_delta.str().c_str());
-//
-//			for (double pos = left + diff_h; pos < right - diff_h; pos+=(2.0*diff_h))
-//			{
-//				std::vector<double> point_left;
-//				point_left.push_back(pos-diff_h);
-//				std::vector<double> point_right;
-//				point_right.push_back(pos+diff_h);
-//
-//				double res = (myEval->eval(*this->alpha_complete, point_right) - myEval->eval(*this->alpha_complete, point_left))/(2.0*diff_h);
-//				deltaout << pos << " " << res << std::endl;
-//			}
-//
-//			deltaout.close();
-//			delete myEval;
-//		}
-//		else
-//		{
-//
-//		}
-//
-//		// Plot gamma
-//		if (nDims == 1)
-//		{
-//			double left = myBounds->getBoundary(0).leftBoundary;
-//			double right = myBounds->getBoundary(0).rightBoundary;
-//			double diff_h = HEDGE_MESH_WIDTH;
-//			std::ofstream gammaout;
-//
-//			base::OperationEval* myEval = GridOperationFactory::createOperationEval(*this->BoundGrid);
-//			gammaout.open(filename_gamma.str().c_str());
-//
-//			for (double pos = left + diff_h; pos < right - diff_h; pos+=(2.0*diff_h))
-//			{
-//				std::vector<double> point_left;
-//				point_left.push_back(pos-diff_h);
-//				std::vector<double> point_right;
-//				point_right.push_back(pos+diff_h);
-//				std::vector<double> point_middle;
-//				point_middle.push_back(pos);
-//
-//				double res = (myEval->eval(*this->alpha_complete, point_right) - (2.0*myEval->eval(*this->alpha_complete, point_middle)) + myEval->eval(*this->alpha_complete, point_left))/(diff_h*diff_h);
-//				gammaout << pos << " " << res << std::endl;
-//			}
-//
-//			gammaout.close();
-//			delete myEval;
-//		}
-//		else
-//		{
-//
-//		}
-//	}
 #endif
 }
 
