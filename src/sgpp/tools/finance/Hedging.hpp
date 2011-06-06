@@ -37,6 +37,8 @@ private:
 	double m_eps;
 	/// Points at which delta and gamma should be calculated
 	sg::base::DataMatrix* m_hedge_points;
+	/// is hedging used with log-transformed grids
+	bool m_is_log_transformed;
 
 public:
 	/**
@@ -45,8 +47,9 @@ public:
 	 * @param hedge_area BoundingBox that describes the full-grid area for which the delta and gamma should be calculated
 	 * @param resolution number of grid points in every dimension
 	 * @param eps epsilon used for calculating finite differences
+	 * @param is_log_transformed set to true if hedging is used with log-transformed grids
 	 */
-	Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps);
+	Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed);
 
 	/**
 	 * Destructor
