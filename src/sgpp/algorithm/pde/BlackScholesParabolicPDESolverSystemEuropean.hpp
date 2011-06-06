@@ -12,6 +12,11 @@
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 #include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
+#include "tools/finance/Hedging.hpp"
+
+//#define HEDGE
+#define HEDGE_EPS 0.05
+#define HEDGE_WIDTH_PERCENT 0.95
 
 namespace sg
 {
@@ -69,6 +74,10 @@ protected:
 	std::vector<size_t> BSalgoDims;
 	/// store number of executed timesteps
 	size_t nExecTimesteps;
+#ifdef HEDGE
+	/// hedging calculator
+	sg::finance::Hedging* myHedge;
+#endif
 
 	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 

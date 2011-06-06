@@ -1,0 +1,73 @@
+/******************************************************************************
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+******************************************************************************/
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+
+#ifndef HEDGING_HPP
+#define HEDGING_HPP
+
+#include "data/DataVector.hpp"
+#include "grid/common/BoundingBox.hpp"
+#include "grid/Grid.hpp"
+
+#include <string>
+
+namespace sg
+{
+
+namespace finance
+{
+
+/**
+ * This class implements the calculations of delta and gamma
+ * for hedging. They are written into a file including the corresponding
+ * option price.
+ *
+ * For calculating delta and gamma finite difference with sparse
+ * grid evaluations are used.
+ */
+class Hedging
+{
+private:
+	/// hedging area
+	//sg::base::BoundingBox* m_hedge_area;
+	/// resoluation in hedging area
+	//size_t m_res;
+	/// epsilon used for calculating finite differences
+	double m_eps;
+	/// Points at which delta and gamma should be calculated
+	sg::base::DataMatrix* m_hedge_points;
+
+public:
+	/**
+	 * Constructor
+	 *
+	 * @param hedge_area BoundingBox that describes the full-grid area for which the delta and gamma should be calculated
+	 * @param resolution number of grid points in every dimension
+	 * @param eps epsilon used for calculating finite differences
+	 */
+	Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps);
+
+	/**
+	 * Destructor
+	 */
+	~Hedging();
+
+	/**
+	 * this routine does the actual calculation of delta and gamma based
+	 * on a sparse grid and its coefficients.
+	 *
+	 * @param sparse_grid the sparse grid
+	 * @param alpha the sparse grid's coefficients
+	 * @param file_extensions some file extension (e.g. numbering) in order to distinguish different outputs that are written
+	 */
+	void calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alpha, std::string file_extension);
+};
+
+}
+
+}
+
+#endif /* HEDGING_HPP */
