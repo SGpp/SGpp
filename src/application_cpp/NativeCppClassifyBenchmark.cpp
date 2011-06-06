@@ -223,7 +223,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "SSE");
 #endif
 #ifdef USE_AVX
-    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new ssg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "AVX");
+    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "AVX");
 #endif
 #ifdef USE_OCL
     sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");

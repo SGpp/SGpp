@@ -82,7 +82,7 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
 	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o\
-	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -770,6 +770,9 @@ Stretching.o : $(SRCDIR)grid/common/Stretching.cpp
     	
 IOToolBonnSG.o : $(SRCDIR)tools/finance/IOToolBonnSG.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)IOToolBonnSG.o $(SRCDIR)tools/finance/IOToolBonnSG.cpp
+	
+Hedging.o : $(SRCDIR)tools/finance/Hedging.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Hedging.o $(SRCDIR)tools/finance/Hedging.cpp
 
 GridPrinter.o : $(SRCDIR)tools/common/GridPrinter.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinter.o $(SRCDIR)tools/common/GridPrinter.cpp
