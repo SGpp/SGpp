@@ -9,6 +9,7 @@
 #include "basis/operations_factory.hpp"
 
 #include <sstream>
+#include <cmath>
 
 namespace sg
 {
@@ -16,12 +17,23 @@ namespace sg
 namespace finance
 {
 
-Hedging::Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps) :
-		m_res(resolution), m_eps(eps), m_hedge_points(new sg::base::DataMatrix(1, hedge_area.getDimensions()))
+Hedging::Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed) :
+		m_res(resolution), m_eps(eps), m_hedge_points(new sg::base::DataMatrix(1, hedge_area.getDimensions())), m_is_log_transformed(is_log_transformed)
 {
 	sg::base::EvalCuboidGenerator* myEval = new sg::base::EvalCuboidGenerator();
 	myEval->getEvaluationCuboid(*m_hedge_points, hedge_area, resolution);
 	delete myEval;
+
+	if (m_is_log_transformed == true)
+	{
+		for (size_t v = 0; v < m_hedge_points->getNrows(); v++)
+		{
+			for (size_t w = 0; w < m_hedge_points->getNcols(); w++)
+			{
+				m_hedge_points->set(v, w, log(m_hedge_points->get(v,w)));
+			}
+		}
+	}
 }
 
 Hedging::~Hedging()
@@ -52,9 +64,19 @@ void Hedging::calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alp
 		double value = myEval->eval(alpha, curPoint);
 
 		// print coordinates into file
-		for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
+		if (m_is_log_transformed == true)
 		{
-			fileout << curPoint.get(j) << " ";
+			for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
+			{
+				fileout << exp(curPoint.get(j)) << " ";
+			}
+		}
+		else
+		{
+			for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
+			{
+				fileout << curPoint.get(j) << " ";
+			}
 		}
 		fileout << value << " ";
 
