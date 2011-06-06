@@ -17,6 +17,7 @@
 //#define HEDGE
 #define HEDGE_EPS 0.05
 #define HEDGE_WIDTH_PERCENT 0.95
+#define HEDGE_POINTS_PER_DIM 75
 
 namespace sg
 {

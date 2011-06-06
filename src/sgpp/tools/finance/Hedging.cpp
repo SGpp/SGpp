@@ -17,7 +17,7 @@ namespace finance
 {
 
 Hedging::Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps) :
-		m_eps(eps), m_hedge_points(new sg::base::DataMatrix(1, hedge_area.getDimensions()))
+		m_res(resolution), m_eps(eps), m_hedge_points(new sg::base::DataMatrix(1, hedge_area.getDimensions()))
 {
 	sg::base::EvalCuboidGenerator* myEval = new sg::base::EvalCuboidGenerator();
 	myEval->getEvaluationCuboid(*m_hedge_points, hedge_area, resolution);
@@ -51,6 +51,13 @@ void Hedging::calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alp
 		// get option value
 		double value = myEval->eval(alpha, curPoint);
 
+		// print coordinates into file
+		for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
+		{
+			fileout << curPoint.get(j) << " ";
+		}
+		fileout << value << " ";
+
 		// calculate derivatives
 		double delta = 0.0;
 		double gamma = 0.0;
@@ -62,16 +69,21 @@ void Hedging::calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alp
 			left.set(j, (left.get(j)-m_eps));
 			right.set(j, (right.get(j)+m_eps));
 
-			delta += ((myEval->eval(alpha, right) - myEval->eval(alpha, left))/(2.0*m_eps));
-			gamma += ((myEval->eval(alpha, right) - (2.0*value) + myEval->eval(alpha, left))/(m_eps*m_eps));
+			double tmp_delta = ((myEval->eval(alpha, right) - myEval->eval(alpha, left))/(2.0*m_eps));
+			double tmp_gamma = ((myEval->eval(alpha, right) - (2.0*value) + myEval->eval(alpha, left))/(m_eps*m_eps));
+
+			fileout << tmp_delta << " " << tmp_gamma << " ";
+
+			delta += tmp_delta;
+			gamma += tmp_gamma;
 		}
 
-		// print into file
-		for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
+		fileout << delta << " " << gamma << std::endl;
+
+		if ((i+1) % m_res == 0)
 		{
-			fileout << curPoint.get(j) << " ";
+			fileout << std::endl;
 		}
-		fileout << value << " " << delta << " " << gamma << std::endl;
 	}
 
 	delete myEval;

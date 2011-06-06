@@ -31,10 +31,8 @@ namespace finance
 class Hedging
 {
 private:
-	/// hedging area
-	//sg::base::BoundingBox* m_hedge_area;
 	/// resoluation in hedging area
-	//size_t m_res;
+	size_t m_res;
 	/// epsilon used for calculating finite differences
 	double m_eps;
 	/// Points at which delta and gamma should be calculated
