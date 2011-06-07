@@ -147,9 +147,19 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 
 	for (size_t d = 0; d < grid_bb->getDimensions(); d++)
 	{
-		double hedge_offset = (grid_bb->getIntervalWidth(d)-(grid_bb->getIntervalWidth(d)*HEDGE_WIDTH_PERCENT))/2.0;
-		myBoundaries[d].leftBoundary = grid_bb->getBoundary(d).leftBoundary + hedge_offset;
-		myBoundaries[d].rightBoundary = grid_bb->getBoundary(d).rightBoundary - hedge_offset;
+		if (bLogTransform == true)
+		{
+			double interval_width = exp(grid_bb->getBoundary(d).rightBoundary) - exp(grid_bb->getBoundary(d).leftBoundary);
+			double hedge_offset = (interval_width-(interval_width*HEDGE_WIDTH_PERCENT))/2.0;
+			myBoundaries[d].leftBoundary = exp(grid_bb->getBoundary(d).leftBoundary) + hedge_offset;
+			myBoundaries[d].rightBoundary = exp(grid_bb->getBoundary(d).rightBoundary) - hedge_offset;
+		}
+		else
+		{
+			double hedge_offset = (grid_bb->getIntervalWidth(d)-(grid_bb->getIntervalWidth(d)*HEDGE_WIDTH_PERCENT))/2.0;
+			myBoundaries[d].leftBoundary = grid_bb->getBoundary(d).leftBoundary + hedge_offset;
+			myBoundaries[d].rightBoundary = grid_bb->getBoundary(d).rightBoundary - hedge_offset;
+		}
 		myBoundaries[d].bDirichletLeft = true;
 		myBoundaries[d].bDirichletRight = true;
 	}
