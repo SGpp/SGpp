@@ -23,17 +23,6 @@ Hedging::Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double ep
 	sg::base::EvalCuboidGenerator* myEval = new sg::base::EvalCuboidGenerator();
 	myEval->getEvaluationCuboid(*m_hedge_points, hedge_area, resolution);
 	delete myEval;
-
-	if (m_is_log_transformed == true)
-	{
-		for (size_t v = 0; v < m_hedge_points->getNrows(); v++)
-		{
-			for (size_t w = 0; w < m_hedge_points->getNcols(); w++)
-			{
-				m_hedge_points->set(v, w, log(m_hedge_points->get(v,w)));
-			}
-		}
-	}
 }
 
 Hedging::~Hedging()
@@ -60,24 +49,23 @@ void Hedging::calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alp
 
 		m_hedge_points->getRow(i, curPoint);
 
-		// get option value
-		double value = myEval->eval(alpha, curPoint);
 
 		// print coordinates into file
+		for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
+		{
+			fileout << curPoint.get(j) << " ";
+		}
+
 		if (m_is_log_transformed == true)
 		{
 			for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
 			{
-				fileout << exp(curPoint.get(j)) << " ";
+				curPoint.set(j, log(curPoint.get(j)));
 			}
 		}
-		else
-		{
-			for (size_t j = 0; j < m_hedge_points->getNcols(); j++)
-			{
-				fileout << curPoint.get(j) << " ";
-			}
-		}
+
+		// get option value
+		double value = myEval->eval(alpha, curPoint);
 		fileout << value << " ";
 
 		// calculate derivatives
@@ -88,8 +76,16 @@ void Hedging::calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alp
 			m_hedge_points->getRow(i, left);
 			m_hedge_points->getRow(i, right);
 
-			left.set(j, (left.get(j)-m_eps));
-			right.set(j, (right.get(j)+m_eps));
+			if (m_is_log_transformed == true)
+			{
+				left.set(j, log((left.get(j)-m_eps)));
+				right.set(j, log((right.get(j)+m_eps)));
+			}
+			else
+			{
+				left.set(j, (left.get(j)-m_eps));
+				right.set(j, (right.get(j)+m_eps));
+			}
 
 			double tmp_delta = ((myEval->eval(alpha, right) - myEval->eval(alpha, left))/(2.0*m_eps));
 			double tmp_gamma = ((myEval->eval(alpha, right) - (2.0*value) + myEval->eval(alpha, left))/(m_eps*m_eps));
