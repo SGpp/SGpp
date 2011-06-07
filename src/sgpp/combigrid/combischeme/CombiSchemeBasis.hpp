@@ -45,6 +45,9 @@ namespace combigrid {
 		/** returns the coefficient for one subspace */
 		inline double getCoef(int i) const { return cofficients_[i]; }
 
+		/** returns the coefficient for one subspace */
+		inline std::vector<double> getCoef() const { return cofficients_; }
+
 	protected:
 
 		/** function which removes the duplicate spaces */
