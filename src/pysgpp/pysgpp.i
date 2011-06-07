@@ -192,8 +192,13 @@ namespace std {
 %include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"
 %include "src/sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
 %include "src/sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp"
-%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
 %include "src/sgpp/combigrid/domain/AbstractStretchingMaker.hpp"
+%include "src/sgpp/combigrid/domain/CombiDomain1D.hpp" 
+%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
+//%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
+%include "src/sgpp/combigrid/domain/CombiAtanSpecialStretching.hpp"
+%include "src/sgpp/combigrid/domain/CombiTanStretching.hpp"
+%include "src/sgpp/combigrid/domain/CombiUniformStretching.hpp"   
 %include "src/sgpp/combigrid/combischeme/CombiSchemeBasis.hpp" 
 %include "src/sgpp/combigrid/combischeme/CombiTS_CT.hpp"
 %include "src/sgpp/combigrid/combischeme/CombiS_CT.hpp"
@@ -201,8 +206,6 @@ namespace std {
 %include "src/sgpp/combigrid/combigridkernel/CombiGridKernel.hpp"
 %include "src/sgpp/combigrid/combigrid/AbstractCombiGrid.hpp"
 %include "src/sgpp/combigrid/combigrid/SerialCombiGrid.hpp"
-%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
-%include "src/sgpp/combigrid/domain/CombiDomain1D.hpp" 
 
 %rename(__add__) combigrid::CombigridLevelVector::operator+;
 %rename(__mul__) combigrid::CombigridLevelVector::operator*;
