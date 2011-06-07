@@ -119,13 +119,14 @@ namespace combigrid{
 		virtual void deCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha) = 0;
 
 
+		/** return the combi scheme */
+		inline const CombiSchemeBasis* getCombiScheme() const { return combischeme_; }
+
 	protected:
 
 		/** return the combi kernel, needed for the combination of the full grids */
 		inline const CombiGridKernelD* getCombiKernel() const { return combikernel_; }
 
-		/** return the combi scheme */
-		inline const CombiSchemeBasis* getCombiScheme() const { return combischeme_; }
 
 		/** pointer to the combi scheme which is set from the constructor argument */
 		const CombiSchemeBasis* combischeme_;
