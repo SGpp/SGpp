@@ -16,6 +16,7 @@ namespace combigrid {
 class CombiArbitraryScheme: public combigrid::CombiSchemeBasis {
 public:
 	CombiArbitraryScheme(std::vector<std::vector<int> > level_vectors);
+	CombiArbitraryScheme(CombigridLevelVector in);
 
 };
 
