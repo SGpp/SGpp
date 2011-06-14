@@ -23,4 +23,5 @@ export I_MPI_PIN_MODE=mpd
 export I_MPI_DEBUG=4
 export I_MPI_PIN_DOMAIN=socket
 
-mpiexec -ppn 2 -genv OMP_NUM_THREADS 8 -genv I_MPI_PIN_DOMAIN socket -n 2 $HOME/SGpp_workspace/SGpp/bin/BSSolverMPI solveNDadaptSurplusSubDomain log 5 6 BStest5d.log.bound BStest5d.stoch 1.0  std_euro_call 0.05 1.0 0.05 CrNic 180 0.00001 maxLevel 7 7 1e-6 coarsen 1e-7
+cd $HOME/SGpp_workspace/SGpp/bin
+mpiexec -ppn 2 -genv OMP_NUM_THREADS 8 -genv I_MPI_PIN_DOMAIN socket -n 2 ./BSSolverMPI solveNDadaptSurplusSubDomain log 5 6 BStest5d.log.bound BStest5d.stoch 1.0  std_euro_call 0.05 1.0 0.05 CrNic 180 0.00001 maxLevel 7 7 1e-6 coarsen 1e-7
