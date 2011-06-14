@@ -507,6 +507,49 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(sg::base
 	}
 }
 
+void BlackScholesSolverWithStretching::getAnalyticAlpha1D(DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized)
+{
+	double coord;
+
+	if(dim!=1)
+	{
+		throw new application_exception("BlackScholesSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
+	}
+	if (!this->bGridConstructed)
+	{
+		throw new application_exception("BlackScholesSolver::getAnalyticAlpha1D : function only available for dim = 1!");
+	}
+
+	// compute values of analytic solution on given grid
+	for (size_t i = 0; i < this->myGridStorage->size(); i++)
+	{
+		std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
+		std::stringstream coordsStream(coords);
+		coordsStream >> coord;
+		if(useLogTransform)
+		{
+			coord = exp(coord);
+		}
+		if (payoffType == "std_euro_call")
+		{
+			alpha_analytic[i] = this->getAnalyticSolution1D(coord, true, t, this->sigmas->get(0), this->r, strike);
+		}
+		else if (payoffType == "std_euro_put")
+		{
+			alpha_analytic[i] = this->getAnalyticSolution1D(coord, false, t, this->sigmas->get(0), this->r, strike);
+		}
+	}
+
+	if(hierarchized)
+	{
+		// hierarchize computed values
+		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		myHier->doHierarchisation(alpha_analytic);
+
+		delete myHier;
+	}
+}
+
 void BlackScholesSolverWithStretching::printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const
 {
 	sg::base::GridPrinterForStretching myPrinter(*this->myGrid);

@@ -598,31 +598,39 @@ double BlackScholesSolver::get1DEuroCallPayoffValue(double assetValue, double st
 	}
 }
 
-void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t, bool isCall)
+double BlackScholesSolver::getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike)
+{
+	StdNormalDistribution* myStdNDis = new StdNormalDistribution();
+
+	double dOne = (log((stock/strike)) + ((r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
+	double dTwo = dOne - (vola*sqrt(t));
+
+	double prem;
+	if (isCall)
+	{
+		return (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*r*t)));
+	}
+	else
+	{
+		return (strike*myStdNDis->getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*r*t))) - (stock*myStdNDis->getCumulativeDensity(dOne*(-1.0)));
+	}
+
+	delete myStdNDis;
+}
+
+
+void BlackScholesSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double minStock, double maxStock, double StockInc, double strike, double t, bool isCall)
 {
 	if (bStochasticDataAlloc)
 	{
 		double stock = 0.0;
 		double vola = this->sigmas->get(0);
-		StdNormalDistribution* myStdNDis = new StdNormalDistribution();
 
-		for (stock = 0.0; stock <= maxStock; stock += StockInc)
+		for (stock = minStock; stock <= maxStock; stock += StockInc)
 		{
-			double dOne = (log((stock/strike)) + ((this->r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
-			double dTwo = dOne - (vola*sqrt(t));
-			double prem;
-			if (isCall)
-			{
-				prem = (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*this->r*t)));
-			}
-			else
-			{
-				prem = (strike*myStdNDis->getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*this->r*t))) - (stock*myStdNDis->getCumulativeDensity(dOne*(-1.0)));
-			}
+			double prem = getAnalyticSolution1D(stock, isCall, t, vola, this->r, strike);
 			premiums.push_back(std::make_pair(stock, prem));
 		}
-
-		delete myStdNDis;
 	}
 	else
 	{
@@ -641,6 +649,73 @@ void BlackScholesSolver::print1DAnalytic(std::vector< std::pair<double, double> 
 		fileout << iter->first << " " << iter->second << " " << std::endl;
 	}
 	fileout.close();
+}
+
+
+void BlackScholesSolver::getAnalyticAlpha1D(DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized)
+{
+	double coord;
+
+	if(dim!=1)
+	{
+		throw new application_exception("BlackScholesSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
+	}
+	if (!this->bGridConstructed)
+	{
+		throw new application_exception("BlackScholesSolver::getAnalyticAlpha1D : function only available for dim = 1!");
+	}
+
+	// compute values of analytic solution on given grid
+	for (size_t i = 0; i < this->myGridStorage->size(); i++)
+	{
+		std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+		std::stringstream coordsStream(coords);
+		coordsStream >> coord;
+		if(useLogTransform)
+		{
+			coord = exp(coord);
+		}
+		if (payoffType == "std_euro_call")
+		{
+			alpha_analytic[i] = getAnalyticSolution1D(coord, true, t, this->sigmas->get(0), this->r, strike);
+		}
+		else if (payoffType == "std_euro_put")
+		{
+			alpha_analytic[i] = getAnalyticSolution1D(coord, false, t, this->sigmas->get(0), this->r, strike);
+		}
+	}
+
+	if(hierarchized)
+	{
+		// hierarchize computed values
+		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		myHier->doHierarchisation(alpha_analytic);
+
+		delete myHier;
+	}
+}
+
+
+void BlackScholesSolver::evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall)
+{
+	int n = EvaluationPoints.getNrows();
+
+	if (AnalyticOptionPrices.getSize() != n)
+	{
+		throw new sg::base::application_exception("PDESolver::evaluate1DAnalyticCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
+	}
+
+	for(int k=0; k<n; k++)
+	{
+		double x = EvaluationPoints.get(k,0); // get first coordinate
+
+		if(this->useLogTransform)
+		{
+			x = exp(x);
+		}
+		double price = getAnalyticSolution1D(x, isCall, t, vola, r, strike);
+		AnalyticOptionPrices.set(k,price);
+	}
 }
 
 std::vector<size_t> BlackScholesSolver::getAlgorithmicDimensions()
@@ -880,6 +955,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(DataVector& alpha, dou
 		throw new application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
 	}
 }
+
 
 size_t BlackScholesSolver::getNeededIterationsToSolve()
 {

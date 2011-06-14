@@ -214,6 +214,18 @@ public:
 	void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
 
+	/**
+	 * evaluates the analytic solution of the 1D Black Scholes equation
+	 * @param stock  stock value (point of evaluation)
+	 * @param isCall set this to true to calculate call, false calculates put
+	 * @param t time to maturity
+	 * @param vola volatility
+	 * @param r risk-free rate
+	 * @param strike the strike price of the option
+	 *
+	 * @returns the option price for the given stock value
+	 */
+	double getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike);
 
 	/**
 	 * Solves the closed form of the Black Scholes equation, the Black Scholes
@@ -223,13 +235,14 @@ public:
 	 * be determined and compared.
 	 *
 	 * @param premiums the result vector, here the combinations of stock price and premium are stored
+	 * @param minStock the minimum stock regarded in these calculations
 	 * @param maxStock the maximum stock regarded in these calculations
 	 * @param StockInc the increase of the stockprice in one step
 	 * @param strike the strike price of the Option
 	 * @param t time to maturity
 	 * @param isCall set this to true to calculate call, false calculates put
 	 */
-	virtual void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double maxStock, double StockInc, double strike, double t, bool isCall);
+	void solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double minStock, double maxStock, double StockInc, double strike, double t, bool isCall);
 
 	/**
 	 * Writes the premiums into a file that can be easily plot with gnuplot
@@ -237,7 +250,32 @@ public:
 	 * @param premiums the result vector, here the combinations of stock price and premium are stored
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename);
+	void print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename);
+
+	/**
+	 *  computes the relative error between the solution and the exact analytic solution for the 1-dimensional Black-Schoesl equation
+	 *
+	 *  @param alpha_analytic data vector with the analytic solution
+	 *  @param strike strike price of the option
+	 *  @param t maturity time
+	 *  @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 *  @param flag whether values should be hierarchized (true=hierarchized, false=dehierarchized)
+	 */
+	virtual void getAnalyticAlpha1D(sg::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
+
+	/**
+	 * Evaluates the analytic solution of the 1d Black Scholes equation
+	 * on different points specified in EvaluationPoints and stores the result into FunctionValues.
+	 *
+	 * @param FunctionValues sg::base::DataVector into the which the result of function's evaluation is stored
+	 * @param EvaluationPoints sg::base::DataMatrix that contains the points at which the sparse grid's function is evaluated
+	 * @param strike the strike price of the Option
+	 * @param vola volatility
+	 * @param r risk-free rate
+	 * @param t time to maturity
+	 * @param isCall set this to true to calculate call, false calculates put
+	 */
+	void evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
