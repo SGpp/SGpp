@@ -129,6 +129,18 @@ public:
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
+
+	/**
+	 *  computes the relative error between the solution and the exact analytic solution for the 1-dimensional Black-Schoesl equation
+	 *
+	 *  @param alpha_analytic data vector with the analytic solution
+	 *  @param strike strike price of the option
+	 *  @param t maturity time
+	 *  @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 *  @param flag whether values should be hierarchized (true=hierarchized, false=dehierarchized)
+	 */
+	virtual void getAnalyticAlpha1D(sg::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
+
 	/**
 	 * Inits the screen object
 	 */

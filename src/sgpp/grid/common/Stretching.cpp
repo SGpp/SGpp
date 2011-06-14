@@ -7,8 +7,13 @@
  ******************************************************************************/
 // @author Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 #include "grid/common/Stretching.hpp"
+#include "exception/application_exception.hpp"
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <stdlib.h>
+
+using namespace sg::base;
 
 namespace sg
 {
@@ -284,7 +289,9 @@ void Stretching::generateLookupTable()
 		else if (stretching1Ds[i].type=="fitob"){
 		}
 		else{
-			noXform(stretching1Ds[i],i);
+			std::cout << "Stretching::generateLookupTable : analytic stretching type not supported!" << std::endl;
+			throw new application_exception("Stretching::generateLookupTable : analytic stretching type not supported!");
+			//noXform(stretching1Ds[i],i);
 		}
 		generateLeftRightArrays(stretching1Ds[i],i);
 	}
