@@ -1111,9 +1111,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		if (i == start_l)
 		{
 			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
-
 			writeDataMatrix(EvalPoints, tFileEvalCuboid);
-
 			// If the log-transformed Black Scholes Eqaution is used -> transform Eval-cuboid
 			if (isLogSolve == true)
 			{
@@ -1126,7 +1124,6 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 				}
 			}
 		}
-
 
 		// init the basis functions' coefficient vector
 		DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
@@ -1179,9 +1176,9 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		double maturity = ((double)(timesteps))*stepsize;
 		myBSSolver->getAnalyticAlpha1D(*alpha_analytic, dStrike, maturity, payoffType, true);
 		myBSSolver->printGrid(*alpha_analytic, 50, "solvedBS_analytic.grid");
-
 		// evaluate analytic solution at evaluation cuboid and store values
 		DataVector AnalyticOptionPrices(EvalPoints.getNrows());
+		// this does an automatic transformation exp(log coords)!
 		myBSSolver->evaluate1DAnalyticCuboid(AnalyticOptionPrices, EvalPoints, dStrike, sigma.get(0), r, maturity, isCall);
 		writeDataVector(AnalyticOptionPrices, tFileEvalCuboidValues+".analytic");
 

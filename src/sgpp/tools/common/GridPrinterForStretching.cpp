@@ -180,7 +180,35 @@ void GridPrinterForStretching::printSparseGrid(DataVector& alpha, std::string tF
 
 void GridPrinterForStretching::printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus)
 {
-	throw new tool_exception("GridPrinterForStretching::printSparseGridExpTransform : This method is not implemented");
+	DataVector temp(alpha);
+		double tmp = 0.0;
+		size_t dim = myGrid->getStorage()->dim();
+		std::ofstream fileout;
+
+		// Do Dehierarchisation, is specified
+		if (bSurplus == false)
+		{
+			OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+			myHier->doDehierarchisation(temp);
+			delete myHier;
+		}
+
+		// Open filehandle
+		fileout.open(tFilename.c_str());
+		for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+		{
+			std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringStretching(*myGrid->getStretching());
+			std::stringstream coordsStream(coords);
+
+			for (size_t j = 0; j < dim; j++)
+			{
+				coordsStream >> tmp;
+				fileout << exp(tmp) << " ";
+			}
+
+			fileout << temp[i] << std::endl;
+		}
+		fileout.close();
 }
 
 }
