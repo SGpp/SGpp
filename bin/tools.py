@@ -994,7 +994,7 @@ class Matrix:
         self.grid = grid
         self.x = x
         self.l = l
-        self.B = grid.createOperationB()
+        self.B = createOperationMultipleEval(grid, x)
         #val: base is obviously not used
         #self.base = base
         self.CMode = mode.lower()
@@ -1026,15 +1026,15 @@ class Matrix:
     
     def generateb(self, y):
         b = DataVector(self.grid.getStorage().size())
-        self.B.mult(y, self.x, b)
+        self.B.multTranspose(y, b)
         return b
     
     def ApplyMatrix(self, alpha, result):
         M = self.x.getNrows();
         temp = DataVector(M)
     
-        self.B.multTranspose(alpha, self.x, temp)
-        self.B.mult(temp, self.x, result)
+        self.B.mult(alpha, temp)
+        self.B.multTranspose(temp, result)
 
         if self.CMode == "laplace":
             temp = DataVector(len(alpha))
