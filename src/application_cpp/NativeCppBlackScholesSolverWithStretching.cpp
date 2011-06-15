@@ -1396,7 +1396,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		// get analytic solution and plot it and store
 		DataVector* alpha_analytic = new DataVector(myBSSolver->getNumberGridPoints());
 		double maturity = ((double)(timesteps))*stepsize;
-		myBSSolver->getAnalyticAlpha1D(*alpha_analytic, dStrike, maturity, payoffType, true);  // problems!
+		myBSSolver->getAnalyticAlpha1D(*alpha_analytic, dStrike, maturity, payoffType, true);
 		myBSSolver->printGrid(*alpha_analytic, 50, "solvedBS_analytic.grid");
 
 		// evaluate analytic solution at evaluation cuboid and store values
