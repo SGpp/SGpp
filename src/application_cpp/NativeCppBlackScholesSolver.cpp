@@ -1352,8 +1352,11 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 					DataVector alpha_relErr(*alpha);
 					alpha_relErr.sub(*alpha_analytic);
 					myBSSolver->printGrid(alpha_relErr, 50, "errAbs.level_"+ level_string.str()+".gnuplot");
+					myBSSolver->printSparseGrid(alpha_relErr, "errAbs.level_"+ level_string.str()+".grid.gnuplot", false);
+
 					alpha_relErr.componentwise_div(*alpha_analytic);
 					myBSSolver->printGrid(alpha_relErr, 50, "errRel.level_"+ level_string.str()+".gnuplot");
+					myBSSolver->printSparseGrid(alpha_relErr, "errRel.level_"+ level_string.str()+".grid.gnuplot", false);
 				}
 			}
 		}
