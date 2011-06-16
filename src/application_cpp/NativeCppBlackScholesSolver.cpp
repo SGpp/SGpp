@@ -1175,7 +1175,16 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		DataVector* alpha_analytic = new DataVector(myBSSolver->getNumberGridPoints());
 		double maturity = ((double)(timesteps))*stepsize;
 		myBSSolver->getAnalyticAlpha1D(*alpha_analytic, dStrike, maturity, payoffType, true);
-		myBSSolver->printGrid(*alpha_analytic, 50, "solvedBS_analytic.grid");
+		//myBSSolver->printGrid(*alpha_analytic, 50, "solvedBS_analytic.grid");
+		if (isLogSolve == true)
+		{
+			myBSSolver->printSparseGridExpTransform(*alpha_analytic, "solvedBS_analytic.grid.gnuplot", false);
+		}
+		else
+		{
+			myBSSolver->printSparseGrid(*alpha_analytic, "solvedBS_analytic.grid.gnuplot", false);
+		}
+
 		// evaluate analytic solution at evaluation cuboid and store values
 		DataVector AnalyticOptionPrices(EvalPoints.getNrows());
 		// this does an automatic transformation exp(log coords)!
@@ -1351,12 +1360,26 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 					// dehierarchize before
 					DataVector alpha_relErr(*alpha);
 					alpha_relErr.sub(*alpha_analytic);
+
 					myBSSolver->printGrid(alpha_relErr, 50, "errAbs.level_"+ level_string.str()+".gnuplot");
-					myBSSolver->printSparseGrid(alpha_relErr, "errAbs.level_"+ level_string.str()+".grid.gnuplot", false);
+					if (isLogSolve == true)
+					{
+						myBSSolver->printSparseGridExpTransform(alpha_relErr, "errAbs.level_"+ level_string.str()+".grid.gnuplot", false);
+					}
+					else{
+						myBSSolver->printSparseGrid(alpha_relErr, "errAbs.level_"+ level_string.str()+".grid.gnuplot", false);
+					}
 
 					alpha_relErr.componentwise_div(*alpha_analytic);
 					myBSSolver->printGrid(alpha_relErr, 50, "errRel.level_"+ level_string.str()+".gnuplot");
-					myBSSolver->printSparseGrid(alpha_relErr, "errRel.level_"+ level_string.str()+".grid.gnuplot", false);
+					if (isLogSolve == true)
+					{
+						myBSSolver->printSparseGridExpTransform(alpha_relErr, "errRel.level_"+ level_string.str()+".grid.gnuplot", false);
+					}
+					else{
+						myBSSolver->printSparseGrid(alpha_relErr, "errRel.level_"+ level_string.str()+".grid.gnuplot", false);
+					}
+
 				}
 			}
 		}
