@@ -12,6 +12,9 @@ import distutils.sysconfig
 EnsureSConsVersion(1, 0)
 EnsurePythonVersion(2, 5)
 
+# Definitions and functions
+#########################################################################
+
 # Custom test for executables used during configuration
 def CheckExec(context, cmd):
     context.Message( 'Checking for %s...' % (cmd) )
@@ -71,6 +74,9 @@ def CheckJNI(context):
     return ret
 
 
+# Definition of flags / command line parameters for SCons
+#########################################################################
+
 vars = Variables("custom.py")
 
 # define the flags 
@@ -102,9 +108,8 @@ vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
 vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
 vars.Add('SG_PYTHON', 'Build Python Support', True)
 
-
+# initialize environment
 env = Environment(variables = vars, ENV = os.environ)
-
 
 # Help Text
 Help("""---------------------------------------------------------------------
@@ -143,10 +148,11 @@ vars.GenerateHelpText(env))
 
 
 
-
+# Set compiler switches and check architectures
+#########################################################################
 
 # scons usually adds double quotes around the command-line arguments containing 
-# white spaces  this whould produce compilation error, therefore replace string 
+# white spaces. As this whould produce compilation error, replace string 
 # with corresponding list of parameters
 opt_flags = Split(env['CPPFLAGS'])
 env['CPPFLAGS'] = []
@@ -219,6 +225,14 @@ if env.has_key('MARCH'):
     else:
         print "Warning: Ignoring option MARCH"
 
+# the optional CPPFLAGS at the end will override the previous flags
+env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
+
+
+
+# Decide what to compile
+#########################################################################
+
 # compile all if nothing set
 if len(sys.argv) < 2:
     env['SG_ALL'] = True
@@ -234,8 +248,9 @@ else:
     swigAvail = False
     javaAvail = False
 
-# configure environment
-# ---------------------
+
+# Initialize environment + support for Python and Java
+#########################################################################
 if not env.GetOption('clean'):
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
@@ -300,21 +315,15 @@ if not env.GetOption('clean'):
     env = config.Finish()
 
 
-# the optional CPPFLAGS at the end will override the previous flags
-env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 
 
-
-# Copy required files
-cpy = []
-
-#start build of pysgpp and jsgpp
-#SConscript('src/sgpp/SConscript', build_dir='tmp/build_sg', duplicate=0)
+# Gather modules
+#########################################################################
 
 if env['SG_ALL']:
-	env['SG_BASE'] = env['SG_PDE'] = env['SG_DATADRIVEN'] = env['SG_SOLVER'] = \
-	env['SG_FINANCE'] = env['SG_PARALLEL'] = env['SG_COMBIGRID'] = \
-	env['SG_PYTHON'] = True
+    env['SG_BASE'] = env['SG_PDE'] = env['SG_DATADRIVEN'] = env['SG_SOLVER'] = \
+                     env['SG_FINANCE'] = env['SG_PARALLEL'] = env['SG_COMBIGRID'] = \
+                     env['SG_PYTHON'] = True
 
 cppdefines = []
 if env['SG_BASE']: cppdefines +=['SG_BASE']
@@ -326,16 +335,17 @@ if env['SG_PARALLEL']: cppdefines +=['SG_PARALLEL']
 if env['SG_COMBIGRID']: cppdefines +=['SG_COMBIGRID']
 env.Append(CPPDEFINES=cppdefines)
 
+
+
+
+# End of configuration
+#########################################################################
 Export('env')
 print "finished configuration"
 
-# Now start for compilation...
-# ----------------------------
-# build c++ lib
-#(libsgpp, libsgppa) = env.SConscript('src/sgpp/SConscript',
-#                                     build_dir='tmp/build_sg', duplicate=0)
-# install
-#env.Install('lib/sgpp', [libsgpp, libsgppa])
+
+# Now compile
+#########################################################################
 lib_sgpp_targets = []
 
 if env['SG_BASE']:
@@ -390,11 +400,10 @@ if env['SG_COMBIGRID']:
 # build python lib
 if env['SG_PYTHON'] and swigAvail and pyAvail:
 	libpysgpp = SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
-	#Import('pysgpp')
 	pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
 	Depends(pyinst, libpysgpp)
-	dep = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	Depends(dep, libpysgpp)
+	pybin = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+	Depends(pybin, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['JSGPP']:
@@ -407,14 +416,18 @@ if swigAvail and javaAvail and env['JSGPP']:
 	
 env.Install('#lib/sgpp', lib_sgpp_targets)
 
-# Execute Unit Tests
+
+
+# Unit tests
+#########################################################################
+
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail:
-    dep = env.SConscript('tests/SConscript')
+    testdep = env.SConscript('tests/SConscript')
     # execute after all installations (even where not necessary)
     if javaAvail and env['JSGPP']:
-        Depends(dep, [jinst, pyinst])
+        Depends(testdep, [jinst, pyinst])
     else:
-        Depends(dep, [pyinst])
+        Depends(testdep, [pyinst])
 else:
     sys.stderr.write("Warning!! Skipping unit tests!!\n")
 
