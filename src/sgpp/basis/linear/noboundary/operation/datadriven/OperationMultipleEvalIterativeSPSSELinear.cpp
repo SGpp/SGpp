@@ -16,22 +16,7 @@
 #ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
-
-union floatAbsMask
-{
-   const float f;
-   const int i;
-
-   floatAbsMask() : i(0x7FFFFFFF) {}
-};
-
-_MM_ALIGN16 const floatAbsMask absMask;
-static const __m128 abs2Mask = _mm_load1_ps( &absMask.f );
-
-const __m128 _mm_abs_ps( const __m128& x)
-{
-       return _mm_and_ps( abs2Mask, x);
-}
+#include "tools/common/IntrinsicExt.hpp"
 #endif
 
 #define CHUNKDATAPOINTS 24 // must be divide-able by 24

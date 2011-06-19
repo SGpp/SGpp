@@ -12,6 +12,9 @@
 #include "solver/sle/ConjugateGradientsSP.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
 #include "basis/operations_factory.hpp"
+#include "grid/type/ModLinearGrid.hpp"
+#include "grid/type/LinearGrid.hpp"
+#include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
 
 #include <string>
 #include <iostream>
@@ -185,6 +188,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	sg::base::Grid* myGrid;
 #ifdef USE_BOUNDARIES
 	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
+//	myGrid = new sg::base::ModLinearGrid(nDim);
 #else
 	myGrid = new sg::base::LinearGrid(nDim);
 #endif
@@ -444,6 +448,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	sg::base::Grid* myGrid;
 #ifdef USE_BOUNDARIES
 	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
+//	myGrid = new sg::base::ModLinearGrid(nDim);
 #else
 	myGrid = new sg::base::LinearGrid(nDim);
 #endif
