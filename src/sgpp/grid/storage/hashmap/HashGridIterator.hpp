@@ -91,7 +91,7 @@ public:
 	}
 
 	/**
-	 * left level zero ansatzfunction for a given dimension
+	 * left level zero ansatz function for a given dimension
 	 *
 	 * @param dim dimension in which we should step to level zero
 	 */
@@ -102,7 +102,7 @@ public:
 	}
 
 	/**
-	 * right level zero ansatzfunction for a given dimension
+	 * right level zero ansatz function for a given dimension
 	 *
 	 * @param dim dimension in which we should step to level zero
 	 */
@@ -217,7 +217,7 @@ public:
 	}
 
 	/**
-	 * returns true if there are more left childs in dimensioin d
+	 * returns true if there are more left childs in dimension d
 	 *
 	 * @param d the moving direction
 	 */
@@ -239,7 +239,7 @@ public:
 	}
 
 	/**
-	 * returns true if there are more right childs in dimensioin d
+	 * returns true if there are more right childs in dimension d
 	 *
 	 * @param d the moving direction
 	 */
@@ -293,8 +293,8 @@ public:
 	 * pushs a position to the index
 	 *
 	 * @param d the dimension of the gridpoint
-	 * @param l the ansatzfunction's level
-	 * @param i the ansartfunction's index
+	 * @param l the ansatz function's level
+	 * @param i the ansatz function's index
 	 */
 	void push(size_t d, typename index_type::level_type l,
 			typename index_type::index_type i)

@@ -9,8 +9,10 @@
 
 #include "basis/basis.hpp"
 #include "basis/poly/operation/common/OperationHierarchisationPoly.hpp"
+#include "basis/poly/algorithm_sweep/HierarchisationPoly.hpp"
 
 #include "data/DataVector.hpp"
+#include "algorithm/common/sweep.hpp"
 
 #include "exception/operation_exception.hpp"
 
@@ -21,7 +23,15 @@ namespace base
 
 void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+	
+	HierarchisationPoly func(this->storage, this->base);
+	sweep<HierarchisationPoly> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(node_values, node_values, i);
+	}
 }
 
 void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha)
