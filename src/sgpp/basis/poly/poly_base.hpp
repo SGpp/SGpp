@@ -12,6 +12,9 @@
 #include <vector>
 #include "exception/factory_exception.hpp"
 
+#include "data/DataVector.hpp"
+
+
 namespace sg
 {
 namespace base
@@ -72,6 +75,18 @@ public:
 		// scale p to a value in [-1.0,1.0]
 		double val = (1 << level)*p - index;
 		return evalPolynom(id, deg, val);
+	}
+
+	double evalHierToTop(LT level, IT index, double p, DataVector& koeffs)
+	{
+		double result = 0.0;
+		for(; level>=1; level--)
+		{
+			result += koeffs[level] * eval(level, index, p);
+			index = ((index-1)/2);
+			index = (index % 2 == 0)?(index+1):index;
+		}
+		return result;
 	}
 
 protected:
@@ -151,14 +166,14 @@ private:
 					lagpoly[i][jj] = lagpoly[i][jj-1] - lagpoly[i][jj]*x[k];
 				}
 				lagpoly[i][0] *= -x[k];
-            	j += 1;
-           		fac /= (x[i] - x[k]);
+				j += 1;
+				fac /= (x[i] - x[k]);
 			}
 
 			for(int l = 0; l < n; l++)
 			{
 				lagpoly[i][l] *= fac;
-            	intpoly[l] += lagpoly[i][l];
+				intpoly[l] += lagpoly[i][l];
 			}
 		}
 
