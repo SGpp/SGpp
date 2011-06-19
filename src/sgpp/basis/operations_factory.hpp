@@ -79,11 +79,12 @@
 #include "basis/poly/operation/datadriven/OperationTestPoly.hpp"
 #include "basis/prewavelet/operation/datadriven/OperationTestPrewavelet.hpp"
 
-
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.hpp"
+
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.hpp"
 
 #ifdef USEOCL
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
@@ -720,9 +721,35 @@ using namespace sg::datadriven;
 				throw factory_exception("Unsupported vectorization type");
 			}
 		}
-
+//		else if(strcmp(grid_type.getType(), "modlinear") == 0)
+//		{
+//			if (VecType == "SSE")
+//			{
+//				return new sg::parallel::OperationMultipleEvalIterativeSSELinear(grid_type.getStorage(), dataset);
+//			}
+//			else if (VecType == "AVX")
+//			{
+//				return new sg::parallel::OperationMultipleEvalIterativeAVXLinear(grid_type.getStorage(), dataset);
+//			}
+//		#ifdef USEOCL
+//			else if (VecType == "OCL")
+//			{
+//				return new sg::parallel::OperationMultipleEvalIterativeOCLLinear(grid_type.getStorage(), dataset);
+//			}
+//			else if (VecType == "HYBRID_SSE_OCL")
+//			{
+//				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid_type.getStorage(), dataset);
+//			}
+//		#endif
+//			else
+//			{
+//				throw factory_exception("Unsupported vectorization type");
+//			}
+//		}
 		else
-			throw factory_exception("OperationLaplace is not implemented for this grid type.");
+		{
+			throw factory_exception("OperationMultipleEvalVectorized is not implemented for this grid type.");
+		}
 	}
 
 	/**
@@ -735,7 +762,6 @@ using namespace sg::datadriven;
 	 */
 	static OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(Grid& grid_type, const std::string& VecType, DataMatrixSP* dataset)
 	{
-
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
 			if (VecType == "SSE")
@@ -767,8 +793,6 @@ using namespace sg::datadriven;
 				throw factory_exception("Unsupported vectorization type");
 			}
 		}
-
-
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0
 				|| strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
@@ -801,9 +825,35 @@ using namespace sg::datadriven;
 				throw factory_exception("Unsupported vectorization type");
 			}
 		}
-
+		else if(strcmp(grid_type.getType(), "modlinear") == 0)
+		{
+			if (VecType == "SSE")
+			{
+				return new sg::parallel::OperationMultipleEvalIterativeSPSSEModLinear(grid_type.getStorage(), dataset);
+			}
+//			else if (VecType == "AVX")
+//			{
+//				return new sg::parallel::OperationMultipleEvalIterativeAVXLinear(grid_type.getStorage(), dataset);
+//			}
+//		#ifdef USEOCL
+//			else if (VecType == "OCL")
+//			{
+//				return new sg::parallel::OperationMultipleEvalIterativeOCLLinear(grid_type.getStorage(), dataset);
+//			}
+//			else if (VecType == "HYBRID_SSE_OCL")
+//			{
+//				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid_type.getStorage(), dataset);
+//			}
+//		#endif
+			else
+			{
+				throw factory_exception("Unsupported vectorization type");
+			}
+		}
 		else
-			throw factory_exception("OperationLaplace is not implemented for this grid type.");
+		{
+			throw factory_exception("OperationMultipleEvalVectorized is not implemented for this grid type.");
+		}
 	}
 #endif //SG_PARALLEL
 

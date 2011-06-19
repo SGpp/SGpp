@@ -16,22 +16,7 @@
 #ifdef __ICC
 // include SSE3 intrinsics
 #include <pmmintrin.h>
-
-union floatAbsMask
-{
-   const float f;
-   const int i;
-
-   floatAbsMask() : i(0x7FFFFFFF) {}
-};
-
-_MM_ALIGN16 const floatAbsMask absMask;
-static const __m128 abs2Mask = _mm_load1_ps( &absMask.f );
-
-const __m128 _mm_abs_ps( const __m128& x)
-{
-       return _mm_and_ps( abs2Mask, x);
-}
+#include "tools/common/IntrinsicExt.hpp"
 #endif
 
 #define CHUNKDATAPOINTS 24 // must be divide-able by 24
@@ -117,6 +102,7 @@ double OperationMultipleEvalIterativeSPSSEModLinear::multTransposeVectorized(sg:
 					__m128 support_5 = _mm_load_ps(&(ptrSource[i+20]));
 
 					__m128 one = _mm_set1_ps(1.0f);
+					__m128 two = _mm_set1_ps(2.0f);
 					__m128 zero = _mm_set1_ps(0.0f);
 
 					for (size_t d = 0; d < dims; d++)
@@ -305,14 +291,14 @@ double OperationMultipleEvalIterativeSPSSEModLinear::multTransposeVectorized(sg:
 						}
 						else if (ptrIndex[(j*dims)+d] == 1.0f)
 						{
-							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
+							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
 							eval = 2.0f - eval;
 							float localSupport = std::max<float>(eval, 0.0f);
 							curSupport *= localSupport;
 						}
 						else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
 						{
-							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
+							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
 							float index_calc = eval - (ptrIndex[(j*dims)+d]);
 							float last = 1.0f + index_calc;
 							float localSupport = std::max<float>(last, 0.0f);
@@ -320,7 +306,7 @@ double OperationMultipleEvalIterativeSPSSEModLinear::multTransposeVectorized(sg:
 						}
 						else
 						{
-							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));
+							float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
 							float index_calc = eval - (ptrIndex[(j*dims)+d]);
 							float abs = fabs(index_calc);
 							float last = 1.0f - abs;
@@ -407,6 +393,7 @@ double OperationMultipleEvalIterativeSPSSEModLinear::multVectorized(sg::base::Da
 						__m128 support_5 = _mm_load1_ps(&(ptrAlpha[j]));
 
 						__m128 one = _mm_set1_ps(1.0f);
+						__m128 two = _mm_set1_ps(2.0f);
 						__m128 zero = _mm_set1_ps(0.0f);
 
 						for (size_t d = 0; d < dims; d++)
@@ -419,12 +406,12 @@ double OperationMultipleEvalIterativeSPSSEModLinear::multVectorized(sg::base::Da
 							// most left basis function on every level
 							else if (ptrIndex[(j*dims)+d] == 1.0f)
 							{
-								__m128 eval_0 = _mm_load_ps(&(ptrData[(d*source_size)+i]));
-								__m128 eval_1 = _mm_load_ps(&(ptrData[(d*source_size)+i+4]));
-								__m128 eval_2 = _mm_load_ps(&(ptrData[(d*source_size)+i+8]));
-								__m128 eval_3 = _mm_load_ps(&(ptrData[(d*source_size)+i+12]));
-								__m128 eval_4 = _mm_load_ps(&(ptrData[(d*source_size)+i+16]));
-								__m128 eval_5 = _mm_load_ps(&(ptrData[(d*source_size)+i+20]));
+								__m128 eval_0 = _mm_load_ps(&(ptrData[(d*result_size)+i]));
+								__m128 eval_1 = _mm_load_ps(&(ptrData[(d*result_size)+i+4]));
+								__m128 eval_2 = _mm_load_ps(&(ptrData[(d*result_size)+i+8]));
+								__m128 eval_3 = _mm_load_ps(&(ptrData[(d*result_size)+i+12]));
+								__m128 eval_4 = _mm_load_ps(&(ptrData[(d*result_size)+i+16]));
+								__m128 eval_5 = _mm_load_ps(&(ptrData[(d*result_size)+i+20]));
 
 								__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
 
@@ -459,12 +446,12 @@ double OperationMultipleEvalIterativeSPSSEModLinear::multVectorized(sg::base::Da
 							// most right basis function on every level
 							else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
 							{
-								__m128 eval_0 = _mm_load_ps(&(ptrData[(d*source_size)+i]));
-								__m128 eval_1 = _mm_load_ps(&(ptrData[(d*source_size)+i+4]));
-								__m128 eval_2 = _mm_load_ps(&(ptrData[(d*source_size)+i+8]));
-								__m128 eval_3 = _mm_load_ps(&(ptrData[(d*source_size)+i+12]));
-								__m128 eval_4 = _mm_load_ps(&(ptrData[(d*source_size)+i+16]));
-								__m128 eval_5 = _mm_load_ps(&(ptrData[(d*source_size)+i+20]));
+								__m128 eval_0 = _mm_load_ps(&(ptrData[(d*result_size)+i]));
+								__m128 eval_1 = _mm_load_ps(&(ptrData[(d*result_size)+i+4]));
+								__m128 eval_2 = _mm_load_ps(&(ptrData[(d*result_size)+i+8]));
+								__m128 eval_3 = _mm_load_ps(&(ptrData[(d*result_size)+i+12]));
+								__m128 eval_4 = _mm_load_ps(&(ptrData[(d*result_size)+i+16]));
+								__m128 eval_5 = _mm_load_ps(&(ptrData[(d*result_size)+i+20]));
 
 								__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
 								__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
@@ -507,12 +494,12 @@ double OperationMultipleEvalIterativeSPSSEModLinear::multVectorized(sg::base::Da
 							// all other basis functions
 							else
 							{
-								__m128 eval_0 = _mm_load_ps(&(ptrData[(d*source_size)+i]));
-								__m128 eval_1 = _mm_load_ps(&(ptrData[(d*source_size)+i+4]));
-								__m128 eval_2 = _mm_load_ps(&(ptrData[(d*source_size)+i+8]));
-								__m128 eval_3 = _mm_load_ps(&(ptrData[(d*source_size)+i+12]));
-								__m128 eval_4 = _mm_load_ps(&(ptrData[(d*source_size)+i+16]));
-								__m128 eval_5 = _mm_load_ps(&(ptrData[(d*source_size)+i+20]));
+								__m128 eval_0 = _mm_load_ps(&(ptrData[(d*result_size)+i]));
+								__m128 eval_1 = _mm_load_ps(&(ptrData[(d*result_size)+i+4]));
+								__m128 eval_2 = _mm_load_ps(&(ptrData[(d*result_size)+i+8]));
+								__m128 eval_3 = _mm_load_ps(&(ptrData[(d*result_size)+i+12]));
+								__m128 eval_4 = _mm_load_ps(&(ptrData[(d*result_size)+i+16]));
+								__m128 eval_5 = _mm_load_ps(&(ptrData[(d*result_size)+i+20]));
 
 								__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
 								__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));

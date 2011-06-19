@@ -82,7 +82,8 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
 	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o\
-	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o\
+	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -366,6 +367,9 @@ HierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/Hierarchis
 DehierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
 
+OperationMultipleEvalIterativeSPSSEModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPSSEModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.cpp
+
 dPhidPhiDownModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 
@@ -401,6 +405,9 @@ OperationEvalPoly.o : $(SRCDIR)basis/poly/operation/common/OperationEvalPoly.cpp
 
 OperationHierarchisationPoly.o : $(SRCDIR)basis/poly/operation/common/OperationHierarchisationPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPoly.o $(SRCDIR)basis/poly/operation/common/OperationHierarchisationPoly.cpp
+
+HierarchisationPoly.o : $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationPoly.o $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
 
 OperationHierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
@@ -803,6 +810,9 @@ EvalCuboidGeneratorForStretching.o : $(SRCDIR)tools/common/EvalCuboidGeneratorFo
 	
 ARFFTools.o : $(SRCDIR)tools/datadriven/ARFFTools.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ARFFTools.o $(SRCDIR)tools/datadriven/ARFFTools.cpp
+
+IntrinsicExt.o : $(SRCDIR)tools/common/IntrinsicExt.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)IntrinsicExt.o $(SRCDIR)tools/common/IntrinsicExt.cpp
 	
 StdUpDown.o : $(SRCDIR)algorithm/pde/StdUpDown.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StdUpDown.o $(SRCDIR)algorithm/pde/StdUpDown.cpp

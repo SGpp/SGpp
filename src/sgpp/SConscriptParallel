@@ -2,18 +2,20 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 Import("env")
 
 srcs = Split("""
+tools/common/IntrinsicExt.cpp
+
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
+
+basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.cpp
 """)
-
-
 
 sg_env = env.Clone()
 
