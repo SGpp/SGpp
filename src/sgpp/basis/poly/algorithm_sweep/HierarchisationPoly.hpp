@@ -28,6 +28,9 @@ class HierarchisationPoly
 {
 protected:
 	typedef GridStorage::grid_iterator grid_iterator;
+	typedef GridStorage::index_type::level_type level_type;
+	typedef GridStorage::index_type::index_type index_type;
+
 
 	/// the grid object
 	GridStorage* storage;
@@ -73,7 +76,7 @@ protected:
 	 * @param dim current fixed dimension of the 'execution direction'
 	 * @param koeffs coefficients of the basis funktions as calculated so far
 	 */
-	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs);
+	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs, level_type cur_lev, index_type cur_ind);
 };
 
 }	// namespace base
