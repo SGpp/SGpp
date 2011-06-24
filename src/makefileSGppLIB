@@ -83,7 +83,8 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
 	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o\
 	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o\
-	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o
+	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o\
+	OperationMultipleEvalIterativeSPSSEModLinear.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -369,6 +370,9 @@ DehierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/Dehierar
 
 OperationMultipleEvalIterativeSPSSEModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPSSEModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.cpp
+
+OperationMultipleEvalIterativeSSEModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSSEModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSSEModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSSEModLinear.cpp
 
 dPhidPhiDownModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp

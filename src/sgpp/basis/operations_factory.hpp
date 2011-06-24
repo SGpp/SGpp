@@ -85,6 +85,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.hpp"
 
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSSEModLinear.hpp"
 
 #ifdef USEOCL
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
@@ -721,12 +722,12 @@ using namespace sg::datadriven;
 				throw factory_exception("Unsupported vectorization type");
 			}
 		}
-//		else if(strcmp(grid_type.getType(), "modlinear") == 0)
-//		{
-//			if (VecType == "SSE")
-//			{
-//				return new sg::parallel::OperationMultipleEvalIterativeSSELinear(grid_type.getStorage(), dataset);
-//			}
+		else if(strcmp(grid_type.getType(), "modlinear") == 0)
+		{
+			if (VecType == "SSE")
+			{
+				return new sg::parallel::OperationMultipleEvalIterativeSSELinear(grid_type.getStorage(), dataset);
+			}
 //			else if (VecType == "AVX")
 //			{
 //				return new sg::parallel::OperationMultipleEvalIterativeAVXLinear(grid_type.getStorage(), dataset);
@@ -741,11 +742,11 @@ using namespace sg::datadriven;
 //				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid_type.getStorage(), dataset);
 //			}
 //		#endif
-//			else
-//			{
-//				throw factory_exception("Unsupported vectorization type");
-//			}
-//		}
+			else
+			{
+				throw factory_exception("Unsupported vectorization type");
+			}
+		}
 		else
 		{
 			throw factory_exception("OperationMultipleEvalVectorized is not implemented for this grid type.");

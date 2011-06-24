@@ -31,15 +31,10 @@
 //#define USE_ARBB
 //#define USE_HYBRID_SSE_OCL
 
-// define if you want to use single precision floats (may deliver speed-up of 2 or greater),
-// BUT: CG method may not converge because of bad system matrix condition.
-#define USEFLOAT
-
-// define this if you want to use grids with Neumann boundaries.
-#define USE_BOUNDARIES
-
 // do Test only after last refinement
 #define TEST_LAST_ONLY
+
+bool bUseFloat;
 
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
@@ -90,7 +85,7 @@ void convertDataVectorSPToDataVector(DataVectorSP& src, DataVector& dest)
 }
 
 void printSettings(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
-		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points,
+		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points, std::string gridtype,
 		size_t gridsize = 0, double finaltr = 0.0, double finalte = 0.0, double time = 0.0)
 {
 	std::cout << std::endl;
@@ -105,7 +100,16 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 	std::cout << "Max. CG Iterations: " << cg_max << std::endl;
 	std::cout << "CG epsilon: " << cg_eps << std::endl << std::endl;
 
-	std::cout << "Lambda: " << lambda << std::endl;
+	std::cout << "Lambda: " << lambda << std::endl << std::endl;
+
+	if (bUseFloat)
+	{
+		std::cout << "Precision: Single Precision (float)" << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "Precision: Double Precision (double)" << std::endl << std::endl;
+	}
 
 #ifdef USE_SSE
 	std::cout << "Vectorized: SSE" << std::endl << std::endl;
@@ -132,27 +136,18 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 		std::cout << "Mode: Classification" << std::endl << std::endl;
 	}
 
-#ifdef USE_BOUNDARIES
-	std::cout << "Boundary-Mode: Neumann" << std::endl << std::endl;
+	std::cout << "chosen gridtype: " << gridtype << std::endl << std::endl;
+
 	if (gridsize > 0)
 	{
-		std::cout << "$" << dataFile << ";" << testFile << ";Neumann;" << isRegression << ";" << start_level
+		std::cout << "$" << dataFile << ";" << testFile << ";" << isRegression << ";" << bUseFloat << ";" << gridtype << ";" << start_level
 		<< ";" << lambda << ";" << cg_max << ";" << cg_eps << ";" << refine_count << ";"  << refine_thresh
 		<< ";" << refine_points << ";" << gridsize << ";" << finaltr << ";" << finalte << ";" << time << std::endl << std::endl;
 	}
-#else
-	std::cout << "Boundary-Mode: Dirichlet-0" << std::endl << std::endl;
-	if (gridsize > 0)
-	{
-		std::cout << "$" << dataFile << ";" << testFile << ";Dirichlet0;" << isRegression << ";" << start_level
-		<< ";" << lambda << ";" << cg_max << ";" << cg_eps << ";" << refine_count << ";"  << refine_thresh
-		<< ";" << refine_points << ";" << gridsize << ";" << finaltr << ";" << finalte << ";" << time << std::endl << std::endl;
-	}
-#endif
 }
 
 void adaptClassificationTest(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
-		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points)
+		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points, std::string gridtype)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -164,7 +159,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << "===============================================================" << std::endl << std::endl;
 
     printSettings(dataFile, testFile, isRegression, start_level,
-			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points);
+			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype);
 
     double execTime = 0.0;
     double acc = 0.0;
@@ -186,12 +181,22 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
 	// Create Grid
 	sg::base::Grid* myGrid;
-#ifdef USE_BOUNDARIES
-	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
-//	myGrid = new sg::base::ModLinearGrid(nDim);
-#else
-	myGrid = new sg::base::LinearGrid(nDim);
-#endif
+	if (gridtype == "linearbound")
+	{
+		myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
+	}
+	else if (gridtype == "modlinear")
+	{
+		myGrid = new sg::base::ModLinearGrid(nDim);
+	}
+	else if (gridtype == "linear")
+	{
+		myGrid = new sg::base::LinearGrid(nDim);
+	}
+	else
+	{
+		std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
+	}
 
 	// Generate regular Grid with LEVELS Levels
 	sg::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
@@ -382,7 +387,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings(dataFile, testFile, isRegression, start_level,
-			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, myGrid->getSize(), acc, accTest, execTime);
+			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, myGrid->getSize(), acc, accTest, execTime);
 #if defined(USE_SSE) || defined(USE_AVX) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
@@ -418,7 +423,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 }
 
 void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
-		float lambda, size_t cg_max, float cg_eps, size_t refine_count, double refine_thresh, size_t refine_points)
+		float lambda, size_t cg_max, float cg_eps, size_t refine_count, double refine_thresh, size_t refine_points, std::string gridtype)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -426,7 +431,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << "===============================================================" << std::endl << std::endl;
 
     printSettings(dataFile, testFile, isRegression, start_level,
-			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points);
+			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, gridtype);
 
 	double execTime = 0.0;
     double acc = 0.0;
@@ -446,12 +451,22 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 
 	// Create Grid
 	sg::base::Grid* myGrid;
-#ifdef USE_BOUNDARIES
-	myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
-//	myGrid = new sg::base::ModLinearGrid(nDim);
-#else
-	myGrid = new sg::base::LinearGrid(nDim);
-#endif
+	if (gridtype == "linearbound")
+	{
+		myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
+	}
+	else if (gridtype == "modlinear")
+	{
+		myGrid = new sg::base::ModLinearGrid(nDim);
+	}
+	else if (gridtype == "linear")
+	{
+		myGrid = new sg::base::LinearGrid(nDim);
+	}
+	else
+	{
+		std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
+	}
 
 	// Generate regular Grid with LEVELS Levels
 	sg::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
@@ -657,7 +672,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings(dataFile, testFile, isRegression, start_level,
-			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, myGrid->getSize(), acc, accTest, execTime);
+			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, gridtype, myGrid->getSize(), acc, accTest, execTime);
     std::cout << "Needed time: " << execTime << " seconds (Single Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
@@ -685,6 +700,8 @@ int main(int argc, char *argv[])
 {
 	std::string dataFile;
 	std::string testFile;
+	std::string gridtype;
+	std::string precision;
 
 	double lambda = 0.0;
 	double cg_eps = 0.0;
@@ -697,7 +714,7 @@ int main(int argc, char *argv[])
 
 	bool regression;
 
-	if (argc != 11)
+	if (argc != 13)
 	{
 		std::cout << std::endl;
 		std::cout << "Help for classification/regression benchmark" << std::endl << std::endl;
@@ -705,6 +722,8 @@ int main(int argc, char *argv[])
 		std::cout << "	Traindata-file" << std::endl;
 		std::cout << "	Testdata-file" << std::endl;
 		std::cout << "	regression (0/1)" << std::endl;
+		std::cout << "	precision (SP,DP)" << std::endl;
+		std::cout << "	gridtype (linear,linearbound,modlinear)" << std::endl;
 		std::cout << "	Startlevel" << std::endl;
 		std::cout << "	lambda" << std::endl;
 		std::cout << "	CG max. iterations" << std::endl;
@@ -713,7 +732,7 @@ int main(int argc, char *argv[])
 		std::cout << "	Refinement threshold" << std::endl;
 		std::cout << "	#points refined" << std::endl << std::endl << std::endl;
 		std::cout << "Example call:" << std::endl;
-		std::cout << "	app.exe     test.data train.data 1 3 0.000001 250 0.0001 6 0.0 100" << std::endl << std::endl << std::endl;
+		std::cout << "	app.exe     test.data train.data 1 SP linearbound 3 0.000001 250 0.0001 6 0.0 100" << std::endl << std::endl << std::endl;
 	}
 	else
 	{
@@ -724,22 +743,32 @@ int main(int argc, char *argv[])
 		{
 			regression = true;
 		}
-		start_level = atoi(argv[4]);
-		lambda = atof(argv[5]);
-		cg_max = atoi(argv[6]);
-		cg_eps = atof(argv[7]);
-		refine_count = atoi(argv[8]);
-		refine_thresh = atof(argv[9]);
-		refine_points = atoi(argv[10]);
+		precision.assign(argv[4]);
+		gridtype.assign(argv[5]);
+		start_level = atoi(argv[6]);
+		lambda = atof(argv[7]);
+		cg_max = atoi(argv[8]);
+		cg_eps = atof(argv[9]);
+		refine_count = atoi(argv[10]);
+		refine_thresh = atof(argv[11]);
+		refine_points = atoi(argv[12]);
 
-#ifdef USEFLOAT
-		adaptClassificationTestSP(dataFile, testFile, regression, start_level,
-				(float)lambda, cg_max, (float)cg_eps, refine_count, refine_thresh, refine_points);
-
-#else
-		adaptClassificationTest(dataFile, testFile, regression, start_level,
-				lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points);
-#endif
+		if (precision == "SP")
+		{
+			bUseFloat = true;
+			adaptClassificationTestSP(dataFile, testFile, regression, start_level,
+				(float)lambda, cg_max, (float)cg_eps, refine_count, refine_thresh, refine_points, gridtype);
+		}
+		else if (precision == "DP")
+		{
+			bUseFloat = false;
+			adaptClassificationTest(dataFile, testFile, regression, start_level,
+				lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype);
+		}
+		else
+		{
+			std::cout << "Unsupported precision type has been chosen! Existing...." << std::endl << std::endl;
+		}
 	}
 
 	return 0;
