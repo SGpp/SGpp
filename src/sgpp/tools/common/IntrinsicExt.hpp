@@ -9,11 +9,17 @@
 #define INTRINSICEXT_HPP
 
 #ifdef __ICC
-// include SSE3 intrinsics
+#ifdef USEAVX
+#include <immintrin.h>
+#else
 #include <pmmintrin.h>
+#include "common/avxintrin_emu.h"
+#endif
 
 const __m128 _mm_abs_ps( const __m128& x);
 const __m128d _mm_abs_pd( const __m128d& x);
+
+const __m256 _mm256_abs_ps( const __m256& x);
 #endif
 
 #endif /* INTRINSICEXT_HPP */

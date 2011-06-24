@@ -19,25 +19,7 @@
 #else
 #include "common/avxintrin_emu.h"
 #endif
-
-union floatAbsMaskAVX
-{
-   const float f;
-   const int i;
-
-   floatAbsMaskAVX() : i(0x7FFFFFFF) {}
-};
-
-__declspec(align(32)) const floatAbsMaskAVX absMaskSPAVX;
-
-static const __m256 abs2MaskSPAVX = _mm256_broadcast_ss( &(absMaskSPAVX.f) );
-
-const __m256 _mm256_abs_ps( const __m256& x)
-{
-       return _mm256_and_ps( abs2MaskSPAVX, x);
-}
-
-static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
+#include "tools/common/IntrinsicExt.hpp"
 #endif
 
 #define CHUNKDATAPOINTS_AVX 48 // must be divide-able by 48
@@ -111,6 +93,8 @@ double OperationMultipleEvalIterativeSPAVXLinear::multTransposeVectorized(sg::ba
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (end-k));
 
 #ifdef __ICC
+			static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
+
 			for (size_t i = 0; i < source_size; i+=CHUNKDATAPOINTS_AVX)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
@@ -282,6 +266,7 @@ double OperationMultipleEvalIterativeSPAVXLinear::multVectorized(sg::base::DataV
 			{
 #ifdef __ICC
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m));
+				static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_AVX; i+=48)
 				{

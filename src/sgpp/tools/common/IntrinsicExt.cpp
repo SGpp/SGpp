@@ -6,8 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #ifdef __ICC
-// include SSE3 intrinsics
-#include <pmmintrin.h>
+#include "tools/common/IntrinsicExt.hpp"
 
 union floatAbsMask
 {
@@ -39,5 +38,22 @@ static const __m128d abs2Maskd = _mm_load1_pd( &absMaskd.d );
 const __m128d _mm_abs_pd( const __m128d& x)
 {
        return _mm_and_pd( abs2Maskd, x);
+}
+
+union floatAbsMaskAVX
+{
+   const float fAVX;
+   const int iAVX;
+
+   floatAbsMaskAVX() : iAVX(0x7FFFFFFF) {}
+};
+
+__declspec(align(32)) const floatAbsMaskAVX absMaskSPAVX;
+
+static const __m256 abs2MaskSPAVX = _mm256_broadcast_ss( &(absMaskSPAVX.fAVX) );
+
+const __m256 _mm256_abs_ps( const __m256& x)
+{
+       return _mm256_and_ps( abs2MaskSPAVX, x);
 }
 #endif
