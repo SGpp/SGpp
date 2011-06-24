@@ -41,7 +41,7 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeSSEModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
+	OperationMultipleEvalIterativeSSEModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
