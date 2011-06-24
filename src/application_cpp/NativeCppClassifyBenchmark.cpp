@@ -181,7 +181,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
 	// Create Grid
 	sg::base::Grid* myGrid;
-	if (gridtype == "linearbound")
+	if (gridtype == "linearboundary")
 	{
 		myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
 	}
@@ -451,7 +451,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 
 	// Create Grid
 	sg::base::Grid* myGrid;
-	if (gridtype == "linearbound")
+	if (gridtype == "linearboundary")
 	{
 		myGrid = new sg::base::LinearTrapezoidBoundaryGrid(nDim);
 	}
@@ -723,7 +723,7 @@ int main(int argc, char *argv[])
 		std::cout << "	Testdata-file" << std::endl;
 		std::cout << "	regression (0/1)" << std::endl;
 		std::cout << "	precision (SP,DP)" << std::endl;
-		std::cout << "	gridtype (linear,linearbound,modlinear)" << std::endl;
+		std::cout << "	gridtype (linear,linearboundary,modlinear)" << std::endl;
 		std::cout << "	Startlevel" << std::endl;
 		std::cout << "	lambda" << std::endl;
 		std::cout << "	CG max. iterations" << std::endl;
@@ -732,7 +732,7 @@ int main(int argc, char *argv[])
 		std::cout << "	Refinement threshold" << std::endl;
 		std::cout << "	#points refined" << std::endl << std::endl << std::endl;
 		std::cout << "Example call:" << std::endl;
-		std::cout << "	app.exe     test.data train.data 1 SP linearbound 3 0.000001 250 0.0001 6 0.0 100" << std::endl << std::endl << std::endl;
+		std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100" << std::endl << std::endl << std::endl;
 	}
 	else
 	{
