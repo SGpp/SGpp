@@ -28,13 +28,13 @@ const __m128 _mm_abs_ps( const __m128& x)
 union doubleAbsMask
 {
    const double d;
-   const __int64 i;
+   const __int64 ilong;
 
-   doubleAbsMask() : i(0x7FFFFFFFFFFFFFFF) {}
+   doubleAbsMask() : ilong(0x7FFFFFFFFFFFFFFF) {}
 };
 
 _MM_ALIGN16 const doubleAbsMask absMaskd;
-static const __m128d abs2Maskd = _mm_loaddup_pd( &absMaskd.d );
+static const __m128d abs2Maskd = _mm_load1_pd( &absMaskd.d );
 
 const __m128d _mm_abs_pd( const __m128d& x)
 {
