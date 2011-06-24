@@ -124,33 +124,33 @@ double OperationMultipleEvalIterativeSSEModLinear::multTransposeVectorized(sg::b
 
 							__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 
-							eval_0 = _mm_mul_ps(eval_0, level);
-							eval_1 = _mm_mul_ps(eval_1, level);
-							eval_2 = _mm_mul_ps(eval_2, level);
-							eval_3 = _mm_mul_ps(eval_3, level);
-							eval_4 = _mm_mul_ps(eval_4, level);
-							eval_5 = _mm_mul_ps(eval_5, level);
+							eval_0 = _mm_mul_pd(eval_0, level);
+							eval_1 = _mm_mul_pd(eval_1, level);
+							eval_2 = _mm_mul_pd(eval_2, level);
+							eval_3 = _mm_mul_pd(eval_3, level);
+							eval_4 = _mm_mul_pd(eval_4, level);
+							eval_5 = _mm_mul_pd(eval_5, level);
 
-							eval_0 = _mm_sub_ps(two, eval_0);
-							eval_1 = _mm_sub_ps(two, eval_1);
-							eval_2 = _mm_sub_ps(two, eval_2);
-							eval_3 = _mm_sub_ps(two, eval_3);
-							eval_4 = _mm_sub_ps(two, eval_4);
-							eval_5 = _mm_sub_ps(two, eval_5);
+							eval_0 = _mm_sub_pd(two, eval_0);
+							eval_1 = _mm_sub_pd(two, eval_1);
+							eval_2 = _mm_sub_pd(two, eval_2);
+							eval_3 = _mm_sub_pd(two, eval_3);
+							eval_4 = _mm_sub_pd(two, eval_4);
+							eval_5 = _mm_sub_pd(two, eval_5);
 
-							eval_0 = _mm_max_ps(zero, eval_0);
-							eval_1 = _mm_max_ps(zero, eval_1);
-							eval_2 = _mm_max_ps(zero, eval_2);
-							eval_3 = _mm_max_ps(zero, eval_3);
-							eval_4 = _mm_max_ps(zero, eval_4);
-							eval_5 = _mm_max_ps(zero, eval_5);
+							eval_0 = _mm_max_pd(zero, eval_0);
+							eval_1 = _mm_max_pd(zero, eval_1);
+							eval_2 = _mm_max_pd(zero, eval_2);
+							eval_3 = _mm_max_pd(zero, eval_3);
+							eval_4 = _mm_max_pd(zero, eval_4);
+							eval_5 = _mm_max_pd(zero, eval_5);
 
-							support_0 = _mm_mul_ps(support_0, eval_0);
-							support_1 = _mm_mul_ps(support_1, eval_1);
-							support_2 = _mm_mul_ps(support_2, eval_2);
-							support_3 = _mm_mul_ps(support_3, eval_3);
-							support_4 = _mm_mul_ps(support_4, eval_4);
-							support_5 = _mm_mul_ps(support_5, eval_5);
+							support_0 = _mm_mul_pd(support_0, eval_0);
+							support_1 = _mm_mul_pd(support_1, eval_1);
+							support_2 = _mm_mul_pd(support_2, eval_2);
+							support_3 = _mm_mul_pd(support_3, eval_3);
+							support_4 = _mm_mul_pd(support_4, eval_4);
+							support_5 = _mm_mul_pd(support_5, eval_5);
 						}
 						// most right basis function on every level
 						else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
@@ -404,52 +404,52 @@ double OperationMultipleEvalIterativeSSEModLinear::multVectorized(sg::base::Data
 							// most left basis function on every level
 							else if (ptrIndex[(j*dims)+d] == 1.0f)
 							{
-								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*source_size)+i]));
-								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*source_size)+i+2]));
-								__m128d eval_2 = _mm_load_pd(&(ptrData[(d*source_size)+i+4]));
-								__m128d eval_3 = _mm_load_pd(&(ptrData[(d*source_size)+i+6]));
-								__m128d eval_4 = _mm_load_pd(&(ptrData[(d*source_size)+i+8]));
-								__m128d eval_5 = _mm_load_pd(&(ptrData[(d*source_size)+i+10]));
+								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*result_size)+i]));
+								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*result_size)+i+2]));
+								__m128d eval_2 = _mm_load_pd(&(ptrData[(d*result_size)+i+4]));
+								__m128d eval_3 = _mm_load_pd(&(ptrData[(d*result_size)+i+6]));
+								__m128d eval_4 = _mm_load_pd(&(ptrData[(d*result_size)+i+8]));
+								__m128d eval_5 = _mm_load_pd(&(ptrData[(d*result_size)+i+10]));
 
 								__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 
-								eval_0 = _mm_mul_ps(eval_0, level);
-								eval_1 = _mm_mul_ps(eval_1, level);
-								eval_2 = _mm_mul_ps(eval_2, level);
-								eval_3 = _mm_mul_ps(eval_3, level);
-								eval_4 = _mm_mul_ps(eval_4, level);
-								eval_5 = _mm_mul_ps(eval_5, level);
+								eval_0 = _mm_mul_pd(eval_0, level);
+								eval_1 = _mm_mul_pd(eval_1, level);
+								eval_2 = _mm_mul_pd(eval_2, level);
+								eval_3 = _mm_mul_pd(eval_3, level);
+								eval_4 = _mm_mul_pd(eval_4, level);
+								eval_5 = _mm_mul_pd(eval_5, level);
 
-								eval_0 = _mm_sub_ps(two, eval_0);
-								eval_1 = _mm_sub_ps(two, eval_1);
-								eval_2 = _mm_sub_ps(two, eval_2);
-								eval_3 = _mm_sub_ps(two, eval_3);
-								eval_4 = _mm_sub_ps(two, eval_4);
-								eval_5 = _mm_sub_ps(two, eval_5);
+								eval_0 = _mm_sub_pd(two, eval_0);
+								eval_1 = _mm_sub_pd(two, eval_1);
+								eval_2 = _mm_sub_pd(two, eval_2);
+								eval_3 = _mm_sub_pd(two, eval_3);
+								eval_4 = _mm_sub_pd(two, eval_4);
+								eval_5 = _mm_sub_pd(two, eval_5);
 
-								eval_0 = _mm_max_ps(zero, eval_0);
-								eval_1 = _mm_max_ps(zero, eval_1);
-								eval_2 = _mm_max_ps(zero, eval_2);
-								eval_3 = _mm_max_ps(zero, eval_3);
-								eval_4 = _mm_max_ps(zero, eval_4);
-								eval_5 = _mm_max_ps(zero, eval_5);
+								eval_0 = _mm_max_pd(zero, eval_0);
+								eval_1 = _mm_max_pd(zero, eval_1);
+								eval_2 = _mm_max_pd(zero, eval_2);
+								eval_3 = _mm_max_pd(zero, eval_3);
+								eval_4 = _mm_max_pd(zero, eval_4);
+								eval_5 = _mm_max_pd(zero, eval_5);
 
-								support_0 = _mm_mul_ps(support_0, eval_0);
-								support_1 = _mm_mul_ps(support_1, eval_1);
-								support_2 = _mm_mul_ps(support_2, eval_2);
-								support_3 = _mm_mul_ps(support_3, eval_3);
-								support_4 = _mm_mul_ps(support_4, eval_4);
-								support_5 = _mm_mul_ps(support_5, eval_5);
+								support_0 = _mm_mul_pd(support_0, eval_0);
+								support_1 = _mm_mul_pd(support_1, eval_1);
+								support_2 = _mm_mul_pd(support_2, eval_2);
+								support_3 = _mm_mul_pd(support_3, eval_3);
+								support_4 = _mm_mul_pd(support_4, eval_4);
+								support_5 = _mm_mul_pd(support_5, eval_5);
 							}
 							// most right basis function on every level
 							else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
 							{
-								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*source_size)+i]));
-								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*source_size)+i+2]));
-								__m128d eval_2 = _mm_load_pd(&(ptrData[(d*source_size)+i+4]));
-								__m128d eval_3 = _mm_load_pd(&(ptrData[(d*source_size)+i+6]));
-								__m128d eval_4 = _mm_load_pd(&(ptrData[(d*source_size)+i+8]));
-								__m128d eval_5 = _mm_load_pd(&(ptrData[(d*source_size)+i+10]));
+								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*result_size)+i]));
+								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*result_size)+i+2]));
+								__m128d eval_2 = _mm_load_pd(&(ptrData[(d*result_size)+i+4]));
+								__m128d eval_3 = _mm_load_pd(&(ptrData[(d*result_size)+i+6]));
+								__m128d eval_4 = _mm_load_pd(&(ptrData[(d*result_size)+i+8]));
+								__m128d eval_5 = _mm_load_pd(&(ptrData[(d*result_size)+i+10]));
 
 								__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 								__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
@@ -492,12 +492,12 @@ double OperationMultipleEvalIterativeSSEModLinear::multVectorized(sg::base::Data
 							// all other basis functions
 							else
 							{
-								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*source_size)+i]));
-								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*source_size)+i+2]));
-								__m128d eval_2 = _mm_load_pd(&(ptrData[(d*source_size)+i+4]));
-								__m128d eval_3 = _mm_load_pd(&(ptrData[(d*source_size)+i+6]));
-								__m128d eval_4 = _mm_load_pd(&(ptrData[(d*source_size)+i+8]));
-								__m128d eval_5 = _mm_load_pd(&(ptrData[(d*source_size)+i+10]));
+								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*result_size)+i]));
+								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*result_size)+i+2]));
+								__m128d eval_2 = _mm_load_pd(&(ptrData[(d*result_size)+i+4]));
+								__m128d eval_3 = _mm_load_pd(&(ptrData[(d*result_size)+i+6]));
+								__m128d eval_4 = _mm_load_pd(&(ptrData[(d*result_size)+i+8]));
+								__m128d eval_5 = _mm_load_pd(&(ptrData[(d*result_size)+i+10]));
 
 								__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 								__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
