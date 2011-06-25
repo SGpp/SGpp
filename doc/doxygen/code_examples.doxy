@@ -112,8 +112,8 @@ found in the directory @c examples/, which we then discuss line by line.
 
 which can be compiled and executed by
 @code
-> g++ -O3 -I../src/sgpp -L../lib/sgpp -o c++_simple c++_simple.cpp -lsgppbase -lsgpp
-> ./c++-simple
+> g++ -O3 -I../src/sgpp -L../lib/sgpp -o c++_simple c++_simple.cpp -lsgppbase
+> ./c++_simple
 @endcode 
 in the directory @c examples/.
 

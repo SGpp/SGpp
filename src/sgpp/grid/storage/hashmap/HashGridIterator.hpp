@@ -261,11 +261,11 @@ public:
 	}
 
 	/**
-	 * gets the index at a given position
+	 * Gets level @c l and index @c i in dimension @c d of the current grid point
 	 *
-	 * @param d the dimension of the gridpoint
-	 * @param l the ansatzfunction's level
-	 * @param i the ansartfunction's index
+	 * @param d the dimension of interest
+	 * @param l the ansatz function's level
+	 * @param i the ansatz function's index
 	 */
 	void get(size_t d, typename index_type::level_type &l,
 			typename index_type::index_type &i) const
@@ -274,13 +274,12 @@ public:
 	}
 
 	/**
-	 * sets the index to a given position
+	 * Sets level @c l and index @c i in dimension @c d of the current grid point.
+         * Recomputes the hash value of the current grid point.
 	 *
-	 * @param d the dimension of the gridpoint
-	 * @param l the ansatzfunction's level
-	 * @param i the ansartfunction's index
-	 *
-	 * @todo (pflueged) What is set and get useful for in the Iterator? Check and remove.
+	 * @param d the dimension of interest
+	 * @param l the ansatz function's level
+	 * @param i the ansatz function's index
 	 */
 	void set(size_t d, typename index_type::level_type l,
 			typename index_type::index_type i)
@@ -290,7 +289,8 @@ public:
 	}
 
 	/**
-	 * pushs a position to the index
+	 * Sets level @c l and index @c i in dimension @c d of the current grid point.
+         * Does not recompute hash value of the current grid point.
 	 *
 	 * @param d the dimension of the gridpoint
 	 * @param l the ansatz function's level

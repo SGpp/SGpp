@@ -504,7 +504,7 @@ def run(grid, training, classes):
 #
 def evaluateError(classes, alpha, m):   
     error = DataVector(len(classes))
-    m.B.multTranspose(alpha, m.x, error)
+    m.B.mult(alpha, error)
     error.sub(classes) # error vector
     error.sqr() # entries squared
     # output some statistics
@@ -523,14 +523,14 @@ def evaluateError(classes, alpha, m):
     Cnorm = alpha.dotProduct(temp)
     M = len(classes)
     temp2 = DataVector(M)
-    m.B.multTranspose(alpha, m.x, temp2)
-    m.B.mult(temp2, m.x, temp)
+    m.B.mult(alpha, temp2)
+    m.B.multTranspose(temp2, temp)
     BBTnorm = alpha.dotProduct(temp)
     print "functional: %g + %g * %g = %g" % (mse, m.l, Cnorm, mse+m.l*Cnorm)
 
     # calculate error per basis function
     errors = DataVector(len(alpha))
-    m.B.mult(error, m.x, errors)
+    m.B.multTranspose(error, errors)
     errors.componentwise_mult(alpha)
     return (mse, errors)
 
@@ -960,7 +960,7 @@ def performFoldRegression(dvec,cvec):
             
             # calculate Mean Square Error for training set
             temp = DataVector(classes.getNrows())
-            m.B.multTranspose(alpha, m.x, temp)
+            m.B.mult(alpha, temp)
             temp.sub(classes)
             temp.sqr()
             meanSqrErrorsTraining.append(temp.sum() / temp.getNrows())

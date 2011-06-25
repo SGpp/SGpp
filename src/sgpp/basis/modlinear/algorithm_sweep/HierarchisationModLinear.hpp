@@ -72,7 +72,7 @@ protected:
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
 };
 
-	// namespace detail
+	// namespace base
 
 }	// namespace sg
 }
