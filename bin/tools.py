@@ -1002,7 +1002,7 @@ class Matrix:
         if self.CMode == "laplace":
             self.C = createOperationLaplace(grid)
         elif self.CMode == "identity":
-            pass
+            self.C = createOperationIdentity(grid)
         elif self.CMode == "identity_no_level1":
             pass
         elif self.CMode == "ratio":
