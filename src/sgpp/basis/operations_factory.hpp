@@ -87,6 +87,7 @@
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPAVXModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSSEModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeAVXModLinear.hpp"
 
 #ifdef USEOCL
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
@@ -729,10 +730,10 @@ using namespace sg::datadriven;
 			{
 				return new sg::parallel::OperationMultipleEvalIterativeSSELinear(grid_type.getStorage(), dataset);
 			}
-//			else if (VecType == "AVX")
-//			{
-//				return new sg::parallel::OperationMultipleEvalIterativeAVXLinear(grid_type.getStorage(), dataset);
-//			}
+			else if (VecType == "AVX")
+			{
+				return new sg::parallel::OperationMultipleEvalIterativeAVXLinear(grid_type.getStorage(), dataset);
+			}
 //		#ifdef USEOCL
 //			else if (VecType == "OCL")
 //			{
