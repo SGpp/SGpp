@@ -14,12 +14,6 @@
 #endif
 
 #ifdef __ICC
-// include SSE3 intrinsics
-#ifdef USEAVX
-#include <immintrin.h>
-#else
-#include "common/avxintrin_emu.h"
-#endif
 #include "tools/common/IntrinsicExt.hpp"
 #endif
 
@@ -387,8 +381,6 @@ double OperationMultipleEvalIterativeSPAVXModLinear::multVectorized(sg::base::Da
 			{
 #ifdef __ICC
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m));
-
-				static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=48)
 				{

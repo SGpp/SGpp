@@ -14,11 +14,6 @@
 #endif
 
 #ifdef __ICC
-#ifdef USEAVX
-#include <immintrin.h>
-#else
-#include "common/avxintrin_emu.h"
-#endif
 #include "tools/common/IntrinsicExt.hpp"
 #endif
 
