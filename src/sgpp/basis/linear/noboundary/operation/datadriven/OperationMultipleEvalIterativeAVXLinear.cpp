@@ -19,25 +19,7 @@
 #else
 #include "common/avxintrin_emu.h"
 #endif
-
-union doubleAbsMaskAVX
-{
-   const double d;
-   const __int64 i;
-
-   doubleAbsMaskAVX() : i(0x7FFFFFFFFFFFFFFF) {}
-};
-
-__declspec(align(32)) const doubleAbsMaskAVX absMaskAVX;
-
-static const __m256d abs2MaskAVX = _mm256_broadcast_sd( &(absMaskAVX.d) );
-
-const __m256d _mm256_abs_pd( const __m256d& x)
-{
-       return _mm256_and_pd( abs2MaskAVX, x);
-}
-
-static const __m256i ldStMaskAVX = _mm256_set_epi64x(0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0xFFFFFFFFFFFFFFFF);
+#include "tools/common/IntrinsicExt.hpp"
 #endif
 
 #define CHUNKDATAPOINTS_AVX 24 // must be divide-able by 24
@@ -112,6 +94,8 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(sg::base
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (end-k));
 
 #ifdef __ICC
+			static const __m256i ldStMaskAVX = _mm256_set_epi64x(0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0xFFFFFFFFFFFFFFFF);
+
 			for (size_t i = 0; i < source_size; i+=CHUNKDATAPOINTS_AVX)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
@@ -411,4 +395,5 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVec
 }
 
 }
+
 }

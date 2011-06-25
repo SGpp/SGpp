@@ -56,4 +56,21 @@ const __m256 _mm256_abs_ps( const __m256& x)
 {
        return _mm256_and_ps( abs2MaskSPAVX, x);
 }
+
+union doubleAbsMaskAVX
+{
+   const double dAVX;
+   const __int64 ilongAVX;
+
+   doubleAbsMaskAVX() : ilongAVX(0x7FFFFFFFFFFFFFFF) {}
+};
+
+__declspec(align(32)) const doubleAbsMaskAVX absMaskAVX;
+
+static const __m256d abs2MaskAVX = _mm256_broadcast_sd( &(absMaskAVX.dAVX) );
+
+const __m256d _mm256_abs_pd( const __m256d& x)
+{
+       return _mm256_and_pd( abs2MaskAVX, x);
+}
 #endif

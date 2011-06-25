@@ -20,6 +20,7 @@ const __m128 _mm_abs_ps( const __m128& x);
 const __m128d _mm_abs_pd( const __m128d& x);
 
 const __m256 _mm256_abs_ps( const __m256& x);
+const __m256d _mm256_abs_pd( const __m256d& x);
 #endif
 
 #endif /* INTRINSICEXT_HPP */
