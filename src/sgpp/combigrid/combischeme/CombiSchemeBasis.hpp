@@ -9,6 +9,7 @@
 #define COMBICOMBISCHEMEBASIS_HPP_
 
 #include "combigrid/utils/combigrid_ultils.hpp"
+//#include "combigrid/combigridkernel/CombiGridKernel.hpp"
 
 using namespace std;
 
@@ -19,6 +20,11 @@ namespace combigrid {
 	class CombiSchemeBasis {
 
 	public:
+
+		/** Empty constructor */
+		CombiSchemeBasis(){
+			dim_=0;levels_vector_.resize(0);levels_.resize(dim_,0);cofficients_.resize(0);
+		}
 
 		/** Ctor */
 		CombiSchemeBasis(int dim, int level) {
@@ -39,6 +45,8 @@ namespace combigrid {
 		/** returns the level vector for one subspace */
 		inline const std::vector<int>& getLevel(int i) const { return levels_vector_[i]; }
 
+		inline const std::vector<std::vector<int> >& getLevels() const{return levels_vector_;}
+
 		/** the levels of the full grid which we extrapolate with the combi scheme*/
 		inline const std::vector<int>& getMaxLevel() const { return levels_; }
 
@@ -47,6 +55,13 @@ namespace combigrid {
 
 		/** returns the coefficient for one subspace */
 		inline std::vector<double> getCoef() const { return cofficients_; }
+
+		/** Method adding a new full grid.
+		 * Coefficients and levels are updated and the indices of the changed
+		 * levels are returned.
+		 */
+		std::vector<int> updateScheme(std::vector<std::vector<int> > levelsNew,std::vector<double> coef) ;
+
 
 	protected:
 
@@ -59,11 +74,12 @@ namespace combigrid {
 		/** the level vector for each space */
 		std::vector< std::vector<int> > levels_vector_;
 
+		/** the coefficients for the spaces */
+		std::vector< double > cofficients_;
 		/** the levels of the full grid which we*/
 		std::vector<int> levels_;
 
-		/** the coefficients for the spaces */
-		std::vector< double > cofficients_;
+
 	};
 
 }

@@ -12,6 +12,7 @@ grid/combination/FullGridSet.cpp
 grid/combination/LinearFullGrid.cpp
 combigrid/basisfunction/CombiLinearBasisFunction.cpp
 combigrid/combigrid/SerialCombiGrid.cpp
+combigrid/combigrid/AdaptiveSerialCombiGrid.cpp
 combigrid/combischeme/CombiS_CT.cpp  
 combigrid/combischeme/CombiSchemeBasis.cpp  
 combigrid/combischeme/CombiTS_CT.cpp

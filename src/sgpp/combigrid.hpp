@@ -16,6 +16,7 @@
 // ----------- Combi Grid Includes ----------
 #include "combigrid/combigrid/AbstractCombiGrid.hpp"
 #include "combigrid/combigrid/SerialCombiGrid.hpp"
+#include "combigrid/combigrid/AdaptiveSerialCombiGrid.hpp"
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
 
 #include "combigrid/combischeme/CombiSchemeBasis.hpp"
