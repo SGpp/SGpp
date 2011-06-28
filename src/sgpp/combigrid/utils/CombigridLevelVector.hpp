@@ -107,6 +107,12 @@ public:
 	 */
 	static CombigridLevelVector getCombiLevels(CombigridLevelVector in);
 
+	/** Add new active full grid. The changes of the combischeme are returned */
+	CombigridLevelVector getChanges(std::vector<int> newFullGridLevels);
+
+	/** Add a new FullGrid to the current CombigridLevelVec*/
+	void update(std::vector<int> newFullGridLevels);
+
 protected:
 	std::vector<std::vector<int> > levelVec_;
 	std::vector<double> coef_;

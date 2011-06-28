@@ -8,8 +8,9 @@
 #ifndef COMBICOMBIGRIDKERNEL_HPP_
 #define COMBICOMBIGRIDKERNEL_HPP_
 
-#include "combigrid/fullgrid/CombiFullGrid.hpp"
 #include "combigrid/combischeme/CombiSchemeBasis.hpp"
+#include "combigrid/fullgrid/CombiFullGrid.hpp"
+#include "combigrid/utils/CombigridLevelVector.hpp"
 
 using namespace std;
 
@@ -29,6 +30,7 @@ public:
 		coefs_.resize(0);
 		nrFG_ = 0;
 		hasBoundaryPts_.resize(dim,true);
+//		currentScheme_= new CombiSchemeBasis(dim,0);
 	}
 
 	/** Ctor with a combi scheme as an input */
@@ -38,6 +40,7 @@ public:
 		fullgrids_.resize(0);
 		coefs_.resize(0);
 		nrFG_ = 0;
+//		currentScheme_=combischeme;
 		initialize( combischeme , hasBoundaryPts );
 	}
 
@@ -135,10 +138,39 @@ public:
 	int getDim() const { return dim_; }
 
 	/** return the coefficient of one space */
-	int getCoef(int i) const { return coefs_[i]; }
+	int getCoef(int i) const { return coefs_[i];
+//		return currentScheme_[0].getCoef(i);
+	}
+
+	std::vector<double> getCoef() {return coefs_;}
 
 	/** returns the array of flags, which shows for each dimensions if there are boundary points */
 	const std::vector<bool>& getBoundaryFlags() const { return hasBoundaryPts_;}
+
+
+	/** changing the levels and coefs*/
+	void updateCombiScheme(/* CombiSchemeBasis* currentScheme_,*/std::vector<int> newCoef,std::vector<int> newFullGridLevel,std::vector<int> changes){
+//		CombigridLevelVector current(currentScheme_[0].getLevels(),currentScheme_[0].getCoef());
+//		current=current.getChanges(newFullGridLevel);
+//		std::vector<int> changes=(*currentScheme_).updateScheme(current.getLevelVec(),current.getCoef());
+//		std::cout<<"length of coeff: "<<currentScheme_->getCoef().size()<<std::endl;
+
+		for(unsigned int i=0;i<changes.size();i++){
+			if(changes[i]<(int) coefs_.size()){
+//				coefs_[changes[i]]=currentScheme_[0].getCoef(changes[i]);
+				coefs_[changes[i]]=newCoef[i];
+			}
+			else{
+				std::cout<<"in kernel: "<<i<<" "<<changes[i]<<std::endl;
+//				addFullGrid(currentScheme_[0].getLevel(changes[i]),hasBoundaryPts_,currentScheme_[0].getCoef(changes[i]));
+				addFullGrid(newFullGridLevel,hasBoundaryPts_,newCoef[i]);
+			}
+		}
+
+	}
+
+//	CombiSchemeBasis* getCombiScheme(){return currentScheme_;}
+
 
 private:
 
@@ -165,6 +197,8 @@ private:
 
 	/** for each dimensions if there are boundary points in that dimension*/
 	std::vector<bool> hasBoundaryPts_;
+
+//	CombiSchemeBasis currentScheme_;
 };
 
 }

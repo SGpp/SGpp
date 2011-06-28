@@ -189,7 +189,7 @@ namespace std {
 //%include "FullGridSet.i"
 
 %include "src/sgpp/combigrid/utils/combigrid_ultils.hpp"
-%include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"
+%include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"  
 %include "src/sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
 %include "src/sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp"
 %include "src/sgpp/combigrid/domain/AbstractStretchingMaker.hpp"
@@ -206,6 +206,7 @@ namespace std {
 %include "src/sgpp/combigrid/combigridkernel/CombiGridKernel.hpp"
 %include "src/sgpp/combigrid/combigrid/AbstractCombiGrid.hpp"
 %include "src/sgpp/combigrid/combigrid/SerialCombiGrid.hpp"
+%include "src/sgpp/combigrid/combigrid/AdaptiveSerialCombiGrid.hpp" 
 
 %rename(__add__) combigrid::CombigridLevelVector::operator+;
 %rename(__mul__) combigrid::CombigridLevelVector::operator*;
@@ -218,5 +219,6 @@ namespace std {
 %template(doubleFullGrid) combigrid::FullGrid<double>;
 %template(FullGridC) combigrid::FullGrid< complex<double> >;
 %template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
+%template(CombiGridKernelD) combigrid::CombiGridKernel< double >;   
 %template(ComplexVector) std::vector< complex<double> >;
 #endif

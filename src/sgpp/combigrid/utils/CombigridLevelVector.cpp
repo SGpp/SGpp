@@ -140,6 +140,23 @@ CombigridLevelVector CombigridLevelVector::getCombiLevels(CombigridLevelVector i
 
 }
 
+CombigridLevelVector CombigridLevelVector::getChanges(std::vector<int> in){
+	CombigridLevelVector inVector(in);
+	CombigridLevelVector unity(in.size());
+//	CombigridLevelVector current(levelVec_,coef_);
+	std::vector<CombigridLevelVector> currentVec=(*this).split();
+	for(unsigned int i=0;i<levelVec_.size();i++){
+		inVector=inVector*(unity-currentVec[i]);
+	}
+	inVector.doAddition();
+	return inVector;
+
+}
+
+void CombigridLevelVector::update(std::vector<int> in){
+	(*this)=(*this)+(*this).getChanges(in);
+}
+
 }
 
 

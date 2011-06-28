@@ -38,19 +38,21 @@ namespace combigrid{
     	 * @param combischeme combi schme of the combi grid
     	 * @param hasBoundaryPts array of flag to indicate weather we have boundary points in the dimension*/
 		AbstractCombiGrid(const CombiSchemeBasis* combischeme ,
-				const std::vector<bool>& hasBoundaryPts ) :combischeme_(combischeme) , gridDomain_(0){
+				const std::vector<bool>& hasBoundaryPts ) :gridDomain_(0){
 			// create the combi kernel which has the non initialized
-			combikernel_ = new CombiGridKernelD( combischeme , hasBoundaryPts );
+			combischeme_ = new CombiSchemeBasis(*combischeme);
+			combikernel_ = new CombiGridKernelD( combischeme_ , hasBoundaryPts );
 		}
 
     	/** Ctor
     	 * @param combischeme combi schme of the combi grid
     	 * @param hasBoundaryPts array of flag to indicate weather we have boundary points in the dimension*/
-		AbstractCombiGrid(const CombiSchemeBasis* combischeme ,
-				bool hasBoundaryPts = true ) :combischeme_(combischeme) , gridDomain_(0){
+		AbstractCombiGrid(const  CombiSchemeBasis* combischeme ,
+				bool hasBoundaryPts = true ) : gridDomain_(0){
 			// create the combi kernel which has the non initialized
 			std::vector<bool> boundaryTmp( combischeme->getDim() , hasBoundaryPts);
-			combikernel_ = new CombiGridKernelD( combischeme , boundaryTmp );
+			combischeme_ = new CombiSchemeBasis(*combischeme);
+			combikernel_ = new CombiGridKernelD( combischeme_ , boundaryTmp );
 		}
 
 		/** Dtor which deletes the kernel */
@@ -118,18 +120,17 @@ namespace combigrid{
 		 * @param alpha , the coefficient vector with which the combi grid values will be set */
 		virtual void deCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha) = 0;
 
-
 		/** return the combi scheme */
 		inline const CombiSchemeBasis* getCombiScheme() const { return combischeme_; }
 
-	protected:
-
 		/** return the combi kernel, needed for the combination of the full grids */
 		inline const CombiGridKernelD* getCombiKernel() const { return combikernel_; }
+	protected:
+
 
 
 		/** pointer to the combi scheme which is set from the constructor argument */
-		const CombiSchemeBasis* combischeme_;
+		CombiSchemeBasis* combischeme_;
 
 		/** the combi kernel which stores the full grids */
 		CombiGridKernelD* combikernel_;
