@@ -26,11 +26,16 @@ class OCLKernels
 private:
 	bool isFirstTimeMultTransSP;
 	bool isFirstTimeMultSP;
-	bool isVeryFirstTimeSP;
+	bool isFirstTimeMultTransModSP;
+	bool isFirstTimeMultModSP;
 
 	bool isFirstTimeMultTransDP;
 	bool isFirstTimeMultDP;
+	bool isFirstTimeMultTransModDP;
+	bool isFirstTimeMultModDP;
+
 	bool isVeryFirstTimeDP;
+	bool isVeryFirstTimeSP;
 
 public:
 	OCLKernels();
@@ -48,9 +53,18 @@ public:
 	double multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition);
 
 	double multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition);
+
+	double multTransModSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition);
+
+	double multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition);
+
+	double multTransModOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition);
+
+	double multModOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition);
 };
 
 }
+
 }
 
 #endif /* OCLKERNELS_HPP */

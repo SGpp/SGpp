@@ -94,6 +94,9 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
+
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
 #endif
 
 #ifdef USEARBB
@@ -734,16 +737,16 @@ using namespace sg::datadriven;
 			{
 				return new sg::parallel::OperationMultipleEvalIterativeAVXLinear(grid_type.getStorage(), dataset);
 			}
-//		#ifdef USEOCL
-//			else if (VecType == "OCL")
-//			{
-//				return new sg::parallel::OperationMultipleEvalIterativeOCLLinear(grid_type.getStorage(), dataset);
-//			}
+		#ifdef USEOCL
+			else if (VecType == "OCL")
+			{
+				return new sg::parallel::OperationMultipleEvalIterativeOCLModLinear(grid_type.getStorage(), dataset);
+			}
 //			else if (VecType == "HYBRID_SSE_OCL")
 //			{
-//				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid_type.getStorage(), dataset);
+//				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLModLinear(grid_type.getStorage(), dataset);
 //			}
-//		#endif
+		#endif
 			else
 			{
 				throw factory_exception("Unsupported vectorization type");
@@ -838,16 +841,16 @@ using namespace sg::datadriven;
 			{
 				return new sg::parallel::OperationMultipleEvalIterativeSPAVXModLinear(grid_type.getStorage(), dataset);
 			}
-//		#ifdef USEOCL
-//			else if (VecType == "OCL")
-//			{
-//				return new sg::parallel::OperationMultipleEvalIterativeOCLLinear(grid_type.getStorage(), dataset);
-//			}
+		#ifdef USEOCL
+			else if (VecType == "OCL")
+			{
+				return new sg::parallel::OperationMultipleEvalIterativeSPOCLModLinear(grid_type.getStorage(), dataset);
+			}
 //			else if (VecType == "HYBRID_SSE_OCL")
 //			{
-//				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid_type.getStorage(), dataset);
+//				return new sg::parallel::OperationMultipleEvalIterativeSPHybridSSEOCLModLinear(grid_type.getStorage(), dataset);
 //			}
-//		#endif
+		#endif
 			else
 			{
 				throw factory_exception("Unsupported vectorization type");
