@@ -97,6 +97,8 @@
 
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.hpp"
 #endif
 
 #ifdef USEARBB
@@ -742,10 +744,10 @@ using namespace sg::datadriven;
 			{
 				return new sg::parallel::OperationMultipleEvalIterativeOCLModLinear(grid_type.getStorage(), dataset);
 			}
-//			else if (VecType == "HYBRID_SSE_OCL")
-//			{
-//				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLModLinear(grid_type.getStorage(), dataset);
-//			}
+			else if (VecType == "HYBRID_SSE_OCL")
+			{
+				return new sg::parallel::OperationMultipleEvalIterativeHybridSSEOCLModLinear(grid_type.getStorage(), dataset);
+			}
 		#endif
 			else
 			{
@@ -846,10 +848,10 @@ using namespace sg::datadriven;
 			{
 				return new sg::parallel::OperationMultipleEvalIterativeSPOCLModLinear(grid_type.getStorage(), dataset);
 			}
-//			else if (VecType == "HYBRID_SSE_OCL")
-//			{
-//				return new sg::parallel::OperationMultipleEvalIterativeSPHybridSSEOCLModLinear(grid_type.getStorage(), dataset);
-//			}
+			else if (VecType == "HYBRID_SSE_OCL")
+			{
+				return new sg::parallel::OperationMultipleEvalIterativeSPHybridSSEOCLModLinear(grid_type.getStorage(), dataset);
+			}
 		#endif
 			else
 			{
