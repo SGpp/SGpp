@@ -280,14 +280,14 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectori
 								}
 								else if (ptrIndex[(j*dims)+d] == 1.0)
 								{
-									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									eval = 2.0 - eval;
 									double localSupport = std::max<double>(eval, 0.0);
 									curSupport *= localSupport;
 								}
 								else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0))
 								{
-									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									double index_calc = eval - (ptrIndex[(j*dims)+d]);
 									double last = 1.0 + index_calc;
 									double localSupport = std::max<double>(last, 0.0);
@@ -295,7 +295,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectori
 								}
 								else
 								{
-									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									double index_calc = eval - (ptrIndex[(j*dims)+d]);
 									double abs = fabs(index_calc);
 									double last = 1.0 - abs;
@@ -541,14 +541,14 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multVectorized(sg::b
 								}
 								else if (ptrIndex[(j*dims)+d] == 1.0)
 								{
-									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									eval = 2.0 - eval;
 									double localSupport = std::max<double>(eval, 0.0);
 									curSupport *= localSupport;
 								}
 								else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0))
 								{
-									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									double index_calc = eval - (ptrIndex[(j*dims)+d]);
 									double last = 1.0 + index_calc;
 									double localSupport = std::max<double>(last, 0.0);
@@ -556,7 +556,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multVectorized(sg::b
 								}
 								else
 								{
-									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									double index_calc = eval - (ptrIndex[(j*dims)+d]);
 									double abs = fabs(index_calc);
 									double last = 1.0 - abs;

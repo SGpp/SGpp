@@ -272,14 +272,14 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multTransposeVecto
 								}
 								else if (ptrIndex[(j*dims)+d] == 1.0f)
 								{
-									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									eval = 2.0f - eval;
 									float localSupport = std::max<float>(eval, 0.0f);
 									curSupport *= localSupport;
 								}
 								else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
 								{
-									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									float index_calc = eval - (ptrIndex[(j*dims)+d]);
 									float last = 1.0f + index_calc;
 									float localSupport = std::max<float>(last, 0.0f);
@@ -287,7 +287,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multTransposeVecto
 								}
 								else
 								{
-									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									float index_calc = eval - (ptrIndex[(j*dims)+d]);
 									float abs = fabs(index_calc);
 									float last = 1.0f - abs;
@@ -532,14 +532,14 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multVectorized(sg:
 								}
 								else if (ptrIndex[(j*dims)+d] == 1.0f)
 								{
-									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									eval = 2.0f - eval;
 									float localSupport = std::max<float>(eval, 0.0f);
 									curSupport *= localSupport;
 								}
 								else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
 								{
-									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									float index_calc = eval - (ptrIndex[(j*dims)+d]);
 									float last = 1.0f + index_calc;
 									float localSupport = std::max<float>(last, 0.0f);
@@ -547,7 +547,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multVectorized(sg:
 								}
 								else
 								{
-									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dim)+d]));
+									float eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d]));
 									float index_calc = eval - (ptrIndex[(j*dims)+d]);
 									float abs = fabs(index_calc);
 									float last = 1.0f - abs;
