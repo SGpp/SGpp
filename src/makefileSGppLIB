@@ -85,7 +85,7 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o\
 	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o\
 	OperationMultipleEvalIterativeSSEModLinear.o OperationMultipleEvalIterativeSPAVXModLinear.o\
-	OperationMultipleEvalIterativeAVXModLinear.o
+	OperationMultipleEvalIterativeAVXModLinear.o DensitySystemMatrix.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -708,6 +708,9 @@ LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o : $(SRCDIR)algorithm/pd
 
 PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+
+DensitySystemMatrix.o : $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DensitySystemMatrix.o $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
 
 DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
