@@ -23,6 +23,8 @@
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 #include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
 
+#include "algorithm/datadriven/DensitySystemMatrix.hpp"
+
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
