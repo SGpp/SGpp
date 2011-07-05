@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <cstring>
@@ -1077,7 +1078,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 
 		std::string program_src = stream_program_src.str();
 
-		//std::cout << program_src << std::endl;
+		std::cout << program_src << std::endl;
 
 	    // setting the program
 	    const char* kernel_src = program_src.c_str();
@@ -1809,7 +1810,7 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 			stream_program_src << "			}" << std::endl;
 			stream_program_src << "			else " << std::endl;
 			stream_program_src << "			{" << std::endl;
-			stream_program_src << "				curSupport *= max(1.0 - fabs( ( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
+			stream_program_src << "				curSupport *= max(1.0f - fabs( ( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
 			stream_program_src << "			}" << std::endl;
 		}
 		stream_program_src << std::endl << "		myResult += curSupport;" << std::endl;
@@ -1840,12 +1841,13 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 			std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
 
 			size_t len;
-			char buffer[2048];
+			char buffer[4096];
 
 			// get the build log
 			clGetProgramBuildInfo(program_multTransModSP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
 
 			std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
+
 			return 0.0;
 		}
 
@@ -2081,7 +2083,7 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
 			stream_program_src << "		}" << std::endl;
 			stream_program_src << "		else " << std::endl;
 			stream_program_src << "		{" << std::endl;
-			stream_program_src << "			curSupport *= max(1.0 - fabs( ( (ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) ), 0.0f);" << std::endl;
+			stream_program_src << "			curSupport *= max(1.0f - fabs( ( (ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) ), 0.0f);" << std::endl;
 			stream_program_src << "		}" << std::endl;
 		}
 		stream_program_src << "		myResult += curSupport;" << std::endl;
@@ -2111,13 +2113,14 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
 	    	std::cout << "OpenCL Build Error. Error Code: " << err << std::endl;
 
 	    	size_t len;
-	    	char buffer[2048];
+	    	char buffer[4096];
 
 	    	// get the build log
 	    	clGetProgramBuildInfo(program_multModSP, device_ids[0], CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
 
 	    	std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
-	    	return 0.0;
+
+			return 0.0;
 	    }
 
 	    // creating the kernels
