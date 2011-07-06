@@ -37,7 +37,7 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	OperationTestModWavelet.o OperationMultipleEvalModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
 	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o HeatEquationSolverWithStretching.o\
 	HeatEquationParabolicPDESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationMultipleEvalModBspline.o\
-	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
+	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o DensitySystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
 	DirichletGridConverter.o OperationDeltaLinear.o OperationGammaLinear.o OperationDeltaLogLinearBoundary.o\
 	OperationGammaLogLinearBoundary.o HierarchisationLinear.o DehierarchisationLinear.o HierarchisationLinearBoundary.o\
@@ -714,6 +714,9 @@ DensitySystemMatrix.o : $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
 
 DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
+
+DensitySystemMatrix.o: $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DensitySystemMatrix.o $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
 	
 DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
