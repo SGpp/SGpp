@@ -85,7 +85,7 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o\
 	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o\
 	OperationMultipleEvalIterativeSSEModLinear.o OperationMultipleEvalIterativeSPAVXModLinear.o\
-	OperationMultipleEvalIterativeAVXModLinear.o DensitySystemMatrix.o
+	OperationMultipleEvalIterativeAVXModLinear.o DensitySystemMatrix.o DehierarchisationPoly.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -423,6 +423,9 @@ OperationHierarchisationPoly.o : $(SRCDIR)basis/poly/operation/common/OperationH
 
 HierarchisationPoly.o : $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationPoly.o $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
+
+DehierarchisationPoly.o : $(SRCDIR)basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationPoly.o $(SRCDIR)basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
 
 OperationHierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
