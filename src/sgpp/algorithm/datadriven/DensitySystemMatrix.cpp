@@ -9,16 +9,14 @@
 #include "algorithm/datadriven/DensitySystemMatrix.hpp"
 #include "basis/operations_factory.hpp"
 #include "exception/operation_exception.hpp"
-
-using namespace sg::base;
+#include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
 
 namespace sg
 {
 namespace datadriven
 {
 
-DensitySystemMatrix::DensitySystemMatrix(Grid& grid, DataMatrix& trainData,
-					 OperationMatrix& C, double lambda)
+  DensitySystemMatrix::DensitySystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda)
 {
   this->data = &trainData;
   this->lambda = lambda;
@@ -29,7 +27,7 @@ DensitySystemMatrix::DensitySystemMatrix(Grid& grid, DataMatrix& trainData,
   this->C = &C;
 }
 
-void DensitySystemMatrix::mult(DataVector &alpha, DataVector &result)
+void DensitySystemMatrix::mult(sg::base::DataVector &alpha, sg::base::DataVector &result)
 {
   result.setAll(0.0);
 
@@ -46,9 +44,9 @@ void DensitySystemMatrix::mult(DataVector &alpha, DataVector &result)
 
 
 // Matrix-Multiplikation verwenden
-void DensitySystemMatrix::generateb(DataVector& rhs)
+void DensitySystemMatrix::generateb(sg::base::DataVector& rhs)
 {
-  DataVector y(this->data->getNrows());
+  sg::base::DataVector y(this->data->getNrows());
   y.setAll(1.0);
   // Bt * 1
   this->B->multTranspose(y, rhs);

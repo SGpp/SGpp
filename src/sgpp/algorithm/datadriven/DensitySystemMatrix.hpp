@@ -43,7 +43,7 @@ public:
   /** 
    * Std-Constructor
    * 
-   * @param SparseGrid  reference to the sparse grid
+   * @param grid  reference to the sparse grid
    * @param trainData reference to DataVector that contains the training data
    * @param C the regression functional
    * @param lambda the regression parameter
@@ -62,7 +62,7 @@ public:
   /** 
    * Generates the right hand side of the classification equation
    * 
-   * @param rhs reference to the vector which will contain the result of the
+   * @param b reference to the vector which will contain the result of the
    * matrix vector multiplication on the rhs
    */
   void generateb(sg::base::DataVector &b);
