@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "basis/poly/algorithm_sweep/HierarchisationPoly.hpp"
+#include "basis/poly/algorithm_sweep/DehierarchisationPoly.hpp"
 
 namespace sg
 {
@@ -18,22 +18,22 @@ namespace sg
 namespace base
 {
 
-HierarchisationPoly::HierarchisationPoly(GridStorage* storage, SPolyBase* base) : storage(storage), base(base)
+DehierarchisationPoly::DehierarchisationPoly(GridStorage* storage, SPolyBase* base) : storage(storage), base(base)
 {
 }
 
-HierarchisationPoly::~HierarchisationPoly()
+DehierarchisationPoly::~DehierarchisationPoly()
 {
 }
 
-void HierarchisationPoly::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void DehierarchisationPoly::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 {
 	DataVector koeffs(index.getGridDepth(dim)+1);
 	koeffs.setAll(0.0);
 	rec(source, result, index, dim, koeffs);
 }
 
-void HierarchisationPoly::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs)
+void DehierarchisationPoly::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs)
 {
 	// current position on the grid
 	size_t seq = index.seq();
@@ -44,8 +44,8 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result, grid_itera
 	// get current level and index from grid
 	index.get(dim, cur_lev, cur_ind);
 		
-	// hierarchisation
-	result[seq] = source[seq] - this->base->evalHierToTop(cur_lev, cur_ind, koeffs);
+	// Dehierarchisation
+	result[seq] = source[seq] + this->base->evalHierToTop(cur_lev, cur_ind, koeffs);
 	
 	// recursive calls for the right and left side of the current node
 	if(index.hint() == false)

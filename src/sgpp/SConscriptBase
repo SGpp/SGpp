@@ -33,6 +33,7 @@ basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
 basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
 basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.cpp
 basis/poly/algorithm_sweep/HierarchisationPoly.cpp
+basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
 basis/poly/operation/common/OperationEvalPoly.cpp
 basis/poly/operation/common/OperationHierarchisationPoly.cpp
 basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp

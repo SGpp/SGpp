@@ -11,9 +11,7 @@
 #include <cmath>
 #include <vector>
 #include "exception/factory_exception.hpp"
-
 #include "data/DataVector.hpp"
-
 
 namespace sg
 {
@@ -77,17 +75,18 @@ public:
 		return evalPolynom(id, deg, val);
 	}
 
-	double evalHierToTop(LT level, IT index, double p, DataVector& koeffs)
+	double evalHierToTop(LT level, IT index, DataVector& koeffs)
 	{
 		double result = 0.0;
 		for(; level>=1; level--)
 		{
-			result += koeffs[level] * eval(level, index, p);
+			result += koeffs[level] * eval(level, index, index/(pow(2.0, level)));
 			index = ((index-1)/2);
 			index = (index % 2 == 0)?(index+1):index;
 		}
 		return result;
 	}
+
 
 protected:
 	/// Pointer to polynoms
