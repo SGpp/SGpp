@@ -252,12 +252,14 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
 
     # evaluate 1d function
     if grid.getStorage().dim() == 1:
+        fout.write("#plot '-' w l\n")
         for x in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
                 pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
     elif grid.getStorage().dim() == 2:
+        fout.write("#splot '-' w pm3d\n")
         for x in xrange(resolution):
             for y in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
