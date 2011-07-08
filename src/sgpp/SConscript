@@ -247,6 +247,8 @@ operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
 algorithm/datadriven/DMSystemMatrix.cpp
 algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
 algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
+algorithm/datadriven/DMWeightMatrix.cpp
+algorithm/datadriven/AlgorithmAdaBoost.cpp
 
 algorithm/datadriven/DMSystemMatrix.cpp
 
