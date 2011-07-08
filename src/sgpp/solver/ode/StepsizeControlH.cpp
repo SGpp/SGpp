@@ -55,8 +55,9 @@ void StepsizeControlH::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPa
 
     std::ofstream fileout;
 
-    fileout.open(filename.c_str());
-
+    //fileout.open(filename.c_str());
+    fileout.open(filename.c_str(), std::ofstream::app); // apend to file
+	fileout << std::endl;
 
 	System.setODESolver("CrNic");
 	for (size_t i = 0; i < maxIter && time < maxTimestep; i++)
@@ -133,6 +134,12 @@ void StepsizeControlH::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPa
 	    	System.saveAlpha();
 			tmp_timestepsize_old = tmp_timestepsize;
 			tmp_timestepsize = tmp_timestepsize_new;
+
+			// avoid small last time steps
+			if(maxTimestep-time<1.3*tmp_timestepsize){
+				tmp_timestepsize = maxTimestep-time;
+			}
+			// adapt size of last time step
 			tmp_timestepsize = std::min(tmp_timestepsize,maxTimestep-time);
 
 	    }

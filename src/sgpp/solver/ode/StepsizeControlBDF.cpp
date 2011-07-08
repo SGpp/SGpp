@@ -54,8 +54,9 @@ void StepsizeControlBDF::solve(SLESolver& LinearSystemSolver, sg::pde::Operation
 
     std::ofstream fileout;
 
-    fileout.open(filename.c_str());
-
+    //fileout.open(filename.c_str());
+    fileout.open(filename.c_str(), std::ofstream::app); // apend to file
+	fileout << std::endl;
 
 
 	for (size_t i = 0; i < maxIter && time < maxTimestep; i++)
@@ -153,6 +154,11 @@ void StepsizeControlBDF::solve(SLESolver& LinearSystemSolver, sg::pde::Operation
 				tmp_timestepsize = tmp_timestepsize_new;
 			}
 
+			// avoid small last time steps
+			if(maxTimestep-time<1.3*tmp_timestepsize){
+				tmp_timestepsize = maxTimestep-time;
+			}
+			// adapt size of last time step
 			tmp_timestepsize = std::min(tmp_timestepsize,maxTimestep-time);
 
 		}
