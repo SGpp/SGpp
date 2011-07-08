@@ -85,7 +85,8 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o\
 	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o\
 	OperationMultipleEvalIterativeSSEModLinear.o OperationMultipleEvalIterativeSPAVXModLinear.o\
-	OperationMultipleEvalIterativeAVXModLinear.o DensitySystemMatrix.o DehierarchisationPoly.o
+	OperationMultipleEvalIterativeAVXModLinear.o DensitySystemMatrix.o DMWeightMatrix.o DehierarchisationPoly.o\
+	AlgorithmAdaBoost.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -713,10 +714,16 @@ PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/Poiss
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 
 DensitySystemMatrix.o : $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DensitySystemMatrix.o $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DensitySystemMatrix.o $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp	
 
 DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
+	
+DMWeightMatrix.o : $(SRCDIR)algorithm/datadriven/DMWeightMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrix.o $(SRCDIR)algorithm/datadriven/DMWeightMatrix.cpp
+	
+AlgorithmAdaBoost.o : $(SRCDIR)algorithm/datadriven/AlgorithmAdaBoost.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoost.o $(SRCDIR)algorithm/datadriven/AlgorithmAdaBoost.cpp
 	
 DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
