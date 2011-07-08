@@ -326,7 +326,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 			}
 			sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
 
-			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
+			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.level_"+level_string.str()+".gnuplot");
 
 			delete[] myAreaBoundaries;
 			delete myGridArea;
