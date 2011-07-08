@@ -60,7 +60,9 @@ void StepsizeControlEJ::solve(SLESolver& LinearSystemSolver, sg::pde::OperationP
 
     std::ofstream fileout;
 
-    fileout.open(filename.c_str());
+    //fileout.open(filename.c_str());
+    fileout.open(filename.c_str(), std::ofstream::app); // apend to file
+    fileout << std::endl;
 
 	System.getGridCoefficientsForSC(YkImEul);
 
@@ -143,6 +145,11 @@ void StepsizeControlEJ::solve(SLESolver& LinearSystemSolver, sg::pde::OperationP
 
 			tmp_timestepsize = tmp_timestepsize_new;
 
+			// avoid small last time steps
+			if(maxTimestep-time<1.3*tmp_timestepsize){
+				tmp_timestepsize = maxTimestep-time;
+			}
+			// adapt size of last timestep
 			tmp_timestepsize = std::min(tmp_timestepsize,maxTimestep-time);
 
 		}

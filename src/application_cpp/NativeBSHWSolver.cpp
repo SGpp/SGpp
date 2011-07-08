@@ -309,6 +309,9 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	// Gridpoints @Money
 	std::cout << "Gridpoints @Money: " << myBSHWSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
+	std::stringstream level_string;
+	level_string << l;
+
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
@@ -328,14 +331,14 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 			delete[] myAreaBoundaries;
 			delete myGridArea;
 		}
-		myBSHWSolver->printGrid(*alpha, 30, "payoffBSHW.gnuplot");
-		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.gnuplot", true);
-		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.gnuplot", false);
+		myBSHWSolver->printGrid(*alpha, 30, ("payoffBSHW.level_"+level_string.str()+".gnuplot"));
+		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.level_"+level_string.str()+".gnuplot", true);
+		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.level_"+level_string.str()+".gnuplot", false);
 		//myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
 		if (isLogSolve == true)
 		{
-			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_surplus_cart.grid.gnuplot", true);
-			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_nodal_cart.grid.gnuplot", false);
+			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_surplus_cart.grid.level_"+level_string.str()+".gnuplot", true);
+			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_nodal_cart.grid.level_"+level_string.str()+".gnuplot", false);
 		}
 	}
 
@@ -369,9 +372,9 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSHWSolver->printGrid(*alpha, 42, "solvedBSHW.gnuplot");
-		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.gnuplot", true);
-		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.gnuplot", false);
+		myBSHWSolver->printGrid(*alpha, 42, "solvedBSHW.level_"+level_string.str()+".gnuplot");
+		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.level_"+level_string.str()+".gnuplot", true);
+		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.level_"+level_string.str()+".gnuplot", false);
 		/*if (isLogSolve == true)
 		{
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBSHW_surplus_cart.grid.gnuplot", true);
@@ -606,19 +609,19 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 			}
 			sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
 
-			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.gnuplot");
+			myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.adaptive.gnuplot");
 
 			delete[] myAreaBoundaries;
 			delete myGridArea;
 		}
-		myBSHWSolver->printGrid(*alpha, 30, "payoffBSHW.gnuplot");
-		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.gnuplot", true);
-		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.gnuplot", false);
+		myBSHWSolver->printGrid(*alpha, 30, "payoffBSHW.adaptive.gnuplot");
+		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.adaptive.gnuplot", true);
+		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.adaptive.gnuplot", false);
 		//myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
 		if (isLogSolve == true)
 		{
-			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_surplus_cart.grid.gnuplot", true);
-			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_nodal_cart.grid.gnuplot", false);
+			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_surplus_cart.grid.adaptive.gnuplot", true);
+			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_nodal_cart.grid.adaptive.gnuplot", false);
 		}
 	}
 
@@ -651,8 +654,8 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
 		myBSHWSolver->printGrid(*alpha, 42, "solvedBSHW.gnuplot");
-		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.gnuplot", true);
-		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.gnuplot", false);
+		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.adaptive.gnuplot", true);
+		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.adaptive.gnuplot", false);
 		/*if (isLogSolve == true)
 		{
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBSHW_surplus_cart.grid.gnuplot", true);
