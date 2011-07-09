@@ -71,6 +71,12 @@ public:
 	 * @param DataVectorDef reference to a DataVectorDefinition struct
 	 */
 	void getDataVectorDefinition(DataVectorDefinition& DataVectorDef);
+         /**
+	 * Set DataVectorDefintion for current DataVector
+	 *
+	 * @param DataVectorDef reference to a DataVectorDefinition struct
+	 */
+	void setDataVectorDefinition(DataVectorDefinition& DataVectorDef);
 
 
 	/**

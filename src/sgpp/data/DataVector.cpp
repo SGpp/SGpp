@@ -55,10 +55,7 @@ DataVector::DataVector(double* input, size_t size) :
 }
 
 DataVector::DataVector(DataVectorDefinition& DataVectorDef) {
-    this->size = DataVectorDef.size;
-    this->unused = DataVectorDef.unused;
-    this->inc_elems = DataVectorDef.inc_elems;
-    this->data = DataVectorDef.data;
+  setDataVectorDefinition(DataVectorDef);
 }
 
 void DataVector::getDataVectorDefinition(DataVectorDefinition& DataVectorDef) {
@@ -66,6 +63,13 @@ void DataVector::getDataVectorDefinition(DataVectorDefinition& DataVectorDef) {
     DataVectorDef.unused = this->unused;
     DataVectorDef.inc_elems = this->inc_elems;
     DataVectorDef.data = this->data;
+}
+
+void DataVector::setDataVectorDefinition(DataVectorDefinition& DataVectorDef) {
+    this->size = DataVectorDef.size;
+    this->unused = DataVectorDef.unused;
+    this->inc_elems = DataVectorDef.inc_elems;
+    this->data = DataVectorDef.data;
 }
 
 void DataVector::restructure(std::vector<size_t>& remainingIndex)
