@@ -10,6 +10,7 @@ srcs = Split("""
 algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
 algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
 algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
+algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
 algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
 algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 application/finance/VariableDiscountFactor.cpp

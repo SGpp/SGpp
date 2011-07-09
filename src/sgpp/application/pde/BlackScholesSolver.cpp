@@ -8,6 +8,7 @@
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystem.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -34,7 +35,7 @@ namespace sg
 namespace finance
 {
 
-BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionType) : ParabolicPDESolver()
+BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionType, bool usePAT) : ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -45,6 +46,11 @@ BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionT
 	this->refineMode = "classic";
 	this->numCoarsenPoints = -1;
 	this->useLogTransform = useLogTransform;
+	this->usePAT = usePAT;
+	if (this->usePAT == true)
+	{
+		this->useLogTransform = true;
+	}
 	this->refineMaxLevel = 0;
 	this->nNeededIterations = 0;
 	this->dNeededTime = 0.0;
@@ -377,7 +383,14 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		}
 		else
 		{
-			myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			if (this->usePAT == true)
+			{
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			}
+			else
+			{
+				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			}
 		}
 
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
