@@ -21,8 +21,7 @@ namespace datadriven
   this->data = &trainData;
   this->lambda = lambda;
 
-  // this->A = sg::GridOperationFactory::createOperationLTwoDotProduct();
-  this->A = new sg::pde::OperationLTwoDotProductLinearBoundary(grid.getStorage());
+  this->A = sg::GridOperationFactory::createOperationLTwoDotProduct(grid);
   this->B = sg::GridOperationFactory::createOperationMultipleEval(grid, this->data);
   this->C = &C;
 }
