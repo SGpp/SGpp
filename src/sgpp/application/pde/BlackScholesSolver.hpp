@@ -75,6 +75,8 @@ protected:
 	int numCoarsenPoints;
 	/// identifies if the Black Scholes Equation should be solved on a log-transformed grid
 	bool useLogTransform;
+	/// identifies if the Black Scholes Equation should be solved by using a principal axis transformation
+	bool usePAT;
 	/// max. level for refinement during solving
 	size_t refineMaxLevel;
 	/// variable to store needed solving iterations
@@ -139,8 +141,9 @@ public:
 	 *
 	 * @param useLogTransform speciefies if a log transformed formulation should be used for solving BlackScholes Equation
 	 * @param OptionType possible values "all" and "European", if "European" is choose a solver with fix Dirichlet boundaries is selected
+	 * @param usePAT speciefies if a principal axis transformation (also enabling a log-transformation) should be used for solving BlackScholes Equation
 	 */
-	BlackScholesSolver(bool useLogTransform = false, std::string OptionType = "all");
+	BlackScholesSolver(bool useLogTransform = false, std::string OptionType = "all", bool usePAT = false);
 
 	/**
 	 * Std-Destructor of the solver

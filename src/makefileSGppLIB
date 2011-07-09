@@ -86,7 +86,7 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o\
 	OperationMultipleEvalIterativeSSEModLinear.o OperationMultipleEvalIterativeSPAVXModLinear.o\
 	OperationMultipleEvalIterativeAVXModLinear.o DensitySystemMatrix.o DMWeightMatrix.o DehierarchisationPoly.o\
-	AlgorithmAdaBoost.o
+	AlgorithmAdaBoost.o BlackScholesPATParabolicPDESolverSystem.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -691,6 +691,9 @@ ModifiedBlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/Modified
 	
 BlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
+
+BlackScholesPATParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
 
 BlackScholesParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
