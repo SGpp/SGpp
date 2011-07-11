@@ -1094,6 +1094,12 @@ double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base:
 	double result = myEval->eval(alpha, eval_point);
 	delete myEval;
 
+	// discounting, if PAT is used
+	if (this->usePAT == true)
+	{
+		result *= exp(((-1.0)*(this->r*this->current_time)));
+	}
+
 	return result;
 }
 
