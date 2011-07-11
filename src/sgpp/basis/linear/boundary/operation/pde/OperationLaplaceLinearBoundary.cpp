@@ -26,6 +26,10 @@ OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(sg::base::GridSto
 {
 }
 
+OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& coef) : UpDownOneOpDim(storage, coef)
+{
+}
+
 OperationLaplaceLinearBoundary::~OperationLaplaceLinearBoundary()
 {
 }

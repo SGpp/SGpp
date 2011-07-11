@@ -23,6 +23,10 @@ OperationLaplaceLinear::OperationLaplaceLinear(sg::base::GridStorage* storage) :
 {
 }
 
+OperationLaplaceLinear::OperationLaplaceLinear(sg::base::GridStorage* storage, sg::base::DataVector& coef) : UpDownOneOpDim(storage, coef)
+{
+}
+
 OperationLaplaceLinear::~OperationLaplaceLinear()
 {
 }
