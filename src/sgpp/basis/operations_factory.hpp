@@ -180,20 +180,14 @@ using namespace sg::pde;
 		{
 			return new OperationLaplaceLinear(grid_type.getStorage());
 		}
-
-
 		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
 		{
 			return new OperationLaplaceLinearBoundary(grid_type.getStorage());
 		}
-
-
 		else if(strcmp(grid_type.getType(), "modlinear") == 0 )
 		{
 			return new OperationLaplaceModLinear(grid_type.getStorage());
 		}
-
-
 		else if(strcmp(grid_type.getType(), "prewavelet") == 0 )
 		{
 			return new OperationLaplacePrewavelet(grid_type.getStorage(),
@@ -207,12 +201,34 @@ using namespace sg::pde;
 		{
 			return new OperationLaplaceLinearStretchedBoundary(grid_type.getStorage());
 		}
-
 		else
+		{
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
-
-
+		}
 	}
+
+	/**
+	 * gets a pointer to OperationLaplace (OperationMatrix) object
+	 *
+	 * @return point to the OperationLaplace object
+	 */
+	static OperationMatrix* createOperationLaplace(Grid& grid_type, sg::base::DataVector& coef)
+	{
+
+		if(strcmp(grid_type.getType(), "linear") == 0)
+		{
+			return new OperationLaplaceLinear(grid_type.getStorage(), coef);
+		}
+		else if(strcmp(grid_type.getType(), "linearBoundary") == 0 || strcmp(grid_type.getType(), "linearTrapezoidBoundary") == 0)
+		{
+			return new OperationLaplaceLinearBoundary(grid_type.getStorage(), coef);
+		}
+		else
+		{
+			throw factory_exception("OperationLaplace (with coefficients) is not implemented for this grid type.");
+		}
+	}
+
 
 	/**
 	 * gets a pointer to OperationLTwoDotProduct (OperationMatrix) object

@@ -85,8 +85,15 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 		}
 	}
 
+	// calculate Eigenvectors and Eigenvalues
+	this->eva_rhos = new DataVector(this->BSalgoDims.size());
+	this->eva_rhos->set(0, this->sigmas->get(0)*this->sigmas->get(0));
+
+	this->eve_rhos = new DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
+	this->eve_rhos->set(0,0,1.0);
+
 	// operations on boundary grid
-	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid);
+	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid, *this->eva_rhos);
 	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
@@ -117,6 +124,8 @@ BlackScholesPATParabolicPDESolverSystem::~BlackScholesPATParabolicPDESolverSyste
 	}
 	delete this->alpha_complete_old;
 	delete this->alpha_complete_tmp;
+	delete this->eva_rhos;
+	delete this->eve_rhos;
 }
 
 void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)
