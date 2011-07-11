@@ -87,10 +87,10 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 
 	// calculate Eigenvectors and Eigenvalues
 	this->eva_rhos = new DataVector(this->BSalgoDims.size());
-	this->eva_rhos->set(0, this->sigmas->get(0)*this->sigmas->get(0));
+	this->eva_rhos->set(0,0.16);
 
 	this->eve_rhos = new DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
-	this->eve_rhos->set(0,0,1.0);
+	this->eve_rhos->set(0,0,0.16);
 
 	// operations on boundary grid
 	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid, *this->eva_rhos);
@@ -142,8 +142,9 @@ void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVecto
 	}
 
 	// Apply the Laplace operator
+	temp.setAll(0.0);
 	this->OpLaplaceBound->mult(alpha, temp);
-	result.axpy(0.5, temp);
+	result.axpy(-0.5, temp);
 }
 
 void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -234,6 +235,7 @@ void BlackScholesPATParabolicPDESolverSystem::startTimestep()
 		}
 	}
 #endif
+	std::cout << std::endl << std::endl << this->alpha_complete->toString() << std::endl << std::endl << std::endl  << std::endl << std::endl;
 }
 
 }
