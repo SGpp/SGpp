@@ -120,15 +120,14 @@ void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVecto
 
 	result.setAll(0.0);
 
-	// Apply the riskfree rate
-	if (this->r != 0.0)
-	{
-		this->OpLTwoBound->mult(alpha, temp);
-		result.axpy((-1.0)*this->r, temp);
-	}
+//	// Apply the riskfree rate
+//	if (this->r != 0.0)
+//	{
+//		this->OpLTwoBound->mult(alpha, temp);
+//		result.axpy((-1.0)*this->r, temp);
+//	}
 
 	// Apply the Laplace operator
-	temp.setAll(0.0);
 	this->OpLaplaceBound->mult(alpha, temp);
 	result.axpy(-0.5, temp);
 }
@@ -147,16 +146,16 @@ void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVect
 
 void BlackScholesPATParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
-#ifndef NOBOUNDARYDISCOUNT
-	// Adjust the boundaries with the riskfree rate
-	if (this->r != 0.0)
-	{
-		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
-		{
-			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
-		}
-	}
-#endif
+//#ifndef NOBOUNDARYDISCOUNT
+//	// Adjust the boundaries with the riskfree rate
+//	if (this->r != 0.0)
+//	{
+//		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
+//		{
+//			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
+//		}
+//	}
+//#endif
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += 0;
@@ -211,16 +210,16 @@ void BlackScholesPATParabolicPDESolverSystem::finishTimestep(bool isLastTimestep
 
 void BlackScholesPATParabolicPDESolverSystem::startTimestep()
 {
-#ifndef NOBOUNDARYDISCOUNT
-	// Adjust the boundaries with the riskfree rate
-	if (this->r != 0.0)
-	{
-		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
-		{
-			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
-		}
-	}
-#endif
+//#ifndef NOBOUNDARYDISCOUNT
+//	// Adjust the boundaries with the riskfree rate
+//	if (this->r != 0.0)
+//	{
+//		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
+//		{
+//			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
+//		}
+//	}
+//#endif
 }
 
 }
