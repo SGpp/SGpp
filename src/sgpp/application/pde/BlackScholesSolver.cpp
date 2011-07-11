@@ -74,6 +74,9 @@ BlackScholesSolver::~BlackScholesSolver()
 		delete this->mus;
 		delete this->sigmas;
 		delete this->rhos;
+		delete this->eigval_covar;
+		delete this->eigvec_covar;
+		delete this->mu_hat;
 	}
 	if (this->myScreen != NULL)
 	{
@@ -301,10 +304,21 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha
 
 void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r)
 {
-	this->mus = new DataVector(mus);
-	this->sigmas = new DataVector(sigmas);
-	this->rhos = new DataMatrix(rhos);
+	this->mus = new sg::base::DataVector(mus);
+	this->sigmas = new sg::base::DataVector(sigmas);
+	this->rhos = new sg::base::DataMatrix(rhos);
 	this->r = r;
+
+	// calculate eigenvalues, eigenvectors and mu_hat from stochastic data for PAT
+	size_t mydim = this->mus->getSize();
+	this->eigval_covar = new sg::base::DataVector(mydim);
+	this->eigvec_covar = new sg::base::DataMatrix(mydim,mydim);
+	this->mu_hat = new sg::base::DataVector(mydim);
+
+	// 1d test case
+	this->eigval_covar->set(0, this->sigmas->get(0)*this->sigmas->get(0));
+	this->eigvec_covar->set(0, 0, 1.0);
+	this->mu_hat->set(0, this->mus->get(0)-(0.5*this->sigmas->get(0)*this->sigmas->get(0)));
 
 	bStochasticDataAlloc = true;
 }
@@ -385,7 +399,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		{
 			if (this->usePAT == true)
 			{
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, this->r, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 			else
 			{
@@ -591,7 +605,14 @@ void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, st
 {
 	if (this->useLogTransform)
 	{
-		initLogTransformedGridWithPayoff(alpha, strike, payoffType);
+		if (this->usePAT)
+		{
+			initPATTransformedGridWithPayoff(alpha, strike, payoffType);
+		}
+		else
+		{
+			initLogTransformedGridWithPayoff(alpha, strike, payoffType);
+		}
 	}
 	else
 	{
@@ -969,6 +990,66 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(DataVector& alpha, dou
 	}
 }
 
+void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
+{
+	double tmp;
+
+	if (this->bGridConstructed)
+	{
+		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+			std::stringstream coordsStream(coords);
+			double* dblFuncValues = new double[dim];
+
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			if (payoffType == "std_euro_call")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					for (size_t l = 0; l < dim; l++)
+					{
+						tmp += this->eigvec_covar->get(l, j)*exp(dblFuncValues[l]);
+					}
+				}
+				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
+			}
+			else if (payoffType == "std_euro_put")
+			{
+				tmp = 0.0;
+				for (size_t j = 0; j < dim; j++)
+				{
+					for (size_t l = 0; l < dim; l++)
+					{
+						tmp += this->eigvec_covar->get(l, j)*exp(dblFuncValues[l]);
+					}
+				}
+				alpha[i] = std::max<double>(strike-((tmp/static_cast<double>(dim))), 0.0);
+			}
+			else
+			{
+				throw new application_exception("BlackScholesSolver::initPATTransformedGridWithPayoff : An unknown payoff-type was specified!");
+			}
+
+			delete[] dblFuncValues;
+		}
+
+		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		myHierarchisation->doHierarchisation(alpha);
+		delete myHierarchisation;
+	}
+	else
+	{
+		throw new application_exception("BlackScholesSolver::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
+	}
+}
 
 size_t BlackScholesSolver::getNeededIterationsToSolve()
 {

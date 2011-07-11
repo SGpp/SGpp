@@ -628,11 +628,11 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-	// Init the grid with on payoff function
-	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-
 	// Set stochastic data
 	myBSSolver->setStochasticData(mu, sigma, rho, r);
+
+	// Init the grid with on payoff function
+	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// Gridpoints @Money
 	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
@@ -888,6 +888,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
+		// Set stochastic data
+		myBSSolver->setStochasticData(mu, sigma, rho, r);
+
 		// Init the grid with on payoff function
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
@@ -910,9 +913,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 			}
 		}
-
-		// Set stochastic data
-		myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 		// Start solving the Black Scholes Equation
 		if (Solver == "ExEul")
@@ -1180,6 +1180,9 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
+		// Set stochastic data
+		myBSSolver->setStochasticData(mu, sigma, rho, r);
+
 		// Init the grid with on payoff function
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
@@ -1201,9 +1204,6 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 			}
 		}
-
-		// Set stochastic data
-		myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 		bool isCall = true;
 		if (payoffType == "std_euro_call")
@@ -1541,6 +1541,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	// init the basis functions' coefficient vector
 	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
 
+	// Set stochastic data
+	myBSSolver->setStochasticData(mu, sigma, rho, r);
+
 	// Init the grid with on payoff function
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
@@ -1677,9 +1680,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		myBSSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
 	}
-
-	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
