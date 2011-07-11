@@ -221,7 +221,6 @@ void BlackScholesPATParabolicPDESolverSystem::startTimestep()
 		}
 	}
 #endif
-	std::cout << std::endl << std::endl << this->alpha_complete->toString() << std::endl << std::endl << std::endl  << std::endl << std::endl;
 }
 
 }

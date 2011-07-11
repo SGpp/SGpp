@@ -749,20 +749,9 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	std::vector<double> point;
 	for (size_t i = 0; i < d; i++)
 	{
-		if (coordsType == "log")
-		{
-			point.push_back(log(dStrike));
-		}
-		else if (coordsType == "PAT")
-		{
-			point.push_back(log(dStrike));
-		}
-		else
-		{
-			point.push_back(dStrike);
-		}
+		point.push_back(dStrike);
 	}
-	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSSolver;

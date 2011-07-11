@@ -97,6 +97,8 @@ protected:
 	sg::base::DataVector* eigval_covar;
 	/// mu hat, tanslation coefficient needed if PAT is used
 	sg::base::DataVector* mu_hat;
+	/// stores the current time until which the option has been solved
+	double current_time;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -354,6 +356,17 @@ public:
 	 * @param strike the option's strike
 	 */
 	virtual void printPayoffInterpolationError2D(sg::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
+
+	/**
+	 * Evaluates the current option value
+	 * at a point given in Cartesian coordinates
+	 *
+	 * @param eval_point the point at with the option price should be determined
+	 * @param alpha the grid's coefficients
+	 *
+	 * @return the option price at the given point
+	 */
+	virtual double evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha);
 
 	/**
 	 * gets the number of gridpoints at money
