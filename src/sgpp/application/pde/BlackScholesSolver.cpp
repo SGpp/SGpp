@@ -57,6 +57,7 @@ BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionT
 	this->staInnerGridSize = 0;
 	this->finInnerGridSize = 0;
 	this->avgInnerGridSize = 0;
+	this->current_time = 0.0;
 	if (OptionType == "all" || OptionType == "European")
 	{
 		this->tOptionType = OptionType;
@@ -372,6 +373,8 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		delete myCG;
 		delete myEuler;
 		delete myStopwatch;
+
+		this->current_time += (static_cast<double>(numTimesteps)*timestepsize);
 	}
 	else
 	{
@@ -435,6 +438,8 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		delete myCG;
 		delete myEuler;
 		delete myStopwatch;
+
+		this->current_time += (static_cast<double>(numTimesteps)*timestepsize);
 	}
 	else
 	{
@@ -511,6 +516,8 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		delete myCN;
 		delete myEuler;
 		delete myStopwatch;
+
+		this->current_time += (static_cast<double>(numTimesteps)*timestepsize);
 	}
 	else
 	{
@@ -593,6 +600,8 @@ void BlackScholesSolver::solveX(size_t numTimesteps, double timestepsize, size_t
 
 		delete myBSSystem;
 		delete myCG;
+
+		this->current_time += (static_cast<double>(numTimesteps)*timestepsize);
 	}
 	else
 	{
@@ -1049,6 +1058,43 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, dou
 	{
 		throw new application_exception("BlackScholesSolver::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
 	}
+}
+
+double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha)
+{
+	// apply needed coordinate transformations
+	if (this->useLogTransform)
+	{
+		if (this->usePAT)
+		{
+			std::vector<double> trans_eval = eval_point;
+			for (size_t i = 0; i < eval_point.size(); i++)
+			{
+				double trans_point = 0.0;
+				for (size_t j = 0; j < this->dim; j++)
+				{
+					trans_point += this->eigvec_covar->get(i,j)*(log(eval_point[j]));
+				}
+				trans_point += (this->current_time*this->mu_hat->get(i));
+
+				trans_eval[i] = trans_point;
+			}
+			eval_point = trans_eval;
+		}
+		else
+		{
+			for (size_t i = 0; i < eval_point.size(); i++)
+			{
+				eval_point[i] = log(eval_point[i]);
+			}
+		}
+	}
+
+	sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
+	double result = myEval->eval(alpha, eval_point);
+	delete myEval;
+
+	return result;
 }
 
 size_t BlackScholesSolver::getNeededIterationsToSolve()
