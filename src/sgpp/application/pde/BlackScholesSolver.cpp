@@ -317,9 +317,33 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	this->mu_hat = new sg::base::DataVector(mydim);
 
 	// 1d test case
-	this->eigval_covar->set(0, this->sigmas->get(0)*this->sigmas->get(0));
-	this->eigvec_covar->set(0, 0, 1.0);
-	this->mu_hat->set(0, this->mus->get(0)-(0.5*this->sigmas->get(0)*this->sigmas->get(0)));
+	if (mydim == 1)
+	{
+		this->eigval_covar->set(0, this->sigmas->get(0)*this->sigmas->get(0));
+		this->eigvec_covar->set(0, 0, 1.0);
+		this->mu_hat->set(0, this->mus->get(0)-(0.5*this->sigmas->get(0)*this->sigmas->get(0)));
+	}
+	// 2d test case
+	else if (mydim == 2)
+	{
+		this->eigval_covar->set(0, 0.0555377800527509792);
+		this->eigval_covar->set(1, 0.194462219947249021);
+
+		this->eigvec_covar->set(0, 0, -0.867142152569025494);
+		this->eigvec_covar->set(0, 1, 0.498060726456078796);
+		this->eigvec_covar->set(1, 0, -0.498060726456078796);
+		this->eigvec_covar->set(1, 1, -0.867142152569025494);
+
+		for (size_t i = 0; i < mydim; i++)
+		{
+			double tmp = 0.0;
+			for (size_t j = 0; j < mydim; j++)
+			{
+				tmp += (this->mus->get(i) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(i, j);
+			}
+			this->mu_hat->set(i, tmp);
+		}
+	}
 
 	bStochasticDataAlloc = true;
 }
@@ -402,7 +426,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		{
 			if (this->usePAT == true)
 			{
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, this->r, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 			else
 			{
@@ -1023,10 +1047,12 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, dou
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
 				{
+					double inner_tmp = 0.0;
 					for (size_t l = 0; l < dim; l++)
 					{
-						tmp += this->eigvec_covar->get(l, j)*exp(dblFuncValues[l]);
+						inner_tmp += this->eigvec_covar->get(l, j)*dblFuncValues[l];
 					}
+					tmp += exp(inner_tmp);
 				}
 				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
@@ -1035,10 +1061,12 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, dou
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
 				{
+					double inner_tmp = 0.0;
 					for (size_t l = 0; l < dim; l++)
 					{
-						tmp += this->eigvec_covar->get(l, j)*exp(dblFuncValues[l]);
+						inner_tmp += this->eigvec_covar->get(l, j)*dblFuncValues[l];
 					}
+					tmp += exp(inner_tmp);
 				}
 				alpha[i] = std::max<double>(strike-((tmp/static_cast<double>(dim))), 0.0);
 			}

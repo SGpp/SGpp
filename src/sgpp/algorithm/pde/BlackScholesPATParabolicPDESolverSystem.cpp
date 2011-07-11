@@ -19,7 +19,7 @@ namespace finance
 {
 
 BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& eigval_covar,
-			double r, double TimestepSize, std::string OperationMode,
+			double TimestepSize, std::string OperationMode,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
@@ -33,7 +33,6 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 	this->TimestepSize = TimestepSize;
 	this->TimestepSize_old = TimestepSize;
 	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
-	this->r = r;
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
 	// set Eigenvalues of covariance matrix
@@ -117,15 +116,7 @@ BlackScholesPATParabolicPDESolverSystem::~BlackScholesPATParabolicPDESolverSyste
 void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
-
 	result.setAll(0.0);
-
-//	// Apply the riskfree rate
-//	if (this->r != 0.0)
-//	{
-//		this->OpLTwoBound->mult(alpha, temp);
-//		result.axpy((-1.0)*this->r, temp);
-//	}
 
 	// Apply the Laplace operator
 	this->OpLaplaceBound->mult(alpha, temp);
@@ -135,7 +126,6 @@ void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVecto
 void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
-
 	result.setAll(0.0);
 
 	// Apply the mass matrix
@@ -146,17 +136,6 @@ void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVect
 
 void BlackScholesPATParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 {
-//#ifndef NOBOUNDARYDISCOUNT
-//	// Adjust the boundaries with the riskfree rate
-//	if (this->r != 0.0)
-//	{
-//		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
-//		{
-//			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
-//		}
-//	}
-//#endif
-
 	// add number of Gridpoints
 	this->numSumGridpointsInner += 0;
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
@@ -210,16 +189,6 @@ void BlackScholesPATParabolicPDESolverSystem::finishTimestep(bool isLastTimestep
 
 void BlackScholesPATParabolicPDESolverSystem::startTimestep()
 {
-//#ifndef NOBOUNDARYDISCOUNT
-//	// Adjust the boundaries with the riskfree rate
-//	if (this->r != 0.0)
-//	{
-//		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
-//		{
-//			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
-//		}
-//	}
-//#endif
 }
 
 }

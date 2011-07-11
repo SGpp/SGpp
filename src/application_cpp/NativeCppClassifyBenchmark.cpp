@@ -29,7 +29,7 @@
 //#define USE_AVX
 //#define USE_OCL
 //#define USE_ARBB
-//#define USE_HYBRID_SSE_OCL
+#define USE_HYBRID_SSE_OCL
 
 // do Test only after last refinement
 #define TEST_LAST_ONLY
