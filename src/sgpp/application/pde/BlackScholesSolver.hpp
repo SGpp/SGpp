@@ -91,6 +91,12 @@ protected:
 	size_t avgInnerGridSize;
 	/// Type of the Option to solve
 	std::string tOptionType;
+	/// Eigenvectors of the co-variance matrix
+	sg::base::DataMatrix* eigvec_covar;
+	/// Eigenvalues of the co-variance matrix
+	sg::base::DataVector* eigval_covar;
+	/// mu hat, tanslation coefficient needed if PAT is used
+	sg::base::DataVector* mu_hat;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -121,6 +127,16 @@ protected:
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initLogTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
+
+	/**
+	 * Inits the alpha vector with a payoff function of an European call option or put option
+	 * The grid is initialized based on log-transformed and a principal axis transformation coordinates!
+	 *
+	 * @param alpha the coefficient vector of the grid's ansatzfunctions
+	 * @param strik the option's strike
+	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 */
+	virtual void initPATTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
 	 * This function calculates for every grid point the value

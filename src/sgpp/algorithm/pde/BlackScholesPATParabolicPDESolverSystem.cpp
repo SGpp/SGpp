@@ -18,8 +18,8 @@ namespace sg
 namespace finance
 {
 
-BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
-			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& eigval_covar,
+			double r, double TimestepSize, std::string OperationMode,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
@@ -34,10 +34,10 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 	this->TimestepSize_old = TimestepSize;
 	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
 	this->r = r;
-	this->mus = &mu;
-	this->sigmas = &sigma;
-	this->rhos = &rho;
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
+
+	// set Eigenvalues of covariance matrix
+	this->eigval_covar = new sg::base::DataVector(eigval_covar);
 
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim())
@@ -46,15 +46,9 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 	}
 
 	// test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
-	if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize())
+	if (this->BoundGrid->getStorage()->dim() != this->eigval_covar->getSize())
 	{
 		throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : Dimension of mu and sigma parameters don't match the grid's dimensions!");
-	}
-
-	// test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
-	if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols())
-	{
-		throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : Row or col of rho parameter don't match the grid's dimensions!");
 	}
 
 	// test if all algorithmic dimensions are inside the grid's dimensions
@@ -85,15 +79,8 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 		}
 	}
 
-	// calculate Eigenvectors and Eigenvalues
-	this->eva_rhos = new DataVector(this->BSalgoDims.size());
-	this->eva_rhos->set(0,0.16);
-
-	this->eve_rhos = new DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
-	this->eve_rhos->set(0,0,0.16);
-
 	// operations on boundary grid
-	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid, *this->eva_rhos);
+	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid, *this->eigval_covar);
 	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
@@ -124,8 +111,7 @@ BlackScholesPATParabolicPDESolverSystem::~BlackScholesPATParabolicPDESolverSyste
 	}
 	delete this->alpha_complete_old;
 	delete this->alpha_complete_tmp;
-	delete this->eva_rhos;
-	delete this->eve_rhos;
+	delete this->eigval_covar;
 }
 
 void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)
