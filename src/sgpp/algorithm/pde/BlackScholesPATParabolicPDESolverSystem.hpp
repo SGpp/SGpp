@@ -30,8 +30,6 @@ namespace finance
 class BlackScholesPATParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemNeumann
 {
 protected:
-	/// the riskfree interest rate
-	double r;
 	/// the Laplace Operation, on boundary grid
 	sg::base::OperationMatrix* OpLaplaceBound;
 	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
@@ -68,7 +66,6 @@ public:
 	 * @param SparseGrid reference to the sparse grid
 	 * @param alpha the ansatzfunctions' coefficients
 	 * @param eigval_covar eigenvalues of the covariance matrix
-	 * @param r the riskfree interest rate
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
@@ -81,7 +78,7 @@ public:
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
 	BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& eigval_covar,
-			double r, double TimestepSize, std::string OperationMode = "ExEul",
+			double TimestepSize, std::string OperationMode = "ExEul",
 			bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
