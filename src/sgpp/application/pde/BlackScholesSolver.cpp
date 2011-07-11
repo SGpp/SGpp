@@ -411,11 +411,12 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
-		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
+		SLESolver* myCG = NULL;
 		OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
 		if (this->tOptionType == "European")
 		{
+			myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
 			myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
@@ -426,10 +427,12 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		{
 			if (this->usePAT == true)
 			{
+				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 			else
 			{
+				myCG = new BiCGStab(maxCGIterations, epsilonCG);
 				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 		}
