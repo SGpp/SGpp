@@ -1179,11 +1179,9 @@ void BlackScholesSolver::printSparseGridPAT(sg::base::DataVector& alpha, std::st
 			double trans_point = 0.0;
 			for (size_t j = 0; j < this->dim; j++)
 			{
-				trans_point += this->eigvec_covar->get(l,j)*(log(trans_eval[j]));
+				trans_point += this->eigvec_covar->get(j,l)*(trans_eval[j] - (this->current_time*this->mu_hat->get(l)));
 			}
-			trans_point += (this->current_time*this->mu_hat->get(l));
-
-			fileout << trans_point << " ";
+			fileout << exp(trans_point) << " ";
 		}
 
 		fileout << temp[i] << std::endl;
