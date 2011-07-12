@@ -64,7 +64,7 @@ public:
 
 private:
 
-	/** full grid on which the operator operates*/
+	/** full grid on which the operator operates */
 	const FullGridD* fg_;
 
 	/** number of spaces; number of unknowns per node <br>.

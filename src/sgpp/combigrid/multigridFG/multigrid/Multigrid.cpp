@@ -6,7 +6,7 @@
  */
 
 #include "Multigrid.hpp"
-#include "solver/multigridFG/multigrid/ProlongationRestriction.hpp"
+#include "combigrid/multigridFG/multigrid/ProlongationRestriction.hpp"
 
 
 combigrid::Multigrid::Multigrid(combigrid::OperatorFG* op , FullGridD* fg , bool createHierarchy) {

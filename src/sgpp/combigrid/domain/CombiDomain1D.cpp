@@ -21,7 +21,7 @@ combigrid::Domain1D::Domain1D(double min, double max) {
 
 combigrid::Domain1D::Domain1D(const std::vector<double>& inputStretching){
 	isStretched_ = true;
-	level_ = ceil( log((double)inputStretching.size())/log(2.0) );
+	level_ = ::round( ::log((double)inputStretching.size())/ ::log(2.0) );
 
 	// test if the vector size match
 	COMBIGRID_ERROR_TEST( (int)inputStretching.size() == combigrid::powerOfTwo[level_]+1 ,

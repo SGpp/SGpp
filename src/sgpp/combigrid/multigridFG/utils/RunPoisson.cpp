@@ -6,10 +6,10 @@
  */
 
 #include "RunPoisson.hpp"
-#include "solver/multigridFG/multigrid/Multigrid.hpp"
-#include "solver/multigridFG/multigrid/MultigridFAS.hpp"
+#include "combigrid/multigridFG/multigrid/Multigrid.hpp"
+#include "combigrid/multigridFG/multigrid/MultigridFAS.hpp"
 
-
+using namespace combigrid;
 
 FullGridD* combigrid::RunPoisson::computeFGPoisson(
 		combigrid::GridDomain& domain,
@@ -56,4 +56,35 @@ FullGridD* combigrid::RunPoisson::computeFGPoisson(
 
 	// return full grid
 	return fg;
+}
+
+void combigrid::RunPoisson::computeFGPoisson_FG(
+		FullGridD* fg ,
+		const std::vector<double>& sigma ,
+		std::vector<double>& unknowns ,
+		const CallBackRHS* callbackRHS ) {
+
+	int verb = 6;
+
+	// create the Tikhonov operator
+	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... create combigrid::PoissonOperator");
+	combigrid::PoissonOperator op( fg , sigma, callbackRHS );
+
+	// create the multigrid method
+	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... create combigrid::Multigrid");
+	combigrid::Multigrid multigrid( &(op) , fg );
+
+	// solve using only the smoother
+	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... solve multigird");
+	multigrid.solveCS( unknowns , 1e-8 , true );
+	//multigrid.solveSmoothing( unknowns , 1e-8);
+	//multigrid.solveCG( unknowns , 1e-6 );
+	//multigridFAS.solveFAS( unknowns , 1e-8 );
+
+	// copy the solution back
+	COMBIGRID_OUT_LEVEL2( verb , "RunPoisson::computeFGPoisson ... write solution back and return");
+	for (int i = 0 ; i < fg->getNrElements() ; i++){
+		fg->getElementVector()[i] = unknowns[i];
+		//COMBIGRID_OUT_LEVEL2( verb , "unknowns["<<i<<"]="<<unknowns[i]);
+	}
 }

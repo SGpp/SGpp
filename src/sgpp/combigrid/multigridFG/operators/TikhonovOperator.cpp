@@ -17,7 +17,7 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 		xCoords_(xCoords) , yCoords_(yCoords) {
 
 	const int verb = 0;
-	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::TikhonovOperator START");
+	COMBIGRID_OUT_LEVEL2( verb , "TikhonovOperator::TikhonovOperator START ");
 	// the full grid must have boundary points
 	// consistency check for the grid (boundary points, at least 3 points per axis)
 	// - the grid must have a domain, even if it is a unit square
@@ -70,6 +70,9 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 	int actualP = 0 , j=0 , nrElPerRow = -2 , perm = (int)::pow(3,dim_);
 	bool indFlag;
 	std::vector<int> axisOffset(dim_,0);
+	// create a temporary vector to calculate the power of three
+	std::vector<int> powerOfThree(dim_,1);
+	for (e = 0 ; e < dim_ ; e++ ) { powerOfThree[e] = (int)::pow(3,e);}
 	// loop over each node, to create first the CRS structure
 	for (e = 0 ; e < nrElem_ ; e++)
 	{
@@ -78,24 +81,25 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 		for (i = dim_-1 ; i >= 0 ; i--) {
 		   axisIndex[i] = tmp / (getFG()->getOffset(i));
 		   tmp = tmp % getFG()->getOffset(i);
-		   COMBIGRID_OUT_LEVEL5( verb , "axisIndex["<<i<<"]=" << axisIndex[i] << "  tmp = " << tmp);
+		   //COMBIGRID_OUT_LEVEL5( verb , "axisIndex["<<i<<"]=" << axisIndex[i] << "  tmp = " << tmp
+			//	   << " , getFG()->getOffset("<<i<<")="<<getFG()->getOffset(i));
 	    }
 		row_ptr_[e] = actualP;
 		COMBIGRID_OUT_LEVEL5( verb , " row_ptr_[" << e << "] = " << actualP );
 		nrElPerRow = 0;
 		// for each node we test each possible neighbor points (due to boundary not all might exist)
 		for(i = 0 ; i < perm ; i++){
-			COMBIGRID_OUT_LEVEL5( verb , " ======== For direction i =" << i << "===============");
+			//COMBIGRID_OUT_LEVEL5( verb , " ======== For direction i =" << i << "===============");
 			tmp = i;
 			// we decompose this in each direction
 			for( j = dim_ -1 ; j >= 0 ; j--){
-				axisOffset[j] = (tmp / (int)::pow(3,j)) - 1;
-				tmp = tmp % 3;
-				COMBIGRID_OUT_LEVEL5( verb , "axisOffset["<<j<<"]=" << axisOffset[j] << "  tmp = " << tmp);
+				axisOffset[j] = (tmp / powerOfThree[j]) - 1;
+				tmp = tmp % powerOfThree[j];
+				//COMBIGRID_OUT_LEVEL5( verb , "axisOffset["<<j<<"]=" << axisOffset[j] << "  tmp = " << tmp);
 			}
 			indFlag = true;
 			for( j = 0 ; j < dim_ ; j++){
-				COMBIGRID_OUT_LEVEL5( verb , "axisIndex[j]+axisOffset[j] = " << axisIndex[j]+axisOffset[j] );
+				//COMBIGRID_OUT_LEVEL5( verb , "axisIndex[j]+axisOffset[j] = " << axisIndex[j]+axisOffset[j] );
 				indFlag = indFlag && ((axisIndex[j]+axisOffset[j] <= getFG()->length(j)-1) &&
 							  (axisIndex[j]+axisOffset[j] >= 0));
 			}
@@ -109,7 +113,7 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 				col_ind_[actualP] = tmp;
 				actualP = actualP + 1;
 				nrElPerRow = nrElPerRow + 1;
-				COMBIGRID_OUT_LEVEL5( verb , " i = " << i << " col_ind_["<<actualP<<"]=" << tmp );
+				//COMBIGRID_OUT_LEVEL5( verb , " i = " << i << " col_ind_["<<actualP<<"]=" << tmp );
 			}
 		}
 	}
@@ -135,8 +139,8 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 			getFG()->getDomain()->get1DDomain(d).findEntry( coordAct[d] , getFG()->getLevels()[d] , axisIndex[d] , axisIntersect[d] );
 			// the linear index of the first node
 			startInd = startInd + getFG()->getOffset(d)*axisIndex[d];
-			COMBIGRID_OUT_LEVEL5( verb , " coordAct["<<d<<"]=" << coordAct[d] );
-			COMBIGRID_OUT_LEVEL5( verb , " axisIndex[d]="<<axisIndex[d] << " axisIntersect[d]="<<axisIntersect[d]);
+			//COMBIGRID_OUT_LEVEL5( verb , " coordAct["<<d<<"]=" << coordAct[d] );
+			//COMBIGRID_OUT_LEVEL5( verb , " axisIndex[d]="<<axisIndex[d] << " axisIntersect[d]="<<axisIntersect[d]);
 		}
 
 		// compute all 2^D basis function values, and the index
@@ -154,31 +158,31 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 				//add to the basis function if the bit is one
 				basisIndex[i] = basisIndex[i] + offs*getFG()->getOffset(d);
 			}
-			COMBIGRID_OUT_LEVEL5( verb , "basisFuncVal[" << i << "]=" << basisFuncVal[i] );
-			COMBIGRID_OUT_LEVEL5( verb , "basisIndex[" << i << "]=" << basisIndex[i] );
+			//COMBIGRID_OUT_LEVEL5( verb , "basisFuncVal[" << i << "]=" << basisFuncVal[i] );
+			//COMBIGRID_OUT_LEVEL5( verb , "basisIndex[" << i << "]=" << basisIndex[i] );
 		}
 
 		// B*BT to all (i,j)
 		for (i = 0 ; i < nrNode ; i++) {
 			// add i to the right hand side
-			COMBIGRID_OUT_LEVEL5( verb , " add to rhs_[ " <<  basisIndex[i] << " ] +=" << (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*(*yCoords_)[e]);
+			//COMBIGRID_OUT_LEVEL5( verb , " add to rhs_[ " <<  basisIndex[i] << " ] +=" << (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*(*yCoords_)[e]);
 			rhs_[ basisIndex[i] ] = rhs_[ basisIndex[i] ] + (1.0/(double)(nrRegPoints_)) * basisFuncVal[i] * (*yCoords_)[e];
 			// here add B*BT to all (i,j)
 			for (j = 0 ; j < nrNode ; j++) {
 				// look in row basisIndex[i] for basisIndex[j]
 				startSearch = row_ptr_[ basisIndex[i] ];
 				endSearch = row_ptr_[ basisIndex[i] + 1];
-				COMBIGRID_OUT_LEVEL5( verb , " startSearch=" << startSearch << "  endSearch="<<endSearch);
+				//COMBIGRID_OUT_LEVEL5( verb , " startSearch=" << startSearch << "  endSearch="<<endSearch);
 				tmp = -2;
 				for ( ; startSearch < endSearch ; startSearch++){
-					COMBIGRID_OUT_LEVEL5( verb , " col_ind_["<<startSearch<<"]=" <<col_ind_[startSearch]<<"  basisIndex[j]="<<basisIndex[j]);
+					//COMBIGRID_OUT_LEVEL5( verb , " col_ind_["<<startSearch<<"]=" <<col_ind_[startSearch]<<"  basisIndex[j]="<<basisIndex[j]);
 					if ( col_ind_[startSearch] == basisIndex[j] ){
 						tmp = startSearch;
-						COMBIGRID_OUT_LEVEL5( verb , " FOUND startSearch="<<startSearch << "  tmp=" << tmp);
+						//COMBIGRID_OUT_LEVEL5( verb , " FOUND startSearch="<<startSearch << "  tmp=" << tmp);
 					}
 				}
-				COMBIGRID_OUT_LEVEL5( verb , " add to B*B^T(" << i << "," << j <<") , tmp = "
-						<< tmp << " +=" << (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*basisFuncVal[j]);
+				//COMBIGRID_OUT_LEVEL5( verb , " add to B*B^T(" << i << "," << j <<") , tmp = "
+				//		<< tmp << " +=" << (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*basisFuncVal[j]);
 				// add this entry to the matrix
 				matrixVal_[tmp] = matrixVal_[tmp] + (1.0/(double)(nrRegPoints_))*basisFuncVal[i]*basisFuncVal[j];
 			}
@@ -200,7 +204,7 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 					{ p_e = startSearch; }
 			}
 
-			COMBIGRID_OUT_LEVEL5( verb , "element position e=" << e << " , p_e=" << p_e );
+			//COMBIGRID_OUT_LEVEL5( verb , "element position e=" << e << " , p_e=" << p_e );
 			tmp = e;
 		    for (i = dim_ - 1 ; i >= 0 ; i--)
 		    {
@@ -208,7 +212,7 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 			   tmp = tmp % getFG()->getOffset(i);
 			   offs = getFG()->getOffset(i);
 			   // add to the direction only if it is not boundary direction
-			   COMBIGRID_OUT_LEVEL5( verb , "axisIndex["<<i<<"]="<<axisIndex[i] << " , getFG()->length(i)=" <<getFG()->length(i));
+			   //COMBIGRID_OUT_LEVEL5( verb , "axisIndex["<<i<<"]="<<axisIndex[i] << " , getFG()->length(i)=" <<getFG()->length(i));
 			   if ( (axisIndex[i] > 0) && ( axisIndex[i] < getFG()->length(i)-1 )){
 				    // look for e - getFG()->getOffset(i) and for e+ getFG()->getOffset(i) elements
 					startSearch = row_ptr_[ e ];
@@ -229,8 +233,8 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 					// h0 = S_scaling(1,i) - S_scaling(1,i-1);
 			    	// h1 = S_scaling(1,i+1) - S_scaling(1,i);
 					getFG()->getDomain()->get1DDomain(i).getMeshWidth( axisIndex[i] , getFG()->getLevels()[i] , h0 , h1 );
-					COMBIGRID_OUT_LEVEL5( verb , " add diffusion , lambda_="<< lambda_ <<" , h0="<<h0
-							<<" , h1="<<h1<<" , p_e_m="<<p_e_m<<" , p_e="<<p_e<<" , p_e_p="<<p_e_p);
+					//COMBIGRID_OUT_LEVEL5( verb , " add diffusion , lambda_="<< lambda_ <<" , h0="<<h0
+					//		<<" , h1="<<h1<<" , p_e_m="<<p_e_m<<" , p_e="<<p_e<<" , p_e_p="<<p_e_p);
 					//	% we need  (- laplace F) * lambda
 					//	C(ind,ind-nr_points(2)) = C(ind,ind-nr_points(2)) - h1/(0.5*h0*h1*(h0+h1));
 					//	C(ind,ind) = C(ind,ind) + (h0+h1)/(0.5*h0*h1*(h0+h1));
@@ -243,8 +247,54 @@ combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,
 		   }
 	}
 
-	// todo: go to the corner points of the hyper cube and add the \laplace u = 0 boundary condition , multiplied with alpha
+	// go to the corner points of the hyper cube and add the one weak condition so that the matrix will not be singular
+	int cornerIndex = 0 , cornerNeighbIndex , matrixI1 , matrixI2;
+	for ( e = 0 ; e < combigrid::powerOfTwo[dim_] ; e++)
+	{
+		tmp = e;
+		cornerIndex = cornerNeighbIndex = 0;
+		for ( i = dim_ - 1 ; i >= 0 ; i--){
+			// calculate the linear index of the corner point
+			basisIndex[i] = tmp / combigrid::powerOfTwo[i];
+			tmp = tmp % combigrid::powerOfTwo[i];
+			cornerIndex = cornerIndex + (getFG()->length(i)-1) * getFG()->getOffset(i) * basisIndex[i];
+			COMBIGRID_OUT_LEVEL3( verb , " tmp = " << tmp << " , cornerIndex=" << cornerIndex << " , basisIndex[i]="<<basisIndex[i]);
+		}
+		// check in which direction to look for neighbors
+		if (basisIndex[0] < 1){
+			// we can add one index
+			cornerNeighbIndex = cornerIndex + getFG()->getOffset(0);
+		} else {
+			// we can subtract one index
+			cornerNeighbIndex = cornerIndex - getFG()->getOffset(0);
+		}
+		COMBIGRID_OUT_LEVEL3( verb , " cornerIndex=" << cornerIndex << " , cornerNeighbIndex=" << cornerNeighbIndex );
+		// here look for the two entries, and add the weak condition
+		matrixI1 = matrixI2 = -10;
+		startSearch = row_ptr_[ cornerIndex ];
+		endSearch = row_ptr_[ cornerIndex + 1];
+		for ( ; startSearch < endSearch ; startSearch++){
+			if ( col_ind_[startSearch] == cornerIndex)
+				{ matrixI1 = startSearch; }
+		}
+		startSearch = row_ptr_[ cornerIndex ];
+		endSearch = row_ptr_[ cornerIndex + 1];
+		for ( ; startSearch < endSearch ; startSearch++){
+			if ( col_ind_[startSearch] == cornerNeighbIndex)
+				{ matrixI2 = startSearch; }
+		}
+		// IMPORTANT: add the values to the matrix if they could be singular
+		if ( ::fabs(matrixVal_[matrixI1]) < 1e-14 ){
+			matrixVal_[matrixI1] = matrixVal_[matrixI1] - lambda_;
+			matrixVal_[matrixI2] = matrixVal_[matrixI2] + lambda_;
+		}
+		else{
+			COMBIGRID_OUT_LEVEL3( verb , " matrixVal_[matrixI1] = " << matrixVal_[matrixI1] <<
+					 " , matrixI1=" << matrixI1 << " , cornerIndex=" << cornerIndex << " , ");
+		}
+	}
 
+	//==================== MATRIX DEBUG PLOTTING =================================
 	if (verb > 3){
 		// visialize the matrix and the right hand side
 		tmp = 0;
