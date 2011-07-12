@@ -1078,7 +1078,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 
 		std::string program_src = stream_program_src.str();
 
-		std::cout << program_src << std::endl;
+		//std::cout << program_src << std::endl;
 
 	    // setting the program
 	    const char* kernel_src = program_src.c_str();
