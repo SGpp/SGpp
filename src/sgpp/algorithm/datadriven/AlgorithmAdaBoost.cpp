@@ -13,7 +13,7 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps)
+	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel)
     {
 		sg::base::GridStorage* gridStorage = SparseGrid.getStorage();
         this->grid = &SparseGrid;
@@ -26,12 +26,33 @@ namespace datadriven
 		this->C = sg::GridOperationFactory::createOperationIdentity(SparseGrid);
         this->imax = IMAX;
         this->epsilon = eps;
+		this->labelOne = firstLabel;
+		this->labelTwo = secondLabel;
     }
     
     AlgorithmAdaBoost::~AlgorithmAdaBoost()
     {
         delete this->C;
     }
+
+	double AlgorithmAdaBoost::hValue(double realValue)
+	{
+		double meanValue = (this->labelOne + this->labelTwo) / 2;
+		if (realValue > meanValue)
+		{
+			if (labelOne > labelTwo)
+				return labelOne;
+			else 
+				return labelTwo;
+		}
+		else 
+		{
+			if (labelOne > labelTwo)
+				return labelTwo;
+			else 
+				return labelOne;
+		}
+	}
     
     void AlgorithmAdaBoost::doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t* actualBN)
     {
