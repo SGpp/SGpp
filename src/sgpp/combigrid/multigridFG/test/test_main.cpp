@@ -6,8 +6,8 @@
  */
 
 
-#include "solver/multigridFG/test/TestTikhonov.hpp"
-#include "solver/multigridFG/test/TestPoisson.hpp"
+#include "combigrid/multigridFG/test/TestTikhonov.hpp"
+#include "combigrid/multigridFG/test/TestPoisson.hpp"
 
 
 int main(int argc, char** argv)

@@ -8,7 +8,7 @@
 #ifndef MULTIGRID_HPP_
 #define MULTIGRID_HPP_
 
-#include "solver/multigridFG/interface/OperatorFG.hpp"
+#include "combigrid/multigridFG/interface/OperatorFG.hpp"
 
 namespace combigrid {
 

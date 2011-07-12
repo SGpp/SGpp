@@ -6,7 +6,7 @@
  */
 
 #include "MultigridFAS.hpp"
-#include "solver/multigridFG/multigrid/ProlongationRestriction.hpp"
+#include "combigrid/multigridFG/multigrid/ProlongationRestriction.hpp"
 
 
 combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op , FullGridD* fg , bool createHierarchy) {

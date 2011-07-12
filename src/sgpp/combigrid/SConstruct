@@ -53,15 +53,17 @@ print
 
 ##### Setup construction environment:
 #
-env = Environment ( 
-   CPPDEFINES = cppdefines,
-   LIBPATH    = libpath,
-   LINKFLAGS  = linkfalgs,
-   LIBS       = libs, 
-   CPPPATH    = cpppath,
-   CCFLAGS    = ccflags,
-   CXX        = cxx
-   )
+vars = Variables("custom.py")
+env = Environment(variables = vars, ENV = os.environ)
+
+env.Append( CPPDEFINES = cppdefines )
+env.Append( LIBPATH    = libpath )
+env.Append( LINKFLAGS  = linkfalgs )
+env.Append( LIBS       = libs ) 
+env.Append( CPPPATH    = cpppath )
+env.Append( CCFLAGS    = ccflags )
+#env.Append( CXX        = cxx )
+env['CXX'] = cxx;
 
 ##### Define source Files 
 #            
@@ -76,17 +78,17 @@ sourceFiles = [
    Glob(buildpath + './plotter/*.cpp'),
    Glob(buildpath + './utils/*.cpp'),
 # Solvers(e.g. multigrid) which work on full grids or on combi grid  
-   Glob(buildpath + '../solver/multigridFG/interface/*.cpp'),
-   Glob(buildpath + '../solver/multigridFG/multigrid/*.cpp'),
-   Glob(buildpath + '../solver/multigridFG/operators/*.cpp'),   
-   Glob(buildpath + '../solver/multigridFG/utils/*.cpp'),
+   Glob(buildpath + './multigridFG/interface/*.cpp'),
+   Glob(buildpath + './multigridFG/multigrid/*.cpp'),
+   Glob(buildpath + './multigridFG/operators/*.cpp'),   
+   Glob(buildpath + './multigridFG/utils/*.cpp'),
 # SGpp objcets which are needed, in order to build a binary
    Glob(buildpath + '../data/DataVector.cpp'),
    Glob(buildpath + '../grid/common/BoundingBox.cpp')
    ]
 
 testFile = ['./tests/test_main.cpp']
-testFileSolv = ['../solver/multigridFG/test/test_main.cpp']
+testFileSolv = ['./multigridFG/test/test_main.cpp']
 
 ################################################################################
 

@@ -12,7 +12,7 @@
 #include "combigrid/utils/combigrid_ultils.hpp"
 #include "combigrid/combigrid/AbstractCombiGrid.hpp"
 #include "combigrid/domain/CombiGridDomain.hpp"
-#include "solver/multigridFG/operators/PoissonOperator.hpp"
+#include "combigrid/multigridFG/operators/PoissonOperator.hpp"
 
 namespace combigrid {
 
@@ -39,6 +39,19 @@ public:
 			const std::vector<int>& levels,
 			const std::vector<double>& sigma ,
 			double startValue ,
+			const CallBackRHS* callbackRHS );
+
+	/** static function to run the Poisson problem on a full grid, which the user already created
+	 * @param fg [IN/OUT] the full grid
+	 * @param sigma [IN] diffusion coefficients in each direction
+	 * @param unkwons [IN/OUT] the initial value of unkowns
+	 * @param startValue [IN] the value of all unknowns at the beginning
+	 * @param callbackRHS  [IN] right hand side call back
+	 * */
+	static void computeFGPoisson_FG(
+			FullGridD* fg ,
+			const std::vector<double>& sigma ,
+			std::vector<double>& unknowns ,
 			const CallBackRHS* callbackRHS );
 
 private :
