@@ -679,8 +679,8 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		}
 		if (coordsType == "PAT")
 		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+			myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+			myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
 		}
 
 	}
@@ -740,8 +740,8 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		}
 		if (coordsType == "PAT")
 		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
+			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
+			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
 		}
 	}
 
