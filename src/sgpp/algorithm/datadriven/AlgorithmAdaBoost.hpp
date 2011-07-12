@@ -57,20 +57,13 @@ namespace datadriven
 		sg::base::OperationMatrix* C;
             /// Parameter for CG solver
         size_t imax;
-            /// Parameter for CG solver
+		    /// Parameter for CG solver
         double epsilon;
-        
-            /**
-             * get the class for certain value
-             * value < 0 then return -1
-             * value > 0 then return  1
-             */
-        double hValue(double value)
-            {
-                if (value > 0) return 1.0;
-                else if (value <= 0) return -1.0;
-            };
-        
+    		/// One label of the DataSet
+		double labelOne;
+    		/// Another label of the DataSet
+		double labelTwo;
+    
     public:
 
             /**
@@ -83,17 +76,26 @@ namespace datadriven
              * @param lambda the regularisation parameter
              * @param IMAX the parameter for ConjugateGradients
              * @param eps the parameter for ConjugateGradients
-             * 
+             * @param firstLabel one label from training dataset
+			 * @param secondLabel another label from training dataset
+			 * 
              */
 
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps);
+        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel);
         
 
             /**
              * Std-Deconstructor
              */
         virtual ~AlgorithmAdaBoost();
-        
+
+            /**
+             * Performs a hypothesis classifer
+			 *
+			 * @param realvalue real value of function 
+             */
+		double hValue(double realValue);
+
             /**
              * Performs the algorithm
 			 *
