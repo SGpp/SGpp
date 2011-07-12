@@ -326,13 +326,23 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	// 2d test case
 	else if (mydim == 2)
 	{
-		this->eigval_covar->set(0, 0.0555377800527509792);
-		this->eigval_covar->set(1, 0.194462219947249021);
+//		// Correlation neq zero
+//		this->eigval_covar->set(0, 0.0555377800527509792);
+//		this->eigval_covar->set(1, 0.194462219947249021);
+//
+//		this->eigvec_covar->set(0, 0, -0.867142152569025494);
+//		this->eigvec_covar->set(0, 1, 0.498060726456078796);
+//		this->eigvec_covar->set(1, 0, -0.498060726456078796);
+//		this->eigvec_covar->set(1, 1, -0.867142152569025494);
 
-		this->eigvec_covar->set(0, 0, -0.867142152569025494);
-		this->eigvec_covar->set(0, 1, 0.498060726456078796);
-		this->eigvec_covar->set(1, 0, -0.498060726456078796);
-		this->eigvec_covar->set(1, 1, -0.867142152569025494);
+		// Correlations zero
+		this->eigval_covar->set(0, 0.09);
+		this->eigval_covar->set(1, 0.16);
+
+		this->eigvec_covar->set(0, 0, 1);
+		this->eigvec_covar->set(0, 1, 0);
+		this->eigvec_covar->set(1, 0, 0);
+		this->eigvec_covar->set(1, 1, 1);
 
 		for (size_t i = 0; i < mydim; i++)
 		{
@@ -1132,6 +1142,53 @@ double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base:
 	}
 
 	return result;
+}
+
+void BlackScholesSolver::printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const
+{
+	DataVector temp(alpha);
+	double tmp = 0.0;
+	size_t dim = myGrid->getStorage()->dim();
+	std::ofstream fileout;
+
+	// Do Dehierarchisation, is specified
+	if (bSurplus == false)
+	{
+		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+		myHier->doDehierarchisation(temp);
+		delete myHier;
+	}
+
+	// Open filehandle
+	fileout.open(tfilename.c_str());
+	for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
+	{
+		std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringBB(*myGrid->getBoundingBox());
+		std::stringstream coordsStream(coords);
+
+		std::vector<double> trans_eval;
+
+		for (size_t j = 0; j < dim; j++)
+		{
+			coordsStream >> tmp;
+			trans_eval.push_back(tmp);
+		}
+
+		for (size_t l = 0; l < dim; l++)
+		{
+			double trans_point = 0.0;
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				trans_point += this->eigvec_covar->get(l,j)*(log(trans_eval[j]));
+			}
+			trans_point += (this->current_time*this->mu_hat->get(l));
+
+			fileout << trans_point << " ";
+		}
+
+		fileout << temp[i] << std::endl;
+	}
+	fileout.close();
 }
 
 size_t BlackScholesSolver::getNeededIterationsToSolve()
