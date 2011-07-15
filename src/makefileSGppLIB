@@ -103,7 +103,8 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	DehierarchisationPoly.o\
 	AlgorithmAdaBoost.o\
 	BlackScholesPATParabolicPDESolverSystem.o\
-	BlackScholesPATParabolicPDESolverSystemEuropean.o
+	BlackScholesPATParabolicPDESolverSystemEuropean.o\
+	BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -718,11 +719,14 @@ BlackScholesParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackSch
 BlackScholesPATParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.cpp
 
-HullWhiteParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
-
 BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
+
+BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.cpp
+
+HullWhiteParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
 
 HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
