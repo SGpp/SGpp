@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
@@ -14,11 +14,10 @@
 
 namespace sg
 {
-
 namespace finance
 {
 
-BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
+BlackScholesPATParabolicPDESolverSystemEuropean::BlackScholesPATParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
 			double TimestepSize, std::string OperationMode,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
@@ -29,14 +28,19 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 	this->alpha_complete_old = new sg::base::DataVector(*this->alpha_complete);
 	this->alpha_complete_tmp = new sg::base::DataVector(*this->alpha_complete);
 
+	this->InnerGrid = NULL;
+	this->alpha_inner = NULL;
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
 	this->TimestepSize_old = TimestepSize;
 	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
-	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
+	this->GridConverter = new sg::base::DirichletGridConverter();
 
 	// set Eigenvalues of covariance matrix
 	this->lambda = new sg::base::DataVector(lambda);
+
+	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
+	this->nExecTimesteps = 1;
 
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim())
@@ -74,12 +78,18 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 
 		if (dimCount > 1)
 		{
-			throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : There is minimum one doubled algorithmic dimension!");
+			throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
 		}
 	}
 
-	// operations on boundary grid
+	// create the inner grid
+	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+
+	// Create operations
+	this->OpLaplaceInner = sg::GridOperationFactory::createOperationLaplace(*this->InnerGrid, *this->lambda);
 	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid, *this->lambda);
+
+	this->OpLTwoInner = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->InnerGrid);
 	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
@@ -99,11 +109,22 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 	this->numSumGridpointsComplete = 0;
 }
 
-BlackScholesPATParabolicPDESolverSystem::~BlackScholesPATParabolicPDESolverSystem()
+BlackScholesPATParabolicPDESolverSystemEuropean::~BlackScholesPATParabolicPDESolverSystemEuropean()
 {
 	delete this->OpLaplaceBound;
 	delete this->OpLTwoBound;
+	delete this->OpLaplaceInner;
+	delete this->OpLTwoInner;
 	delete this->BoundaryUpdate;
+	delete this->GridConverter;
+	if (this->InnerGrid != NULL)
+	{
+		delete this->InnerGrid;
+	}
+	if (this->alpha_inner != NULL)
+	{
+		delete this->alpha_inner;
+	}
 	if (this->rhs != NULL)
 	{
 		delete this->rhs;
@@ -113,9 +134,10 @@ BlackScholesPATParabolicPDESolverSystem::~BlackScholesPATParabolicPDESolverSyste
 	delete this->lambda;
 }
 
-void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuropean::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
+
 	result.setAll(0.0);
 
 	// Apply the Laplace operator
@@ -123,9 +145,21 @@ void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVecto
 	result.axpy(-0.5, temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuropean::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
+
+	result.setAll(0.0);
+
+	// Apply the Laplace operator
+	this->OpLaplaceInner->mult(alpha, temp);
+	result.axpy(-0.5, temp);
+}
+
+void BlackScholesPATParabolicPDESolverSystemEuropean::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+{
+	sg::base::DataVector temp(alpha.getSize());
+
 	result.setAll(0.0);
 
 	// Apply the mass matrix
@@ -134,10 +168,25 @@ void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVect
 	result.add(temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
+void BlackScholesPATParabolicPDESolverSystemEuropean::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
+	sg::base::DataVector temp(alpha.getSize());
+
+	result.setAll(0.0);
+
+	// Apply the mass matrix
+	this->OpLTwoInner->mult(alpha, temp);
+
+	result.add(temp);
+}
+
+void BlackScholesPATParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTimestep)
+{
+	// Replace the inner coefficients on the boundary grid
+	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
+
 	// add number of Gridpoints
-	this->numSumGridpointsInner += 0;
+	this->numSumGridpointsInner += this->InnerGrid->getSize();
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
 
 	if (this->useCoarsen == true && isLastTimestep == false)
@@ -184,10 +233,14 @@ void BlackScholesPATParabolicPDESolverSystem::finishTimestep(bool isLastTimestep
 		///////////////////////////////////////////////////
 		// End integrated refinement & coarsening
 		///////////////////////////////////////////////////
+
+		// rebuild the inner grid + coefficients
+		this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 	}
+
 }
 
-void BlackScholesPATParabolicPDESolverSystem::startTimestep()
+void BlackScholesPATParabolicPDESolverSystemEuropean::startTimestep()
 {
 }
 

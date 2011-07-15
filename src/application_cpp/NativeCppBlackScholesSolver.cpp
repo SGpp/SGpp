@@ -598,7 +598,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "all", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
 	}
 	else
 	{
