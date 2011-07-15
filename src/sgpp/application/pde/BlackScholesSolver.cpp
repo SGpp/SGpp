@@ -9,6 +9,7 @@
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
 #include "algorithm/pde/BlackScholesPATParabolicPDESolverSystem.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -435,11 +436,20 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 
 		if (this->tOptionType == "European")
 		{
-			myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
+			myCG = new BiCGStab(maxCGIterations, epsilonCG);
 			myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-			myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			if (this->usePAT == true)
+			{
+				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			}
+			else
+			{
+				myCG = new BiCGStab(maxCGIterations, epsilonCG);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			}
 #endif
 		}
 		else

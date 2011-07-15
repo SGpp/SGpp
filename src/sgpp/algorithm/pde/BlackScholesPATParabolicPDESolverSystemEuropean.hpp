@@ -5,14 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEM_HPP
-#define BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEM_HPP
+#ifndef BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
+#define BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
-#include "grid/common/DirichletUpdateVector.hpp"
-#include "operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
+#include "operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 
 namespace sg
 {
@@ -21,20 +20,25 @@ namespace finance
 
 /**
  * This class implements the ParabolicPDESolverSystem for the BlackScholes
- * Equation. In this case a principal axis transformation is performed in order
- * to improve the use of spatially adaptive grids and to reduce the
- * calculation effort for higher dimensional cases.
+ * Equation.
  *
- * @revision HEAD
+ * Here a European Option with fix Dirichlet boundaries is solved.
+ *
+ * In addition a principal axis transformation is performed in order
+ * to reduce the computational effort.
  */
-class BlackScholesPATParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemNeumann
+class BlackScholesPATParabolicPDESolverSystemEuropean : public sg::pde::OperationParabolicPDESolverSystemDirichlet
 {
 protected:
 	/// the Laplace Operation, on boundary grid
 	sg::base::OperationMatrix* OpLaplaceBound;
 	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
 	sg::base::OperationMatrix* OpLTwoBound;
-	/// Eigenvalues of the covariance matrix
+	/// the Laplace Operation, on Inner grid
+	sg::base::OperationMatrix* OpLaplaceInner;
+	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
+	sg::base::OperationMatrix* OpLTwoInner;
+	/// Pointer to the lambda (coefficients of the needed Laplace operator)
 	sg::base::DataVector* lambda;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
@@ -52,12 +56,16 @@ protected:
 	size_t refineMaxLevel;
 	/// the algorithmic dimensions used in this system
 	std::vector<size_t> BSalgoDims;
-	/// Routine to modify the boundaries/inner points of the grid
-	sg::base::DirichletUpdateVector* BoundaryUpdate;
+	/// store number of executed timesteps
+	size_t nExecTimesteps;
 
-	virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
+	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual void applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result);
+	virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+
+	virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+
+	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 public:
 	/**
@@ -65,10 +73,11 @@ public:
 	 *
 	 * @param SparseGrid reference to the sparse grid
 	 * @param alpha the ansatzfunctions' coefficients
-	 * @param lambda eigenvalues of the covariance matrix
+	 * @param lambda reference to the lambdas
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
+	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
 	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
 	 * @param adaptSolveMode adaptive mode during solving: coarsen, refine, coarsenNrefine
@@ -77,7 +86,7 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
-	BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
+	BlackScholesPATParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
 			double TimestepSize, std::string OperationMode = "ExEul",
 			bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
@@ -85,14 +94,14 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BlackScholesPATParabolicPDESolverSystem();
+	virtual ~BlackScholesPATParabolicPDESolverSystemEuropean();
 
 	virtual void finishTimestep(bool isLastTimestep = false);
 
-	virtual void startTimestep();
+	void startTimestep();
 };
 
 }
 }
 
-#endif /* BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEM_HPP */
+#endif /* BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP */

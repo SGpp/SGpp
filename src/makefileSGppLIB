@@ -78,15 +78,32 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	PrewaveletGrid.o PrewaveletGridGenerator.o OperationMultipleEvalPrewavelet.o OperationTestPrewavelet.o\
 	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
 	UpDownOneOpDimWithShadow.o OperationParabolicPDESolverSystemDirichlet.o OperationParabolicPDESolverSystemNeumann.o\
-	StepsizeControlH.o StepsizeControlBDF.o StepsizeControlEJ.o PoissonEquationSolver.o\
-	EllipticPDESolver.o OperationEllipticPDESolverSystem.o OperationEllipticPDESolverSystemDirichlet.o\
-	OperationEllipticPDESolverSystemNeumann.o PoissonEquationEllipticPDESolverSystemDirichlet.o\
-	HeatEquationParabolicPDESolverSystemParallelOMP.o VariableDiscountFactor.o\
-	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o LaserHeatEquationSolver2D.o Hedging.o\
-	HierarchisationPoly.o OperationMultipleEvalIterativeSPSSEModLinear.o IntrinsicExt.o\
-	OperationMultipleEvalIterativeSSEModLinear.o OperationMultipleEvalIterativeSPAVXModLinear.o\
-	OperationMultipleEvalIterativeAVXModLinear.o DensitySystemMatrix.o DMWeightMatrix.o DehierarchisationPoly.o\
-	AlgorithmAdaBoost.o BlackScholesPATParabolicPDESolverSystem.o
+	StepsizeControlH.o\
+	StepsizeControlBDF.o\
+	StepsizeControlEJ.o\
+	PoissonEquationSolver.o\
+	EllipticPDESolver.o\
+	OperationEllipticPDESolverSystem.o\
+	OperationEllipticPDESolverSystemDirichlet.o\
+	OperationEllipticPDESolverSystemNeumann.o\
+	PoissonEquationEllipticPDESolverSystemDirichlet.o\
+	HeatEquationParabolicPDESolverSystemParallelOMP.o\
+	VariableDiscountFactor.o\
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o\
+	LaserHeatEquationSolver2D.o\
+	Hedging.o\
+	HierarchisationPoly.o\
+	OperationMultipleEvalIterativeSPSSEModLinear.o\
+	IntrinsicExt.o\
+	OperationMultipleEvalIterativeSSEModLinear.o\
+	OperationMultipleEvalIterativeSPAVXModLinear.o\
+	OperationMultipleEvalIterativeAVXModLinear.o\
+	DensitySystemMatrix.o\
+	DMWeightMatrix.o\
+	DehierarchisationPoly.o\
+	AlgorithmAdaBoost.o\
+	BlackScholesPATParabolicPDESolverSystem.o\
+	BlackScholesPATParabolicPDESolverSystemEuropean.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
@@ -697,6 +714,9 @@ BlackScholesPATParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesP
 
 BlackScholesParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
+
+BlackScholesPATParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.cpp
 
 HullWhiteParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
