@@ -326,30 +326,39 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	// 2d test case
 	else if (mydim == 2)
 	{
-//		// Correlation neq zero
-//		this->eigval_covar->set(0, 0.0555377800527509792);
-//		this->eigval_covar->set(1, 0.194462219947249021);
-//
-//		this->eigvec_covar->set(0, 0, -0.867142152569025494);
-//		this->eigvec_covar->set(0, 1, 0.498060726456078796);
-//		this->eigvec_covar->set(1, 0, -0.498060726456078796);
-//		this->eigvec_covar->set(1, 1, -0.867142152569025494);
+		// Correlation -0.5
+		this->eigval_covar->set(0, 0.0555377800527509792);
+		this->eigval_covar->set(1, 0.194462219947249021);
+
+		this->eigvec_covar->set(0, 0, -0.867142152569025494);
+		this->eigvec_covar->set(1, 0, -0.498060726456078796);
+		this->eigvec_covar->set(0, 1, 0.498060726456078796);
+		this->eigvec_covar->set(1, 1, -0.867142152569025494);
+
+		// Correlation 0.1
+//		this->eigval_covar->set(0, 0.0879999999999999949);
+//		this->eigval_covar->set(1, 0.162000000000000005);
+
+//		this->eigvec_covar->set(0, 0, -0.986393923832143860);
+//		this->eigvec_covar->set(0, 1, -0.164398987305357291);
+//		this->eigvec_covar->set(1, 0, 0.164398987305357291);
+//		this->eigvec_covar->set(1, 1, -0.986393923832143860);
 
 		// Correlations zero
-		this->eigval_covar->set(0, 0.09);
-		this->eigval_covar->set(1, 0.16);
-
-		this->eigvec_covar->set(0, 0, 1);
-		this->eigvec_covar->set(0, 1, 0);
-		this->eigvec_covar->set(1, 0, 0);
-		this->eigvec_covar->set(1, 1, 1);
+//		this->eigval_covar->set(0, 0.09);
+//		this->eigval_covar->set(1, 0.16);
+//
+//		this->eigvec_covar->set(0, 0, 1);
+//		this->eigvec_covar->set(0, 1, 0);
+//		this->eigvec_covar->set(1, 0, 0);
+//		this->eigvec_covar->set(1, 1, 1);
 
 		for (size_t i = 0; i < mydim; i++)
 		{
 			double tmp = 0.0;
 			for (size_t j = 0; j < mydim; j++)
 			{
-				tmp += (this->mus->get(i) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(i, j);
+				tmp += ((this->mus->get(i) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
 			}
 			this->mu_hat->set(i, tmp);
 		}
@@ -1063,7 +1072,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, dou
 					double inner_tmp = 0.0;
 					for (size_t l = 0; l < dim; l++)
 					{
-						inner_tmp += this->eigvec_covar->get(l, j)*dblFuncValues[l];
+						inner_tmp += this->eigvec_covar->get(j, l)*dblFuncValues[l];
 					}
 					tmp += exp(inner_tmp);
 				}
@@ -1077,7 +1086,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, dou
 					double inner_tmp = 0.0;
 					for (size_t l = 0; l < dim; l++)
 					{
-						inner_tmp += this->eigvec_covar->get(l, j)*dblFuncValues[l];
+						inner_tmp += this->eigvec_covar->get(j, l)*dblFuncValues[l];
 					}
 					tmp += exp(inner_tmp);
 				}
@@ -1114,7 +1123,7 @@ double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base:
 				double trans_point = 0.0;
 				for (size_t j = 0; j < this->dim; j++)
 				{
-					trans_point += this->eigvec_covar->get(i,j)*(log(eval_point[j]));
+					trans_point += (this->eigvec_covar->get(j,i)*(log(eval_point[j])));
 				}
 				trans_point += (this->current_time*this->mu_hat->get(i));
 
@@ -1179,7 +1188,7 @@ void BlackScholesSolver::printSparseGridPAT(sg::base::DataVector& alpha, std::st
 			double trans_point = 0.0;
 			for (size_t j = 0; j < this->dim; j++)
 			{
-				trans_point += this->eigvec_covar->get(j,l)*(trans_eval[j] - (this->current_time*this->mu_hat->get(l)));
+				trans_point += this->eigvec_covar->get(l,j)*(trans_eval[j] - (this->current_time*this->mu_hat->get(l)));
 			}
 			fileout << exp(trans_point) << " ";
 		}
