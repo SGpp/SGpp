@@ -95,7 +95,7 @@ void combigrid::S_CT::init( std::vector< int >& levels , std::vector< double >& 
 		if ( levels[i] > n )
 			n = levels[i];
 		if ( l_user_[i] > max )
-			max = l_user_[0];
+			max = l_user_[i];
 	}
 	for (int i = 0 ; i < dim_ ; i++ ){
 		ratio_[i] = (double)n/(double)levels[i];
