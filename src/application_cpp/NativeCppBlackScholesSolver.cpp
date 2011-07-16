@@ -682,7 +682,6 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 			myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
 			myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
 		}
-
 	}
 
 	// Start solving the Black Scholes Equation
@@ -745,7 +744,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		}
 	}
 
-	// Test call @ the money
+	// Test option @ the money
 	std::vector<double> point;
 	for (size_t i = 0; i < d; i++)
 	{
@@ -825,7 +824,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "all", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
 	}
 	else
 	{
@@ -846,6 +845,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	for (size_t i = start_l; i <= end_l; i++)
 	{
 		size_t level = i;
+
+		// Reset Solve Time
+		myBSSolver->resetSolveTime();
 
 		// Construct a grid
 		myBSSolver->constructGrid(*myBoundingBox, level);
@@ -883,9 +885,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// Init the grid with on payoff function
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
-		// Gridpoints @Money
-		std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
-
 		// Print the payoff function into a gnuplot file
 		if (dim < 3)
 		{
@@ -900,6 +899,11 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			{
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+			}
+			if (coordsType == "PAT")
+			{
+				myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+				myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
 			}
 		}
 
@@ -956,22 +960,20 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
 				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
 			}
+			if (coordsType == "PAT")
+			{
+				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
+				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
+			}
 		}
 
-		// Test call @ the money
+		// Test option @ the money
 		std::vector<double> point;
-		for (size_t j = 0; j < d; j++)
+		for (size_t x = 0; x < dim; x++)
 		{
-			if (coordsType == "log")
-			{
-				point.push_back(log(dStrike));
-			}
-			else
-			{
-				point.push_back(dStrike);
-			}
+			point.push_back(dStrike);
 		}
-		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
 		// Evaluate Cuboid
 		DataVector Prices(EvalPoints.getNrows());
@@ -1118,7 +1120,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "all", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
 	}
 	else
 	{
@@ -1140,6 +1142,9 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 	for (size_t i = start_l; i <= end_l; i++)
 	{
 		size_t level = i;
+
+		// Reset Solve Time
+		myBSSolver->resetSolveTime();
 
 		// Construct a grid
 		myBSSolver->constructGrid(*myBoundingBox, level);
@@ -1191,6 +1196,11 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 			{
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+			}
+			if (coordsType == "PAT")
+			{
+				myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+				myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
 			}
 		}
 
@@ -1281,22 +1291,20 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
 				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
 			}
+			if (coordsType == "PAT")
+			{
+				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
+				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
+			}
 		}
 
-		// Test call @ the money
+		// Test option @ the money
 		std::vector<double> point;
-		for (size_t j = 0; j < dim; j++)
+		for (size_t x = 0; x < dim; x++)
 		{
-			if (coordsType == "log")
-			{
-				point.push_back(log(dStrike));
-			}
-			else
-			{
-				point.push_back(dStrike);
-			}
+			point.push_back(dStrike);
 		}
-		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
 		// Evaluate Cuboid
 		DataVector Prices(EvalPoints.getNrows());
@@ -1502,7 +1510,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "all", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
 	}
 	else
 	{
@@ -1659,6 +1667,11 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
 			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 		}
+		if (coordsType == "PAT")
+		{
+			myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+			myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
+		}
 	}
 
 	// Gridpoints @Money
@@ -1723,21 +1736,20 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
 			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
 		}
+		if (coordsType == "PAT")
+		{
+			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
+			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
+		}
 	}
 
+	// Test option @ the money
 	std::vector<double> point;
 	for (size_t i = 0; i < d; i++)
 	{
-		if (coordsType == "log")
-		{
-			point.push_back(log(dStrike));
-		}
-		else
-		{
-			point.push_back(dStrike);
-		}
+		point.push_back(dStrike);
 	}
-	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
 	// calculate relative errors
 	////////////////////////////
@@ -1809,7 +1821,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
 	std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
 	std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
-	std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl;
+	std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl;
 	std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
 		<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
 		<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()

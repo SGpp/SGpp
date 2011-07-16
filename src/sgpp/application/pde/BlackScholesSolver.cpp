@@ -94,29 +94,48 @@ void BlackScholesSolver::getGridNormalDistribution(DataVector& alpha, std::vecto
 		double tmp;
 		double value;
 		StdNormalDistribution myNormDistr;
+		double* s_coords = new double[this->dim];
 
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 		{
 			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
 			std::stringstream coordsStream(coords);
 
+			for (size_t j = 0; j < this->dim; j++)
+			{
+				double tmp_load;
+				coordsStream >> tmp_load;
+				s_coords[j] = tmp_load;
+			}
+
 			value = 1.0;
 			for (size_t j = 0; j < this->dim; j++)
 			{
-				coordsStream >> tmp;
-
 				if (this->useLogTransform == false)
 				{
-					value *= myNormDistr.getDensity(tmp, norm_mu[j], norm_sigma[j]);
+					value *= myNormDistr.getDensity(s_coords[j], norm_mu[j], norm_sigma[j]);
 				}
 				else
 				{
-					value *= myNormDistr.getDensity(exp(tmp), norm_mu[j], norm_sigma[j]);
+					if (this->usePAT == true)
+					{
+						double inner_tmp = 0.0;
+						for (size_t l = 0; l < dim; l++)
+						{
+							inner_tmp += this->eigvec_covar->get(j, l)*(s_coords[l]-(this->current_time*this->mu_hat->get(l)));
+						}
+						value *= myNormDistr.getDensity(exp(inner_tmp), norm_mu[j], norm_sigma[j]);
+					}
+					else
+					{
+						value *= myNormDistr.getDensity(exp(s_coords[j]), norm_mu[j], norm_sigma[j]);
+					}
 				}
 			}
 
 			alpha[i] = value;
 		}
+		delete[] s_coords;
 	}
 	else
 	{
@@ -1170,12 +1189,13 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, dou
 
 double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha)
 {
+	std::vector<double> trans_eval = eval_point;
+
 	// apply needed coordinate transformations
 	if (this->useLogTransform)
 	{
 		if (this->usePAT)
 		{
-			std::vector<double> trans_eval = eval_point;
 			for (size_t i = 0; i < eval_point.size(); i++)
 			{
 				double trans_point = 0.0;
@@ -1187,19 +1207,18 @@ double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base:
 
 				trans_eval[i] = trans_point;
 			}
-			eval_point = trans_eval;
 		}
 		else
 		{
 			for (size_t i = 0; i < eval_point.size(); i++)
 			{
-				eval_point[i] = log(eval_point[i]);
+				trans_eval[i] = log(trans_eval[i]);
 			}
 		}
 	}
 
 	sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
-	double result = myEval->eval(alpha, eval_point);
+	double result = myEval->eval(alpha, trans_eval);
 	delete myEval;
 
 	// discounting, if PAT is used
@@ -1233,27 +1252,34 @@ void BlackScholesSolver::printSparseGridPAT(sg::base::DataVector& alpha, std::st
 		std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringBB(*myGrid->getBoundingBox());
 		std::stringstream coordsStream(coords);
 
-		std::vector<double> trans_eval;
+		double* dblFuncValues = new double[dim];
 
 		for (size_t j = 0; j < dim; j++)
 		{
 			coordsStream >> tmp;
-			trans_eval.push_back(tmp);
+			dblFuncValues[j] = tmp;
 		}
 
 		for (size_t l = 0; l < dim; l++)
 		{
 			double trans_point = 0.0;
-			for (size_t j = 0; j < this->dim; j++)
+			for (size_t j = 0; j < dim; j++)
 			{
-				trans_point += this->eigvec_covar->get(l,j)*(trans_eval[j] - (this->current_time*this->mu_hat->get(l)));
+				trans_point += this->eigvec_covar->get(l,j)*(dblFuncValues[j] - (this->current_time*this->mu_hat->get(j)));
 			}
 			fileout << exp(trans_point) << " ";
 		}
 
 		fileout << temp[i] << std::endl;
+
+		delete[] dblFuncValues;
 	}
 	fileout.close();
+}
+
+void BlackScholesSolver::resetSolveTime()
+{
+	this->current_time = 0.0;
 }
 
 size_t BlackScholesSolver::getNeededIterationsToSolve()
