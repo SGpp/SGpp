@@ -197,9 +197,7 @@ void DataMatrix::setRow(size_t row, DataVector& vec) {
 		throw new sg::base::data_exception(
 				"DataMatrix::setRow : Dimensions do not match");
 	}
-#ifdef __ICC
-	#pragma ivdep
-#endif
+
 	for (size_t i = 0; i < this->ncols; i++) {
 		this->data[row * ncols + i] = vec[i];
 	}

@@ -1230,6 +1230,39 @@ double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base:
 	return result;
 }
 
+void BlackScholesSolver::transformPoint(sg::base::DataVector& point)
+{
+	sg::base::DataVector tmp_point(point);
+
+	// apply needed coordinate transformations
+	if (this->useLogTransform)
+	{
+		if (this->usePAT)
+		{
+			for (size_t i = 0; i < point.getSize(); i++)
+			{
+				double trans_point = 0.0;
+				for (size_t j = 0; j < point.getSize(); j++)
+				{
+					trans_point += (this->eigvec_covar->get(j,i)*(log(point[j])));
+				}
+				trans_point += (this->current_time*this->mu_hat->get(i));
+
+				tmp_point[i] = trans_point;
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < point.getSize(); i++)
+			{
+				tmp_point[i] = log(point[i]);
+			}
+		}
+	}
+
+	point = tmp_point;
+}
+
 void BlackScholesSolver::printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const
 {
 	DataVector temp(alpha);

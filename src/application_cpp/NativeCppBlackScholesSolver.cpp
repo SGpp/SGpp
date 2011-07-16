@@ -852,24 +852,14 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// Construct a grid
 		myBSSolver->constructGrid(*myBoundingBox, level);
 
+		// Set stochastic data
+		myBSSolver->setStochasticData(mu, sigma, rho, r);
+
 		// in first iteration -> calculate the evaluation points
 		if (i == start_l)
 		{
 			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
-
 			writeDataMatrix(EvalPoints, tFileEvalCuboid);
-
-			// If the log-transformed Black Scholes Eqaution is used -> transform Eval-cuboid
-			if (coordsType == "log")
-			{
-				for (size_t v = 0; v < EvalPoints.getNrows(); v++)
-				{
-					for (size_t w = 0; w < EvalPoints.getNcols(); w++)
-					{
-						EvalPoints.set(v, w, log(EvalPoints.get(v,w)));
-					}
-				}
-			}
 		}
 
 		// init the basis functions' coefficient vector
@@ -878,9 +868,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::cout << "Grid has " << level << " Levels" << std::endl;
 		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-
-		// Set stochastic data
-		myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 		// Init the grid with on payoff function
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
@@ -974,6 +961,18 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			point.push_back(dStrike);
 		}
 		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
+
+		if (i == start_l)
+		{
+			// if transformed Black Scholes Equation is used -> transform evaluation domain
+			for (size_t v = 0; v < EvalPoints.getNrows(); v++)
+			{
+				sg::base::DataVector r(dim);
+				EvalPoints.getRow(v, r);
+				myBSSolver->transformPoint(r);
+				EvalPoints.setRow(v, r);
+			}
+		}
 
 		// Evaluate Cuboid
 		DataVector Prices(EvalPoints.getNrows());
@@ -1154,17 +1153,6 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		{
 			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
 			writeDataMatrix(EvalPoints, tFileEvalCuboid);
-			// If the log-transformed Black Scholes Eqaution is used -> transform Eval-cuboid
-			if (coordsType == "log")
-			{
-				for (size_t v = 0; v < EvalPoints.getNrows(); v++)
-				{
-					for (size_t w = 0; w < EvalPoints.getNcols(); w++)
-					{
-						EvalPoints.set(v, w, log(EvalPoints.get(v,w)));
-					}
-				}
-			}
 		}
 
 		// init the basis functions' coefficient vector
@@ -1316,6 +1304,18 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		level_string << i;
 		writeDataVector(Prices, tFileEvalCuboidValues+".level_"+ level_string.str());
 		writeDataVector(Prices, tFileEvalCuboidValues);
+
+		// If the transformed Black Scholes Equation is used -> transform Eval-cuboid
+		if (i == start_l)
+		{
+			for (size_t v = 0; v < EvalPoints.getNrows(); v++)
+			{
+				sg::base::DataVector r(dim);
+				EvalPoints.getRow(v, r);
+				myBSSolver->transformPoint(r);
+				EvalPoints.setRow(v, r);
+			}
+		}
 
 		if (i > start_l)
 		{
@@ -1758,16 +1758,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	if (retCuboid == 0 && retCuboidValues == 0)
 	{
-		// If the log-transformed Black Scholes Equation is used -> transform Eval-cuboid
-		if (coordsType == "log")
+		// If the transformed Black Scholes Equation is used -> transform Eval-cuboid
+		for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
 		{
-			for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
-			{
-				for (size_t w = 0; w < EvalCuboid.getNcols(); w++)
-				{
-					EvalCuboid.set(v, w, log(EvalCuboid.get(v,w)));
-				}
-			}
+			sg::base::DataVector r(dim);
+			EvalCuboid.getRow(v, r);
+			myBSSolver->transformPoint(r);
+			EvalCuboid.setRow(v, r);
 		}
 
 		std::cout << "Calculating relative errors..." << std::endl;
