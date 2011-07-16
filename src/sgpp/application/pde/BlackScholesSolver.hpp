@@ -369,12 +369,21 @@ public:
 	virtual double evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha);
 
 	/**
+	 * This method transforms a point given
+	 * in Cartesian coordinates into the coordinates used by the
+	 * current instance of BlackScholesSolver
+	 *
+	 * @param point point given in Cartision coordinates that should be transformed
+	 */
+	virtual void transformPoint(sg::base::DataVector& point);
+
+	/**
 	 * Resets the current solving time.
 	 *
 	 * use this in order to get the discounting right when using one
 	 * instance of multiple option pricings
 	 */
-	void resetSolveTime();
+	virtual void resetSolveTime();
 
 	/**
 	 * gets the number of gridpoints at money
