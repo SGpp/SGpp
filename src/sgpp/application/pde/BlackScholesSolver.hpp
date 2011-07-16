@@ -369,6 +369,14 @@ public:
 	virtual double evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha);
 
 	/**
+	 * Resets the current solving time.
+	 *
+	 * use this in order to get the discounting right when using one
+	 * instance of multiple option pricings
+	 */
+	void resetSolveTime();
+
+	/**
 	 * gets the number of gridpoints at money
 	 *
 	 * Only on Cartesian grids!
