@@ -20,6 +20,7 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <cstdlib>
 
 namespace sg
 {
@@ -101,7 +102,7 @@ namespace datadriven
 			 *
 			 * @param storageAlpha the matrix to store alpha for each different weights
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
-			 * @param actualBN pointer points the actual number of baselearner(cause there is no wrong classify after certain iteration step)
+			 * @param actualBN reference to the actual number of baselearner(cause there is no wrong classify after certain iteration step)
              */
         void doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t* actualBN);
 
@@ -118,16 +119,17 @@ namespace datadriven
              * 
              * @param testData reference to the testing dataset
 			 * @param algorithmClass reference to the class got from the algorithm
+			 * @param algorithmValue reference to the function real value got from the algorithm 
              */
-        void classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass);
+        void classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue);
         
             /**
-             * Performs an accuracy and error evaluation for the testing dataset
+             * Performs an accuracy and interpolation error evaluation for the testing dataset
 			 *
              * @param testData reference to the testing dataset
              * @param testDataClass reference to the class of testing dataset
 			 * @param accruracy reference to the the accruracy 
-			 * @param error reference to the error
+			 * @param error reference to the interpolation error
              */
         void getAccuracyAndError(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accruracy, double* error);
 
@@ -140,14 +142,76 @@ namespace datadriven
         double getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass);
 
             /**
-             * Performs an error evaluation for the testing dataset
+             * Performs an interpolation error evaluation for the testing dataset
              *
              * @param testData reference to the testing dataset   
              * @param testDataClass reference to the class of testing dataset
              */
         double getError(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass);
+
+            /**
+             * Performs a real value calculate for the testing dataset with a specified number of base learner
+             * 
+             * @param testData reference to the testing dataset
+             * @param algorithmValue reference to the real value got from the algorithm
+			 * @param storageAlpha the matrix to store alpha for each different weights
+			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
+			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
+			 * @param yourBaseLearner the number of base learner specified
+             */
+		void evalBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
+
+            /**
+             * Performs a real value calculate for the testing dataset with a specified number of base learner
+             * 
+             * @param testData reference to the testing dataset
+             * @param algorithmClass reference to the class got from the algorithm
+             * @param algorithmValue reference to the real value got from the algorithm
+			 * @param storageAlpha the matrix to store alpha for each different weights
+			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
+			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
+			 * @param yourBaseLearner the number of base learner specified
+             */
+		void classifBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
+
+            /**
+             * Performs an accuracy and interpolation error evaluation for the testing dataset with a specified number of base learner
+			 *
+             * @param testData reference to the testing dataset
+             * @param testDataClass reference to the class of testing dataset
+			 * @param storageAlpha the matrix to store alpha for each different weights
+			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
+			 * @param accruracy reference to the the accruracy 
+			 * @param error reference to the interpolation error
+			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
+			 * @param yourBaseLearner the number of base learner specified
+             */
+		void getAccuracyAndErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, double* accruracy, double* error, size_t actualBN, size_t yourBaseLearner);
+
+            /**
+             * Performs an accuracy evaluation for the testing dataset with a specified number of base learner
+             *
+             * @param testData reference to the testing dataset
+             * @param testDataClass reference to the class of testing dataset
+			 * @param storageAlpha the matrix to store alpha for each different weights
+			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
+			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
+			 * @param yourBaseLearner the number of base learner specified
+             */
+		double getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
+
+            /**
+             * Performs an interpolation error evaluation for the testing dataset
+             *
+             * @param testData reference to the testing dataset
+             * @param testDataClass reference to the class of testing dataset
+			 * @param storageAlpha the matrix to store alpha for each different weights
+			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
+			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
+			 * @param yourBaseLearner the number of base learner specified
+             */
+		double getErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
     };
-    
 }
 }
 #endif
