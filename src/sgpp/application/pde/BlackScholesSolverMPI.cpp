@@ -174,11 +174,10 @@ void BlackScholesSolverMPI::setStochasticData(sg::base::DataVector& mus, sg::bas
 	if (mydim == 1)
 	{
 		this->eigval_covar->set(0, this->sigmas->get(0)*this->sigmas->get(0));
-		this->eigvec_covar->set(0, 0, 1.0);
-		this->mu_hat->set(0, this->mus->get(0)-(0.5*this->sigmas->get(0)*this->sigmas->get(0)));
+		this->eigvec_covar->set(0, 0, this->sigmas->get(0)*this->sigmas->get(0)*1.0);
 	}
 	// 2d test case
-	else if (mydim == 2)
+	if (mydim == 2)
 	{
 		// Correlation -0.5
 		this->eigval_covar->set(0, 0.0555377800527509792);
@@ -188,34 +187,93 @@ void BlackScholesSolverMPI::setStochasticData(sg::base::DataVector& mus, sg::bas
 		this->eigvec_covar->set(1, 0, -0.498060726456078796);
 		this->eigvec_covar->set(0, 1, 0.498060726456078796);
 		this->eigvec_covar->set(1, 1, -0.867142152569025494);
+	}
+	// 3d test case
+	if (mydim == 3)
+	{
+		this->eigval_covar->set(0, 0.0161152062670340546);
+		this->eigval_covar->set(1, 0.109759129882028184);
+		this->eigval_covar->set(2, 0.164125663850937770);
 
-		// Correlation 0.1
-//		this->eigval_covar->set(0, 0.0879999999999999949);
-//		this->eigval_covar->set(1, 0.162000000000000005);
+		this->eigvec_covar->set(0, 0, -0.869836297894464927);
+		this->eigvec_covar->set(0, 1, -0.472520156399458380);
+		this->eigvec_covar->set(0, 2, -0.141808027493095845);
+		this->eigvec_covar->set(1, 0, -0.493287590771869233);
+		this->eigvec_covar->set(1, 1, 0.837245861704536964);
+		this->eigvec_covar->set(1, 2, 0.235980337844304722);
+		this->eigvec_covar->set(2, 0, -0.722271802968979613e-2);
+		this->eigvec_covar->set(2, 1, -0.275216403680555832);
+		this->eigvec_covar->set(2, 2, 0.961355170313971441);
+	}
+	// 4d test case
+	if (mydim == 4)
+	{
+		this->eigval_covar->set(0, 0.203896808612126890);
+		this->eigval_covar->set(1, 0.143228838600683389);
+		this->eigval_covar->set(2, 0.0369289052706551282);
+		this->eigval_covar->set(3, 0.884454475165345477e-1);
 
-//		this->eigvec_covar->set(0, 0, -0.986393923832143860);
-//		this->eigvec_covar->set(0, 1, -0.164398987305357291);
-//		this->eigvec_covar->set(1, 0, 0.164398987305357291);
-//		this->eigvec_covar->set(1, 1, -0.986393923832143860);
+		this->eigvec_covar->set(0, 0, -0.758784156527507303);
+		this->eigvec_covar->set(0, 1, -0.441609644035335480);
+		this->eigvec_covar->set(0, 2, -0.329723883556484409);
+		this->eigvec_covar->set(0, 3, 0.347145051398191185);
+		this->eigvec_covar->set(1, 0, 0.0381555338704252095);
+		this->eigvec_covar->set(1, 1, -0.502978780370165746e-1);
+		this->eigvec_covar->set(1, 2, 0.713853106787664671);
+		this->eigvec_covar->set(1, 3, 0.697443919343796126);
+		this->eigvec_covar->set(2, 0, 0.327315044904916141);
+		this->eigvec_covar->set(2, 1, 0.376967846478724333);
+		this->eigvec_covar->set(2, 2, -0.600862700798999505);
+		this->eigvec_covar->set(2, 3, 0.624278879098610684);
+		this->eigvec_covar->set(3, 0, -0.561832377508447611);
+		this->eigvec_covar->set(3, 1, 0.812616938342507478);
+		this->eigvec_covar->set(3, 2, 0.143735581296216858);
+		this->eigvec_covar->set(3, 3, -0.577769311359955864e-1);
+	}
+	// 5d test case
+	if (mydim == 5)
+	{
+		this->eigval_covar->set(0, 0.248090694157781677);
+		this->eigval_covar->set(1, 0.181003240820949346);
+		this->eigval_covar->set(2, 0.0132179416451147155);
+		this->eigval_covar->set(3, 0.0939549786605669707);
+		this->eigval_covar->set(4, 0.0587331447155870698);
 
-		// Correlations zero
-//		this->eigval_covar->set(0, 0.09);
-//		this->eigval_covar->set(1, 0.16);
-//
-//		this->eigvec_covar->set(0, 0, 1);
-//		this->eigvec_covar->set(0, 1, 0);
-//		this->eigvec_covar->set(1, 0, 0);
-//		this->eigvec_covar->set(1, 1, 1);
+		this->eigvec_covar->set(0, 0, 0.263790550378285305);
+		this->eigvec_covar->set(0, 1, 0.859923642135395405);
+		this->eigvec_covar->set(0, 2, 0.334323851170300113);
+		this->eigvec_covar->set(0, 3, -0.280069559202008711);
+		this->eigvec_covar->set(0, 4, 0.0271012873267933163);
+		this->eigvec_covar->set(1, 0, -0.460592496016481306e-1);
+		this->eigvec_covar->set(1, 1, 0.127520536615915014e-1);
+		this->eigvec_covar->set(1, 2, -0.377657780213884409);
+		this->eigvec_covar->set(1, 3, -0.528472957191017390);
+		this->eigvec_covar->set(1, 4, -0.758819389061222926);
+		this->eigvec_covar->set(2, 0, -0.164069200805689486);
+		this->eigvec_covar->set(2, 1, -0.378822519988808670);
+		this->eigvec_covar->set(2, 2, 0.470800766942319815);
+		this->eigvec_covar->set(2, 3, -0.728869775137000020);
+		this->eigvec_covar->set(2, 4, 0.276893994941337263);
+		this->eigvec_covar->set(3, 0, 0.749451659161123107);
+		this->eigvec_covar->set(3, 1, -0.143542996441549164);
+		this->eigvec_covar->set(3, 2, -0.467549699477188219);
+		this->eigvec_covar->set(3, 3, -0.257715994147244276);
+		this->eigvec_covar->set(3, 4, 0.364276493384776856);
+		this->eigvec_covar->set(4, 0, -0.582834967194725273);
+		this->eigvec_covar->set(4, 1, 0.310254123817747751);
+		this->eigvec_covar->set(4, 2, -0.552581288090625233);
+		this->eigvec_covar->set(4, 3, -0.211207700566551748);
+		this->eigvec_covar->set(4, 4, 0.462699694124277694);
+	}
 
-		for (size_t i = 0; i < mydim; i++)
+	for (size_t i = 0; i < mydim; i++)
+	{
+		double tmp = 0.0;
+		for (size_t j = 0; j < mydim; j++)
 		{
-			double tmp = 0.0;
-			for (size_t j = 0; j < mydim; j++)
-			{
-				tmp += ((this->mus->get(i) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
-			}
-			this->mu_hat->set(i, tmp);
+			tmp += ((this->mus->get(i) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
 		}
+		this->mu_hat->set(i, tmp);
 	}
 
 	bStochasticDataAlloc = true;
