@@ -21,63 +21,233 @@ OCLLIB = /usr/lib64
 IOCLINCLUDE = /usr/include
 IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 
-OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o LinearStretchedTrapezoidBoundaryGrid.o LinearGrid.o LinearStretchedGrid.o ModLinearGrid.o\
-	ModPolyGrid.o SquareRootGrid.o TruncatedTrapezoidGrid.o PolyGrid.o StandardGridGenerator.o BoundaryGridGenerator.o TrapezoidBoundaryGridGenerator.o\
-	TruncatedTrapezoidGridGenerator.o SquareRootGridGenerator.o\
-	OperationMultipleEvalLinear.o OperationEvalLinear.o OperationHierarchisationLinear.o OperationMultipleEvalModLinear.o OperationEvalModLinear.o\
-	OperationHierarchisationModLinear.o OperationMultipleEvalModPoly.o OperationEvalModPoly.o OperationHierarchisationModPoly.o\
-	OperationMultipleEvalPoly.o OperationEvalPoly.o OperationHierarchisationPoly.o OperationHierarchisationLinearBoundary.o\
-	OperationEvalLinearBoundary.o OperationMultipleEvalLinearBoundary.o BlackScholesParabolicPDESolverSystem.o HullWhiteParabolicPDESolverSystem.o BlackScholesSolver.o BlackScholesSolverWithStretching.o HullWhiteSolver.o\
-	BlackScholesHullWhiteSolver.o ConjugateGradients.o SGppStopwatch.o BoundingBox.o Stretching.o OperationDeltaLinearBoundary.o OperationGammaLinearBoundary.o\
-	Euler.o CrankNicolson.o StdNormalDistribution.o BiCGStab.o DirichletUpdateVector.o\
-	IOToolBonnSG.o OperationLTwoDotProductLinearBoundary.o OperationLTwoDotProductLinear.o GridPrinter.o GridPrinterForStretching.o\
-	OperationLBLinear.o OperationLDLinear.o OperationLELinear.o OperationLFLinear.o\
-	OperationLBLinearBoundary.o OperationLDLinearBoundary.o OperationLELinearBoundary.o OperationLFLinearBoundary.o\
-	OperationLaplaceLinearBoundary.o ScreenOutput.o ModWaveletGrid.o OperationTestLinear.o OperationHierarchisationModWavelet.o\
-	OperationTestModWavelet.o OperationMultipleEvalModWavelet.o OperationEvalModWavelet.o OperationTestModLinear.o\
-	OperationTestModPoly.o OperationTestPoly.o OperationTestLinearBoundary.o HeatEquationSolver.o HeatEquationSolverWithStretching.o\
-	HeatEquationParabolicPDESolverSystem.o OperationTestModBspline.o OperationEvalModBspline.o OperationMultipleEvalModBspline.o\
-	OperationHierarchisationModBspline.o ModBsplineGrid.o DMSystemMatrix.o ARFFTools.o OperationLaplaceLinear.o\
-	OperationLaplaceModLinear.o OperationUpDownTestLinearBoundary.o StdUpDown.o UpDownOneOpDim.o UpDownTwoOpDims.o\
-	DirichletGridConverter.o OperationDeltaLinear.o OperationGammaLinear.o OperationDeltaLogLinearBoundary.o\
-	OperationGammaLogLinearBoundary.o HierarchisationLinear.o DehierarchisationLinear.o HierarchisationLinearBoundary.o\
-	DehierarchisationLinearBoundary.o HierarchisationModLinear.o DehierarchisationModLinear.o\
-	PhiPhiUpBBLinear.o PhiPhiDownBBLinear.o SqXdPhidPhiDownBBLinear.o SqXdPhidPhiUpBBLinear.o\
-	XdPhiPhiDownBBLinear.o XdPhiPhiUpBBLinear.o XPhidPhiDownBBLinear.o XPhidPhiUpBBLinear.o XPhiPhiDownBBLinear.o XPhiPhiUpBBLinear.o dPhidPhiDownModLinear.o\
-	dPhidPhiUpModLinear.o PhiPhiDownModLinear.o PhiPhiUpModLinear.o\
-	PhiPhiUpBBLinearBoundary.o PhiPhiDownBBLinearBoundary.o SqXdPhidPhiDownBBLinearBoundary.o SqXdPhidPhiUpBBLinearBoundary.o\
-	XdPhiPhiDownBBLinearBoundary.o XdPhiPhiUpBBLinearBoundary.o XPhidPhiDownBBLinearBoundary.o XPhidPhiUpBBLinearBoundary.o\
-	DPhiPhiDownBBLinearBoundary.o DPhiPhiUpBBLinearBoundary.o PhidPhiDownBBLinearBoundary.o PhidPhiUpBBLinearBoundary.o\
-	XPhiPhiDownBBLinearBoundary.o XPhiPhiUpBBLinearBoundary.o\
-	DPhiPhiDownBBLinear.o DPhiPhiUpBBLinear.o PhidPhiDownBBLinear.o PhidPhiUpBBLinear.o PDESolver.o ParabolicPDESolver.o\
-	EvalCuboidGenerator.o  EvalCuboidGeneratorForStretching.o OperationParabolicPDESolverSystem.o AdamsBashforth.o VarTimestep.o SurplusRefinementFunctor.o\
-	SurplusCoarseningFunctor.o AlignedMemory.o DataMatrix.o BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o\
-	OperationMultipleEvalIterativeSSELinear.o DMSystemMatrixVectorizedIdentity.o OperationDeltaLogLinear.o\
-	OperationGammaLogLinear.o DowndPhidPhiBBIterativeLinear.o DowndPhidPhiBBIterativeLinearBoundary.o\
-	UpdPhidPhiBBIterativeLinearBoundary.o OperationMultipleEvalIterativeAVXLinear.o\
-	DataVectorSP.o DataMatrixSP.o ConjugateGradientsSP.o OperationMultipleEvalIterativeSPSSELinear.o\
-	OperationMultipleEvalIterativeSPAVXLinear.o DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesParabolicPDESolverSystem.o BlackScholesParabolicPDESolverSystemEuropean.o\
-	StretchedTrapezoidBoundaryGridGenerator.o OperationMultipleEvalLinearStretched.o OperationEvalLinearStretched.o\
-	OperationHierarchisationLinearStretched.o OperationHierarchisationLinearStretchedBoundary.o OperationEvalLinearStretchedBoundary.o\
-	OperationMultipleEvalLinearStretchedBoundary.o OperationLaplaceLinearStretched.o OperationDeltaLinearStretchedBoundary.o OperationGammaLinearStretchedBoundary.o\
-	OperationLTwoDotProductLinearStretchedBoundary.o OperationLTwoDotProductLinearStretched.o\
+OBJS =	DataVector.o\
+ 	Grid.o\
+ 	LinearBoundaryGrid.o\
+ 	LinearTrapezoidBoundaryGrid.o\
+ 	LinearStretchedTrapezoidBoundaryGrid.o\
+ 	LinearGrid.o\
+ 	LinearStretchedGrid.o\
+ 	ModLinearGrid.o\
+	ModPolyGrid.o\
+	SquareRootGrid.o\
+	TruncatedTrapezoidGrid.o\
+	PolyGrid.o\
+	StandardGridGenerator.o\
+	BoundaryGridGenerator.o\
+	TrapezoidBoundaryGridGenerator.o\
+	TruncatedTrapezoidGridGenerator.o\
+	SquareRootGridGenerator.o\
+	OperationMultipleEvalLinear.o\
+	OperationEvalLinear.o\
+	OperationHierarchisationLinear.o\
+	OperationMultipleEvalModLinear.o\
+	OperationEvalModLinear.o\
+	OperationHierarchisationModLinear.o\
+	OperationMultipleEvalModPoly.o\
+	OperationEvalModPoly.o\
+	OperationHierarchisationModPoly.o\
+	OperationMultipleEvalPoly.o\
+	OperationEvalPoly.o\
+	OperationHierarchisationPoly.o\
+	OperationHierarchisationLinearBoundary.o\
+	OperationEvalLinearBoundary.o\
+	OperationMultipleEvalLinearBoundary.o\
+	BlackScholesParabolicPDESolverSystem.o\
+	HullWhiteParabolicPDESolverSystem.o\
+	BlackScholesSolver.o\
+	BlackScholesSolverWithStretching.o\
+	HullWhiteSolver.o\
+	BlackScholesHullWhiteSolver.o\
+	ConjugateGradients.o\
+	SGppStopwatch.o\
+	BoundingBox.o\
+	Stretching.o\
+	OperationDeltaLinearBoundary.o\
+	OperationGammaLinearBoundary.o\
+	Euler.o\
+	CrankNicolson.o\
+	StdNormalDistribution.o\
+	BiCGStab.o\
+	DirichletUpdateVector.o\
+	IOToolBonnSG.o\
+	OperationLTwoDotProductLinearBoundary.o\
+	OperationLTwoDotProductLinear.o\
+	GridPrinter.o\
+	GridPrinterForStretching.o\
+	OperationLBLinear.o\
+	OperationLDLinear.o\
+	OperationLELinear.o\
+	OperationLFLinear.o\
+	OperationLBLinearBoundary.o\
+	OperationLDLinearBoundary.o\
+	OperationLELinearBoundary.o\
+	OperationLFLinearBoundary.o\
+	OperationLaplaceLinearBoundary.o\
+	ScreenOutput.o\
+	ModWaveletGrid.o\
+	OperationTestLinear.o\
+	OperationHierarchisationModWavelet.o\
+	OperationTestModWavelet.o\
+	OperationMultipleEvalModWavelet.o\
+	OperationEvalModWavelet.o\
+	OperationTestModLinear.o\
+	OperationTestModPoly.o\
+	OperationTestPoly.o\
+	OperationTestLinearBoundary.o\
+	HeatEquationSolver.o\
+	HeatEquationSolverWithStretching.o\
+	HeatEquationParabolicPDESolverSystem.o\
+	OperationTestModBspline.o\
+	OperationEvalModBspline.o\
+	OperationMultipleEvalModBspline.o\
+	OperationHierarchisationModBspline.o\
+	ModBsplineGrid.o\
+	DMSystemMatrix.o\
+	ARFFTools.o\
+	OperationLaplaceLinear.o\
+	OperationLaplaceModLinear.o\
+	OperationUpDownTestLinearBoundary.o\
+	StdUpDown.o\
+	UpDownOneOpDim.o\
+	UpDownTwoOpDims.o\
+	DirichletGridConverter.o\
+	OperationDeltaLinear.o\
+	OperationGammaLinear.o\
+	OperationDeltaLogLinearBoundary.o\
+	OperationGammaLogLinearBoundary.o\
+	HierarchisationLinear.o\
+	DehierarchisationLinear.o\
+	HierarchisationLinearBoundary.o\
+	DehierarchisationLinearBoundary.o\
+	HierarchisationModLinear.o\
+	DehierarchisationModLinear.o\
+	PhiPhiUpBBLinear.o\
+	PhiPhiDownBBLinear.o\
+	SqXdPhidPhiDownBBLinear.o\
+	SqXdPhidPhiUpBBLinear.o\
+	XdPhiPhiDownBBLinear.o\
+	XdPhiPhiUpBBLinear.o\
+	XPhidPhiDownBBLinear.o\
+	XPhidPhiUpBBLinear.o\
+	XPhiPhiDownBBLinear.o\
+	XPhiPhiUpBBLinear.o\
+	dPhidPhiDownModLinear.o\
+	dPhidPhiUpModLinear.o\
+	PhiPhiDownModLinear.o\
+	PhiPhiUpModLinear.o\
+	PhiPhiUpBBLinearBoundary.o\
+	PhiPhiDownBBLinearBoundary.o\
+	SqXdPhidPhiDownBBLinearBoundary.o\
+	SqXdPhidPhiUpBBLinearBoundary.o\
+	XdPhiPhiDownBBLinearBoundary.o\
+	XdPhiPhiUpBBLinearBoundary.o\
+	XPhidPhiDownBBLinearBoundary.o\
+	XPhidPhiUpBBLinearBoundary.o\
+	DPhiPhiDownBBLinearBoundary.o\
+	DPhiPhiUpBBLinearBoundary.o\
+	PhidPhiDownBBLinearBoundary.o\
+	PhidPhiUpBBLinearBoundary.o\
+	XPhiPhiDownBBLinearBoundary.o\
+	XPhiPhiUpBBLinearBoundary.o\
+	DPhiPhiDownBBLinear.o\
+	DPhiPhiUpBBLinear.o\
+	PhidPhiDownBBLinear.o\
+	PhidPhiUpBBLinear.o\
+	PDESolver.o\
+	ParabolicPDESolver.o\
+	EvalCuboidGenerator.o\
+	EvalCuboidGeneratorForStretching.o\
+	OperationParabolicPDESolverSystem.o\
+	AdamsBashforth.o\
+	VarTimestep.o\
+	SurplusRefinementFunctor.o\
+	SurplusCoarseningFunctor.o\
+	AlignedMemory.o\
+	DataMatrix.o\
+	BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o\
+	OperationMultipleEvalIterativeSSELinear.o\
+	DMSystemMatrixVectorizedIdentity.o\
+	OperationDeltaLogLinear.o\
+	OperationGammaLogLinear.o\
+	DowndPhidPhiBBIterativeLinear.o\
+	DowndPhidPhiBBIterativeLinearBoundary.o\
+	UpdPhidPhiBBIterativeLinearBoundary.o\
+	OperationMultipleEvalIterativeAVXLinear.o\
+	DataVectorSP.o\
+	DataMatrixSP.o\
+	ConjugateGradientsSP.o\
+	OperationMultipleEvalIterativeSPSSELinear.o\
+	OperationMultipleEvalIterativeSPAVXLinear.o\
+	DMSystemMatrixSPVectorizedIdentity.o\
+	ModifiedBlackScholesParabolicPDESolverSystem.o\
+	BlackScholesParabolicPDESolverSystemEuropean.o\
+	StretchedTrapezoidBoundaryGridGenerator.o\
+	OperationMultipleEvalLinearStretched.o\
+	OperationEvalLinearStretched.o\
+	OperationHierarchisationLinearStretched.o\
+	OperationHierarchisationLinearStretchedBoundary.o\
+	OperationEvalLinearStretchedBoundary.o\
+	OperationMultipleEvalLinearStretchedBoundary.o\
+	OperationLaplaceLinearStretched.o\
+	OperationDeltaLinearStretchedBoundary.o\
+	OperationGammaLinearStretchedBoundary.o\
+	OperationLTwoDotProductLinearStretchedBoundary.o\
+	OperationLTwoDotProductLinearStretched.o\
 	OperationLaplaceLinearStretchedBoundary.o\
-	OperationTestLinearStretched.o OperationTestLinearStretchedBoundary.o OperationUpDownTestLinearStretchedBoundary.o OperationDeltaLinearStretched.o\
-	OperationGammaLinearStretched.o OperationDeltaLogLinearStretchedBoundary.o OperationGammaLogLinearStretchedBoundary.o HierarchisationLinearStretched.o\
-	DehierarchisationLinearStretched.o HierarchisationLinearStretchedBoundary.o DehierarchisationLinearStretchedBoundary.o PhiPhiUpBBLinearStretched.o\
-	PhiPhiDownBBLinearStretched.o SqXdPhidPhiDownBBLinearStretched.o SqXdPhidPhiUpBBLinearStretched.o XdPhiPhiDownBBLinearStretched.o XdPhiPhiUpBBLinearStretched.o\
-	XPhidPhiDownBBLinearStretched.o XPhidPhiUpBBLinearStretched.o PhiPhiUpBBLinearStretchedBoundary.o\
-	PhiPhiDownBBLinearStretchedBoundary.o SqXdPhidPhiDownBBLinearStretchedBoundary.o SqXdPhidPhiUpBBLinearStretchedBoundary.o XdPhiPhiDownBBLinearStretchedBoundary.o\
-	XdPhiPhiUpBBLinearStretchedBoundary.o XPhidPhiDownBBLinearStretchedBoundary.o XPhidPhiUpBBLinearStretchedBoundary.o DPhiPhiDownBBLinearStretchedBoundary.o\
-	DPhiPhiUpBBLinearStretchedBoundary.o PhidPhiDownBBLinearStretchedBoundary.o PhidPhiUpBBLinearStretchedBoundary.o\
-	DPhiPhiDownBBLinearStretched.o DPhiPhiUpBBLinearStretched.o PhidPhiDownBBLinearStretched.o PhidPhiUpBBLinearStretched.o\
-	OperationDeltaLogLinearStretched.o OperationGammaLogLinearStretched.o DowndPhidPhiBBIterativeLinearStretched.o\
+	OperationTestLinearStretched.o\
+	OperationTestLinearStretchedBoundary.o\
+	OperationUpDownTestLinearStretchedBoundary.o\
+	OperationDeltaLinearStretched.o\
+	OperationGammaLinearStretched.o\
+	OperationDeltaLogLinearStretchedBoundary.o\
+	OperationGammaLogLinearStretchedBoundary.o\
+	HierarchisationLinearStretched.o\
+	DehierarchisationLinearStretched.o\
+	HierarchisationLinearStretchedBoundary.o\
+	DehierarchisationLinearStretchedBoundary.o\
+	PhiPhiUpBBLinearStretched.o\
+	PhiPhiDownBBLinearStretched.o\
+	SqXdPhidPhiDownBBLinearStretched.o\
+	SqXdPhidPhiUpBBLinearStretched.o\
+	XdPhiPhiDownBBLinearStretched.o\
+	XdPhiPhiUpBBLinearStretched.o\
+	XPhidPhiDownBBLinearStretched.o\
+	XPhidPhiUpBBLinearStretched.o\
+	PhiPhiUpBBLinearStretchedBoundary.o\
+	PhiPhiDownBBLinearStretchedBoundary.o\
+	SqXdPhidPhiDownBBLinearStretchedBoundary.o\
+	SqXdPhidPhiUpBBLinearStretchedBoundary.o\
+	XdPhiPhiDownBBLinearStretchedBoundary.o\
+	XdPhiPhiUpBBLinearStretchedBoundary.o\
+	XPhidPhiDownBBLinearStretchedBoundary.o\
+	XPhidPhiUpBBLinearStretchedBoundary.o\
+	DPhiPhiDownBBLinearStretchedBoundary.o\
+	DPhiPhiUpBBLinearStretchedBoundary.o\
+	PhidPhiDownBBLinearStretchedBoundary.o\
+	PhidPhiUpBBLinearStretchedBoundary.o\
+	DPhiPhiDownBBLinearStretched.o\
+	DPhiPhiUpBBLinearStretched.o\
+	PhidPhiDownBBLinearStretched.o\
+	PhidPhiUpBBLinearStretched.o\
+	OperationDeltaLogLinearStretched.o\
+	OperationGammaLogLinearStretched.o\
+	DowndPhidPhiBBIterativeLinearStretched.o\
 	DowndPhidPhiBBIterativeLinearStretchedBoundary.o\
 	UpdPhidPhiBBIterativeLinearStretchedBoundary.o\
-	DMSystemMatrixSPVectorizedIdentity.o ModifiedBlackScholesParabolicPDESolverSystem.o BlackScholesParabolicPDESolverSystemEuropean.o\
-	PrewaveletGrid.o PrewaveletGridGenerator.o OperationMultipleEvalPrewavelet.o OperationTestPrewavelet.o\
-	OperationEvalPrewavelet.o OperationConvertPrewavelet.o OperationHierarchisationPrewavelet.o\
-	UpDownOneOpDimWithShadow.o OperationParabolicPDESolverSystemDirichlet.o OperationParabolicPDESolverSystemNeumann.o\
+	DMSystemMatrixSPVectorizedIdentity.o\
+	ModifiedBlackScholesParabolicPDESolverSystem.o\
+	BlackScholesParabolicPDESolverSystemEuropean.o\
+	PrewaveletGrid.o\
+	PrewaveletGridGenerator.o\
+	OperationMultipleEvalPrewavelet.o\
+	OperationTestPrewavelet.o\
+	OperationEvalPrewavelet.o\
+	OperationConvertPrewavelet.o\
+	OperationHierarchisationPrewavelet.o\
+	UpDownOneOpDimWithShadow.o\
+	OperationParabolicPDESolverSystemDirichlet.o\
+	OperationParabolicPDESolverSystemNeumann.o\
 	StepsizeControlH.o\
 	StepsizeControlBDF.o\
 	StepsizeControlEJ.o\
@@ -107,29 +277,51 @@ OBJS =	DataVector.o Grid.o LinearBoundaryGrid.o LinearTrapezoidBoundaryGrid.o Li
 	BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o
 	
 ifeq ($(EXT), ArBB)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o OperationMultipleEvalIterativeSPArBBLinear.o ArBBKernels.o
+OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
+ 	OperationMultipleEvalIterativeSPArBBLinear.o\
+ 	ArBBKernels.o
 endif
+
 ifeq ($(EXT), OCL)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o OperationMultipleEvalIterativeHybridSSEOCLLinear.o OCLKernels.o\
-	OperationMultipleEvalIterativeOCLModLinear.o OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
+	OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o\
+	OperationMultipleEvalIterativeHybridSSEOCLLinear.o\
+	OCLKernels.o\
+	OperationMultipleEvalIterativeOCLModLinear.o\
+	OperationMultipleEvalIterativeSPOCLModLinear.o\
+	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
 OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL
 OCLCC=g++
 endif
+
 ifeq ($(EXT), IOCL)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o OperationMultipleEvalIterativeHybridSSEOCLLinear.o OCLKernels.o\
-	OperationMultipleEvalIterativeOCLModLinear.o OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
+ 	OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o\
+	OperationMultipleEvalIterativeHybridSSEOCLLinear.o\
+	OCLKernels.o\
+	OperationMultipleEvalIterativeOCLModLinear.o\
+	OperationMultipleEvalIterativeSPOCLModLinear.o\
+	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
 OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU
 OCLCC=g++
 endif
+
 ifeq ($(EXT), MPI)
-OBJS:=$(OBJS) MPICommunicator.o GlobalMPIComm.o ConjugateGradientsMPI.o PoissonEquationSolverMPI.o\
-	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o HeatEquationParabolicPDESolverSystemParallelMPI.o\
-	HeatEquationSolverMPI.o BlackScholesSolverMPI.o BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o\
-	BiCGStabMPI.o
+OBJS:=$(OBJS) MPICommunicator.o\
+	GlobalMPIComm.o\
+	ConjugateGradientsMPI.o\
+	PoissonEquationSolverMPI.o\
+	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o\
+	HeatEquationParabolicPDESolverSystemParallelMPI.o\
+	HeatEquationSolverMPI.o\
+	BlackScholesSolverMPI.o\
+	BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o\
+	BiCGStabMPI.o\
+	BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.o
 endif
 
 default : $(OBJS)
