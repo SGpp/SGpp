@@ -85,7 +85,7 @@ namespace datadriven
             WMatrix.generateb(*classes, rhs);
 
 			sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
-            myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
+            myCG.solve(WMatrix, alpha, rhs, false, true, -1.0);
             
             storageAlpha.setColumn(count, alpha);
 
@@ -178,7 +178,6 @@ namespace datadriven
         for (size_t i = 0; i < testData.getNrows(); i++)
         {
             algorithmClass.set(i, hValue(algorithmValue.get(i)));
-			std::cout << algorithmClass.get(i);
         }
     }
 

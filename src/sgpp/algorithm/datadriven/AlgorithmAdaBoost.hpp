@@ -64,6 +64,12 @@ namespace datadriven
 		double labelOne;
     		/// Another label of the DataSet
 		double labelTwo;
+            /**
+             * Performs a hypothesis classifer
+			 *
+			 * @param realvalue real value of function 
+             */
+		double hValue(double realValue);
     
     public:
 
@@ -89,13 +95,6 @@ namespace datadriven
              * Std-Deconstructor
              */
         virtual ~AlgorithmAdaBoost();
-
-            /**
-             * Performs a hypothesis classifer
-			 *
-			 * @param realvalue real value of function 
-             */
-		double hValue(double realValue);
 
             /**
              * Performs the algorithm
