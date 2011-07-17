@@ -90,7 +90,7 @@ void combigrid::S_CT::init( std::vector< int >& levels , std::vector< double >& 
 	ratio_.resize( dim_ , 1.0 );
 
 	// get the maximum level and get the
-	int n = levels[0] , max = 0;
+	int n = levels[0] , max = l_user_[0];
 	for (int i = 1 ; i < dim_ ; i++ ){
 		if ( levels[i] > n )
 			n = levels[i];
