@@ -402,18 +402,18 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 		}
@@ -422,12 +422,12 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 			if (this->usePAT == true)
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 		}
 

@@ -90,7 +90,7 @@ void writeHelp()
 	mySStream << "-----------------------------------------------------" << std::endl;
 	mySStream << "solveNDanalyze" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
+	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords; PAT principal axis transform" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level_start: number of levels within the Sparse Grid (start)" << std::endl;
 	mySStream << "	level_end: number of levels within the Sparse Grid (end)" << std::endl;
@@ -511,10 +511,10 @@ int writeDataVector(DataVector& data, std::string tFile)
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
- * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
+ * @param coordsType set the type of coordinates that should be used: cart, log, PAT
  */
 void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
-		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, std::string fileAnalyze, bool isLogSolve)
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, std::string fileAnalyze, std::string coordsType)
 {
 	size_t dim = d;
 	size_t timesteps = timeSt;
@@ -542,13 +542,28 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
 	// create Black Scholes Solver Object
 	sg::parallel::BlackScholesSolverMPI* myBSSolver;
-	if (isLogSolve == true)
+	if (coordsType == "log")
 	{
 		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European");
 	}
-	else
+	else if (coordsType == "cart")
 	{
 		myBSSolver = new sg::parallel::BlackScholesSolverMPI(false, "European");
+	}
+	else if (coordsType == "PAT")
+	{
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European", true);
+	}
+	else
+	{
+		// Write Error
+		std::cout << "Unsupported grid transformation!" << std::endl;
+		std::cout << std::endl << std::endl;
+		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
+		{
+			writeHelp();
+		}
+		sg::parallel::myGlobalMPIComm->Abort();
 	}
 
 	// Screen initialization only on rank 0
@@ -561,6 +576,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	for (size_t i = start_l; i <= end_l; i++)
 	{
 		size_t level = i;
+
+		// Reset Solve Time
+		myBSSolver->resetSolveTime();
 
 		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
 		{
@@ -592,20 +610,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
 
 				myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
-
 				writeDataMatrix(EvalPoints, tFileEvalCuboid);
 
-				// If the log-transformed Black Scholes Eqaution is used -> transform Eval-cuboid
-				if (isLogSolve == true)
-				{
-					for (size_t v = 0; v < EvalPoints.getNrows(); v++)
-					{
-						for (size_t w = 0; w < EvalPoints.getNcols(); w++)
-						{
-							EvalPoints.set(v, w, log(EvalPoints.get(v,w)));
-						}
-					}
-				}
 				std::cout << "=====================================================================" << std::endl;
 				std::cout << "=====================================================================" << std::endl << std::endl;
 				std::cout << "Calculating norms of relative errors to a grid" << std::endl;
@@ -628,6 +634,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
 			std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
+			// Set stochastic data
+			myBSSolver->setStochasticData(mu, sigma, rho, r);
+
 			// Init the grid with on payoff function
 			myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
@@ -641,10 +650,15 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.MPI.gnuplot", true);
 				myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.MPI.gnuplot", false);
 
-				if (isLogSolve == true)
+				if (coordsType == "log")
 				{
 					myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.MPI.gnuplot", true);
 					myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.MPI.gnuplot", false);
+				}
+				if (coordsType == "PAT")
+				{
+					myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.MPI.gnuplot", true);
+					myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.MPI.gnuplot", false);
 				}
 			}
 		}
@@ -665,6 +679,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			myBSSolver->setGrid(serialized_grid);
 
 			alpha = new DataVector(myBSSolver->getNumberGridPoints());
+
+			// Set stochastic data
+			myBSSolver->setStochasticData(mu, sigma, rho, r);
 		}
 
 		sg::parallel::myGlobalMPIComm->Barrier();
@@ -673,9 +690,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
 		sg::parallel::myGlobalMPIComm->Barrier();
-
-		// Set stochastic data
-		myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 		// Start solving the Black Scholes Equation
 		if (Solver == "ExEul")
@@ -689,26 +703,6 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		else if (Solver == "CrNic")
 		{
 			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-		}
-		else if (Solver == "AdBas")
-		{
-			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-		}
-		else if (Solver == "SCAC")
-		{
-			myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-		}
-		else if (Solver == "SCH")
-		{
-			myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-		}
-		else if (Solver == "SCBDF")
-		{
-			myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-		}
-		else if (Solver == "SCEJ")
-		{
-			myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 		}
 		else
 		{
@@ -728,27 +722,37 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.MPI.gnuplot", true);
 				myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.MPI.gnuplot", false);
 
-				if (isLogSolve == true)
+				if (coordsType == "log")
 				{
 					myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.MPI.gnuplot", true);
 					myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.MPI.gnuplot", false);
 				}
+				if (coordsType == "PAT")
+				{
+					myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.MPI.gnuplot", true);
+					myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.MPI.gnuplot", false);
+				}
 			}
 
-			// Test call @ the money
+			// Test option @ the money
 			std::vector<double> point;
-			for (size_t j = 0; j < d; j++)
+			for (size_t x = 0; x < dim; x++)
 			{
-				if (isLogSolve == true)
+				point.push_back(dStrike);
+			}
+			std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
+
+			if (i == start_l)
+			{
+				// if transformed Black Scholes Equation is used -> transform evaluation domain
+				for (size_t v = 0; v < EvalPoints.getNrows(); v++)
 				{
-					point.push_back(log(dStrike));
-				}
-				else
-				{
-					point.push_back(dStrike);
+					sg::base::DataVector r(dim);
+					EvalPoints.getRow(v, r);
+					myBSSolver->transformPoint(r);
+					EvalPoints.setRow(v, r);
 				}
 			}
-			std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 			// Evaluate Cuboid
 			DataVector Prices(EvalPoints.getNrows());
@@ -772,6 +776,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				double oldTwoNorm = 0.0;
 
 				// Calculate relative errors and some norms
+				std::cout << "Level, max-norm(rel-error), two-norm(rel-error), rate max-norm,  rate two-norm" << std::endl;
+				std::cout << "------------------------------------------------------------------------------" << std::endl;
 				for (size_t j = 0; j < i-start_l; j++)
 				{
 					DataVector maxLevel(results[i-start_l]);
@@ -790,7 +796,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 					l2Norm = relError.RMSNorm();
 
 					// Printing norms
-					std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+					//std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+					std::cout << j + start_l << ", " << maxNorm << ", " << l2Norm << ", " << log(oldMaxNorm/maxNorm) << ", " << log(oldTwoNorm/l2Norm) << std::endl;
 
 					oldMaxNorm = maxNorm;
 					oldTwoNorm = l2Norm;
@@ -831,13 +838,13 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
  * @param useCoarsen specifies if the grid should be coarsened between timesteps
  * @param adaptSolvingMode specifies which adaptive methods are applied during solving the BS Equation
  * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
- * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
+ * @param coordsType set the type of coordinates that should be used: cart, log, PAT
  * @param useNormalDist enable local initial refinement based on a normal distribution
  */
 void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound, double dStrike,
 		std::string payoffType, double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps,
 		std::string Solver, std::string refinementMode, int numRefinePoints, size_t maxRefineLevel, size_t nIterAdaptSteps, double dRefineThreshold,
-		bool useCoarsen, std::string adaptSolvingMode, double coarsenThreshold, bool isLogSolve, bool useNormalDist)
+		bool useCoarsen, std::string adaptSolvingMode, double coarsenThreshold, std::string coordsType, bool useNormalDist)
 {
 	size_t dim = d;
 	size_t level = l;
@@ -868,13 +875,28 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	}
 
 	sg::parallel::BlackScholesSolverMPI* myBSSolver;
-	if (isLogSolve == true)
+	if (coordsType == "log")
 	{
 		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European");
 	}
-	else
+	else if (coordsType == "cart")
 	{
 		myBSSolver = new sg::parallel::BlackScholesSolverMPI(false, "European");
+	}
+	else if (coordsType == "PAT")
+	{
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European", true);
+	}
+	else
+	{
+		// Write Error
+		std::cout << "Unsupported grid transformation!" << std::endl;
+		std::cout << std::endl << std::endl;
+		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
+		{
+			writeHelp();
+		}
+		sg::parallel::myGlobalMPIComm->Abort();
 	}
 
 	// Enable Coarsening
@@ -902,6 +924,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 		// init the basis functions' coefficient vector
 		alpha = new DataVector(myBSSolver->getNumberGridPoints());
+
+		// Set stochastic data
+		myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 		// Init the grid with on payoff function
 		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
@@ -1005,10 +1030,15 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.MPI.gnuplot", true);
 			myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.MPI.gnuplot", false);
 
-			if (isLogSolve == true)
+			if (coordsType == "log")
 			{
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.MPI.gnuplot", true);
 				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.MPI.gnuplot", false);
+			}
+			if (coordsType == "PAT")
+			{
+				myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.MPI.gnuplot", true);
+				myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.MPI.gnuplot", false);
 			}
 		}
 	}
@@ -1029,6 +1059,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		myBSSolver->setGrid(serialized_grid);
 
 		alpha = new DataVector(myBSSolver->getNumberGridPoints());
+
+		// Set stochastic data
+		myBSSolver->setStochasticData(mu, sigma, rho, r);
 	}
 
 	sg::parallel::myGlobalMPIComm->Barrier();
@@ -1036,9 +1069,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	// Communicate coefficients
 	sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 	sg::parallel::myGlobalMPIComm->Barrier();
-
-	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigma, rho, r);
 
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
@@ -1052,26 +1082,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	else if (Solver == "CrNic")
 	{
 		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-	}
-	else if (Solver == "AdBas")
-	{
-		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCAC")
-	{
-		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCH")
-	{
-		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCBDF")
-	{
-		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCEJ")
-	{
-		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 	}
 	else
 	{
@@ -1090,26 +1100,25 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.MPI.gnuplot", true);
 			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.MPI.gnuplot", false);
 
-			if (isLogSolve == true)
+			if (coordsType == "log")
 			{
 				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.MPI.gnuplot", true);
 				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.MPI.gnuplot", false);
 			}
+			if (coordsType == "PAT")
+			{
+				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.MPI.gnuplot", true);
+				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.MPI.gnuplot", false);
+			}
 		}
 
+		// Test option @ the money
 		std::vector<double> point;
 		for (size_t i = 0; i < d; i++)
 		{
-			if (isLogSolve == true)
-			{
-				point.push_back(log(dStrike));
-			}
-			else
-			{
-				point.push_back(dStrike);
-			}
+			point.push_back(dStrike);
 		}
-		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
 		// calculate relative errors
 		////////////////////////////
@@ -1118,16 +1127,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 		if (retCuboid == 0 && retCuboidValues == 0)
 		{
-			// If the log-transformed Black Scholes Equation is used -> transform Eval-cuboid
-			if (isLogSolve == true)
+			// If the transformed Black Scholes Equation is used -> transform Eval-cuboid
+			for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
 			{
-				for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
-				{
-					for (size_t w = 0; w < EvalCuboid.getNcols(); w++)
-					{
-						EvalCuboid.set(v, w, log(EvalCuboid.get(v,w)));
-					}
-				}
+				sg::base::DataVector r(dim);
+				EvalCuboid.getRow(v, r);
+				myBSSolver->transformPoint(r);
+				EvalCuboid.setRow(v, r);
 			}
 
 			std::cout << "Calculating relative errors..." << std::endl;
@@ -1181,7 +1187,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
 		std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
 		std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
-		std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl;
+		std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl;
 		std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
 			<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
 			<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
@@ -1253,25 +1259,9 @@ int main(int argc, char *argv[])
 			solver.assign(argv[13]);
 
 			std::string coordsType;
-			bool coords = false;
 			coordsType.assign(argv[2]);
-			if (coordsType == "cart")
-			{
-				coords = false;
-			}
-			else if (coordsType == "log")
-			{
-				coords = true;
-			}
-			else
-			{
-				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
-				std::cout << std::endl << std::endl;
-				writeHelp();
-			}
 
-
-			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coords);
+			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coordsType);
 		}
 	}
 	else if (option == "solveNDadaptSurplus" || option == "solveNDadaptSurplusSubDomain")
@@ -1310,27 +1300,7 @@ int main(int argc, char *argv[])
 			adaptSolveMode.assign(argv[19]);
 
 			std::string coordsType;
-			bool coords = false;
 			coordsType.assign(argv[2]);
-			if (coordsType == "cart")
-			{
-				coords = false;
-			}
-			else if (coordsType == "log")
-			{
-				coords = true;
-			}
-			else
-			{
-				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
-				std::cout << std::endl << std::endl;
-				if (mpi_myid == 0)
-				{
-					writeHelp();
-				}
-				sg::parallel::myGlobalMPIComm->Abort();
-				return 0;
-			}
 
 			if (refinementMode != "maxLevel" && refinementMode != "classic")
 			{
@@ -1365,7 +1335,7 @@ int main(int argc, char *argv[])
 				return 0;
 			}
 
-			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode, atof(argv[20]), coords, isNormalDist);
+			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode, atof(argv[20]), coordsType, isNormalDist);
 		}
 	}
 	else

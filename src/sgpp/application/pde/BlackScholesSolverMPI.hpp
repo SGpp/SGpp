@@ -79,6 +79,8 @@ protected:
 	int numCoarsenPoints;
 	/// identifies if the Black Scholes Equation should be solved on a log-transformed grid
 	bool useLogTransform;
+	/// identifies if the Black Scholes Equation should be solved by using a principal axis transformation
+	bool usePAT;
 	/// max. level for refinement during solving
 	size_t refineMaxLevel;
 	/// variable to store needed solving iterations
@@ -93,6 +95,14 @@ protected:
 	size_t avgInnerGridSize;
 	/// Type of the Option to solve
 	std::string tOptionType;
+	/// Eigenvectors of the co-variance matrix
+	sg::base::DataMatrix* eigvec_covar;
+	/// Eigenvalues of the co-variance matrix
+	sg::base::DataVector* eigval_covar;
+	/// mu hat, tanslation coefficient needed if PAT is used
+	sg::base::DataVector* mu_hat;
+	/// stores the current time until which the option has been solved
+	double current_time;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -125,6 +135,16 @@ protected:
 	virtual void initLogTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
+	 * Inits the alpha vector with a payoff function of an European call option or put option
+	 * The grid is initialized based on log-transformed and a principal axis transformation coordinates!
+	 *
+	 * @param alpha the coefficient vector of the grid's ansatzfunctions
+	 * @param strik the option's strike
+	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
+	 */
+	virtual void initPATTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
+
+	/**
 	 * This function calculates for every grid point the value
 	 * of a normal distribution given by norm_mu and norm_sigma.
 	 * The result is stored dehierarchized in alpha.
@@ -143,8 +163,9 @@ public:
 	 *
 	 * @param useLogTransform speciefies if a log transformed formulation should be used for solving BlackScholes Equation
 	 * @param OptionType possible values "all" and "European", if "European" is choose a solver with fix Dirichlet boundaries is selected
+	 * @param usePAT speciefies if a principal axis transformation (also enabling a log-transformation) should be used for solving BlackScholes Equation
 	 */
-	BlackScholesSolverMPI(bool useLogTransform = false, std::string OptionType = "European");
+	BlackScholesSolverMPI(bool useLogTransform = false, std::string OptionType = "all", bool usePAT = false);
 
 	/**
 	 * Std-Destructor of the solver
@@ -152,40 +173,6 @@ public:
 	virtual ~BlackScholesSolverMPI();
 
 	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
-
-	/**
-	 * This function tries to refine the grid such that
-	 * most of the grid points are used for interpolation of the singularity. So this grid
-	 * is able to approximate the start solution better.
-	 *
-	 * After refining the grid the payoff function is applied to the grid.
-	 *
-	 * Only on Cartesian grids!
-	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param strike containing the option's strike
-	 * @param payoffType the type of payoff Function used ONLY supported: avgM
-	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
-	 */
-	virtual void refineInitialGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
-
-	/**
-	 * This function tries to refine the grid such that
-	 * most of the grid points are used for interpolation of the singularity. So this grid
-	 * is able to approximate the start solution better. Refining is done only if the max
-	 * refinement level hasn't be reached.
-	 *
-	 * After refining the grid the payoff function is applied to the grid.
-	 *
-	 * Only on Cartesian grids!
-	 *
-	 * @param alpha reference to a DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param strike containing the option's strike
-	 * @param payoffType the type of payoff Function used ONLY supported: avgM
-	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
-	 * @param maxLevel maximum level of refinement
-	 */
-	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
@@ -260,6 +247,46 @@ public:
 	 *	@param refineThreshold Threshold needed to determine if a grid point should be refined
 	 */
 	virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+
+	/**
+	 * Evaluates the current option value
+	 * at a point given in Cartesian coordinates
+	 *
+	 * @param eval_point the point at with the option price should be determined
+	 * @param alpha the grid's coefficients
+	 *
+	 * @return the option price at the given point
+	 */
+	virtual double evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha);
+
+	/**
+	 * This method transforms a point given
+	 * in Cartesian coordinates into the coordinates used by the
+	 * current instance of BlackScholesSolver
+	 *
+	 * @param point point given in Cartision coordinates that should be transformed
+	 */
+	virtual void transformPoint(sg::base::DataVector& point);
+
+	/**
+	 * Resets the current solving time.
+	 *
+	 * use this in order to get the discounting right when using one
+	 * instance of multiple option pricings
+	 */
+	virtual void resetSolveTime();
+
+	/**
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
+	 * or their hierarchical surplus
+	 *
+	 * This function is available for all dimensions
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tfilename absoulte path to the file the grid is written into
+	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
+	 */
+	void printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
 	 * gets the number needed iterations to solve Black Scholes Equation
