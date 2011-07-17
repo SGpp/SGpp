@@ -386,6 +386,18 @@ public:
 	virtual void resetSolveTime();
 
 	/**
+	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
+	 * or their hierarchical surplus
+	 *
+	 * This function is available for all dimensions
+	 *
+	 * @param alpha the coefficients of the grid's ansatzfunctions
+	 * @param tfilename absoulte path to the file the grid is written into
+	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
+	 */
+	void printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
+
+	/**
 	 * gets the number of gridpoints at money
 	 *
 	 * Only on Cartesian grids!
@@ -431,18 +443,6 @@ public:
 	 * @returns the number of average gridpoints, if called before solving, 0 is returned
 	 */
 	virtual size_t getAverageInnerGridSize();
-
-	/**
-	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
-	 * or their hierarchical surplus
-	 *
-	 * This function is available for all dimensions
-	 *
-	 * @param alpha the coefficients of the grid's ansatzfunctions
-	 * @param tfilename absoulte path to the file the grid is written into
-	 * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
-	 */
-	void printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
 	/**
 	 * Routine to export the matrix of the inner system in matrix

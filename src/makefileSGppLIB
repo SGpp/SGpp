@@ -1159,6 +1159,9 @@ BiCGStabMPI.o : $(SRCDIR)solver/sle/BiCGStabMPI.cpp
 	
 BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.cpp	
+
+BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.cpp	
 		
 clean:
 	rm *
