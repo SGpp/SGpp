@@ -673,12 +673,12 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
         lmin = minvals
         lmax = maxvals
     else:
+        # init lmin and lmax to first values of first dataset
         lmin = []
         lmax = []
-
-        for datadim in data[0]["data"]:
-            lmin.append(datadim[0])
-            lmax.append(datadim[0])
+        for dim in range(data[0]["data"].getNcols()):
+            lmin.append(data[0]["data"].get(0,dim))
+            lmax.append(data[0]["data"].get(0,dim))
 
         for dataset in data:
             for dim in xrange(dataset["data"].getNcols()):
