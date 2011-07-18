@@ -15,16 +15,16 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeOCLModLinear::OperationMultipleEvalIterativeOCLModLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeOCLModLinear::OperationMultipleEvalIterativeOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 
-	this->level_ = new DataMatrix(storage->size(), storage->dim());
-	this->index_ = new DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new SGppStopwatch();
+	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 }
 
@@ -39,8 +39,8 @@ void OperationMultipleEvalIterativeOCLModLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new DataMatrix(storage->size(), storage->dim());
-	this->index_ = new DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
