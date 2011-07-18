@@ -126,12 +126,14 @@ if __name__=='__main__':
     
     for i in xrange(len(options.infiles)):
         try:
-            if options.types[i] == "arff":
-                data.append(readDataARFF(options.infiles[i]))
-                data[i]["filename"] = options.outfiles[i]
-            elif options.types[i] == "simple":
-                data.append(readDataTrivial(options.infiles[i], delim=options.delimiter, hasclass=options.hasnoclass))
-                data[i]["filename"] = options.outfiles[i]
+#            if options.types[i] == "arff":
+#                data.append(readDataARFF(options.infiles[i]))
+#                data[i]["filename"] = options.outfiles[i]
+#            elif options.types[i] == "simple":
+#                data.append(readDataTrivial(options.infiles[i], delim=options.delimiter, hasclass=options.hasnoclass))
+#                data[i]["filename"] = options.outfiles[i]
+            data.append(readData(options.infiles[i]))
+            data[i]["filename"] = options.outfiles[i]
         except Exception, e:
             print("Error while reading "  + options.infiles[i] +"! Aborting...");
             print e

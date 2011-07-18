@@ -99,7 +99,7 @@ vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
 
 # for compiling different modules
 vars.Add('SG_ALL', 'Build all modules', False)
-vars.Add('SG_BASE', 'Build Basis Module', True)
+vars.Add('SG_BASE', 'Build Basis Module', False)
 vars.Add('SG_DATADRIVEN', 'Build Datadriven Module', False)
 vars.Add('SG_SOLVER', 'Build Solver Module', False)
 vars.Add('SG_FINANCE', 'Build Finance Module', False)
@@ -107,6 +107,8 @@ vars.Add('SG_PDE', 'Build PDE Module', False)
 vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
 vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
 vars.Add('SG_PYTHON', 'Build Python Support', True)
+moduleList = ['SG_BASE', 'SG_DATADRIVEN', 'SG_SOLVER', 'SG_FINANCE',
+              'SG_PDE', 'SG_PARALLEL', 'SG_COMBIGRID']
 
 # initialize environment
 env = Environment(variables = vars, ENV = os.environ)
@@ -234,7 +236,13 @@ env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 #########################################################################
 
 # compile all if nothing set
-if len(sys.argv) < 2:
+anyModl = False
+for modl in moduleList:
+    if env[modl]:
+        print "Compiling module", modl
+    anyModl = anyModl or env[modl]
+if not anyModl:
+    print "Compiling all modules..."
     env['SG_ALL'] = True
     env['SG_PYTHON'] = True
 
