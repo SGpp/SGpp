@@ -15,16 +15,16 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPOCLModLinear::OperationMultipleEvalIterativeSPOCLModLinear(GridStorage* storage, DataMatrixSP* dataset) : OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPOCLModLinear::OperationMultipleEvalIterativeSPOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset)
 {
 	this->storage = storage;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new SGppStopwatch();
+	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 }
 
@@ -39,8 +39,8 @@ void OperationMultipleEvalIterativeSPOCLModLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
