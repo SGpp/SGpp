@@ -360,8 +360,8 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 		this->eigval_covar->set(1, 0.144);
 
 		this->eigvec_covar->set(0, 0, 0.707106781186547351);
-		this->eigvec_covar->set(0, 1, 0.707106781186547573);
-		this->eigvec_covar->set(1, 0, -0.707106781186547573);
+		this->eigvec_covar->set(0, 1, -0.707106781186547573);
+		this->eigvec_covar->set(1, 0, 0.707106781186547573);
 		this->eigvec_covar->set(1, 1, 0.707106781186547351);
 
 		// correlation 0.0, sigma 0.4
