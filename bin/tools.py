@@ -267,10 +267,10 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
                 pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
+        fout.write("e\n")
     # can't plot anything else
     else:
         sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (grid.getStorage().dim()))
-    fout.write("e\n")
     fout.close()
     return
 
@@ -303,10 +303,10 @@ def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
                 pc = fctn(p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
+        fout.write("e\n")
     # can't plot anything else
     else:
         sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (dim))
-    fout.write("e\n")
     fout.close()
     return
 
