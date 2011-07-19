@@ -15,11 +15,12 @@
 
 namespace sg
 {
+
 namespace base
 {
 
 /**
- * Polynomial base functions.
+ * Polynomial basis functions.
  *
  * @version $HEAD$
  */
@@ -75,12 +76,12 @@ public:
 		return evalPolynom(id, deg, val);
 	}
 
-	double evalHierToTop(LT level, IT index, DataVector& koeffs)
+	double evalHierToTop(LT level, IT index, DataVector& koeffs, double pos)
 	{
 		double result = 0.0;
 		for(; level>=1; level--)
 		{
-			result += koeffs[level] * eval(level, index, index/(pow(2.0, level)));
+			result += koeffs[level] * eval(level, index, pos);
 			index = ((index-1)/2);
 			index = (index % 2 == 0)?(index+1):index;
 		}
@@ -234,6 +235,7 @@ private:
 };
 
 }
+
 }
 
 #endif /* POLY_BASE_HPP */

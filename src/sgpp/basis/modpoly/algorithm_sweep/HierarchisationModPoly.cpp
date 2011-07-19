@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "basis/poly/algorithm_sweep/HierarchisationPoly.hpp"
+#include "basis/modpoly/algorithm_sweep/HierarchisationModPoly.hpp"
 
 namespace sg
 {
@@ -18,22 +18,22 @@ namespace sg
 namespace base
 {
 
-HierarchisationPoly::HierarchisationPoly(GridStorage* storage, SPolyBase* base) : storage(storage), base(base)
+HierarchisationModPoly::HierarchisationModPoly(GridStorage* storage, SModPolyBase* base) : storage(storage), base(base)
 {
 }
 
-HierarchisationPoly::~HierarchisationPoly()
+HierarchisationModPoly::~HierarchisationModPoly()
 {
 }
 
-void HierarchisationPoly::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
+void HierarchisationModPoly::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
 {
 	DataVector koeffs(index.getGridDepth(dim)+1);
 	koeffs.setAll(0.0);
 	rec(source, result, index, dim, koeffs);
 }
 
-void HierarchisationPoly::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs)
+void HierarchisationModPoly::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs)
 {
 	// current position on the grid
 	size_t seq = index.seq();

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "exception/factory_exception.hpp"
+#include "data/DataVector.hpp"
 
 namespace sg
 {
@@ -81,6 +82,18 @@ public:
 		return evalPolynom(id, deg, val);
 	}
 
+	double evalHierToTop(LT level, IT index, DataVector& koeffs, double pos)
+	{
+		double result = 0.0;
+		for(; level>=1; level--)
+		{
+			result += koeffs[level] * eval(level, index, pos);
+			index = ((index-1)/2);
+			index = (index % 2 == 0)?(index+1):index;
+		}
+		return result;
+	}
+	
 private:
 	/**
 	 * Evaluate a base functions.
