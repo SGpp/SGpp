@@ -9,10 +9,11 @@
 
 #include "basis/basis.hpp"
 #include "basis/modpoly/operation/common/OperationHierarchisationModPoly.hpp"
-
-#include "exception/operation_exception.hpp"
+#include "basis/modpoly/algorithm_sweep/HierarchisationModPoly.hpp"
+#include "basis/modpoly/algorithm_sweep/DehierarchisationModPoly.hpp"
 
 #include "data/DataVector.hpp"
+#include "algorithm/common/sweep.hpp"
 
 namespace sg
 {
@@ -21,12 +22,26 @@ namespace base
 
 void OperationHierarchisationModPoly::doHierarchisation(DataVector& node_values)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+	HierarchisationModPoly func(this->storage, &this->base);
+	sweep<HierarchisationModPoly> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(node_values, node_values, i);
+	}
 }
 
 void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha)
 {
-	throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+	DehierarchisationModPoly func(this->storage, &this->base);
+	sweep<DehierarchisationModPoly> s(func, this->storage);
+
+	// Execute hierarchisation in every dimension of the grid
+	for (size_t i = 0; i < this->storage->dim(); i++)
+	{
+		s.sweep1D(alpha, alpha, i);
+	}
 }
 
 }

@@ -26,6 +26,8 @@ basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
 basis/modlinear/operation/common/OperationEvalModLinear.cpp
 basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
 basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
+basis/modpoly/algorithm_sweep/HierarchisationModPoly.cpp
+basis/modpoly/algorithm_sweep/DehierarchisationModPoly.cpp
 basis/modpoly/operation/common/OperationEvalModPoly.cpp
 basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.cpp
