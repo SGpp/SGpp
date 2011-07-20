@@ -28,6 +28,7 @@ namespace datadriven
         this->epsilon = eps;
 		this->labelOne = firstLabel;
 		this->labelTwo = secondLabel;
+		this->actualBaseLearners = 0;
     }
     
     AlgorithmAdaBoost::~AlgorithmAdaBoost()
@@ -54,9 +55,8 @@ namespace datadriven
 		}
 	}
     
-    void AlgorithmAdaBoost::doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t* actualBN)
+    void AlgorithmAdaBoost::doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision)
     {
-        *actualBN = 0;
 		sg::base::DataVector weight(this->numData);
         for (size_t i = 0; i < this->numData;i++)
         {
@@ -78,7 +78,11 @@ namespace datadriven
 
 		sg::base::DataVector tmpweight(this->numData);
         for (size_t count = 0; count < this->numBaseLearners; count++){
-			(*actualBN)++;
+			
+			weights.setColumn(count, weight);
+
+			(this->actualBaseLearners)++;
+
             alpha.setAll(0.0);
             
 			sg::datadriven::DMWeightMatrix WMatrix(*grid, *data, *C, this->lamb, weight);
@@ -98,8 +102,10 @@ namespace datadriven
             for (size_t i = 0; i < this->numData; i++){
                 if (newclasses.get(i) == this->classes->get(i)){
                     identity.set(i, 0.0);
+					decision.set(i, count, 1.0);
                 }else{
                     identity.set(i, 1.0);
+					decision.set(i, count, 0.0);
                 }
             }
 
@@ -131,41 +137,44 @@ namespace datadriven
 		sg::base::GridStorage* gridStorage = this->grid->getStorage();
 		sg::base::DataMatrix storageOfAlpha(gridStorage->size(), this->numBaseLearners);
 		sg::base::DataVector theHypoWeight(this->numBaseLearners);
+		sg::base::DataMatrix weightsMatrix(this->numData, this->numBaseLearners);
+		sg::base::DataMatrix decisionMatrix(this->numData, this->numBaseLearners);
 		storageOfAlpha.setAll(0.0);
 		theHypoWeight.setAll(0.0);
-		size_t actualBN;
-		doAdaBoost(storageOfAlpha, theHypoWeight, &actualBN);
-		sg::base::DataMatrix baseLearnerMatr(testData.getNrows(), actualBN);
-		sg::base::DataVector finalHypoClasses(actualBN);
+		weightsMatrix.setAll(0.0);
+		decisionMatrix.setAll(0.0);
+		doAdaBoost(storageOfAlpha, theHypoWeight, weightsMatrix, decisionMatrix);
+		sg::base::DataMatrix baseLearnerMatr(testData.getNrows(), this->actualBaseLearners);
+		sg::base::DataVector finalHypoClasses(this->actualBaseLearners);
 		sg::base::DataVector p(this->dim);
 		sg::base::OperationEval* operateEval = sg::GridOperationFactory::createOperationEval(*this->grid);
 		sg::base::DataVector alphaT(storageOfAlpha.getNrows());
 		sg::base::DataVector baseLearnerVec(testData.getNrows());
-        for (size_t t = 0; t < actualBN; t++){
+        for (size_t t = 0; t < this->actualBaseLearners; t++){
 			storageOfAlpha.getColumn(t, alphaT);
 			baseLearnerVec.setAll(0.0);
             for (size_t i = 0; i < testData.getNrows(); i++){
                 testData.getRow(i, p);
                 double value = operateEval->eval(alphaT, p);
 				// when there is only one baselearner actually, we do as following, just use normal classify to get the value
-				if (actualBN == 1)
+				if (this->actualBaseLearners == 1)
 					algorithmValue.set(i, value);
 				else
 					baseLearnerVec.set(i, hValue(value));
             }
-			if (actualBN > 1)
+			if (this->actualBaseLearners > 1)
 				baseLearnerMatr.setColumn(t, baseLearnerVec);
         }
-		if (actualBN > 1)
+		if (this->actualBaseLearners > 1)
 		{
 			double value;
-			sg::base::DataVector tmp(actualBN);
+			sg::base::DataVector tmp(this->actualBaseLearners);
 			for (size_t i = 0; i < testData.getNrows(); i++)
 			{
 				value = 0.0;
-				for(size_t k = 0; k < actualBN; k++)
+				for(size_t k = 0; k < this->actualBaseLearners; k++)
 					tmp.set(k, baseLearnerMatr.get(i, k));
-				for(size_t j = 0; j < actualBN; j++)
+				for(size_t j = 0; j < this->actualBaseLearners; j++)
 					value = value + theHypoWeight.get(j)*tmp.get(j);
 				algorithmValue.set(i, value);
 			}
@@ -227,11 +236,11 @@ namespace datadriven
         return helper.sum()/helper.getSize();
     }
 
-    void AlgorithmAdaBoost::evalBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner)
+    void AlgorithmAdaBoost::evalBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner)
     {
-		if (yourBaseLearner > actualBN)
+		if (yourBaseLearner > this->actualBaseLearners)
 		{
-			std::cout << "Please choose your base learner number not larger than " << actualBN << endl;
+			std::cout << "Please choose your base learner number not larger than " << this->actualBaseLearners << endl;
 			abort();
 		}
 		else
@@ -276,24 +285,24 @@ namespace datadriven
 		}
 	}
 
-    void AlgorithmAdaBoost::classifBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner)
+    void AlgorithmAdaBoost::classifBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner)
     {
-        evalBL(testData, algorithmValue, storageAlpha, hypoWeight, actualBN, yourBaseLearner);
+        evalBL(testData, algorithmValue, storageAlpha, hypoWeight, yourBaseLearner);
         for (size_t i = 0; i < testData.getNrows(); i++)
         {
             algorithmClass.set(i, hValue(algorithmValue.get(i)));
         }
     }
 
-    void AlgorithmAdaBoost::getAccuracyAndErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, double* accruracy, double* error, size_t actualBN, size_t yourBaseLearner)
+    void AlgorithmAdaBoost::getAccuracyAndErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, double* accruracy, double* error, size_t yourBaseLearner)
     {
 		/* get the accuracy */
-        double right = 0.0;
+		double right = 0.0;
 		sg::base::DataVector classOfAlgorithm(testDataClass.getSize());
 		sg::base::DataVector valueOfAlgorithm(testDataClass.getSize());
 		classOfAlgorithm.setAll(0.0);
 		valueOfAlgorithm.setAll(0.0);
-        classifBL(testData, classOfAlgorithm, valueOfAlgorithm, storageAlpha, hypoWeight, actualBN, yourBaseLearner);
+        classifBL(testData, classOfAlgorithm, valueOfAlgorithm, storageAlpha, hypoWeight, yourBaseLearner);
         for(size_t i = 0; i < testData.getNrows(); i++)
         {
             if(classOfAlgorithm.get(i) == testDataClass.get(i))
@@ -308,14 +317,14 @@ namespace datadriven
         *error = valueOfAlgorithm.sum()/valueOfAlgorithm.getSize();
     }
 
-    double AlgorithmAdaBoost::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner)
+    double AlgorithmAdaBoost::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner)
     {
         double right = 0.0;
 		sg::base::DataVector classOfAlgorithm(testDataClass.getSize());
 		sg::base::DataVector valueOfAlgorithm(testDataClass.getSize());
 		classOfAlgorithm.setAll(0.0);
 		valueOfAlgorithm.setAll(0.0);
-        classifBL(testData, classOfAlgorithm, valueOfAlgorithm, storageAlpha, hypoWeight, actualBN, yourBaseLearner);
+        classifBL(testData, classOfAlgorithm, valueOfAlgorithm, storageAlpha, hypoWeight, yourBaseLearner);
         for(size_t i = 0; i < testData.getNrows(); i++)
         {
             if(classOfAlgorithm.get(i) == testDataClass.get(i))
@@ -324,13 +333,18 @@ namespace datadriven
         return right/testDataClass.getSize();
     }
 
-    double AlgorithmAdaBoost::getErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner)
+    double AlgorithmAdaBoost::getErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner)
     {
 		sg::base::DataVector helper(testData.getNrows());
-        evalBL(testData, helper, storageAlpha, hypoWeight, actualBN, yourBaseLearner);
+        evalBL(testData, helper, storageAlpha, hypoWeight, yourBaseLearner);
         helper.sub(testDataClass);
         helper.sqr();
         return helper.sum()/helper.getSize();
     }
+
+	size_t AlgorithmAdaBoost::getActualBL()
+	{
+		return this->actualBaseLearners;
+	}
 }
 }
