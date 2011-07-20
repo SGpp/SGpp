@@ -274,7 +274,9 @@ OBJS =	DataVector.o\
 	AlgorithmAdaBoost.o\
 	BlackScholesPATParabolicPDESolverSystem.o\
 	BlackScholesPATParabolicPDESolverSystemEuropean.o\
-	BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o
+	BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o\
+	HierarchisationModPoly.o\
+	DehierarchisationModPoly.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -619,6 +621,12 @@ OperationEvalModPoly.o : $(SRCDIR)basis/modpoly/operation/common/OperationEvalMo
 
 OperationHierarchisationModPoly.o : $(SRCDIR)basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModPoly.o $(SRCDIR)basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
+
+HierarchisationModPoly.o : $(SRCDIR)basis/modpoly/algorithm_sweep/HierarchisationModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationModPoly.o $(SRCDIR)basis/modpoly/algorithm_sweep/HierarchisationModPoly.cpp
+
+DehierarchisationModPoly.o : $(SRCDIR)basis/modpoly/algorithm_sweep/DehierarchisationModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModPoly.o $(SRCDIR)basis/modpoly/algorithm_sweep/DehierarchisationModPoly.cpp
 
 OperationMultipleEvalPoly.o : $(SRCDIR)basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalPoly.o $(SRCDIR)basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
