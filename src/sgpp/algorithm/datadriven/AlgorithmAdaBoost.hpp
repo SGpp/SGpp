@@ -44,7 +44,7 @@ namespace datadriven
         double lamb;
             /// the size of the grid
         size_t numData;
-            /// Pointer to the data vector
+            /// Pointer to the data matrix
 		sg::base::DataMatrix* data;
             /// DataSet Dimension
         int dim;
@@ -64,6 +64,8 @@ namespace datadriven
 		double labelOne;
     		/// Another label of the DataSet
 		double labelTwo;
+    		/// the actual base learners number for Adaboosting
+		size_t actualBaseLearners;
             /**
              * Performs a hypothesis classifer
 			 *
@@ -85,9 +87,7 @@ namespace datadriven
              * @param eps the parameter for ConjugateGradients
              * @param firstLabel one label from training dataset
 			 * @param secondLabel another label from training dataset
-			 * 
              */
-
         AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel);
         
 
@@ -101,9 +101,10 @@ namespace datadriven
 			 *
 			 * @param storageAlpha the matrix to store alpha for each different weights
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
-			 * @param actualBN reference to the actual number of baselearner(cause there is no wrong classify after certain iteration step)
+			 * @param weights the matrix to store weights of every training date for every weak learner
+			 * @param decision the matrix to store the decision right or not according to the true class
              */
-        void doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t* actualBN);
+        void doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision);
 
             /**
              * Performs a real value calculate for the testing dataset
@@ -155,10 +156,9 @@ namespace datadriven
              * @param algorithmValue reference to the real value got from the algorithm
 			 * @param storageAlpha the matrix to store alpha for each different weights
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
-			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
 			 * @param yourBaseLearner the number of base learner specified
              */
-		void evalBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
+		void evalBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner);
 
             /**
              * Performs a real value calculate for the testing dataset with a specified number of base learner
@@ -168,10 +168,9 @@ namespace datadriven
              * @param algorithmValue reference to the real value got from the algorithm
 			 * @param storageAlpha the matrix to store alpha for each different weights
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
-			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
 			 * @param yourBaseLearner the number of base learner specified
              */
-		void classifBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
+		void classifBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner);
 
             /**
              * Performs an accuracy and interpolation error evaluation for the testing dataset with a specified number of base learner
@@ -182,10 +181,9 @@ namespace datadriven
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
 			 * @param accruracy reference to the the accruracy 
 			 * @param error reference to the interpolation error
-			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
 			 * @param yourBaseLearner the number of base learner specified
              */
-		void getAccuracyAndErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, double* accruracy, double* error, size_t actualBN, size_t yourBaseLearner);
+		void getAccuracyAndErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, double* accruracy, double* error, size_t yourBaseLearner);
 
             /**
              * Performs an accuracy evaluation for the testing dataset with a specified number of base learner
@@ -194,10 +192,9 @@ namespace datadriven
              * @param testDataClass reference to the class of testing dataset
 			 * @param storageAlpha the matrix to store alpha for each different weights
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
-			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
 			 * @param yourBaseLearner the number of base learner specified
              */
-		double getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
+		double getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner);
 
             /**
              * Performs an interpolation error evaluation for the testing dataset
@@ -206,11 +203,17 @@ namespace datadriven
              * @param testDataClass reference to the class of testing dataset
 			 * @param storageAlpha the matrix to store alpha for each different weights
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
-			 * @param actualBN the actual number of baselearner(cause there is no wrong classify after certain iteration step)
 			 * @param yourBaseLearner the number of base learner specified
              */
-		double getErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t actualBN, size_t yourBaseLearner);
-    };
+		double getErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner);
+    
+		    /**
+             * Get the actual base learners after doing adaboosting
+             *
+			 */
+		size_t getActualBL();
+	};
+    
 }
 }
 #endif
