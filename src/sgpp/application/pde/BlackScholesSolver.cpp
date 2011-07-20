@@ -346,23 +346,50 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	// 2d test case
 	if (mydim == 2)
 	{
-		// correlation -0.5
-//		this->eigval_covar->set(0, 0.0555377800527509792);
-//		this->eigval_covar->set(1, 0.194462219947249021);
-//
-//		this->eigvec_covar->set(0, 0, -0.867142152569025494);
-//		this->eigvec_covar->set(0, 1, 0.498060726456078796);
-//		this->eigvec_covar->set(1, 0, -0.498060726456078796);
-//		this->eigvec_covar->set(1, 1, -0.867142152569025494);
+		// correlation -0.5, sigma_1 0.3, sigma_2 0.4
+		this->eigval_covar->set(0, 0.0555377800527509792);
+		this->eigval_covar->set(1, 0.194462219947249021);
+
+		this->eigvec_covar->set(0, 0, -0.867142152569025494);
+		this->eigvec_covar->set(0, 1, 0.498060726456078796);
+		this->eigvec_covar->set(1, 0, -0.498060726456078796);
+		this->eigvec_covar->set(1, 1, -0.867142152569025494);
 
 		// correlation 0.1, sigma 0.4
-		this->eigval_covar->set(0, 0.176);
-		this->eigval_covar->set(1, 0.144);
+//		this->eigval_covar->set(0, 0.176);
+//		this->eigval_covar->set(1, 0.144);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547351);
+//		this->eigvec_covar->set(0, 1, -0.707106781186547573);
+//		this->eigvec_covar->set(1, 0, 0.707106781186547573);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547351);
 
-		this->eigvec_covar->set(0, 0, 0.707106781186547351);
-		this->eigvec_covar->set(0, 1, -0.707106781186547573);
-		this->eigvec_covar->set(1, 0, 0.707106781186547573);
-		this->eigvec_covar->set(1, 1, 0.707106781186547351);
+		// correlation 0.25, sigma 0.4
+//		this->eigval_covar->set(0, 0.20);
+//		this->eigval_covar->set(1, 0.12);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547573);
+//		this->eigvec_covar->set(0, 1, -0.707106781186547462);
+//		this->eigvec_covar->set(1, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547573);
+
+		// correlation 0.5, sigma 0.4
+//		this->eigval_covar->set(0, 0.24);
+//		this->eigval_covar->set(1, 0.08);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(0, 1, -0.707106781186547462);
+//		this->eigvec_covar->set(1, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547462);
+
+		// correlation -0.5, sigma 0.4
+//		this->eigval_covar->set(0, 0.24);
+//		this->eigval_covar->set(1, 0.08);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(0, 1, 0.707106781186547462);
+//		this->eigvec_covar->set(1, 0, -0.707106781186547462);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547462);
 
 		// correlation 0.0, sigma 0.4
 //		this->eigval_covar->set(0, 0.16);
@@ -386,7 +413,7 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 		this->eigvec_covar->set(1, 0, -0.493287590771869233);
 		this->eigvec_covar->set(1, 1, 0.837245861704536964);
 		this->eigvec_covar->set(1, 2, 0.235980337844304722);
-		this->eigvec_covar->set(2, 0, -0.722271802968979613e-2);
+		this->eigvec_covar->set(2, 0, -0.00722271802968979613);
 		this->eigvec_covar->set(2, 1, -0.275216403680555832);
 		this->eigvec_covar->set(2, 2, 0.961355170313971441);
 	}
@@ -456,7 +483,7 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 		double tmp = 0.0;
 		for (size_t j = 0; j < mydim; j++)
 		{
-			tmp += ((this->mus->get(i) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
+			tmp += ((this->mus->get(j) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
 		}
 		this->mu_hat->set(i, tmp);
 	}
