@@ -36,6 +36,67 @@
 
 bool bUseFloat;
 
+void calcGFlopsAndGBytes(std::string gridtype, sg::base::Grid* myGrid, size_t nInstancesNo, size_t nGridsize, size_t nDim, size_t nIterations, size_t datatype_size, double& GFlops, double& GBytes)
+{
+	if (gridtype == "modlinear")
+	{
+		for (size_t g = 0; g < nGridsize; g++)
+		{
+			sg::base::GridIndex* curPoint = myGrid->getStorage()->get(g);
+
+			for (size_t h = 0; h < nDim; h++)
+			{
+				unsigned int level, index;
+
+				curPoint->get(h, level, index);
+
+				if (level == 1)
+				{
+				}
+				else if (index == 1)
+				{
+					GFlops += 1e-9*8.0*static_cast<double>(nIterations)*static_cast<double>(nInstancesNo);
+					GBytes += 1e-9*4.0*static_cast<double>(nIterations)*static_cast<double>(datatype_size)*static_cast<double>(nInstancesNo);
+				}
+				else if (index == (1<<level - 1))
+				{
+					GFlops += 1e-9*10.0*static_cast<double>(nIterations)*static_cast<double>(nInstancesNo);
+					GBytes += 1e-9*6.0*static_cast<double>(nIterations)*static_cast<double>(datatype_size)*static_cast<double>(nInstancesNo);
+				}
+				else
+				{
+					GFlops += 1e-9*12.0*static_cast<double>(nIterations)*static_cast<double>(nInstancesNo);
+					GBytes += 1e-9*6.0*static_cast<double>(nIterations)*static_cast<double>(datatype_size)*static_cast<double>(nInstancesNo);
+				}
+			}
+		}
+
+		// GBytes for EvalTrans (coefficients)
+		GBytes += 1e-9*static_cast<double>(nIterations)
+				*((static_cast<double>(nGridsize)*static_cast<double>(nInstancesNo+1)*static_cast<double>(datatype_size)));
+
+		// GBytes for Eval (coefficients)
+		GBytes += 1e-9*static_cast<double>(nIterations)
+				*((static_cast<double>(nGridsize+1)*static_cast<double>(nInstancesNo)*static_cast<double>(datatype_size)));
+	}
+	else
+	{
+		// GFlops
+		GFlops += 2.0*1e-9*static_cast<double>(nGridsize)*static_cast<double>(nInstancesNo)*static_cast<double>(nDim)*6.0*static_cast<double>(nIterations);
+
+		// GBytes
+		GBytes += 2.0*1e-9*static_cast<double>(nGridsize)*static_cast<double>(nInstancesNo)*static_cast<double>(nDim)*3.0*static_cast<double>(nIterations)*static_cast<double>(datatype_size);
+
+		// GBytes for EvalTrans (coefficients)
+		GBytes += 1e-9*static_cast<double>(nIterations)
+				*((static_cast<double>(nGridsize)*static_cast<double>(nInstancesNo)*static_cast<double>(datatype_size)));
+
+		// GBytes for Eval (coefficients)
+		GBytes += 1e-9*static_cast<double>(nIterations)
+				*((static_cast<double>(nGridsize)*static_cast<double>(nInstancesNo)*static_cast<double>(datatype_size)));
+	}
+}
+
 void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 {
 	if (src.getSize() != dest.getSize())
@@ -253,10 +314,11 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     // execute adaptsteps
     sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
-    myStopwatch->start();
     for (size_t i = 0; i < refine_count+1; i++)
     {
-    	std::cout << std::endl << "Doing refinement :" << i << std::endl;
+    	std::cout << std::endl << "Doing refinement: " << i << std::endl;
+
+    	myStopwatch->start();
 
     	// Do Refinements
     	if (i > 0)
@@ -282,28 +344,15 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     	myCG->solve(*mySystem, alpha, b, true, false, 0.0);
 
+        execTime = myStopwatch->stop();
+
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
     	// Calc flops and mem bandwidth
     	nGridsize = myGrid->getStorage()->size();
-    	GFlops += 1e-9*static_cast<double>(myCG->getNumberIterations())
-    			*(2.0
-    			*((static_cast<double>(nDim)
-    			*(static_cast<double>(nGridsize)
-    			*static_cast<double>(nInstancesNo)))*6.0));
 
-    	// GBytes for Eval
-    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
-    			*((static_cast<double>(nInstancesNo)*2.0*static_cast<double>(nDim)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(double)))
-    				+(static_cast<double>(nInstancesNo)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(double)))
-    				+(static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(double))));
-
-    	// GBytes for EvalTrans
-    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
-    			*((static_cast<double>(nGridsize)*static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(double)))
-    			+(static_cast<double>(nGridsize)*2.0*static_cast<double>(nDim)*static_cast<double>(sizeof(double))));
-
+    	calcGFlopsAndGBytes(gridtype, myGrid, nInstancesNo, nGridsize, nDim, myCG->getNumberIterations(), sizeof(double), GFlops, GBytes);
 
 #ifndef TEST_LAST_ONLY
 		// Do tests on test data
@@ -346,7 +395,6 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 #endif
     }
 
-    execTime = myStopwatch->stop();
     delete myStopwatch;
 
 #ifdef TEST_LAST_ONLY
@@ -524,7 +572,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_SSE_OCL");
 #endif
 #ifdef USE_ARBB
-    sg::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
+    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
 #endif
 #else
     sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
@@ -533,11 +581,11 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << "Starting Learning...." << std::endl;
     // execute adaptsteps
     sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
-    myStopwatch->start();
     for (size_t i = 0; i < refine_count+1; i++)
     {
-    	std::cout << std::endl << "Doing refinement :" << i << std::endl;
+    	std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
+    	myStopwatch->start();
     	// Do Refinements
     	if (i > 0)
     	{
@@ -564,27 +612,15 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 
     	myCG->solve(*mySystem, alphaSP, bSP, true, false, 0.0);
 
+    	execTime += myStopwatch->stop();
+
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
 
     	// Calc flops and mem bandwidth
     	nGridsize = myGrid->getStorage()->size();
-    	GFlops += 1e-9*static_cast<double>(myCG->getNumberIterations())
-    			*(2.0
-    			*((static_cast<double>(nDim)
-    			*(static_cast<double>(nGridsize)
-    			*static_cast<double>(nInstancesNo)))*6.0));
 
-    	// GBytes for Eval
-    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
-    			*((static_cast<double>(nInstancesNo)*2.0*static_cast<double>(nDim)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(float)))
-    				+(static_cast<double>(nInstancesNo)*static_cast<double>(nGridsize)*static_cast<double>(sizeof(float)))
-    				+(static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(float))));
-
-    	// GBytes for EvalTrans
-    	GBytes += 1e-9*static_cast<double>(myCG->getNumberIterations())
-    			*((static_cast<double>(nGridsize)*static_cast<double>(nDim+1)*static_cast<double>(nInstancesNo)*static_cast<double>(sizeof(float)))
-    			+(static_cast<double>(nGridsize)*2.0*static_cast<double>(nDim)*static_cast<double>(sizeof(float))));
+    	calcGFlopsAndGBytes(gridtype, myGrid, nInstancesNo, nGridsize, nDim, myCG->getNumberIterations(), sizeof(float), GFlops, GBytes);
 
     	// Do tests on test data
 #ifndef TEST_LAST_ONLY
@@ -628,7 +664,6 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 #endif
     }
 
-    execTime = myStopwatch->stop();
     delete myStopwatch;
 
 #ifdef TEST_LAST_ONLY
