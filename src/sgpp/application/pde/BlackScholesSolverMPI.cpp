@@ -179,14 +179,59 @@ void BlackScholesSolverMPI::setStochasticData(sg::base::DataVector& mus, sg::bas
 	// 2d test case
 	if (mydim == 2)
 	{
-		// Correlation -0.5
+		// correlation -0.5, sigma_1 0.3, sigma_2 0.4
 		this->eigval_covar->set(0, 0.0555377800527509792);
 		this->eigval_covar->set(1, 0.194462219947249021);
 
 		this->eigvec_covar->set(0, 0, -0.867142152569025494);
-		this->eigvec_covar->set(1, 0, -0.498060726456078796);
 		this->eigvec_covar->set(0, 1, 0.498060726456078796);
+		this->eigvec_covar->set(1, 0, -0.498060726456078796);
 		this->eigvec_covar->set(1, 1, -0.867142152569025494);
+
+		// correlation 0.1, sigma 0.4
+//		this->eigval_covar->set(0, 0.176);
+//		this->eigval_covar->set(1, 0.144);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547351);
+//		this->eigvec_covar->set(0, 1, -0.707106781186547573);
+//		this->eigvec_covar->set(1, 0, 0.707106781186547573);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547351);
+
+		// correlation 0.25, sigma 0.4
+//		this->eigval_covar->set(0, 0.20);
+//		this->eigval_covar->set(1, 0.12);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547573);
+//		this->eigvec_covar->set(0, 1, -0.707106781186547462);
+//		this->eigvec_covar->set(1, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547573);
+
+		// correlation 0.5, sigma 0.4
+//		this->eigval_covar->set(0, 0.24);
+//		this->eigval_covar->set(1, 0.08);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(0, 1, -0.707106781186547462);
+//		this->eigvec_covar->set(1, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547462);
+
+		// correlation -0.5, sigma 0.4
+//		this->eigval_covar->set(0, 0.24);
+//		this->eigval_covar->set(1, 0.08);
+//
+//		this->eigvec_covar->set(0, 0, 0.707106781186547462);
+//		this->eigvec_covar->set(0, 1, 0.707106781186547462);
+//		this->eigvec_covar->set(1, 0, -0.707106781186547462);
+//		this->eigvec_covar->set(1, 1, 0.707106781186547462);
+
+		// correlation 0.0, sigma 0.4
+//		this->eigval_covar->set(0, 0.16);
+//		this->eigval_covar->set(1, 0.16);
+//
+//		this->eigvec_covar->set(0, 0, 1);
+//		this->eigvec_covar->set(0, 1, 0);
+//		this->eigvec_covar->set(1, 0, 0);
+//		this->eigvec_covar->set(1, 1, 1);
 	}
 	// 3d test case
 	if (mydim == 3)
@@ -271,7 +316,7 @@ void BlackScholesSolverMPI::setStochasticData(sg::base::DataVector& mus, sg::bas
 		double tmp = 0.0;
 		for (size_t j = 0; j < mydim; j++)
 		{
-			tmp += ((this->mus->get(i) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
+			tmp += ((this->mus->get(j) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
 		}
 		this->mu_hat->set(i, tmp);
 	}
