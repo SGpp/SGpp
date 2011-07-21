@@ -5,4 +5,5 @@ cd cart
 cd ..
 cd log
 ./test_BSSolver_1d_log.sh
+./test_BSSolver_1d_PAT.sh
 cd ..
