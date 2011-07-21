@@ -341,7 +341,7 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 	if (mydim == 1)
 	{
 		this->eigval_covar->set(0, this->sigmas->get(0)*this->sigmas->get(0));
-		this->eigvec_covar->set(0, 0, this->sigmas->get(0)*this->sigmas->get(0)*1.0);
+		this->eigvec_covar->set(0, 0, 1.0);
 	}
 	// 2d test case
 	if (mydim == 2)
