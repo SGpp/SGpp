@@ -344,7 +344,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     	myCG->solve(*mySystem, alpha, b, true, false, 0.0);
 
-        execTime = myStopwatch->stop();
+        execTime += myStopwatch->stop();
 
     	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
     	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
