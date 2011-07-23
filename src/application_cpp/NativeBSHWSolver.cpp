@@ -411,17 +411,29 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	int endtime=32;
 	double c = 0.06;
 	double rr = 0.05; // change the risk-free rate here!!
+
 	for(int k=(timeT+1); k<=endtime;k++)
 	{
 		PT=exp(0.04*(timeT-k)+ 0.04*(1-exp(-a*(k-timeT)))/a - pow(sigma,2.0)*pow((exp(-a*k)-exp(-a*timeT)),2.0)*(exp(2*a*timeT)-1)/(4*pow(a,3.0))-(1-exp(-a*(k-timeT)))*rr/a);
 		PB=PB+c*PT;
 	}
-	std::vector<double> point_strike;
-	point_strike.push_back(PB);
-	point_strike.push_back(rr);
 
-	std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] << "] (at-the-money!!): " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl << std::endl;
 
+	double dS = 0.01;
+	for(int j=-10; j<=10; j++){
+		double S= PB+j*dS;
+
+		std::vector<double> point_strike;
+		point_strike.push_back(S);
+		point_strike.push_back(rr);
+
+		if(j==0){
+			std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] << "] (at-the-money!!): " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl;
+		}
+		else{
+			std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] << "]: " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl;
+		}
+	}
 	delete alpha;
 	delete myBSHWSolver;
 	delete myBoundingBox;
