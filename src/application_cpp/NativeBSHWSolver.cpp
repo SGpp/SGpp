@@ -260,6 +260,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	DataVector sigmabs(dim);
 	DataMatrix rho(dim,dim);
 
+
 	if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0)
 		{
 			return;
@@ -400,7 +401,26 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 		point.push_back(point_i);
 	}
 	delete[] myBoundaries;
-	std::cout << "Optionprice at [" << point[0] << ", " << point[1] << "]: " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at [" << point[0] << ", " << point[1] << "] (center): " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+
+	// for evaluation at strike
+	double PB=0;
+	double PT=0;
+	double tmp;
+	int timeT=12;
+	int endtime=32;
+	double c = 0.06;
+	double rr = 0.05; // change the risk-free rate here!!
+	for(int k=(timeT+1); k<=endtime;k++)
+	{
+		PT=exp(0.04*(timeT-k)+ 0.04*(1-exp(-a*(k-timeT)))/a - pow(sigma,2.0)*pow((exp(-a*k)-exp(-a*timeT)),2.0)*(exp(2*a*timeT)-1)/(4*pow(a,3.0))-(1-exp(-a*(k-timeT)))*rr/a);
+		PB=PB+c*PT;
+	}
+	std::vector<double> point_strike;
+	point_strike.push_back(PB);
+	point_strike.push_back(rr);
+
+	std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] << "] (at-the-money!!): " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSHWSolver;
@@ -681,7 +701,26 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 		point.push_back(point_i);
 	}
 	delete[] myBoundaries;
-	std::cout << "Optionprice at [" << point[0] << ", " << point[1] << "]: " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at [" << point[0] << ", " << point[1] << "] (center of domain): " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
+
+	// for evaluation at strike
+	double PB=0;
+	double PT=0;
+	double tmp;
+	int timeT=12;
+	int endtime=32;
+	double c = 0.06;
+	double rr = 0.05; // change the risk-free rate here!!
+	for(int k=(timeT+1); k<=endtime;k++)
+	{
+		PT=exp(0.04*(timeT-k)+ 0.04*(1-exp(-a*(k-timeT)))/a - pow(sigma,2.0)*pow((exp(-a*k)-exp(-a*timeT)),2.0)*(exp(2*a*timeT)-1)/(4*pow(a,3.0))-(1-exp(-a*(k-timeT)))*rr/a);
+		PB=PB+c*PT;
+	}
+	std::vector<double> point_strike;
+	point_strike.push_back(PB);
+	point_strike.push_back(rr);
+
+	std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] << "] (at-the-money!!): " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSHWSolver;
