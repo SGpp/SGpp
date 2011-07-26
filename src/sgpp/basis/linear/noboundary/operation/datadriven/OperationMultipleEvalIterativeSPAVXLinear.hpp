@@ -33,7 +33,7 @@ class OperationMultipleEvalIterativeSPAVXLinear : public sg::base::OperationMult
 {
 public:
 	/**
-	 * Construtor of OperationMultipleEvalLinearSP
+	 * Constructor of OperationMultipleEvalLinearSP
 	 *
 	 * Within the construct sg::base::DataMatrixSP Level and sg::base::DataMatrixSP Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
@@ -57,7 +57,7 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;

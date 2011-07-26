@@ -23,7 +23,7 @@ class OperationMultipleEvalLinearStretched : public OperationMultipleEval
 {
 public:
 	/**
-	 * Construtor of OperationBLinearStretched
+	 * Constructor of OperationBLinearStretched
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset Pointer to the dataset that should be evaluated
@@ -41,7 +41,7 @@ public:
 	virtual void multTranspose(DataVector& source, DataVector& result);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	GridStorage* storage;
 };
 

@@ -23,7 +23,7 @@ class OperationEvalLinear : public OperationEval
 {
 public:
 	/**
-	 * Construtor of OperationEvalLinear
+	 * Constructor of OperationEvalLinear
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
@@ -37,7 +37,7 @@ public:
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	GridStorage* storage;
 };
 

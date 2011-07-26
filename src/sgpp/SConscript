@@ -73,6 +73,7 @@ basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVX
 basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
 basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
+basis/linear/noboundary/operation/common/OperationQuadratureLinear.cpp
 basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
 basis/linear/noboundary/operation/pde/financeHW1D/OperationLBLinear.cpp
 basis/linear/noboundary/operation/pde/financeHW1D/OperationLDLinear.cpp

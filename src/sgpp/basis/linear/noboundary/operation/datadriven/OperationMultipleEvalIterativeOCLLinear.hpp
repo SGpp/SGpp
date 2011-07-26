@@ -34,7 +34,7 @@ class OperationMultipleEvalIterativeOCLLinear : public sg::base::OperationMultip
 {
 public:
 	/**
-	 * Construtor of OperationBLinear
+	 * Constructor of OperationBLinear
 	 *
 	 * Within the construct sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
@@ -58,7 +58,7 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	sg::base::GridStorage* storage;
 	/// sg::base::DataMatrix that contains a prepared Level matrix of all grid points (2^level)
 	/// Timer object to handle time measurements

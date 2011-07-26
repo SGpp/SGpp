@@ -38,7 +38,7 @@ class OperationConvertPrewavelet : public OperationConvert
 {
 public:
 	/**
-	 * Construtor of OperationHierarchisationPrewavelet
+	 * Constructor of OperationHierarchisationPrewavelet
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
@@ -58,7 +58,7 @@ public:
 	virtual void doConvertFromLinear(DataVector& alpha);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	GridStorage* storage;
 	GridStorage* shadowstorage;
 };

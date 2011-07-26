@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 namespace sg
 {
@@ -95,6 +95,15 @@ public:
 	virtual void doHierarchisation(DataVector& node_values) = 0;
 	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };
-
 }
+
+namespace base {
+class OperationQuadrature
+{
+public:
+	virtual double doQuadrature(DataVector& alpha) = 0;
+};
+}
+
+
 }

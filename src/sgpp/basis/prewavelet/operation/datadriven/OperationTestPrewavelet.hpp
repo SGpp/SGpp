@@ -38,7 +38,7 @@ class OperationTestPrewavelet : public OperationTest
 {
 public:
 	/**
-	 * Construtor of OperationTestPrewavelet
+	 * Constructor of OperationTestPrewavelet
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
@@ -54,7 +54,7 @@ public:
 	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	sg::base::GridStorage* storage;
 };
 

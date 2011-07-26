@@ -55,7 +55,7 @@ class OperationLaplacePrewavelet: public UpDownOneOpDimWithShadow
 {
 public:
 	/**
-	 * Construtor of OperationLaplacePrewavelet
+	 * Constructor of OperationLaplacePrewavelet
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
