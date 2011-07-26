@@ -22,7 +22,7 @@ class OperationIdentity: public OperationMatrix
 {
 public:
 	/**
-	 * Construtor of OperationIdentity
+	 * Constructor of OperationIdentity
 	 */
 	OperationIdentity()
 	{

@@ -39,7 +39,7 @@ class OperationMultipleEvalPrewavelet : public OperationMultipleEval
 {
 public:
 	/**
-	 * Construtor of OperationMultipleEvalPrewavelet
+	 * Constructor of OperationMultipleEvalPrewavelet
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
@@ -56,7 +56,7 @@ public:
 	virtual void multTranspose(DataVector& source, DataVector& result);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	GridStorage* storage;
 };
 

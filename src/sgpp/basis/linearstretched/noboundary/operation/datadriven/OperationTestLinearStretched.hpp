@@ -24,7 +24,7 @@ class OperationTestLinearStretched : public OperationTest
 {
 public:
 	/**
-	 * Construtor of OperationTestLinearStretched
+	 * Constructor of OperationTestLinearStretched
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
@@ -40,7 +40,7 @@ public:
 	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	sg::base::GridStorage* storage;
 };
 

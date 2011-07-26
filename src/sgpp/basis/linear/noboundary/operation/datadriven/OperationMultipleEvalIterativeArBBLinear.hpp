@@ -34,7 +34,7 @@ class OperationMultipleEvalIterativeArBBLinear : public sg::base::OperationMulti
 {
 public:
 	/**
-	 * Construtor of sg::base::OperationMultipleEvalLinear
+	 * Constructor of sg::base::OperationMultipleEvalLinear
 	 *
 	 * Within the construct sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
@@ -58,7 +58,7 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;

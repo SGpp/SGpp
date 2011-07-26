@@ -26,7 +26,7 @@ class OperationLaplaceLinearStretched: public UpDownOneOpDim
 {
 public:
 	/**
-	 * Construtor of OperationLaplaceLinearStretched
+	 * Constructor of OperationLaplaceLinearStretched
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */

@@ -62,7 +62,7 @@ public:
 		index_type index;
 		GridStorage::grid_map_iterator end_iter = storage->end();
 
-		// I think this may be depedent on local support
+		// I think this may be dependent on local support
 		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
 		{
 			index = *(iter->first);
@@ -205,7 +205,7 @@ public:
 		index_type index;
 		GridStorage::grid_map_iterator end_iter = storage->end();
 
-		// I think this may be depedent on local support
+		// I think this may be dependent on local support
 		for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++)
 		{
 			index = *(iter->first);

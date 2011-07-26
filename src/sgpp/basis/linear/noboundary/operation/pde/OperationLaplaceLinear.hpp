@@ -24,14 +24,14 @@ class OperationLaplaceLinear: public UpDownOneOpDim
 {
 public:
 	/**
-	 * Construtor of OperationLaplaceLinear
+	 * Constructor of OperationLaplaceLinear
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
 	OperationLaplaceLinear(sg::base::GridStorage* storage);
 
 	/**
-	 * Construtor of OperationLaplaceLinear
+	 * Constructor of OperationLaplaceLinear
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param coef reference to a sg::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension

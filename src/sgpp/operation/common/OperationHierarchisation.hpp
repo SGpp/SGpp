@@ -32,16 +32,16 @@ public:
 	virtual ~OperationHierarchisation() {}
 
 	/**
-	 * Implements the hierarchisation on a sprase grid
+	 * Implements the hierarchisation on a sparse grid
 	 *
-	 * @param node_values the functions values in the node base
+	 * @param node_values the function's values in the nodal basis
 	 */
 	virtual void doHierarchisation(DataVector& node_values) = 0;
 
 	/**
-	 * Implements the dehierarchisation on a sprase grid
+	 * Implements the dehierarchisation on a sparse grid
 	 *
-	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param alpha the coefficients of the sparse grid's basis functions
 	 */
 	virtual void doDehierarchisation(DataVector& alpha) = 0;
 };

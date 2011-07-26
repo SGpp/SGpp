@@ -17,6 +17,7 @@ basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
 basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
 basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
+basis/linear/noboundary/operation/common/OperationQuadratureLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
 basis/modbspline/operation/common/OperationEvalModBspline.cpp
 basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp

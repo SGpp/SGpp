@@ -24,7 +24,7 @@ class OperationEvalLinearStretched : public OperationEval
 {
 public:
 	/**
-	 * Construtor of OperationEvalLinearStretched
+	 * Constructor of OperationEvalLinearStretched
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
@@ -38,7 +38,7 @@ public:
 	virtual double eval(DataVector& alpha, std::vector<double>& point);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	GridStorage* storage;
 };
 

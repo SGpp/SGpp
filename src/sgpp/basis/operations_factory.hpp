@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Valeriy Khakhutskyy (khakhutv@in.tum.de)
+// @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef OPERATIONS_FACTORY_HPP
 #define OPERATIONS_FACTORY_HPP
@@ -26,6 +26,7 @@
 #include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
 #include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
 #include "operation/common/OperationHierarchisation.hpp"
+#include "operation/common/OperationQuadrature.hpp"
 #include "operation/common/OperationConvert.hpp"
 #include "operation/common/OperationIdentity.hpp"
 
@@ -115,6 +116,8 @@
 #include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
 #include "basis/poly/operation/common/OperationHierarchisationPoly.hpp"
 #include "basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.hpp"
+
+#include "basis/linear/noboundary/operation/common/OperationQuadratureLinear.hpp"
 
 #include "basis/prewavelet/operation/common/OperationConvertPrewavelet.hpp"
 
@@ -942,6 +945,22 @@ using namespace sg::datadriven;
 
 		else
 			throw factory_exception("OperationLaplace is not implemented for this grid type.");
+	}
+
+	/**
+	 * Creates a OperationQuadrature
+	 *
+	 * @return pointer to the OperationQuadrature object
+	 */
+	static OperationQuadrature* createOperationQuadrature(Grid& grid_type)
+	{
+
+		if(strcmp(grid_type.getType(), "linear") == 0)
+		{
+			return new OperationQuadratureLinear(grid_type.getStorage());
+		}
+		else
+			throw factory_exception("OperationQuadrature is not implemented for this grid type.");
 	}
 
 	/**

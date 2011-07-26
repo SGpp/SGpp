@@ -44,7 +44,7 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation
 {
 public:
 	/**
-	 * Construtor of OperationHierarchisationPrewavelet
+	 * Constructor of OperationHierarchisationPrewavelet
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
@@ -64,7 +64,7 @@ public:
 	virtual void doDehierarchisation(DataVector& alpha);
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	GridStorage* storage;
 	GridStorage* shadowStorage;
 

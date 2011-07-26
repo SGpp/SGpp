@@ -55,7 +55,7 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's gridstorage object
+	/// Pointer to the grid's GridStorage object
 	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;
