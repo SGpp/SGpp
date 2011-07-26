@@ -373,7 +373,7 @@ double OperationMultipleEvalIterativeAVXModLinear::multVectorized(sg::base::Data
 #endif
 			for (size_t i = c; i < data_end; i++)
 			{
-				ptrResult[i] = 0.0f;
+				ptrResult[i] = 0.0;
 			}
 
 			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m)))
@@ -381,7 +381,7 @@ double OperationMultipleEvalIterativeAVXModLinear::multVectorized(sg::base::Data
 #ifdef __ICC
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m));
 
-				for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=48)
+				for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=24)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
 					{

@@ -749,11 +749,11 @@ using namespace sg::datadriven;
 		{
 			if (VecType == "SSE")
 			{
-				return new sg::parallel::OperationMultipleEvalIterativeSSELinear(grid_type.getStorage(), dataset);
+				return new sg::parallel::OperationMultipleEvalIterativeSSEModLinear(grid_type.getStorage(), dataset);
 			}
 			else if (VecType == "AVX")
 			{
-				return new sg::parallel::OperationMultipleEvalIterativeAVXLinear(grid_type.getStorage(), dataset);
+				return new sg::parallel::OperationMultipleEvalIterativeAVXModLinear(grid_type.getStorage(), dataset);
 			}
 		#ifdef USEOCL
 			else if (VecType == "OCL")

@@ -106,12 +106,12 @@ double OperationMultipleEvalIterativeSSEModLinear::multTransposeVectorized(sg::b
 					for (size_t d = 0; d < dims; d++)
 					{
 						// special case for level 1
-						if (ptrLevel[(j*dims)+d] == 2.0f)
+						if (ptrLevel[(j*dims)+d] == 2.0)
 						{
 							// Nothing (multiply by one)
 						}
 						// most left basis function on every level
-						else if (ptrIndex[(j*dims)+d] == 1.0f)
+						else if (ptrIndex[(j*dims)+d] == 1.0)
 						{
 							__m128d eval_0 = _mm_load_pd(&(ptrData[(d*source_size)+i]));
 							__m128d eval_1 = _mm_load_pd(&(ptrData[(d*source_size)+i+2]));
@@ -151,7 +151,7 @@ double OperationMultipleEvalIterativeSSEModLinear::multTransposeVectorized(sg::b
 							support_5 = _mm_mul_pd(support_5, eval_5);
 						}
 						// most right basis function on every level
-						else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
+						else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0))
 						{
 							__m128d eval_0 = _mm_load_pd(&(ptrData[(d*source_size)+i]));
 							__m128d eval_1 = _mm_load_pd(&(ptrData[(d*source_size)+i+2]));
@@ -369,7 +369,7 @@ double OperationMultipleEvalIterativeSSEModLinear::multVectorized(sg::base::Data
 #endif
 			for (size_t i = c; i < data_end; i++)
 			{
-				ptrResult[i] = 0.0f;
+				ptrResult[i] = 0.0;
 			}
 
 			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m)))
@@ -377,7 +377,7 @@ double OperationMultipleEvalIterativeSSEModLinear::multVectorized(sg::base::Data
 #ifdef __ICC
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS, (storageSize-m));
 
-				for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=24)
+				for (size_t i = c; i < c+CHUNKDATAPOINTS; i+=12)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
 					{
@@ -395,12 +395,12 @@ double OperationMultipleEvalIterativeSSEModLinear::multVectorized(sg::base::Data
 						for (size_t d = 0; d < dims; d++)
 						{
 							// special case for level 1
-							if (ptrLevel[(j*dims)+d] == 2.0f)
+							if (ptrLevel[(j*dims)+d] == 2.0)
 							{
 								// Nothing (multiply by one)
 							}
 							// most left basis function on every level
-							else if (ptrIndex[(j*dims)+d] == 1.0f)
+							else if (ptrIndex[(j*dims)+d] == 1.0)
 							{
 								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*result_size)+i]));
 								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*result_size)+i+2]));
@@ -440,7 +440,7 @@ double OperationMultipleEvalIterativeSSEModLinear::multVectorized(sg::base::Data
 								support_5 = _mm_mul_pd(support_5, eval_5);
 							}
 							// most right basis function on every level
-							else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
+							else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0))
 							{
 								__m128d eval_0 = _mm_load_pd(&(ptrData[(d*result_size)+i]));
 								__m128d eval_1 = _mm_load_pd(&(ptrData[(d*result_size)+i+2]));

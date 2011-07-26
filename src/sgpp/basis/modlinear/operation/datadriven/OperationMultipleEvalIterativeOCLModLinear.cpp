@@ -77,7 +77,6 @@ double OperationMultipleEvalIterativeOCLModLinear::multTransposeVectorized(DataV
     	global = storageSize;
     }
 
-
 	#pragma omp parallel for
 	for (size_t j = global; j < storageSize; j++)
 	{
