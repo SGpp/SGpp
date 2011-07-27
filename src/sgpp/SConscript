@@ -14,6 +14,7 @@ data/DataMatrix.cpp
 data/DataMatrixSP.cpp
 
 common/AlignedMemory.cpp
+common/operation/OperationQuadratureMC.hpp
 
 grid/Grid.cpp
 grid/GridDataBase.cpp

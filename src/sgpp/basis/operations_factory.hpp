@@ -957,7 +957,7 @@ using namespace sg::datadriven;
 
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
-			return new OperationQuadratureLinear(grid_type.getStorage());
+                  return new OperationQuadratureLinear(grid_type.getStorage());
 		}
 		else
 			throw factory_exception("OperationQuadrature is not implemented for this grid type.");

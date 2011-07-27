@@ -5,8 +5,6 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
-
 #include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
 #include "basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp"
 #include "basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp"
