@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef OPERATIONHIERARCHISATIONLINEAR_HPP
 #define OPERATIONHIERARCHISATIONLINEAR_HPP
@@ -27,7 +27,7 @@ public:
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
-	OperationHierarchisationLinear(GridStorage* storage) : storage(storage) {}
+  OperationHierarchisationLinear(GridStorage* storage) : storage(storage) {}
 
 	/**
 	 * Destructor
