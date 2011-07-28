@@ -11,7 +11,7 @@
 #include "grid/GridStorage.hpp"
 #include "grid/GridDataBase.hpp"
 
-#include "common/operation/OperationQuadratureMC.hpp"
+#include "tools/common/OperationQuadratureMC.hpp"
 
 #include "application/common/ScreenOutput.hpp"
 

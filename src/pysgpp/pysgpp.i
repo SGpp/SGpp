@@ -79,7 +79,7 @@ namespace std {
 %include "GridFactory.i"
 
 %include "src/sgpp/grid/GridDataBase.hpp"
-%include "src/sgpp/common/operation/OperationQuadratureMC.hpp"
+%include "src/sgpp/tools/common/OperationQuadratureMC.hpp"
 
 // the Bad
 
