@@ -95,7 +95,7 @@ grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
 tools/common/EvalCuboidGeneratorForStretching.cpp
 tools/common/GridPrinterForStretching.cpp
 
-common/operation/OperationQuadratureMC.cpp
+tools/common/OperationQuadratureMC.cpp
 """)
 
 

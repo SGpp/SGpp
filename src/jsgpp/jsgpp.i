@@ -72,7 +72,7 @@ namespace std {
 %include "src/sgpp/tools/common/StdNormalDistribution.hpp"
 
 %include "src/sgpp/grid/GridDataBase.hpp"
-%include "src/sgpp/common/operation/OperationQuadratureMC.hpp"
+%include "src/sgpp/tools/common/OperationQuadratureMC.hpp"
 
 // the Bad
 %include "src/sgpp/data/DataVector.hpp"
