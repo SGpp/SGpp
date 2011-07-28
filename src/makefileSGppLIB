@@ -276,7 +276,9 @@ OBJS =	DataVector.o\
 	BlackScholesPATParabolicPDESolverSystemEuropean.o\
 	BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o\
 	HierarchisationModPoly.o\
-	DehierarchisationModPoly.o
+	DehierarchisationModPoly.o\
+	OperationQuadratureMC.o\
+	OperationQuadratureLinear.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -484,6 +486,9 @@ OperationEvalLinear.o : $(SRCDIR)basis/linear/noboundary/operation/common/Operat
 OperationHierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
 	
+OperationQuadratureLinear.o : $(SRCDIR)basis/linear/noboundary/operation/common/OperationQuadratureLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureLinear.o $(SRCDIR)basis/linear/noboundary/operation/common/OperationQuadratureLinear.cpp
+
 OperationLTwoDotProductLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
 	
@@ -949,6 +954,9 @@ DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
 DMWeightMatrix.o : $(SRCDIR)algorithm/datadriven/DMWeightMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrix.o $(SRCDIR)algorithm/datadriven/DMWeightMatrix.cpp
 	
+OperationQuadratureMC.o : $(SRCDIR)common/operation/OperationQuadratureMC.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureMC.o $(SRCDIR)common/operation/OperationQuadratureMC.cpp
+
 AlgorithmAdaBoost.o : $(SRCDIR)algorithm/datadriven/AlgorithmAdaBoost.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoost.o $(SRCDIR)algorithm/datadriven/AlgorithmAdaBoost.cpp
 	
