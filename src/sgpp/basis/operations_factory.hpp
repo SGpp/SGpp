@@ -118,6 +118,7 @@
 #include "basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.hpp"
 
 #include "basis/linear/noboundary/operation/common/OperationQuadratureLinear.hpp"
+#include "basis/poly/operation/common/OperationQuadraturePoly.hpp"
 
 #include "basis/prewavelet/operation/common/OperationConvertPrewavelet.hpp"
 
@@ -958,6 +959,15 @@ using namespace sg::datadriven;
 		if(strcmp(grid_type.getType(), "linear") == 0)
 		{
                   return new OperationQuadratureLinear(grid_type.getStorage());
+		}
+		else if(strcmp(grid_type.getType(), "poly") == 0 )
+		{
+			if(((PolyGrid*) &grid_type)->getDegree()>2) {
+				throw factory_exception("OperationQuadrature is not implemented for polynomials with degree higher than 2.");
+			}
+			else {
+				return new OperationQuadraturePoly(grid_type.getStorage(), ((PolyGrid*) &grid_type)->getDegree());
+			}
 		}
 		else
 			throw factory_exception("OperationQuadrature is not implemented for this grid type.");
