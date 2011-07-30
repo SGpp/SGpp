@@ -87,6 +87,11 @@ public:
 		}
 		return result;
 	}
+	
+	size_t getDegree()
+	{
+		return degree;
+	}
 
 
 protected:
