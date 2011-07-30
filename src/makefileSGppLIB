@@ -278,7 +278,8 @@ OBJS =	DataVector.o\
 	HierarchisationModPoly.o\
 	DehierarchisationModPoly.o\
 	OperationQuadratureMC.o\
-	OperationQuadratureLinear.o
+	OperationQuadratureLinear.o\
+	OperationQuadraturePoly.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -644,6 +645,9 @@ OperationEvalPoly.o : $(SRCDIR)basis/poly/operation/common/OperationEvalPoly.cpp
 
 OperationHierarchisationPoly.o : $(SRCDIR)basis/poly/operation/common/OperationHierarchisationPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPoly.o $(SRCDIR)basis/poly/operation/common/OperationHierarchisationPoly.cpp
+	
+OperationQuadraturePoly.o : $(SRCDIR)basis/poly/operation/common/OperationQuadraturePoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadraturePoly.o $(SRCDIR)basis/poly/operation/common/OperationQuadraturePoly.cpp
 
 HierarchisationPoly.o : $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationPoly.o $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
