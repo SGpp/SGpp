@@ -962,8 +962,8 @@ using namespace sg::datadriven;
 		}
 		else if(strcmp(grid_type.getType(), "poly") == 0 )
 		{
-			if(((PolyGrid*) &grid_type)->getDegree()>2) {
-				throw factory_exception("OperationQuadrature is not implemented for polynomials with degree higher than 2.");
+			if(((PolyGrid*) &grid_type)->getDegree()>3) {
+				throw factory_exception("OperationQuadrature is not implemented for polynomials with degree higher than 3.");
 			}
 			else {
 				return new OperationQuadraturePoly(grid_type.getStorage(), ((PolyGrid*) &grid_type)->getDegree());

@@ -33,7 +33,7 @@ public:
 	virtual ~OperationQuadraturePoly() {}
 
   /**
-   * Quadrature for piecewise polynomial basis functions of max. degree 2
+   * Quadrature for piecewise polynomial basis functions of max. degree 3
    *
    * @param alpha Coefficient vector for current grid
    */

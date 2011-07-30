@@ -27,14 +27,9 @@ double OperationQuadraturePoly::doQuadrature(DataVector& alpha)
 	GridStorage::grid_map_iterator end_iter = storage->end();
 	
 	for(GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++) {
-		//    index = *(iter->first);
-		//    std::cout << iter->second << " " << iter->first->getLevelSum() << " " << pow(2.0, -static_cast<double>(iter->first->getLevelSum())) << std::endl;
-		if(base.getDegree() == 2) {
+		if(base.getDegree() <= 3) {
 			res += pow(2.0, (2.0-log(3.0)/log(2.0))*static_cast<double>(iter->first->dim())-static_cast<double>(iter->first->getLevelSum()))*alpha.get(iter->second);
 		}
-		/*else if(base->degree == 3) {
-			res += pow(2.0, -static_cast<double>(iter->first->getLevelSum()))*alpha.get(iter->second);
-		}*/
 		else {
 			res += 0; // if this case occurs, something has gone very wrong...
 		}
