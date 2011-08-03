@@ -5,6 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#ifndef OPERATIONIDENTITY_HPP
+#define OPERATIONIDENTITY_HPP
 
 #include "operation/common/OperationMatrix.hpp"
 
@@ -41,3 +43,4 @@ public:
 
 }
 }
+#endif /* OPERATIONIDENTITY_HPP */
