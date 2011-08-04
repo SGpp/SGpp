@@ -13,11 +13,12 @@ namespace sg
 {
 namespace base
 {
+  
+  
   OperationQuadratureMC::OperationQuadratureMC(Grid &grid, int mcPaths) : grid(&grid), mcPaths(mcPaths) {
     // init seed for random number generator
     srand((unsigned)time(0)); 
   }
-
 
 double OperationQuadratureMC::doQuadrature(DataVector& alpha)
 {
@@ -33,6 +34,22 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha)
   DataVector res = DataVector(mcPaths);
   opEval->mult(alpha, res);
   return res.sum()/static_cast<double>(mcPaths);
+}
+
+double OperationQuadratureMC::doQuadratureFunc(FUNC func, void *clientdata)
+{
+  int dim = grid->getStorage()->dim();
+  double p[dim];
+  
+  // create number of paths (uniformly drawn from [0,1]^d)
+  double res = 0;
+  for (int i=0; i<mcPaths; i++) {
+    for (int d=0; d<dim; d++) {
+      p[d] = static_cast<double>(rand())/RAND_MAX;
+    }
+    res += func(dim, p, clientdata);
+  }
+  return res / static_cast<double>(mcPaths);
 }
 
 }
