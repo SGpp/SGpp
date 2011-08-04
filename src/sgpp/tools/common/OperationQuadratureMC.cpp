@@ -8,6 +8,8 @@
 #include "tools/common/OperationQuadratureMC.hpp"
 #include "basis/operations_factory.hpp"
 #include "data/DataMatrix.hpp"
+#include "data/DataVector.hpp"
+#include <cmath>
 
 namespace sg
 {
@@ -50,6 +52,26 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void *clientdata)
     res += func(dim, p, clientdata);
   }
   return res / static_cast<double>(mcPaths);
+}
+
+double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void *clientdata, DataVector& alpha)
+{
+  int dim = grid->getStorage()->dim();
+  double x;
+  double p[dim];
+  DataVector point(dim);
+  OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*grid);  
+  // create number of paths (uniformly drawn from [0,1]^d)
+  double res = 0;
+  for (int i=0; i<mcPaths; i++) {
+    for (int d=0; d<dim; d++) {
+      x = static_cast<double>(rand())/RAND_MAX;
+      p[d] = x;
+      point[d] = x;
+    }
+    res += pow(func(dim, p, clientdata) - opEval->eval(alpha, point), 2);
+  }
+  return sqrt(res / static_cast<double>(mcPaths));
 }
 
 }

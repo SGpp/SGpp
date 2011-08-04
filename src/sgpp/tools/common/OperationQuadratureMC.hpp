@@ -61,6 +61,18 @@ public:
    */
   double doQuadratureFunc(FUNC func, void *clientdata);
 
+  /**
+   * Quadrature of the @f$L^2@f$-norm of the error,
+   * @f$ ||f(x)-u(x)||_{L^2} @f$, between a given function and the
+   * current sparse grid function using 
+   * simple MC in @f$\Omega=[0,1]^d@f$.
+   *
+   * @param FUNC The function @f$f(x)@f$
+   * @param clientdata 
+   * @param alpha Coefficient vector for current grid
+   */
+  double doQuadratureL2Error(FUNC func, void *clientdata, DataVector& alpha);
+
 protected:
   // Pointer to the grid object
   Grid* grid;
