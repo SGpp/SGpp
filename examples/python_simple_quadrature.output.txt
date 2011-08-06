@@ -1,5 +1,0 @@
-dimensionality:         2
-Start: number of grid points:  17
-exact integral value: 1.5
-Monte Carlo value:    1.50249293063
-Monte Carlo value:    1.50010763029

@@ -172,6 +172,20 @@ namespace GridOperationFactory
 {
 #ifdef SG_PDE
 using namespace sg::pde;
+  /**
+   * gets a pointer to OperationLaplace (OperationMatrix) object
+   *
+   * @return point to the OperationLaplace object
+   */
+  //  extern OperationMatrix* createOperationLaplace(Grid& grid_type);
+
+  /**
+   * gets a pointer to OperationLaplace (OperationMatrix) object
+   *
+   * @return point to the OperationLaplace object
+   */
+  //  extern OperationMatrix* createOperationLaplace(Grid& grid_type, sg::base::DataVector& coef);
+
 	/**
 	 * gets a pointer to OperationLaplace (OperationMatrix) object
 	 *
@@ -232,7 +246,6 @@ using namespace sg::pde;
 			throw factory_exception("OperationLaplace (with coefficients) is not implemented for this grid type.");
 		}
 	}
-
 
 	/**
 	 * gets a pointer to OperationLTwoDotProduct (OperationMatrix) object
@@ -549,7 +562,7 @@ using namespace sg::finance;
 	 *
 	 * @param dataset the dataset that should be evaluated on the sparse grid
 	 *
-	 * @return pointer to the OperationB object
+	 * @return pointer to the OperationMultipleEval object
 	 */
 	static OperationMultipleEval* createOperationMultipleEval(Grid& grid_type, DataMatrix* dataset)
 	{

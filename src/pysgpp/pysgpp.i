@@ -46,6 +46,10 @@ namespace std {
 #include "combigrid.hpp"
 %}
 
+%include "Operations.i"
+%include "OperationQuadratureMC.i"
+
+
 // The Good, i.e. without any modifications
 %include "src/sgpp/grid/storage/hashmap/SerializationVersion.hpp"
 %include "src/sgpp/grid/storage/hashmap/HashGridIndex.hpp"
@@ -55,8 +59,6 @@ namespace std {
 %include "src/sgpp/grid/common/BoundingBox.hpp"
 %include "src/sgpp/grid/common/Stretching.hpp"
 %include "src/sgpp/grid/common/DirichletUpdateVector.hpp"
-
-%include "Operations.i"
 
 %include "src/sgpp/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/grid/generation/hashmap/HashRefinement.hpp"
@@ -79,7 +81,6 @@ namespace std {
 %include "GridFactory.i"
 
 %include "src/sgpp/grid/GridDataBase.hpp"
-%include "src/sgpp/tools/common/OperationQuadratureMC.hpp"
 
 // the Bad
 

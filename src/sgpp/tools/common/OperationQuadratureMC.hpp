@@ -10,8 +10,6 @@
 
 #include "operation/common/OperationQuadrature.hpp"
 #include "grid/Grid.hpp"
-#include <cstdlib>
-#include <ctime>
 
 namespace sg
 {
@@ -19,7 +17,7 @@ namespace base
 {
 
   /**
-   * typedef for general functions that can be passed to integration methods
+   * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
    */
   typedef double (*FUNC)(int, double*, void *);
 
@@ -57,7 +55,7 @@ public:
    * simple MC in @f$\Omega=[0,1]^d@f$.
    *
    * @param FUNC The function to integrate
-   * @param clientdate 
+   * @param clientdata Optional data to pass to FUNC
    */
   double doQuadratureFunc(FUNC func, void *clientdata);
 
@@ -68,7 +66,7 @@ public:
    * simple MC in @f$\Omega=[0,1]^d@f$.
    *
    * @param FUNC The function @f$f(x)@f$
-   * @param clientdata 
+   * @param clientdata Optional data to pass to FUNC
    * @param alpha Coefficient vector for current grid
    */
   double doQuadratureL2Error(FUNC func, void *clientdata, DataVector& alpha);

@@ -10,6 +10,8 @@
 #include "data/DataMatrix.hpp"
 #include "data/DataVector.hpp"
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 namespace sg
 {
