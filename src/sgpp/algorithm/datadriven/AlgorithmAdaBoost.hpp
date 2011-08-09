@@ -71,7 +71,24 @@ namespace datadriven
 			 *
 			 * @param realvalue real value of function 
              */
-		double hValue(double realValue);
+		double hValue(double realValue)
+		{
+			double meanValue = (this->labelOne + this->labelTwo) / 2;
+			if (realValue > meanValue)
+			{
+				if (labelOne > labelTwo)
+					return labelOne;
+				else 
+					return labelTwo;
+			}
+			else 
+			{
+				if (labelOne > labelTwo)
+					return labelTwo;
+				else 
+					return labelOne;
+			}
+		};
     
     public:
 
