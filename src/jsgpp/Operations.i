@@ -101,7 +101,7 @@ namespace base {
 class OperationQuadrature
 {
 public:
-	double void doQuadrature(DataVector& alpha) = 0;
+	virtual double doQuadrature(DataVector& alpha) = 0;
 };
 }
 
