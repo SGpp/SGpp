@@ -39,7 +39,7 @@ namespace datadriven
     void AlgorithmAdaBoost::doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision)
     {
 		sg::base::DataVector weight(this->numData);
-        for (size_t i = 0; i < this->numData;i++)
+        for (size_t i = 0; i < this->numData; i++)
         {
 			weight.set(i, 1.0/double(this->numData));
         }
@@ -48,6 +48,7 @@ namespace datadriven
 		sg::base::DataVector alpha(gridStorage->size());
             // create weight error vector(ε)
 		sg::base::DataVector weighterror(this->numBaseLearners);
+		weighterror.setAll(0.0);
 		sg::base::DataVector rhs(gridStorage->size());
 		sg::base::OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*this->grid);
             // to store certain train data point
@@ -65,10 +66,9 @@ namespace datadriven
 
         for (size_t count = 0; count < this->numBaseLearners; count++){
 			stop = true;
-			weights.setColumn(count, weight);
 			(this->actualBaseLearners)++;
-
-			//            alpha.setAll(0.0);
+			weights.setColumn(count, weight);
+			alpha.setAll(0.0);
 			sg::datadriven::DMWeightMatrix WMatrix(*grid, *data, *C, this->lamb, weight);
             WMatrix.generateb(*classes, rhs);
 
@@ -132,9 +132,10 @@ namespace datadriven
                 break;
 			}
 
+			double helper;
             for (size_t i = 0; i < this->numData; i++){
-                double tmp = weight.get(i)*exp(-hypoWeight.get(count) * newclasses.get(i)*this->classes->get(i));
-                tmpweight.set(i, tmp);
+                helper = weight.get(i)*exp(-hypoWeight.get(count) * newclasses.get(i)*this->classes->get(i));
+                tmpweight.set(i, helper);
             }
 
             double sum = tmpweight.sum();
