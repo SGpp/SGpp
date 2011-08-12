@@ -58,13 +58,14 @@ void PhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector&
 
 	index.get(dim, l, i);
 
-	double h = (1.0/(pow(2.0, static_cast<int>(l))));
+	double h = 1.0/static_cast<double>(1<<l);
+	double tmp_m = ((fl+fr)/2.0);
 
 	// integration
-	result[seq] = (h * ((fl+fr)/2.0)) + (((2.0/3.0) * h) * alpha_value);
+	result[seq] = (h * tmp_m) + (((2.0/3.0) * h) * alpha_value);
 
 	// dehierarchisation
-	double fm = ((fl+fr)/2.0) + alpha_value;
+	double fm = tmp_m + alpha_value;
 
 	if(!index.hint())
 	{
@@ -95,13 +96,14 @@ void PhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVecto
 
 	index.get(dim, l, i);
 
-	double h = (1.0/(pow(2.0, static_cast<int>(l))));
+	double h = 1.0/static_cast<double>(1<<l);
+	double tmp_m = ((fl+fr)/2.0);
 
 	// integration
-	result[seq] = ((h * ((fl+fr)/2.0)) * q) + ((((2.0/3.0) * h) * alpha_value) * q);    // diagonal entry
+	result[seq] = ((h * tmp_m) + (((2.0/3.0) * h) * alpha_value)) * q;    // diagonal entry
 
 	// dehierarchisation
-	double fm = ((fl+fr)/2.0) + alpha_value;
+	double fm = tmp_m + alpha_value;
 
 	if(!index.hint())
 	{
@@ -121,7 +123,7 @@ void PhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVecto
 	}
 }
 
- // namespace detail
-
-} // namespace sg
+// namespace detail
+}
+// namespace sg
 }

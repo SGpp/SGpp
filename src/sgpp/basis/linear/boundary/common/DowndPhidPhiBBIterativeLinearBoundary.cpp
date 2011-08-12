@@ -72,7 +72,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sg::base::DataVector& alp
 			//only affects the diagonal of the stiffness matrix
 			else
 			{
-				result[i] = alpha[i]*(Qqout*pow(2.0, static_cast<int>(level+1)));
+				result[i] = alpha[i]*(Qqout*static_cast<double>(1<<(level+1)));
 			}
 		}
 	}
@@ -117,7 +117,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(sg::base::DataVector& alp
 			//only affects the diagonal of the stiffness matrix
 			else
 			{
-				result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
+				result[i] = alpha[i]*static_cast<double>(1<<(level+1));
 			}
 		}
 	}
