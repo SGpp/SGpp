@@ -79,15 +79,15 @@ void PhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& r
 	index.get(dim, current_level, current_index);
 
 	double fm = fml + fmr;
-
 	double alpha_value = source[seq];
-	double h = (1.0/(pow(2.0,static_cast<int>(current_level))));
 
 	// transposed operations:
 	result[seq] = fm;
 
-	fl = ((fm/2.0) + (alpha_value*(h/2.0))) + fl;
-	fr = ((fm/2.0) + (alpha_value*(h/2.0))) + fr;
+	double tmp = (fm/2.0) + (alpha_value/static_cast<double>(1<<(current_level+1)));
+
+	fl = tmp + fl;
+	fr = tmp + fr;
 }
 
 void PhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
@@ -121,18 +121,18 @@ void PhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector&
 	index.get(dim, current_level, current_index);
 
 	double fm = fml + fmr;
-
 	double alpha_value = source[seq];
-	double h = 1.0/(pow(2.0,static_cast<int>(current_level)));
 
 	// transposed operations:
 	result[seq] = fm;
 
-	fl = ((fm/2.0) + ((alpha_value*(h/2.0))*q)) + fl;
-	fr = ((fm/2.0) + ((alpha_value*(h/2.0))*q)) + fr;
+	double tmp = ((fm/2.0) + ((alpha_value/static_cast<double>(1<<(current_level+1)))*q));
+
+	fl = tmp + fl;
+	fr = tmp + fr;
 }
 
- // namespace detail
-
-} // namespace sg
+// namespace detail
+}
+// namespace sg
 }

@@ -12,8 +12,6 @@ namespace sg
 namespace pde
 {
 
-
-
 PhiPhiUpBBLinearBoundary::PhiPhiUpBBLinearBoundary(sg::base::GridStorage* storage) : PhiPhiUpBBLinear(storage)
 {
 }
@@ -136,7 +134,7 @@ void PhiPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base
 	}
 }
 
- // namespace detail
-
-} // namespace sg
+// namespace detail
+}
+// namespace sg
 }

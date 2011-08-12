@@ -40,7 +40,7 @@ void DowndPhidPhiBBIterativeLinear::operator()(sg::base::DataVector& alpha, sg::
 			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			//only affects the diagonal of the stiffness matrix
-			result[i] = alpha[i]*(Qqout*pow(2.0, static_cast<int>(level+1)));
+			result[i] = alpha[i]*(Qqout*(static_cast<double>(1<<(level+1))));
 		}
 	}
 	else
@@ -52,7 +52,7 @@ void DowndPhidPhiBBIterativeLinear::operator()(sg::base::DataVector& alpha, sg::
 			sg::base::GridStorage::index_type::index_type index;
 			(*storage)[i]->get(dim, level, index);
 			//only affects the diagonal of the stiffness matrix
-			result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
+			result[i] = alpha[i]*static_cast<double>(1<<(level+1));
 		}
 	}
 }
