@@ -6,11 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "algorithm/pde/BlackScholesPATParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.hpp"
-#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmer.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -37,7 +37,7 @@ namespace sg
 namespace finance
 {
 
-BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionType, bool usePAT) : ParabolicPDESolver()
+BlackScholesSolver::BlackScholesSolver(bool useLogTransform, bool usePAT) : ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -60,14 +60,7 @@ BlackScholesSolver::BlackScholesSolver(bool useLogTransform, std::string OptionT
 	this->finInnerGridSize = 0;
 	this->avgInnerGridSize = 0;
 	this->current_time = 0.0;
-	if (OptionType == "all" || OptionType == "European")
-	{
-		this->tOptionType = OptionType;
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolver::BlackScholesSolver : An unsupported option type has been chosen! all & European are supported!");
-	}
+	this->tBoundaryType = "freeBoundaries";
 }
 
 BlackScholesSolver::~BlackScholesSolver()
@@ -168,6 +161,9 @@ void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double s
 {
 	size_t nRefinements = 0;
 
+	this->dStrike = strike;
+	this->payoffType = payoffType;
+
 	if (this->useLogTransform == false)
 	{
 		if (this->bGridConstructed)
@@ -175,8 +171,9 @@ void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double s
 
 			DataVector refineVector(alpha.getSize());
 
-			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+			if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
+				this->tBoundaryType = "Dirichlet";
 				double tmp;
 				double* dblFuncValues = new double[dim];
 				double dDistance = 0.0;
@@ -203,7 +200,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(DataVector& alpha, double s
 					{
 						dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
 					}
-					if (payoffType == "std_euro_put")
+					if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 					{
 						dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
 					}
@@ -248,6 +245,9 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha
 {
 	size_t nRefinements = 0;
 
+	this->dStrike = strike;
+	this->payoffType = payoffType;
+
 	if (this->useLogTransform == false)
 	{
 		if (this->bGridConstructed)
@@ -255,11 +255,13 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha
 
 			DataVector refineVector(alpha.getSize());
 
-			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+			if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
 				double tmp;
 				double* dblFuncValues = new double[dim];
 				double dDistance = 0.0;
+
+				this->tBoundaryType = "Dirichlet";
 
 				for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 				{
@@ -283,7 +285,7 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha
 					{
 						dDistance = fabs(((tmp/static_cast<double>(this->dim))-strike));
 					}
-					if (payoffType == "std_euro_put")
+					if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 					{
 						dDistance = fabs((strike-(tmp/static_cast<double>(this->dim))));
 					}
@@ -499,24 +501,24 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 		SLESolver* myCG = NULL;
 		OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
-		if (this->tOptionType == "European")
+		if (this->tBoundaryType == "Dirichlet")
 		{
 			if (this->usePAT == true)
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 		}
@@ -525,12 +527,12 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestep
 			if (this->usePAT == true)
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 		}
 
@@ -579,24 +581,24 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 		SLESolver* myCG = NULL;
 		OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
-		if (this->tOptionType == "European")
+		if (this->tBoundaryType == "Dirichlet")
 		{
 			if (this->usePAT == true)
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 		}
@@ -605,12 +607,12 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestep
 			if (this->usePAT == true)
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 		}
 
@@ -658,24 +660,24 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 		SLESolver* myCG = NULL;
 		OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
-		if (this->tOptionType == "European")
+		if (this->tBoundaryType == "Dirichlet")
 		{
 			if (this->usePAT == true)
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-				myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 			}
 		}
@@ -684,12 +686,12 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestep
 			if (this->usePAT == true)
 			{
 				myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 			else
 			{
 				myCG = new BiCGStab(maxCGIterations, epsilonCG);
-				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+				myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 			}
 		}
 
@@ -794,17 +796,17 @@ void BlackScholesSolver::solveX(size_t numTimesteps, double timestepsize, size_t
 	{		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
 		OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
-		if (this->tOptionType == "European")
+		if (this->tBoundaryType == "Dirichlet")
 		{
 #ifdef _OPENMP
-			myBSSystem = new BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->dStrike, this->payoffType, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #else
-			myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->dStrike, this->payoffType, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 #endif
 		}
 		else
 		{
-			myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->dStrike, this->payoffType, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
@@ -838,6 +840,14 @@ void BlackScholesSolver::solveX(size_t numTimesteps, double timestepsize, size_t
 
 void BlackScholesSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
 {
+	this->dStrike = strike;
+	this->payoffType = payoffType;
+
+	if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put")
+	{
+		this->tBoundaryType = "Dirichlet";
+	}
+
 	if (this->useLogTransform)
 	{
 		if (this->usePAT)
@@ -994,7 +1004,7 @@ std::vector<size_t> BlackScholesSolver::getAlgorithmicDimensions()
 
 void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
 {
-	if (tOptionType == "all")
+	if (this->tBoundaryType == "freeBoundaries")
 	{
 		this->myGrid->setAlgorithmicDimensions(newAlgoDims);
 	}
@@ -1084,7 +1094,7 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, double s
 				DataVector coords(this->dim);
 				this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
 
-				if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
+				if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put")
 				{
 					for (size_t d = 0; d < this->dim; d++)
 					{
@@ -1143,7 +1153,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(DataVector& alpha, double s
 				}
 				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
-			else if (payoffType == "std_euro_put")
+			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
@@ -1198,7 +1208,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(DataVector& alpha, dou
 				}
 				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
-			else if (payoffType == "std_euro_put")
+			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
@@ -1258,7 +1268,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(DataVector& alpha, dou
 				}
 				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
-			else if (payoffType == "std_euro_put")
+			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
@@ -1447,7 +1457,7 @@ void BlackScholesSolver::storeInnerMatrix(DataVector& alpha, std::string tFilena
 {
 	if (this->bGridConstructed)
 	{
-		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		std::string mtx = "";
@@ -1474,7 +1484,7 @@ void BlackScholesSolver::storeInnerMatrixDiagonal(DataVector& alpha, std::string
 {
 	if (this->bGridConstructed)
 	{
-		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		std::string mtx = "";
@@ -1501,7 +1511,7 @@ void BlackScholesSolver::storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::
 {
 	if (this->bGridConstructed)
 	{
-		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		std::string mtx = "";
@@ -1528,7 +1538,7 @@ void BlackScholesSolver::storeInnerRHS(DataVector& alpha, std::string tFilename,
 {
 	if (this->bGridConstructed)
 	{
-		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		myStopwatch->start();
@@ -1559,7 +1569,7 @@ void BlackScholesSolver::storeInnerSolution(DataVector& alpha, size_t numTimeste
 	{
 		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, false, 0, myScreen);
 		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuropean(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+		OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		SGppStopwatch* myStopwatch = new SGppStopwatch();
 
 		myStopwatch->start();

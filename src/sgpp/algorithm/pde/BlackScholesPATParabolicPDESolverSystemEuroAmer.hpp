@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
-#define BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
+#ifndef BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
+#define BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
@@ -22,12 +22,12 @@ namespace finance
  * This class implements the ParabolicPDESolverSystem for the BlackScholes
  * Equation.
  *
- * Here a European Option with fix Dirichlet boundaries is solved.
+ * Here a European and American Options with fix Dirichlet boundaries are solved.
  *
  * In addition a principal axis transformation is performed in order
  * to reduce the computational effort.
  */
-class BlackScholesPATParabolicPDESolverSystemEuropean : public sg::pde::OperationParabolicPDESolverSystemDirichlet
+class BlackScholesPATParabolicPDESolverSystemEuroAmer : public sg::pde::OperationParabolicPDESolverSystemDirichlet
 {
 protected:
 	/// the Laplace Operation, on boundary grid
@@ -40,6 +40,8 @@ protected:
 	sg::base::OperationMatrix* OpLTwoInner;
 	/// Pointer to the lambda (coefficients of the needed Laplace operator)
 	sg::base::DataVector* lambda;
+	/// Eigenvectors of the covariance matrix
+	sg::base::DataMatrix* eigenvecs;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -58,6 +60,10 @@ protected:
 	std::vector<size_t> BSalgoDims;
 	/// store number of executed timesteps
 	size_t nExecTimesteps;
+	/// the strike of the current option
+	double dStrike;
+	/// the type of the current option
+	std::string option_type;
 
 	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
@@ -86,15 +92,16 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
-	BlackScholesPATParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			double TimestepSize, std::string OperationMode = "ExEul",
+	BlackScholesPATParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
+			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BlackScholesPATParabolicPDESolverSystemEuropean();
+	virtual ~BlackScholesPATParabolicPDESolverSystemEuroAmer();
 
 	virtual void finishTimestep(bool isLastTimestep = false);
 
@@ -104,4 +111,4 @@ public:
 }
 }
 
-#endif /* BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP */
+#endif /* BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROAMER_HPP */

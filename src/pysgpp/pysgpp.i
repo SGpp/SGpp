@@ -108,8 +108,8 @@ namespace std {
 
 #ifdef SG_FINANCE
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 %include "src/sgpp/application/pde/BlackScholesSolver.hpp"
 %include "src/sgpp/application/pde/BlackScholesSolverWithStretching.hpp"

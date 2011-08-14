@@ -7,13 +7,14 @@
 
 #include "tools/MPI/SGppMPITools.hpp"
 
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
+#include "basis/operations_factory.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -24,18 +25,18 @@ namespace sg
 namespace parallel
 {
 
-BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::BlackScholesParabolicPDESolverSystemEuropeanParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
-			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
+			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode, double dStrike, std::string option_type,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesParabolicPDESolverSystemEuropean(SparseGrid, alpha, mu, sigma, rho,
-			r, TimestepSize, OperationMode, bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, mu, sigma, rho,
+			r, TimestepSize, OperationMode, dStrike, option_type, bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
 {}
 
-BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::~BlackScholesParabolicPDESolverSystemEuropeanParallelMPI()
+BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::~BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI()
 {
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -137,7 +138,7 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorInne
 	result.sub(GammaResult);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -240,7 +241,7 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyLOperatorComp
 	result.sub(GammaResult);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 	result.setAll(0.0);
@@ -255,7 +256,7 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyMassMatrixInn
 	}
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 	result.setAll(0.0);
@@ -270,7 +271,7 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::applyMassMatrixCom
 	}
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	// distribute the current grid coefficients
 	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
@@ -348,7 +349,7 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::mult(sg::base::Dat
 	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
 }
 
-sg::base::DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::generateRHS()
+sg::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS()
 {
 	// distribute the current grid coefficients
 	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*(this->alpha_complete));
@@ -575,15 +576,17 @@ sg::base::DataVector* BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::g
 	return this->rhs;
 }
 
-void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::finishTimestep(bool isLastTimestep)
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(bool isLastTimestep)
 {
+	this->nExecTimesteps++;
+
 	// Adaptivity stuff is done on rank 0 only
 	if (myGlobalMPIComm->getMyRank() == 0)
 	{
 		// Replace the inner coefficients on the boundary grid
 		this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
-	#ifndef NOBOUNDARYDISCOUNT
+#ifndef NOBOUNDARYDISCOUNT
 		// Adjust the boundaries with the riskfree rate
 		if (this->r != 0.0)
 		{
@@ -592,7 +595,58 @@ void BlackScholesParabolicPDESolverSystemEuropeanParallelMPI::finishTimestep(boo
 				this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
 			}
 		}
-	#endif
+#endif
+
+		// check if we are doing an American put -> handle early exercise
+		if (this->option_type == "std_amer_put")
+		{
+			sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+			myHierarchisation->doDehierarchisation(*this->alpha_complete);
+			size_t dim = this->BoundGrid->getStorage()->dim();
+			sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
+
+			double* dblFuncValues = new double[dim];
+			for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
+			{
+				std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
+				std::stringstream coordsStream(coords);
+
+				double tmp;
+
+				// read coordinates
+				for (size_t j = 0; j < dim; j++)
+				{
+					coordsStream >> tmp;
+
+					dblFuncValues[j] = tmp;
+				}
+
+				tmp = 0.0;
+
+				if (this->b_log_transform == true)
+				{
+					for (size_t j = 0; j < dim; j++)
+					{
+						tmp += exp(dblFuncValues[j]);
+					}
+				}
+				else
+				{
+					for (size_t j = 0; j < dim; j++)
+					{
+						tmp += dblFuncValues[j];
+					}
+				}
+
+	//			(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0))*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize))));
+				(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0)));
+			}
+			delete[] dblFuncValues;
+
+			myHierarchisation->doHierarchisation(*this->alpha_complete);
+			delete myHierarchisation;
+			delete myBB;
+		}
 
 		// add number of Gridpoints
 		this->numSumGridpointsInner += this->InnerGrid->getSize();

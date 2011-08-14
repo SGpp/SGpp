@@ -61,6 +61,12 @@ protected:
 	std::vector<size_t> BSalgoDims;
 	/// Routine to modify the boundaries/inner points of the grid
 	sg::base::DirichletUpdateVector* BoundaryUpdate;
+	/// the strike of the current option
+	double dStrike;
+	/// the type of the current option
+	std::string option_type;
+	/// store whether log coordinates are used
+	bool b_log_transform;
 
 	virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
@@ -121,7 +127,8 @@ public:
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
 	BlackScholesParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
-			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 

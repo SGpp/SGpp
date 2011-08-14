@@ -36,6 +36,8 @@ protected:
 	sg::base::OperationMatrix* OpLTwoBound;
 	/// Eigenvalues of the covariance matrix
 	sg::base::DataVector* lambda;
+	/// Eigenvectors of the covariance matrix
+	sg::base::DataMatrix* eigenvecs;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -78,7 +80,8 @@ public:
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
 	BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			double TimestepSize, std::string OperationMode = "ExEul",
+			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 

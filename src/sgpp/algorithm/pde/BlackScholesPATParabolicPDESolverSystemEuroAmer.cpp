@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmer.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
@@ -17,8 +17,9 @@ namespace sg
 namespace finance
 {
 
-BlackScholesPATParabolicPDESolverSystemEuropean::BlackScholesPATParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			double TimestepSize, std::string OperationMode,
+BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
+			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
@@ -38,6 +39,7 @@ BlackScholesPATParabolicPDESolverSystemEuropean::BlackScholesPATParabolicPDESolv
 
 	// set Eigenvalues of covariance matrix
 	this->lambda = new sg::base::DataVector(lambda);
+	this->eigenvecs = new sg::base::DataMatrix(eigenvecs);
 
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 	this->nExecTimesteps = 1;
@@ -107,9 +109,13 @@ BlackScholesPATParabolicPDESolverSystemEuropean::BlackScholesPATParabolicPDESolv
 	// init Number of AverageGridPoins
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
+
+	// init option type and strike
+	this->dStrike = dStrike;
+	this->option_type = option_type;
 }
 
-BlackScholesPATParabolicPDESolverSystemEuropean::~BlackScholesPATParabolicPDESolverSystemEuropean()
+BlackScholesPATParabolicPDESolverSystemEuroAmer::~BlackScholesPATParabolicPDESolverSystemEuroAmer()
 {
 	delete this->OpLaplaceBound;
 	delete this->OpLTwoBound;
@@ -132,9 +138,10 @@ BlackScholesPATParabolicPDESolverSystemEuropean::~BlackScholesPATParabolicPDESol
 	delete this->alpha_complete_old;
 	delete this->alpha_complete_tmp;
 	delete this->lambda;
+	delete this->eigenvecs;
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropean::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -145,7 +152,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropean::applyLOperatorComplete(sg:
 	result.axpy(-0.5, temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropean::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -156,7 +163,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropean::applyLOperatorInner(sg::ba
 	result.axpy(-0.5, temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropean::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -168,7 +175,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropean::applyMassMatrixComplete(sg
 	result.add(temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropean::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -180,10 +187,55 @@ void BlackScholesPATParabolicPDESolverSystemEuropean::applyMassMatrixInner(sg::b
 	result.add(temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTimestep)
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLastTimestep)
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
+
+	// check if we are doing an American put -> handle early exercise
+	if (this->option_type == "std_amer_put")
+	{
+		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+		myHierarchisation->doDehierarchisation(*this->alpha_complete);
+		size_t dim = this->BoundGrid->getStorage()->dim();
+		sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
+
+		double* dblFuncValues = new double[dim];
+		for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
+			std::stringstream coordsStream(coords);
+
+			double tmp;
+
+			// read coordinates
+			for (size_t j = 0; j < dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			tmp = 0.0;
+
+			for (size_t j = 0; j < dim; j++)
+			{
+				double inner_tmp = 0.0;
+				for (size_t l = 0; l < dim; l++)
+				{
+					inner_tmp += this->eigenvecs->get(j, l)*dblFuncValues[l];
+				}
+				tmp += exp(inner_tmp);
+			}
+
+			(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0)));
+		}
+		delete[] dblFuncValues;
+
+		myHierarchisation->doHierarchisation(*this->alpha_complete);
+		delete myHierarchisation;
+		delete myBB;
+	}
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
@@ -240,7 +292,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropean::finishTimestep(bool isLast
 
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropean::startTimestep()
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::startTimestep()
 {
 }
 

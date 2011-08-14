@@ -83,8 +83,8 @@ namespace std {
 %include "src/sgpp/algorithm/common/sweep.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
 %include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
-%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+%include "src/sgpp/algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 %include "src/sgpp/algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 
 %include "src/sgpp/application/common/ScreenOutput.hpp"

@@ -165,7 +165,7 @@ OBJS =	DataVector.o\
 	SurplusCoarseningFunctor.o\
 	AlignedMemory.o\
 	DataMatrix.o\
-	BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o\
+	BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o\
 	OperationMultipleEvalIterativeSSELinear.o\
 	DMSystemMatrixVectorizedIdentity.o\
 	OperationDeltaLogLinear.o\
@@ -181,7 +181,7 @@ OBJS =	DataVector.o\
 	OperationMultipleEvalIterativeSPAVXLinear.o\
 	DMSystemMatrixSPVectorizedIdentity.o\
 	ModifiedBlackScholesParabolicPDESolverSystem.o\
-	BlackScholesParabolicPDESolverSystemEuropean.o\
+	BlackScholesParabolicPDESolverSystemEuroAmer.o\
 	StretchedTrapezoidBoundaryGridGenerator.o\
 	OperationMultipleEvalLinearStretched.o\
 	OperationEvalLinearStretched.o\
@@ -237,7 +237,6 @@ OBJS =	DataVector.o\
 	UpdPhidPhiBBIterativeLinearStretchedBoundary.o\
 	DMSystemMatrixSPVectorizedIdentity.o\
 	ModifiedBlackScholesParabolicPDESolverSystem.o\
-	BlackScholesParabolicPDESolverSystemEuropean.o\
 	PrewaveletGrid.o\
 	PrewaveletGridGenerator.o\
 	OperationMultipleEvalPrewavelet.o\
@@ -273,8 +272,8 @@ OBJS =	DataVector.o\
 	DehierarchisationPoly.o\
 	AlgorithmAdaBoost.o\
 	BlackScholesPATParabolicPDESolverSystem.o\
-	BlackScholesPATParabolicPDESolverSystemEuropean.o\
-	BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o\
+	BlackScholesPATParabolicPDESolverSystemEuroAmer.o\
+	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o\
 	HierarchisationModPoly.o\
 	DehierarchisationModPoly.o\
 	OperationQuadratureMC.o\
@@ -324,9 +323,9 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	HeatEquationParabolicPDESolverSystemParallelMPI.o\
 	HeatEquationSolverMPI.o\
 	BlackScholesSolverMPI.o\
-	BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o\
+	BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	BiCGStabMPI.o\
-	BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.o
+	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o
 endif
 
 default : $(OBJS)
@@ -922,17 +921,17 @@ BlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesPara
 BlackScholesPATParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
 
-BlackScholesParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
+BlackScholesParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmer.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
 
-BlackScholesPATParabolicPDESolverSystemEuropean.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuropean.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.cpp
+BlackScholesPATParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmer.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
 
-BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
+BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 
-BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.cpp
+BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 
 HullWhiteParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
@@ -1177,11 +1176,11 @@ BlackScholesSolverMPI.o : $(SRCDIR)application/pde/BlackScholesSolverMPI.cpp
 BiCGStabMPI.o : $(SRCDIR)solver/sle/BiCGStabMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)solver/sle/BiCGStabMPI.cpp
 	
-BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.cpp	
+BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
 
-BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.cpp	
+BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
 		
 clean:
 	rm *

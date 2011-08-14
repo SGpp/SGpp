@@ -544,15 +544,15 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	sg::parallel::BlackScholesSolverMPI* myBSSolver;
 	if (coordsType == "log")
 	{
-		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European");
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true);
 	}
 	else if (coordsType == "cart")
 	{
-		myBSSolver = new sg::parallel::BlackScholesSolverMPI(false, "European");
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(false);
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European", true);
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, true);
 	}
 	else
 	{
@@ -877,15 +877,15 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	sg::parallel::BlackScholesSolverMPI* myBSSolver;
 	if (coordsType == "log")
 	{
-		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European");
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true);
 	}
 	else if (coordsType == "cart")
 	{
-		myBSSolver = new sg::parallel::BlackScholesSolverMPI(false, "European");
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(false);
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, "European", true);
+		myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, true);
 	}
 	else
 	{

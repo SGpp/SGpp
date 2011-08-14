@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELOMP_HPP
-#define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELOMP_HPP
+#ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELOMP_HPP
+#define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELOMP_HPP
 
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 
 namespace sg
 {
@@ -20,13 +20,13 @@ namespace finance
  * Equation.
  *
  *
- * Here a European Option with fix Dirichlet boundaries is solved.
+ * Here European or American Options with fix Dirichlet boundaries are solved.
  *
  * It's derived from the existing BlackScholesParabolicPDESolverSystemEuropean but uses
  * the OMP task concept to enable further parallelization possibilities
  * in the calculation of the space-discretization operator (L)
  */
-class BlackScholesParabolicPDESolverSystemEuropeanParallelOMP : public BlackScholesParabolicPDESolverSystemEuropean
+class BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP : public BlackScholesParabolicPDESolverSystemEuroAmer
 {
 protected:
 	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
@@ -59,15 +59,16 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level for refinement during solving
 	 */
-	BlackScholesParabolicPDESolverSystemEuropeanParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
-			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+	BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
+			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BlackScholesParabolicPDESolverSystemEuropeanParallelOMP();
+	virtual ~BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP();
 
 	/**
 	 * Multiplicates a vector with the matrix, parallel
@@ -86,6 +87,7 @@ public:
 };
 
 }
+
 }
 
-#endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELOMP_HPP */
+#endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELOMP_HPP */

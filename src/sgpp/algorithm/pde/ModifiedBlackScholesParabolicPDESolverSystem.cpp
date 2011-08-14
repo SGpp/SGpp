@@ -32,6 +32,8 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
 		r,
 		TimestepSize,
 		OperationMode,
+		0.0,
+		"nothing",
 		bLogTransform,
 		useCoarsen,
 		coarsenThreshold,

@@ -6,8 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "application/pde/BlackScholesSolverWithStretching.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
@@ -29,7 +29,7 @@ namespace sg
 namespace finance
 {
 
-BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(bool useLogTransform, std::string OptionType) : BlackScholesSolver(useLogTransform, OptionType)
+BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(bool useLogTransform, std::string OptionType) : BlackScholesSolver(useLogTransform)
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -47,14 +47,7 @@ BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(bool useLogTr
 	this->finInnerGridSize = 0;
 	this->avgInnerGridSize = 0;
 //	std::cout<<"BSSolverWithStretching\n";
-	if (OptionType == "all" || OptionType == "European")
-	{
-		this->tOptionType = OptionType;
-	}
-	else
-	{
-		throw new sg::base::application_exception("BlackScholesSolverWithStretching::BlackScholesSolverWithStretching : An unsupported option type has been chosen! all & European are supported!");
-	}
+	this->tBoundaryType = "freeBoundaries";
 }
 
 BlackScholesSolverWithStretching::~BlackScholesSolverWithStretching()
@@ -128,6 +121,9 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(sg::base::Dat
 {
 	size_t nRefinements = 0;
 
+	this->dStrike = strike;
+	this->payoffType = payoffType;
+
 	if (this->useLogTransform == false)
 	{
 		if (this->bGridConstructed)
@@ -137,6 +133,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(sg::base::Dat
 
 			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
 			{
+				this->tBoundaryType = "Dirichlet";
+
 				double tmp;
 				double* dblFuncValues = new double[dim];
 				double dDistance = 0.0;
@@ -208,6 +206,9 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(sg:
 {
 	size_t nRefinements = 0;
 
+	this->dStrike = strike;
+	this->payoffType = payoffType;
+
 	if (this->useLogTransform == false)
 	{
 		if (this->bGridConstructed)
@@ -217,6 +218,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(sg:
 
 			if (payoffType == "std_euro_call" || payoffType == "std_euro_put")
 			{
+				this->tBoundaryType = "Dirichlet";
+
 				double tmp;
 				double* dblFuncValues = new double[dim];
 				double dDistance = 0.0;
@@ -287,6 +290,14 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(sg:
 
 void BlackScholesSolverWithStretching::initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType)
 {
+	this->dStrike = strike;
+	this->payoffType = payoffType;
+
+	if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put")
+	{
+		this->tBoundaryType = "Dirichlet";
+	}
+
 	if (this->useLogTransform)
 	{
 		initLogTransformedGridWithPayoff(alpha, strike, payoffType);

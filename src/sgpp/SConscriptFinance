@@ -8,11 +8,11 @@ Import("env")
 
 srcs = Split("""
 algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
-algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.cpp
-algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.cpp
+algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
+algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
-algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropean.cpp
-algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.cpp
+algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
+algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
 algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 application/finance/VariableDiscountFactor.cpp

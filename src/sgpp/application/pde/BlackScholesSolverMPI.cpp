@@ -8,8 +8,8 @@
 #include "tools/MPI/SGppMPITools.hpp"
 #include "solver/sle/BiCGStabMPI.hpp"
 #include "solver/sle/ConjugateGradientsMPI.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.hpp"
-#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 #include "application/pde/BlackScholesSolverMPI.hpp"
 
 #include "solver/ode/Euler.hpp"
@@ -33,7 +33,7 @@ namespace sg
 namespace parallel
 {
 
-BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, std::string OptionType, bool usePAT) : sg::pde::ParabolicPDESolver()
+BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, bool usePAT) : sg::pde::ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -56,14 +56,7 @@ BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, std::string O
 	this->finInnerGridSize = 0;
 	this->avgInnerGridSize = 0;
 	this->current_time = 0.0;
-	if (OptionType == "European")
-	{
-		this->tOptionType = OptionType;
-	}
-	else
-	{
-		throw new application_exception("BlackScholesSolverMPI::BlackScholesSolverMPI : An unsupported option type has been chosen! all & European are supported!");
-	}
+	this->tBoundaryType = "freeBoundaries";
 }
 
 BlackScholesSolverMPI::~BlackScholesSolverMPI()
@@ -335,12 +328,12 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 		if (this->usePAT == false)
 		{
 			myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuropeanParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 		else
 		{
 			myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -393,12 +386,12 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
 		if (this->usePAT == false)
 		{
 			myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuropeanParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 		else
 		{
 			myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -450,12 +443,12 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
 		if (this->usePAT == false)
 		{
 			myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuropeanParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 		else
 		{
 			myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuropeanParallelMPI(*this->myGrid, alpha, *this->eigval_covar, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -559,6 +552,14 @@ void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize, siz
 
 void BlackScholesSolverMPI::initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType)
 {
+	this->dStrike = strike;
+	this->payoffType = payoffType;
+
+	if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put")
+	{
+		this->tBoundaryType = "Dirichlet";
+	}
+
 	if (this->useLogTransform)
 	{
 		if (this->usePAT == true)
@@ -595,7 +596,7 @@ std::vector<size_t> BlackScholesSolverMPI::getAlgorithmicDimensions()
 
 void BlackScholesSolverMPI::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
 {
-	if (tOptionType == "all")
+	if (this->tBoundaryType == "freeBoundaries")
 	{
 		this->myGrid->setAlgorithmicDimensions(newAlgoDims);
 	}
@@ -651,7 +652,7 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(sg::base::DataVector& al
 				}
 				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
-			else if (payoffType == "std_euro_put")
+			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
@@ -706,7 +707,7 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(DataVector& alpha, 
 				}
 				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
-			else if (payoffType == "std_euro_put")
+			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
@@ -766,7 +767,7 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(DataVector& alpha, 
 				}
 				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
 			}
-			else if (payoffType == "std_euro_put")
+			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
 				tmp = 0.0;
 				for (size_t j = 0; j < dim; j++)
