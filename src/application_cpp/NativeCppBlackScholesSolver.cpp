@@ -590,15 +590,15 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	sg::finance::BlackScholesSolver* myBSSolver;
 	if (coordsType == "log")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(true);
 	}
 	else if (coordsType == "cart")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(false);
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
 	}
 	else
 	{
@@ -816,15 +816,15 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	sg::finance::BlackScholesSolver* myBSSolver;
 	if (coordsType == "log")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(true);
 	}
 	else if (coordsType == "cart")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(false);
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
 	}
 	else
 	{
@@ -1111,15 +1111,15 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 	sg::finance::BlackScholesSolver* myBSSolver;
 	if (coordsType == "log")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(true);
 	}
 	else if (coordsType == "cart")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(false);
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
 	}
 	else
 	{
@@ -1502,15 +1502,15 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	sg::finance::BlackScholesSolver* myBSSolver;
 	if (coordsType == "log")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(true);
 	}
 	else if (coordsType == "cart")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolver(false);
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, "European", true);
+		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
 	}
 	else
 	{

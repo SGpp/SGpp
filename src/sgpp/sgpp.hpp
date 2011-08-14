@@ -32,8 +32,8 @@
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 

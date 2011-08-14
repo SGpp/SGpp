@@ -19,6 +19,7 @@ namespace finance
 
 BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
 			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
@@ -125,6 +126,13 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(sg::b
 	// init Number of AverageGridPoins
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
+
+	// init option type and strike
+	this->dStrike = dStrike;
+	this->option_type = option_type;
+
+	// save coordinate transformations
+	this->b_log_transform = bLogTransform;
 }
 
 BlackScholesParabolicPDESolverSystem::~BlackScholesParabolicPDESolverSystem()

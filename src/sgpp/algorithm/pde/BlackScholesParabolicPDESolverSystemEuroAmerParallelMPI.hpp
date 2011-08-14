@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELMPI_HPP
-#define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELMPI_HPP
+#ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELMPI_HPP
+#define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELMPI_HPP
 
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 
 namespace sg
 {
@@ -27,7 +27,7 @@ namespace parallel
  *
  * Parallelization of the FEM operators is done by using MPI.
  */
-class BlackScholesParabolicPDESolverSystemEuropeanParallelMPI : public sg::finance::BlackScholesParabolicPDESolverSystemEuropean
+class BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI : public sg::finance::BlackScholesParabolicPDESolverSystemEuroAmer
 {
 protected:
 	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
@@ -60,15 +60,16 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level for refinement during solving
 	 */
-	BlackScholesParabolicPDESolverSystemEuropeanParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
-			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+	BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
+			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BlackScholesParabolicPDESolverSystemEuropeanParallelMPI();
+	virtual ~BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI();
 
 	/**
 	 * Multiplicates a vector with the matrix, parallel
@@ -92,4 +93,4 @@ public:
 
 }
 
-#endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEANPARALLELMPI_HPP */
+#endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELMPI_HPP */

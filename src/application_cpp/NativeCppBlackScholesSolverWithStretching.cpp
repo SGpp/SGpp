@@ -663,11 +663,11 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	sg::finance::BlackScholesSolverWithStretching* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true);
 	}
 	else
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false);
 	}
 	sg::base::Stretching* myStretching;
 
@@ -912,11 +912,11 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	sg::finance::BlackScholesSolverWithStretching* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true);
 	}
 	else
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false);
 	}
 	sg::base::Stretching* myStretching;
 	sg::base::Stretching* myEvalStretching;
@@ -1249,11 +1249,11 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 	sg::finance::BlackScholesSolverWithStretching* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true);
 	}
 	else
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false);
 	}
 	sg::base::Stretching* myStretching;
 	sg::base::Stretching* myEvalStretching;
@@ -1683,11 +1683,11 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	sg::finance::BlackScholesSolverWithStretching* myBSSolver;
 	if (isLogSolve == true)
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(true);
 	}
 	else
 	{
-		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false, "European");
+		myBSSolver = new sg::finance::BlackScholesSolverWithStretching(false);
 	}
 
 	sg::base::Stretching* myStretching;

@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
-#define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP
+#ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
+#define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"
@@ -28,9 +28,9 @@ namespace finance
  * This class implements the ParabolicPDESolverSystem for the BlackScholes
  * Equation.
  *
- * Here a European Option with fix Dirichlet boundaries is solved.
+ * Here European or American Options with fix Dirichlet boundaries are solved.
  */
-class BlackScholesParabolicPDESolverSystemEuropean : public sg::pde::OperationParabolicPDESolverSystemDirichlet
+class BlackScholesParabolicPDESolverSystemEuroAmer : public sg::pde::OperationParabolicPDESolverSystemDirichlet
 {
 protected:
 	/// the riskfree interest rate
@@ -75,6 +75,12 @@ protected:
 	std::vector<size_t> BSalgoDims;
 	/// store number of executed timesteps
 	size_t nExecTimesteps;
+	/// the strike of the current option
+	double dStrike;
+	/// the type of the current option
+	std::string option_type;
+	/// store whether log coordinates are used
+	bool b_log_transform;
 #ifdef HEDGE
 	/// hedging calculator
 	sg::finance::Hedging* myHedge;
@@ -133,6 +139,8 @@ public:
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
+	 * @param dStrike the strike of the current options
+	 * @param option_type the type of the current option
 	 * @param bLogTransform indicates that this system belongs to a log-transformed Black Scholes Equation
 	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
@@ -142,15 +150,16 @@ public:
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
-	BlackScholesParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
-			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode = "ExEul",
+	BlackScholesParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
+			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BlackScholesParabolicPDESolverSystemEuropean();
+	virtual ~BlackScholesParabolicPDESolverSystemEuroAmer();
 
 	virtual void finishTimestep(bool isLastTimestep = false);
 
@@ -158,6 +167,7 @@ public:
 };
 
 }
+
 }
 
-#endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROPEAN_HPP */
+#endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMER_HPP */

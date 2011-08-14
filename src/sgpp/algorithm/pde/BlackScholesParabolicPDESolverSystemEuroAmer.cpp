@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropean.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
@@ -17,8 +17,9 @@ namespace sg
 namespace finance
 {
 
-BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
+BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
 			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
@@ -40,7 +41,7 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 	this->sigmas = &sigma;
 	this->rhos = &rho;
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
-	this->nExecTimesteps = 1;
+	this->nExecTimesteps = 0;
 
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->BSalgoDims.size() != this->BoundGrid->getStorage()->dim())
@@ -141,6 +142,13 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
 
+	// init option type and strike
+	this->dStrike = dStrike;
+	this->option_type = option_type;
+
+	// save coordinate transformations
+	this->b_log_transform = bLogTransform;
+
 #ifdef HEDGE
 	sg::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
 	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[grid_bb->getDimensions()];
@@ -173,7 +181,7 @@ BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSyst
 #endif
 }
 
-BlackScholesParabolicPDESolverSystemEuropean::~BlackScholesParabolicPDESolverSystemEuropean()
+BlackScholesParabolicPDESolverSystemEuroAmer::~BlackScholesParabolicPDESolverSystemEuroAmer()
 {
 	delete this->OpDeltaBound;
 	delete this->OpGammaBound;
@@ -205,7 +213,7 @@ BlackScholesParabolicPDESolverSystemEuropean::~BlackScholesParabolicPDESolverSys
 #endif
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -227,7 +235,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorComplete(sg::ba
 	result.sub(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -249,7 +257,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::applyLOperatorInner(sg::base:
 	result.sub(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -261,7 +269,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixComplete(sg::b
 	result.add(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -273,8 +281,10 @@ void BlackScholesParabolicPDESolverSystemEuropean::applyMassMatrixInner(sg::base
 	result.add(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTimestep)
+void BlackScholesParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLastTimestep)
 {
+	this->nExecTimesteps++;
+
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
@@ -288,6 +298,57 @@ void BlackScholesParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTim
 		}
 	}
 #endif
+
+	// check if we are doing an American put -> handle early exercise
+	if (this->option_type == "std_amer_put")
+	{
+		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+		myHierarchisation->doDehierarchisation(*this->alpha_complete);
+		size_t dim = this->BoundGrid->getStorage()->dim();
+		sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
+
+		double* dblFuncValues = new double[dim];
+		for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
+		{
+			std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
+			std::stringstream coordsStream(coords);
+
+			double tmp;
+
+			// read coordinates
+			for (size_t j = 0; j < dim; j++)
+			{
+				coordsStream >> tmp;
+
+				dblFuncValues[j] = tmp;
+			}
+
+			tmp = 0.0;
+
+			if (this->b_log_transform == true)
+			{
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += exp(dblFuncValues[j]);
+				}
+			}
+			else
+			{
+				for (size_t j = 0; j < dim; j++)
+				{
+					tmp += dblFuncValues[j];
+				}
+			}
+
+//			(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0))*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize))));
+			(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0)));
+		}
+		delete[] dblFuncValues;
+
+		myHierarchisation->doHierarchisation(*this->alpha_complete);
+		delete myHierarchisation;
+		delete myBB;
+	}
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
@@ -344,14 +405,13 @@ void BlackScholesParabolicPDESolverSystemEuropean::finishTimestep(bool isLastTim
 
 #ifdef HEDGE
 	std::stringstream filename_ext;
-	filename_ext << (this->nExecTimesteps*this->TimestepSize);
-	this->nExecTimesteps++;
+	filename_ext << ((this->nExecTimesteps)*this->TimestepSize);
 
 	myHedge->calc_hedging(*this->BoundGrid, *this->alpha_complete, filename_ext.str());
 #endif
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::startTimestep()
+void BlackScholesParabolicPDESolverSystemEuroAmer::startTimestep()
 {
 #ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
@@ -365,7 +425,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::startTimestep()
 #endif
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::buildGammaCoefficients()
+void BlackScholesParabolicPDESolverSystemEuroAmer::buildGammaCoefficients()
 {
 	size_t dim = this->BSalgoDims.size();
 
@@ -386,7 +446,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::buildGammaCoefficients()
 	}
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::buildDeltaCoefficients()
+void BlackScholesParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients()
 {
 	size_t dim = this->BSalgoDims.size();
 	double covar_sum = 0.0;
@@ -410,7 +470,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::buildDeltaCoefficients()
 	}
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::buildGammaCoefficientsLogTransform()
+void BlackScholesParabolicPDESolverSystemEuroAmer::buildGammaCoefficientsLogTransform()
 {
 	size_t dim = this->BSalgoDims.size();
 
@@ -431,7 +491,7 @@ void BlackScholesParabolicPDESolverSystemEuropean::buildGammaCoefficientsLogTran
 	}
 }
 
-void BlackScholesParabolicPDESolverSystemEuropean::buildDeltaCoefficientsLogTransform()
+void BlackScholesParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform()
 {
 	size_t dim = this->BSalgoDims.size();
 

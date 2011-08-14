@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP.hpp"
+#include "algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "exception/algorithm_exception.hpp"
 
 #include "algorithm/pde/StdUpDown.hpp"
@@ -20,18 +20,19 @@ namespace sg
 namespace finance
 {
 
-BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			double TimestepSize, std::string OperationMode,
+BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
+			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			double dStrike, std::string option_type,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesPATParabolicPDESolverSystemEuropean(SparseGrid, alpha, lambda,
-			TimestepSize, OperationMode, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesPATParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, lambda,
+			eigenvecs, TimestepSize, OperationMode, dStrike, option_type, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
 {}
 
-BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::~BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP()
+BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::~BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP()
 {
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -73,7 +74,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorI
 #endif
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -115,7 +116,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyLOperatorC
 #endif
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -126,7 +127,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrix
 	result.add(temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
 
@@ -137,7 +138,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::applyMassMatrix
 	result.add(temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -211,7 +212,7 @@ void BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::mult(sg::base::
 	}
 }
 
-sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS()
+sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::generateRHS()
 {
 	sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
 

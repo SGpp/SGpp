@@ -19,7 +19,7 @@
 
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuropeanParallelMPI.hpp"
+#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 
 #include "sgpp.hpp"
 

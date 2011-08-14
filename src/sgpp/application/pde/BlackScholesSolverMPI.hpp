@@ -94,7 +94,7 @@ protected:
 	/// variable to store average grid size (Inner Grid)
 	size_t avgInnerGridSize;
 	/// Type of the Option to solve
-	std::string tOptionType;
+	std::string tBoundaryType;
 	/// Eigenvectors of the co-variance matrix
 	sg::base::DataMatrix* eigvec_covar;
 	/// Eigenvalues of the co-variance matrix
@@ -103,6 +103,10 @@ protected:
 	sg::base::DataVector* mu_hat;
 	/// stores the current time until which the option has been solved
 	double current_time;
+	/// stores the strike of the current option
+	double dStrike;
+	/// stores the option type of the current option
+	std::string payoffType;
 
 	/**
 	 * returns the option value (payoff value) for an European call option
@@ -162,10 +166,9 @@ public:
 	 * Std-Constructor of the solver
 	 *
 	 * @param useLogTransform speciefies if a log transformed formulation should be used for solving BlackScholes Equation
-	 * @param OptionType possible values "all" and "European", if "European" is choose a solver with fix Dirichlet boundaries is selected
 	 * @param usePAT speciefies if a principal axis transformation (also enabling a log-transformation) should be used for solving BlackScholes Equation
 	 */
-	BlackScholesSolverMPI(bool useLogTransform = false, std::string OptionType = "all", bool usePAT = false);
+	BlackScholesSolverMPI(bool useLogTransform = false, bool usePAT = false);
 
 	/**
 	 * Std-Destructor of the solver
