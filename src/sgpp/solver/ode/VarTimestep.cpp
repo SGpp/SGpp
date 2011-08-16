@@ -107,7 +107,7 @@ void VarTimestep::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabol
 
 	    }
 	    else {
-	    	fileout << i << " " << (tmp_timestepsize_new-tmp_timestepsize) << " " << time << " " << tmp_timestepsize << std::endl;
+	    	fileout << i << " " << (tmp_timestepsize_new-tmp_timestepsize) << " " << time << " " << tmp_timestepsize << " " << deltaY << std::endl;
 	    	time += tmp_timestepsize;
 	    	allIter += LinearSystemSolver.getNumberIterations();
 	    	if (verbose == true)
