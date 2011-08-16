@@ -77,7 +77,7 @@ ifeq ($(CC),icpc)
 CFLAGS:=$(CFLAGS_ICC)
 LFLAGS:=$(LFLAGS_ICC)
 ifeq ($(VEC),sse3)
-CFLAGS:=$(CFLAGS) -xSSE3
+CFLAGS:=$(CFLAGS) -msse3
 endif
 ifeq ($(VEC),sse4)
 CFLAGS:=$(CFLAGS) -xSSE4.2
