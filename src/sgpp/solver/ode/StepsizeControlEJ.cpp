@@ -91,19 +91,23 @@ void StepsizeControlEJ::solve(SLESolver& LinearSystemSolver, sg::pde::OperationP
 		double *OldData = YkImEulOld.getPointer();
 		double *Data = YkImEul.getPointer();
 
-	    double max = 0.0;
-double diff = 0.0;
-int idx = -1;
+	       double max = 0.0;
+              double diff = 0.0;
+              int idx = -1;
+              int divisor = 0.0;
 
-	    // calculate the max norm
+
+	       // calculate the max norm
 		for(int j=0;j<System.getGridCoefficientsForCG()->getSize();j++)
 		{
 			double t2 = std::max(fabs(Data[j]),fabs(OldData[j]));
 			double tmpData = fabs(Data[j]-OldData[j])/std::max(sc,t2);
 			if (max < fabs(tmpData)){
 				max = fabs(tmpData);
-                            idx=j;
+                            // just for output
+                            idx=j;  
                             diff = fabs(Data[j]-OldData[j]);
+                            divisor = std::max(sc,t2);
                      }
 		}
 
@@ -117,7 +121,7 @@ int idx = -1;
 			allIter += LinearSystemSolver.getNumberIterations();
 		}
 		else {
-			fileout << i << " " << (tmp_timestepsize_new-tmp_timestepsize) << " " << time << " " << tmp_timestepsize  << " " <<  u << " " << diff << " " << idx << std::endl;
+			fileout << i << " " << (tmp_timestepsize_new-tmp_timestepsize) << " " << time << " " << tmp_timestepsize  << " " <<  u << " " << diff << " " << divisor << " " << idx << std::endl;
 			time += tmp_timestepsize;
 			allIter += LinearSystemSolver.getNumberIterations();
 			if (verbose == true)
