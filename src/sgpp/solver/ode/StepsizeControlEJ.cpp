@@ -66,7 +66,7 @@ void StepsizeControlEJ::solve(SLESolver& LinearSystemSolver, sg::pde::OperationP
 
 	System.getGridCoefficientsForSC(YkImEul);
 
-    double sc = this->mySC;
+       double sc = this->mySC;
 
 	System.setODESolver("CrNic");
 
@@ -94,8 +94,7 @@ void StepsizeControlEJ::solve(SLESolver& LinearSystemSolver, sg::pde::OperationP
 	       double max = 0.0;
               double diff = 0.0;
               int idx = -1;
-              int divisor = 0.0;
-
+              double divisor = 0.0;
 
 	       // calculate the max norm
 		for(int j=0;j<System.getGridCoefficientsForCG()->getSize();j++)
