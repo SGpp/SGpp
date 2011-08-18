@@ -418,6 +418,21 @@ void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, 
 		this->eigvec_covar->set(2, 0, -0.00722271802968979613);
 		this->eigvec_covar->set(2, 1, -0.275216403680555832);
 		this->eigvec_covar->set(2, 2, 0.961355170313971441);
+
+		// american put test case, steffi
+//		this->eigval_covar->set(0, 0.0941905506508006474);
+//		this->eigval_covar->set(1, 0.211230588426859212);
+//		this->eigval_covar->set(2, 0.174578860922339874);
+//
+//		this->eigvec_covar->set(0, 0, 0.592851303426220277);
+//		this->eigvec_covar->set(0, 1, -0.610834162257256286);
+//		this->eigvec_covar->set(0, 2, 0.524794205613311915);
+//		this->eigvec_covar->set(1, 0, -0.658103087561460964);
+//		this->eigvec_covar->set(1, 1, -0.743068675017919733);
+//		this->eigvec_covar->set(1, 2, -0.121446574052896814);
+//		this->eigvec_covar->set(2, 0, -0.464141851342780687);
+//		this->eigvec_covar->set(2, 1, 0.273368927324575406);
+//		this->eigvec_covar->set(2, 2, 0.842521080689087154);
 	}
 	// 4d test case
 	if (mydim == 4)
