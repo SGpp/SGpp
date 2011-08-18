@@ -19,7 +19,7 @@ namespace finance
 
 BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
 			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
-			double dStrike, std::string option_type,
+			double dStrike, std::string option_type, double r,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
@@ -42,7 +42,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 	this->eigenvecs = new sg::base::DataMatrix(eigenvecs);
 
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
-	this->nExecTimesteps = 1;
+	this->nExecTimesteps = 0;
 
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim())
@@ -113,6 +113,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 	// init option type and strike
 	this->dStrike = dStrike;
 	this->option_type = option_type;
+	this->r = r;
 }
 
 BlackScholesPATParabolicPDESolverSystemEuroAmer::~BlackScholesPATParabolicPDESolverSystemEuroAmer()
@@ -189,6 +190,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::b
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLastTimestep)
 {
+	this->nExecTimesteps++;
+
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
@@ -228,7 +231,13 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 				tmp += exp(inner_tmp);
 			}
 
-			(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0)));
+			double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);
+			double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize)));
+
+			if (discounted_value < payoff)
+			{
+				(*this->alpha_complete)[i] = payoff;
+			}
 		}
 		delete[] dblFuncValues;
 

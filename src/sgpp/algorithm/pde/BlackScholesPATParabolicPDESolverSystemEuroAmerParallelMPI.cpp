@@ -463,6 +463,8 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(bool isLastTimestep)
 {
+	this->nExecTimesteps++;
+
 	// Adaptivity stuff is done on rank 0 only
 	if (myGlobalMPIComm->getMyRank() == 0)
 	{
@@ -505,7 +507,13 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 					tmp += exp(inner_tmp);
 				}
 
-				(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0)));
+				double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);
+				double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize)));
+
+				if (discounted_value < payoff)
+				{
+					(*this->alpha_complete)[i] = payoff;
+				}
 			}
 			delete[] dblFuncValues;
 
