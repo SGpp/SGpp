@@ -283,7 +283,11 @@ OBJS =	DataVector.o\
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	OperationMultipleEvalIterativeSPArBBLinear.o\
- 	ArBBKernels.o
+ 	ArBBKernels.o\
+ 	ArBBKernels2D.o\
+ 	ArBBKernels4D.o\
+ 	ArBBKernels5D.o\
+ 	ArBBKernels10D.o
 endif
 
 ifeq ($(EXT), OCL)
@@ -1117,9 +1121,21 @@ OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)basis/linear/noboundary/op
 OperationMultipleEvalIterativeSPArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPArBBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.cpp
 	
-ArBBKernels.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/ArBBKernels.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/ArBBKernels.cpp
+ArBBKernels.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels.cpp
 	
+ArBBKernels2D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels2D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels2D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels2D.cpp
+	
+ArBBKernels4D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels4D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels4D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels4D.cpp
+		
+ArBBKernels5D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels5D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels5D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels5D.cpp
+	
+ArBBKernels10D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels10D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels10D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels10D.cpp
+
 # OCL Extensions:
 OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
@@ -1133,8 +1149,8 @@ OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/nob
 OperationMultipleEvalIterativeHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp	
 	
-OCLKernels.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
-	$(OCLCC) $(OCLCFLAGS) -o $(OUTDIR)OCLKernels.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OCLKernels.cpp
+OCLKernels.o : $(SRCDIR)basis/common/operation/datadriven/OCLKernels.cpp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_DP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_SP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_ModDP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_ModSP.imp
+	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)basis/common/operation/datadriven/OCLKernels.cpp
 	
 OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.cpp

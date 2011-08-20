@@ -9,7 +9,11 @@
 #define OPERATIONMULTIPLEEVALITERATIVESPARBBLINEAR_HPP
 
 #include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
-#include "basis/linear/noboundary/operation/datadriven/ArBBKernels.hpp"
+#include "basis/common/operation/datadriven/ArBBKernels.hpp"
+#include "basis/common/operation/datadriven/ArBBKernels2D.hpp"
+#include "basis/common/operation/datadriven/ArBBKernels4D.hpp"
+#include "basis/common/operation/datadriven/ArBBKernels5D.hpp"
+#include "basis/common/operation/datadriven/ArBBKernels10D.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 
@@ -34,7 +38,7 @@ class OperationMultipleEvalIterativeSPArBBLinear : public sg::base::OperationMul
 {
 public:
 	/**
-	 * Constructor of OperationBLinearSP
+	 * Construtor of OperationBLinearSP
 	 *
 	 * Within the construct sg::base::DataMatrixSP Level and sg::base::DataMatrixSP Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
@@ -58,12 +62,20 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's GridStorage object
+	/// Pointer to the grid's gridstorage object
 	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	ArBBKernels* myArBBKernels;
+	/// Object to access the ArBB 2D Kernel
+	ArBBKernels2D* myArBBKernels2D;
+	/// Object to access the ArBB 4D Kernel
+	ArBBKernels4D* myArBBKernels4D;
+	/// Object to access the ArBB 5D Kernel
+	ArBBKernels5D* myArBBKernels5D;
+	/// Object to access the ArBB 10D Kernel
+	ArBBKernels10D* myArBBKernels10D;
 };
 
 }
