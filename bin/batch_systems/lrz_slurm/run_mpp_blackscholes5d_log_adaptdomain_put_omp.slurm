@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH -o $HOME/SGpp/bin/blackscholes5d_log_adaptdomain_put_omp_mpp.%j.out
-#SBATCH -D $HOME/SGpp/bin
+#SBATCH -o /home/cluster/t1207/lu28mec/SGpp/bin/blackscholes5d_log_adaptdomain_put_omp_mpp.%j.out
+#SBATCH -D /home/cluster/t1207/lu28mec/SGpp/bin
 #SBATCH -J blackscholes5d_log_adaptdomain_put_omp_mpp
 #SBATCH --partition mpp1_batch
 #SBATCH --nodes=1-1
