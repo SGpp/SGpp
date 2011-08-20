@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH -o $HOME/SGpp/bin/blackscholes3d_stretch_reg_call_50_steps_omp_mpp.%j.out
-#SBATCH -D $HOME/SGpp/bin
+#SBATCH -o /home/cluster/t1207/lu28mec/SGpp/bin/blackscholes3d_stretch_reg_call_50_steps_omp_mpp.%j.out
+#SBATCH -D /home/cluster/t1207/lu28mec/SGpp/bin
 #SBATCH -J blackscholes3d_stretch_reg_call_50_steps_omp_mpp
 #SBATCH --partition mpp1_batch
 #SBATCH --nodes=1-1
