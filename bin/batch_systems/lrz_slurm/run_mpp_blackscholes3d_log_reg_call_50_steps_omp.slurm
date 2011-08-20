@@ -1,0 +1,20 @@
+#!/bin/bash
+#SBATCH -o $HOME/SGpp/bin/blackscholes3d_log_reg_call_50_steps_omp_mpp.%j.out
+#SBATCH -D $HOME/SGpp/bin
+#SBATCH -J blackscholes3d_log_reg_call_50_steps_omp_mpp
+#SBATCH --partition mpp1_batch
+#SBATCH --nodes=1-1
+#SBATCH --mail-type=end
+#SBATCH --mail-user=heinecke@in.tum.de
+#SBATCH --export=NONE
+#SBATCH --time=48:00:00
+
+source /etc/profile
+cd $HOME/SGpp/bin
+
+module unload ccomp/intel
+module load ccomp/intel/12.0
+
+export OMP_NUM_THREADS=16
+
+./BSSolver solveNDanalyze log 3 3 13 BStest3d.log.bound BStest3d.stoch 1.0 std_euro_call 0.05 1.0 0.02 CrNic 8000 0.00001 BStest3d.analyze
