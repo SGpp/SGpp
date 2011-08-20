@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "common/AlignedMemory.hpp"
+#include "tools/common/AlignedMemory.hpp"
 
 void* operator new (size_t size) throw (std::bad_alloc)
 {

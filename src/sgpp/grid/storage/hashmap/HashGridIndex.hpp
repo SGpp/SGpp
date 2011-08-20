@@ -8,7 +8,7 @@
 #ifndef HASHGRIDINDEX_HPP
 #define HASHGRIDINDEX_HPP
 
-#include "common/hash_map_config.hpp"
+#include "tools/common/hash_map_config.hpp"
 #include "data/DataVector.hpp"
 
 #include "grid/common/BoundingBox.hpp"

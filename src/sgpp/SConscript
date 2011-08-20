@@ -13,7 +13,7 @@ data/DataVectorSP.cpp
 data/DataMatrix.cpp
 data/DataMatrixSP.cpp
 
-common/AlignedMemory.cpp
+tools/common/AlignedMemory.cpp
 tools/common/OperationQuadratureMC.hpp
 
 grid/Grid.cpp

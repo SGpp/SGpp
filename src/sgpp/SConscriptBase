@@ -45,7 +45,6 @@ basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
 basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
 basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
 basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.cpp
-common/AlignedMemory.cpp
 data/DataMatrix.cpp
 data/DataMatrixSP.cpp
 data/DataVector.cpp
@@ -77,6 +76,7 @@ tools/common/EvalCuboidGenerator.cpp
 tools/common/GridPrinter.cpp
 tools/common/SGppStopwatch.cpp
 tools/common/StdNormalDistribution.cpp
+tools/common/AlignedMemory.cpp
 basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
 basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
 basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
