@@ -349,8 +349,8 @@ endif
 DataVector.o : $(SRCDIR)data/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)data/DataVector.cpp
 	
-AlignedMemory.o : $(SRCDIR)common/AlignedMemory.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)AlignedMemory.o $(SRCDIR)common/AlignedMemory.cpp
+AlignedMemory.o : $(SRCDIR)tools/common/AlignedMemory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlignedMemory.o $(SRCDIR)tools/common/AlignedMemory.cpp
 
 DataMatrix.o : $(SRCDIR)data/DataMatrix.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrix.o $(SRCDIR)data/DataMatrix.cpp

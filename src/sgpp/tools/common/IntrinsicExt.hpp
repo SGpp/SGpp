@@ -13,7 +13,7 @@
 #include <immintrin.h>
 #else
 #include <pmmintrin.h>
-#include "common/avxintrin_emu.h"
+#include "tools/common/avxintrin_emu.h"
 #endif
 
 const __m128 _mm_abs_ps( const __m128& x);

@@ -8,7 +8,7 @@
 #ifndef GRIDDATABASE_HPP
 #define GRIDDATABASE_HPP
 
-#include "common/hash_map_config.hpp"
+#include "tools/common/hash_map_config.hpp"
 
 #include "grid/Grid.hpp"
 #include "data/DataVector.hpp"

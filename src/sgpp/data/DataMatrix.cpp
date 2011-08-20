@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-#include "common/AlignedMemory.hpp"
+#include "tools/common/AlignedMemory.hpp"
 
 namespace sg
 {

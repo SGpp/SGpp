@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <cstring>
 #include <cstdlib>
-#include "common/AlignedMemory.hpp"
+#include "tools/common/AlignedMemory.hpp"
 
 namespace sg
 {

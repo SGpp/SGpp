@@ -8,7 +8,7 @@
 #ifndef HASHGRIDITERATOR_HPP
 #define HASHGRIDITERATOR_HPP
 
-#include "common/hash_map_config.hpp"
+#include "tools/common/hash_map_config.hpp"
 
 #include "exception/generation_exception.hpp"
 

@@ -8,7 +8,7 @@
 #include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
 #include "exception/operation_exception.hpp"
-#include "common/AlignedMemory.hpp"
+#include "tools/common/AlignedMemory.hpp"
 
 // This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
 #define PERCENT_CPUS 16
