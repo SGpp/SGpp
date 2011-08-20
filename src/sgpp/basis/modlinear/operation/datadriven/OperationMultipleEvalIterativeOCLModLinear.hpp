@@ -9,7 +9,7 @@
 #define OPERATIONMULTIPLEEVALITERATIVEOCLMODLINEAR_HPP
 
 #include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OCLKernels.hpp"
+#include "basis/common/operation/datadriven/OCLKernels.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 
@@ -35,7 +35,7 @@ class OperationMultipleEvalIterativeOCLModLinear : public sg::base::OperationMul
 {
 public:
 	/**
-	 * Constructor of OperationBLinear
+	 * Construtor of OperationBLinear
 	 *
 	 * Within the construct DataMatrix Level and DataMatrix Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
@@ -59,7 +59,7 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's GridStorage object
+	/// Pointer to the grid's gridstorage object
 	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;
