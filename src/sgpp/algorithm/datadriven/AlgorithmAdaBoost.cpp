@@ -39,10 +39,8 @@ namespace datadriven
     void AlgorithmAdaBoost::doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision)
     {
 		sg::base::DataVector weight(this->numData);
-        for (size_t i = 0; i < this->numData; i++)
-        {
-			weight.set(i, 1.0/double(this->numData));
-        }
+		weight.setAll(1.0/double(this->numData));
+
 		sg::base::GridStorage* gridStorage = this->grid->getStorage();
             // create coefficient vector
 		sg::base::DataVector alpha(gridStorage->size());
@@ -60,12 +58,12 @@ namespace datadriven
 
 		sg::base::DataVector tmpweight(this->numData);
 		    // stop criterion
-		bool stop;
+		// bool stop;
 		sg::base::DataMatrix baseLearnerMatr(this->numData, this->numBaseLearners);
 		baseLearnerMatr.setAll(0.0);
 
         for (size_t count = 0; count < this->numBaseLearners; count++){
-			stop = true;
+			// stop = true;
 			(this->actualBaseLearners)++;
 			weights.setColumn(count, weight);
 			alpha.setAll(0.0);
@@ -93,12 +91,26 @@ namespace datadriven
 					decision.set(i, count, 0.0);
                 }
             }
-
+			// calculate the weighted train error rate
             weighterror.set(count, weight.dotProduct(identity));
+			// to judge the classification
+			if (weighterror.get(count) >= 0.5)
+			{
+                std::cout << std::endl << "The training error rate exceeds 0.5 after " << count + 1 << " iterations" << std::endl;
+				(this->actualBaseLearners)--;
+				break;
+			}
+			if (identity.sum() == 0)
+			{
+                std::cout << std::endl << "The training error rate is 0 after  " << count + 1 << " iterations" << std::endl;
+				(this->actualBaseLearners)--;
+				break;
+			}
+
+			// calculate the weight of this weak classify
             hypoWeight.set(count, 0.5*(log((1.0-weighterror.get(count))/weighterror.get(count))));
 
-			// to judge the classification
-			// when there is only one baselearner actually, we do as following, just use normal classify to get 
+			/*
 			if (this->actualBaseLearners == 1)
 				for (size_t i = 0; i < this->numData; i++)
 				{
@@ -131,6 +143,7 @@ namespace datadriven
                 std::cout << std::endl << "There is no wrong classification any more after " << count + 1 << " iterations" << std::endl;
                 break;
 			}
+			*/
 
 			double helper;
             for (size_t i = 0; i < this->numData; i++){
