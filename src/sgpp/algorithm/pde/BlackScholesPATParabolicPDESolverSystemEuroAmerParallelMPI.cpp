@@ -27,10 +27,10 @@ namespace parallel
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
 			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
-			double dStrike, std::string option_type,
+			double dStrike, std::string option_type, double r,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesPATParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, lambda,
-			eigenvecs, TimestepSize, OperationMode, dStrike, option_type, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
+			eigenvecs, TimestepSize, OperationMode, dStrike, option_type, r, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
 {}
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::~BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI()
