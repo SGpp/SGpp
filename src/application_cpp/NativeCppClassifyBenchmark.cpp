@@ -354,6 +354,11 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     	calcGFlopsAndGBytes(gridtype, myGrid, nInstancesNo, nGridsize, nDim, myCG->getNumberIterations(), sizeof(double), GFlops, GBytes);
 
+    	std::cout << std::endl;
+        std::cout << "Current GFlop/s: " << GFlops/execTime << std::endl;
+        std::cout << "Current GByte/s: " << GBytes/execTime << std::endl;
+        std::cout << std::endl;
+
 #ifndef TEST_LAST_ONLY
 		// Do tests on test data
     	if (isRegression)
@@ -621,6 +626,11 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	nGridsize = myGrid->getStorage()->size();
 
     	calcGFlopsAndGBytes(gridtype, myGrid, nInstancesNo, nGridsize, nDim, myCG->getNumberIterations(), sizeof(float), GFlops, GBytes);
+
+    	std::cout << std::endl;
+        std::cout << "Current GFlop/s: " << GFlops/execTime << std::endl;
+        std::cout << "Current GByte/s: " << GBytes/execTime << std::endl;
+        std::cout << std::endl;
 
     	// Do tests on test data
 #ifndef TEST_LAST_ONLY
