@@ -112,7 +112,7 @@ LFLAGS:=$(LFLAGS_ICC)
 CFLAGS:=$(CFLAGS) -DUSE_MPI
 EXT=MPI
 ifeq ($(VEC),sse3)
-CFLAGS:=$(CFLAGS) -xSSE3
+CFLAGS:=$(CFLAGS) -msse3
 endif
 ifeq ($(VEC),sse4)
 CFLAGS:=$(CFLAGS) -xSSE4.2
