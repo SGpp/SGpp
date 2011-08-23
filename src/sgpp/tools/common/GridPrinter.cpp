@@ -111,6 +111,8 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 				dimOne = myGrid->getBoundingBox()->getBoundary(0);
 				dimTwo = myGrid->getBoundingBox()->getBoundary(1);
 
+				double offset_x = dimOne.leftBoundary;
+				double offset_y = dimTwo.leftBoundary;
 				double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(PointsPerDimension-1));
 				double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary)/(PointsPerDimension-1));
 
@@ -121,9 +123,9 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 					for (size_t j = 0; j < points; j++)
 					{
 						std::vector<double> point;
-						point.push_back((((double)(i))*inc_x));
-						point.push_back((((double)(j))*inc_y));
-						fileout << (((double)(i))*inc_x) << " " << (((double)(j))*inc_y) << " " << myEval->eval(alpha,point) << std::endl;
+						point.push_back(offset_x+(((double)(i))*inc_x));
+						point.push_back(offset_y+(((double)(j))*inc_y));
+						fileout << (offset_x+((double)(i))*inc_x) << " " << (offset_y+((double)(j))*inc_y) << " " << myEval->eval(alpha,point) << std::endl;
 					}
 					fileout << std::endl;
 				}
