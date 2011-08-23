@@ -118,9 +118,6 @@ void DataMatrixSP::transpose()
 
 	for (size_t i = 0; i < nrows; i++)
 	{
-#ifdef __ICC
-		#pragma ivdep
-#endif
 		for (size_t j = 0; j < ncols; j++)
 		{
 			newData[(j*nrows)+i] = data[(i*ncols)+j];
@@ -148,10 +145,7 @@ size_t DataMatrixSP::appendRow(DataVectorSP& vec) {
 
 void DataMatrixSP::setAll(float value) {
 	size_t n = nrows * ncols;
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
+
 	for (size_t i = 0; i < n; i++) {
 		data[i] = value;
 	}
@@ -180,9 +174,7 @@ void DataMatrixSP::setRow(size_t row, DataVectorSP& vec) {
 		throw new sg::base::data_exception(
 				"DataMatrixSP::setRow : Dimensions do not match");
 	}
-#ifdef __ICC
-	#pragma ivdep
-#endif
+
 	for (size_t i = 0; i < this->ncols; i++) {
 		this->data[row * ncols + i] = vec[i];
 	}
@@ -193,9 +185,7 @@ void DataMatrixSP::getColumn(size_t col, DataVectorSP& vec) {
 		throw new sg::base::data_exception(
 				"DataMatrixSP::getColumn : Dimensions do not match");
 	}
-#ifdef __ICC
-	#pragma ivdep
-#endif
+
 	for (size_t j = 0; j < this->nrows; j++) {
 		vec[j] = data[j * ncols + col];
 	}
@@ -206,9 +196,7 @@ void DataMatrixSP::setColumn(size_t col, DataVectorSP& vec) {
 		throw new sg::base::data_exception(
 				"DataMatrixSP::setColumn : Dimensions do not match");
 	}
-#ifdef __ICC
-	#pragma ivdep
-#endif
+
 	for (size_t j = 0; j < this->nrows; j++) {
 		data[j * ncols + col] = vec[j];
 	}
@@ -250,10 +238,7 @@ void DataMatrixSP::add(DataMatrixSP &matr) {
 				"DataMatrixSP::add : Dimensions do not match");
 	}
 	size_t n = nrows * ncols;
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
+
 	for (size_t i = 0; i < n; i++) {
 		data[i] += matr.data[i];
 	}
@@ -266,10 +251,6 @@ void DataMatrixSP::sub(DataMatrixSP& matr) {
 	}
 	size_t n = nrows * ncols;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] -= matr.data[i];
 	}
@@ -282,10 +263,6 @@ void DataMatrixSP::componentwise_mult(DataMatrixSP& matr) {
 	}
 	size_t n = nrows * ncols;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] *= matr.data[i];
 	}
@@ -298,10 +275,6 @@ void DataMatrixSP::componentwise_div(DataMatrixSP& matr) {
 	}
 	size_t n = nrows * ncols;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] /= matr.data[i];
 	}
@@ -310,10 +283,6 @@ void DataMatrixSP::componentwise_div(DataMatrixSP& matr) {
 void DataMatrixSP::mult(float scalar) {
 	size_t n = nrows * ncols;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] *= scalar;
 	}
@@ -322,9 +291,6 @@ void DataMatrixSP::mult(float scalar) {
 void DataMatrixSP::sqr() {
 	size_t n = nrows * ncols;
 
-#ifdef __ICC
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] = data[i] * data[i];
 	}
@@ -333,9 +299,6 @@ void DataMatrixSP::sqr() {
 void DataMatrixSP::sqrt() {
 	size_t n = nrows * ncols;
 
-#ifdef __ICC
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] = std::sqrt(data[i]);
 	}
@@ -344,9 +307,6 @@ void DataMatrixSP::sqrt() {
 void DataMatrixSP::abs() {
 	size_t n = nrows * ncols;
 
-#ifdef __ICC
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		data[i] = std::abs(data[i]);
 	}
@@ -356,9 +316,6 @@ float DataMatrixSP::sum() {
 	size_t n = nrows * ncols;
 	float result = 0.0;
 
-#ifdef __ICC
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < n; i++) {
 		result += data[i];
 	}

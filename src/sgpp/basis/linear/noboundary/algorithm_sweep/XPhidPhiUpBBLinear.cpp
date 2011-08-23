@@ -82,7 +82,7 @@ void XPhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector&
 
 	double alpha_value = source[seq];
 
-	double helper = (1.0/pow(2.0, static_cast<int>(current_level+1))) * (static_cast<double>(current_index));
+	double helper = (1.0/static_cast<double>(1<<(current_level+1))) * (static_cast<double>(current_index));
 
 	// transposed operations:
 	result[seq] = fm;
@@ -125,7 +125,7 @@ void XPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVecto
 
 	double alpha_value = source[seq];
 
-	double helper = (1.0/pow(2.0, static_cast<int>(current_level+1))) * (q * static_cast<double>(current_index)) + (0.5*t);
+	double helper = (1.0/static_cast<double>(1<<(current_level+1))) * (q * static_cast<double>(current_index)) + (0.5*t);
 
 	// transposed operations:
 	result[seq] = fm;

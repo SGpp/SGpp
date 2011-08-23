@@ -58,7 +58,7 @@ void XPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector
 	double i_dbl = static_cast<double>(i);
     int l_int = static_cast<int>(l);
 
-    double hsquare = (1.0/(pow(2.0,2*l_int)));
+    double hsquare = (1.0/static_cast<double>(1<<(2*l_int)));
 
 	// integration
 	result[seq] = (hsquare * ((fl+fr)/2.0))*i_dbl + hsquare * (fr-fl)/12.0 + (((2.0/3.0) * hsquare * i_dbl) * alpha_value);
@@ -98,7 +98,7 @@ void XPhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVect
 	double i_dbl = static_cast<double>(i);
 	int l_int = static_cast<int>(l);
 
-	double h = (1.0/(pow(2.0,l_int)));
+	double h = (1.0/(static_cast<double>(1<<(l_int))));
 
 	// integration
 	result[seq] = (h*h*i_dbl*q*q + h * q * t)* ((fl+fr)/2.0) + h*h *q*q * (fr-fl)/12.0 + (((2.0/3.0) * h * q * t + (2.0/3.0) * i_dbl * h*h * q*q ) * alpha_value);   // diagonal entry

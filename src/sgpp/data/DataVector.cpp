@@ -224,10 +224,6 @@ void DataVector::add(DataVector &vec) {
 				"DataVector::add : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] += vec.data[i];
     }
@@ -239,10 +235,6 @@ void DataVector::sub(DataVector &vec) {
 				"DataVector::sub : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] -= vec.data[i];
     }
@@ -254,10 +246,6 @@ void DataVector::componentwise_mult(DataVector& vec) {
 				"DataVector::componentwise_mult : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] *= vec.data[i];
     }
@@ -269,10 +257,6 @@ void DataVector::componentwise_div(DataVector& vec) {
 				"DataVector::componentwise_div : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] /= vec.data[i];
     }
@@ -281,10 +265,6 @@ void DataVector::componentwise_div(DataVector& vec) {
 double DataVector::dotProduct(DataVector &vec) {
     double sum = 0.0;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         sum += data[i] * vec.data[i];
     }
@@ -292,36 +272,24 @@ double DataVector::dotProduct(DataVector &vec) {
 }
 
 void DataVector::mult(double scalar) {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] *= scalar;
     }
 }
 
 void DataVector::sqr() {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] = data[i] * data[i];
     }
 }
 
 void DataVector::sqrt() {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] = std::sqrt(data[i]);
     }
 }
 
 void DataVector::abs() {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < size; i++) {
         data[i] = std::abs(data[i]);
     }
@@ -330,9 +298,6 @@ void DataVector::abs() {
 double DataVector::sum() {
     double result = 0.0;
 
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         result += data[i];
     }
@@ -390,10 +355,6 @@ void DataVector::axpy(double a, DataVector& x) {
     double* p_x = x.data;
     double* p_d = data;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         p_d[i] += a * p_x[i];
     }
