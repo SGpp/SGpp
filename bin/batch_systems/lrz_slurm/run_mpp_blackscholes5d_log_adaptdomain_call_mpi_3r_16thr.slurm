@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH -o /home/cluster/t1207/lu28mec/SGpp/bin/blackscholes5d_log_adaptdomain_call_mpi_mpp.%j.out
+#SBATCH -o /home/cluster/t1207/lu28mec/SGpp/bin/blackscholes5d_log_adaptdomain_call_mpi_3r_16thr_mpp.%j.out
 #SBATCH -D /home/cluster/t1207/lu28mec/SGpp_DM/bin
-#SBATCH -J blackscholes5d_log_adaptdomain_call_mpi_mpp
+#SBATCH -J blackscholes5d_log_adaptdomain_call_mpi_3r_16thr_mpp
 #SBATCH --partition mpp1_batch
-#SBATCH --ntasks=6
+#SBATCH --ntasks=3
 #SBATCH --cpus-per-task=16
 #SBATCH --mail-type=end
 #SBATCH --mail-user=heinecke@in.tum.de
