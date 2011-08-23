@@ -875,7 +875,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		// Print the payoff function into a gnuplot file
 		if (dim < 3)
 		{
-			myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+			myBSSolver->printGrid(*alpha, 21, "payoff.gnuplot");
 		}
 		if (dim < 4)
 		{
@@ -935,7 +935,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		if (dim < 3)
 		{
 			// Print the solved Black Scholes Equation into a gnuplot file
-			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+			myBSSolver->printGrid(*alpha, 21, "solvedBS.gnuplot");
 		}
 		if (dim < 4)
 		{
@@ -1267,7 +1267,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		if (dim < 3)
 		{
 			// Print the solved Black Scholes Equation into a gnuplot file
-			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+			myBSSolver->printGrid(*alpha, 21, "solvedBS.gnuplot");
 		}
 		if (dim < 4)
 		{
@@ -1655,7 +1655,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	// Print the payoff function into a gnuplot file
 	if (dim < 3)
 	{
-		myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+		myBSSolver->printGrid(*alpha, 21, "payoff.gnuplot");
 	}
 	if (dim < 4)
 	{
@@ -1724,7 +1724,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+		myBSSolver->printGrid(*alpha, 21, "solvedBS.gnuplot");
 	}
 	if (dim < 4)
 	{
