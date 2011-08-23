@@ -43,7 +43,7 @@ EXT=NO
 # instances used to compile
 JOBS=2
 # Default residual threshold
-SLETHR=-1.0
+SLE_RES_THRESH=-1.0
 
 ###################################################################
 # Compiler Flags
@@ -128,7 +128,7 @@ LFLAGS:=$(LFLAGS) -openmp
 endif
 endif
 
-CFLAGS:=$(CFLAGS) -DDEFAULT_RES_THRESHOLD=$(SLETHR)
+CFLAGS:=$(CFLAGS) -DDEFAULT_RES_THRESHOLD=$(SLE_RES_THRESH)
 
 ###################################################################
 # Builds a lib containing all SG Algorithms
