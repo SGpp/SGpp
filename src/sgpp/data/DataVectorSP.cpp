@@ -182,10 +182,6 @@ void DataVectorSP::add(DataVectorSP &vec) {
 				"DataVectorSP::add : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] += vec.data[i];
     }
@@ -197,10 +193,6 @@ void DataVectorSP::sub(DataVectorSP &vec) {
 				"DataVectorSP::sub : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] -= vec.data[i];
     }
@@ -212,10 +204,6 @@ void DataVectorSP::componentwise_mult(DataVectorSP& vec) {
 				"DataVectorSP::componentwise_mult : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] *= vec.data[i];
     }
@@ -227,10 +215,6 @@ void DataVectorSP::componentwise_div(DataVectorSP& vec) {
 				"DataVectorSP::componentwise_div : Dimensions do not match");
     }
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] /= vec.data[i];
     }
@@ -239,10 +223,6 @@ void DataVectorSP::componentwise_div(DataVectorSP& vec) {
 float DataVectorSP::dotProduct(DataVectorSP &vec) {
     float sum = 0.0;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         sum += data[i] * vec.data[i];
     }
@@ -250,36 +230,24 @@ float DataVectorSP::dotProduct(DataVectorSP &vec) {
 }
 
 void DataVectorSP::mult(float scalar) {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] *= scalar;
     }
 }
 
 void DataVectorSP::sqr() {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] = data[i] * data[i];
     }
 }
 
 void DataVectorSP::sqrt() {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         data[i] = std::sqrt(data[i]);
     }
 }
 
 void DataVectorSP::abs() {
-#ifdef __ICC
-	#pragma vector aligned
-#endif
 	for (size_t i = 0; i < size; i++) {
         data[i] = std::abs(data[i]);
     }
@@ -288,9 +256,6 @@ void DataVectorSP::abs() {
 float DataVectorSP::sum() {
     float result = 0.0f;
 
-#ifdef __ICC
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         result += data[i];
     }
@@ -348,10 +313,6 @@ void DataVectorSP::axpy(float a, DataVectorSP& x) {
     float* p_x = x.data;
     float* p_d = data;
 
-#ifdef __ICC
-	#pragma ivdep
-	#pragma vector aligned
-#endif
     for (size_t i = 0; i < size; i++) {
         p_d[i] += a * p_x[i];
     }

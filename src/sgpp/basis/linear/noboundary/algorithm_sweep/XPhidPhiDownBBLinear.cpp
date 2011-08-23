@@ -55,11 +55,11 @@ void XPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVecto
 
 	index.get(dim, l, i);
 
-	double hhalf = 1.0/pow(2.0,static_cast<int>(l+1));
+	double hhalf = 1.0/static_cast<double>(1<<(l+1));
 	double i_dbl = static_cast<double>(i);
 
 	// integration
-	result[seq] = (  ( (fl * ((hhalf * i_dbl) - hhalf)) + (fr * (((-1.0)*(hhalf * i_dbl)) - hhalf)) ) - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l)))) * alpha_value)) );    // diagonal entry
+	result[seq] = (  ( (fl * ((hhalf * i_dbl) - hhalf)) + (fr * (((-1.0)*(hhalf * i_dbl)) - hhalf)) ) - ((1.0/3.0) * (((1.0/static_cast<double>(1<<l))) * alpha_value)) );    // diagonal entry
 
 	// dehierarchisation
 	double fm = ((fl+fr)/2.0) + alpha_value;
@@ -93,12 +93,12 @@ void XPhidPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVec
 
 	index.get(dim, l, i);
 
-	double hhalf = 1.0/pow(2.0,static_cast<int>(l+1));
+	double hhalf = 1.0/static_cast<double>(1<<(l+1));
 	double i_dbl = static_cast<double>(i);
 
 	// integration
 	result[seq] = (  ( (fl * ((q*((hhalf * i_dbl) - hhalf))+(0.5*t))) + (fr * ((q*(((-1.0)*(hhalf * i_dbl)) - hhalf))-(0.5*t))) )
-						  - ((1.0/3.0) * (((1.0/pow(2.0, static_cast<int>(l))) * q) * alpha_value)) );    // diagonal entry
+						  - ((1.0/3.0) * (((1.0/static_cast<double>(1<<l)) * q) * alpha_value)) );    // diagonal entry
 
 	// dehierarchisation
 	double fm = ((fl+fr)/2.0) + alpha_value;

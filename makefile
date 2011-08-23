@@ -49,7 +49,7 @@ JOBS=2
 CFLAGS_GCC:=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-CFLAGS_ICC:=-Wall -ansi -c -fno-strict-aliasing -ipo -ip -ansi-alias -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
+CFLAGS_ICC:=-Wall -ansi -ansi-alias -fp-speculation=safe -c -ipo -ip -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
 LFLAGS_ICC:=-Wall -ansi -O3 -static-intel -ipo -ip
 
 ifeq ($(CC),g++)

@@ -84,7 +84,7 @@ void SqXdPhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 
 	double alpha_value = source[seq];
 
-	double c = ((1.0/pow(2.0, static_cast<int>(current_level))) * static_cast<double>(current_index));
+	double c = ((1.0/static_cast<double>(1<<current_level)) * static_cast<double>(current_index));
 
 	// transposed operations:
 	result[seq] = fm;
@@ -127,7 +127,7 @@ void SqXdPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVe
 
 	double alpha_value = source[seq];
 
-	double c = ((1.0/pow(2.0, static_cast<int>(current_level))) * static_cast<double>(current_index) * q) + t;
+	double c = ((1.0/static_cast<double>(1<<current_level)) * static_cast<double>(current_index) * q) + t;
 
 	// transposed operations:
 	result[seq] = fm;
@@ -136,7 +136,7 @@ void SqXdPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVe
 	fr = (fm/2.0) - (alpha_value*c) + fr;
 }
 
- // namespace detail
-
-} // namespace sg
+// namespace detail
+}
+// namespace sg
 }
