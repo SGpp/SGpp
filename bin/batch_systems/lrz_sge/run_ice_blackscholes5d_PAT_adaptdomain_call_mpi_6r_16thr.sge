@@ -4,7 +4,8 @@
 #$-l h_rt=96:00:00 
 #$-S /bin/bash 
 #$-pe mpi_ice 48
-#$-M heinecke@in.tum.de 
+#$-M heinecke@in.tum.de
+#$-m ea
 
 . /etc/profile 
 
