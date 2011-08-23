@@ -112,7 +112,7 @@ void BiCGStab::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVect
 		this->residuum = delta;
 
 		// Stop in case of better accuracy
-		if (delta < delta_0)
+		if (delta < delta_0 || delta < max_threshold)
 		{
 			break;
 		}

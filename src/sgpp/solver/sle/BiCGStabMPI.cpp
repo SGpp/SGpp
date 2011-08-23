@@ -130,7 +130,7 @@ void BiCGStabMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataV
 			this->residuum = delta;
 
 			// Stop in case of better accuracy
-			if (delta < delta_0)
+			if (delta < delta_0 || delta < max_threshold)
 			{
 				break;
 			}

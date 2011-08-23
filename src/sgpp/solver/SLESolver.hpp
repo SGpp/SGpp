@@ -11,6 +11,10 @@
 #include "solver/SGSolver.hpp"
 #include "data/DataVector.hpp"
 
+#ifndef DEFAULT_RES_THRESHOLD
+#define DEFAULT_RES_THRESHOLD -1.0
+#endif
+
 namespace sg
 {
 namespace solver
@@ -42,9 +46,9 @@ public:
 	 * @param b the right hand side of the system of linear equations
 	 * @param reuse identifies if the alphas, stored in alpha at calling time, should be reused
 	 * @param verbose prints information during execution of the solver
-	 * @param max_threshold additional abort criteria for solver
+	 * @param max_threshold additional abort criteria for solver, default value is 10^-9!
 	 */
-	virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0) = 0;
+	virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = DEFAULT_RES_THRESHOLD) = 0;
 };
 
 }

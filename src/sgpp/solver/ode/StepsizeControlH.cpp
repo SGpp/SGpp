@@ -68,7 +68,7 @@ void StepsizeControlH::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPa
 		rhs = System.generateRHS();
 
 		// solve the system of the current timesteps
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
 
 		System.finishTimestep();
 
@@ -82,7 +82,7 @@ void StepsizeControlH::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPa
 		rhs = System.generateRHS();
 
 		// solve the system of the current timesteps
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
 		System.finishTimestep();
 
 		rhs = System.generateRHS();

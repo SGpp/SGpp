@@ -74,7 +74,7 @@ void StepsizeControlBDF::solve(SLESolver& LinearSystemSolver, sg::pde::Operation
 		rhs = System.generateRHS();
 
 		// solve the system of the current timestep
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
 		System.finishTimestep();
 
 		System.getGridCoefficientsForSC(YkF23);
@@ -89,7 +89,7 @@ void StepsizeControlBDF::solve(SLESolver& LinearSystemSolver, sg::pde::Operation
 		rhs = System.generateRHS();
 
 		// solve the system of the current timestep
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
 		System.finishTimestep();
 		System.getGridCoefficientsForSC(YkBDF2);
 

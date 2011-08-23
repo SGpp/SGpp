@@ -46,7 +46,7 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPara
 
 
 		// solve the system of the current timestep
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
 
 	    allIter += LinearSystemSolver.getNumberIterations();
 	    if (verbose == true)

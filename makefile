@@ -42,6 +42,8 @@ VEC=sse3
 EXT=NO
 # instances used to compile
 JOBS=2
+# Default residual threshold
+SLETHR=-1.0
 
 ###################################################################
 # Compiler Flags
@@ -125,6 +127,8 @@ CFLAGS:=$(CFLAGS) -openmp
 LFLAGS:=$(LFLAGS) -openmp
 endif
 endif
+
+CFLAGS:=$(CFLAGS) -DDEFAULT_RES_THRESHOLD=$(SLETHR)
 
 ###################################################################
 # Builds a lib containing all SG Algorithms
