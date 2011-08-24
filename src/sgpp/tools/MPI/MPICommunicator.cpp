@@ -16,43 +16,10 @@ MPICommunicator::MPICommunicator(int myid, int ranks) : myid_(myid), ranks_(rank
 
 MPICommunicator::~MPICommunicator() { }
 
-//void MPICommunicator::sendGridCoefficients(sg::base::DataVector& alpha, int dest_rank)
-//{
-//	MPI_Send((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, dest_rank, this->myid_, MPI_COMM_WORLD);
-//}
-//
-//void MPICommunicator::broadcastGridCoefficients(sg::base::DataVector& alpha)
-//{
-//	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
-//	{
-//		MPI_Send((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, dest_rank, this->myid_, MPI_COMM_WORLD);
-//	}
-//}
-
 void MPICommunicator::broadcastGridCoefficientsFromRank0(sg::base::DataVector& alpha)
 {
 	MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
-
-//void MPICommunicator::receiveGridCoefficients(sg::base::DataVector& alpha)
-//{
-//	MPI_Status status;
-//
-//	MPI_Recv((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-//}
-//
-//void MPICommunicator::aggregateGridCoefficients(sg::base::DataVector& alpha)
-//{
-//	for (int recv_rank = 1; recv_rank < this->ranks_; recv_rank++)
-//	{
-//		sg::base::DataVector tmp(alpha);
-//		MPI_Status status;
-//
-//		MPI_Recv((void*)tmp.getPointer(), (int)tmp.getSize(), MPI_DOUBLE, recv_rank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-//
-//		alpha.add(tmp);
-//	}
-//}
 
 void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha)
 {
@@ -65,7 +32,6 @@ void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha)
 		MPI_Reduce((void*)alpha.getPointer(), NULL, (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	}
 }
-
 
 void MPICommunicator::sendGrid(std::string& serialized_grid, int dest_rank)
 {
@@ -136,24 +102,6 @@ void MPICommunicator::Abort()
 	MPI_Abort(MPI_COMM_WORLD, -1);
 }
 
-//void MPICommunicator::broadcastControl(char ctrl)
-//{
-//	for (int dest_rank = 1; dest_rank < this->ranks_; dest_rank++)
-//	{
-//		MPI_Send((void*)&ctrl, 1, MPI_CHAR, dest_rank, this->myid_, MPI_COMM_WORLD);
-//	}
-//}
-//
-//char MPICommunicator::receiveControl()
-//{
-//	MPI_Status status;
-//	char result;
-//
-//	MPI_Recv((void*)&result, 1, MPI_CHAR, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-//
-//	return result;
-//}
-
 void MPICommunicator::broadcastControlFromRank0(char* ctrl)
 {
 	MPI_Bcast((void*)ctrl, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
@@ -170,4 +118,5 @@ int MPICommunicator::getNumRanks()
 }
 
 }
+
 }
