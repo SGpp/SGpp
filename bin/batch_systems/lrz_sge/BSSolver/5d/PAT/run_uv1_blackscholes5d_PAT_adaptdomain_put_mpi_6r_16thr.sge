@@ -1,5 +1,5 @@
 #!/bin/bash 
-#$-o $HOME/SGpp/bin/blackscholes5d_PAT_adaptdomain_put_mpi_6r_16thr_uv1.out -j y 
+#$-o $HOME/SGpp/bin/blackscholes5d_PAT_adaptdomain_put_mpi_6r_16thr_uv1.$JOB_ID.out -j y 
 #$-N blackscholes5d_PAT_adaptdomain_put_mpi_6r_16thr_uv1 
 #$-l h_rt=96:00:00 
 #$-S /bin/bash 
