@@ -337,8 +337,10 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP
 		throw new sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
-//	if (this->useCoarsen == true || this->nExecTimesteps == 0)
-//	{
+	if (this->useCoarsen == true || this->nExecTimesteps == 0 || this->bnewODESolver == true)
+	{
+		this->bnewODESolver = false;
+
 		// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
 		sg::base::DataVector result_complete(this->alpha_complete->getSize());
 		sg::base::DataVector alpha_bound(*this->alpha_complete);
@@ -413,18 +415,18 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP
 			throw new sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 		}
 
-//		// Store right hand side corrector
-//		if (this->rhs_corrector != NULL)
-//		{
-//			delete this->rhs_corrector;
-//		}
-//		this->rhs_corrector = new sg::base::DataVector(this->alpha_complete->getSize());
-//		*(this->rhs_corrector) = result_complete;
-//	}
-//
-//	rhs_complete.sub(*(this->rhs_corrector));
+		// Store right hand side corrector
+		if (this->rhs_corrector != NULL)
+		{
+			delete this->rhs_corrector;
+		}
+		this->rhs_corrector = new sg::base::DataVector(this->alpha_complete->getSize());
+		*(this->rhs_corrector) = result_complete;
+	}
 
-	rhs_complete.sub(result_complete);
+	rhs_complete.sub(*(this->rhs_corrector));
+
+//	rhs_complete.sub(result_complete);
 
 	if (this->rhs != NULL)
 	{

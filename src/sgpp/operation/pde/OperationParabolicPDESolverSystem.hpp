@@ -57,6 +57,9 @@ protected:
 	/// Stores number of average gridpoints, complete grid
 	size_t numSumGridpointsComplete;
 
+	/// checks whether a new ODE solver has been selected after creation
+	bool bnewODESolver;
+
 public:
 	/**
 	 * Constructor
