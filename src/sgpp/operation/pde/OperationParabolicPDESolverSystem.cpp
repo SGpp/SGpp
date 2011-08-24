@@ -18,6 +18,7 @@ OperationParabolicPDESolverSystem::OperationParabolicPDESolverSystem()
 {
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
+	this->bnewODESolver = false;
 }
 
 OperationParabolicPDESolverSystem::~OperationParabolicPDESolverSystem()
@@ -37,6 +38,7 @@ sg::base::Grid* OperationParabolicPDESolverSystem::getGrid()
 void OperationParabolicPDESolverSystem::setODESolver(std::string ode)
 {
 	this->tOperationMode = ode;
+	this->bnewODESolver = true;
 }
 
 std::string OperationParabolicPDESolverSystem::getODESolver()
