@@ -37,6 +37,9 @@ protected:
 
 	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
+	// right-hand side corrector
+	sg::base::DataVector* rhs_corrector;
+
 public:
 	/**
 	 * Std-Constructor

@@ -25,11 +25,16 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::BlackScholesPATParab
 			double dStrike, std::string option_type, double r,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesPATParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, lambda,
-			eigenvecs, TimestepSize, OperationMode, dStrike, option_type, r, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
-{}
+			eigenvecs, TimestepSize, OperationMode, dStrike, option_type, r, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel), rhs_corrector(NULL)
+{
+}
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::~BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP()
 {
+	if (this->rhs_corrector != NULL)
+	{
+		delete this->rhs_corrector;
+	}
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -332,82 +337,92 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP
 		throw new sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
-	// Now we have the right hand side, lets apply the riskfree rate for the next timestep
-	this->startTimestep();
+//	if (this->useCoarsen == true || this->nExecTimesteps == 0)
+//	{
+		// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
+		sg::base::DataVector result_complete(this->alpha_complete->getSize());
+		sg::base::DataVector alpha_bound(*this->alpha_complete);
 
-	// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-	sg::base::DataVector result_complete(this->alpha_complete->getSize());
-	sg::base::DataVector alpha_bound(*this->alpha_complete);
+		result_complete.setAll(0.0);
 
-	result_complete.setAll(0.0);
+		this->BoundaryUpdate->setInnerPointsToZero(alpha_bound);
 
-	this->BoundaryUpdate->setInnerPointsToZero(alpha_bound);
-
-	// apply CG Matrix
-	if (this->tOperationMode == "ExEul")
-	{
-		applyMassMatrixComplete(alpha_bound, result_complete);
-	}
-	else if (this->tOperationMode == "ImEul")
-	{
-		sg::base::DataVector temp(alpha_bound.getSize());
-		sg::base::DataVector temp2(alpha_bound.getSize());
-
-		#pragma omp parallel shared(alpha_bound, temp, temp2)
+		// apply CG Matrix
+		if (this->tOperationMode == "ExEul")
 		{
-			#pragma omp single nowait
+			applyMassMatrixComplete(alpha_bound, result_complete);
+		}
+		else if (this->tOperationMode == "ImEul")
+		{
+			sg::base::DataVector temp(alpha_bound.getSize());
+			sg::base::DataVector temp2(alpha_bound.getSize());
+
+			#pragma omp parallel shared(alpha_bound, temp, temp2)
 			{
-				#pragma omp task shared (alpha_bound, temp)
+				#pragma omp single nowait
 				{
-					applyMassMatrixComplete(alpha_bound, temp);
-				}
+					#pragma omp task shared (alpha_bound, temp)
+					{
+						applyMassMatrixComplete(alpha_bound, temp);
+					}
 
-				#pragma omp task shared (alpha_bound, temp2)
-				{
-					applyLOperatorComplete(alpha_bound, temp2);
-				}
+					#pragma omp task shared (alpha_bound, temp2)
+					{
+						applyLOperatorComplete(alpha_bound, temp2);
+					}
 
-				#pragma omp taskwait
+					#pragma omp taskwait
+				}
 			}
+
+			result_complete.add(temp);
+			result_complete.axpy((-1.0)*this->TimestepSize, temp2);
+		}
+		else if (this->tOperationMode == "CrNic")
+		{
+			sg::base::DataVector temp(alpha_bound.getSize());
+			sg::base::DataVector temp2(alpha_bound.getSize());
+
+			#pragma omp parallel shared(alpha_bound, temp, temp2)
+			{
+				#pragma omp single nowait
+				{
+					#pragma omp task shared (alpha_bound, temp)
+					{
+						applyMassMatrixComplete(alpha_bound, temp);
+					}
+
+					#pragma omp task shared (alpha_bound, temp2)
+					{
+						applyLOperatorComplete(alpha_bound, temp2);
+					}
+
+					#pragma omp taskwait
+				}
+			}
+
+			result_complete.add(temp);
+			result_complete.axpy((-0.5)*this->TimestepSize, temp2);
+		}
+		else if (this->tOperationMode == "AdBas")
+		{
+			applyMassMatrixComplete(alpha_bound, result_complete);
+		}
+		else
+		{
+			throw new sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 		}
 
-		result_complete.add(temp);
-		result_complete.axpy((-1.0)*this->TimestepSize, temp2);
-	}
-	else if (this->tOperationMode == "CrNic")
-	{
-		sg::base::DataVector temp(alpha_bound.getSize());
-		sg::base::DataVector temp2(alpha_bound.getSize());
-
-		#pragma omp parallel shared(alpha_bound, temp, temp2)
-		{
-			#pragma omp single nowait
-			{
-				#pragma omp task shared (alpha_bound, temp)
-				{
-					applyMassMatrixComplete(alpha_bound, temp);
-				}
-
-				#pragma omp task shared (alpha_bound, temp2)
-				{
-					applyLOperatorComplete(alpha_bound, temp2);
-				}
-
-				#pragma omp taskwait
-			}
-		}
-
-		result_complete.add(temp);
-		result_complete.axpy((-0.5)*this->TimestepSize, temp2);
-	}
-	else if (this->tOperationMode == "AdBas")
-	{
-		applyMassMatrixComplete(alpha_bound, result_complete);
-	}
-	else
-	{
-		throw new sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
-	}
+//		// Store right hand side corrector
+//		if (this->rhs_corrector != NULL)
+//		{
+//			delete this->rhs_corrector;
+//		}
+//		this->rhs_corrector = new sg::base::DataVector(this->alpha_complete->getSize());
+//		*(this->rhs_corrector) = result_complete;
+//	}
+//
+//	rhs_complete.sub(*(this->rhs_corrector));
 
 	rhs_complete.sub(result_complete);
 
