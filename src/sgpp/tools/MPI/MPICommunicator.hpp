@@ -51,14 +51,6 @@ public:
 	 */
 	~MPICommunicator();
 
-//	/**
-//	 * sends grid coefficients to a specfic destination rank
-//	 *
-//	 * @param alpha grid coefficients that should be sent
-//	 * @param dest_rank rank to which the data should be sent
-//	 */
-//	void sendGridCoefficients(sg::base::DataVector& alpha, int dest_rank);
-
 	/**
 	 * sends grid coefficients to all ranks greater zero
 	 * here MPI_Bcast is used.
@@ -66,29 +58,6 @@ public:
 	 * @param alpha grid coefficients that should be sent
 	 */
 	void broadcastGridCoefficientsFromRank0(sg::base::DataVector& alpha);
-
-//	/**
-//	 * sends grid coefficients to all ranks greater zero
-//	 *
-//	 * @param alpha grid coefficients that should be sent
-//	 */
-//	void broadcastGridCoefficients(sg::base::DataVector& alpha);
-
-//	/**
-//	 * receives the grid's coefficients and store them into a pre-allocated sg::base::DataVector
-//	 * Length of this sg::base::DataVector must match message length (not checked!!!)
-//	 *
-//	 * @param alpha sg::base::DataVector into which the received data is stored
-//	 */
-//	void receiveGridCoefficients(sg::base::DataVector& alpha);
-//
-//	/**
-//	 * receives the grid's coefficients from all ranks and add them to alpha
-//	 * Length of this sg::base::DataVector must match message length (not checked!!!)
-//	 *
-//	 * @param alpha sg::base::DataVector to which all other rank's grid coefficients should be added
-//	 */
-//	void aggregateGridCoefficients(sg::base::DataVector& alpha);
 
 	/**
 	 * Reduces the grid coefficients on rank 0 using
@@ -142,20 +111,6 @@ public:
 	 */
 	void broadcastControlFromRank0(char* ctrl);
 
-//	/**
-//	 * sends a control character to all ranks greater the zero
-//	 *
-//	 * @param ctrl Control character that should be sent
-//	 */
-//	void broadcastControl(char ctrl);
-//
-//	/**
-//	 * receives a control character send by rank 0
-//	 *
-//	 * @return the received Control Parameter
-//	 */
-//	char receiveControl();
-
 	/**
 	 * Implements a Barrier for all tasks
 	 */
@@ -178,7 +133,7 @@ public:
 };
 
 }
-}
 
+}
 
 #endif /* MPICOMMUNICATOR_HPP */

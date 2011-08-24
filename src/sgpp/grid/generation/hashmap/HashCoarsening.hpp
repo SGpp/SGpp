@@ -153,6 +153,8 @@ public:
 
 		// Drop Elements from DataVector
 		alpha->restructure(remainingIndex);
+
+		delete[] removePoints;
 	}
 
 	/**

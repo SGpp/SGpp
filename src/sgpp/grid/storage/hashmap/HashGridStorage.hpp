@@ -203,6 +203,12 @@ public:
 	 */
 	void emptyStorage()
 	{
+		// delete all grid points
+		for(grid_list_iterator iter = list.begin(); iter != list.end(); iter++)
+		{
+			delete *iter;
+		}
+
 		// remove all elements from hashmap
 		map.clear();
 		// remove all list entries
