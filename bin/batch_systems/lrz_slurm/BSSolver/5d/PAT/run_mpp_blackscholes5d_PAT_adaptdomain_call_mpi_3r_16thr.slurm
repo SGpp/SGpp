@@ -21,9 +21,9 @@ export I_MPI_PIN_MODE=mpd
 export I_MPI_DEBUG=4
 export PSI_EXPORTS=$PSI_EXPORTS,I_MPI_PIN_MODE,I_MPI_DEBUG
 
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 2 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 3 7 0.000001 coarsen 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 3 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 4 7 0.000001 coarsen 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 4 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 5 7 0.000001 coarsen 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 5 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 6 7 0.000001 coarsen 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 6 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 7 7 0.000001 coarsen 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 7 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 8 7 0.000001 coarsen 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 2 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 3 7 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 3 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 4 7 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 4 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 5 7 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 5 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 6 7 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 6 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 7 7 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 5 7 BStest5d.log.bound BStest5d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 8 7 0.000001 none 0.0000001
