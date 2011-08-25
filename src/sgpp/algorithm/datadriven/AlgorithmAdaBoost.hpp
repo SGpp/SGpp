@@ -62,12 +62,18 @@ namespace datadriven
         double epsilon;
     		/// One label of the DataSet
 		double labelOne;
-    		/// Another label of the DataSet
+		    /// Another label of the DataSet
 		double labelTwo;
-    		/// the actual base learners number for Adaboosting
+    		/// Log of the Max lambda in searching for optimal lambda
+		double lambLogMax;
+     		/// Interval size with logrange used in searching optimal lambda
+		double lambStepsize;
+    		/// Number of iteration in searching for optimal lambda 
+		size_t lambSteps;
+    		/// Actual base learners number for Adaboosting
 		size_t actualBaseLearners;
             /**
-             * Performs a hypothesis classifer
+             * Performs a hypothesis classifier
 			 *
 			 * @param realvalue real value of function 
              */
@@ -89,7 +95,7 @@ namespace datadriven
 					return labelOne;
 			}
 		};
-    
+
     public:
 
             /**
@@ -104,8 +110,11 @@ namespace datadriven
              * @param eps the parameter for ConjugateGradients
              * @param firstLabel one label from training dataset
 			 * @param secondLabel another label from training dataset
+			 * @param maxLambda the max lambda used in searching optimal lambda
+			 * @param minLambda the min lambda used in searching optimal lambda
+			 * @param searchNum the searching times used in searching for optimal lambda
              */
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel);
+        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum);
         
 
             /**
@@ -118,10 +127,11 @@ namespace datadriven
 			 *
 			 * @param storageAlpha the matrix to store alpha for each different weights
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
+			 * @param weightError the vector to store the weight error of each iteration
 			 * @param weights the matrix to store weights of every training date for every weak learner
 			 * @param decision the matrix to store the decision right or not according to the true class
              */
-        void doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision);
+        void doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision);
 
             /**
              * Performs a real value calculate for the testing dataset
