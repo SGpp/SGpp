@@ -44,6 +44,8 @@ EXT=NO
 JOBS=2
 # Default residual threshold
 SLE_RES_THRESH=-1.0
+# Default number of parallel dimensions for the parallelization of the recursive up down scheme
+UPDOWN_PARADIMS=4
 
 ###################################################################
 # Compiler Flags
@@ -129,6 +131,7 @@ endif
 endif
 
 CFLAGS:=$(CFLAGS) -DDEFAULT_RES_THRESHOLD=$(SLE_RES_THRESH)
+CFLAGS:=$(CFLAGS) -DTASKS_PARALLEL_UPDOWN=$(UPDOWN_PARADIMS)
 
 ###################################################################
 # Builds a lib containing all SG Algorithms

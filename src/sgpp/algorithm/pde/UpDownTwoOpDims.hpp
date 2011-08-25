@@ -15,6 +15,10 @@
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"
 
+#ifndef TASKS_PARALLEL_UPDOWN
+#define TASKS_PARALLEL_UPDOWN 4
+#endif
+
 namespace sg
 {
 namespace pde
@@ -95,7 +99,7 @@ protected:
 	/// number of algorithmic dimensions
 	const size_t numAlgoDims_;
 	/// max number of parallel stages (dimension recursive calls)
-	static const size_t maxParallelDims_ = 3;
+	static const size_t maxParallelDims_ = TASKS_PARALLEL_UPDOWN;
 
 	/**
 	 * Recursive procedure for updown, parallel version using OpenMP 3
