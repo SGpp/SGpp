@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -o /home/cluster/t1207/lu28mec/SGpp/bin/blackscholes3d_PAT_reg_call_20_steps_omp_mpp.%j.out
+#SBATCH -o /home/cluster/t1207/lu28mec/SGpp/bin/blackscholes3d_stretch_reg_call_omp_mpp.%j.out
 #SBATCH -D /home/cluster/t1207/lu28mec/SGpp/bin
-#SBATCH -J blackscholes3d_PAT_reg_call_20_steps_omp_mpp
+#SBATCH -J blackscholes3d_stretch_reg_call_omp_mpp
 #SBATCH --partition mpp1_batch
 #SBATCH --nodes=1-1
 #SBATCH --mail-type=end
@@ -17,4 +17,4 @@ module load ccomp/intel/12.0
 
 export OMP_NUM_THREADS=16
 
-./BSSolver solveNDanalyze PAT 3 3 13 BStest3d.log.bound BStest3d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 8000 0.00001 BStest3d.analyze
+./BSSolverWithStretching solveNDanalyze cart 3 3 13 BStest3d.cart.bound BStest3d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 8000 0.000001 BStest3d.analyze analytic BStest3d.stretching
