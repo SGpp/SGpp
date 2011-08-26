@@ -17,4 +17,4 @@ module load ccomp/intel/12.0
 
 export OMP_NUM_THREADS=16
 
-./BSSolver solveNDanalyze log 2 3 14 BStest2d.log.bound BStest2d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 8000 0.00001 BStest2d.analyze
+./BSSolver solveNDanalyze log 2 3 14 BStest2d.log.bound BStest2d.stoch 1.0 std_euro_call 0.05 1.0 0.05 CrNic 8000 0.000001 BStest2d.analyze
