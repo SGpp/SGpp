@@ -89,11 +89,6 @@ vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means 
 vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
 vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
 
-# for building Java support (jsgpp lib)
-vars.Add('JSGPP', 'Build jsgpp if set to True', False)
-#vars.Add('JNI_CPPPATH', 'Path to JNI includes', None)
-#vars.Add('JNI_OS', 'JNI os path', None)
-
 # for compiling on LRZ without errors: omit unit tests
 vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
 
@@ -106,9 +101,11 @@ vars.Add('SG_FINANCE', 'Build Finance Module', False)
 vars.Add('SG_PDE', 'Build PDE Module', False)
 vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
 vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
-vars.Add('SG_PYTHON', 'Build Python Support', True)
+vars.Add('SG_PYTHON', 'Build Python Support', False)
+vars.Add('SG_JAVA', 'Build Java Support', False)
 moduleList = ['SG_BASE', 'SG_DATADRIVEN', 'SG_SOLVER', 'SG_FINANCE',
               'SG_PDE', 'SG_PARALLEL', 'SG_COMBIGRID']
+supportList = ['SG_PYTHON', 'SG_JAVA']
 
 # initialize environment
 env = Environment(variables = vars, ENV = os.environ)
@@ -235,32 +232,55 @@ env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 # Decide what to compile
 #########################################################################
 
+# for clean enable everything:
+if env.GetOption('clean'):
+    for entry in moduleList+supportList:
+        env[entry] = True
+
+# SG_ALL activates all modules and Python 
+if env['SG_ALL']:
+    for entry in moduleList + supportList:
+        env[entry] = True
+
 # compile all if nothing set
 anyModl = False
 for modl in moduleList:
     if env[modl]:
         print "Compiling module", modl
-    anyModl = anyModl or env[modl]
+        anyModl = True
 if not anyModl:
     print "Compiling all modules..."
-    env['SG_ALL'] = True
-    env['SG_PYTHON'] = True
+    for modl in moduleList:
+        env[modl] = True
+# support for non-C++
+anySup = False
+for sup in supportList:
+    if env[sup]:
+        print "Compiling support for", sup
+        anySup = True
+# if nothing set (no module, no support), enable both JAVA and Python
+if not anySup and not anyModl:
+    print "Compiling all support..."
+    for sup in supportList:
+        env[sup] = True
 
-# boolean variables for environment 
-if env['SG_PYTHON'] or env['SG_ALL']:
-    pyAvail = True
-    swigAvail = True
-    javaAvail = True
-else:
-    pyAvail = False
-    swigAvail = False
-    javaAvail = False
+# add C++ defines for all modules
+cppdefines = []
+for modl in moduleList:
+    if env[modl]:
+        cppdefines.append(modl)
+env.Append(CPPDEFINES=cppdefines)
 
 
 # Initialize environment + support for Python and Java
 #########################################################################
-if not env.GetOption('clean'):
+# boolean variables for environment 
+pyAvail = True
+swigAvail = True
+javaAvail = True
 
+# no checks if clean:
+if not env.GetOption('clean'):
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
 
@@ -314,36 +334,13 @@ if not env.GetOption('clean'):
         if not config.CheckLib('iomp5'):
             print "Error: Intel omp library iomp5 is missing."
             Exit(1)
-               
+
     # check if the the intel vector lib is available
     if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC']:
         if not config.CheckLib('svml'):
             print "SVML should be available when using intelc. Consider runnning scons --config=force!"
-            
+
     env = config.Finish()
-
-
-
-
-# Gather modules
-#########################################################################
-
-if env['SG_ALL']:
-    env['SG_BASE'] = env['SG_PDE'] = env['SG_DATADRIVEN'] = env['SG_SOLVER'] = \
-                     env['SG_FINANCE'] = env['SG_PARALLEL'] = env['SG_COMBIGRID'] = \
-                     env['SG_PYTHON'] = True
-
-cppdefines = []
-if env['SG_BASE']: cppdefines +=['SG_BASE']
-if env['SG_PDE']: cppdefines +=['SG_PDE']
-if env['SG_DATADRIVEN']: cppdefines +=['SG_DATADRIVEN']
-if env['SG_SOLVER']: cppdefines +=['SG_SOLVER']
-if env['SG_FINANCE']: cppdefines +=['SG_FINANCE']
-if env['SG_PARALLEL']: cppdefines +=['SG_PARALLEL']
-if env['SG_COMBIGRID']: cppdefines +=['SG_COMBIGRID']
-env.Append(CPPDEFINES=cppdefines)
-
-
 
 
 # End of configuration
@@ -414,7 +411,7 @@ if env['SG_PYTHON'] and swigAvail and pyAvail:
 	Depends(pybin, libpysgpp)
     
 # build java lib
-if swigAvail and javaAvail and env['JSGPP']:
+if swigAvail and javaAvail and env['SG_JAVA']:
     libjsgpp = env.SConscript('src/jsgpp/SConscript',
                               build_dir='tmp/build_jsgpp', duplicate=0)
 #    libweka = env.SConscript('src/jsgpp_weka/SConscript',
@@ -425,14 +422,13 @@ if swigAvail and javaAvail and env['JSGPP']:
 env.Install('#lib/sgpp', lib_sgpp_targets)
 
 
-
 # Unit tests
 #########################################################################
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail:
     testdep = env.SConscript('tests/SConscript')
     # execute after all installations (even where not necessary)
-    if javaAvail and env['JSGPP']:
+    if javaAvail and env['SG_JAVA']:
         Depends(testdep, [jinst, pyinst])
     else:
         Depends(testdep, [pyinst])
