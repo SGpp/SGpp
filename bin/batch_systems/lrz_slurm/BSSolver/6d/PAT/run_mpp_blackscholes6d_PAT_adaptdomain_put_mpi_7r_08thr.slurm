@@ -26,4 +26,3 @@ srun_ps -v -t 8 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 3 BStest6d.log.
 srun_ps -v -t 8 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 4 BStest6d.log.bound BStest6d.stoch 1.0 std_euro_put 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 4 8 0.000001 none 0.0000001
 srun_ps -v -t 8 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 5 BStest6d.log.bound BStest6d.stoch 1.0 std_euro_put 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 5 8 0.000001 none 0.0000001
 srun_ps -v -t 8 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 6 BStest6d.log.bound BStest6d.stoch 1.0 std_euro_put 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 6 8 0.000001 none 0.0000001
-srun_ps -v -t 8 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 7 BStest6d.log.bound BStest6d.stoch 1.0 std_euro_put 0.05 1.0 0.05 CrNic 180 0.000001 maxLevel 7 8 0.000001 none 0.0000001
