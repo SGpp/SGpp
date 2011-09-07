@@ -188,7 +188,7 @@ int readStochasticData(std::string tFile, size_t numAssets, DataVector& mu, Data
 		t++;
 	} while (!file.eof());
 	file.close();
-	if (t < (numAssets*(numAssets+2))+1)
+	if (t < ((numAssets*numAssets)+2*numAssets))
 	{
 		std::cout << "Invalid stoch file: " << tFile << " Last Value:" << test << std::endl;
 		return -1;
@@ -245,7 +245,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets, sg::base::DimensionB
 		j++;
 	} while (!file.eof());
 	file.close();
-	if (j < (numAssets*2)+1)
+	if (j < (numAssets*2))
 	{
 		std::cout << "Invalid boundary file: " << tFile << " Last Value:" << test << std::endl;
 		return -1;
@@ -301,7 +301,7 @@ int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoun
 		j++;
 	} while (!file.eof());
 	file.close();
-	if (j < ((numAssets*2)+1)+1)
+	if (j < ((numAssets*2)+1))
 	{
 		std::cout << "Invalid analyze file: " << tFile << " Last Value:" << test << std::endl;
 		return -1;
