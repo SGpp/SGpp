@@ -235,7 +235,7 @@ int readStochasticData(std::string tFile, size_t numAssets, DataVector& mu, Data
 		t++;
 	} while (!file.eof());
 	file.close();
-	if (t < ((numAssets*numAssets)+2*numAssets))
+	if (t < ((numAssets*numAssets)+(2*numAssets)))
 	{
 		std::cout << "Invalid stoch file: " << tFile << " Last Value:" << test << std::endl;
 		return -1;
