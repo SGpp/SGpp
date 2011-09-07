@@ -33,6 +33,11 @@ void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha)
 	}
 }
 
+void MPICommunicator::reduceGridCoefficients(sg::base::DataVector& alpha)
+{
+	MPI_Allreduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+}
+
 void MPICommunicator::sendGrid(std::string& serialized_grid, int dest_rank)
 {
 	int nChars = (int)serialized_grid.length();

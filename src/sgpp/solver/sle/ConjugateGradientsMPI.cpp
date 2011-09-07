@@ -26,18 +26,21 @@ ConjugateGradientsMPI::~ConjugateGradientsMPI()
 
 void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
-	if (myGlobalMPIComm->getMyRank() != 0)
-	{
-		this->waitForTask(SystemMatrix, alpha);
-	}
-	else
-	{
+	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
+	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(b);
+
+//	if (myGlobalMPIComm->getMyRank() != 0)
+//	{
+//		this->waitForTask(SystemMatrix, alpha);
+//	}
+//	else
+//	{
 		if (verbose == true)
 		{
 			std::cout << "Starting Conjugated Gradients" << std::endl;
 		}
 
-		char ctrl = 'M';
+//		char ctrl = 'M';
 		// needed for residuum calculation
 		double epsilonSquared = this->myEpsilon*this->myEpsilon;
 		// number off current iterations
@@ -63,8 +66,8 @@ void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::b
 		{
 			q.setAll(0.0);
 
-			ctrl = 'M';
-			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
+//			ctrl = 'M';
+//			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 			SystemMatrix.mult(q, temp);
 
 			r.sub(temp);
@@ -76,8 +79,8 @@ void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::b
 		}
 
 		// calculate the starting residuum
-		ctrl = 'M';
-		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
+//		ctrl = 'M';
+//		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 		SystemMatrix.mult(alpha, temp);
 
 		r.sub(temp);
@@ -103,8 +106,8 @@ void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::b
 		while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold))
 		{
 			// q = A*d
-			ctrl = 'M';
-			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
+//			ctrl = 'M';
+//			myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 			SystemMatrix.mult(d, q);
 
 			// a = d_new / d.q
@@ -117,8 +120,8 @@ void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::b
 			if ((this->nIterations % 50) == 0)
 			{
 				// r = b - A*x
-				ctrl = 'M';
-				myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
+//				ctrl = 'M';
+//				myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 				SystemMatrix.mult(alpha, temp);
 
 				r.copyFrom(b);
@@ -151,15 +154,15 @@ void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::b
 
 		this->residuum = delta_new;
 
-		ctrl = 'T';
-		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
+//		ctrl = 'T';
+//		myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
 
 		if (verbose == true)
 		{
 			std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations << ")" << std::endl;
 			std::cout << "Final norm of residuum: " << delta_new << std::endl;
 		}
-	}
+//	}
 }
 
 void ConjugateGradientsMPI::waitForTask(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha)

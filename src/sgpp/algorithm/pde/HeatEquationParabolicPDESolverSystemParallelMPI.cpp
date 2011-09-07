@@ -185,7 +185,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::startTimestep()
 void HeatEquationParabolicPDESolverSystemParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	// distribute the current grid coefficients
-	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
+	//myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
 	result.setAll(0.0);
 
@@ -252,7 +252,8 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::mult(sg::base::DataVector&
 	}
 
 	// aggregate all results
-	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
+	//myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
+	myGlobalMPIComm->reduceGridCoefficients(result);
 }
 
 sg::base::DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS()
