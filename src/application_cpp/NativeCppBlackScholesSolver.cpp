@@ -294,7 +294,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets, sg::base::DimensionB
 	file.close();
 	if (j < (numAssets*2)+1)
 	{
-		std::cout << "Invalid boundary file: " << tFile << " Last Value:" << test << std::endl;
+		std::cout << "Invalid boundary file (j=" << j << "): " << tFile << " Last Value:" << test << std::endl;
 		return -1;
 	}
 
