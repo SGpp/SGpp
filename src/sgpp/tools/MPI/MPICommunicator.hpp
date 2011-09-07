@@ -68,6 +68,14 @@ public:
 	void reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha);
 
 	/**
+	 * Reduces the grid coefficients on of all ranks and all ranks using
+	 * MPI's reduce routine
+	 *
+	 * @param alpha sg::base::DataVector to which all other rank's grid coefficients should be added
+	 */
+	void reduceGridCoefficients(sg::base::DataVector& alpha);
+
+	/**
 	 * sends a serialized grid to a specific rank
 	 *
 	 * @param serialized_grid serialized grid that should be sent

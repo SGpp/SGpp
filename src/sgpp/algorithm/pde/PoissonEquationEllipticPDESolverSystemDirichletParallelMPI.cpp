@@ -109,12 +109,13 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
 void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	// distribute the current grid coefficients
-	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
+	//myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
 	this->applyLOperatorInner(alpha, result);
 
 	// aggregate all results
-	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
+	//myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
+	myGlobalMPIComm->reduceGridCoefficients(result);
 }
 
 sg::base::DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS()

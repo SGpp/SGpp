@@ -163,7 +163,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::applyMassMatrix
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	// distribute the current grid coefficients
-	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
+	//myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
 	result.setAll(0.0);
 
@@ -235,7 +235,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::mult(sg::base::
 	}
 
 	// aggregate all results
-	myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
+	//myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
+	myGlobalMPIComm->reduceGridCoefficients(result);
 }
 
 sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS()
