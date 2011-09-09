@@ -332,7 +332,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 			delete[] myAreaBoundaries;
 			delete myGridArea;
 		}
-		myBSHWSolver->printGrid(*alpha, 30, ("payoffBSHW.level_"+level_string.str()+".gnuplot"));
+		myBSHWSolver->printGrid(*alpha, 21, ("payoffBSHW.level_"+level_string.str()+".gnuplot"));
 		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.level_"+level_string.str()+".gnuplot", true);
 		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.level_"+level_string.str()+".gnuplot", false);
 		//myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
@@ -353,17 +353,23 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 		int count=0;
 		double dt_outerCall = stepsize_general*static_cast<double>(timesteps_innerCall);
 		double t_local = 0.0;
+
+
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		myStopwatch->start();
+
 		for (int i=0; i<T/dt_outerCall; i++)
 		{
-		theta=calculatetheta(a, sigma, T, t_local);
-		myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
-		myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
-		count=count+1;
-		t_local += dt_outerCall;
+			theta=calculatetheta(a, sigma, T, t_local);
+			myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
+			myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations, CGepsilon, *alpha, false, false, 20);
+			count=count+1;
+			t_local += dt_outerCall;
 
-		std::cout << "solved at t = " << t_local << " of T = " << T << std::endl;
-
+			std::cout << "solved at t = " << t_local << " of T = " << T << std::endl;
 	    }
+		double neededTime = myStopwatch->stop();
+		std::cout << "Time to solve in total: " << neededTime << " seconds" << std::endl;
 	}
 	else
 	{
@@ -373,7 +379,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSHWSolver->printGrid(*alpha, 42, "solvedBSHW.level_"+level_string.str()+".gnuplot");
+		myBSHWSolver->printGrid(*alpha, 21, "solvedBSHW.level_"+level_string.str()+".gnuplot");
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.level_"+level_string.str()+".gnuplot", true);
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.level_"+level_string.str()+".gnuplot", false);
 		/*if (isLogSolve == true)
@@ -646,7 +652,7 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 			delete[] myAreaBoundaries;
 			delete myGridArea;
 		}
-		myBSHWSolver->printGrid(*alpha, 30, "payoffBSHW.adaptive.gnuplot");
+		myBSHWSolver->printGrid(*alpha, 21, "payoffBSHW.adaptive.gnuplot");
 		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.adaptive.gnuplot", true);
 		myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.adaptive.gnuplot", false);
 		//myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
@@ -656,6 +662,7 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 			myBSHWSolver->printSparseGridExpTransform(*alpha, "payoffBSHW_nodal_cart.grid.adaptive.gnuplot", false);
 		}
 	}
+
 
 	// Set stochastic data
 	//myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
@@ -667,6 +674,10 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 		int count=0;
 		double dt_outerCall = stepsize_general*static_cast<double>(timesteps_innerCall);
 		double t_local = 0.0;
+
+		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		myStopwatch->start();
+
 		for (int i=0; i<T/dt_outerCall; i++)
 		{
 		theta=calculatetheta(a, sigma, T, t_local);
@@ -676,6 +687,9 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 		t_local += dt_outerCall;
 		std::cout << "solved at t = " << t_local << " of T = " << T << std::endl;
 	    }
+
+		double neededTime = myStopwatch->stop();
+		std::cout << "Time to solve in total: " << neededTime << " seconds" << std::endl;
 	}
 	else
 	{
@@ -685,7 +699,7 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSHWSolver->printGrid(*alpha, 42, "solvedBSHW.gnuplot");
+		myBSHWSolver->printGrid(*alpha, 21, "solvedBSHW.gnuplot");
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.adaptive.gnuplot", true);
 		myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.adaptive.gnuplot", false);
 		/*if (isLogSolve == true)
