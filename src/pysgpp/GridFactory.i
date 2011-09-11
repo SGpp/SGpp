@@ -70,19 +70,6 @@ public:
 
 public:	
 	virtual GridGenerator* createGridGenerator() = 0;
-	//virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
-	//virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset) = 0;
-	//virtual OperationEval* createOperationEval() = 0;
-	//virtual sg::datadriven::OperationTest* createOperationTest() = 0;
-	//virtual OperationMatrix* createOperationLaplace() = 0;
-	//virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
-	//virtual OperationMatrix* createOperationIdentity() = 0;
-	//virtual OperationHierarchisation* createOperationHierarchisation() = 0;
-	//virtual OperationConvert* createOperationConvert() = 0;
-	
-	//virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
-	//virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
-	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
 	virtual Stretching* getStretching();
