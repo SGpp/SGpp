@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef LINEAR_BASE_HPP
 #define LINEAR_BASE_HPP
@@ -45,6 +45,9 @@ public:
 		return std::max(1.0 - fabs((1<<level) * p - index), 0.0);
 	}
 };
+
+  // default type-def (unsigned int for level and index)
+  typedef linear_base<unsigned int, unsigned int> SLinearBase;
 
 }
 }

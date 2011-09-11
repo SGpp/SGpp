@@ -3,7 +3,7 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 
 #ifndef LINEARSTRETCHED_BASE_HPP
@@ -56,6 +56,9 @@ public:
 		return (p-pos0)/(pos1-pos0);
 	}
 };
+
+  // default type-def (unsigned int for level and index)
+  typedef linearstretched_base<unsigned int, unsigned int> SLinearStretchedBase;
 
 }
 }
