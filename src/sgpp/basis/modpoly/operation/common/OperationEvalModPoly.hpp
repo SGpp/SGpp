@@ -45,7 +45,7 @@ protected:
 	/// Pointer to GridStorage object
 	GridStorage* storage;
 	/// Mod Poly Basis object
-	sg::SModPolyBase base;
+  sg::base::SModPolyBase base;
 };
 
 }

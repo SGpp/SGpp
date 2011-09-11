@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Deepak Pandey (pandey@in.tum.de)
 
 #ifndef POLY_BASE_HPP
 #define POLY_BASE_HPP
@@ -239,8 +239,10 @@ private:
 
 };
 
-}
+  // default type-def (unsigned int for level and index)
+  typedef poly_base<unsigned int, unsigned int> SPolyBase;
 
+}
 }
 
 #endif /* POLY_BASE_HPP */

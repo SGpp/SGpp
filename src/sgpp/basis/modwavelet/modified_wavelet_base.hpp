@@ -47,7 +47,8 @@ class modified_wavelet_base
         }
 
 };
-
+  // default type-def (unsigned int for level and index)
+  typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
 }
 }
 

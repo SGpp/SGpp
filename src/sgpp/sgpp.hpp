@@ -8,6 +8,8 @@
 #ifndef SGPP_HPP_
 #define SGPP_HPP_
 
+#include "basis/basis.hpp"
+
 #include "grid/GridStorage.hpp"
 #include "grid/GridDataBase.hpp"
 
@@ -46,7 +48,6 @@
 #include "application/pde/LaserHeatEquationSolver2D.hpp"
 #include "application/pde/PoissonEquationSolver.hpp"
 
-#include "basis/basis.hpp"
 
 
 
@@ -102,26 +103,14 @@
 #include "tools/common/EvalCuboidGenerator.hpp"
 #include "tools/common/EvalCuboidGeneratorForStretching.hpp"
 
-namespace sg
-{
-
-typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
-typedef linear_base<unsigned int, unsigned int> SLinearBase;
-typedef linearstretchedboundaryBase<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
-typedef linearstretched_base<unsigned int, unsigned int> SLinearStretchedBase;
-typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
-typedef poly_base<unsigned int, unsigned int> SPolyBase;
-typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
-typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
-typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
-typedef prewavelet_base<unsigned int, unsigned int> SPrewaveletBase;
-
-typedef AlgorithmDGEMV<SLinearBase> SGridOperationB;
-typedef AlgorithmMultipleEvaluation<SLinearBase> SGridOperationNewB;
-typedef AlgorithmDGEMV<SLinearBoundaryBase> SGridBoundaryOperationB;
-typedef AlgorithmDGEMV<SModLinearBase> SGridModOperationB;
-
-}
+// note pflueged: anyone using this?
+//namespace sg
+//{
+  //typedef AlgorithmDGEMV<base::SLinearBase> SGridOperationB;
+  //typedef AlgorithmMultipleEvaluation<base::SLinearBase> SGridOperationNewB;
+  //typedef AlgorithmDGEMV<base::SLinearBoundaryBase> SGridBoundaryOperationB;
+  //typedef AlgorithmDGEMV<base::SModLinearBase> SGridModOperationB;
+//}
 
 #include "basis/operations_factory.hpp"
 

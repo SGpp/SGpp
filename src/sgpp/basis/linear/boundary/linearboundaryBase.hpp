@@ -86,6 +86,9 @@ public:
 	}
 };
 
+  // default type-def (unsigned int for level and index)
+  typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
+
 }
 }
 

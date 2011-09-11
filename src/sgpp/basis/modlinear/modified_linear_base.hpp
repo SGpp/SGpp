@@ -46,6 +46,8 @@ public:
 	}
 };
 
+  // default type-def (unsigned int for level and index)
+  typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
 }
 }
 
