@@ -201,15 +201,19 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 	if (this->option_type == "std_amer_put")
 	{
 		double current_time = static_cast<double>(this->nExecTimesteps)*this->TimestepSize;
+		DataVector alpha_hier(*this->alpha_complete);
 
 		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+		sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->BoundGrid);
 		myHierarchisation->doDehierarchisation(*this->alpha_complete);
 		size_t dim = this->BoundGrid->getStorage()->dim();
 		sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
 
 		double* coords_val = new double[dim];
+
 		for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
 		{
+			std::vector<double> eval_point;
 			std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
 			std::stringstream coordsStream(coords);
 
@@ -228,23 +232,30 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 			for (size_t j = 0; j < dim; j++)
 			{
 				double inner_tmp = 0.0;
+				double inner_tmp_eval = 0.0;
 				for (size_t l = 0; l < dim; l++)
 				{
-					inner_tmp += this->eigenvecs->get(j, l)*(coords_val[l]-(current_time*this->mu_hat->get(l)));
+					inner_tmp_eval += this->eigenvecs->get(j, l)*(coords_val[l]-(current_time*this->mu_hat->get(l)));
+					inner_tmp += this->eigenvecs->get(j, l)*coords_val[l];
 				}
+				eval_point.push_back(exp(inner_tmp_eval));
 				tmp += exp(inner_tmp);
 			}
 
 			double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);
-			double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*current_time)));
+			double discounted_value = myEval->eval(alpha_hier, eval_point)*exp(((-1.0)*(this->r*current_time)));
 
-			(*this->alpha_complete)[i] = std::max<double>(discounted_value, payoff);
+			if (discounted_value < payoff)
+			{
+				(*this->alpha_complete)[i] = payoff;
+			}
 		}
 		delete[] coords_val;
 
 		myHierarchisation->doHierarchisation(*this->alpha_complete);
 		delete myHierarchisation;
 		delete myBB;
+		delete myEval;
 	}
 
 	// add number of Gridpoints
