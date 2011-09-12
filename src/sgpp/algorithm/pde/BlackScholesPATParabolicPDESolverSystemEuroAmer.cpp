@@ -18,7 +18,7 @@ namespace finance
 {
 
 BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
 			double dStrike, std::string option_type, double r,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
@@ -37,9 +37,10 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
 	this->GridConverter = new sg::base::DirichletGridConverter();
 
-	// set Eigenvalues of covariance matrix
+	// set Eigenvalues, Eigenvector of covariance matrix and mu_hat
 	this->lambda = new sg::base::DataVector(lambda);
 	this->eigenvecs = new sg::base::DataMatrix(eigenvecs);
+	this->mu_hat = new sg::base::DataVector(mu_hat);
 
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 	this->nExecTimesteps = 0;
@@ -140,6 +141,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::~BlackScholesPATParabolicPDESol
 	delete this->alpha_complete_tmp;
 	delete this->lambda;
 	delete this->eigenvecs;
+	delete this->mu_hat;
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -198,6 +200,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 	// check if we are doing an American put -> handle early exercise
 	if (this->option_type == "std_amer_put")
 	{
+		double current_time = static_cast<double>(this->nExecTimesteps)*this->TimestepSize;
+
 		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
 		myHierarchisation->doDehierarchisation(*this->alpha_complete);
 		size_t dim = this->BoundGrid->getStorage()->dim();
@@ -226,19 +230,15 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 				double inner_tmp = 0.0;
 				for (size_t l = 0; l < dim; l++)
 				{
-					inner_tmp += this->eigenvecs->get(j, l)*dblFuncValues[l];
+					inner_tmp += this->eigenvecs->get(j, l)*(dblFuncValues[l]-(current_time*this->mu_hat->get(l)));
 				}
 				tmp += exp(inner_tmp);
 			}
 
 			double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);
-			double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize)));
+			double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*current_time)));
 
-			if (discounted_value < payoff)
-			{
-				(*this->alpha_complete)[i] = payoff;
-			}
-//			(*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0)));
+			(*this->alpha_complete)[i] = std::max<double>(discounted_value, payoff);
 		}
 		delete[] dblFuncValues;
 

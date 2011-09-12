@@ -19,7 +19,7 @@ namespace finance
 {
 
 BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
 			double dStrike, std::string option_type,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
 			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
@@ -36,8 +36,10 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
 	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
-	// set Eigenvalues of covariance matrix
+	// set Eigenvalues, Eigenvector of covariance matrix and mu_hat
 	this->lambda = new sg::base::DataVector(lambda);
+	this->eigenvecs = new sg::base::DataMatrix(eigenvecs);
+	this->mu_hat = new sg::base::DataVector(mu_hat);
 
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim())
@@ -112,6 +114,8 @@ BlackScholesPATParabolicPDESolverSystem::~BlackScholesPATParabolicPDESolverSyste
 	delete this->alpha_complete_old;
 	delete this->alpha_complete_tmp;
 	delete this->lambda;
+	delete this->eigenvecs;
+	delete this->mu_hat;
 }
 
 void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)

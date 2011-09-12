@@ -48,6 +48,7 @@ public:
 	 * @param alpha the ansatzfunctions' coefficients
 	 * @param lambda reference to the lambdas
 	 * @param eigenvecs reference to the eigenvectors of the co-variance matrix
+	 * @param mu_hat reference to transformed drifts and correlation, needed for constraint of American options
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
@@ -63,7 +64,7 @@ public:
 	 * @param refineMaxLevel max. level for refinement during solving
 	 */
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
 			double dStrike, std::string option_type, double r,
 			bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);

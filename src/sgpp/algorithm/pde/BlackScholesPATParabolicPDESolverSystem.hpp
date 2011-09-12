@@ -38,6 +38,8 @@ protected:
 	sg::base::DataVector* lambda;
 	/// Eigenvectors of the covariance matrix
 	sg::base::DataMatrix* eigenvecs;
+	/// Pointer to the mu_hat (transformed drifts and correlation, needed for constraint of American options)
+	sg::base::DataVector* mu_hat;
 	/// use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
 	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -68,6 +70,8 @@ public:
 	 * @param SparseGrid reference to the sparse grid
 	 * @param alpha the ansatzfunctions' coefficients
 	 * @param lambda eigenvalues of the covariance matrix
+	 * @param eigenvecs reference to the eigenvectors of the co-variance matrix
+	 * @param mu_hat reference to transformed drifts and correlation, needed for constraint of American options
 	 * @param TimestepSize the size of one timestep used in the ODE Solver
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
@@ -80,7 +84,7 @@ public:
 	 * @param refineMaxLevel max. level of refinement during solving
 	 */
 	BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-			sg::base::DataMatrix& eigenvecs, double TimestepSize, std::string OperationMode,
+			sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
 			double dStrike, std::string option_type,
 			bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);

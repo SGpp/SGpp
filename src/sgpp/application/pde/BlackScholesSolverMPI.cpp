@@ -484,7 +484,7 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 		else
 		{
 			myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -542,7 +542,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
 		else
 		{
 			myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->r, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->r, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -599,7 +599,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
 		else
 		{
 			myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
