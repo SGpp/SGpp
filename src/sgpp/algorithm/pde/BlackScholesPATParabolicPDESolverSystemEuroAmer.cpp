@@ -207,7 +207,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 		size_t dim = this->BoundGrid->getStorage()->dim();
 		sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
 
-		double* dblFuncValues = new double[dim];
+		double* coords_val = new double[dim];
 		for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
 		{
 			std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
@@ -220,7 +220,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 			{
 				coordsStream >> tmp;
 
-				dblFuncValues[j] = tmp;
+				coords_val[j] = tmp;
 			}
 
 			tmp = 0.0;
@@ -230,7 +230,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 				double inner_tmp = 0.0;
 				for (size_t l = 0; l < dim; l++)
 				{
-					inner_tmp += this->eigenvecs->get(j, l)*(dblFuncValues[l]-(current_time*this->mu_hat->get(l)));
+					inner_tmp += this->eigenvecs->get(j, l)*(coords_val[l]-(current_time*this->mu_hat->get(l)));
 				}
 				tmp += exp(inner_tmp);
 			}
@@ -240,7 +240,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 
 			(*this->alpha_complete)[i] = std::max<double>(discounted_value, payoff);
 		}
-		delete[] dblFuncValues;
+		delete[] coords_val;
 
 		myHierarchisation->doHierarchisation(*this->alpha_complete);
 		delete myHierarchisation;
