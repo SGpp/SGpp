@@ -201,10 +201,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 	if (this->option_type == "std_amer_put")
 	{
 		double current_time = static_cast<double>(this->nExecTimesteps)*this->TimestepSize;
-		DataVector alpha_hier(*this->alpha_complete);
 
 		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
-		sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->BoundGrid);
 		myHierarchisation->doDehierarchisation(*this->alpha_complete);
 		size_t dim = this->BoundGrid->getStorage()->dim();
 		sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
@@ -229,52 +227,18 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 
 			tmp = 0.0;
 
-			// Version 1: Transform Payoff, Transform Option Value
-//			for (size_t j = 0; j < dim; j++)
-//			{
-//				double inner_tmp = 0.0;
-//				double inner_tmp_eval = 0.0;
-//				for (size_t l = 0; l < dim; l++)
-//				{
-//					inner_tmp_eval += this->eigenvecs->get(j, l)*(coords_val[l]-(current_time*this->mu_hat->get(l)));
-//					inner_tmp += this->eigenvecs->get(j, l)*coords_val[l];
-//				}
-//				eval_point_coord.push_back(exp(inner_tmp_eval));
-//				tmp += exp(inner_tmp);
-//			}
-//
-//			std::vector<double> eval_point = eval_point_coord;
-
-			// Version 2: Transform Payoff, transform payoff coordinates back and eval
 			for (size_t j = 0; j < dim; j++)
 			{
 				double inner_tmp = 0.0;
-				double inner_tmp_eval = 0.0;
 				for (size_t l = 0; l < dim; l++)
 				{
-					//inner_tmp_eval += this->eigenvecs->get(j, l)*(coords_val[l]-(current_time*this->mu_hat->get(l)));
-					inner_tmp += this->eigenvecs->get(j, l)*coords_val[l];
+					inner_tmp += this->eigenvecs->get(j, l)*(coords_val[l]-(current_time*this->mu_hat->get(l)));
 				}
-				eval_point_coord.push_back(exp(inner_tmp));
 				tmp += exp(inner_tmp);
 			}
 
-			std::vector<double> eval_point = eval_point_coord;
-
-			for (size_t l = 0; l < dim; l++)
-			{
-				double trans_point = 0.0;
-				for (size_t j = 0; j < dim; j++)
-				{
-					trans_point += (this->eigenvecs->get(j,l)*(log(eval_point_coord[j])));
-				}
-				trans_point += (current_time*this->mu_hat->get(l));
-
-				eval_point[l] = trans_point;
-			}
-
 			double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);
-			double discounted_value = myEval->eval(alpha_hier, eval_point)*exp(((-1.0)*(this->r*current_time)));
+			double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*current_time)));
 
 			if (discounted_value < payoff)
 			{
@@ -286,7 +250,6 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 		myHierarchisation->doHierarchisation(*this->alpha_complete);
 		delete myHierarchisation;
 		delete myBB;
-		delete myEval;
 	}
 
 	// add number of Gridpoints

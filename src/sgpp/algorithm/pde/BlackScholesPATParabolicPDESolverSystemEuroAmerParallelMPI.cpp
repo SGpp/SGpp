@@ -365,7 +365,7 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI
 	// aggregate all results
 	myGlobalMPIComm->reduceGridCoefficientsOnRank0(rhs_complete);
 
-	if (this->useCoarsen == true || this->nExecTimesteps == 0 || this->bnewODESolver == true)
+	if (this->useCoarsen == true || this->nExecTimesteps == 0 || this->bnewODESolver == true || this->option_type == "std_amer_put")
 	{
 		// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
 		sg::base::DataVector result_complete(this->alpha_complete->getSize());

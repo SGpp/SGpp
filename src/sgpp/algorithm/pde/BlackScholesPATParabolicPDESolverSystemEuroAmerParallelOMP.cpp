@@ -337,7 +337,7 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP
 		throw new sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
 	}
 
-	if (this->useCoarsen == true || this->nExecTimesteps == 0 || this->bnewODESolver == true)
+	if (this->useCoarsen == true || this->nExecTimesteps == 0 || this->bnewODESolver == true  || this->option_type == "std_amer_put")
 	{
 		this->bnewODESolver = false;
 
