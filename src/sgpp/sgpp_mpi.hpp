@@ -21,5 +21,4 @@
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
 #include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 
-
 #endif /* SGPP_MPI_HPP */

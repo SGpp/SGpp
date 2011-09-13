@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include <mpi.h>
+#include "sgpp.hpp"
 #include "sgpp_mpi.hpp"
 
 #include <iostream>
