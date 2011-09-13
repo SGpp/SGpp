@@ -367,6 +367,8 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI
 
 	if (this->useCoarsen == true || this->nExecTimesteps == 0 || this->bnewODESolver == true || this->option_type == "std_amer_put")
 	{
+		this->bnewODESolver = false;
+
 		// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
 		sg::base::DataVector result_complete(this->alpha_complete->getSize());
 		sg::base::DataVector alpha_bound(*this->alpha_complete);
@@ -489,14 +491,18 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 		// check if we are doing an American put -> handle early exercise
 		if (this->option_type == "std_amer_put")
 		{
+			double current_time = static_cast<double>(this->nExecTimesteps)*this->TimestepSize;
+
 			sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
 			myHierarchisation->doDehierarchisation(*this->alpha_complete);
 			size_t dim = this->BoundGrid->getStorage()->dim();
 			sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
 
-			double* dblFuncValues = new double[dim];
+			double* coords_val = new double[dim];
+
 			for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
 			{
+				std::vector<double> eval_point_coord;
 				std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
 				std::stringstream coordsStream(coords);
 
@@ -507,7 +513,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 				{
 					coordsStream >> tmp;
 
-					dblFuncValues[j] = tmp;
+					coords_val[j] = tmp;
 				}
 
 				tmp = 0.0;
@@ -517,20 +523,20 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 					double inner_tmp = 0.0;
 					for (size_t l = 0; l < dim; l++)
 					{
-						inner_tmp += this->eigenvecs->get(j, l)*dblFuncValues[l];
+						inner_tmp += this->eigenvecs->get(j, l)*(coords_val[l]-(current_time*this->mu_hat->get(l)));
 					}
 					tmp += exp(inner_tmp);
 				}
 
 				double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);
-				double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize)));
+				double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*current_time)));
 
 				if (discounted_value < payoff)
 				{
 					(*this->alpha_complete)[i] = payoff;
 				}
 			}
-			delete[] dblFuncValues;
+			delete[] coords_val;
 
 			myHierarchisation->doHierarchisation(*this->alpha_complete);
 			delete myHierarchisation;
