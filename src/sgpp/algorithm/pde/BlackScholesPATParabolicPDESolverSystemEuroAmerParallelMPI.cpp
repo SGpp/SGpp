@@ -367,7 +367,7 @@ sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI
 
 	if (this->useCoarsen == true || this->nExecTimesteps == 0 || this->bnewODESolver == true || this->option_type == "std_amer_put")
 	{
-		this->bnewODESolver = false;
+		//this->bnewODESolver = false;
 
 		// Now apply the boundary ansatzfunctions to the inner ansatzfunctions
 		sg::base::DataVector result_complete(this->alpha_complete->getSize());
