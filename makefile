@@ -128,6 +128,9 @@ ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -openmp
 LFLAGS:=$(LFLAGS) -openmp
 endif
+ifeq ($(TR1),1)
+CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+endif
 endif
 
 CFLAGS:=$(CFLAGS) -DDEFAULT_RES_THRESHOLD=$(SLE_RES_THRESH)

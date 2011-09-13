@@ -18,6 +18,7 @@
 #define NUMEVALPOINTS 11
 
 #include <mpi.h>
+#include "sgpp.hpp"
 #include "sgpp_mpi.hpp"
 
 #include <cstdlib>
