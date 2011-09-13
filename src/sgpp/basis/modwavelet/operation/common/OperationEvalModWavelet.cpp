@@ -8,7 +8,7 @@
 #include "basis/basis.hpp"
 #include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
 
-#include "sgpp.hpp"
+#include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
 #include "data/DataVector.hpp"
 

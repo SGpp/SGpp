@@ -5,7 +5,6 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.hpp"
 #include "exception/operation_exception.hpp"
 #include "tools/common/AlignedMemory.hpp"

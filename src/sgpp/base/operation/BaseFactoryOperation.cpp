@@ -12,9 +12,8 @@
 #include "exception/factory_exception.hpp"
 
 #include "grid/type/PolyGrid.hpp"
-#include "grid/type/PrewaveletGrid.hpp"
-#include "grid/type/PolyGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
+#include "grid/type/PrewaveletGrid.hpp"
 #include "grid/type/ModBsplineGrid.hpp"
 
 #include "basis/linear/noboundary/operation/common/OperationHierarchisationLinear.hpp"
@@ -90,16 +89,15 @@ namespace GOperationFactory
       {
         return new base::OperationHierarchisationLinearStretchedBoundary(grid.getStorage());
       }
-
-    else if(strcmp(grid.getType(), "poly") == 0 )
-      {
-        return new base::OperationHierarchisationPoly(grid.getStorage(),
-                                                ((base::PolyGrid*) &grid)->getDegree());
-      }
+//    else if(strcmp(grid.getType(), "poly") == 0 )
+//      {
+//        return new base::OperationHierarchisationPoly(grid.getStorage(),
+//                                                      ((base::PolyGrid*) &grid)->getDegree());
+//      }
     else if(strcmp(grid.getType(), "modpoly") == 0 )
       {
         return new base::OperationHierarchisationModPoly(grid.getStorage(),
-                                                   ((base::ModPolyGrid*) &grid)->getDegree());
+                                                         ((base::ModPolyGrid*) &grid)->getDegree());
       }
     else if(strcmp(grid.getType(), "prewavelet") == 0 )
       {

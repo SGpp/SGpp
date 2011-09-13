@@ -3,10 +3,11 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Kilian Roehner (roehner@tum.de)
+// @author Kilian Roehner (roehner@tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
+#include "basis/modpoly/modified_poly_base.hpp"
 
 #include <cmath>
 

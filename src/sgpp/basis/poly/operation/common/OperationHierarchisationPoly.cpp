@@ -5,15 +5,11 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-// #include "basis/poly/poly_base.hpp"
-#include "sgpp.hpp"
-
-#include "basis/basis.hpp"
 #include "basis/poly/operation/common/OperationHierarchisationPoly.hpp"
+
 #include "basis/poly/algorithm_sweep/HierarchisationPoly.hpp"
 #include "basis/poly/algorithm_sweep/DehierarchisationPoly.hpp"
 
-#include "data/DataVector.hpp"
 #include "algorithm/common/sweep.hpp"
 
 namespace sg

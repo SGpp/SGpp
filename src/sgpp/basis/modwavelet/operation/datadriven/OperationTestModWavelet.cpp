@@ -7,10 +7,9 @@
 
 #include "basis/basis.hpp"
 #include "basis/modwavelet/operation/datadriven/OperationTestModWavelet.hpp"
+#include "basis/modwavelet/modified_wavelet_base.hpp"
 
-#include "sgpp.hpp"
-
-#include "data/DataVector.hpp"
+#include "algorithm/datadriven/test_dataset.hpp"
 
 #include "exception/operation_exception.hpp"
 
@@ -19,23 +18,23 @@ namespace sg
 namespace datadriven
 {
 
-double OperationTestModWavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
-{
-	modified_wavelet_base<unsigned int, unsigned int> base;
-	return test_dataset(this->storage, base, alpha, data, classes);
-}
+  double OperationTestModWavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
+  {
+    base::modified_wavelet_base<unsigned int, unsigned int> base;
+    return test_dataset(this->storage, base, alpha, data, classes);
+  }
 
-double OperationTestModWavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
-{
-	modified_wavelet_base<unsigned int, unsigned int> base;
-	return test_dataset_mse(this->storage, base, alpha, data, refValues);
-}
+  double OperationTestModWavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
+  {
+    base::modified_wavelet_base<unsigned int, unsigned int> base;
+    return test_dataset_mse(this->storage, base, alpha, data, refValues);
+  }
 
-double OperationTestModWavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
-{
-	modified_wavelet_base<unsigned int, unsigned int> base;
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
-}
+  double OperationTestModWavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
+  {
+    base::modified_wavelet_base<unsigned int, unsigned int> base;
+    return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+  }
 
 }
 }

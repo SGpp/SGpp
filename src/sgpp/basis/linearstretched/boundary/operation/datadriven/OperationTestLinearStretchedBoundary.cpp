@@ -5,13 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
-
-#include "basis/basis.hpp"
+#include "basis/linear/boundary/linearboundaryBase.hpp"
+#include "algorithm/datadriven/test_dataset.hpp"
 
 #include "basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.hpp"
-
-#include "data/DataVector.hpp"
 
 
 namespace sg
@@ -19,23 +16,23 @@ namespace sg
 namespace datadriven
 {
 
-double OperationTestLinearStretchedBoundary::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
-{
-	linearboundaryBase<unsigned int, unsigned int> base;
-	return test_dataset(this->storage, base, alpha, data, classes);
-}
+  double OperationTestLinearStretchedBoundary::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
+  {
+    base::linearboundaryBase<unsigned int, unsigned int> base;
+    return test_dataset(this->storage, base, alpha, data, classes);
+  }
 
-double OperationTestLinearStretchedBoundary::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
-{
-	linearboundaryBase<unsigned int, unsigned int> base;
-	return test_dataset_mse(this->storage, base, alpha, data, refValues);
-}
+  double OperationTestLinearStretchedBoundary::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
+  {
+    base::linearboundaryBase<unsigned int, unsigned int> base;
+    return test_dataset_mse(this->storage, base, alpha, data, refValues);
+  }
 
-double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
-{
-	linearboundaryBase<unsigned int, unsigned int> base;
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
-}
+  double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
+  {
+    base::linearboundaryBase<unsigned int, unsigned int> base;
+    return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+  }
 
 }
 }

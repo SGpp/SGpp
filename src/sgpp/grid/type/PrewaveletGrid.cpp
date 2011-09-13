@@ -36,7 +36,6 @@
 
 #include "exception/factory_exception.hpp"
 
-#include "sgpp.hpp"
 
 
 

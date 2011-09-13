@@ -13,8 +13,8 @@
 
 #include "grid/generation/BoundaryGridGenerator.hpp"
 #include "grid/GridStorage.hpp"
-
-#include "sgpp.hpp"
+#include "grid/generation/SquareRootGridGenerator.hpp"
+#include "grid/generation/hashmap/HashGenerator.hpp"
 
 namespace sg
 {

@@ -27,7 +27,6 @@
 #include "basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp"
 #include "basis/prewavelet/operation/common/OperationConvertPrewavelet.hpp"
 
-#include "sgpp.hpp"
 
 #include "algorithm/common/sweep.hpp"
 

@@ -11,44 +11,45 @@
 #include "operation/datadriven/OperationTest.hpp"
 #include "grid/GridStorage.hpp"
 
-#include "sgpp.hpp"
+#include "basis/modbspline/modified_bspline_base.hpp"
+
 
 namespace sg
 {
 namespace datadriven
 {
 
-/**
- * This class implements OperationTest for a grids with modified bspline basis functions with a certain degree
- *
- * @version $HEAD$
- */
-class OperationTestModBspline : public OperationTest
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's sg::base::GridStorage object
-	 * @param degree the bspline's degree
-	 */
-	OperationTestModBspline(sg::base::GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+  /**
+   * This class implements OperationTest for a grids with modified bspline basis functions with a certain degree
+   *
+   * @version $HEAD$
+   */
+  class OperationTestModBspline : public OperationTest
+  {
+  public:
+    /**
+     * Constructor
+     *
+     * @param storage the grid's base::GridStorage object
+     * @param degree the bspline's degree
+     */
+    OperationTestModBspline(base::GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationTestModBspline() {}
+    /**
+     * Destructor
+     */
+    virtual ~OperationTestModBspline() {}
 
-	virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
-	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
+    virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
+    virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
+    virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers);
 
-protected:
-	/// Pointer to sg::base::GridStorage object
-	sg::base::GridStorage* storage;
-	/// Mod Bspline Basis object
-	SModBsplineBase base;
-};
+  protected:
+    /// Pointer to base::GridStorage object
+    base::GridStorage* storage;
+    /// Mod Bspline Basis object
+    base::SModBsplineBase base;
+  };
 
 }
 }

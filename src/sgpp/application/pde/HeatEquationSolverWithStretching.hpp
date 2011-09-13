@@ -8,7 +8,6 @@
 #ifndef HEATEQUATIONSOLVERWITHSTRETCHING_HPP
 #define HEATEQUATIONSOLVERWITHSTRETCHING_HPP
 
-#include "sgpp.hpp"
 
 #include "application/pde/ParabolicPDESolver.hpp"
 

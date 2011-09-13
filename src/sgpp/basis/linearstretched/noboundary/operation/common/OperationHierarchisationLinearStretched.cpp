@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 
-#include "sgpp.hpp"
 
 #include "basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.hpp"
 #include "basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.hpp"

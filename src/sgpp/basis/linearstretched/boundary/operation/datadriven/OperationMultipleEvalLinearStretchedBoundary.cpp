@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
+#include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
 #include "basis/basis.hpp"
 

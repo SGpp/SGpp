@@ -10,7 +10,9 @@
 
 #include "exception/generation_exception.hpp"
 
-#include "sgpp.hpp"
+#include "grid/generation/hashmap/HashCoarsening.hpp"
+#include "grid/generation/hashmap/HashRefinement.hpp"
+#include "grid/generation/hashmap/HashGenerator.hpp"
 
 namespace sg
 {

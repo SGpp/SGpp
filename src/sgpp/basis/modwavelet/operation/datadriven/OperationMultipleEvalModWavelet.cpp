@@ -8,7 +8,7 @@
 #include "basis/basis.hpp"
 #include "basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.hpp"
 
-#include "sgpp.hpp"
+#include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"

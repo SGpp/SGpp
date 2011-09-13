@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
+#include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
 #include "basis/basis.hpp"
 

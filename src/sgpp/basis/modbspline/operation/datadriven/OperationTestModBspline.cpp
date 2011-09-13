@@ -5,12 +5,10 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "sgpp.hpp"
-
-#include "basis/basis.hpp"
 #include "basis/modbspline/operation/datadriven/OperationTestModBspline.hpp"
 
 #include "exception/operation_exception.hpp"
+#include "algorithm/datadriven/test_dataset.hpp"
 
 #include "data/DataVector.hpp"
 
@@ -19,20 +17,20 @@ namespace sg
 namespace datadriven
 {
 
-double OperationTestModBspline::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
-{
-	return test_dataset(this->storage, base, alpha, data, classes);
-}
+  double OperationTestModBspline::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
+  {
+    return test_dataset(this->storage, base, alpha, data, classes);
+  }
 
-double OperationTestModBspline::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
-{
-	return test_dataset_mse(this->storage, base, alpha, data, refValues);
-}
+  double OperationTestModBspline::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
+  {
+    return test_dataset_mse(this->storage, base, alpha, data, refValues);
+  }
 
-double OperationTestModBspline::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
-{
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
-}
+  double OperationTestModBspline::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
+  {
+    return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+  }
 
 }
 }

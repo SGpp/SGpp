@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#include "sgpp.hpp"
+#include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
 #include "basis/basis.hpp"
 #include "basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.hpp"

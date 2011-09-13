@@ -3,15 +3,15 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef OPERATIONEVALMODPOLY_HPP
 #define OPERATIONEVALMODPOLY_HPP
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
-
-#include "sgpp.hpp"
+#include "basis/modpoly/modified_poly_base.hpp"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

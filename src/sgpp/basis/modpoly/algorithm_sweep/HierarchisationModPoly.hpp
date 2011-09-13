@@ -10,8 +10,7 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-
-#include "sgpp.hpp"
+#include "basis/modpoly/modified_poly_base.hpp"
 
 namespace sg
 {

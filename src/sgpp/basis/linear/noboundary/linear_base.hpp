@@ -17,8 +17,7 @@ namespace base
 {
 
 /**
- * linear base functions.
- * And here we have another implicit dependence on tensor products
+ * Piecewise linear basis functions.
  */
 template<class LT, class IT>
 class linear_base

@@ -3,15 +3,11 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "sgpp.hpp"
-
-#include "basis/basis.hpp"
 #include "basis/poly/operation/common/OperationEvalPoly.hpp"
 
-#include "data/DataVector.hpp"
-
+#include "algorithm/common/GetAffectedBasisFunctions.hpp"
 #include "exception/operation_exception.hpp"
 
 namespace sg

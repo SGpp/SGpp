@@ -5,12 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
-
-#include "basis/basis.hpp"
 #include "basis/poly/operation/datadriven/OperationTestPoly.hpp"
 
-#include "data/DataVector.hpp"
+#include "algorithm/datadriven/test_dataset.hpp"
 
 #include "exception/operation_exception.hpp"
 
@@ -19,17 +16,17 @@ namespace sg
 namespace datadriven
 {
 
-double OperationTestPoly::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
+double OperationTestPoly::test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes)
 {
 	return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-double OperationTestPoly::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
+double OperationTestPoly::testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues)
 {
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestPoly::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
+double OperationTestPoly::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers)
 {
 	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
 }
