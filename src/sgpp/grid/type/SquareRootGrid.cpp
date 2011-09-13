@@ -18,7 +18,6 @@
 #include "grid/generation/SquareRootGridGenerator.hpp"
 //#include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 //#include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
-#include "sgpp.hpp"
 
 #include <iostream>
 

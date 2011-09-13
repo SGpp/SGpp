@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
+#include "algorithm/common/AlgorithmEvaluation.hpp"
 
 #include "basis/basis.hpp"
 

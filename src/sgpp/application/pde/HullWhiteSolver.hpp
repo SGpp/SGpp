@@ -8,7 +8,6 @@
 #ifndef HULLWHITESOLVER_HPP
 #define HULLWHITESOLVER_HPP
 
-#include "sgpp.hpp"
 
 #include "application/pde/ParabolicPDESolver.hpp"
 

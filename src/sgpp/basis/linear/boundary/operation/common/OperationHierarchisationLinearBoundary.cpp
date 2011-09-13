@@ -20,7 +20,6 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "sgpp.hpp"
 
 #include "basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.hpp"
 #include "basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"

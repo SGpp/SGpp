@@ -5,7 +5,6 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.hpp"
 #include "exception/operation_exception.hpp"
 

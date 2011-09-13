@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
+#include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 #include "basis/basis.hpp"
 #include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.hpp"
 #include "exception/operation_exception.hpp"

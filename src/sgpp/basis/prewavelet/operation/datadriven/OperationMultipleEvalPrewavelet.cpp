@@ -25,7 +25,7 @@
 
 #include "basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.hpp"
 
-#include "sgpp.hpp"
+#include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
 #include "data/DataVector.hpp"
 

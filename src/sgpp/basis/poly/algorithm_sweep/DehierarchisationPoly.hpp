@@ -11,8 +11,7 @@
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
 
-// #include "basis/poly/poly_base.hpp"
-#include "sgpp.hpp"
+#include "basis/poly/poly_base.hpp"
 
 namespace sg
 {

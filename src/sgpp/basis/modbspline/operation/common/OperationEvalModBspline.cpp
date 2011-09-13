@@ -5,14 +5,10 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "sgpp.hpp"
-
-#include "basis/basis.hpp"
 #include "basis/modbspline/operation/common/OperationEvalModBspline.hpp"
 
 #include "exception/operation_exception.hpp"
-
-#include "data/DataVector.hpp"
+#include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
 namespace sg
 {

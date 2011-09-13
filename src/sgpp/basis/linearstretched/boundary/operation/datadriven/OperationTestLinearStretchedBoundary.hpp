@@ -10,41 +10,43 @@
 
 #include "operation/datadriven/OperationTest.hpp"
 #include "grid/GridStorage.hpp"
+#include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 namespace sg
 {
 namespace datadriven
 {
 
-/**
- * This class implements OperationTest for a grids with linear basis ansatzfunctions with
- * boundaries
- *
- * @version $HEAD$
- */
-class OperationTestLinearStretchedBoundary : public OperationTest
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's sg::base::GridStorage object
-	 */
-	OperationTestLinearStretchedBoundary(sg::base::GridStorage* storage) : storage(storage) {}
+  /**
+   * This class implements OperationTest for a grids with linear basis ansatzfunctions with
+   * boundaries
+   *
+   * @version $HEAD$
+   */
+  class OperationTestLinearStretchedBoundary : public OperationTest
+  {
+  public:
+    /**
+     * Constructor
+     *
+     * @param storage the grid's base::GridStorage object
+     */
+    OperationTestLinearStretchedBoundary(base::GridStorage* storage) : storage(storage) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationTestLinearStretchedBoundary() {}
+    /**
+     * Destructor
+     */
+    virtual ~OperationTestLinearStretchedBoundary() {}
 
-	virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
-	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
+    virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
+    virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
+    virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers);
 
-protected:
-	/// Pointer to sg::base::GridStorage object
-	sg::base::GridStorage* storage;
-};
+  protected:
+    /// Pointer to base::GridStorage object
+    base::GridStorage* storage;
+  };
 
 }
 }

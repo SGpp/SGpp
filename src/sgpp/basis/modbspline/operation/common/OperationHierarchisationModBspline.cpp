@@ -5,14 +5,9 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "sgpp.hpp"
-
-#include "basis/basis.hpp"
 #include "basis/modbspline/operation/common/OperationHierarchisationModBspline.hpp"
 
 #include "exception/operation_exception.hpp"
-
-#include "data/DataVector.hpp"
 
 namespace sg
 {

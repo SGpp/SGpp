@@ -8,7 +8,6 @@
 #include "basis/basis.hpp"
 #include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
 
-#include "sgpp.hpp"
 
 #include "data/DataVector.hpp"
 

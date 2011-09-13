@@ -24,7 +24,7 @@
 #include "basis/basis.hpp"
 #include "basis/prewavelet/operation/common/OperationEvalPrewavelet.hpp"
 
-#include "sgpp.hpp"
+#include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
 #include "exception/operation_exception.hpp"
 

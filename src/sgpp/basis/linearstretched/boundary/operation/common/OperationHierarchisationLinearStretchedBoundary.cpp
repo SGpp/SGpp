@@ -21,7 +21,6 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "sgpp.hpp"
 
 #include "basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.hpp"
 #include "basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.hpp"

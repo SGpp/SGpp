@@ -12,6 +12,7 @@
 #include "basis/common/operation/datadriven/OCLKernels.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+#include "data/DataVectorSP.hpp"
 
 namespace sg
 {
@@ -31,7 +32,7 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeSPOCLModLinear : public sg::base::OperationMultipleEvalVectorizedSP
+class OperationMultipleEvalIterativeSPOCLModLinear : public base::OperationMultipleEvalVectorizedSP
 {
 public:
 	/**
@@ -45,24 +46,24 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeSPOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
+	OperationMultipleEvalIterativeSPOCLModLinear(base::GridStorage* storage, base::DataMatrixSP* dataset);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationMultipleEvalIterativeSPOCLModLinear();
 
-	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
+	virtual double multVectorized(base::DataVectorSP& alpha, base::DataVectorSP& result);
 
-	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result);
+	virtual double multTransposeVectorized(base::DataVectorSP& source, base::DataVectorSP& result);
 
 	virtual void rebuildLevelAndIndex();
 
 protected:
 	/// Pointer to the grid's gridstorage object
-	sg::base::GridStorage* storage;
+	base::GridStorage* storage;
 	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
+	base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
 };

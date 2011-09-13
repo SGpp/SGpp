@@ -8,8 +8,6 @@
 #ifndef BLACKSCHOLESSOLVERWITHSTRETCHING_HPP
 #define BLACKSCHOLESSOLVERWITHSTRETCHING_HPP
 
-//#include "sgpp.hpp"
-
 #include "application/pde/BlackScholesSolver.hpp"
 #include "grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
 #include "grid/type/LinearStretchedGrid.hpp"
@@ -236,5 +234,4 @@ public:
 
 }
 }
-
 #endif /* BLACKSCHOLESSOLVERWITHSTRETCHING_HPP */

@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
+#include "algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
 #include "basis/basis.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.hpp"
 #include "exception/operation_exception.hpp"

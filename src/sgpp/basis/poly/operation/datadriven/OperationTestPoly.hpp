@@ -3,52 +3,54 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef OPERATIONTESTPOLY_HPP
 #define OPERATIONTESTPOLY_HPP
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
-
-#include "sgpp.hpp"
+#include "basis/poly/poly_base.hpp"
+#include "operation/datadriven/OperationTest.hpp"
+#include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 
 namespace sg
 {
 namespace datadriven
 {
 
-/**
- * This class implements OperationTest for a grids with poly basis ansatzfunctions with
- *
- * @version $HEAD$
- */
-class OperationTestPoly : public OperationTest
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's sg::base::GridStorage object
-	 * @param degree the polynom's max. degree
-	 */
-	OperationTestPoly(sg::base::GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+  /**
+   * This class implements OperationTest for a grids with poly basis ansatzfunctions with
+   *
+   * @version $HEAD$
+   */
+  class OperationTestPoly : public OperationTest
+  {
+  public:
+    /**
+     * Constructor
+     *
+     * @param storage the grid's base::GridStorage object
+     * @param degree the polynom's max. degree
+     */
+    OperationTestPoly(base::GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationTestPoly() {}
+    /**
+     * Destructor
+     */
+    virtual ~OperationTestPoly() {}
 
-	virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
-	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
+    virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
+    virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
+    virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers);
 
-protected:
-	/// Pointer to sg::base::GridStorage object
-	sg::base::GridStorage* storage;
-	/// Poly Basis object
-	SPolyBase base;
-};
+  protected:
+    /// Pointer to base::GridStorage object
+    base::GridStorage* storage;
+    /// Poly Basis object
+    base::SPolyBase base;
+  };
 
 }
 }

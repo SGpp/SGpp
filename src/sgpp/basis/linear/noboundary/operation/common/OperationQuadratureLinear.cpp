@@ -5,7 +5,6 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "sgpp.hpp"
 
 #include "basis/linear/noboundary/operation/common/OperationQuadratureLinear.hpp"
 

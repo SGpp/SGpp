@@ -5,7 +5,6 @@
 ******************************************************************************/
 // @author Kilian Roehner (roehner@tum.de)
 
-#include "sgpp.hpp"
 
 #include "basis/poly/operation/common/OperationQuadraturePoly.hpp"
 

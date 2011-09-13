@@ -7,6 +7,7 @@
 
 #include "tools/finance/Hedging.hpp"
 #include "basis/operations_factory.hpp"
+#include "tools/common/EvalCuboidGenerator.hpp"
 
 #include <sstream>
 #include <cmath>

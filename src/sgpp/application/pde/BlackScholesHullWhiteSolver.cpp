@@ -9,6 +9,7 @@
 #include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
 #include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
 #include "application/pde/BlackScholesSolver.hpp"
+#include "application/pde/BlackScholesHullWhiteSolver.hpp"
 #include "application/pde/HullWhiteSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"

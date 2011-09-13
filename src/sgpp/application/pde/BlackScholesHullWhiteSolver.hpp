@@ -8,7 +8,6 @@
 #ifndef BLACKSCHOLESHULLWHITESOLVER_HPP
 #define BLACKSCHOLESHULLWHITESOLVER_HPP
 
-#include "sgpp.hpp"
 
 #include "application/pde/ParabolicPDESolver.hpp"
 

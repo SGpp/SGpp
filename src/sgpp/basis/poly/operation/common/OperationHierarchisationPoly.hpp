@@ -10,8 +10,8 @@
 
 #include "operation/common/OperationHierarchisation.hpp"
 #include "grid/GridStorage.hpp"
-
-#include "sgpp.hpp"
+#include "basis/poly/poly_base.hpp"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

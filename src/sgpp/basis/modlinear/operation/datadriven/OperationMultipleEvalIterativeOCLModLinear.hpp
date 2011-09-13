@@ -31,7 +31,7 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeOCLModLinear : public sg::base::OperationMultipleEvalVectorized
+class OperationMultipleEvalIterativeOCLModLinear : public base::OperationMultipleEvalVectorized
 {
 public:
 	/**
@@ -45,24 +45,24 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+	OperationMultipleEvalIterativeOCLModLinear(base::GridStorage* storage, base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~OperationMultipleEvalIterativeOCLModLinear();
 
-	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
+	virtual double multVectorized(base::DataVector& alpha, base::DataVector& result);
 
-	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
+	virtual double multTransposeVectorized(base::DataVector& source, base::DataVector& result);
 
 	virtual void rebuildLevelAndIndex();
 
 protected:
 	/// Pointer to the grid's gridstorage object
-	sg::base::GridStorage* storage;
+	base::GridStorage* storage;
 	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
+	base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
 };

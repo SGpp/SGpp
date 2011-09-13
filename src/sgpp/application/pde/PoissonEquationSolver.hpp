@@ -8,7 +8,6 @@
 #ifndef POISSONEQUATIONSOLVER_HPP
 #define POISSONEQUATIONSOLVER_HPP
 
-#include "sgpp.hpp"
 
 #include "application/pde/EllipticPDESolver.hpp"
 

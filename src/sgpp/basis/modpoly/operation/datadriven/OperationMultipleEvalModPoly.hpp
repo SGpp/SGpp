@@ -11,7 +11,6 @@
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "grid/GridStorage.hpp"
 
-#include "sgpp.hpp"
 
 namespace sg
 {

@@ -10,8 +10,8 @@
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
-
-#include "sgpp.hpp"
+#include "basis/modbspline/modified_bspline_base.hpp"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

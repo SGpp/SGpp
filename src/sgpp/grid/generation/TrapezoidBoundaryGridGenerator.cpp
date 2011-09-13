@@ -8,7 +8,10 @@
 #include "grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 #include "grid/GridStorage.hpp"
 
-#include "sgpp.hpp"
+#include "grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp"
+#include "grid/generation/hashmap/HashCoarsening.hpp"
+#include "grid/generation/hashmap/HashRefinementBoundaries.hpp"
+#include "grid/generation/hashmap/HashGenerator.hpp"
 
 namespace sg
 {
