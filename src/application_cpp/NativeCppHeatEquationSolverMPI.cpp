@@ -366,12 +366,8 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 			alpha = new DataVector(myHESolver->getNumberGridPoints());
 		}
 
-		sg::parallel::myGlobalMPIComm->Barrier();
-
 		// Communicate coefficients
 		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
-
-		sg::parallel::myGlobalMPIComm->Barrier();
 
 		// Print initial grid only on rank 0
 		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
@@ -552,12 +548,8 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 			alpha = new DataVector(myPoisSolver->getNumberGridPoints());
 		}
 
-		sg::parallel::myGlobalMPIComm->Barrier();
-
 		// Communicate coefficients
 		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
-
-		sg::parallel::myGlobalMPIComm->Barrier();
 
 		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
 		{
@@ -755,12 +747,8 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 		alpha = new DataVector(myPoisSolver->getNumberGridPoints());
 	}
 
-	sg::parallel::myGlobalMPIComm->Barrier();
-
 	// Communicate coefficients
 	sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
-
-	sg::parallel::myGlobalMPIComm->Barrier();
 
 	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
 	{

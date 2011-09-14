@@ -145,14 +145,14 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyMassMatrix
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
+	result.setAll(0.0);
+
 	if (this->tOperationMode == "ExEul")
 	{
 		applyMassMatrixInner(alpha, result);
 	}
 	else if (this->tOperationMode == "ImEul")
 	{
-		result.setAll(0.0);
-
 		sg::base::DataVector temp(result.getSize());
 		sg::base::DataVector temp2(result.getSize());
 
@@ -179,8 +179,6 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::mult(sg::base::
 	}
 	else if (this->tOperationMode == "CrNic")
 	{
-		result.setAll(0.0);
-
 		sg::base::DataVector temp(result.getSize());
 		sg::base::DataVector temp2(result.getSize());
 

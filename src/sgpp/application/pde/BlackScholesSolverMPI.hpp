@@ -217,6 +217,14 @@ public:
 	virtual void initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
 
 	/**
+	 * In order to enable some options the payoff type has to be known by all ranks. Call
+	 * this method on all ranks to allow optimizations. Otherwise your application will deadlock.
+	 *
+	 * @param payoffType the payoff type of the current option.
+	 */
+	virtual void setPayoffType(std::string payoffType);
+
+	/**
 	 * Inits the screen object
 	 */
 	virtual void initScreen();
