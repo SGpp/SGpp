@@ -17,9 +17,9 @@ module load ccomp/intel/12.0
 
 export OMP_NUM_THREADS=16
 
-./BSSolver solveNDadaptSurplusSubDomain PAT 5 2 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 180 0.000001 maxLevel 3 7 0.000001 none 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 5 3 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 180 0.000001 maxLevel 4 7 0.000001 none 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 5 4 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 180 0.000001 maxLevel 5 7 0.000001 none 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 5 5 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 180 0.000001 maxLevel 6 7 0.000001 none 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 5 6 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 180 0.000001 maxLevel 7 7 0.000001 none 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 5 7 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 180 0.000001 maxLevel 8 7 0.000001 none 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 5 2 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 180 0.000001 maxLevel 3 7 0.000001 none 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 5 3 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 180 0.000001 maxLevel 4 7 0.000001 none 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 5 4 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 180 0.000001 maxLevel 5 7 0.000001 none 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 5 5 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 180 0.000001 maxLevel 6 7 0.000001 none 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 5 6 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 180 0.000001 maxLevel 7 7 0.000001 none 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 5 7 BStest5d.log.bound BStest5d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 180 0.000001 maxLevel 8 7 0.000001 none 0.0000001

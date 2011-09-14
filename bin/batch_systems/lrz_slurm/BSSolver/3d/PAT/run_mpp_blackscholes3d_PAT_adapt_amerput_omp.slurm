@@ -17,20 +17,20 @@ module load ccomp/intel/12.0
 
 export OMP_NUM_THREADS=16
 
-./BSSolver solveNDadaptSurplus PAT 3 2 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 2 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplus PAT 3 3 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 3 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplus PAT 3 4 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 4 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplus PAT 3 5 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 5 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplus PAT 3 6 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 6 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplus PAT 3 7 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 7 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplus PAT 3 8 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 8 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplus PAT 3 9 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 9 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 2 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 2 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 3 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 3 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 4 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 4 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 5 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 5 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 6 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 6 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 7 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 7 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 8 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 8 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplus PAT 3 9 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 9 4 0.000001 coarsen 0.0000001
 
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 2 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 2 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 3 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 3 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 4 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 4 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 5 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 5 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 6 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 6 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 7 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 7 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 8 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 8 4 0.000001 coarsen 0.0000001
-./BSSolver solveNDadaptSurplusSubDomain PAT 3 9 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 20000 0.000001 maxLevel 9 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 2 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 2 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 3 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 3 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 4 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 4 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 5 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 5 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 6 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 6 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 7 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 7 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 8 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 8 4 0.000001 coarsen 0.0000001
+./BSSolver solveNDadaptSurplusSubDomain PAT 3 9 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 maxLevel 9 4 0.000001 coarsen 0.0000001
