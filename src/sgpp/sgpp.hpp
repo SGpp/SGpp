@@ -84,11 +84,6 @@
 #include "grid/generation/SurplusVolumeRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 
-#include "grid/combination/FullGrid.hpp"
-#include "grid/combination/FullGridSet.hpp"
-#include "grid/combination/LinearFullGrid.hpp"
-#include "grid/combination/OptiCom.hpp"
-
 #include "solver/sle/ConjugateGradients.hpp"
 #include "solver/sle/BiCGStab.hpp"
 #include "solver/ode/Euler.hpp"
