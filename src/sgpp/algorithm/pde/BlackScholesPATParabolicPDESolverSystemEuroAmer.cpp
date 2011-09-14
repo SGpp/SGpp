@@ -237,13 +237,10 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 				tmp += exp(inner_tmp);
 			}
 
-			double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);
-			double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*current_time)));
+			double payoff = std::max<double>(this->dStrike-(tmp/static_cast<double>(dim)), 0.0);//*exp(((-1.0)*(this->r*current_time)));
+			double discounted_value = ((*this->alpha_complete)[i])*exp(((-1.0)*(this->r*this->TimestepSize)));
 
-			if (discounted_value < payoff)
-			{
-				(*this->alpha_complete)[i] = payoff;
-			}
+			(*this->alpha_complete)[i] = std::max<double>(payoff, discounted_value);
 		}
 		delete[] coords_val;
 
