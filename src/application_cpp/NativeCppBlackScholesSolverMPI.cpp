@@ -683,14 +683,13 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
 			// Set stochastic data
 			myBSSolver->setStochasticData(mu, sigma, rho, r);
-		}
 
-		sg::parallel::myGlobalMPIComm->Barrier();
+			// Set Payoff type
+			myBSSolver->setPayoffType(payoffType);
+		}
 
 		// Communicate coefficients
 		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
-
-		sg::parallel::myGlobalMPIComm->Barrier();
 
 		// Start solving the Black Scholes Equation
 		if (Solver == "ExEul")
@@ -1063,13 +1062,13 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 		// Set stochastic data
 		myBSSolver->setStochasticData(mu, sigma, rho, r);
-	}
 
-	sg::parallel::myGlobalMPIComm->Barrier();
+		// Set Payoff type
+		myBSSolver->setPayoffType(payoffType);
+	}
 
 	// Communicate coefficients
 	sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
-	sg::parallel::myGlobalMPIComm->Barrier();
 
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")

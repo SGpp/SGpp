@@ -490,6 +490,10 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
+		if (myGlobalMPIComm->getMyRank() == 0)
+		{
+			std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
+		}
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
@@ -542,12 +546,16 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
 		else
 		{
 			myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->r, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 
 		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
 		this->staInnerGridSize = getNumberInnerGridPoints();
 
+		if (myGlobalMPIComm->getMyRank() == 0)
+		{
+			std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
+		}
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
 		this->dNeededTime = myStopwatch->stop();
@@ -699,6 +707,11 @@ void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize, 
 void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, void *myODESolverV, std::string Solver)
 {
 	throw new application_exception("BlackScholesSolverMPI::solveX : An unsupported ODE Solver type has been chosen!");
+}
+
+void BlackScholesSolverMPI::setPayoffType(std::string payoffType)
+{
+	this->payoffType = payoffType;
 }
 
 void BlackScholesSolverMPI::initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType)
