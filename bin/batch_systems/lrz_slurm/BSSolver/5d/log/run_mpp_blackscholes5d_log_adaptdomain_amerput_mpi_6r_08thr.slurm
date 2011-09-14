@@ -14,7 +14,7 @@ source /etc/profile
 cd $HOME/SGpp/bin
 
 module unload ccomp/intel
-module load ccomp/intel/12.0
+module load ccomp/intel/12.1
 
 export OMP_NUM_THREADS=8
 export I_MPI_PIN_MODE=mpd
