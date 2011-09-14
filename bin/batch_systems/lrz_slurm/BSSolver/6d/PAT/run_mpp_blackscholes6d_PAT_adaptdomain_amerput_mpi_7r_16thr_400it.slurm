@@ -21,8 +21,8 @@ export I_MPI_PIN_MODE=mpd
 export I_MPI_DEBUG=4
 export PSI_EXPORTS=$PSI_EXPORTS,I_MPI_PIN_MODE,I_MPI_DEBUG
 
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 2 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 400 0.000001 maxLevel 2 8 0.000001 none 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 3 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 400 0.000001 maxLevel 3 8 0.000001 none 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 4 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 400 0.000001 maxLevel 4 8 0.000001 none 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 5 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 400 0.000001 maxLevel 5 8 0.000001 none 0.0000001
-srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 6 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 400 0.000001 maxLevel 6 8 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 2 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 400 0.000001 maxLevel 2 8 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 3 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 400 0.000001 maxLevel 3 8 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 4 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 400 0.000001 maxLevel 4 8 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 5 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 400 0.000001 maxLevel 5 8 0.000001 none 0.0000001
+srun_ps -v -t 16 ./BSSolverMPI solveNDadaptSurplusSubDomain PAT 6 6 BStest6d.log.bound BStest6d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 400 0.000001 maxLevel 6 8 0.000001 none 0.0000001

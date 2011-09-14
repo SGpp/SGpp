@@ -17,4 +17,4 @@ module load ccomp/intel/12.0
 
 export OMP_NUM_THREADS=16
 
-./BSSolver solveNDanalyze PAT 3 3 13 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 8000 0.000001 BStest3d.analyze
+./BSSolver solveNDanalyze PAT 3 3 13 BStest3d.log.bound BStest3d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 250 0.000001 BStest3d.analyze

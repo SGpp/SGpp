@@ -17,8 +17,8 @@ module load ccomp/intel/12.0
 
 export OMP_NUM_THREADS=16
 
-./BSSolver solveNDadaptSurplus PAT 4 2 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 160 0.000001 maxLevel 2 5 1e-6 none 1e-7
-./BSSolver solveNDadaptSurplus PAT 4 3 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 160 0.000001 maxLevel 3 5 1e-6 none 1e-7
-./BSSolver solveNDadaptSurplus PAT 4 4 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 160 0.000001 maxLevel 4 5 1e-6 none 1e-7
-./BSSolver solveNDadaptSurplus PAT 4 5 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 160 0.000001 maxLevel 5 5 1e-6 none 1e-7
-./BSSolver solveNDadaptSurplus PAT 4 6 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.025 CrNic 160 0.000001 maxLevel 6 5 1e-6 none 1e-7
+./BSSolver solveNDadaptSurplus PAT 4 2 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 160 0.000001 maxLevel 2 5 1e-6 none 1e-7
+./BSSolver solveNDadaptSurplus PAT 4 3 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 160 0.000001 maxLevel 3 5 1e-6 none 1e-7
+./BSSolver solveNDadaptSurplus PAT 4 4 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 160 0.000001 maxLevel 4 5 1e-6 none 1e-7
+./BSSolver solveNDadaptSurplus PAT 4 5 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 160 0.000001 maxLevel 5 5 1e-6 none 1e-7
+./BSSolver solveNDadaptSurplus PAT 4 6 BStest4d.log.bound BStest4d.stoch 1.0 std_amer_put 0.05 1.0 0.0125 CrNic 160 0.000001 maxLevel 6 5 1e-6 none 1e-7
