@@ -3,13 +3,13 @@
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+#grid/combination/FullGrid.cpp
+#grid/combination/FullGridSet.cpp
+#grid/combination/LinearFullGrid.cpp
 
 Import("env")
 
 srcs = Split("""
-grid/combination/FullGrid.cpp
-grid/combination/FullGridSet.cpp
-grid/combination/LinearFullGrid.cpp
 combigrid/basisfunction/CombiLinearBasisFunction.cpp
 combigrid/combigrid/SerialCombiGrid.cpp
 combigrid/combigrid/AdaptiveSerialCombiGrid.cpp
