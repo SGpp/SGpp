@@ -1488,10 +1488,10 @@ namespace finance
     delete myEval;
 
     // discounting, if PAT is used
-    if (this->usePAT == true)
-      {
-        result *= exp(((-1.0)*(this->r*this->current_time)));
-      }
+    if (this->usePAT == true && this->payoffType != "std_amer_put")
+    {
+    	result *= exp(((-1.0)*(this->r*this->current_time)));
+    }
 
     return result;
   }
