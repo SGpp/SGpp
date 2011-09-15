@@ -16,6 +16,8 @@
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "algorithm/datadriven/DMWeightMatrix.hpp"
+#include "operation/common/OperationHierarchisation.hpp"
+#include "grid/generation/SurplusRefinementFunctor.hpp"
 #include <math.h>
 #include <vector>
 #include <utility>
@@ -54,6 +56,8 @@ namespace datadriven
         size_t numBaseLearners;
 		    /// type of the grid
 		sg::base::Grid* grid;
+    		/// Number of grid points
+		size_t gridPoint;
         	/// OperationMatrix, the regularisation mehtod
 		sg::base::OperationMatrix* C;
             /// Parameter for CG solver
@@ -72,6 +76,10 @@ namespace datadriven
 		size_t lambSteps;
     		/// Actual base learners number for Adaboosting
 		size_t actualBaseLearners;
+		    /// Judgement of grid refine
+		bool refinement;
+    		/// Number of refinement 
+		size_t refineTimes;
             /**
              * Performs a hypothesis classifier
 			 *
@@ -114,7 +122,7 @@ namespace datadriven
 			 * @param minLambda the min lambda used in searching optimal lambda
 			 * @param searchNum the searching times used in searching for optimal lambda
              */
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum);
+        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineNum);
         
 
             /**
@@ -233,6 +241,16 @@ namespace datadriven
 			 * @param yourBaseLearner the number of base learner specified
              */
 		double getErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner);
+
+            /**
+             * Performs refinement of grid to get an adaptive grid(10% grid points refine)
+             *
+			 * @param alpha_ada the coefficients of the sparse grid's basis functions and to be refined
+			 * @param rhs_ada the refined right hand side of the DMWeight linear system equation
+			 * @param weight_ada the weights of examples
+			 * @param ada_time the number of to be adapted
+			 */
+		void doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& rhs_ada, sg::base::DataVector& weight_ada, size_t ada_time);
     
 		    /**
              * Get the actual base learners after doing adaboosting
