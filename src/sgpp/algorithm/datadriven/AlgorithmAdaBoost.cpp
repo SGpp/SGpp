@@ -80,7 +80,7 @@ namespace datadriven
 			{
 				for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++)
 					doRefinement(alpha, rhs, weight, adaptiveStep);
-				sg::base::OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*this->grid);
+				opEval = sg::GridOperationFactory::createOperationEval(*this->grid);
 				// resize the DataMatrix storageAlpha
 				storageAlpha.resizeZero(alpha.getSize());
 			}
