@@ -64,6 +64,16 @@ public:
 	 * @param sigma the standard deviation of the normal distribution
 	 */
 	double getDensity(const double x, const double mu, const double sigma);
+
+
+	/*
+	 * Calculates the Density values of the normal distribution (normed variant)
+	 *
+	 * @param x the value for which the density value should be calculated
+	 * @param mu the expected value of the normal distribution
+	 * @param sigma the standard deviation of the normal distribution
+	 */
+	double getNormedDensity(const double x, const double mu, const double sigma);
 };
 
 }
