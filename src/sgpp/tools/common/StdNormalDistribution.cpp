@@ -68,5 +68,16 @@ double StdNormalDistribution::getDensity(const double x, const double mu, const 
 	return result;
 }
 
+double StdNormalDistribution::getNormedDensity(const double x, const double mu, const double sigma)
+{
+	const double mean = mu;
+	const double stddev = sigma;
+
+	const double secondTerm = -( (x - mean) * (x - mean) / (2.0 * stddev * stddev) );
+	const double result = std::exp(secondTerm);
+
+	return result;
+}
+
 }
 }
