@@ -20,15 +20,15 @@ namespace base
  *
  */
 template<class LT, class IT>
-class modified_bspline_base
+class ModifiedBsplineBasis
 {
     protected:
         size_t degree;
 
 
     public:
-        modified_bspline_base():degree(0){}
-        modified_bspline_base(size_t degree) : degree(degree){
+        ModifiedBsplineBasis():degree(0){}
+        ModifiedBsplineBasis(size_t degree) : degree(degree){
             if (degree < 1)
                 this->degree=1;
             if(degree%2 == 0)
@@ -77,7 +77,7 @@ class modified_bspline_base
 };
 
   // default type-def (unsigned int for level and index)
-  typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
+  typedef ModifiedBsplineBasis<unsigned int, unsigned int> SModBsplineBase;
 }
 }
 

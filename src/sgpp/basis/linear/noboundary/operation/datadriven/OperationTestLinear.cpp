@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "basis/linear/noboundary/linear_base.hpp"
+#include "basis/linear/noboundary/LinearBasis.hpp"
 
 #include "basis/basis.hpp"
 #include "algorithm/datadriven/test_dataset.hpp"
@@ -21,19 +21,19 @@ namespace datadriven
 
   double OperationTestLinear::test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes)
   {
-    base::linear_base<unsigned int, unsigned int> base;
+    base::LinearBasis<unsigned int, unsigned int> base;
     return test_dataset(this->storage, base, alpha, data, classes);
   }
 
   double OperationTestLinear::testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues)
   {
-    base::linear_base<unsigned int, unsigned int> base;
+    base::LinearBasis<unsigned int, unsigned int> base;
     return test_dataset_mse(this->storage, base, alpha, data, refValues);
   }
 
   double OperationTestLinear::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers)
   {
-    base::linear_base<unsigned int, unsigned int> base;
+    base::LinearBasis<unsigned int, unsigned int> base;
     return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
   }
 

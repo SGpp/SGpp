@@ -11,7 +11,7 @@
 #include "operation/datadriven/OperationTest.hpp"
 #include "grid/GridStorage.hpp"
 
-#include "basis/modpoly/modified_poly_base.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
 
 #include "data/DataVector.hpp"
 

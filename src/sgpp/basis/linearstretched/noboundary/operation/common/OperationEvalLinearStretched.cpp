@@ -21,8 +21,8 @@ namespace base
 
 double OperationEvalLinearStretched::eval(DataVector& alpha, std::vector<double>& point)
 {
-	linearstretched_base<unsigned int, unsigned int> base;
-	AlgorithmEvaluation<linearstretched_base<unsigned int, unsigned int> > AlgoEval(storage);
+	LinearStretchedBasis<unsigned int, unsigned int> base;
+	AlgorithmEvaluation<LinearStretchedBasis<unsigned int, unsigned int> > AlgoEval(storage);
 
 	return AlgoEval(base, point, alpha);
 }

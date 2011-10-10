@@ -21,7 +21,7 @@ namespace base
  * @version $HEAD$
  */
  template<class LT, class IT>
-class modified_linear_base
+class ModifiedLinearBasis
 {
 public:
 	/**
@@ -47,7 +47,7 @@ public:
 };
 
   // default type-def (unsigned int for level and index)
-  typedef modified_linear_base<unsigned int, unsigned int> SModLinearBase;
+  typedef ModifiedLinearBasis<unsigned int, unsigned int> SModLinearBase;
 }
 }
 

@@ -23,7 +23,7 @@ namespace base
  * @version $HEAD$
  */
 template<class LT, class IT>
-class linearstretchedboundaryBase
+class LinearStretchedBoundaryBasis
 {
 public:
 	/*	*
@@ -87,7 +87,7 @@ public:
 	}*/
 
 	/*
-	 * evaluate a base functions
+	 * evaluate a basis function
 	 * Has a dependence on the position of two grid points with values 1 and 0 and the
 	 * support position
 	 */
@@ -97,7 +97,7 @@ public:
 
 	///TODO: Index and level is not necessary, maybe function could be changed
 	/*
-	 * evaluate a base functions
+	 * evaluate a basis function
 	 * Has a dependence on the position of two grid points with values 1 and 0 and the
 	 * support position
 	 */
@@ -122,7 +122,7 @@ public:
 };
 
   // default type-def (unsigned int for level and index)
-  typedef linearstretchedboundaryBase<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
+  typedef LinearStretchedBoundaryBasis<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
 }
 }
 

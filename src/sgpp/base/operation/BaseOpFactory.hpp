@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#ifndef BASE_FACTORY_OPERATION_HPP
-#define BASE_FACTORY_OPERATION_HPP
+#ifndef BASE_OP_FACTORY_HPP
+#define BASE_OP_FACTORY_HPP
 
 #include "grid/Grid.hpp"
 
@@ -18,10 +18,14 @@
 #include "operation/common/OperationEval.hpp"
 #include "operation/datadriven/OperationMultipleEval.hpp"
 
+/*
+ * This file contains factory methods for operations.
+ */
+ 
 namespace sg
 {
 
-namespace GOperationFactory
+namespace op_factory
 {
 
   /**
@@ -79,4 +83,4 @@ namespace GOperationFactory
 
 }
 
-#endif /*BASE_FACTORY_OPERATION_HPP*/
+#endif /*BASE_OP_FACTORY_HPP*/

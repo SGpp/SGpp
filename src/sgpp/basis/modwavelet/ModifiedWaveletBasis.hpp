@@ -20,7 +20,7 @@ namespace base
  * @todo (pflueged) Concernc also most other basis functions: Why static cast in int and not in unsigned int?? If index is unsigned int (which is the case) then for level 32, indices get lost/corrupted.
  */
 template<class LT, class IT>
-class modified_wavelet_base
+class ModifiedWaveletBasis
 {
     public:
         double eval(LT level, IT index, double p)
@@ -48,7 +48,7 @@ class modified_wavelet_base
 
 };
   // default type-def (unsigned int for level and index)
-  typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
+  typedef ModifiedWaveletBasis<unsigned int, unsigned int> SModWaveletBase;
 }
 }
 

@@ -24,8 +24,8 @@ double OperationEvalModLinear::eval(DataVector& alpha, std::vector<double>& poin
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	modified_linear_base<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<modified_linear_base<unsigned int, unsigned int> > ga(storage);
+	ModifiedLinearBasis<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<ModifiedLinearBasis<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 

@@ -35,7 +35,7 @@ namespace base
  * this advantage is bought with a wider support of the ansatzfunctions.
  */
 template<class LT, class IT>
-class prewavelet_base
+class PrewaveletBasis
 {
 private:
 
@@ -50,7 +50,7 @@ private:
 public:
 
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 */
 	double eval(LT level, IT index, double p)
@@ -138,15 +138,15 @@ public:
 };
 
 template<class LT, class IT>
-const double prewavelet_base<LT, IT>::normal_stamp[] =
+const double PrewaveletBasis<LT, IT>::normal_stamp[] =
 { 0.1, -0.6, 1.0, -0.6, 0.1 };
 
 template<class LT, class IT>
-const double prewavelet_base<LT, IT>::border_stamp[] =
+const double PrewaveletBasis<LT, IT>::border_stamp[] =
 { 0.9, -0.6, 0.1 };
 
   // default type-def (unsigned int for level and index)
-  typedef prewavelet_base<unsigned int, unsigned int> SPrewaveletBase;
+  typedef PrewaveletBasis<unsigned int, unsigned int> SPrewaveletBase;
 
 }
 }

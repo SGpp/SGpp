@@ -10,11 +10,11 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
-#include "basis/linearstretched/boundary/linearstretchedboundaryBase.hpp"
-#include "basis/prewavelet/prewavelet_base.hpp"
+#include "basis/modwavelet/ModifiedWaveletBasis.hpp"
+#include "basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "basis/linear/boundary/LinearBoundaryBasis.hpp"
+#include "basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
+#include "basis/prewavelet/PrewaveletBasis.hpp"
 
 
 #include <vector>
@@ -182,8 +182,8 @@ protected:
  * Template Specialization for mod_Wavelet basis.
  */
 template<>
-class GetAffectedBasisFunctions<modified_wavelet_base<unsigned int, unsigned int> > {
-    typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
+class GetAffectedBasisFunctions<ModifiedWaveletBasis<unsigned int, unsigned int> > {
+    typedef ModifiedWaveletBasis<unsigned int, unsigned int> SModWaveletBase;
 public:
     GetAffectedBasisFunctions(GridStorage* storage) :
         storage(storage) {
@@ -358,9 +358,9 @@ protected:
  * Template Specialization for B-Spline basis.
  **/
 template<>
-class GetAffectedBasisFunctions<modified_bspline_base<unsigned int, unsigned int> >
+class GetAffectedBasisFunctions<ModifiedBsplineBasis<unsigned int, unsigned int> >
 {
-    typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
+    typedef ModifiedBsplineBasis<unsigned int, unsigned int> SModBsplineBase;
 public:
     GetAffectedBasisFunctions(GridStorage* storage) : storage(storage)
     {
@@ -534,12 +534,12 @@ protected:
 };
 
 /**
- * Template Specialization for linearboundaryBase basis.
+ * Template Specialization for LinearBoundaryBasis basis.
  */
 template<>
-class GetAffectedBasisFunctions<linearboundaryBase<unsigned int, unsigned int> >
+class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> >
 {
-	typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
+	typedef LinearBoundaryBasis<unsigned int, unsigned int> SLinearBoundaryBase;
 public:
 	GetAffectedBasisFunctions(GridStorage* storage) : storage(storage), BB(storage->getBoundingBox())
 	{
@@ -805,12 +805,12 @@ protected:
 };
 
 /**
- * Template Specialization for linearstretchedboundaryBase basis.
+ * Template Specialization for LinearStretchedBoundaryBasis basis.
  */
 template<>
-class GetAffectedBasisFunctions<linearstretchedboundaryBase<unsigned int, unsigned int> >
+class GetAffectedBasisFunctions<LinearStretchedBoundaryBasis<unsigned int, unsigned int> >
 {
-	typedef linearstretchedboundaryBase<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
+	typedef LinearStretchedBoundaryBasis<unsigned int, unsigned int> SLinearStretchedBoundaryBase;
 public:
 	GetAffectedBasisFunctions(GridStorage* storage) : storage(storage), stretch(storage->getStretching())
 	{
@@ -980,10 +980,10 @@ void recBB(SLinearStretchedBoundaryBase& basis, std::vector<double>& point, size
  * Template Specialization for prewavelet basis.
  */
 template<>
-class GetAffectedBasisFunctions<prewavelet_base<unsigned int, unsigned int> >
+class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> >
 {
 
-	typedef prewavelet_base<unsigned int, unsigned int> SPrewaveletBase;
+	typedef PrewaveletBasis<unsigned int, unsigned int> SPrewaveletBase;
 public:
 	GetAffectedBasisFunctions(GridStorage* storage) :
 		storage(storage)

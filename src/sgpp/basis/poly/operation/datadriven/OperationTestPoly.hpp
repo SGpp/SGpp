@@ -10,7 +10,7 @@
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
-#include "basis/poly/poly_base.hpp"
+#include "basis/poly/PolyBasis.hpp"
 #include "operation/datadriven/OperationTest.hpp"
 #include "data/DataVector.hpp"
 #include "data/DataMatrix.hpp"

@@ -20,8 +20,8 @@ namespace base
 
 double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
 {
-	linear_base<unsigned int, unsigned int> base;
-	AlgorithmEvaluation<linear_base<unsigned int, unsigned int> > AlgoEval(storage);
+	LinearBasis<unsigned int, unsigned int> base;
+	AlgorithmEvaluation<LinearBasis<unsigned int, unsigned int> > AlgoEval(storage);
 
 	return AlgoEval(base, point, alpha);
 }
