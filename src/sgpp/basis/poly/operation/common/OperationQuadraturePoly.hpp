@@ -10,7 +10,7 @@
 
 #include "operation/common/OperationQuadrature.hpp"
 #include "grid/Grid.hpp"
-#include "basis/poly/poly_base.hpp"
+#include "basis/poly/PolyBasis.hpp"
 
 namespace sg
 {

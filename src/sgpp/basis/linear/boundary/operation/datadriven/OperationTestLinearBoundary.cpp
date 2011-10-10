@@ -6,7 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #include "basis/basis.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
+#include "basis/linear/boundary/LinearBoundaryBasis.hpp"
 #include "algorithm/datadriven/test_dataset.hpp"
 
 #include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
@@ -20,19 +20,19 @@ namespace datadriven
 
   double OperationTestLinearBoundary::test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes)
   {
-    base::linearboundaryBase<unsigned int, unsigned int> base;
+    base::LinearBoundaryBasis<unsigned int, unsigned int> base;
     return test_dataset(this->storage, base, alpha, data, classes);
   }
 
   double OperationTestLinearBoundary::testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues)
   {
-    base::linearboundaryBase<unsigned int, unsigned int> base;
+    base::LinearBoundaryBasis<unsigned int, unsigned int> base;
     return test_dataset_mse(this->storage, base, alpha, data, refValues);
   }
 
   double OperationTestLinearBoundary::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers)
   {
-    base::linearboundaryBase<unsigned int, unsigned int> base;
+    base::LinearBoundaryBasis<unsigned int, unsigned int> base;
     return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
   }
 

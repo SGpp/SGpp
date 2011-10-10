@@ -1,0 +1,115 @@
+/******************************************************************************
+* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+******************************************************************************/
+// @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
+
+#ifndef FINANCE_OP_FACTORY_HPP
+#define FINANCE_OP_FACTORY_HPP
+
+#include "grid/Grid.hpp"
+#include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
+
+#include "operation/common/OperationMatrix.hpp"
+
+/*
+ * This file contains factory methods for operations.
+ */
+ 
+namespace sg
+{
+
+namespace op_factory
+{
+  /**
+   * Factory method, returning an OperationGamma (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * This operation calculates the following bilinear form which is 
+   * needed to solve the Black Scholes equation:
+   * \f$ \int_{\Omega} S_i S_j \frac{\partial u(\vec{s}}{\partial S_i} \frac{\partial v(\vec{s}}{\partial S_j} d \vec{s}\f$
+   *
+   * @param grid Grid which is to be used
+   * @param coef Reference to a DataMatrix object that contains the constant coeffecients of this bilinear form
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationGamma(base::Grid& grid, base::DataMatrix& coef);
+  /**
+   * Factory method, returning an OperationGammaLog (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * This operation calculates the following bilinear form which is 
+   * needed to solve the Black Scholes equation:
+   * \f$ \int_{\Omega} \frac{\partial u(\vec{s}}{\partial S_i} \frac{\partial v(\vec{s}}{\partial S_j} d \vec{s}\f$
+   *
+   * @param grid Grid which is to be used
+   * @param coef Reference to a DataMatrix object that contains the constant coeffecients of this bilinear form
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationGammaLog(base::Grid& grid, base::DataMatrix& coef);
+  /**
+   * Factory method, returning an OperationLB (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * @param grid Grid which is to be used
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationLB(base::Grid& grid);
+  /**
+   * Factory method, returning an OperationLE (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * @param grid Grid which is to be used
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationLE(base::Grid& grid);
+  /**
+   * Factory method, returning an OperationLD (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * @param grid Grid which is to be used
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationLD(base::Grid& grid);
+  /**
+   * Factory method, returning an OperationLF (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * @param grid Grid which is to be used
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationLF(base::Grid& grid);
+  /**
+   * Factory method, returning an OperationDelta (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * This operation calculates the following bilinear form which is 
+   * needed to solve the Black Scholes equation:
+   * \f$ \int_{\Omega} S_i v(\vec{s}) \frac{\partial u(\vec{s}}{\partial S_i} d \vec{s}\f$
+   *
+   * @param grid Grid which is to be used
+   * @param coef Reference to a DataMatrix object that contains the constant coeffecients of this bilinear form
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationDelta(base::Grid& grid, base::DataVector& coef);
+  /**
+   * Factory method, returning an OperationDeltaLog (OperationMatrix) for the grid at hand.
+   * Note: object has to bee freed after use.
+   *
+   * This operation calculates the following bilinear form which is 
+   * needed to solve the Black Scholes equation:
+   * \f$ \int_{\Omega} \frac{\partial u(\vec{s}}{\partial S_i} v(\vec{s}) d \vec{s}\f$
+   *
+   * @param grid Grid which is to be used
+   * @param coef Reference to a DataMatrix object that contains the constant coeffecients of this bilinear form
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+  base::OperationMatrix* createOperationDeltaLog(base::Grid& grid, base::DataVector& coef);
+
+}
+
+}
+
+#endif /*FINANCE_OP_FACTORY_HPP*/

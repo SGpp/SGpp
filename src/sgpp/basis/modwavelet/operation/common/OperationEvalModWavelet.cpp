@@ -24,8 +24,8 @@ double OperationEvalModWavelet::eval(DataVector& alpha, std::vector<double>& poi
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	modified_wavelet_base<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<modified_wavelet_base<unsigned int, unsigned int> > ga(storage);
+	ModifiedWaveletBasis<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<ModifiedWaveletBasis<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 

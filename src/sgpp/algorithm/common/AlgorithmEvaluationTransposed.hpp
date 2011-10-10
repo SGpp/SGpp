@@ -10,9 +10,9 @@
 
 #include "grid/GridStorage.hpp"
 #include "data/DataVector.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
+#include "basis/modwavelet/ModifiedWaveletBasis.hpp"
+#include "basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "basis/linear/boundary/LinearBoundaryBasis.hpp"
 
 #include <vector>
 #include <utility>
@@ -152,8 +152,8 @@ protected:
 // * Template Specialization for mod_Wavelet basis.
 // */
 //template<>
-//class GetAffectedBasisFunctions<modified_wavelet_base<unsigned int, unsigned int> > {
-//    typedef modified_wavelet_base<unsigned int, unsigned int> SModWaveletBase;
+//class GetAffectedBasisFunctions<ModifiedWaveletBasis<unsigned int, unsigned int> > {
+//    typedef ModifiedWaveletBasis<unsigned int, unsigned int> SModWaveletBase;
 //public:
 //    GetAffectedBasisFunctions(GridStorage* storage) :
 //        storage(storage) {
@@ -328,9 +328,9 @@ protected:
 // * Template Specialization for B-Spline basis.
 // **/
 //template<>
-//class GetAffectedBasisFunctions<modified_bspline_base<unsigned int, unsigned int> >
+//class GetAffectedBasisFunctions<ModifiedBsplineBasis<unsigned int, unsigned int> >
 //{
-//    typedef modified_bspline_base<unsigned int, unsigned int> SModBsplineBase;
+//    typedef ModifiedBsplineBasis<unsigned int, unsigned int> SModBsplineBase;
 //public:
 //    GetAffectedBasisFunctions(GridStorage* storage) : storage(storage)
 //    {
@@ -508,9 +508,9 @@ protected:
 //};
 //
 //template<>
-//class GetAffectedBasisFunctions<linearboundaryBase<unsigned int, unsigned int> >
+//class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> >
 //{
-//	typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
+//	typedef LinearBoundaryBasis<unsigned int, unsigned int> SLinearBoundaryBase;
 //public:
 //	GetAffectedBasisFunctions(GridStorage* storage) : storage(storage), BB(storage->getBoundingBox())
 //	{

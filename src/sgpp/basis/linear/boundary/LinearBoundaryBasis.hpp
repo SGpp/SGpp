@@ -22,7 +22,7 @@ namespace base
  * @version $HEAD$
  */
 template<class LT, class IT>
-class linearboundaryBase
+class LinearBoundaryBasis
 {
 public:
 	/**
@@ -87,7 +87,7 @@ public:
 };
 
   // default type-def (unsigned int for level and index)
-  typedef linearboundaryBase<unsigned int, unsigned int> SLinearBoundaryBase;
+  typedef LinearBoundaryBasis<unsigned int, unsigned int> SLinearBoundaryBase;
 
 }
 }

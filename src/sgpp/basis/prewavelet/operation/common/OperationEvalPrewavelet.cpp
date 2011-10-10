@@ -41,8 +41,8 @@ double OperationEvalPrewavelet::eval(DataVector& alpha,
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	prewavelet_base<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<prewavelet_base<unsigned int, unsigned int> > ga(
+	PrewaveletBasis<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(
 			storage);
 
 	ga(base, point, vec);

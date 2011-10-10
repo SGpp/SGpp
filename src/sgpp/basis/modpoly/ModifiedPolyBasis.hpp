@@ -25,7 +25,7 @@ namespace base
  * by Prof. Bungartz (http://www5.in.tum.de/wiki/index.php/Algorithmen_des_Wissenschaftlichen_Rechnens_II_-_Winter_08)
  */
 template<class LT, class IT>
-class modified_poly_base
+class ModifiedPolyBasis
 {
 protected:
 	/// Pointer to polynoms
@@ -40,11 +40,11 @@ public:
 	 *
 	 * @param degree the polynom's max. degree
 	 */
-	modified_poly_base(size_t degree) : polynoms(NULL), degree(degree)
+	ModifiedPolyBasis(size_t degree) : polynoms(NULL), degree(degree)
 	{
 		//if(degree < 0)
 		//{
-		//	throw factory_exception("poly_base: degree < 0");
+		//	throw factory_exception("PolyBasis: degree < 0");
 		//}
 
 		int polycount = (1 << (degree+1)) - 1;
@@ -58,7 +58,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	~modified_poly_base()
+	~ModifiedPolyBasis()
 	{
 		if(polynoms)
 		{
@@ -67,7 +67,7 @@ public:
 	}
 
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 */
 	double eval(LT level, IT index, double p)
@@ -96,7 +96,7 @@ public:
 	
 private:
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 */
 	double evalPolynom(size_t id, size_t deg, double val)
@@ -200,7 +200,7 @@ private:
 };
 
   // default type-def (unsigned int for level and index)
-  typedef modified_poly_base<unsigned int, unsigned int> SModPolyBase;
+  typedef ModifiedPolyBasis<unsigned int, unsigned int> SModPolyBase;
 }
 }
 

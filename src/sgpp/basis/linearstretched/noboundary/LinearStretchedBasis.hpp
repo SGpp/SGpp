@@ -23,11 +23,11 @@ namespace base
  * And here we have another implicit dependence on tensor products
  */
 template<class LT, class IT>
-class linearstretched_base
+class LinearStretchedBasis
 {
 public:
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 
 	double eval(LT level, IT index, double p)
@@ -36,7 +36,7 @@ public:
 	}
 
 	 *
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 *
 	 * This version catches errors, that occur if a basis function
@@ -48,7 +48,7 @@ public:
 	}*/
 
 	/*
-	 * evaluate a base functions
+	 * evaluate a basis function
 	 * Has a dependence on the position of two grid points with values 1 and 0 and the
 	 * support position
 	 */
@@ -58,7 +58,7 @@ public:
 };
 
   // default type-def (unsigned int for level and index)
-  typedef linearstretched_base<unsigned int, unsigned int> SLinearStretchedBase;
+  typedef LinearStretchedBasis<unsigned int, unsigned int> SLinearStretchedBase;
 
 }
 }

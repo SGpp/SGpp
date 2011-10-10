@@ -425,7 +425,7 @@ env.Install('#lib/sgpp', lib_sgpp_targets)
 # Unit tests
 #########################################################################
 
-if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail:
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail and swigAvail:
     testdep = env.SConscript('tests/SConscript')
     # execute after all installations (even where not necessary)
     if javaAvail and env['SG_JAVA']:
@@ -433,5 +433,5 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail:
     else:
         Depends(testdep, [pyinst])
 else:
-    sys.stderr.write("Warning!! Skipping unit tests!!\n")
+    sys.stderr.write("Warning!! Skipping unit tests!!\n\n\n")
 

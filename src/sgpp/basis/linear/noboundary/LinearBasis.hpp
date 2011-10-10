@@ -20,11 +20,11 @@ namespace base
  * Piecewise linear basis functions.
  */
 template<class LT, class IT>
-class linear_base
+class LinearBasis
 {
 public:
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 */
 	double eval(LT level, IT index, double p)
@@ -33,7 +33,7 @@ public:
 	}
 
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 *
 	 * This version catches errors, that occur if a basis function
@@ -46,7 +46,7 @@ public:
 };
 
   // default type-def (unsigned int for level and index)
-  typedef linear_base<unsigned int, unsigned int> SLinearBase;
+  typedef LinearBasis<unsigned int, unsigned int> SLinearBase;
 
 }
 }

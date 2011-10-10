@@ -10,7 +10,7 @@
 
 #include "operation/common/OperationEval.hpp"
 #include "grid/GridStorage.hpp"
-#include "basis/poly/poly_base.hpp"
+#include "basis/poly/PolyBasis.hpp"
 #include "data/DataVector.hpp"
 
 namespace sg

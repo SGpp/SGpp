@@ -23,8 +23,8 @@ double OperationEvalLinearStretchedBoundary::eval(DataVector& alpha, std::vector
 	typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
 	IndexValVector vec;
-	linearstretchedboundaryBase<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<linearstretchedboundaryBase<unsigned int, unsigned int> > ga(storage);
+	LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
+	GetAffectedBasisFunctions<LinearStretchedBoundaryBasis<unsigned int, unsigned int> > ga(storage);
 
 	ga(base, point, vec);
 

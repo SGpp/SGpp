@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/operation/BaseFactoryOperation.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 #include <cstring>
 
@@ -59,7 +59,7 @@
 namespace sg
 {
 
-namespace GOperationFactory
+namespace op_factory
 {
 
   base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)

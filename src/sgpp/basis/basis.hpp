@@ -8,15 +8,15 @@
 #ifndef BASIS_HPP
 #define BASIS_HPP
 
-#include "basis/linear/noboundary/linear_base.hpp"
-#include "basis/linear/boundary/linearboundaryBase.hpp"
-#include "basis/linearstretched/noboundary/linearstretched_base.hpp"
-#include "basis/linearstretched/boundary/linearstretchedboundaryBase.hpp"
-#include "basis/modlinear/modified_linear_base.hpp"
-#include "basis/poly/poly_base.hpp"
-#include "basis/modpoly/modified_poly_base.hpp"
-#include "basis/modwavelet/modified_wavelet_base.hpp"
-#include "basis/modbspline/modified_bspline_base.hpp"
-#include "basis/prewavelet/prewavelet_base.hpp"
+#include "basis/linear/noboundary/LinearBasis.hpp"
+#include "basis/linear/boundary/LinearBoundaryBasis.hpp"
+#include "basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
+#include "basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
+#include "basis/modlinear/ModifiedLinearBasis.hpp"
+#include "basis/poly/PolyBasis.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
+#include "basis/modwavelet/ModifiedWaveletBasis.hpp"
+#include "basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "basis/prewavelet/PrewaveletBasis.hpp"
 
 #endif /* BASIS_HPP */

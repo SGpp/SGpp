@@ -6,7 +6,7 @@
 // @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "basis/basis.hpp"
-#include "basis/prewavelet/prewavelet_base.hpp"
+#include "basis/prewavelet/PrewaveletBasis.hpp"
 #include "algorithm/datadriven/test_dataset.hpp"
 
 #include "basis/prewavelet/operation/datadriven/OperationTestPrewavelet.hpp"
@@ -22,19 +22,19 @@ namespace datadriven
 
   double OperationTestPrewavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
   {
-    base::prewavelet_base<unsigned int, unsigned int> base;
+    base::PrewaveletBasis<unsigned int, unsigned int> base;
     return test_dataset(this->storage, base, alpha, data, classes);
   }
 
   double OperationTestPrewavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
   {
-    base::prewavelet_base<unsigned int, unsigned int> base;
+    base::PrewaveletBasis<unsigned int, unsigned int> base;
     return test_dataset_mse(this->storage, base, alpha, data, refValues);
   }
 
   double OperationTestPrewavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
   {
-    base::prewavelet_base<unsigned int, unsigned int> base;
+    base::PrewaveletBasis<unsigned int, unsigned int> base;
     return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
   }
 

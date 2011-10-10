@@ -23,7 +23,7 @@ namespace base
 void OperationMultipleEvalModWavelet::mult(DataVector& alpha, DataVector& result)
 {
 	AlgorithmDGEMV<SModWaveletBase> op;
-	modified_wavelet_base<unsigned int, unsigned int> base;
+	ModifiedWaveletBasis<unsigned int, unsigned int> base;
 
 	op.mult(storage, base, alpha, *(this->dataset_), result);
 }
@@ -31,7 +31,7 @@ void OperationMultipleEvalModWavelet::mult(DataVector& alpha, DataVector& result
 void OperationMultipleEvalModWavelet::multTranspose(DataVector& source, DataVector& result)
 {
 	AlgorithmDGEMV<SModWaveletBase> op;
-	modified_wavelet_base<unsigned int, unsigned int> base;
+	ModifiedWaveletBasis<unsigned int, unsigned int> base;
 
 	op.mult_transposed(storage, base, source, *(this->dataset_), result);
 }

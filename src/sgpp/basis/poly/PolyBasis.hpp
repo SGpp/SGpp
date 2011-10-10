@@ -25,7 +25,7 @@ namespace base
  * @version $HEAD$
  */
 template<class LT, class IT>
-class poly_base
+class PolyBasis
 {
 public:
 	/**
@@ -33,11 +33,11 @@ public:
 	 *
 	 * @param degree the polynom's max. degree
 	 */
-	poly_base(int degree) : polynoms(NULL), degree(degree)
+	PolyBasis(int degree) : polynoms(NULL), degree(degree)
 	{
 		if(degree < 2)
 		{
-			throw factory_exception("poly_base: degree < 2");
+			throw factory_exception("PolyBasis: degree < 2");
 		}
 
 		int polycount = (1 << (degree - 1)) - 1;
@@ -52,7 +52,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	~poly_base()
+	~PolyBasis()
 	{
 		if(polynoms)
 		{
@@ -61,7 +61,7 @@ public:
 	}
 
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 */
 	double eval(LT level, IT index, double p)
@@ -102,7 +102,7 @@ protected:
 
 private:
 	/**
-	 * Evaluate a base functions.
+	 * Evaluate a basis function.
 	 * Has a dependence on the absolute position of grid point and support.
 	 */
 	double evalPolynom(size_t id, size_t deg, double val)
@@ -240,7 +240,7 @@ private:
 };
 
   // default type-def (unsigned int for level and index)
-  typedef poly_base<unsigned int, unsigned int> SPolyBase;
+  typedef PolyBasis<unsigned int, unsigned int> SPolyBase;
 
 }
 }
