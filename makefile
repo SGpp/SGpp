@@ -365,4 +365,4 @@ test_ClassifyBenchmark:
 	./test_ClassifyBenchmark.sh;
 
 clean:
-	rm -rdfv tmp/build_native
+	rm -rfv tmp/build_native
