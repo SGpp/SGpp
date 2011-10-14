@@ -7,7 +7,7 @@
 
 #include "operation/pde/OperationParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 namespace sg
 {

@@ -11,7 +11,7 @@
 #include "tools/common/StdNormalDistribution.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 #include <sstream>
 #include <iostream>

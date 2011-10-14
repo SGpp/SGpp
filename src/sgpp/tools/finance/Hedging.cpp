@@ -6,7 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "tools/finance/Hedging.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 #include "tools/common/EvalCuboidGenerator.hpp"
 
 #include "data/DataVector.hpp"

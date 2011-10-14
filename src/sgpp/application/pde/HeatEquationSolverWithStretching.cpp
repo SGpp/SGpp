@@ -5,7 +5,7 @@
 #include "solver/ode/CrankNicolson.hpp"
 #include "solver/sle/ConjugateGradients.hpp"
 #include "exception/application_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 
 using namespace sg::base;

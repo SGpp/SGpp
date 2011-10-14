@@ -13,7 +13,7 @@
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 
-#include "basis/operations_factory.hpp"
+#include "pde/operation/PdeOpFactory.hpp"
 
 namespace sg
 {

@@ -9,7 +9,7 @@
 
 #include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
 #include "exception/algorithm_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "pde/operation/PdeOpFactory.hpp"
 
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"

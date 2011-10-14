@@ -7,7 +7,7 @@
 
 #include "tools/common/GridPrinterForStretching.hpp"
 #include "exception/tool_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 #include <fstream>
 #include <vector>

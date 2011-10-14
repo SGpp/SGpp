@@ -7,8 +7,7 @@
 
 #include "algorithm/datadriven/DMSystemMatrix.hpp"
 #include "exception/operation_exception.hpp"
-#include "basis/operations_factory.hpp"
-
+#include "base/operation/BaseOpFactory.hpp"
 
 namespace sg
 {

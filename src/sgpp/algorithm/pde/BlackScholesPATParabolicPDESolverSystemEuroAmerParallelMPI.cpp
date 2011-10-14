@@ -14,7 +14,7 @@
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
 #include "algorithm/pde/UpDownTwoOpDims.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
