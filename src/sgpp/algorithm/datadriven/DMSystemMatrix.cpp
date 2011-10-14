@@ -21,7 +21,7 @@ DMSystemMatrix::DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix&
 	this->C = &C;
 	this->lamb = lambda;
 	this->data = &trainData;
-	this->B = sg::GridOperationFactory::createOperationMultipleEval(SparseGrid, this->data);
+	this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, this->data);
 }
 
 DMSystemMatrix::~DMSystemMatrix()

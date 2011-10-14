@@ -89,11 +89,11 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
 	// Create operations
-	this->OpLaplaceInner = sg::GridOperationFactory::createOperationLaplace(*this->InnerGrid, *this->lambda);
-	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid, *this->lambda);
+	this->OpLaplaceInner = sg::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda);
+	this->OpLaplaceBound = sg::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda);
 
-	this->OpLTwoInner = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->InnerGrid);
-	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
+	this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
+	this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;
@@ -202,7 +202,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 	{
 		double current_time = static_cast<double>(this->nExecTimesteps)*this->TimestepSize;
 
-		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+		sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->BoundGrid);
 		myHierarchisation->doDehierarchisation(*this->alpha_complete);
 		size_t dim = this->BoundGrid->getStorage()->dim();
 		sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));

@@ -81,7 +81,7 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Gri
 
 	this->myTimer = new sg::base::SGppStopwatch();
 
-	this->B = sg::GridOperationFactory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode, this->data);
+	this->B = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode, this->data);
 }
 
 DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity()

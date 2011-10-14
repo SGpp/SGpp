@@ -82,8 +82,8 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 	}
 
 	// operations on boundary grid
-	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(*this->BoundGrid, *this->lambda);
-	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
+	this->OpLaplaceBound = sg::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda);
+	this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;

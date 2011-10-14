@@ -9,13 +9,11 @@
 #define GETAFFECTEDBASISFUNCTIONS_HPP
 
 #include "grid/GridStorage.hpp"
-#include "data/DataVector.hpp"
 #include "basis/modwavelet/ModifiedWaveletBasis.hpp"
 #include "basis/modbspline/ModifiedBsplineBasis.hpp"
 #include "basis/linear/boundary/LinearBoundaryBasis.hpp"
 #include "basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
 #include "basis/prewavelet/PrewaveletBasis.hpp"
-
 
 #include <vector>
 #include <utility>

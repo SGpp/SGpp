@@ -16,6 +16,8 @@
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "stdlib.h"
 #include "basis/operations_factory.hpp"
+#include "data/DataVector.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 #include <sstream>
 #include <fstream>
 
@@ -32,12 +34,12 @@ LaserHeatEquationSolver2D::~LaserHeatEquationSolver2D()
 {
 }
 
-void LaserHeatEquationSolver2D::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+  void LaserHeatEquationSolver2D::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	throw new application_exception("LaserHeatEquationSolver::solveExplicitEuler : explicit sg::solver::Euler is not supported!");
+  throw new base::application_exception("LaserHeatEquationSolver::solveExplicitEuler : explicit sg::solver::Euler is not supported!");
 }
 
-void LaserHeatEquationSolver2D::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
+void LaserHeatEquationSolver2D::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
 	if (this->bGridConstructed)
 	{
@@ -46,7 +48,7 @@ void LaserHeatEquationSolver2D::solveImplicitEuler(size_t numTimesteps, double t
 		sg::solver::Euler* myEuler = new sg::solver::Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(maxCGIterations, epsilonCG);
 		LaserHeatEquationParabolicPDESolverSystemParallelOMP2D* myHESolver = new LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(this->beam_velocity_, this->heat_sigma_, this->max_level_, this->heat_, this->refine_threshold_, this->coarsen_threshold_, *this->myGrid, alpha, this->a, timestepsize, "ImEul");
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
 
 		myStopwatch->start();
 		myEuler->solve(*myCG, *myHESolver, verbose);
@@ -65,20 +67,20 @@ void LaserHeatEquationSolver2D::solveImplicitEuler(size_t numTimesteps, double t
 	}
 	else
 	{
-		throw new application_exception("LaserHeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
+	  throw new base::application_exception("LaserHeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
 	}
 }
 
-void LaserHeatEquationSolver2D::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
+void LaserHeatEquationSolver2D::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, base::DataVector& alpha, size_t NumImEul)
 {
-	throw new application_exception("LaserHeatEquationSolver::solveCrankNicolson : Crank Nicolson is not supported!");
+  throw new base::application_exception("LaserHeatEquationSolver::solveCrankNicolson : Crank Nicolson is not supported!");
 }
 
-void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(DataVector& alpha, size_t nRefinements)
+void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(base::DataVector& alpha, size_t nRefinements)
 {
 	if (this->bGridConstructed)
 	{
-		StdNormalDistribution myNormDistr;
+	  base::StdNormalDistribution myNormDistr;
 
 		std::cout << std::endl;
 
@@ -110,14 +112,14 @@ void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(DataVector& alpha
 			delete[] dblFuncValues;
 
 			// do hierarchisation
-			OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+			base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 			myHierarchisation->doHierarchisation(alpha);
 			delete myHierarchisation;
 
 			// do refinement
-			GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+			base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
 			size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-			SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(&alpha, numRefines, this->refine_threshold_);
+			base::SurplusRefinementFunctor* myRefineFunc = new base::SurplusRefinementFunctor(&alpha, numRefines, this->refine_threshold_);
 			myGenerator->refineMaxLevel(myRefineFunc, this->max_level_);
 			delete myRefineFunc;
 			delete myGenerator;
@@ -155,19 +157,19 @@ void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(DataVector& alpha
 		delete[] dblFuncValues;
 
 		// do hierarchisation
-		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
 	else
 	{
-		throw new application_exception("LaserHeatEquationSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
+	  throw new base::application_exception("LaserHeatEquationSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
 	}
 }
 
 void LaserHeatEquationSolver2D::initScreen()
 {
-	this->myScreen = new ScreenOutput();
+  this->myScreen = new base::ScreenOutput();
 	this->myScreen->writeTitle("SGpp - Laser Heat Solver, 1.0.0", "Alexander Heinecke, (C) 2011");
 }
 

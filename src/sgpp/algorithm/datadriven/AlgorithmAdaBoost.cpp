@@ -25,7 +25,7 @@ namespace datadriven
         this->numData = trainData.getNrows();
         this->dim = gridStorage->dim();
         this->numBaseLearners = NUM;
-		this->C = sg::GridOperationFactory::createOperationIdentity(SparseGrid);
+		this->C = sg::op_factory::createOperationIdentity(SparseGrid);
         this->imax = IMAX;
         this->epsilon = eps;
 		this->labelOne = firstLabel;
@@ -47,7 +47,7 @@ namespace datadriven
 	{
 		sg::base::DataVector weight(this->numData);
 		weight.setAll(1.0/double(this->numData));
-		sg::base::OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*this->grid);
+		sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
 		// to store certain train data point
 		sg::base::DataVector p(this->dim);
 		// create vector to store the hypothesis of the training data according to certain alpha vector(base learner)
@@ -80,7 +80,7 @@ namespace datadriven
 			{
 				for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++)
 					doRefinement(alpha, rhs, weight, adaptiveStep);
-				opEval = sg::GridOperationFactory::createOperationEval(*this->grid);
+				opEval = sg::op_factory::createOperationEval(*this->grid);
 				// resize the DataMatrix storageAlpha
 				storageAlpha.resizeZero(alpha.getSize());
 			}
@@ -222,7 +222,7 @@ namespace datadriven
 		
 		sg::base::DataMatrix baseLearnerMatr(testData.getNrows(), this->actualBaseLearners);
 		sg::base::DataVector p(this->dim);
-		sg::base::OperationEval* operateEval = sg::GridOperationFactory::createOperationEval(*this->grid);
+		sg::base::OperationEval* operateEval = sg::op_factory::createOperationEval(*this->grid);
 		sg::base::DataVector alphaT(storageOfAlpha.getNrows());
 		sg::base::DataVector baseLearnerVec(testData.getNrows());
 		for (size_t t = 0; t < this->actualBaseLearners; t++)
@@ -324,7 +324,7 @@ namespace datadriven
 		{
 			sg::base::DataMatrix baseLearnerMatr(testData.getNrows(), yourBaseLearner);
 			sg::base::DataVector p(this->dim);
-			sg::base::OperationEval* operateEval = sg::GridOperationFactory::createOperationEval(*this->grid);
+			sg::base::OperationEval* operateEval = sg::op_factory::createOperationEval(*this->grid);
 			sg::base::DataVector alphaT(storageAlpha.getNrows());
 			sg::base::DataVector baseLearnerVec(testData.getNrows());
 			for (size_t t = 0; t < yourBaseLearner; t++)

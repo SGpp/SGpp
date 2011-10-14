@@ -7,12 +7,10 @@
 
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
-#include "basis/basis.hpp"
+#include "basis/modlinear/ModifiedLinearBasis.hpp"
 #include "basis/modlinear/operation/common/OperationEvalModLinear.hpp"
 
-#include "exception/operation_exception.hpp"
 
-#include "data/DataVector.hpp"
 
 namespace sg
 {

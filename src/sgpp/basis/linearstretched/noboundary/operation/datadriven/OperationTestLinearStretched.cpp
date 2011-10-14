@@ -6,14 +6,12 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 
-#include "basis/basis.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
 #include "basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
 #include "algorithm/datadriven/test_dataset.hpp"
 
 #include "basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.hpp"
 
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 namespace sg
 {

@@ -31,7 +31,7 @@
 namespace sg
 {
 
-namespace GOperationFactory
+namespace op_factory
 {
 
   base::OperationMatrix* createOperationLaplace(base::Grid& grid)

@@ -94,9 +94,9 @@ int main()
      * This step can also be replaced by the direct assignment of function values to the sparse grid points as we showed it before
      * */
     fgs.reCompose(gridStorage,&beta);
-    OperationHierarchisation* oh=sg::GridOperationFactory::createOperationHierarchisation(*grid);
+    OperationHierarchisation* oh=sg::op_factory::createOperationHierarchisation(*grid);
     oh->doHierarchisation(beta);
-    OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*grid);
+    OperationEval* opEval = sg::op_factory::createOperationEval(*grid);
     /**
      * We print the value interpolated on the sparse grid and also the real value of the function in the given point
      * */

@@ -57,6 +57,8 @@ basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
 basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.cpp
 basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.cpp
 basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
+
+pde/operation/PdeOpFactory.cpp
 """)
 
 

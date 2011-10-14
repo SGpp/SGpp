@@ -44,14 +44,14 @@ int main() {
   cout << alpha.toString() << endl;
 
   // hierarchize
-  sg::GridOperationFactory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  sg::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
   cout << alpha.toString() << endl;
 
   // evaluate
   DataVector p(dim);
   p[0] = 0.52;
   p[1] = 0.73;
-  OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*grid);
+  OperationEval* opEval = sg::op_factory::createOperationEval(*grid);
   cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << endl;
 
   delete grid;

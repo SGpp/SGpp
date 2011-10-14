@@ -10,7 +10,7 @@
 
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "grid/GridStorage.hpp"
-
+#include "basis/modbspline/ModifiedBsplineBasis.hpp"
 
 namespace sg
 {

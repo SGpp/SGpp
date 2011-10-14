@@ -8,23 +8,11 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-#include "grid/GridStorage.hpp"
 
-#include "operation/datadriven/OperationMultipleEval.hpp"
-#include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
-#include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
-#include "operation/datadriven/OperationTest.hpp"
 #include "operation/common/OperationEval.hpp"
-#include "operation/common/OperationHierarchisation.hpp"
-#include "operation/common/OperationMatrix.hpp"
-#include "operation/common/OperationConvert.hpp"
 
 #include "grid/generation/GridGenerator.hpp"
-#include "grid/common/BoundingBox.hpp"
-#include "grid/common/Stretching.hpp"
 
-#include <iostream>
-#include <string>
 #include <map>
 
 namespace sg

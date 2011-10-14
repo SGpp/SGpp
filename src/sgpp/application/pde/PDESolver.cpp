@@ -286,7 +286,7 @@ void PDESolver::constructGridBonn(std::string tfilename, sg::base::DataVector& e
 
 	if (ishierarchized == false)
 	{
-		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+		sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*myGrid);
 		myHierarchisation->doHierarchisation(emptyAlpha);
 		delete myHierarchisation;
 	}
@@ -305,7 +305,7 @@ void PDESolver::storeGridBonn(std::string tfilename, sg::base::DataVector& alpha
 	{
 		if (ishierarchized == false)
 		{
-			sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+			sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*myGrid);
 			myHierarchisation->doDehierarchisation(copyAlpha);
 			delete myHierarchisation;
 		}
@@ -350,7 +350,7 @@ double PDESolver::evaluatePoint(std::vector<double>& evalPoint, sg::base::DataVe
 
 	if (bGridConstructed)
 	{
-		sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
+		sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
 		result = myEval->eval(alpha, evalPoint);
 		delete myEval;
 	}
@@ -371,7 +371,7 @@ void PDESolver::evaluateCuboid(sg::base::DataVector& alpha, sg::base::DataVector
 			throw new sg::base::application_exception("PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
 		}
 
-		sg::base::OperationMultipleEval* myOpMultEval = sg::GridOperationFactory::createOperationMultipleEval(*myGrid, &EvaluationPoints);
+		sg::base::OperationMultipleEval* myOpMultEval = sg::op_factory::createOperationMultipleEval(*myGrid, &EvaluationPoints);
 		myOpMultEval->mult(alpha, OptionPrices);
 		delete myOpMultEval;
 	}

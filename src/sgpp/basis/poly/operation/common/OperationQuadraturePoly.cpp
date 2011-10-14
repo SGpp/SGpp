@@ -8,11 +8,6 @@
 
 #include "basis/poly/operation/common/OperationQuadraturePoly.hpp"
 
-#include "basis/basis.hpp"
-#include "data/DataVector.hpp"
-#include "grid/GridStorage.hpp"
-#include <sstream>
-#include <cmath>
 
 namespace sg
 {

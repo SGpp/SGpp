@@ -7,13 +7,9 @@
 
 #include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
-#include "basis/basis.hpp"
 #include "basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.hpp"
 
-#include "exception/operation_exception.hpp"
 
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 namespace sg
 {

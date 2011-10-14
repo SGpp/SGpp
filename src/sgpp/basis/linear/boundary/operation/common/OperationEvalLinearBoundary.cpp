@@ -7,11 +7,9 @@
 
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
-#include "basis/basis.hpp"
 
 #include "basis/linear/boundary/operation/common/OperationEvalLinearBoundary.hpp"
 
-#include "data/DataVector.hpp"
 
 namespace sg
 {

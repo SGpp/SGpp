@@ -20,20 +20,14 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.hpp"
 #include "basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp"
 #include "basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp"
-#include "basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp"
 #include "basis/prewavelet/operation/common/OperationConvertPrewavelet.hpp"
 
 
 #include "algorithm/common/sweep.hpp"
 
-#include "basis/basis.hpp"
-#include "data/DataVector.hpp"
 
-#include <iostream>
 
 namespace sg
 {

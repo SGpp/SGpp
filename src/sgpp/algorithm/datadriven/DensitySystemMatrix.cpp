@@ -11,6 +11,9 @@
 #include "exception/operation_exception.hpp"
 #include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
 
+#include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
+
 namespace sg
 {
 namespace datadriven
@@ -21,8 +24,8 @@ namespace datadriven
   this->data = &trainData;
   this->lambda = lambda;
 
-  this->A = sg::GridOperationFactory::createOperationLTwoDotProduct(grid);
-  this->B = sg::GridOperationFactory::createOperationMultipleEval(grid, this->data);
+  this->A = sg::op_factory::createOperationLTwoDotProduct(grid);
+  this->B = sg::op_factory::createOperationMultipleEval(grid, this->data);
   this->C = &C;
 }
 
@@ -34,7 +37,7 @@ void DensitySystemMatrix::mult(sg::base::DataVector &alpha, sg::base::DataVector
   this->A->mult(alpha, result);
   
   // C * alpha
-  DataVector tmp(result.getSize());
+  base::DataVector tmp(result.getSize());
   this->C->mult(alpha, tmp);
 
   // A * alpha + lambda * C * alpha

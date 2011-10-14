@@ -6,11 +6,8 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/datadriven/AlgorithmDGEMV.hpp"
-#include "basis/basis.hpp"
+#include "basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
 #include "basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.hpp"
-#include "exception/operation_exception.hpp"
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 
 namespace sg

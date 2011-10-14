@@ -221,10 +221,10 @@ int main(int argc, char *argv[])
 	}
 
 
-	myUpDown1 = sg::GridOperationFactory::createOperationUpDownTest(*myGrid1);
-	myDelta1 = sg::GridOperationFactory::createOperationDelta(*myGrid1, deltaCoef);
-	myGamma1 = sg::GridOperationFactory::createOperationGamma(*myGrid1, gammaCoef);
-	myL2Dot1 = sg::GridOperationFactory::createOperationLTwoDotProduct(*myGrid1);
+	myUpDown1 = sg::op_factory::createOperationUpDownTest(*myGrid1);
+	myDelta1 = sg::op_factory::createOperationDelta(*myGrid1, deltaCoef);
+	myGamma1 = sg::op_factory::createOperationGamma(*myGrid1, gammaCoef);
+	myL2Dot1 = sg::op_factory::createOperationLTwoDotProduct(*myGrid1);
 
 	std::cout << "start constructing the operator's matrix" << std::endl;
 	for (size_t i = 0; i < numGridPoints; i++)
@@ -450,7 +450,7 @@ int main(int argc, char *argv[])
 	DataMatrix UpDownMatrix2(numGridPoints, numGridPoints);
 	UpDownMatrix2.setAll(0.0);
 
-	myUpDown2 = sg::GridOperationFactory::createOperationUpDownTest(*myGrid2);
+	myUpDown2 = sg::op_factory::createOperationUpDownTest(*myGrid2);
 
 	std::cout << "start constructing the operator's matrix" << std::endl;
 	for (size_t i = 0; i < numGridPoints; i++)

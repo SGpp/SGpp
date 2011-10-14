@@ -7,13 +7,10 @@
 
 #include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
-#include "basis/basis.hpp"
+#include "basis/poly/PolyBasis.hpp"
 #include "basis/poly/operation/datadriven/OperationMultipleEvalPoly.hpp"
 
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
-#include "exception/operation_exception.hpp"
 
 namespace sg
 {

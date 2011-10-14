@@ -7,11 +7,10 @@
 
 #include "algorithm/common/AlgorithmEvaluation.hpp"
 
-#include "basis/basis.hpp"
+#include "basis/linear/noboundary/LinearBasis.hpp"
 
 #include "basis/linear/noboundary/operation/common/OperationEvalLinear.hpp"
 
-#include "data/DataVector.hpp"
 
 namespace sg
 {

@@ -33,15 +33,15 @@ HeatEquationParabolicPDESolverSystemParallelMPI::HeatEquationParabolicPDESolverS
 	this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
 	this->GridConverter = new sg::base::DirichletGridConverter();
 
-	this->OpLaplaceBound = sg::GridOperationFactory::createOperationLaplace(SparseGrid);
-	this->OpMassBound = sg::GridOperationFactory::createOperationLTwoDotProduct(SparseGrid);
+	this->OpLaplaceBound = sg::op_factory::createOperationLaplace(SparseGrid);
+	this->OpMassBound = sg::op_factory::createOperationLTwoDotProduct(SparseGrid);
 
 	// create the inner grid
 	this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
 	//Create needed operations, on inner grid
-	this->OpLaplaceInner = sg::GridOperationFactory::createOperationLaplace(*this->InnerGrid);
-	this->OpMassInner = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->InnerGrid);
+	this->OpLaplaceInner = sg::op_factory::createOperationLaplace(*this->InnerGrid);
+	this->OpMassInner = sg::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
 
 	// right hand side if System
 	this->rhs = NULL;
@@ -85,7 +85,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixComplete(sg
 	}
 }
 
-void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(DataVector& alpha, DataVector& result)
+  void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -121,7 +121,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(Dat
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 	size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
@@ -136,7 +136,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixInner(DataV
 	}
 }
 
-void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorInner(DataVector& alpha, DataVector& result)
+void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
 
@@ -261,7 +261,7 @@ sg::base::DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateR
 	// distribute the current grid coefficients
 	myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*(this->alpha_complete));
 
-	DataVector rhs_complete(this->alpha_complete->getSize());
+	sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
 	if (this->tOperationMode == "ExEul")
 	{
@@ -417,7 +417,7 @@ sg::base::DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateR
 		delete this->rhs;
 	}
 
-	this->rhs = new DataVector(this->alpha_inner->getSize());
+	this->rhs = new sg::base::DataVector(this->alpha_inner->getSize());
 
 	if (myGlobalMPIComm->getMyRank() == 0)
 	{

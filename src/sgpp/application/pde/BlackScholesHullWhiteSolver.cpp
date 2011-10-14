@@ -331,7 +331,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

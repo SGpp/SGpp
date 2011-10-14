@@ -1,14 +1,12 @@
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.hpp"
 #include "application/pde/HeatEquationSolverWithStretching.hpp"
+#include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "solver/sle/ConjugateGradients.hpp"
-#include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
-#include "stdlib.h"
-#include <sstream>
 #include "basis/operations_factory.hpp"
+#include "tools/common/SGppStopwatch.hpp"
 
 using namespace sg::base;
 using namespace sg::solver;
@@ -213,7 +211,7 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(DataVector& alpha,
 
 		delete[] dblFuncValues;
 
-		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
