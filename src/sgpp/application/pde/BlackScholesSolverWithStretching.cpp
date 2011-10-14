@@ -17,7 +17,7 @@
 #include "solver/sle/BiCGStab.hpp"
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 #include "data/DataVector.hpp"
 #include <cstdlib>
 #include <sstream>

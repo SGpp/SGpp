@@ -6,7 +6,7 @@
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
 #include "tools/common/OperationQuadratureMC.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 #include "data/DataMatrix.hpp"
 #include "data/DataVector.hpp"
 #include <cmath>

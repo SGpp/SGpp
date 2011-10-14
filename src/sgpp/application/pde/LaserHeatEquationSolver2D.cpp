@@ -15,7 +15,7 @@
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "stdlib.h"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 #include "data/DataVector.hpp"
 #include "tools/common/SGppStopwatch.hpp"
 #include <sstream>

@@ -9,7 +9,8 @@
 #include "exception/algorithm_exception.hpp"
 #include "grid/generation/SurplusCoarseningFunctor.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
+#include "pde/operation/PdeOpFactory.hpp"
 #include <cmath>
 
 namespace sg

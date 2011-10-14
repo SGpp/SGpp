@@ -7,7 +7,8 @@
 
 #include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
 #include "exception/operation_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "parallel/operation/ParallelOpFactory.hpp"
+#include "datadriven/operation/DatadrivenOpFactory.hpp"
 
 namespace sg
 {

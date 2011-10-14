@@ -7,7 +7,8 @@
 //         Benjamin Peherstorfer <pehersto@in.tum.de>
 
 #include "algorithm/datadriven/DensitySystemMatrix.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
+#include "pde/operation/PdeOpFactory.hpp"
 #include "exception/operation_exception.hpp"
 #include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
 

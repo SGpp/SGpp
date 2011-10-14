@@ -14,7 +14,7 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "tools/common/SGppStopwatch.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 #include "stdlib.h"
 #include <sstream>
 

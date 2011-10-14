@@ -117,5 +117,10 @@
 //}
 
 #include "basis/operations_factory.hpp"
+#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "parallel/operation/ParallelOpFactory.hpp"
+#include "finance/operation/FinanceOpFactory.hpp"
+#include "pde/operation/PdeOpFactory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 #endif /*SGPP_HPP_*/

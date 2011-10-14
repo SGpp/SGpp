@@ -8,7 +8,7 @@
 // @author Benjamin (pehersto@in.tum.de)
 #include "algorithm/datadriven/DMWeightMatrix.hpp"
 #include "exception/operation_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 
 namespace sg

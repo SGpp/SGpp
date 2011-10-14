@@ -7,7 +7,8 @@
 
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
 #include "exception/algorithm_exception.hpp"
-#include "basis/operations_factory.hpp"
+#include "pde/operation/PdeOpFactory.hpp"
+
 using namespace sg::op_factory;
 
 namespace sg

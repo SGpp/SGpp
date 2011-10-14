@@ -15,7 +15,7 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "stdlib.h"
-#include "basis/operations_factory.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 #include <sstream>
 
 
