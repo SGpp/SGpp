@@ -13,7 +13,8 @@
 
 #include "algorithm/pde/StdUpDown.hpp"
 #include "algorithm/pde/UpDownOneOpDim.hpp"
-using namespace sg::GridOperationFactory;
+
+using namespace sg::op_factory;
 
 namespace sg
 {

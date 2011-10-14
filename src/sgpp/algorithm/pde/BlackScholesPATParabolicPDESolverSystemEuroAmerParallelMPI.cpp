@@ -493,7 +493,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 		{
 			double current_time = static_cast<double>(this->nExecTimesteps)*this->TimestepSize;
 
-			sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+			sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->BoundGrid);
 			myHierarchisation->doDehierarchisation(*this->alpha_complete);
 			size_t dim = this->BoundGrid->getStorage()->dim();
 			sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));

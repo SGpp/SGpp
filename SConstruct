@@ -224,8 +224,15 @@ if env.has_key('MARCH'):
     else:
         print "Warning: Ignoring option MARCH"
 
+# special treatment for MAC OS-X
+if env['PLATFORM']=='darwin':
+    env.Append(LINKFLAGS=['-lpython'])
+    env['SHLIBSUFFIX'] = '.so'
+
+
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
+
 
 
 

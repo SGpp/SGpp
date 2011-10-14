@@ -45,13 +45,13 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(sg::base::G
 	this->HWalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
 	// Create needed operations, on boundary grid
-	this->OpBBound = sg::GridOperationFactory::createOperationLB(*this->BoundGrid);
-	this->OpDBound = sg::GridOperationFactory::createOperationLD(*this->BoundGrid);
-	this->OpEBound = sg::GridOperationFactory::createOperationLE(*this->BoundGrid);
-	this->OpFBound = sg::GridOperationFactory::createOperationLF(*this->BoundGrid);
+	this->OpBBound = sg::op_factory::createOperationLB(*this->BoundGrid);
+	this->OpDBound = sg::op_factory::createOperationLD(*this->BoundGrid);
+	this->OpEBound = sg::op_factory::createOperationLE(*this->BoundGrid);
+	this->OpFBound = sg::op_factory::createOperationLF(*this->BoundGrid);
 
 	// Create operations, independent bLogTransform
-	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
+	this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;

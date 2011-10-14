@@ -18,6 +18,8 @@ basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeAVXModLinear.
 basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPAVXModLinear.cpp
 basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.cpp
 basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSSEModLinear.cpp
+
+parallel/operation/ParallelOpFactory.cpp
 """)
 
 sg_env = env.Clone()

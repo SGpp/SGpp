@@ -6,12 +6,10 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #include "basis/modlinear/operation/datadriven/OperationTestModLinear.hpp"
-#include "basis/basis.hpp"
 #include "basis/modlinear/ModifiedLinearBasis.hpp"
 
 #include "algorithm/datadriven/test_dataset.hpp"
 
-#include "exception/operation_exception.hpp"
 
 namespace sg
 {

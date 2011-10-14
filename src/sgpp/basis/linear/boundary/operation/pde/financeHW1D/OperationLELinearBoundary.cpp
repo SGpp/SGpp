@@ -7,13 +7,10 @@
 
 #include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
 
-//#include "basis/linear/boundary/algorithm_sweep/DPhidPhiDownBBLinearBoundary.hpp"
-//#include "basis/linear/boundary/algorithm_sweep/DPhidPhiUpBBLinearBoundary.hpp"
 
 #include "basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.hpp"
 #include "basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
-#include "algorithm/common/sweep.hpp"
 
 namespace sg
 {

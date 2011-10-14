@@ -6,11 +6,8 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "algorithm/datadriven/AlgorithmMultipleEvaluation.hpp"
-#include "basis/basis.hpp"
+#include "basis/linear/noboundary/LinearBasis.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.hpp"
-#include "exception/operation_exception.hpp"
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 
 namespace sg

@@ -95,8 +95,8 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(sg::b
 		buildGammaCoefficients();
 
 		// Create needed operations, on boundary grid
-		this->OpDeltaBound = sg::GridOperationFactory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
-		this->OpGammaBound = sg::GridOperationFactory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
+		this->OpDeltaBound = sg::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
 	}
 	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
 	else
@@ -105,11 +105,11 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(sg::b
 		buildGammaCoefficientsLogTransform();
 
 		// operations on boundary grid
-		this->OpDeltaBound = sg::GridOperationFactory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
-		this->OpGammaBound = sg::GridOperationFactory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
+		this->OpDeltaBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
 	}
 
-	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
+	this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;

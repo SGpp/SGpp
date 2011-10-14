@@ -90,6 +90,8 @@ basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStret
 basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.cpp
 basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.cpp
 basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.cpp
+
+finance/operation/FinanceOpFactory.cpp
 """)
 
 

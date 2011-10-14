@@ -49,7 +49,7 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha, std:
 		{
 			// Open filehandle
 			fileout.open(tFilename.c_str());
-			OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
+			OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
 
 			dimOne = GridArea.getBoundary(0);
 			dimTwo = GridArea.getBoundary(1);
@@ -93,7 +93,7 @@ void GridPrinterForStretching::printGrid(DataVector& alpha, std::string tFilenam
 			{
 				// Open filehandle
 				fileout.open(tFilename.c_str());
-				OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*myGrid);
+				OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
 
 				if (myGrid->getStorage()->dim() == 1)
 				{
@@ -157,7 +157,7 @@ void GridPrinterForStretching::printSparseGrid(DataVector& alpha, std::string tF
 	// Do Dehierarchisation, is specified
 	if (bSurplus == false)
 	{
-		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+		OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
 		myHier->doDehierarchisation(temp);
 		delete myHier;
 	}
@@ -190,7 +190,7 @@ void GridPrinterForStretching::printSparseGridExpTransform(DataVector& alpha, st
 		// Do Dehierarchisation, is specified
 		if (bSurplus == false)
 		{
-			OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+			OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
 			myHier->doDehierarchisation(temp);
 			delete myHier;
 		}

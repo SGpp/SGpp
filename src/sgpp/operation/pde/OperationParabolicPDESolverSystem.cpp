@@ -76,7 +76,7 @@ size_t OperationParabolicPDESolverSystem::getSumGridPointsInner()
 void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(sg::base::DataVector& Values)
 {
 	Values = *(this->alpha_complete);
-	sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*BoundGrid);
+	sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*BoundGrid);
 	myHierarchisation->doDehierarchisation(Values);
 	delete myHierarchisation;
 }

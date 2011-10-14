@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	DataMatrix UpDownMatrix(numGridPoints, numGridPoints);
 	UpDownMatrix.setAll(0.0);
 
-	myUpDown = sg::GridOperationFactory::createOperationUpDownTest(*myGrid);
+	myUpDown = sg::op_factory::createOperationUpDownTest(*myGrid);
 
 	std::cout << "start constructing the operator's matrix" << std::endl;
 	for (size_t i = 0; i < numGridPoints; i++)

@@ -18,6 +18,7 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "basis/operations_factory.hpp"
+#include "data/DataVector.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
@@ -335,7 +336,7 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(sg::base:
 				std::ofstream file;
 				file.open(tFilename.c_str());
 
-				sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
+				sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
 
 				for (size_t i = 0; i < numTestpoints; i++)
 				{
@@ -453,7 +454,7 @@ void BlackScholesSolverWithStretching::initCartesianGridWithPayoff(sg::base::Dat
 			delete[] dblFuncValues;
 		}
 
-		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -508,7 +509,7 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(sg::base
 			delete[] dblFuncValues;
 		}
 
-		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -518,17 +519,17 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(sg::base
 	}
 }
 
-void BlackScholesSolverWithStretching::getAnalyticAlpha1D(DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized)
+  void BlackScholesSolverWithStretching::getAnalyticAlpha1D(base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized)
 {
 	double coord;
 
 	if(dim!=1)
 	{
-		throw new application_exception("BlackScholesSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
+	  throw new base::application_exception("BlackScholesSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
 	}
 	if (!this->bGridConstructed)
 	{
-		throw new application_exception("BlackScholesSolver::getAnalyticAlpha1D : function only available for dim = 1!");
+	  throw new base::application_exception("BlackScholesSolver::getAnalyticAlpha1D : function only available for dim = 1!");
 	}
 
 	// compute values of analytic solution on given grid
@@ -554,7 +555,7 @@ void BlackScholesSolverWithStretching::getAnalyticAlpha1D(DataVector& alpha_anal
 	if(hierarchized)
 	{
 		// hierarchize computed values
-		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+	  base::OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHier->doHierarchisation(alpha_analytic);
 
 		delete myHier;

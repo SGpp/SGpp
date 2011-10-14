@@ -1120,7 +1120,7 @@ namespace finance
     if(hierarchized)
       {
         // hierarchize computed values
-        OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*this->myGrid);
         myHier->doHierarchisation(alpha_analytic);
 
         delete myHier;
@@ -1204,7 +1204,7 @@ namespace finance
                 std::ofstream file;
                 file.open(tFilename.c_str());
 
-                OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
+                OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
 
                 for (size_t i = 0; i < numTestpoints; i++)
                   {
@@ -1323,7 +1323,7 @@ namespace finance
             delete[] dblFuncValues;
           }
 
-        OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       }
@@ -1378,7 +1378,7 @@ namespace finance
             delete[] dblFuncValues;
           }
 
-        OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       }
@@ -1443,7 +1443,7 @@ namespace finance
             delete[] dblFuncValues;
           }
 
-        OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       }
@@ -1483,7 +1483,7 @@ namespace finance
           }
       }
 
-    sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
+    sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
     double result = myEval->eval(alpha, trans_eval);
     delete myEval;
 
@@ -1539,7 +1539,7 @@ namespace finance
     // Do Dehierarchisation, is specified
     if (bSurplus == false)
       {
-        OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+        OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
         myHier->doDehierarchisation(temp);
         delete myHier;
       }

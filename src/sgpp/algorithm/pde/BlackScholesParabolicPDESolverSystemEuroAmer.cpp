@@ -102,11 +102,11 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 		buildGammaCoefficients();
 
 		//Create needed operations, on inner grid
-		this->OpDeltaInner = sg::GridOperationFactory::createOperationDelta(*this->InnerGrid, *this->deltaCoef);
-		this->OpGammaInner = sg::GridOperationFactory::createOperationGamma(*this->InnerGrid, *this->gammaCoef);
+		this->OpDeltaInner = sg::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef);
+		this->OpGammaInner = sg::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef);
 		// Create needed operations, on boundary grid
-		this->OpDeltaBound = sg::GridOperationFactory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
-		this->OpGammaBound = sg::GridOperationFactory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
+		this->OpDeltaBound = sg::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
 	}
 	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
 	else
@@ -115,16 +115,16 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 		buildGammaCoefficientsLogTransform();
 
 		// operations on boundary grid
-		this->OpDeltaBound = sg::GridOperationFactory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
-		this->OpGammaBound = sg::GridOperationFactory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
+		this->OpDeltaBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
+		this->OpGammaBound = sg::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
 		//operations on inner grid
-		this->OpDeltaInner = sg::GridOperationFactory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
-		this->OpGammaInner = sg::GridOperationFactory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
+		this->OpDeltaInner = sg::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
+		this->OpGammaInner = sg::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
 	}
 
 	// Create operations, independent bLogTransform
-	this->OpLTwoInner = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->InnerGrid);
-	this->OpLTwoBound = sg::GridOperationFactory::createOperationLTwoDotProduct(*this->BoundGrid);
+	this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
+	this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
 	// right hand side if System
 	this->rhs = NULL;
@@ -302,7 +302,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLastTim
 	// check if we are doing an American put -> handle early exercise
 	if (this->option_type == "std_amer_put")
 	{
-		sg::base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+		sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->BoundGrid);
 		myHierarchisation->doDehierarchisation(*this->alpha_complete);
 		size_t dim = this->BoundGrid->getStorage()->dim();
 		sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));

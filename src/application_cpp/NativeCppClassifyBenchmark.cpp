@@ -305,7 +305,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
 #endif
 #else
-    sg::base::OperationMatrix* myC = sg::GridOperationFactory::createOperationIdentity(*myGrid);
+    sg::base::OperationMatrix* myC = sg::op_factory::createOperationIdentity(*myGrid);
     //sg::OperationMatrix* myC = myGrid->createOperationLaplace();
     sg::datadriven::DMSystemMatrix* mySystem = new sg::datadriven::DMSystemMatrix(*myGrid, data, *myC, lambda);
 #endif
@@ -363,7 +363,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 		// Do tests on test data
     	if (isRegression)
     	{
-    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+    		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 			acc = myTest->testMSE(alpha, data, classes);
 			std::cout << "MSE (train): " << acc << std::endl;
 			accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -380,7 +380,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	}
     	else
     	{
-    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+    		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 			acc = myTest->test(alpha, data, classes);
 			acc /= static_cast<double>(classes.getSize());
 			std::cout << "train acc.: " << acc << std::endl;
@@ -406,7 +406,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << std::endl << std::endl;
     if (isRegression)
 	{
-		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 		acc = myTest->testMSE(alpha, data, classes);
 		std::cout << "MSE (train): " << acc << std::endl;
 		accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -415,7 +415,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	}
 	else
 	{
-		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 		acc = myTest->test(alpha, data, classes);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train acc.: " << acc << std::endl;
@@ -637,7 +637,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	convertDataVectorSPToDataVector(alphaSP, alpha);
     	if (isRegression)
     	{
-    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+    		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 			acc = myTest->testMSE(alpha, data, classes);
 			std::cout << "MSE (train): " << acc << std::endl;
 			accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -654,7 +654,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	}
     	else
     	{
-    		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+    		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 			acc = myTest->test(alpha, data, classes);
 			acc /= static_cast<double>(classes.getSize());
 			std::cout << "train acc.: " << acc << std::endl;
@@ -681,7 +681,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	std::cout << std::endl << std::endl;
 	if (isRegression)
 	{
-		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 		acc = myTest->testMSE(alpha, data, classes);
 		std::cout << "MSE (train): " << acc << std::endl;
 		accTest = myTest->testMSE(alpha, testData, testclasses);
@@ -690,7 +690,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	}
 	else
 	{
-		sg::datadriven::OperationTest* myTest = sg::GridOperationFactory::createOperationTest(*myGrid);
+		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 		acc = myTest->test(alpha, data, classes);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train acc.: " << acc << std::endl;

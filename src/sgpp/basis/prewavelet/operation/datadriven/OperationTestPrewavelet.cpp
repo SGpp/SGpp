@@ -5,15 +5,12 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/basis.hpp"
-#include "basis/prewavelet/PrewaveletBasis.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
 #include "algorithm/datadriven/test_dataset.hpp"
 
 #include "basis/prewavelet/operation/datadriven/OperationTestPrewavelet.hpp"
 
-#include "data/DataVector.hpp"
 
-#include "data/DataMatrix.hpp"
 
 namespace sg
 {

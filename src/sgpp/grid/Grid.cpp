@@ -6,6 +6,9 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 #include "grid/Grid.hpp"
+
+#include "exception/factory_exception.hpp"
+
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearStretchedGrid.hpp"
 #include "grid/type/LinearBoundaryGrid.hpp"
@@ -14,20 +17,16 @@
 #include "grid/type/ModLinearGrid.hpp"
 #include "grid/type/PolyGrid.hpp"
 #include "grid/type/ModPolyGrid.hpp"
-#include "grid/type/ModWaveletGrid.hpp"
 #include "grid/type/ModBsplineGrid.hpp"
+#include "grid/type/ModWaveletGrid.hpp"
 #include "grid/type/SquareRootGrid.hpp"
 #include "grid/type/TruncatedTrapezoidGrid.hpp"
 #include "grid/type/PrewaveletGrid.hpp"
 
 #include "grid/generation/SurplusRefinementFunctor.hpp"
-//#include "operation/common/OperationIdentity.hpp"
 
-#include "exception/factory_exception.hpp"
 #include "basis/operations_factory.hpp"
 
-#include <iostream>
-#include <sstream>
 
 namespace sg
 {
@@ -265,7 +264,7 @@ void Grid::refine(DataVector* vector, int numOfPoints)
 OperationEval* Grid::evalOp(NULL);
 
 double Grid::eval(DataVector& alpha, DataVector& point){
-	if(this->evalOp == NULL) this->evalOp = sg::GridOperationFactory::createOperationEval(*this);
+	if(this->evalOp == NULL) this->evalOp = sg::op_factory::createOperationEval(*this);
 	return this->evalOp->eval(alpha, point);
 }
 

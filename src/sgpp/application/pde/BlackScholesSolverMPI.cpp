@@ -22,6 +22,7 @@
 #include "grid/Grid.hpp"
 #include "exception/application_exception.hpp"
 #include "basis/operations_factory.hpp"
+#include "tools/common/StdNormalDistribution.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
@@ -79,7 +80,7 @@ void BlackScholesSolverMPI::getGridNormalDistribution(sg::base::DataVector& alph
 	{
 		double tmp;
 		double value;
-		StdNormalDistribution myNormDistr;
+		base::StdNormalDistribution myNormDistr;
 		double* s_coords = new double[this->dim];
 
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
@@ -833,7 +834,7 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(sg::base::DataVector& al
 			delete[] dblFuncValues;
 		}
 
-		base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -888,7 +889,7 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(DataVector& alpha, 
 			delete[] dblFuncValues;
 		}
 
-		base::OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -953,7 +954,7 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(DataVector& alpha, 
 			delete[] dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}
@@ -993,7 +994,7 @@ double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point, sg::ba
 		}
 	}
 
-	sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(*this->myGrid);
+	sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
 	double result = myEval->eval(alpha, trans_eval);
 	delete myEval;
 
@@ -1050,7 +1051,7 @@ void BlackScholesSolverMPI::printSparseGridPAT(sg::base::DataVector& alpha, std:
 	// Do Dehierarchisation, is specified
 	if (bSurplus == false)
 	{
-		OperationHierarchisation* myHier = sg::GridOperationFactory::createOperationHierarchisation(*myGrid);
+		OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
 		myHier->doDehierarchisation(temp);
 		delete myHier;
 	}

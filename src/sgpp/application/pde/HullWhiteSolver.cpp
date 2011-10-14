@@ -18,6 +18,8 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+#include "tools/common/SGppStopwatch.hpp"
+
 using namespace sg::pde;
 using namespace sg::solver;
 using namespace sg::base;
@@ -216,7 +218,7 @@ void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::
 			//delete dblFuncValues;
 		}
 
-		OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->myGrid);
+		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
 	}

@@ -34,7 +34,7 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha)
       dm.set(i, d, static_cast<double>(rand())/RAND_MAX);
     }
   }
-  OperationMultipleEval* opEval = sg::GridOperationFactory::createOperationMultipleEval(*grid, &dm);
+  OperationMultipleEval* opEval = sg::op_factory::createOperationMultipleEval(*grid, &dm);
   DataVector res = DataVector(mcPaths);
   opEval->mult(alpha, res);
   return res.sum()/static_cast<double>(mcPaths);
@@ -61,8 +61,8 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void *clientdata, D
   int dim = grid->getStorage()->dim();
   double x;
   double p[dim];
-  DataVector point(dim);
-  OperationEval* opEval = sg::GridOperationFactory::createOperationEval(*grid);  
+  sg::base::DataVector point(dim);
+  OperationEval* opEval = sg::op_factory::createOperationEval(*grid);  
   // create number of paths (uniformly drawn from [0,1]^d)
   double res = 0;
   for (int i=0; i<mcPaths; i++) {

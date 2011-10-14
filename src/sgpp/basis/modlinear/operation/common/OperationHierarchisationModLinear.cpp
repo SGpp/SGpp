@@ -6,14 +6,13 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
-#include "basis/basis.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
 #include "basis/modlinear/operation/common/OperationHierarchisationModLinear.hpp"
 #include "basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
 #include "basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
 
 #include "algorithm/common/sweep.hpp"
 
-#include "data/DataVector.hpp"
 
 namespace sg
 {

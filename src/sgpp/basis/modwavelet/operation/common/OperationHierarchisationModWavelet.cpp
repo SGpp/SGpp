@@ -5,11 +5,10 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/basis.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
 #include "basis/modwavelet/operation/common/OperationHierarchisationModWavelet.hpp"
 
 
-#include "data/DataVector.hpp"
 
 #include "exception/operation_exception.hpp"
 

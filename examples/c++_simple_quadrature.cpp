@@ -37,10 +37,10 @@ int main() {
     p[1] = gp->abs(1);
     alpha[i] = f(2, p, NULL);
   }
-  GridOperationFactory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
   // direct quadrature
-  OperationQuadrature* opQ = GridOperationFactory::createOperationQuadrature(*grid);
+  OperationQuadrature* opQ = op_factory::createOperationQuadrature(*grid);
   double res = opQ->doQuadrature(alpha);
   cout << "exact integral value:  " << res << endl;
   delete opQ;

@@ -21,13 +21,12 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "basis/basis.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
 
 #include "basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.hpp"
 
 #include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
-#include "data/DataVector.hpp"
 
 namespace sg
 {

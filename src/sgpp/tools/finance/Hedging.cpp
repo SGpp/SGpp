@@ -9,6 +9,9 @@
 #include "basis/operations_factory.hpp"
 #include "tools/common/EvalCuboidGenerator.hpp"
 
+#include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
+
 #include <sstream>
 #include <cmath>
 
@@ -39,14 +42,14 @@ void Hedging::calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alp
 	std::ofstream fileout;
 	fileout.open(sfilename.str().c_str());
 
-	sg::base::OperationEval* myEval = sg::GridOperationFactory::createOperationEval(sparse_grid);
+	sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(sparse_grid);
 
 	// loop overall evaluation points
 	for (size_t i = 0; i < m_hedge_points->getNrows(); i++)
 	{
-		DataVector curPoint(m_hedge_points->getNcols());
-		DataVector left(m_hedge_points->getNcols());
-		DataVector right(m_hedge_points->getNcols());
+		base::DataVector curPoint(m_hedge_points->getNcols());
+		base::DataVector left(m_hedge_points->getNcols());
+		base::DataVector right(m_hedge_points->getNcols());
 
 		m_hedge_points->getRow(i, curPoint);
 

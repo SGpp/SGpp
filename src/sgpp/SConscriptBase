@@ -97,6 +97,8 @@ tools/common/EvalCuboidGeneratorForStretching.cpp
 tools/common/GridPrinterForStretching.cpp
 
 tools/common/OperationQuadratureMC.cpp
+
+base/operation/BaseOpFactory.cpp
 """)
 
 

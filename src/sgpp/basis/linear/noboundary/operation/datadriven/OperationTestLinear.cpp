@@ -5,14 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "basis/linear/noboundary/LinearBasis.hpp"
 
-#include "basis/basis.hpp"
+#include "basis/linear/noboundary/LinearBasis.hpp"
 #include "algorithm/datadriven/test_dataset.hpp"
 
 #include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
 
-#include "data/DataVector.hpp"
 
 namespace sg
 {

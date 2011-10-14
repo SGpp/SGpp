@@ -5,14 +5,12 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@mytum.de)
 
-#include "basis/basis.hpp"
+#include "basis/modpoly/ModifiedPolyBasis.hpp"
 #include "basis/modwavelet/operation/common/OperationEvalModWavelet.hpp"
 
 #include "algorithm/common/GetAffectedBasisFunctions.hpp"
 
-#include "data/DataVector.hpp"
 
-#include "exception/operation_exception.hpp"
 
 namespace sg
 {

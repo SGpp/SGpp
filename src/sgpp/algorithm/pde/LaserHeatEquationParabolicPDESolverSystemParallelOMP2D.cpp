@@ -25,7 +25,7 @@ namespace sg
 namespace pde
 {
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, Grid& SparseGrid, DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), done_steps_(0), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), done_steps_(0), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
 {
 }
 
@@ -39,12 +39,12 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
 	// apply new laser position
-	StdNormalDistribution myNormDistr;
-	OperationHierarchisation* myHierarchisation = sg::GridOperationFactory::createOperationHierarchisation(*this->BoundGrid);
+	base::StdNormalDistribution myNormDistr;
+	base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->BoundGrid);
 	myHierarchisation->doDehierarchisation(*this->alpha_complete);
 
-	DataVector laser_update(this->BoundGrid->getStorage()->size());
-	BoundingBox* myBoundingBox = new BoundingBox(*(this->BoundGrid->getStorage()->getBoundingBox()));
+	base::DataVector laser_update(this->BoundGrid->getStorage()->size());
+	base::BoundingBox* myBoundingBox = new base::BoundingBox(*(this->BoundGrid->getStorage()->getBoundingBox()));
 
 	this->done_steps_++;
 	double angle = ((this->beam_velocity_*(double(this->done_steps_)*this->TimestepSize)) * 360) - 180;
@@ -94,10 +94,10 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool
 	size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
 	// Coarsen the grid
-	GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+	base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
 	size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-	SurplusRefinementFunctor* myRefineFunc = new SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refine_threshold_);
+	base::SurplusRefinementFunctor* myRefineFunc = new base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refine_threshold_);
 	myGenerator->refineMaxLevel(myRefineFunc, this->max_level_);
 	this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
 	delete myRefineFunc;
@@ -105,7 +105,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool
 	if (this->BoundGrid->getStorage()->getNumInnerPoints() > 100)
 	{
 		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
-		SurplusCoarseningFunctor* myCoarsenFunctor = new SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsen_threshold_);
+		base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsen_threshold_);
 		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 		delete myCoarsenFunctor;
 	}

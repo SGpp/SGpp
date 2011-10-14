@@ -43,7 +43,7 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
 		refineMode,
 		refineMaxLevel)
 {
-	this->OpFBound = sg::GridOperationFactory::createOperationLF(*this->BoundGrid);
+	this->OpFBound = sg::op_factory::createOperationLF(*this->BoundGrid);
 	this->dim_r = dim_HW;
 	this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
 }

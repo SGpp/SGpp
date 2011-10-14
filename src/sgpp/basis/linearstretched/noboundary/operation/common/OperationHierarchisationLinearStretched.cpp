@@ -13,8 +13,6 @@
 
 #include "algorithm/common/sweep.hpp"
 
-#include "basis/basis.hpp"
-#include "data/DataVector.hpp"
 
 namespace sg
 {

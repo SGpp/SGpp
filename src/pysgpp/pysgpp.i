@@ -91,9 +91,13 @@ namespace std {
 
 %include "src/sgpp/sgpp.hpp"
 
+%include "src/sgpp/base/operation/BaseOpFactory.hpp"
+%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
+
 #ifdef SG_DATADRIVEN
 %include "src/sgpp/algorithm/datadriven/test_dataset.hpp"
 %include "src/sgpp/algorithm/datadriven/DMSystemMatrix.hpp"
+%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
 #endif
 
 #ifdef SG_PDE
@@ -103,6 +107,7 @@ namespace std {
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "src/sgpp/operation/pde/OperationParabolicPDESolverSystemNeumann.hpp"
 %include "src/sgpp/application/pde/HeatEquationSolver.hpp"
+%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
 #endif
 
 
@@ -118,6 +123,7 @@ namespace std {
 %include "src/sgpp/application/pde/EllipticPDESolver.hpp"
 %include "src/sgpp/application/pde/PoissonEquationSolver.hpp"
 %include "src/sgpp/application/finance/VariableDiscountFactor.hpp"
+%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
 #endif
 
 %include "src/sgpp/algorithm/datadriven/AlgorithmDGEMV.hpp"
@@ -154,6 +160,11 @@ namespace std {
 
  // static factory methods
 %include "src/sgpp/basis/operations_factory.hpp"
+%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
+%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
+%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
+%include "src/sgpp/base/operation/BaseOpFactory.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 

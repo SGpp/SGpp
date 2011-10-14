@@ -9,6 +9,8 @@
 #define LASERHEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP2D_HPP
 
 #include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.hpp"
+#include "grid/Grid.hpp"
+#include "data/DataVector.hpp"
 
 namespace sg
 {

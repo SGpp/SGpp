@@ -8,11 +8,10 @@
 
 #include "algorithm/common/AlgorithmEvaluation.hpp"
 
-#include "basis/basis.hpp"
+#include "basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
 
 #include "basis/linearstretched/noboundary/operation/common/OperationEvalLinearStretched.hpp"
 
-#include "data/DataVector.hpp"
 
 namespace sg
 {

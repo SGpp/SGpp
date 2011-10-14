@@ -7,12 +7,9 @@
 
 #include "algorithm/datadriven/AlgorithmDGEMV.hpp"
 
-#include "basis/basis.hpp"
 
 #include "basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.hpp"
 
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
 
 namespace sg
 {
