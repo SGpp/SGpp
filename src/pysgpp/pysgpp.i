@@ -42,8 +42,28 @@ namespace std {
 
 // This should include all necessary header files
 %{
-#include "sgpp.hpp"
-#include "combigrid.hpp"
+//#include "sgpp.hpp"
+#include "base/base.hpp"
+#ifdef SG_DATADRIVEN
+#include "datadriven/datadriven.hpp"
+#endif
+#ifdef SG_PDE
+#include "pde/pde.hpp"
+#endif
+#ifdef SG_FINANCE
+#include "finance/finance.hpp"
+#endif
+#ifdef SG_SOLVER
+#include "solver/solver.hpp"
+#endif
+#ifdef SG_PARALLEL
+#include "parallel/parallel.hpp"
+#endif
+#ifdef SG_COMBIGRID
+#include "combigrid/combigrid.hpp"
+//#include "combigrid.hpp"
+#endif
+#include "basis/operations_factory.hpp"
 %}
 
 %include "Operations.i"
@@ -88,8 +108,6 @@ namespace std {
 %include "DataMatrix.i"
 
 // and the rest
-
-%include "src/sgpp/sgpp.hpp"
 
  //%include "src/sgpp/base/operation/BaseOpFactory.hpp"
  //%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"

@@ -1,3 +1,4 @@
+
 /******************************************************************************
 * Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
@@ -18,10 +19,6 @@
 
 #include "basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.hpp"
 #include "basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLELinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLBLinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLFLinearStretched.hpp"
-//#include "basis/linearstretched/noboundary/operation/pde/financeHW1D/OperationLDLinearStretched.hpp"
 
 #include "basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.hpp"
 #include "basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.hpp"
@@ -75,98 +72,5 @@ GridGenerator* LinearStretchedGrid::createGridGenerator()
 {
 	return new StandardGridGenerator(this->storage);
 }
-/*
-OperationMultipleEval* LinearStretchedGrid::createOperationMultipleEval(DataMatrix* dataset)
-{
-	return new OperationMultipleEvalLinearStretched(this->storage, dataset);
-}
-
-OperationMultipleEvalVectorized* LinearStretchedGrid::createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset)
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMultipleEvalVectorizedSP* LinearStretchedGrid::createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset)
-{
-	throw factory_exception("Unsupported operation");
-}
-OperationMatrix* LinearStretchedGrid::createOperationLaplace()
-{
-	return new sg::pde::OperationLaplaceLinearStretched(this->storage);
-}
-
-OperationEval* LinearStretchedGrid::createOperationEval()
-{
-	return new OperationEvalLinearStretched(this->storage);
-}
-
-OperationTest* LinearStretchedGrid::createOperationTest()
-{
-	return new OperationTestLinearStretched(this->storage);
-}
-
-OperationHierarchisation* LinearStretchedGrid::createOperationHierarchisation()
-{
-	return new OperationHierarchisationLinearStretched(this->storage);
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationLTwoDotProduct()
-{
-	return new sg::pde::OperationLTwoDotProductLinearStretched(this->storage);
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationLE()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationLB()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationLF()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationLD()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-// @todo (heinecke) removed this when done
-OperationMatrix* LinearStretchedGrid::createOperationUpDownTest()
-{
-	throw factory_exception("Unsupported operation");
-}
-
-// finance operations
-/////////////////////
-OperationMatrix* LinearStretchedGrid::createOperationDelta(DataVector& coef)
-{
-	return new sg::finance::OperationDeltaLinearStretched(this->storage, coef);
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationGamma(DataMatrix& coef)
-{
-	return new sg::finance::OperationGammaLinearStretched(this->storage, coef);
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationDeltaLog(DataVector& coef)
-{
-	return new sg::finance::OperationDeltaLogLinearStretched(this->storage, coef);
-}
-
-OperationMatrix* LinearStretchedGrid::createOperationGammaLog(DataMatrix& coef)
-{
-	return new sg::finance::OperationGammaLogLinearStretched(this->storage, coef);
-}
-
-OperationConvert* LinearStretchedGrid::createOperationConvert()
-{
-	throw factory_exception("Unsupported operation");
-}
-*/
 }
 }
