@@ -131,11 +131,11 @@ namespace std {
 
  // static factory methods
 %include "src/sgpp/basis/operations_factory.hpp"
-%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
-%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
-%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
-%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
-%include "src/sgpp/base/operation/BaseOpFactory.hpp"
+//%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+//%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
+//%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
+//%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
+//%include "src/sgpp/base/operation/BaseOpFactory.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 
