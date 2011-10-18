@@ -17,9 +17,9 @@ namespace datadriven
 DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, std::string vecMode)
 {
 	// handle unsupported vector extensions
-	if (vecMode != "SSE" && vecMode != "AVX" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_SSE_OCL")
+	if (vecMode != "X86SIMD" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_SSE_OCL")
 	{
-		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
+		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
 	}
 
 	resetTimers();
@@ -29,11 +29,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(sg::base:
 	this->lamb = lambda;
 	this->data = new sg::base::DataMatrixSP(trainData);
 
-	if (this->vecMode == "SSE")
-	{
-		this->vecWidth = 24;
-	}
-	else if (this->vecMode == "AVX")
+	if (this->vecMode == "X86SIMD")
 	{
 		this->vecWidth = 48;
 	}
@@ -52,7 +48,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(sg::base:
 	// should not happen because this exception should have been thrown some lines upwards!
 	else
 	{
-		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only SSE or AVX or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
+		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_SSE_OCL are supported vector extensions!");
 	}
 
 	numTrainingInstances = data->getNrows();

@@ -39,11 +39,7 @@ namespace op_factory
 
     if(strcmp(grid.getType(), "linear") == 0)
       {
-        if (vecType == "SSE")
-          {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
-          }
-        else if (vecType == "AVX")
+        if (vecType == "X86SIMD")
           {
             return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
@@ -73,11 +69,7 @@ namespace op_factory
     else if(strcmp(grid.getType(), "linearBoundary") == 0
             || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
       {
-        if (vecType == "SSE")
-          {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
-          }
-        else if (vecType == "AVX")
+        if (vecType == "X86SIMD")
           {
             return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
@@ -104,11 +96,7 @@ namespace op_factory
       }
     else if(strcmp(grid.getType(), "modlinear") == 0)
       {
-        if (vecType == "SSE")
-          {
-            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
-          }
-        else if (vecType == "AVX")
+        if (vecType == "X86SIMD")
           {
             return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
           }
@@ -137,11 +125,7 @@ namespace op_factory
   {
     if(strcmp(grid.getType(), "linear") == 0)
       {
-        if (vecType == "SSE")
-          {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
-          }
-        else if (vecType == "AVX")
+        if (vecType == "X86SIMD")
           {
             return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
@@ -169,11 +153,7 @@ namespace op_factory
     else if(strcmp(grid.getType(), "linearBoundary") == 0
             || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
       {
-        if (vecType == "SSE")
-          {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
-          }
-        else if (vecType == "AVX")
+        if (vecType == "X86SIMD")
           {
             return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
@@ -200,11 +180,7 @@ namespace op_factory
       }
     else if(strcmp(grid.getType(), "modlinear") == 0)
       {
-        if (vecType == "SSE")
-          {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset);
-          }
-        else if (vecType == "AVX")
+        if (vecType == "X86SIMD")
           {
             return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset);
           }
