@@ -345,7 +345,7 @@ int readDiscreteStretchingData(std::string tFile, size_t numAssests, std::vector
 	for (size_t i = 0; i < numAssests; i++)
 	{
 		file >> gridLength;
-		discreteCoordinates[i] = vector<double>(gridLength,0);
+		discreteCoordinates[i] = std::vector<double>(gridLength,0);
 		for(size_t j=0; j<gridLength; j++){
 			file>>discreteCoordinates[i][j];
 		}
