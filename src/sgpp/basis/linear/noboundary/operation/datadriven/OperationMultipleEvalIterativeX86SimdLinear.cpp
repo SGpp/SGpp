@@ -5,26 +5,26 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "exception/operation_exception.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
 #endif
 
-#ifdef __ICC
+#ifdef  defined(__SSE3__) || defined(__AVX__)
 #include "tools/common/IntrinsicExt.hpp"
 #endif
 
-#define CHUNKDATAPOINTS_AVX 24 // must be divide-able by 24
-#define CHUNKGRIDPOINTS_AVX 12
+#define CHUNKDATAPOINTS_X86 24 // must be divide-able by 24
+#define CHUNKGRIDPOINTS_X86 12
 
 namespace sg
 {
 namespace parallel
 {
 
-OperationMultipleEvalIterativeAVXLinear::OperationMultipleEvalIterativeAVXLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 
@@ -36,12 +36,12 @@ OperationMultipleEvalIterativeAVXLinear::OperationMultipleEvalIterativeAVXLinear
 	myTimer = new sg::base::SGppStopwatch();
 }
 
-OperationMultipleEvalIterativeAVXLinear::~OperationMultipleEvalIterativeAVXLinear()
+OperationMultipleEvalIterativeX86SimdLinear::~OperationMultipleEvalIterativeX86SimdLinear()
 {
 	delete myTimer;
 }
 
-void OperationMultipleEvalIterativeAVXLinear::rebuildLevelAndIndex()
+void OperationMultipleEvalIterativeX86SimdLinear::rebuildLevelAndIndex()
 {
 	delete this->level_;
 	delete this->index_;
@@ -52,7 +52,7 @@ void OperationMultipleEvalIterativeAVXLinear::rebuildLevelAndIndex()
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
-double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
+double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
@@ -63,7 +63,7 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(sg::base
     double* ptrIndex = this->index_->getPointer();
 	double* ptrResult = result.getPointer();
 
-    if (this->dataset_->getNcols() % 24 != 0 || source_size != this->dataset_->getNcols())
+    if (this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 || source_size != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -83,14 +83,100 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(sg::base
     	size_t end = storageSize;
 #endif
 
-		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (end-k)))
+		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
 		{
-			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (end-k));
+			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k));
 
-#ifdef __ICC
+#if defined(__SSE3__) && !defined(__AVX__)
+			for (size_t i = 0; i < source_size; i+=12)
+			{
+				for (size_t j = k; j < k+grid_inc; j++)
+				{
+					__m128d support_0 = _mm_load_pd(&(ptrSource[i]));
+					__m128d support_1 = _mm_load_pd(&(ptrSource[i+2]));
+					__m128d support_2 = _mm_load_pd(&(ptrSource[i+4]));
+					__m128d support_3 = _mm_load_pd(&(ptrSource[i+6]));
+					__m128d support_4 = _mm_load_pd(&(ptrSource[i+8]));
+					__m128d support_5 = _mm_load_pd(&(ptrSource[i+10]));
+
+					__m128d one = _mm_set1_pd(1.0);
+					__m128d zero = _mm_set1_pd(0.0);
+
+					for (size_t d = 0; d < dims; d++)
+					{
+						__m128d eval_0 = _mm_load_pd(&(ptrData[(d*source_size)+i]));
+						__m128d eval_1 = _mm_load_pd(&(ptrData[(d*source_size)+i+2]));
+						__m128d eval_2 = _mm_load_pd(&(ptrData[(d*source_size)+i+4]));
+						__m128d eval_3 = _mm_load_pd(&(ptrData[(d*source_size)+i+6]));
+						__m128d eval_4 = _mm_load_pd(&(ptrData[(d*source_size)+i+8]));
+						__m128d eval_5 = _mm_load_pd(&(ptrData[(d*source_size)+i+10]));
+
+						__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
+						__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
+
+						eval_0 = _mm_mul_pd(eval_0, level);
+						eval_1 = _mm_mul_pd(eval_1, level);
+						eval_2 = _mm_mul_pd(eval_2, level);
+						eval_3 = _mm_mul_pd(eval_3, level);
+						eval_4 = _mm_mul_pd(eval_4, level);
+						eval_5 = _mm_mul_pd(eval_5, level);
+
+						eval_0 = _mm_sub_pd(eval_0, index);
+						eval_1 = _mm_sub_pd(eval_1, index);
+						eval_2 = _mm_sub_pd(eval_2, index);
+						eval_3 = _mm_sub_pd(eval_3, index);
+						eval_4 = _mm_sub_pd(eval_4, index);
+						eval_5 = _mm_sub_pd(eval_5, index);
+
+						eval_0 = _mm_abs_pd(eval_0);
+						eval_1 = _mm_abs_pd(eval_1);
+						eval_2 = _mm_abs_pd(eval_2);
+						eval_3 = _mm_abs_pd(eval_3);
+						eval_4 = _mm_abs_pd(eval_4);
+						eval_5 = _mm_abs_pd(eval_5);
+
+						eval_0 = _mm_sub_pd(one, eval_0);
+						eval_1 = _mm_sub_pd(one, eval_1);
+						eval_2 = _mm_sub_pd(one, eval_2);
+						eval_3 = _mm_sub_pd(one, eval_3);
+						eval_4 = _mm_sub_pd(one, eval_4);
+						eval_5 = _mm_sub_pd(one, eval_5);
+
+						eval_0 = _mm_max_pd(zero, eval_0);
+						eval_1 = _mm_max_pd(zero, eval_1);
+						eval_2 = _mm_max_pd(zero, eval_2);
+						eval_3 = _mm_max_pd(zero, eval_3);
+						eval_4 = _mm_max_pd(zero, eval_4);
+						eval_5 = _mm_max_pd(zero, eval_5);
+
+						support_0 = _mm_mul_pd(support_0, eval_0);
+						support_1 = _mm_mul_pd(support_1, eval_1);
+						support_2 = _mm_mul_pd(support_2, eval_2);
+						support_3 = _mm_mul_pd(support_3, eval_3);
+						support_4 = _mm_mul_pd(support_4, eval_4);
+						support_5 = _mm_mul_pd(support_5, eval_5);
+					}
+
+					__m128d res_0 = _mm_setzero_pd();
+					res_0 = _mm_loadl_pd(res_0, &(ptrResult[j]));
+
+					support_0 = _mm_add_pd(support_0, support_1);
+					support_2 = _mm_add_pd(support_2, support_3);
+					support_4 = _mm_add_pd(support_4, support_5);
+					support_0 = _mm_add_pd(support_0, support_2);
+					support_0 = _mm_add_pd(support_0, support_4);
+
+					support_0 = _mm_hadd_pd(support_0, support_0);
+					res_0 = _mm_add_sd(res_0, support_0);
+
+					_mm_storel_pd(&(ptrResult[j]), res_0);
+				}
+			}
+#endif
+#if defined(__SSE3__) && defined(__AVX__)
 			static const __m256i ldStMaskAVX = _mm256_set_epi64x(0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0xFFFFFFFFFFFFFFFF);
 
-			for (size_t i = 0; i < source_size; i+=CHUNKDATAPOINTS_AVX)
+			for (size_t i = 0; i < source_size; i+=24)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{
@@ -175,17 +261,14 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(sg::base
 					_mm256_maskstore_pd(&(ptrResult[j]), ldStMaskAVX, res_0);
 				}
 			}
-#else
+#endif
+#if !defined(__SSE3__) && !defined(__AVX__)
 			for (size_t i = 0; i < source_size; i++)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{
 					double curSupport = ptrSource[i];
 
-#ifdef __ICC
-					#pragma ivdep
-					#pragma vector aligned
-#endif
 					for (size_t d = 0; d < dims; d++)
 					{
 						double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*source_size)+i]));
@@ -208,7 +291,7 @@ double OperationMultipleEvalIterativeAVXLinear::multTransposeVectorized(sg::base
 	return myTimer->stop();
 }
 
-double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
+double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -219,7 +302,7 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVec
     double* ptrLevel = this->level_->getPointer();
     double* ptrIndex = this->index_->getPointer();
 
-    if (this->dataset_->getNcols() % 24 != 0 || result_size != this->dataset_->getNcols())
+    if (this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 || result_size != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -231,10 +314,10 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVec
 	{
 		size_t chunksize = (result_size/omp_get_num_threads())+1;
 		// assure that every subarray is 32-byte aligned
-		if (chunksize % 24 != 0)
+		if (chunksize % CHUNKDATAPOINTS_X86 != 0)
 		{
-			size_t remainder = chunksize % 24;
-			size_t patch = 24 - remainder;
+			size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
+			size_t patch = CHUNKDATAPOINTS_X86 - remainder;
 			chunksize += patch;
 		}
     	size_t start = chunksize*omp_get_thread_num();
@@ -243,9 +326,9 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVec
     	size_t start = 0;
     	size_t end = result_size;
 #endif
-		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_AVX, (end-c)))
+		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (end-c)))
 		{
-			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_AVX+c, end);
+			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86+c, end);
 
 #ifdef __ICC
 			#pragma ivdep
@@ -256,12 +339,107 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVec
 				ptrResult[i] = 0.0;
 			}
 
-			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m)))
+			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (storageSize-m)))
 			{
-#ifdef __ICC
-				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m));
+#if defined(__SSE3__) && !defined(__AVX__)
+				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
 
-				for (size_t i = c; i < c+CHUNKDATAPOINTS_AVX; i+=24)
+				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=12)
+				{
+					for (size_t j = m; j < m+grid_inc; j++)
+					{
+						__m128d support_0 = _mm_loaddup_pd(&(ptrAlpha[j]));
+						__m128d support_1 = _mm_loaddup_pd(&(ptrAlpha[j]));
+						__m128d support_2 = _mm_loaddup_pd(&(ptrAlpha[j]));
+						__m128d support_3 = _mm_loaddup_pd(&(ptrAlpha[j]));
+						__m128d support_4 = _mm_loaddup_pd(&(ptrAlpha[j]));
+						__m128d support_5 = _mm_loaddup_pd(&(ptrAlpha[j]));
+
+						__m128d one = _mm_set1_pd(1.0);
+						__m128d zero = _mm_set1_pd(0.0);
+
+						for (size_t d = 0; d < dims; d++)
+						{
+							__m128d eval_0 = _mm_load_pd(&(ptrData[(d*result_size)+i]));
+							__m128d eval_1 = _mm_load_pd(&(ptrData[(d*result_size)+i+2]));
+							__m128d eval_2 = _mm_load_pd(&(ptrData[(d*result_size)+i+4]));
+							__m128d eval_3 = _mm_load_pd(&(ptrData[(d*result_size)+i+6]));
+							__m128d eval_4 = _mm_load_pd(&(ptrData[(d*result_size)+i+8]));
+							__m128d eval_5 = _mm_load_pd(&(ptrData[(d*result_size)+i+10]));
+
+							__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
+							__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
+
+							eval_0 = _mm_mul_pd(eval_0, level);
+							eval_1 = _mm_mul_pd(eval_1, level);
+							eval_2 = _mm_mul_pd(eval_2, level);
+							eval_3 = _mm_mul_pd(eval_3, level);
+							eval_4 = _mm_mul_pd(eval_4, level);
+							eval_5 = _mm_mul_pd(eval_5, level);
+
+							eval_0 = _mm_sub_pd(eval_0, index);
+							eval_1 = _mm_sub_pd(eval_1, index);
+							eval_2 = _mm_sub_pd(eval_2, index);
+							eval_3 = _mm_sub_pd(eval_3, index);
+							eval_4 = _mm_sub_pd(eval_4, index);
+							eval_5 = _mm_sub_pd(eval_5, index);
+
+							eval_0 = _mm_abs_pd(eval_0);
+							eval_1 = _mm_abs_pd(eval_1);
+							eval_2 = _mm_abs_pd(eval_2);
+							eval_3 = _mm_abs_pd(eval_3);
+							eval_4 = _mm_abs_pd(eval_4);
+							eval_5 = _mm_abs_pd(eval_5);
+
+							eval_0 = _mm_sub_pd(one, eval_0);
+							eval_1 = _mm_sub_pd(one, eval_1);
+							eval_2 = _mm_sub_pd(one, eval_2);
+							eval_3 = _mm_sub_pd(one, eval_3);
+							eval_4 = _mm_sub_pd(one, eval_4);
+							eval_5 = _mm_sub_pd(one, eval_5);
+
+							eval_0 = _mm_max_pd(zero, eval_0);
+							eval_1 = _mm_max_pd(zero, eval_1);
+							eval_2 = _mm_max_pd(zero, eval_2);
+							eval_3 = _mm_max_pd(zero, eval_3);
+							eval_4 = _mm_max_pd(zero, eval_4);
+							eval_5 = _mm_max_pd(zero, eval_5);
+
+							support_0 = _mm_mul_pd(support_0, eval_0);
+							support_1 = _mm_mul_pd(support_1, eval_1);
+							support_2 = _mm_mul_pd(support_2, eval_2);
+							support_3 = _mm_mul_pd(support_3, eval_3);
+							support_4 = _mm_mul_pd(support_4, eval_4);
+							support_5 = _mm_mul_pd(support_5, eval_5);
+						}
+
+						__m128d res_0 = _mm_load_pd(&(ptrResult[i]));
+						__m128d res_1 = _mm_load_pd(&(ptrResult[i+2]));
+						__m128d res_2 = _mm_load_pd(&(ptrResult[i+4]));
+						__m128d res_3 = _mm_load_pd(&(ptrResult[i+6]));
+						__m128d res_4 = _mm_load_pd(&(ptrResult[i+8]));
+						__m128d res_5 = _mm_load_pd(&(ptrResult[i+10]));
+
+						res_0 = _mm_add_pd(res_0, support_0);
+						res_1 = _mm_add_pd(res_1, support_1);
+						res_2 = _mm_add_pd(res_2, support_2);
+						res_3 = _mm_add_pd(res_3, support_3);
+						res_4 = _mm_add_pd(res_4, support_4);
+						res_5 = _mm_add_pd(res_5, support_5);
+
+						_mm_store_pd(&(ptrResult[i]), res_0);
+						_mm_store_pd(&(ptrResult[i+2]), res_1);
+						_mm_store_pd(&(ptrResult[i+4]), res_2);
+						_mm_store_pd(&(ptrResult[i+6]), res_3);
+						_mm_store_pd(&(ptrResult[i+8]), res_4);
+						_mm_store_pd(&(ptrResult[i+10]), res_5);
+					}
+				}
+#endif
+#if defined(__SSE3__) && defined(__AVX__)
+				size_t grid_inc = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (storageSize-m));
+
+				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=24)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
 					{
@@ -352,8 +530,9 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVec
 						_mm256_store_pd(&(ptrResult[i+20]), res_5);
 					}
 				}
-#else
-				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX+m, storageSize);
+#endif
+#if !defined(__SSE3__) && !defined(__AVX__)
+				size_t grid_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86+m, storageSize);
 
 				for (size_t i = c; i < data_end; i++)
 				{
@@ -361,10 +540,6 @@ double OperationMultipleEvalIterativeAVXLinear::multVectorized(sg::base::DataVec
 					{
 						double curSupport = ptrAlpha[j];
 
-#ifdef __ICC
-						#pragma ivdep
-						#pragma vector aligned
-#endif
 						for (size_t d = 0; d < dims; d++)
 						{
 							double eval = ((ptrLevel[(j*dims)+d]) * (ptrData[(d*result_size)+i]));

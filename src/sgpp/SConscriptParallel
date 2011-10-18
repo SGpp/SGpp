@@ -9,10 +9,8 @@ Import("env")
 srcs = Split("""
 tools/common/IntrinsicExt.cpp
 
-basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
-basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
-basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
-basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.cpp
+basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 
 basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeAVXModLinear.cpp
 basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPAVXModLinear.cpp
