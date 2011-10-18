@@ -9,6 +9,7 @@
 #define FACTORY_EXCEPTION_HPP
 
 #include <exception>
+#include <cstddef>
 
 namespace sg
 {
