@@ -12,10 +12,8 @@ tools/common/IntrinsicExt.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 
-basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeAVXModLinear.cpp
-basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPAVXModLinear.cpp
-basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.cpp
-basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSSEModLinear.cpp
+basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeX86SimdModLinear.cpp
+basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
 
 parallel/operation/ParallelOpFactory.cpp
 """)

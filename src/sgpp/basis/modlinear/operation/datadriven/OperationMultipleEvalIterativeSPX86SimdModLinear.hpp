@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONMULTIPLEEVALITERATIVESPSSEMODLINEAR_HPP
-#define OPERATIONMULTIPLEEVALITERATIVESPSSEMODLINEAR_HPP
+#ifndef OPERATIONMULTIPLEEVALITERATIVESPX86SIMDMODLINEAR_HPP
+#define OPERATIONMULTIPLEEVALITERATIVESPX86SIMDMODLINEAR_HPP
 
 #include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
 #include "grid/GridStorage.hpp"
@@ -18,10 +18,11 @@ namespace parallel
 {
 
 /**
- * This class implements sg::base::OperationMultipleEval for a grids with modified linear basis ansatzfunctions without boundaries
+ * This class implements sg::base::OperationMultipleEvalVectorizedSP for a grids with modified
+ * linear basis ansatzfunctions without boundaries.
  *
- * However in this case high efficient vector code (SSE3 instructions) are generated
- * to implement a iterative OperationB version. In addition cache blocking is used
+ * However, in this case highly efficient vector code (AVX or SSE instructions) is generated
+ * to implement an iterative OperationB version. In addition cache blocking is used
  * in order to assure a most efficient cache usage.
  *
  * IMPORTANT REMARK:
@@ -29,7 +30,7 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeSPSSEModLinear : public sg::base::OperationMultipleEvalVectorizedSP
+class OperationMultipleEvalIterativeSPX86SimdModLinear : public sg::base::OperationMultipleEvalVectorizedSP
 {
 public:
 	/**
@@ -41,12 +42,12 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeSPSSEModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
+	OperationMultipleEvalIterativeSPX86SimdModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationMultipleEvalIterativeSPSSEModLinear();
+	virtual ~OperationMultipleEvalIterativeSPX86SimdModLinear();
 
 	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
 
@@ -65,4 +66,4 @@ protected:
 
 }
 
-#endif /* OPERATIONMULTIPLEEVALITERATIVESPSSEMODLINEAR_HPP */
+#endif /* OPERATIONMULTIPLEEVALITERATIVESPX86SIMDMODLINEAR_HPP */

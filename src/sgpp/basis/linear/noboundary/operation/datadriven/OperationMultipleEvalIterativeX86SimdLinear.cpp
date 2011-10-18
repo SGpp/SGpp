@@ -12,7 +12,7 @@
 #include "omp.h"
 #endif
 
-#ifdef  defined(__SSE3__) || defined(__AVX__)
+#if defined(__SSE3__) || defined(__AVX__)
 #include "tools/common/IntrinsicExt.hpp"
 #endif
 
@@ -339,7 +339,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 				ptrResult[i] = 0.0;
 			}
 
-			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (storageSize-m)))
+			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m)))
 			{
 #if defined(__SSE3__) && !defined(__AVX__)
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
@@ -437,7 +437,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 				}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-				size_t grid_inc = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (storageSize-m));
+				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=24)
 				{
@@ -532,7 +532,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 				}
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
-				size_t grid_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86+m, storageSize);
+				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86+m, storageSize);
 
 				for (size_t i = c; i < data_end; i++)
 				{
