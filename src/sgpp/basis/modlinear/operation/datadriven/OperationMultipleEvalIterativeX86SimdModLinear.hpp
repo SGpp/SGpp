@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONMULTIPLEEVALITERATIVEAVXMODLINEAR_HPP
-#define OPERATIONMULTIPLEEVALITERATIVEAVXMODLINEAR_HPP
+#ifndef OPERATIONMULTIPLEEVALITERATIVEX86SIMDMODLINEAR_HPP
+#define OPERATIONMULTIPLEEVALITERATIVEX86SIMDMODLINEAR_HPP
 
 #include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
 #include "grid/GridStorage.hpp"
@@ -18,22 +18,23 @@ namespace parallel
 {
 
 /**
- * This class implements sg::base::OperationMultipleEval for a grids with modified linear basis ansatzfunctions without boundaries
+ * This class implements sg::base::OperationMultipleEvalVectorized for a grids with modified
+ * linear basis ansatzfunctions without boundaries
  *
- * However in this case high efficient vector code (AVX instructions) are generated
- * to implement a iterative OperationB version. In addition cache blocking is used
+ * However, in this case highly efficient vector code (AVX or SSE instructions) is generated
+ * to implement an iterative OperationB version. In addition cache blocking is used
  * in order to assure a most efficient cache usage.
  *
  * IMPORTANT REMARK:
  * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
- * @li data MUST a have even number of points AND it must be transposed
+ * @li data MUST have a even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeAVXModLinear : public sg::base::OperationMultipleEvalVectorized
+class OperationMultipleEvalIterativeX86SimdModLinear : public sg::base::OperationMultipleEvalVectorized
 {
 public:
 	/**
-	 * Within the constructor sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
+	 * Within the constructor, sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
 	 * a new instance of this class, you have to call rebuildLevelAndIndex before
 	 * doing any further mult or multTranspose calls.
@@ -41,12 +42,12 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeAVXModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+	OperationMultipleEvalIterativeX86SimdModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationMultipleEvalIterativeAVXModLinear();
+	virtual ~OperationMultipleEvalIterativeX86SimdModLinear();
 
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
@@ -65,4 +66,4 @@ protected:
 
 }
 
-#endif /* OPERATIONMULTIPLEEVALITERATIVEAVXMODLINEAR_HPP */
+#endif /* OPERATIONMULTIPLEEVALITERATIVEX86SIMDMODLINEAR_HPP */

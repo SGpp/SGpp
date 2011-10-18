@@ -15,8 +15,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSSEModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeAVXModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.hpp"
 
@@ -24,8 +23,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPSSEModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPAVXModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.hpp"
 
@@ -108,11 +106,11 @@ namespace op_factory
       {
         if (vecType == "SSE")
           {
-            return new parallel::OperationMultipleEvalIterativeSSEModLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
           }
         else if (vecType == "AVX")
           {
-            return new parallel::OperationMultipleEvalIterativeAVXModLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == "OCL")
@@ -204,11 +202,11 @@ namespace op_factory
       {
         if (vecType == "SSE")
           {
-            return new parallel::OperationMultipleEvalIterativeSPSSEModLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset);
           }
         else if (vecType == "AVX")
           {
-            return new parallel::OperationMultipleEvalIterativeSPAVXModLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == "OCL")
