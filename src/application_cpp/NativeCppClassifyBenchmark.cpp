@@ -172,7 +172,12 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 	}
 
 #ifdef USE_X86SIMD
-	std::cout << "Vectorized: X86SIMD" << std::endl << std::endl;
+#if defined(__SSE3__) && !defined(__AVX__)
+	std::cout << "Vectorized: X86SIMD (SSE3)" << std::endl << std::endl;
+#endif
+#if defined(__SSE3__) && defined(__AVX__)
+	std::cout << "Vectorized: X86SIMD (AVX)" << std::endl << std::endl;
+#endif
 #endif
 #ifdef USE_OCL
 	std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
@@ -204,7 +209,8 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 }
 
 void adaptClassificationTest(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
-		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points, std::string gridtype)
+		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points,
+		std::string gridtype, size_t cg_max_learning)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -285,7 +291,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 #endif
 
     // Generate CG to solve System
-    sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(cg_max, cg_eps);
+    sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(cg_max_learning, cg_eps);
 #if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_X86SIMD
     sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "X86SIMD");
@@ -337,6 +343,10 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	DataVector b(alpha.getSize());
     	mySystem->generateb(classes, b);
 
+    	if (i == refine_count)
+    	{
+    		myCG->setMaxIterations(cg_max);
+    	}
     	myCG->solve(*mySystem, alpha, b, true, false, 0.0);
 
         execTime += myStopwatch->stop();
@@ -469,7 +479,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 }
 
 void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
-		float lambda, size_t cg_max, float cg_eps, size_t refine_count, double refine_thresh, size_t refine_points, std::string gridtype)
+		float lambda, size_t cg_max, float cg_eps, size_t refine_count, double refine_thresh, size_t refine_points,
+		std::string gridtype, size_t cg_max_learning)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -556,7 +567,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 #endif
 
     // Generate CG to solve System
-    sg::solver::ConjugateGradientsSP* myCG = new sg::solver::ConjugateGradientsSP(cg_max, cg_eps);
+    sg::solver::ConjugateGradientsSP* myCG = new sg::solver::ConjugateGradientsSP(cg_max_learning, cg_eps);
 
 #if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
 #ifdef USE_X86SIMD
@@ -607,6 +618,10 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	DataVectorSP bSP(alphaSP.getSize());
     	mySystem->generateb(classesSP, bSP);
 
+    	if (i == refine_count)
+    	{
+    		myCG->setMaxIterations(cg_max);
+    	}
     	myCG->solve(*mySystem, alphaSP, bSP, true, false, 0.0);
 
     	execTime += myStopwatch->stop();
@@ -744,14 +759,15 @@ int main(int argc, char *argv[])
 	double cg_eps = 0.0;
 	double refine_thresh = 0.0;
 
-	size_t cg_max = 0.0;
+	size_t cg_max = 0;
 	size_t refine_count = 0;
 	size_t refine_points = 0;
 	size_t start_level = 0;
+	size_t cg_max_learning = 0;
 
 	bool regression;
 
-	if (argc != 13)
+	if (argc != 14)
 	{
 		std::cout << std::endl;
 		std::cout << "Help for classification/regression benchmark" << std::endl << std::endl;
@@ -768,8 +784,9 @@ int main(int argc, char *argv[])
 		std::cout << "	#refinements" << std::endl;
 		std::cout << "	Refinement threshold" << std::endl;
 		std::cout << "	#points refined" << std::endl << std::endl << std::endl;
+		std::cout << "	CG max. iterations, first refinement steps" << std::endl;
 		std::cout << "Example call:" << std::endl;
-		std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100" << std::endl << std::endl << std::endl;
+		std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20" << std::endl << std::endl << std::endl;
 	}
 	else
 	{
@@ -789,18 +806,19 @@ int main(int argc, char *argv[])
 		refine_count = atoi(argv[10]);
 		refine_thresh = atof(argv[11]);
 		refine_points = atoi(argv[12]);
+		cg_max_learning = atoi(argv[13]);
 
 		if (precision == "SP")
 		{
 			bUseFloat = true;
 			adaptClassificationTestSP(dataFile, testFile, regression, start_level,
-				(float)lambda, cg_max, (float)cg_eps, refine_count, refine_thresh, refine_points, gridtype);
+				(float)lambda, cg_max, (float)cg_eps, refine_count, refine_thresh, refine_points, gridtype, cg_max_learning);
 		}
 		else if (precision == "DP")
 		{
 			bUseFloat = false;
 			adaptClassificationTest(dataFile, testFile, regression, start_level,
-				lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype);
+				lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, cg_max_learning);
 		}
 		else
 		{
