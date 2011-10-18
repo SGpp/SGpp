@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONMULTIPLEEVALITERATIVEAVXLINEAR_HPP
-#define OPERATIONMULTIPLEEVALITERATIVEAVXLINEAR_HPP
+#ifndef OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
+#define OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
 
 #include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
 #include "grid/GridStorage.hpp"
@@ -18,9 +18,10 @@ namespace parallel
 {
 
 /**
- * This class implements sg::base::OperationMultipleEval for a grids with linear basis ansatzfunctions without boundaries
+ * This class implements OperationMultipleEvalVectorizedSP for grids with linear basis ansatzfunctions with or
+ * without boundaries with double precision coefficients.
  *
- * However in this case high efficient vector code (AVX instructions) are generated
+ * However, in this case highly efficient vector code (SSE or AVX instructions) are generated
  * to implement a iterative OperationB version. In addition cache blocking is used
  * in order to assure a most efficient cache usage.
  *
@@ -29,26 +30,26 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeAVXLinear : public sg::base::OperationMultipleEvalVectorized
+class OperationMultipleEvalIterativeX86SimdLinear : public sg::base::OperationMultipleEvalVectorized
 {
 public:
 	/**
-	 * Constructor of OperationBLinear
+	 * Constructor of OperationMultipleEvalIterativeSPX86Simd
 	 *
-	 * Within the construct sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
+	 * Within the constructor sg::base::DataMatrixSP Level and sg::base::DataMatrixSP Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
 	 * a new instance of this class, you have to call rebuildLevelAndIndex before
 	 * doing any further mult or multTranspose calls.
 	 *
-	 * @param storage Pointer to the grid's gridstorage obejct
+	 * @param storage Pointer to the grid's gridstorage object
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeAVXLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+	OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationMultipleEvalIterativeAVXLinear();
+	virtual ~OperationMultipleEvalIterativeX86SimdLinear();
 
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
@@ -66,4 +67,4 @@ protected:
 }
 }
 
-#endif /* OPERATIONMULTIPLEEVALITERATIVEAVXLINEAR_HPP */
+#endif /* OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP */

@@ -166,19 +166,17 @@ OBJS =	DataVector.o\
 	AlignedMemory.o\
 	DataMatrix.o\
 	BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o\
-	OperationMultipleEvalIterativeSSELinear.o\
 	DMSystemMatrixVectorizedIdentity.o\
 	OperationDeltaLogLinear.o\
 	OperationGammaLogLinear.o\
 	DowndPhidPhiBBIterativeLinear.o\
 	DowndPhidPhiBBIterativeLinearBoundary.o\
 	UpdPhidPhiBBIterativeLinearBoundary.o\
-	OperationMultipleEvalIterativeAVXLinear.o\
 	DataVectorSP.o\
 	DataMatrixSP.o\
 	ConjugateGradientsSP.o\
-	OperationMultipleEvalIterativeSPSSELinear.o\
-	OperationMultipleEvalIterativeSPAVXLinear.o\
+	OperationMultipleEvalIterativeX86SimdLinear.o\
+	OperationMultipleEvalIterativeSPX86SimdLinear.o\
 	DMSystemMatrixSPVectorizedIdentity.o\
 	ModifiedBlackScholesParabolicPDESolverSystem.o\
 	BlackScholesParabolicPDESolverSystemEuroAmer.o\
@@ -474,17 +472,11 @@ OperationHierarchisationModBspline.o : $(SRCDIR)basis/modbspline/operation/commo
 OperationMultipleEvalLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
 	
-OperationMultipleEvalIterativeSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.cpp
-	
-OperationMultipleEvalIterativeSPSSELinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPSSELinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.cpp
-	
-OperationMultipleEvalIterativeAVXLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeAVXLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.cpp
+OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.cpp
 
-OperationMultipleEvalIterativeSPAVXLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPAVXLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.cpp
+OperationMultipleEvalIterativeSPX86SimdLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 
 OperationTestLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp

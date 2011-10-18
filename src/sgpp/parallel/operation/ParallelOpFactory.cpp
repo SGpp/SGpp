@@ -11,8 +11,7 @@
 
 #include "exception/factory_exception.hpp"
 
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSSELinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeAVXLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
@@ -21,8 +20,7 @@
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.hpp"
 
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPSSELinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPAVXLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
@@ -45,11 +43,11 @@ namespace op_factory
       {
         if (vecType == "SSE")
           {
-            return new parallel::OperationMultipleEvalIterativeSSELinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
         else if (vecType == "AVX")
           {
-            return new parallel::OperationMultipleEvalIterativeAVXLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == "OCL")
@@ -79,11 +77,11 @@ namespace op_factory
       {
         if (vecType == "SSE")
           {
-            return new parallel::OperationMultipleEvalIterativeSSELinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
         else if (vecType == "AVX")
           {
-            return new parallel::OperationMultipleEvalIterativeAVXLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == "OCL")
@@ -143,11 +141,11 @@ namespace op_factory
       {
         if (vecType == "SSE")
           {
-            return new parallel::OperationMultipleEvalIterativeSPSSELinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
         else if (vecType == "AVX")
           {
-            return new parallel::OperationMultipleEvalIterativeSPAVXLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == "OCL")
@@ -175,11 +173,11 @@ namespace op_factory
       {
         if (vecType == "SSE")
           {
-            return new parallel::OperationMultipleEvalIterativeSPSSELinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
         else if (vecType == "AVX")
           {
-            return new parallel::OperationMultipleEvalIterativeSPAVXLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == "OCL")
