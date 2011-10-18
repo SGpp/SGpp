@@ -32,7 +32,10 @@ TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
 CC=g++
 #CC=icpc
-# vectorization option for intel compiler
+# vectorization option
+#  sse3
+#  sse4
+#  avx
 VEC=sse3
 # extensions, manages extensions to be included, possible values (only when using Intel Compiler):
 #	ArBB - Intel Array Building Blocks support
@@ -64,6 +67,15 @@ ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -fopenmp
 LFLAGS:=$(LFLAGS) -fopenmp
 endif
+ifeq ($(VEC),sse3)
+CFLAGS:=$(CFLAGS) -msse3
+endif
+ifeq ($(VEC),sse4)
+CFLAGS:=$(CFLAGS) -msse4.2
+endif
+ifeq ($(VEC),avx)
+CFLAGS:=$(CFLAGS) -mavx
+endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
 endif
@@ -84,10 +96,10 @@ ifeq ($(VEC),sse3)
 CFLAGS:=$(CFLAGS) -msse3
 endif
 ifeq ($(VEC),sse4)
-CFLAGS:=$(CFLAGS) -xSSE4.2
+CFLAGS:=$(CFLAGS) -msse4.2
 endif
 ifeq ($(VEC),avx)
-CFLAGS:=$(CFLAGS) -xAVX -DUSEAVX
+CFLAGS:=$(CFLAGS) -mavx
 endif
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -openmp

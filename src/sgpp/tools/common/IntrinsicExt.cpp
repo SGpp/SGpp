@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifdef __ICC
 #include "tools/common/IntrinsicExt.hpp"
 
+#ifdef __SSE3__
 union floatAbsMask
 {
    const float f;
@@ -16,7 +16,7 @@ union floatAbsMask
    floatAbsMask() : i(0x7FFFFFFF) {}
 };
 
-_MM_ALIGN16 const floatAbsMask absMask;
+__attribute__((aligned(16))) const floatAbsMask absMask;
 static const __m128 abs2Mask = _mm_load1_ps( &absMask.f );
 
 const __m128 _mm_abs_ps( const __m128& x)
@@ -27,19 +27,21 @@ const __m128 _mm_abs_ps( const __m128& x)
 union doubleAbsMask
 {
    const double d;
-   const __int64 ilong;
+   const long long ilong;
 
    doubleAbsMask() : ilong(0x7FFFFFFFFFFFFFFF) {}
 };
 
-_MM_ALIGN16 const doubleAbsMask absMaskd;
+__attribute__((aligned(16))) const doubleAbsMask absMaskd;
 static const __m128d abs2Maskd = _mm_load1_pd( &absMaskd.d );
 
 const __m128d _mm_abs_pd( const __m128d& x)
 {
        return _mm_and_pd( abs2Maskd, x);
 }
+#endif
 
+#ifdef __AVX__
 union floatAbsMaskAVX
 {
    const float fAVX;
@@ -48,7 +50,7 @@ union floatAbsMaskAVX
    floatAbsMaskAVX() : iAVX(0x7FFFFFFF) {}
 };
 
-__declspec(align(32)) const floatAbsMaskAVX absMaskSPAVX;
+__attribute__((aligned(32))) const floatAbsMaskAVX absMaskSPAVX;
 
 static const __m256 abs2MaskSPAVX = _mm256_broadcast_ss( &(absMaskSPAVX.fAVX) );
 
@@ -60,12 +62,12 @@ const __m256 _mm256_abs_ps( const __m256& x)
 union doubleAbsMaskAVX
 {
    const double dAVX;
-   const __int64 ilongAVX;
+   const long long ilongAVX;
 
    doubleAbsMaskAVX() : ilongAVX(0x7FFFFFFFFFFFFFFF) {}
 };
 
-__declspec(align(32)) const doubleAbsMaskAVX absMaskAVX;
+__attribute__((aligned(32))) const doubleAbsMaskAVX absMaskAVX;
 
 static const __m256d abs2MaskAVX = _mm256_broadcast_sd( &(absMaskAVX.dAVX) );
 

@@ -437,7 +437,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 				}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_AVX, (storageSize-m));
+				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
 				static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=48)
