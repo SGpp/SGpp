@@ -11,10 +11,10 @@
 #include "algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.hpp"
 #include "solver/sle/ConjugateGradientsSP.hpp"
 #include "tools/datadriven/ARFFTools.hpp"
-#include "basis/operations_factory.hpp"
 #include "grid/type/ModLinearGrid.hpp"
 #include "grid/type/LinearGrid.hpp"
 #include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
+#include "datadriven/operation/DatadrivenOpFactory.hpp"
 
 #include <string>
 #include <iostream>
@@ -58,7 +58,7 @@ void calcGFlopsAndGBytes(std::string gridtype, sg::base::Grid* myGrid, size_t nI
 					GFlops += 1e-9*8.0*static_cast<double>(nIterations)*static_cast<double>(nInstancesNo);
 					GBytes += 1e-9*4.0*static_cast<double>(nIterations)*static_cast<double>(datatype_size)*static_cast<double>(nInstancesNo);
 				}
-				else if (index == (1<<level - 1))
+				else if (index == ((1<<level) - 1))
 				{
 					GFlops += 1e-9*10.0*static_cast<double>(nIterations)*static_cast<double>(nInstancesNo);
 					GBytes += 1e-9*6.0*static_cast<double>(nIterations)*static_cast<double>(datatype_size)*static_cast<double>(nInstancesNo);
@@ -257,6 +257,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	else
 	{
 		std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
+		myGrid = NULL;
+		return;
 	}
 
 	// Generate regular Grid with LEVELS Levels
@@ -519,6 +521,8 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	else
 	{
 		std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
+		myGrid = NULL;
+		return;
 	}
 
 	// Generate regular Grid with LEVELS Levels

@@ -278,7 +278,12 @@ OBJS =	DataVector.o\
 	DehierarchisationModPoly.o\
 	OperationQuadratureMC.o\
 	OperationQuadratureLinear.o\
-	OperationQuadraturePoly.o
+	OperationQuadraturePoly.o\
+	BaseOpFactory.o\
+	DatadrivenOpFactory.o\
+	FinanceOpFactory.o\
+	ParallelOpFactory.o\
+	PdeOpFactory.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1113,6 +1118,21 @@ OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationEl
 	
 OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
+	
+BaseOpFactory.o : $(SRCDIR)base/operation/BaseOpFactory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BaseOpFactory.o $(SRCDIR)base/operation/BaseOpFactory.cpp
+
+DatadrivenOpFactory.o : $(SRCDIR)datadriven/operation/DatadrivenOpFactory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DatadrivenOpFactory.o $(SRCDIR)datadriven/operation/DatadrivenOpFactory.cpp
+
+FinanceOpFactory.o : $(SRCDIR)finance/operation/FinanceOpFactory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)FinanceOpFactory.o $(SRCDIR)finance/operation/FinanceOpFactory.cpp
+
+ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ParallelOpFactory.o $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
+
+PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PdeOpFactory.o $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
