@@ -53,8 +53,8 @@ UPDOWN_PARADIMS=4
 CFLAGS_GCC:=-Wall -pedantic -ansi -c -Wno-long-long -fno-strict-aliasing -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-CFLAGS_ICC:=-Wall -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
-LFLAGS_ICC:=-Wall -ansi -O3 -static-intel
+CFLAGS_ICC:=-Wall -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
+LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
 
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
