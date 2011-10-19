@@ -783,8 +783,8 @@ int main(int argc, char *argv[])
 		std::cout << "	CG threshold" << std::endl;
 		std::cout << "	#refinements" << std::endl;
 		std::cout << "	Refinement threshold" << std::endl;
-		std::cout << "	#points refined" << std::endl << std::endl << std::endl;
-		std::cout << "	CG max. iterations, first refinement steps" << std::endl;
+		std::cout << "	#points refined" << std::endl;
+		std::cout << "	CG max. iterations, first refinement steps" << std::endl << std::endl << std::endl;
 		std::cout << "Example call:" << std::endl;
 		std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20" << std::endl << std::endl << std::endl;
 	}
