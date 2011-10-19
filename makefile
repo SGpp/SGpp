@@ -59,6 +59,9 @@ LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 CFLAGS_ICC:=-Wall -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
 LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
 
+CFLAGS_OPENCC:=-Wall -pedantic -ansi -c -ipa -O3 -funroll-loops -ffloat-store -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
+LFLAGS_OPENCC:=-Wall -pedantic -ansi -O3 -ipa
+
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
 LFLAGS:=$(LFLAGS_GCC)
@@ -66,6 +69,36 @@ EXT=NO
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -fopenmp
 LFLAGS:=$(LFLAGS) -fopenmp
+endif
+ifeq ($(VEC),sse3)
+CFLAGS:=$(CFLAGS) -msse3
+endif
+ifeq ($(VEC),sse4)
+CFLAGS:=$(CFLAGS) -msse4.2
+endif
+ifeq ($(VEC),avx)
+CFLAGS:=$(CFLAGS) -mavx
+endif
+ifeq ($(TR1),1)
+CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+endif
+ifeq ($(EXT), OCL)
+CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -fopenmp
+LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), IOCL)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -fopenmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+endif
+
+ifeq ($(CC),opencc)
+CFLAGS:=$(CFLAGS_GCC)
+LFLAGS:=$(LFLAGS_GCC)
+EXT=NO
+ifeq ($(OMP),1)
+CFLAGS:=$(CFLAGS) -mp
+LFLAGS:=$(LFLAGS) -mp
 endif
 ifeq ($(VEC),sse3)
 CFLAGS:=$(CFLAGS) -msse3
@@ -155,6 +188,10 @@ default:
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/sgpplib_gcc
 	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "EXT=$(EXT)"
+endif
+ifeq ($(CC),opencc)
+	mkdir -p tmp/build_native/sgpplib_opencc
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_opencc "CC=/opt/x86_open64-4.2.5.2/bin/$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_opencc.a" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/sgpplib_icc
@@ -273,6 +310,10 @@ ClassifyBenchmark: default
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/ClassifyBenchmark_gcc
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),opencc)
+	mkdir -p tmp/build_native/ClassifyBenchmark_opencc
+	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_opencc "CC=/opt/x86_open64-4.2.5.2/bin/$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_opencc.a" "BINNAME=ClassifyBenchmark_OPENCC" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icc
