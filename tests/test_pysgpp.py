@@ -14,8 +14,8 @@ import test_laplace
 import test_hierarchisation
 import test_OperationQuadrature
 import test_BBT
-import test_BBT_SSE
-import test_BBT_AVX
+#import test_BBT_SSE
+#import test_BBT_AVX
 import test_BT
 
 import test_GridFactory
@@ -39,8 +39,8 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
                 unittest.defaultTestLoader.loadTestsFromModule(test_OperationQuadrature),
                 unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
-                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_SSE),
-                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_AVX),
+#                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_SSE),
+#                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_AVX),
                 unittest.defaultTestLoader.loadTestsFromModule(test_BT),
                 unittest.defaultTestLoader.suiteClass(learnertests.alltests),
                 unittest.defaultTestLoader.suiteClass(datatests.alltests),

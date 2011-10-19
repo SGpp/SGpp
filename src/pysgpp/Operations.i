@@ -7,6 +7,7 @@
 
 namespace sg
 {
+//-     namespace base ------------------------------------------------
 namespace base
 {
 
@@ -75,20 +76,7 @@ class OperationEval
 public:
 	virtual double eval(DataVector& alpha, DataVector& point) = 0;
 };
-}
 
-namespace datadriven {
-%nodefaultdtor sg::datadriven::OperationTest;
-class OperationTest
-{
-public:
-	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes) = 0;
-	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues) = 0;
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
-};
-}
-
-namespace base {
 class OperationHierarchisation
 {
 public:
@@ -103,8 +91,22 @@ class OperationQuadrature
 public:
 	virtual double doQuadrature(DataVector& alpha) = 0;
 };
-}
 
+}
+//- end namespace base ------------------------------------------------
+
+//-     namespace datadriven ------------------------------------------
+namespace datadriven {
+%nodefaultdtor sg::datadriven::OperationTest;
+class OperationTest
+{
+public:
+  virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) = 0;
+	virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) = 0;
+	virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers) = 0;
+};
+}
+//- end namespace datadriven ------------------------------------------
 
 }
 

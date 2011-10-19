@@ -17,7 +17,7 @@
 
 namespace sg
 {
-namespace finance
+namespace pde
 {
 
 IOToolBonnSG::IOToolBonnSG()

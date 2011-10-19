@@ -9,6 +9,7 @@
 #define DMSYSTEMMATRIX_HPP
 
 #include "data/DataVector.hpp"
+#include "data/DataMatrix.hpp"
 #include "grid/Grid.hpp"
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "operation/common/OperationMatrix.hpp"

@@ -9,7 +9,6 @@
 
 #include "application/common/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
 #include <string>
 //
 namespace sg
