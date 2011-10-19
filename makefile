@@ -77,7 +77,7 @@ ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
 endif
 ifeq ($(VEC),bd_avx128)
-CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__NOAVX256_BULLDOZER__
+CFLAGS:=$(CFLAGS) -msse4.2 -mfma4 -mxop -march=bdver1 -D__NOAVX256_BULLDOZER__
 endif
 ifeq ($(VEC),bd_avx)
 CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1
