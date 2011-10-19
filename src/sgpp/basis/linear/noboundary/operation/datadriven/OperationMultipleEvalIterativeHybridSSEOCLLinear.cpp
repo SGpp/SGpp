@@ -14,19 +14,7 @@
 #define PERCENT_CPUS_MULT 16
 
 #ifdef __ICC
-// include SSE3 intrinsics
-#include <pmmintrin.h>
-
-union doubleAbsMaskHybrid
-{
-   const double d;
-   const __int64 i;
-
-   doubleAbsMaskHybrid() : i(0x7FFFFFFFFFFFFFFF) {}
-};
-
-_MM_ALIGN16 const doubleAbsMaskHybrid absMaskHybridDouble;
-static const __m128d abs2MaskHybridDouble = _mm_load1_pd( &absMaskHybridDouble.d );
+#include <x86intrin.h>
 #endif
 
 namespace sg

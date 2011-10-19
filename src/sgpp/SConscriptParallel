@@ -7,8 +7,6 @@
 Import("env")
 
 srcs = Split("""
-tools/common/IntrinsicExt.cpp
-
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.cpp
 basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 
