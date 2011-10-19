@@ -134,6 +134,9 @@ endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
 endif
+ifeq ($(VEC),avx2)
+CFLAGS:=$(CFLAGS) -xCORE-AVX2
+endif
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -openmp
 LFLAGS:=$(LFLAGS) -openmp
