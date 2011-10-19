@@ -86,6 +86,9 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k));
 #if defined(__SSE3__) && !defined(__AVX__)
+			int imask = 0x7FFFFFFF;
+			float* fmask = (float*)&imask;
+
 			for (size_t i = 0; i < source_size; i+=24)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
@@ -97,9 +100,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 					__m128 support_4 = _mm_load_ps(&(ptrSource[i+16]));
 					__m128 support_5 = _mm_load_ps(&(ptrSource[i+20]));
 
-					__m128 one = _mm_set1_ps(1.0f);
-					__m128 zero = _mm_set1_ps(0.0f);
-
 					for (size_t d = 0; d < dims; d++)
 					{
 						__m128 eval_0 = _mm_load_ps(&(ptrData[(d*source_size)+i]));
@@ -110,7 +110,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						__m128 eval_5 = _mm_load_ps(&(ptrData[(d*source_size)+i+20]));
 
 						__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
-						__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
 
 						eval_0 = _mm_mul_ps(eval_0, level);
 						eval_1 = _mm_mul_ps(eval_1, level);
@@ -119,6 +118,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						eval_4 = _mm_mul_ps(eval_4, level);
 						eval_5 = _mm_mul_ps(eval_5, level);
 
+						__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
+
 						eval_0 = _mm_sub_ps(eval_0, index);
 						eval_1 = _mm_sub_ps(eval_1, index);
 						eval_2 = _mm_sub_ps(eval_2, index);
@@ -126,12 +127,16 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						eval_4 = _mm_sub_ps(eval_4, index);
 						eval_5 = _mm_sub_ps(eval_5, index);
 
-						eval_0 = _mm_abs_ps(eval_0);
-						eval_1 = _mm_abs_ps(eval_1);
-						eval_2 = _mm_abs_ps(eval_2);
-						eval_3 = _mm_abs_ps(eval_3);
-						eval_4 = _mm_abs_ps(eval_4);
-						eval_5 = _mm_abs_ps(eval_5);
+						__m128 mask = _mm_set1_ps(*fmask);
+
+						eval_0 = _mm_and_ps(mask, eval_0);
+						eval_1 = _mm_and_ps(mask, eval_1);
+						eval_2 = _mm_and_ps(mask, eval_2);
+						eval_3 = _mm_and_ps(mask, eval_3);
+						eval_4 = _mm_and_ps(mask, eval_4);
+						eval_5 = _mm_and_ps(mask, eval_5);
+
+						__m128 one = _mm_set1_ps(1.0f);
 
 						eval_0 = _mm_sub_ps(one, eval_0);
 						eval_1 = _mm_sub_ps(one, eval_1);
@@ -139,6 +144,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						eval_3 = _mm_sub_ps(one, eval_3);
 						eval_4 = _mm_sub_ps(one, eval_4);
 						eval_5 = _mm_sub_ps(one, eval_5);
+
+						__m128 zero = _mm_set1_ps(0.0f);
 
 						eval_0 = _mm_max_ps(zero, eval_0);
 						eval_1 = _mm_max_ps(zero, eval_1);
@@ -173,7 +180,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 			}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-			static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
+			int imask = 0x7FFFFFFF;
+			float* fmask = (float*)&imask;
 
 			for (size_t i = 0; i < source_size; i+=48)
 			{
@@ -186,9 +194,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 					__m256 support_4 = _mm256_load_ps(&(ptrSource[i+32]));
 					__m256 support_5 = _mm256_load_ps(&(ptrSource[i+40]));
 
-					__m256 one = _mm256_set1_ps(1.0f);
-					__m256 zero = _mm256_set1_ps(0.0f);
-
 					for (size_t d = 0; d < dims; d++)
 					{
 						__m256 eval_0 = _mm256_load_ps(&(ptrData[(d*source_size)+i]));
@@ -199,7 +204,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						__m256 eval_5 = _mm256_load_ps(&(ptrData[(d*source_size)+i+40]));
 
 						__m256 level = _mm256_broadcast_ss(&(ptrLevel[(j*dims)+d]));
-						__m256 index = _mm256_broadcast_ss(&(ptrIndex[(j*dims)+d]));
 
 						eval_0 = _mm256_mul_ps(eval_0, level);
 						eval_1 = _mm256_mul_ps(eval_1, level);
@@ -208,6 +212,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						eval_4 = _mm256_mul_ps(eval_4, level);
 						eval_5 = _mm256_mul_ps(eval_5, level);
 
+						__m256 index = _mm256_broadcast_ss(&(ptrIndex[(j*dims)+d]));
+
 						eval_0 = _mm256_sub_ps(eval_0, index);
 						eval_1 = _mm256_sub_ps(eval_1, index);
 						eval_2 = _mm256_sub_ps(eval_2, index);
@@ -215,12 +221,16 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						eval_4 = _mm256_sub_ps(eval_4, index);
 						eval_5 = _mm256_sub_ps(eval_5, index);
 
-						eval_0 = _mm256_abs_ps(eval_0);
-						eval_1 = _mm256_abs_ps(eval_1);
-						eval_2 = _mm256_abs_ps(eval_2);
-						eval_3 = _mm256_abs_ps(eval_3);
-						eval_4 = _mm256_abs_ps(eval_4);
-						eval_5 = _mm256_abs_ps(eval_5);
+						__m256 mask = _mm256_set1_ps(*fmask);
+
+						eval_0 = _mm256_and_ps(mask, eval_0);
+						eval_1 = _mm256_and_ps(mask, eval_1);
+						eval_2 = _mm256_and_ps(mask, eval_2);
+						eval_3 = _mm256_and_ps(mask, eval_3);
+						eval_4 = _mm256_and_ps(mask, eval_4);
+						eval_5 = _mm256_and_ps(mask, eval_5);
+
+						__m256 one = _mm256_set1_ps(1.0f);
 
 						eval_0 = _mm256_sub_ps(one, eval_0);
 						eval_1 = _mm256_sub_ps(one, eval_1);
@@ -228,6 +238,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						eval_3 = _mm256_sub_ps(one, eval_3);
 						eval_4 = _mm256_sub_ps(one, eval_4);
 						eval_5 = _mm256_sub_ps(one, eval_5);
+
+						__m256 zero = _mm256_set1_ps(0.0f);
 
 						eval_0 = _mm256_max_ps(zero, eval_0);
 						eval_1 = _mm256_max_ps(zero, eval_1);
@@ -243,6 +255,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						support_4 = _mm256_mul_ps(support_4, eval_4);
 						support_5 = _mm256_mul_ps(support_5, eval_5);
 					}
+					__m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
 
 					__m256 res_0 = _mm256_maskload_ps(&(ptrResult[j]), ldStMaskSPAVX);
 
@@ -344,6 +357,9 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 #if defined(__SSE3__) && !defined(__AVX__)
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
 
+				int imask = 0x7FFFFFFF;
+				float* fmask = (float*)&imask;
+
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=24)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
@@ -355,9 +371,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 						__m128 support_4 = _mm_load1_ps(&(ptrAlpha[j]));
 						__m128 support_5 = _mm_load1_ps(&(ptrAlpha[j]));
 
-						__m128 one = _mm_set1_ps(1.0f);
-						__m128 zero = _mm_set1_ps(0.0f);
-
 						for (size_t d = 0; d < dims; d++)
 						{
 							__m128 eval_0 = _mm_load_ps(&(ptrData[(d*result_size)+i]));
@@ -368,7 +381,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							__m128 eval_5 = _mm_load_ps(&(ptrData[(d*result_size)+i+20]));
 
 							__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
-							__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
 
 							eval_0 = _mm_mul_ps(eval_0, level);
 							eval_1 = _mm_mul_ps(eval_1, level);
@@ -377,6 +389,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							eval_4 = _mm_mul_ps(eval_4, level);
 							eval_5 = _mm_mul_ps(eval_5, level);
 
+							__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
+
 							eval_0 = _mm_sub_ps(eval_0, index);
 							eval_1 = _mm_sub_ps(eval_1, index);
 							eval_2 = _mm_sub_ps(eval_2, index);
@@ -384,12 +398,16 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							eval_4 = _mm_sub_ps(eval_4, index);
 							eval_5 = _mm_sub_ps(eval_5, index);
 
-							eval_0 = _mm_abs_ps(eval_0);
-							eval_1 = _mm_abs_ps(eval_1);
-							eval_2 = _mm_abs_ps(eval_2);
-							eval_3 = _mm_abs_ps(eval_3);
-							eval_4 = _mm_abs_ps(eval_4);
-							eval_5 = _mm_abs_ps(eval_5);
+							__m128 mask = _mm_set1_ps(*fmask);
+
+							eval_0 = _mm_and_ps(mask, eval_0);
+							eval_1 = _mm_and_ps(mask, eval_1);
+							eval_2 = _mm_and_ps(mask, eval_2);
+							eval_3 = _mm_and_ps(mask, eval_3);
+							eval_4 = _mm_and_ps(mask, eval_4);
+							eval_5 = _mm_and_ps(mask, eval_5);
+
+							__m128 one = _mm_set1_ps(1.0f);
 
 							eval_0 = _mm_sub_ps(one, eval_0);
 							eval_1 = _mm_sub_ps(one, eval_1);
@@ -397,6 +415,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							eval_3 = _mm_sub_ps(one, eval_3);
 							eval_4 = _mm_sub_ps(one, eval_4);
 							eval_5 = _mm_sub_ps(one, eval_5);
+
+							__m128 zero = _mm_set1_ps(0.0f);
 
 							eval_0 = _mm_max_ps(zero, eval_0);
 							eval_1 = _mm_max_ps(zero, eval_1);
@@ -438,7 +458,9 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
-				static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
+
+				int imask = 0x7FFFFFFF;
+				float* fmask = (float*)&imask;
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=48)
 				{
@@ -451,9 +473,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 						__m256 support_4 = _mm256_broadcast_ss(&(ptrAlpha[j]));
 						__m256 support_5 = _mm256_broadcast_ss(&(ptrAlpha[j]));
 
-						__m256 one = _mm256_set1_ps(1.0f);
-						__m256 zero = _mm256_set1_ps(0.0f);
-
 						for (size_t d = 0; d < dims; d++)
 						{
 							__m256 eval_0 = _mm256_load_ps(&(ptrData[(d*result_size)+i]));
@@ -464,7 +483,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							__m256 eval_5 = _mm256_load_ps(&(ptrData[(d*result_size)+i+40]));
 
 							__m256 level = _mm256_broadcast_ss(&(ptrLevel[(j*dims)+d]));
-							__m256 index = _mm256_broadcast_ss(&(ptrIndex[(j*dims)+d]));
 
 							eval_0 = _mm256_mul_ps(eval_0, level);
 							eval_1 = _mm256_mul_ps(eval_1, level);
@@ -473,6 +491,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							eval_4 = _mm256_mul_ps(eval_4, level);
 							eval_5 = _mm256_mul_ps(eval_5, level);
 
+							__m256 index = _mm256_broadcast_ss(&(ptrIndex[(j*dims)+d]));
+
 							eval_0 = _mm256_sub_ps(eval_0, index);
 							eval_1 = _mm256_sub_ps(eval_1, index);
 							eval_2 = _mm256_sub_ps(eval_2, index);
@@ -480,12 +500,16 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							eval_4 = _mm256_sub_ps(eval_4, index);
 							eval_5 = _mm256_sub_ps(eval_5, index);
 
-							eval_0 = _mm256_abs_ps(eval_0);
-							eval_1 = _mm256_abs_ps(eval_1);
-							eval_2 = _mm256_abs_ps(eval_2);
-							eval_3 = _mm256_abs_ps(eval_3);
-							eval_4 = _mm256_abs_ps(eval_4);
-							eval_5 = _mm256_abs_ps(eval_5);
+							__m256 mask = _mm256_set1_ps(*fmask);
+
+							eval_0 = _mm256_and_ps(mask, eval_0);
+							eval_1 = _mm256_and_ps(mask, eval_1);
+							eval_2 = _mm256_and_ps(mask, eval_2);
+							eval_3 = _mm256_and_ps(mask, eval_3);
+							eval_4 = _mm256_and_ps(mask, eval_4);
+							eval_5 = _mm256_and_ps(mask, eval_5);
+
+							__m256 one = _mm256_set1_ps(1.0f);
 
 							eval_0 = _mm256_sub_ps(one, eval_0);
 							eval_1 = _mm256_sub_ps(one, eval_1);
@@ -493,6 +517,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 							eval_3 = _mm256_sub_ps(one, eval_3);
 							eval_4 = _mm256_sub_ps(one, eval_4);
 							eval_5 = _mm256_sub_ps(one, eval_5);
+
+							__m256 zero = _mm256_set1_ps(0.0f);
 
 							eval_0 = _mm256_max_ps(zero, eval_0);
 							eval_1 = _mm256_max_ps(zero, eval_1);
