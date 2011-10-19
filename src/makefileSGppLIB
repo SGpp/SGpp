@@ -260,7 +260,6 @@ OBJS =	DataVector.o\
 	LaserHeatEquationSolver2D.o\
 	Hedging.o\
 	HierarchisationPoly.o\
-	IntrinsicExt.o\
 	OperationMultipleEvalIterativeSPX86SimdModLinear.o\
 	OperationMultipleEvalIterativeX86SimdModLinear.o\
 	DensitySystemMatrix.o\
@@ -1069,9 +1068,6 @@ EvalCuboidGeneratorForStretching.o : $(SRCDIR)tools/common/EvalCuboidGeneratorFo
 	
 ARFFTools.o : $(SRCDIR)tools/datadriven/ARFFTools.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ARFFTools.o $(SRCDIR)tools/datadriven/ARFFTools.cpp
-
-IntrinsicExt.o : $(SRCDIR)tools/common/IntrinsicExt.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)IntrinsicExt.o $(SRCDIR)tools/common/IntrinsicExt.cpp
 	
 StdUpDown.o : $(SRCDIR)algorithm/pde/StdUpDown.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StdUpDown.o $(SRCDIR)algorithm/pde/StdUpDown.cpp

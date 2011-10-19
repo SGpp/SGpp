@@ -13,19 +13,7 @@
 #define PERCENT_CPUS 8
 
 #ifdef __ICC
-// include SSE3 intrinsics
-#include <pmmintrin.h>
-
-union floatAbsMaskHybrid
-{
-   const float f;
-   const int i;
-
-   floatAbsMaskHybrid() : i(0x7FFFFFFF) {}
-};
-
-_MM_ALIGN16 const floatAbsMaskHybrid absMaskHybrid;
-static const __m128 abs2MaskHybrid = _mm_load1_ps( &absMaskHybrid.f );
+#include <x86intrin.h>
 #endif
 
 namespace sg

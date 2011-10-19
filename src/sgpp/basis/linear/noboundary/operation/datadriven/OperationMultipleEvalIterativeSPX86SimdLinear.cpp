@@ -13,7 +13,7 @@
 #endif
 
 #if defined(__SSE3__) || defined(__AVX__)
-#include "tools/common/IntrinsicExt.hpp"
+#include <x86intrin.h>
 #endif
 
 #define CHUNKDATAPOINTS_X86 48 // must be divide-able by 48

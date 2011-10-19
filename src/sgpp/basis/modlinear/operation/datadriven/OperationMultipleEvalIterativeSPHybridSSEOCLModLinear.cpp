@@ -14,8 +14,7 @@
 
 #ifdef __ICC
 // include SSE3 intrinsics
-#include <pmmintrin.h>
-#include "tools/common/IntrinsicExt.hpp"
+#include <x86intrin.h>
 #endif
 
 namespace sg
@@ -107,6 +106,8 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multTransposeVecto
 					#pragma omp task firstprivate(j)
 					{
 						__m128 res = _mm_set1_ps(0.0f);
+						int imask = 0x7FFFFFFF;
+						float* fmask = (float*)&imask;
 
 						for (size_t i = 0; i < source_size; i+=16)
 						{
@@ -213,10 +214,12 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multTransposeVecto
 									eval_2 = _mm_sub_ps(eval_2, index);
 									eval_3 = _mm_sub_ps(eval_3, index);
 
-									eval_0 = _mm_abs_ps(eval_0);
-									eval_1 = _mm_abs_ps(eval_1);
-									eval_2 = _mm_abs_ps(eval_2);
-									eval_3 = _mm_abs_ps(eval_3);
+									__m128 mask = _mm_set1_ps(*fmask);
+
+									eval_0 = _mm_and_ps(mask, eval_0);
+									eval_1 = _mm_and_ps(mask, eval_1);
+									eval_2 = _mm_and_ps(mask, eval_2);
+									eval_3 = _mm_and_ps(mask, eval_3);
 
 									eval_0 = _mm_sub_ps(one, eval_0);
 									eval_1 = _mm_sub_ps(one, eval_1);
@@ -354,6 +357,9 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multVectorized(sg:
 				{
 					#pragma omp task firstprivate(i)
 					{
+						int imask = 0x7FFFFFFF;
+						float* fmask = (float*)&imask;
+
 						__m128 res_0 = _mm_load_ps(&(ptrResult[i]));
 						__m128 res_1 = _mm_load_ps(&(ptrResult[i+4]));
 						__m128 res_2 = _mm_load_ps(&(ptrResult[i+8]));
@@ -474,10 +480,12 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLModLinear::multVectorized(sg:
 									eval_2 = _mm_sub_ps(eval_2, index);
 									eval_3 = _mm_sub_ps(eval_3, index);
 
-									eval_0 = _mm_abs_ps(eval_0);
-									eval_1 = _mm_abs_ps(eval_1);
-									eval_2 = _mm_abs_ps(eval_2);
-									eval_3 = _mm_abs_ps(eval_3);
+									__m128 mask = _mm_set1_ps(*fmask);
+
+									eval_0 = _mm_and_ps(mask, eval_0);
+									eval_1 = _mm_and_ps(mask, eval_1);
+									eval_2 = _mm_and_ps(mask, eval_2);
+									eval_3 = _mm_and_ps(mask, eval_3);
 
 									eval_0 = _mm_sub_ps(one, eval_0);
 									eval_1 = _mm_sub_ps(one, eval_1);

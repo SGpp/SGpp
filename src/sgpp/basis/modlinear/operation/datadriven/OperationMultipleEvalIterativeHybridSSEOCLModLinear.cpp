@@ -15,8 +15,7 @@
 
 #ifdef __ICC
 // include SSE3 intrinsics
-#include <pmmintrin.h>
-#include "tools/common/IntrinsicExt.hpp"
+#include <x86intrin.h>
 #endif
 
 namespace sg
@@ -116,6 +115,9 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectori
 					#pragma omp task firstprivate(j)
 					{
 						__m128d res = _mm_set1_pd(0.0f);
+
+						long long imask = 0x7FFFFFFFFFFFFFFF;
+						double* fmask = (double*)&imask;
 
 						for (size_t i = 0; i < source_size; i+=8)
 						{
@@ -222,10 +224,12 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectori
 									eval_2 = _mm_sub_pd(eval_2, index);
 									eval_3 = _mm_sub_pd(eval_3, index);
 
-									eval_0 = _mm_abs_pd(eval_0);
-									eval_1 = _mm_abs_pd(eval_1);
-									eval_2 = _mm_abs_pd(eval_2);
-									eval_3 = _mm_abs_pd(eval_3);
+									__m128d mask = _mm_set1_pd(*fmask);
+
+									eval_0 = _mm_and_pd(mask, eval_0);
+									eval_1 = _mm_and_pd(mask, eval_1);
+									eval_2 = _mm_and_pd(mask, eval_2);
+									eval_3 = _mm_and_pd(mask, eval_3);
 
 									eval_0 = _mm_sub_pd(one, eval_0);
 									eval_1 = _mm_sub_pd(one, eval_1);
@@ -363,6 +367,9 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multVectorized(sg::b
 				{
 					#pragma omp task firstprivate(i)
 					{
+						long long imask = 0x7FFFFFFFFFFFFFFF;
+						double* fmask = (double*)&imask;
+
 						__m128d res_0 = _mm_load_pd(&(ptrResult[i+0]));
 						__m128d res_1 = _mm_load_pd(&(ptrResult[i+2]));
 						__m128d res_2 = _mm_load_pd(&(ptrResult[i+4]));
@@ -483,10 +490,12 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multVectorized(sg::b
 									eval_2 = _mm_sub_pd(eval_2, index);
 									eval_3 = _mm_sub_pd(eval_3, index);
 
-									eval_0 = _mm_abs_pd(eval_0);
-									eval_1 = _mm_abs_pd(eval_1);
-									eval_2 = _mm_abs_pd(eval_2);
-									eval_3 = _mm_abs_pd(eval_3);
+									__m128d mask = _mm_set1_pd(*fmask);
+
+									eval_0 = _mm_and_pd(mask, eval_0);
+									eval_1 = _mm_and_pd(mask, eval_1);
+									eval_2 = _mm_and_pd(mask, eval_2);
+									eval_3 = _mm_and_pd(mask, eval_3);
 
 									eval_0 = _mm_sub_pd(one, eval_0);
 									eval_1 = _mm_sub_pd(one, eval_1);

@@ -13,7 +13,7 @@
 #endif
 
 #if defined(__SSE3__) || defined(__AVX__)
-#include "tools/common/IntrinsicExt.hpp"
+#include <x86intrin.h>
 #endif
 
 #define CHUNKDATAPOINTS_X86 48 // must be divide-able by 48
@@ -86,6 +86,9 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k));
 #if defined(__SSE3__) && !defined(__AVX__)
+			int imask = 0x7FFFFFFF;
+			float* fmask = (float*)&imask;
+
 			for (size_t i = 0; i < source_size; i+=24)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
@@ -223,12 +226,14 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
 							eval_4 = _mm_sub_ps(eval_4, index);
 							eval_5 = _mm_sub_ps(eval_5, index);
 
-							eval_0 = _mm_abs_ps(eval_0);
-							eval_1 = _mm_abs_ps(eval_1);
-							eval_2 = _mm_abs_ps(eval_2);
-							eval_3 = _mm_abs_ps(eval_3);
-							eval_4 = _mm_abs_ps(eval_4);
-							eval_5 = _mm_abs_ps(eval_5);
+							__m128 mask = _mm_set1_ps(*fmask);
+
+							eval_0 = _mm_and_ps(mask, eval_0);
+							eval_1 = _mm_and_ps(mask, eval_1);
+							eval_2 = _mm_and_ps(mask, eval_2);
+							eval_3 = _mm_and_ps(mask, eval_3);
+							eval_4 = _mm_and_ps(mask, eval_4);
+							eval_5 = _mm_and_ps(mask, eval_5);
 
 							eval_0 = _mm_sub_ps(one, eval_0);
 							eval_1 = _mm_sub_ps(one, eval_1);
@@ -272,6 +277,9 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
 			static const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
+
+			int imask = 0x7FFFFFFF;
+			float* fmask = (float*)&imask;
 
 			for (size_t i = 0; i < source_size; i+=48)
 			{
@@ -410,12 +418,14 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
 							eval_4 = _mm256_sub_ps(eval_4, index);
 							eval_5 = _mm256_sub_ps(eval_5, index);
 
-							eval_0 = _mm256_abs_ps(eval_0);
-							eval_1 = _mm256_abs_ps(eval_1);
-							eval_2 = _mm256_abs_ps(eval_2);
-							eval_3 = _mm256_abs_ps(eval_3);
-							eval_4 = _mm256_abs_ps(eval_4);
-							eval_5 = _mm256_abs_ps(eval_5);
+							__m256 mask = _mm256_set1_ps(*fmask);
+
+							eval_0 = _mm256_and_ps(mask, eval_0);
+							eval_1 = _mm256_and_ps(mask, eval_1);
+							eval_2 = _mm256_and_ps(mask, eval_2);
+							eval_3 = _mm256_and_ps(mask, eval_3);
+							eval_4 = _mm256_and_ps(mask, eval_4);
+							eval_5 = _mm256_and_ps(mask, eval_5);
 
 							eval_0 = _mm256_sub_ps(one, eval_0);
 							eval_1 = _mm256_sub_ps(one, eval_1);
@@ -563,6 +573,9 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 #if defined(__SSE3__) && !defined(__AVX__)
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
 
+				int imask = 0x7FFFFFFF;
+				float* fmask = (float*)&imask;
+
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=24)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
@@ -700,12 +713,14 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 								eval_4 = _mm_sub_ps(eval_4, index);
 								eval_5 = _mm_sub_ps(eval_5, index);
 
-								eval_0 = _mm_abs_ps(eval_0);
-								eval_1 = _mm_abs_ps(eval_1);
-								eval_2 = _mm_abs_ps(eval_2);
-								eval_3 = _mm_abs_ps(eval_3);
-								eval_4 = _mm_abs_ps(eval_4);
-								eval_5 = _mm_abs_ps(eval_5);
+								__m128 mask = _mm_set1_ps(*fmask);
+
+								eval_0 = _mm_and_ps(mask, eval_0);
+								eval_1 = _mm_and_ps(mask, eval_1);
+								eval_2 = _mm_and_ps(mask, eval_2);
+								eval_3 = _mm_and_ps(mask, eval_3);
+								eval_4 = _mm_and_ps(mask, eval_4);
+								eval_5 = _mm_and_ps(mask, eval_5);
 
 								eval_0 = _mm_sub_ps(one, eval_0);
 								eval_1 = _mm_sub_ps(one, eval_1);
@@ -755,6 +770,9 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
 				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
+
+				int imask = 0x7FFFFFFF;
+				float* fmask = (float*)&imask;
 
 				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=48)
 				{
@@ -893,12 +911,14 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 								eval_4 = _mm256_sub_ps(eval_4, index);
 								eval_5 = _mm256_sub_ps(eval_5, index);
 
-								eval_0 = _mm256_abs_ps(eval_0);
-								eval_1 = _mm256_abs_ps(eval_1);
-								eval_2 = _mm256_abs_ps(eval_2);
-								eval_3 = _mm256_abs_ps(eval_3);
-								eval_4 = _mm256_abs_ps(eval_4);
-								eval_5 = _mm256_abs_ps(eval_5);
+								__m256 mask = _mm256_set1_ps(*fmask);
+
+								eval_0 = _mm256_and_ps(mask, eval_0);
+								eval_1 = _mm256_and_ps(mask, eval_1);
+								eval_2 = _mm256_and_ps(mask, eval_2);
+								eval_3 = _mm256_and_ps(mask, eval_3);
+								eval_4 = _mm256_and_ps(mask, eval_4);
+								eval_5 = _mm256_and_ps(mask, eval_5);
 
 								eval_0 = _mm256_sub_ps(one, eval_0);
 								eval_1 = _mm256_sub_ps(one, eval_1);
