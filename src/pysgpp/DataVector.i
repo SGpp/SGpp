@@ -5,6 +5,7 @@
 ******************************************************************************/
 // @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
+
 %apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
 %rename(__str__) DataVector::toString;
@@ -15,6 +16,10 @@
 %rename(__len__) DataVector::getSize;
 
 
+//namespace sg
+//{
+//namespace base
+//{
 
 class DataVector
 {
@@ -100,4 +105,5 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
 };
 
-
+//}
+//}

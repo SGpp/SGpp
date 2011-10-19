@@ -3,13 +3,12 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pfueged@in.tum.de)
 
 #ifndef LINEARSTRETCHEDGRID_HPP
 #define LINEARSTRETCHEDGRID_HPP
 
 #include "grid/Grid.hpp"
-//#include "grid/common/BoundingBox.hpp"
 #include "grid/common/Stretching.hpp"
 
 #include <iostream>
@@ -49,36 +48,7 @@ public:
 
 	virtual const char* getType();
 
-//	virtual OperationB* createOperationB();
-//	virtual OperationBVectorized* createOperationBVectorized(const std::string& VecType);
-//	virtual OperationBVectorizedSP* createOperationBVectorizedSP(const std::string& VecType);
-/*	virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset);
-	virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset);
-	virtual OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(const std::string& VecType, DataMatrixSP* dataset);
-*/	virtual GridGenerator* createGridGenerator();
-/*	virtual OperationMatrix* createOperationLaplace();
-	virtual OperationEval* createOperationEval();
-	virtual OperationTest* createOperationTest();
-	virtual OperationHierarchisation* createOperationHierarchisation();
-	virtual OperationMatrix* createOperationLTwoDotProduct();
-	virtual OperationConvert* createOperationConvert();
-
-
-	// @todo (heinecke) remove this when done
-	virtual OperationMatrix* createOperationUpDownTest();
-
-	// finance operations
-	virtual OperationMatrix* createOperationDelta(DataVector& coef);
-	virtual OperationMatrix* createOperationGamma(DataMatrix& coef);
-	virtual OperationMatrix* createOperationDeltaLog(DataVector& coef);
-	virtual OperationMatrix* createOperationGammaLog(DataMatrix& coef);
-
-	// finance operations for hull-white 1D
-	virtual OperationMatrix* createOperationLE();
-	virtual OperationMatrix* createOperationLB();
-	virtual OperationMatrix* createOperationLF();
-	virtual OperationMatrix* createOperationLD();
-*/
+	virtual GridGenerator* createGridGenerator();
 	static Grid* unserialize(std::istream& istr);
 };
 

@@ -16,7 +16,7 @@
 
 namespace sg
 {
-namespace finance
+namespace pde
 {
 
 /**

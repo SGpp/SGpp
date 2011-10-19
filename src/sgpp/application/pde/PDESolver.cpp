@@ -257,7 +257,7 @@ void PDESolver::coarsenInitialGridSurplus(sg::base::DataVector& alpha, double dT
 
 void PDESolver::constructGridBonn(std::string tfilename, sg::base::DataVector& emptyAlpha, bool& ishierarchized)
 {
-	sg::finance::IOToolBonnSG* myImporter = new sg::finance::IOToolBonnSG();
+	sg::pde::IOToolBonnSG* myImporter = new sg::pde::IOToolBonnSG();
 	std::string serGrid;
 
 	// test if emptyAlpha is really empty
@@ -298,7 +298,7 @@ void PDESolver::constructGridBonn(std::string tfilename, sg::base::DataVector& e
 
 void PDESolver::storeGridBonn(std::string tfilename, sg::base::DataVector& alpha, bool ishierarchized)
 {
-	sg::finance::IOToolBonnSG* myExporter = new sg::finance::IOToolBonnSG();
+	sg::pde::IOToolBonnSG* myExporter = new sg::pde::IOToolBonnSG();
 	sg::base::DataVector copyAlpha(alpha);
 
 	if (bGridConstructed)
