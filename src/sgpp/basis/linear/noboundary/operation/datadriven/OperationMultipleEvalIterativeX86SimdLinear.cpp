@@ -16,6 +16,10 @@
 #include <x86intrin.h>
 #endif
 
+#ifdef __NOAVX256_BULLDOZER__
+#undef __AVX__
+#endif
+
 #define CHUNKDATAPOINTS_X86 24 // must be divide-able by 24
 #define CHUNKGRIDPOINTS_X86 12
 

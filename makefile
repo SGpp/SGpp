@@ -59,9 +59,6 @@ LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 CFLAGS_ICC:=-Wall -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
 LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
 
-CFLAGS_OPENCC:=-Wall -pedantic -ansi -c -ipa -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
-LFLAGS_OPENCC:=-Wall -pedantic -ansi -O3 -ipa
-
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
 LFLAGS:=$(LFLAGS_GCC)
@@ -79,35 +76,11 @@ endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
 endif
-ifeq ($(TR1),1)
-CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+ifeq ($(VEC),bd_avx128)
+CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__NOAVX256_BULLDOZER__
 endif
-ifeq ($(EXT), OCL)
-CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -fopenmp
-LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
-endif
-ifeq ($(EXT), IOCL)
-CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -fopenmp -DUSEOCL_CPU
-LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
-endif
-endif
-
-ifeq ($(CC),opencc)
-CFLAGS:=$(CFLAGS_GCC)
-LFLAGS:=$(LFLAGS_GCC)
-EXT=NO
-ifeq ($(OMP),1)
-CFLAGS:=$(CFLAGS) -mp
-LFLAGS:=$(LFLAGS) -mp
-endif
-ifeq ($(VEC),sse3)
-CFLAGS:=$(CFLAGS) -msse3
-endif
-ifeq ($(VEC),sse4)
-CFLAGS:=$(CFLAGS) -msse4.2
-endif
-ifeq ($(VEC),avx)
-CFLAGS:=$(CFLAGS) -mavx
+ifeq ($(VEC),bd_avx)
+CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1
 endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
