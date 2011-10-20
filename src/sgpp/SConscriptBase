@@ -95,6 +95,7 @@ grid/type/LinearStretchedGrid.cpp
 grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
 tools/common/EvalCuboidGeneratorForStretching.cpp
 tools/common/GridPrinterForStretching.cpp
+tools/common/TwoPartitionAutoTuning.cpp
 
 tools/common/OperationQuadratureMC.cpp
 

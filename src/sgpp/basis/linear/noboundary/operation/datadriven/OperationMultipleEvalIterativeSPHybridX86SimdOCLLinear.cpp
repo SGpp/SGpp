@@ -5,12 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.hpp"
 #include "exception/operation_exception.hpp"
 #include "tools/common/AlignedMemory.hpp"
-
-// This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
-#define PERCENT_CPUS 8
 
 #ifdef __ICC
 #include <x86intrin.h>
@@ -21,7 +18,7 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPHybridSSEOCLLinear::OperationMultipleEvalIterativeSPHybridSSEOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset)
 {
 	this->storage = storage;
 
@@ -32,15 +29,20 @@ OperationMultipleEvalIterativeSPHybridSSEOCLLinear::OperationMultipleEvalIterati
 
 	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
+
+	_tuningMult = new sg::base::TwoPartitionAutoTuning(dataset->getNrows(), 128);
+	_tuningMultTrans = new sg::base::TwoPartitionAutoTuning(storage->size(), 128);
 }
 
-OperationMultipleEvalIterativeSPHybridSSEOCLLinear::~OperationMultipleEvalIterativeSPHybridSSEOCLLinear()
+OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear()
 {
 	delete myTimer;
 	delete myOCLKernels;
+	delete _tuningMult;
+	delete _tuningMultTrans;
 }
 
-void OperationMultipleEvalIterativeSPHybridSSEOCLLinear::rebuildLevelAndIndex()
+void OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::rebuildLevelAndIndex()
 {
 	delete this->level_;
 	delete this->index_;
@@ -51,13 +53,18 @@ void OperationMultipleEvalIterativeSPHybridSSEOCLLinear::rebuildLevelAndIndex()
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myOCLKernels->resetKernels();
+
+	_tuningMultTrans->setProblemSize(storage->size());
 }
 
-double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
+double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
+
+    double gpu_time = 0.0;
+    double cpu_time = 0.0;
 
     result.setAll(0.0f);
 
@@ -73,24 +80,23 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
     }
 
     // split result into GPU and CPU partition
-    size_t gpu_partition = (storageSize * (100-PERCENT_CPUS))/100;
-    size_t gpu_pad = gpu_partition % 128;
-    gpu_partition -= gpu_pad;
+    size_t gpu_partition = storageSize - _tuningMultTrans->getPartition1Size();
 
     // Do on-demand transpose
 	float* ptrTransData = new float[dims*source_size];
 
-	#pragma omp parallel
+	#pragma omp parallel shared(gpu_time, cpu_time)
     {
 		#pragma omp single nowait
     	{
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
-    			myOCLKernels->multTransSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+    			gpu_time = myOCLKernels->multTransSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
     		}
 
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
+    			myTimer->start();
 #ifdef __ICC
     			for (size_t n = 0; n < source_size; n++)
     			{
@@ -105,6 +111,8 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 					#pragma omp task firstprivate(j)
 					{
 						__m128 res = _mm_set1_ps(0.0f);
+						int imask = 0x7FFFFFFF;
+						float* fmask = (float*)&imask;
 
 						for (size_t i = 0; i < source_size; i+=16)
 						{
@@ -115,6 +123,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 
 							__m128 one = _mm_set1_ps(1.0f);
 							__m128 zero = _mm_set1_ps(0.0f);
+							__m128 mask = _mm_set1_ps(*fmask);
 
 							for (size_t d = 0; d < dims; d++)
 							{
@@ -136,10 +145,10 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 								eval_2 = _mm_sub_ps(eval_2, index);
 								eval_3 = _mm_sub_ps(eval_3, index);
 
-								eval_0 = _mm_and_ps(abs2MaskHybrid, eval_0);
-								eval_1 = _mm_and_ps(abs2MaskHybrid, eval_1);
-								eval_2 = _mm_and_ps(abs2MaskHybrid, eval_2);
-								eval_3 = _mm_and_ps(abs2MaskHybrid, eval_3);
+								eval_0 = _mm_and_ps(mask, eval_0);
+								eval_1 = _mm_and_ps(mask, eval_1);
+								eval_2 = _mm_and_ps(mask, eval_2);
+								eval_3 = _mm_and_ps(mask, eval_3);
 
 								eval_0 = _mm_sub_ps(one, eval_0);
 								eval_1 = _mm_sub_ps(one, eval_1);
@@ -196,11 +205,14 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 					}
 				}
 #endif
+				cpu_time = myTimer->stop();
     		}
 
 			#pragma omp taskwait
     	}
     }
+
+    _tuningMultTrans->setExecutionTimes(cpu_time, gpu_time);
 
     double time = 0.0;
     //cleanup
@@ -209,11 +221,14 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multTransposeVectoriz
 	return time;
 }
 
-double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
+double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
+
+    double gpu_time = 0.0;
+    double cpu_time = 0.0;
 
     result.setAll(0.0f);
 
@@ -229,27 +244,28 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(sg::ba
     }
 
     // split result into GPU and CPU partition
-    size_t cpu_partition = (result_size * PERCENT_CPUS)/100;
-    size_t cpu_pad = cpu_partition % 128;
-    cpu_partition -= cpu_pad;
-    size_t gpu_partition = result_size - cpu_partition;
+    size_t gpu_partition = storageSize - _tuningMult->getPartition1Size();
 
-	#pragma omp parallel
+	#pragma omp parallel shared(gpu_time, cpu_time)
     {
 		#pragma omp single nowait
     	{
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
-    			myOCLKernels->multSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+    			gpu_time = myOCLKernels->multSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
     		}
 
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
+    			myTimer->start();
 #ifdef __ICC
 				for (size_t i = gpu_partition; i < result_size; i+=16)
 				{
 					#pragma omp task firstprivate(i)
 					{
+						int imask = 0x7FFFFFFF;
+						float* fmask = (float*)&imask;
+
 						__m128 res_0 = _mm_load_ps(&(ptrResult[i]));
 						__m128 res_1 = _mm_load_ps(&(ptrResult[i+4]));
 						__m128 res_2 = _mm_load_ps(&(ptrResult[i+8]));
@@ -274,6 +290,7 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(sg::ba
 
 							__m128 one = _mm_set1_ps(1.0f);
 							__m128 zero = _mm_set1_ps(0.0f);
+							__m128 mask = _mm_set1_ps(*fmask);
 
 							for (size_t d = 0; d < dims; d++)
 							{
@@ -295,10 +312,10 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(sg::ba
 								eval_2 = _mm_sub_ps(eval_2, index);
 								eval_3 = _mm_sub_ps(eval_3, index);
 
-								eval_0 = _mm_and_ps(abs2MaskHybrid, eval_0);
-								eval_1 = _mm_and_ps(abs2MaskHybrid, eval_1);
-								eval_2 = _mm_and_ps(abs2MaskHybrid, eval_2);
-								eval_3 = _mm_and_ps(abs2MaskHybrid, eval_3);
+								eval_0 = _mm_and_ps(mask, eval_0);
+								eval_1 = _mm_and_ps(mask, eval_1);
+								eval_2 = _mm_and_ps(mask, eval_2);
+								eval_3 = _mm_and_ps(mask, eval_3);
 
 								eval_0 = _mm_sub_ps(one, eval_0);
 								eval_1 = _mm_sub_ps(one, eval_1);
@@ -354,11 +371,15 @@ double OperationMultipleEvalIterativeSPHybridSSEOCLLinear::multVectorized(sg::ba
 					}
 				}
 #endif
+				cpu_time = myTimer->stop();
     		}
 
 			#pragma omp taskwait
     	}
     }
+
+    _tuningMult->setExecutionTimes(cpu_time, gpu_time);
+
     double time = 0.0;
 
    	return time;

@@ -25,10 +25,10 @@
 #define GRDIRESOLUTION 100
 
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
-#define USE_X86SIMD
+//#define USE_X86SIMD
 //#define USE_OCL
 //#define USE_ARBB
-//#define USE_HYBRID_SSE_OCL
+#define USE_HYBRID_SSE_OCL
 
 // do Test only after last refinement
 #define TEST_LAST_ONLY
