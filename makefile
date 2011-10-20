@@ -73,13 +73,16 @@ endif
 ifeq ($(VEC),sse4)
 CFLAGS:=$(CFLAGS) -msse4.2
 endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
+endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
 endif
 ifeq ($(VEC),bd_avx128)
-CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__NOAVX256_BULLDOZER__
+CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__USEAVX128__
 endif
-ifeq ($(VEC),bd_avx256)
+ifeq ($(VEC),bd_avx)
 CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1
 endif
 ifeq ($(TR1),1)
@@ -103,6 +106,9 @@ CFLAGS:=$(CFLAGS) -msse3
 endif
 ifeq ($(VEC),sse4)
 CFLAGS:=$(CFLAGS) -msse4.2
+endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
 endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx

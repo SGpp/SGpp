@@ -16,6 +16,10 @@
 #include <x86intrin.h>
 #endif
 
+#ifdef __USEAVX128__
+#undef __AVX__
+#endif
+
 #define CHUNKDATAPOINTS_X86 24 // must be divide-able by 24
 #define CHUNKGRIDPOINTS_x86 12
 
