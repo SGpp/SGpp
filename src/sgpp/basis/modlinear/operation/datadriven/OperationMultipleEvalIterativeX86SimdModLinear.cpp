@@ -167,14 +167,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
 
 							__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 							__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+							eval_0 = _mm_msub_pd(eval_0, level, index);
+							eval_1 = _mm_msub_pd(eval_1, level, index);
+							eval_2 = _mm_msub_pd(eval_2, level, index);
+							eval_3 = _mm_msub_pd(eval_3, level, index);
+							eval_4 = _mm_msub_pd(eval_4, level, index);
+							eval_5 = _mm_msub_pd(eval_5, level, index);
+#else
 							eval_0 = _mm_sub_pd(_mm_mul_pd(eval_0, level), index);
 							eval_1 = _mm_sub_pd(_mm_mul_pd(eval_1, level), index);
 							eval_2 = _mm_sub_pd(_mm_mul_pd(eval_2, level), index);
 							eval_3 = _mm_sub_pd(_mm_mul_pd(eval_3, level), index);
 							eval_4 = _mm_sub_pd(_mm_mul_pd(eval_4, level), index);
 							eval_5 = _mm_sub_pd(_mm_mul_pd(eval_5, level), index);
-
+#endif
 							eval_0 = _mm_add_pd(one, eval_0);
 							eval_1 = _mm_add_pd(one, eval_1);
 							eval_2 = _mm_add_pd(one, eval_2);
@@ -208,14 +215,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
 
 							__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 							__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+							eval_0 = _mm_msub_pd(eval_0, level, index);
+							eval_1 = _mm_msub_pd(eval_1, level, index);
+							eval_2 = _mm_msub_pd(eval_2, level, index);
+							eval_3 = _mm_msub_pd(eval_3, level, index);
+							eval_4 = _mm_msub_pd(eval_4, level, index);
+							eval_5 = _mm_msub_pd(eval_5, level, index);
+#else
 							eval_0 = _mm_sub_pd(_mm_mul_pd(eval_0, level), index);
 							eval_1 = _mm_sub_pd(_mm_mul_pd(eval_1, level), index);
 							eval_2 = _mm_sub_pd(_mm_mul_pd(eval_2, level), index);
 							eval_3 = _mm_sub_pd(_mm_mul_pd(eval_3, level), index);
 							eval_4 = _mm_sub_pd(_mm_mul_pd(eval_4, level), index);
 							eval_5 = _mm_sub_pd(_mm_mul_pd(eval_5, level), index);
-
+#endif
 							__m128d mask = _mm_set1_pd(*fmask);
 
 							eval_0 = _mm_and_pd(mask, eval_0);
@@ -342,14 +356,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
 
 							__m256d level = _mm256_broadcast_sd(&(ptrLevel[(j*dims)+d]));
 							__m256d index = _mm256_broadcast_sd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+							eval_0 = _mm256_msub_pd(eval_0, level, index);
+							eval_1 = _mm256_msub_pd(eval_1, level, index);
+							eval_2 = _mm256_msub_pd(eval_2, level, index);
+							eval_3 = _mm256_msub_pd(eval_3, level, index);
+							eval_4 = _mm256_msub_pd(eval_4, level, index);
+							eval_5 = _mm256_msub_pd(eval_5, level, index);
+#else
 							eval_0 = _mm256_sub_pd(_mm256_mul_pd(eval_0, level), index);
 							eval_1 = _mm256_sub_pd(_mm256_mul_pd(eval_1, level), index);
 							eval_2 = _mm256_sub_pd(_mm256_mul_pd(eval_2, level), index);
 							eval_3 = _mm256_sub_pd(_mm256_mul_pd(eval_3, level), index);
 							eval_4 = _mm256_sub_pd(_mm256_mul_pd(eval_4, level), index);
 							eval_5 = _mm256_sub_pd(_mm256_mul_pd(eval_5, level), index);
-
+#endif
 							eval_0 = _mm256_add_pd(one, eval_0);
 							eval_1 = _mm256_add_pd(one, eval_1);
 							eval_2 = _mm256_add_pd(one, eval_2);
@@ -383,14 +404,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
 
 							__m256d level = _mm256_broadcast_sd(&(ptrLevel[(j*dims)+d]));
 							__m256d index = _mm256_broadcast_sd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+							eval_0 = _mm256_msub_pd(eval_0, level, index);
+							eval_1 = _mm256_msub_pd(eval_1, level, index);
+							eval_2 = _mm256_msub_pd(eval_2, level, index);
+							eval_3 = _mm256_msub_pd(eval_3, level, index);
+							eval_4 = _mm256_msub_pd(eval_4, level, index);
+							eval_5 = _mm256_msub_pd(eval_5, level, index);
+#else
 							eval_0 = _mm256_sub_pd(_mm256_mul_pd(eval_0, level), index);
 							eval_1 = _mm256_sub_pd(_mm256_mul_pd(eval_1, level), index);
 							eval_2 = _mm256_sub_pd(_mm256_mul_pd(eval_2, level), index);
 							eval_3 = _mm256_sub_pd(_mm256_mul_pd(eval_3, level), index);
 							eval_4 = _mm256_sub_pd(_mm256_mul_pd(eval_4, level), index);
 							eval_5 = _mm256_sub_pd(_mm256_mul_pd(eval_5, level), index);
-
+#endif
 							__m256d mask = _mm256_broadcast_sd(fmask);
 
 							eval_0 = _mm256_and_pd(mask, eval_0);
@@ -442,7 +470,7 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
 					_mm256_maskstore_pd(&(ptrResult[j]), ldStMaskAVX, res_0);
 #else
 					double tmp_reduce;
-					_mm256_maskstore_pd(&(tmp_reduce), ldStMaskAVX, res_0);
+					_mm256_maskstore_pd(&(tmp_reduce), ldStMaskAVX, support_0);
 					ptrResult[j] += tmp_reduce;
 #endif
 				}
@@ -630,14 +658,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
 
 								__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 								__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+								eval_0 = _mm_msub_pd(eval_0, level, index);
+								eval_1 = _mm_msub_pd(eval_1, level, index);
+								eval_2 = _mm_msub_pd(eval_2, level, index);
+								eval_3 = _mm_msub_pd(eval_3, level, index);
+								eval_4 = _mm_msub_pd(eval_4, level, index);
+								eval_5 = _mm_msub_pd(eval_5, level, index);
+#else
 								eval_0 = _mm_sub_pd(_mm_mul_pd(eval_0, level), index);
 								eval_1 = _mm_sub_pd(_mm_mul_pd(eval_1, level), index);
 								eval_2 = _mm_sub_pd(_mm_mul_pd(eval_2, level), index);
 								eval_3 = _mm_sub_pd(_mm_mul_pd(eval_3, level), index);
 								eval_4 = _mm_sub_pd(_mm_mul_pd(eval_4, level), index);
 								eval_5 = _mm_sub_pd(_mm_mul_pd(eval_5, level), index);
-
+#endif
 								eval_0 = _mm_add_pd(one, eval_0);
 								eval_1 = _mm_add_pd(one, eval_1);
 								eval_2 = _mm_add_pd(one, eval_2);
@@ -671,14 +706,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
 
 								__m128d level = _mm_loaddup_pd(&(ptrLevel[(j*dims)+d]));
 								__m128d index = _mm_loaddup_pd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+								eval_0 = _mm_msub_pd(eval_0, level, index);
+								eval_1 = _mm_msub_pd(eval_1, level, index);
+								eval_2 = _mm_msub_pd(eval_2, level, index);
+								eval_3 = _mm_msub_pd(eval_3, level, index);
+								eval_4 = _mm_msub_pd(eval_4, level, index);
+								eval_5 = _mm_msub_pd(eval_5, level, index);
+#else
 								eval_0 = _mm_sub_pd(_mm_mul_pd(eval_0, level), index);
 								eval_1 = _mm_sub_pd(_mm_mul_pd(eval_1, level), index);
 								eval_2 = _mm_sub_pd(_mm_mul_pd(eval_2, level), index);
 								eval_3 = _mm_sub_pd(_mm_mul_pd(eval_3, level), index);
 								eval_4 = _mm_sub_pd(_mm_mul_pd(eval_4, level), index);
 								eval_5 = _mm_sub_pd(_mm_mul_pd(eval_5, level), index);
-
+#endif
 								__m128d mask = _mm_set1_pd(*fmask);
 
 								eval_0 = _mm_and_pd(mask, eval_0);
@@ -814,14 +856,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
 
 								__m256d level = _mm256_broadcast_sd(&(ptrLevel[(j*dims)+d]));
 								__m256d index = _mm256_broadcast_sd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+								eval_0 = _mm256_msub_pd(eval_0, level, index);
+								eval_1 = _mm256_msub_pd(eval_1, level, index);
+								eval_2 = _mm256_msub_pd(eval_2, level, index);
+								eval_3 = _mm256_msub_pd(eval_3, level, index);
+								eval_4 = _mm256_msub_pd(eval_4, level, index);
+								eval_5 = _mm256_msub_pd(eval_5, level, index);
+#else
 								eval_0 = _mm256_sub_pd(_mm256_mul_pd(eval_0, level), index);
 								eval_1 = _mm256_sub_pd(_mm256_mul_pd(eval_1, level), index);
 								eval_2 = _mm256_sub_pd(_mm256_mul_pd(eval_2, level), index);
 								eval_3 = _mm256_sub_pd(_mm256_mul_pd(eval_3, level), index);
 								eval_4 = _mm256_sub_pd(_mm256_mul_pd(eval_4, level), index);
 								eval_5 = _mm256_sub_pd(_mm256_mul_pd(eval_5, level), index);
-
+#endif
 								eval_0 = _mm256_add_pd(one, eval_0);
 								eval_1 = _mm256_add_pd(one, eval_1);
 								eval_2 = _mm256_add_pd(one, eval_2);
@@ -855,14 +904,21 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
 
 								__m256d level = _mm256_broadcast_sd(&(ptrLevel[(j*dims)+d]));
 								__m256d index = _mm256_broadcast_sd(&(ptrIndex[(j*dims)+d]));
-
+#ifdef __FMA4__
+								eval_0 = _mm256_msub_pd(eval_0, level, index);
+								eval_1 = _mm256_msub_pd(eval_1, level, index);
+								eval_2 = _mm256_msub_pd(eval_2, level, index);
+								eval_3 = _mm256_msub_pd(eval_3, level, index);
+								eval_4 = _mm256_msub_pd(eval_4, level, index);
+								eval_5 = _mm256_msub_pd(eval_5, level, index);
+#else
 								eval_0 = _mm256_sub_pd(_mm256_mul_pd(eval_0, level), index);
 								eval_1 = _mm256_sub_pd(_mm256_mul_pd(eval_1, level), index);
 								eval_2 = _mm256_sub_pd(_mm256_mul_pd(eval_2, level), index);
 								eval_3 = _mm256_sub_pd(_mm256_mul_pd(eval_3, level), index);
 								eval_4 = _mm256_sub_pd(_mm256_mul_pd(eval_4, level), index);
 								eval_5 = _mm256_sub_pd(_mm256_mul_pd(eval_5, level), index);
-
+#endif
 								__m256d mask = _mm256_broadcast_sd(fmask);
 
 								eval_0 = _mm256_and_pd(mask, eval_0);
