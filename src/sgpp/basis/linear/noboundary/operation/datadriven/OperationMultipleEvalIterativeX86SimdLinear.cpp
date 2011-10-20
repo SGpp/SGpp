@@ -274,7 +274,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 					_mm256_maskstore_pd(&(ptrResult[j]), ldStMaskAVX, res_0);
 #else
 					double tmp_reduce;
-					_mm256_maskstore_pd(&(tmp_reduce), ldStMaskAVX, res_0);
+					_mm256_maskstore_pd(&(tmp_reduce), ldStMaskAVX, support_0);
 					ptrResult[j] += tmp_reduce;
 #endif
 				}
