@@ -91,7 +91,10 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
     	{
 			#pragma omp task shared(gpu_time, cpu_time)
     		{
-    			gpu_time = myOCLKernels->multTransSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+    			if (gpu_partition > 0)
+    			{
+    				gpu_time = myOCLKernels->multTransSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+    			}
     		}
 
 			#pragma omp task shared(gpu_time, cpu_time)
@@ -244,7 +247,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
     }
 
     // split result into GPU and CPU partition
-    size_t gpu_partition = storageSize - _tuningMult->getPartition1Size();
+    size_t gpu_partition = result_size - _tuningMult->getPartition1Size();
 
 	#pragma omp parallel shared(gpu_time, cpu_time)
     {
@@ -252,7 +255,10 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
     	{
 			#pragma omp task shared(gpu_time, cpu_time)
     		{
-    			gpu_time = myOCLKernels->multSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+    			if (gpu_partition > 0)
+    			{
+    				gpu_time = myOCLKernels->multSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+    			}
     		}
 
 			#pragma omp task shared(gpu_time, cpu_time)
@@ -377,6 +383,8 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 			#pragma omp taskwait
     	}
     }
+
+    std::cout << cpu_time << " " << gpu_time << std::endl;
 
     _tuningMult->setExecutionTimes(cpu_time, gpu_time);
 
