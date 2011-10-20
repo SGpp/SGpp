@@ -16,7 +16,7 @@
 #include <x86intrin.h>
 #endif
 
-#ifdef __NOAVX256_BULLDOZER__
+#ifdef __USEAVX128__
 #undef __AVX__
 #endif
 
