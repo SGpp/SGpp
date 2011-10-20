@@ -253,9 +253,8 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						support_4 = _mm256_mul_ps(support_4, eval_4);
 						support_5 = _mm256_mul_ps(support_5, eval_5);
 					}
-					__m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
 
-					__m256 res_0 = _mm256_maskload_ps(&(ptrResult[j]), ldStMaskSPAVX);
+					__m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);				
 
 					support_0 = _mm256_add_ps(support_0, support_1);
 					support_2 = _mm256_add_ps(support_2, support_3);
@@ -267,9 +266,17 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 					__m256 tmp = _mm256_permute2f128_ps(support_0, support_0, 0x81);
 					support_0 = _mm256_add_ps(support_0, tmp);
 					support_0 = _mm256_hadd_ps(support_0, support_0);
-					res_0 = _mm256_add_ps(res_0, support_0);
 
+// Workaround: bug with maskload in GCC (4.6.1)				
+#ifdef __ICC					
+					__m256 res_0 = _mm256_maskload_ps(&(ptrResult[j]), ldStMaskSPAVX);
+					res_0 = _mm256_add_ps(res_0, support_0);
 					_mm256_maskstore_ps(&(ptrResult[j]), ldStMaskSPAVX, res_0);
+#else
+					float tmp_reduce;
+					_mm256_maskstore_ps(&(tmp_reduce), ldStMaskSPAVX, support_0);
+					ptrResult[j] += tmp_reduce;
+#endif
 				}
 			}
 #endif
