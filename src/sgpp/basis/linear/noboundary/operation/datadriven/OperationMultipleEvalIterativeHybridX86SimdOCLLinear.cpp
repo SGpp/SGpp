@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.hpp"
 #include "exception/operation_exception.hpp"
 #include "tools/common/AlignedMemory.hpp"
 
@@ -22,7 +22,7 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeHybridSSEOCLLinear::OperationMultipleEvalIterativeHybridSSEOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeHybridX86SimdOCLLinear::OperationMultipleEvalIterativeHybridX86SimdOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 
@@ -35,13 +35,13 @@ OperationMultipleEvalIterativeHybridSSEOCLLinear::OperationMultipleEvalIterative
 	myOCLKernels = new OCLKernels();
 }
 
-OperationMultipleEvalIterativeHybridSSEOCLLinear::~OperationMultipleEvalIterativeHybridSSEOCLLinear()
+OperationMultipleEvalIterativeHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeHybridX86SimdOCLLinear()
 {
 	delete myTimer;
 	delete myOCLKernels;
 }
 
-void OperationMultipleEvalIterativeHybridSSEOCLLinear::rebuildLevelAndIndex()
+void OperationMultipleEvalIterativeHybridX86SimdOCLLinear::rebuildLevelAndIndex()
 {
 	delete this->level_;
 	delete this->index_;
@@ -54,7 +54,7 @@ void OperationMultipleEvalIterativeHybridSSEOCLLinear::rebuildLevelAndIndex()
 	myOCLKernels->resetKernels();
 }
 
-double OperationMultipleEvalIterativeHybridSSEOCLLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
+double OperationMultipleEvalIterativeHybridX86SimdOCLLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
@@ -113,6 +113,9 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multTransposeVectorized
 				{
 					#pragma omp task firstprivate(j)
 					{
+						long long imask = 0x7FFFFFFFFFFFFFFF;
+						double* fmask = (double*)&imask;
+
 						__m128d res = _mm_set1_pd(0.0f);
 
 						for (size_t i = 0; i < source_size; i+=8)
@@ -124,6 +127,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multTransposeVectorized
 
 							__m128d one = _mm_set1_pd(1.0);
 							__m128d zero = _mm_set1_pd(0.0);
+							__m128d mask = _mm_set1_pd(*fmask);
 
 							for (size_t d = 0; d < dims; d++)
 							{
@@ -145,10 +149,10 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multTransposeVectorized
 								eval_2 = _mm_sub_pd(eval_2, index);
 								eval_3 = _mm_sub_pd(eval_3, index);
 
-								eval_0 = _mm_and_pd(abs2MaskHybridDouble, eval_0);
-								eval_1 = _mm_and_pd(abs2MaskHybridDouble, eval_1);
-								eval_2 = _mm_and_pd(abs2MaskHybridDouble, eval_2);
-								eval_3 = _mm_and_pd(abs2MaskHybridDouble, eval_3);
+								eval_0 = _mm_and_pd(mask, eval_0);
+								eval_1 = _mm_and_pd(mask, eval_1);
+								eval_2 = _mm_and_pd(mask, eval_2);
+								eval_3 = _mm_and_pd(mask, eval_3);
 
 								eval_0 = _mm_sub_pd(one, eval_0);
 								eval_1 = _mm_sub_pd(one, eval_1);
@@ -218,7 +222,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multTransposeVectorized
 	return time;
 }
 
-double OperationMultipleEvalIterativeHybridSSEOCLLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
+double OperationMultipleEvalIterativeHybridX86SimdOCLLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
@@ -259,6 +263,9 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multVectorized(sg::base
 				{
 					#pragma omp task firstprivate(i)
 					{
+						long long imask = 0x7FFFFFFFFFFFFFFF;
+						double* fmask = (double*)&imask;
+
 						__m128d res_0 = _mm_load_pd(&(ptrResult[i+0]));
 						__m128d res_1 = _mm_load_pd(&(ptrResult[i+2]));
 						__m128d res_2 = _mm_load_pd(&(ptrResult[i+4]));
@@ -283,6 +290,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multVectorized(sg::base
 
 							__m128d one = _mm_set1_pd(1.0);
 							__m128d zero = _mm_set1_pd(0.0);
+							__m128d mask = _mm_set1_pd(*fmask);
 
 							for (size_t d = 0; d < dims; d++)
 							{
@@ -304,10 +312,10 @@ double OperationMultipleEvalIterativeHybridSSEOCLLinear::multVectorized(sg::base
 								eval_2 = _mm_sub_pd(eval_2, index);
 								eval_3 = _mm_sub_pd(eval_3, index);
 
-								eval_0 = _mm_and_pd(abs2MaskHybridDouble, eval_0);
-								eval_1 = _mm_and_pd(abs2MaskHybridDouble, eval_1);
-								eval_2 = _mm_and_pd(abs2MaskHybridDouble, eval_2);
-								eval_3 = _mm_and_pd(abs2MaskHybridDouble, eval_3);
+								eval_0 = _mm_and_pd(mask, eval_0);
+								eval_1 = _mm_and_pd(mask, eval_1);
+								eval_2 = _mm_and_pd(mask, eval_2);
+								eval_3 = _mm_and_pd(mask, eval_3);
 
 								eval_0 = _mm_sub_pd(one, eval_0);
 								eval_1 = _mm_sub_pd(one, eval_1);

@@ -14,14 +14,14 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.hpp"
 
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.hpp"
+#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
@@ -50,7 +50,7 @@ namespace op_factory
           }
         else if (vecType == "HYBRID_SSE_OCL")
           {
-            return new parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB
@@ -80,7 +80,7 @@ namespace op_factory
           }
         else if (vecType == "HYBRID_SSE_OCL")
           {
-            return new parallel::OperationMultipleEvalIterativeHybridSSEOCLLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB
@@ -136,7 +136,7 @@ namespace op_factory
           }
         else if (vecType == "HYBRID_SSE_OCL")
           {
-            return new parallel::OperationMultipleEvalIterativeSPHybridSSEOCLLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB
@@ -164,7 +164,7 @@ namespace op_factory
           }
         else if (vecType == "HYBRID_SSE_OCL")
           {
-            return new parallel::OperationMultipleEvalIterativeSPHybridSSEOCLLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB

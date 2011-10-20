@@ -5,13 +5,14 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONMULTIPLEEVALITERATIVEHYBRIDSSEOCLLINEAR_HPP
-#define OPERATIONMULTIPLEEVALITERATIVEHYBRIDSSEOCLLINEAR_HPP
+#ifndef OPERATIONMULTIPLEEVALITERATIVESPHYBRIDX86SIMDOCLLINEAR_HPP
+#define OPERATIONMULTIPLEEVALITERATIVESPHYBRIDX86SIMDOCLLINEAR_HPP
 
-#include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
+#include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
 #include "basis/common/operation/datadriven/OCLKernels.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+#include "tools/common/TwoPartitionAutoTuning.hpp"
 
 namespace sg
 {
@@ -19,25 +20,24 @@ namespace parallel
 {
 
 /**
- * This class implements sg::base::OperationMultipleEval for a grids with linear basis ansatzfunctions without boundaries
+ * This class implements OperationMultipleEvalSP for a grids with linear basis ansatzfunctions without boundaries.
  *
- * However in this case high efficient vector code (OpenCL) is generated
+ * However in this case highly efficient vector code (OpenCL and SSE/AVX intrinsics) is generated
  * to implement a iterative OperationB version. In addition cache blocking is used
- * in order to assure a most efficient cache usage. The CPU cores a are used by
- * an highly optimized SSE intrinsic implementation.
+ * in order to assure a most efficient cache usage.
  *
  * IMPORTANT REMARK:
  * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeHybridSSEOCLLinear : public sg::base::OperationMultipleEvalVectorized
+class OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear : public sg::base::OperationMultipleEvalVectorizedSP
 {
 public:
 	/**
-	 * Construtor of sg::base::OperationMultipleEvalLinear
+	 * Construtor of OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear
 	 *
-	 * Within the construct sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
+	 * Within the construct sg::base::DataMatrixSP Level and sg::base::DataMatrixSP Index are set up.
 	 * If the grid changes during your calculations and you don't want to create
 	 * a new instance of this class, you have to call rebuildLevelAndIndex before
 	 * doing any further mult or multTranspose calls.
@@ -45,16 +45,16 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeHybridSSEOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationMultipleEvalIterativeHybridSSEOCLLinear();
+	virtual ~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear();
 
-	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
+	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
 
-	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
+	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result);
 
 	virtual void rebuildLevelAndIndex();
 
@@ -65,9 +65,13 @@ protected:
 	sg::base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
+	/// Autotuning object for mult routine
+	sg::base::TwoPartitionAutoTuning* _tuningMult;
+	/// Autotuning object for mult trans routine
+	sg::base::TwoPartitionAutoTuning* _tuningMultTrans;
 };
 
 }
 }
 
-#endif /* OPERATIONMULTIPLEEVALITERATIVEHYBRIDSSEOCLLINEAR_HPP */
+#endif /* OPERATIONMULTIPLEEVALITERATIVESPHYBRIDX86SIMDOCLLINEAR_HPP */

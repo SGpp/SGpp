@@ -279,6 +279,7 @@ OBJS =	DataVector.o\
 	FinanceOpFactory.o\
 	ParallelOpFactory.o\
 	PdeOpFactory.o\
+	TwoPartitionAutoTuning.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -293,28 +294,28 @@ endif
 ifeq ($(EXT), OCL)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o\
-	OperationMultipleEvalIterativeHybridSSEOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
 	OCLKernels.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o\
 	OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA
 OCLCC=g++
 endif
 
 ifeq ($(EXT), IOCL)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
  	OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o\
-	OperationMultipleEvalIterativeHybridSSEOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
 	OCLKernels.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o\
 	OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU -DUSEOCL_INTEL
 OCLCC=g++
 endif
 
@@ -1114,6 +1115,9 @@ ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
 PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PdeOpFactory.o $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
+TwoPartitionAutoTuning.o : $(SRCDIR)tools/common/TwoPartitionAutoTuning.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)tools/common/TwoPartitionAutoTuning.cpp
+	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
@@ -1143,11 +1147,11 @@ OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)basis/linear/noboundary/ope
 OperationMultipleEvalIterativeSPOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
 	
-OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLLinear.cpp	
+OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp	
 
-OperationMultipleEvalIterativeHybridSSEOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridSSEOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLLinear.cpp	
+OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
 	
 OCLKernels.o : $(SRCDIR)basis/common/operation/datadriven/OCLKernels.cpp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_DP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_SP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_ModDP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_ModSP.imp
 	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)basis/common/operation/datadriven/OCLKernels.cpp
