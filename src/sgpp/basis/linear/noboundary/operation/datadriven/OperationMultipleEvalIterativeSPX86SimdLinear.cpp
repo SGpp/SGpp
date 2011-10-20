@@ -254,7 +254,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 						support_5 = _mm256_mul_ps(support_5, eval_5);
 					}
 
-					__m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);				
+					const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
 
 					support_0 = _mm256_add_ps(support_0, support_1);
 					support_2 = _mm256_add_ps(support_2, support_3);
