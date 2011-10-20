@@ -33,7 +33,7 @@ size_t TwoPartitionAutoTuning::getPartition1Size()
 	size_t partition2 = 0;
 
 	// don't use an accelerate for smallest problems
-	if (2.0*_partition2Divider < _problemSize)
+	if (2*_partition2Divider > _problemSize)
 	{
 		partition1 = _problemSize;
 	}
@@ -60,11 +60,11 @@ size_t TwoPartitionAutoTuning::getPartition1Size()
 
 				if (_timePartition1 < _timePartition2)
 				{
-					factor = ((double)_timePartition1)/((double)_timePartition2);
+					factor = ((double)_timePartition2)/((double)_timePartition1);
 				}
 				else
 				{
-					factor = ((double)_timePartition2)/((double)_timePartition1);
+					factor = ((double)_timePartition1)/((double)_timePartition2);
 				}
 
 				partition1 = (size_t)(((double)partition1)*factor);
@@ -77,7 +77,7 @@ size_t TwoPartitionAutoTuning::getPartition1Size()
 	    partition2 -= partition2_remainder;
 	    partition1 = _problemSize - partition2;
 
-	    std::cout << std::endl << std::endl << "AUTOTUNING-PARTITION-SIZES: Size1: " << partition1 << ", Size2: " << partition2 << std::endl << std::endl;
+	    std::cout <<  "AUTOTUNING-PARTITION-SIZES (" << _problemSize << "): Size1: " << partition1 << ", Size2: " << partition2 << std::endl;
 	}
 
 	_oldSizePartition1 = partition1;
