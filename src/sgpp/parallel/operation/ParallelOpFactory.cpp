@@ -17,7 +17,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.hpp"
 
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
@@ -25,7 +25,7 @@
 #include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
 #include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.hpp"
 
 namespace sg
 {
@@ -107,7 +107,7 @@ namespace op_factory
           }
         else if (vecType == "HYBRID_SSE_OCL")
           {
-            return new parallel::OperationMultipleEvalIterativeHybridSSEOCLModLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
           }
 #endif
         else
@@ -191,7 +191,7 @@ namespace op_factory
           }
         else if (vecType == "HYBRID_SSE_OCL")
           {
-            return new parallel::OperationMultipleEvalIterativeSPHybridSSEOCLModLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
           }
 #endif
         else

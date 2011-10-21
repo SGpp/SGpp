@@ -5,13 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.hpp"
+#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.hpp"
 #include "exception/operation_exception.hpp"
 #include "tools/common/AlignedMemory.hpp"
-
-// This value is adjusted for a 2 socket Intel Westmere System (X5650) (SMT on) with 2 NVidia Fermis (GTX470)
-#define PERCENT_CPUS 16
-#define PERCENT_CPUS_MULT 16
 
 #ifdef __ICC
 // include SSE3 intrinsics
@@ -23,7 +19,7 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeHybridSSEOCLModLinear::OperationMultipleEvalIterativeHybridSSEOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::OperationMultipleEvalIterativeHybridX86SimdOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 
@@ -34,15 +30,20 @@ OperationMultipleEvalIterativeHybridSSEOCLModLinear::OperationMultipleEvalIterat
 
 	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
+
+	_tuningMult = new sg::base::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 3);
+	_tuningMultTrans = new sg::base::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.85, 3);
 }
 
-OperationMultipleEvalIterativeHybridSSEOCLModLinear::~OperationMultipleEvalIterativeHybridSSEOCLModLinear()
+OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::~OperationMultipleEvalIterativeHybridX86SimdOCLModLinear()
 {
 	delete myTimer;
 	delete myOCLKernels;
+	delete _tuningMult;
+	delete _tuningMultTrans;
 }
 
-void OperationMultipleEvalIterativeHybridSSEOCLModLinear::rebuildLevelAndIndex()
+void OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::rebuildLevelAndIndex()
 {
 	delete this->level_;
 	delete this->index_;
@@ -53,13 +54,19 @@ void OperationMultipleEvalIterativeHybridSSEOCLModLinear::rebuildLevelAndIndex()
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myOCLKernels->resetKernels();
+
+	_tuningMultTrans->setProblemSize(storage->size());
+	_tuningMult->softResetAutoTuning();
 }
 
-double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
+double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
 	size_t source_size = source.getSize();
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
+
+    double gpu_time = 0.0;
+    double cpu_time = 0.0;
 
     result.setAll(0.0);
 
@@ -75,32 +82,26 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectori
     }
 
     // split result into GPU and CPU partition
-    size_t gpu_partition;
-    if (storageSize < 40000)
-    {
-    	gpu_partition = (storageSize * (100-(PERCENT_CPUS_MULT)))/100;
-    }
-    else
-    {
-    	gpu_partition = (storageSize * (100-(PERCENT_CPUS)))/100;
-    }
-    size_t gpu_pad = gpu_partition % 128;
-    gpu_partition -= gpu_pad;
+    size_t gpu_partition = storageSize - _tuningMultTrans->getPartition1Size();
 
     // Do on-demand transpose
 	double* ptrTransData = new double[dims*source_size];
 
-	#pragma omp parallel
+	#pragma omp parallel shared(gpu_time, cpu_time)
     {
 		#pragma omp single nowait
     	{
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
-    			myOCLKernels->multTransModOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+    			if (gpu_partition > 0)
+    			{
+    				gpu_time = myOCLKernels->multTransModOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+    			}
     		}
 
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
+    			myTimer->start();
 #ifdef __ICC
     			for (size_t n = 0; n < source_size; n++)
     			{
@@ -312,6 +313,7 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectori
 					}
 				}
 #endif
+				cpu_time = myTimer->stop();
     		}
 
 			#pragma omp taskwait
@@ -320,17 +322,22 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multTransposeVectori
 
     double time = 0.0;
 
+    _tuningMultTrans->setExecutionTimes(cpu_time, gpu_time);
+
     //cleanup
     delete[] ptrTransData;
 
 	return time;
 }
 
-double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
+double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
     size_t dims = storage->dim();
     size_t storageSize = storage->size();
+
+    double gpu_time = 0.0;
+    double cpu_time = 0.0;
 
     result.setAll(0.0);
 
@@ -346,22 +353,23 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multVectorized(sg::b
     }
 
     // split result into GPU and CPU partition
-    size_t cpu_partition = (result_size * PERCENT_CPUS)/100;
-    size_t cpu_pad = cpu_partition % 128;
-    cpu_partition -= cpu_pad;
-    size_t gpu_partition = result_size - cpu_partition;
+    size_t gpu_partition = result_size - _tuningMult->getPartition1Size();
 
-	#pragma omp parallel
+	#pragma omp parallel shared(gpu_time, cpu_time)
     {
 		#pragma omp single nowait
     	{
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
-    			myOCLKernels->multModOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+    			if (gpu_partition > 0)
+    			{
+    				gpu_time = myOCLKernels->multModOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+    			}
     		}
 
-			#pragma omp task
+			#pragma omp task shared(gpu_time, cpu_time)
     		{
+    			myTimer->start();
 #ifdef __ICC
 				for (size_t i = gpu_partition; i < result_size; i+=8)
 				{
@@ -578,12 +586,15 @@ double OperationMultipleEvalIterativeHybridSSEOCLModLinear::multVectorized(sg::b
 					}
 				}
 #endif
+				cpu_time = myTimer->stop();
     		}
 
 			#pragma omp taskwait
     	}
     }
     double time = 0.0;
+
+    _tuningMult->setExecutionTimes(cpu_time, gpu_time);
 
    	return time;
 }

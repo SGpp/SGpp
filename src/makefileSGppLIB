@@ -299,8 +299,8 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OCLKernels.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
 OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA
 OCLCC=g++
 endif
@@ -313,8 +313,8 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OCLKernels.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridSSEOCLModLinear.o
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
 OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU -DUSEOCL_INTEL
 OCLCC=g++
 endif
@@ -1162,11 +1162,11 @@ OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)basis/modlinear/operatio
 OperationMultipleEvalIterativeSPOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.cpp
 	
-OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridSSEOCLModLinear.cpp	
+OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp	
 
-OperationMultipleEvalIterativeHybridSSEOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridSSEOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridSSEOCLModLinear.cpp	
+OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp	
 
 # MPI Extensions:
 MPICommunicator.o : $(SRCDIR)tools/MPI/MPICommunicator.cpp
