@@ -81,8 +81,14 @@ public:
 	 */
 	void setPartition2Divider(size_t partition2Divider);
 
+	/**
+	 * resets all auto tuning parameter
+	 */
 	void resetAutoTuning();
 
+	/**
+	 * resets only temp. auto tuning data
+	 */
 	void softResetAutoTuning();
 
 protected:
@@ -101,18 +107,32 @@ protected:
 	/// (old) size of partition1
 	size_t _oldSizePartition1;
 
+	/// identify partition1 as point of interest
 	bool _testPartition1;
+
+	/// identify partition2 as point of interest
 	bool _testPartition2;
+
+	/// first run, do initial calibration
 	bool _isFirstTuning;
 
+	/// counter for timer updates
 	size_t _tuneCounter;
 
+	/// number of updates that cause a tuning update
 	size_t _retune;
 
+	/// damping factor to shade OS issues and instabilities in time measurements
 	double _damping;
 
+	/// max. allowed change in percent
 	double _maxPercent;
 
+	/**
+	 * re-scale the data and tuning parameter due to workload change
+	 *
+	 * @param newProblemSize new workload size
+	 */
 	void rescaleAutoTuning(size_t newProblemSize);
 };
 
