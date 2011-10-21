@@ -12,6 +12,7 @@
 #include "basis/common/operation/datadriven/OCLKernels.hpp"
 #include "grid/GridStorage.hpp"
 #include "tools/common/SGppStopwatch.hpp"
+#include "tools/common/TwoPartitionAutoTuning.hpp"
 
 namespace sg
 {
@@ -64,6 +65,10 @@ protected:
 	sg::base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
+	/// Autotuning object for mult routine
+	sg::base::TwoPartitionAutoTuning* _tuningMult;
+	/// Autotuning object for mult trans routine
+	sg::base::TwoPartitionAutoTuning* _tuningMultTrans;
 };
 
 }
