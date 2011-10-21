@@ -32,8 +32,11 @@ public:
 	 *
 	 * @param problemSize contains the overall size which should be partitioned
 	 * @param partition2Divider the second partition
+	 * @param retune_cycles number of iteration after which the problem's separation is re-considered
+	 * @oaram damping damping factor to shade OS issues which might influence time measurements
+	 * @param maxPercent max. percentage range into which the partition size should be changed during rescheduling
 	 */
-	TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider);
+	TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles, double damping, double maxPercent);
 
 	/**
 	 * Destructor
@@ -80,6 +83,8 @@ public:
 
 	void resetAutoTuning();
 
+	void softResetAutoTuning();
+
 protected:
 	/// store problemsize
 	size_t _problemSize;
@@ -99,6 +104,14 @@ protected:
 	bool _testPartition1;
 	bool _testPartition2;
 	bool _isFirstTuning;
+
+	size_t _tuneCounter;
+
+	size_t _retune;
+
+	double _damping;
+
+	double _maxPercent;
 
 	void rescaleAutoTuning(size_t newProblemSize);
 };

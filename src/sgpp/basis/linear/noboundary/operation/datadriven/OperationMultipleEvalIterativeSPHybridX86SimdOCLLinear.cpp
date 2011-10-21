@@ -30,8 +30,8 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::OperationMultipleEvalIte
 	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 
-	_tuningMult = new sg::base::TwoPartitionAutoTuning(dataset->getNrows(), 128);
-	_tuningMultTrans = new sg::base::TwoPartitionAutoTuning(storage->size(), 128);
+	_tuningMult = new sg::base::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 3);
+	_tuningMultTrans = new sg::base::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.85, 3);
 }
 
 OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear()
@@ -55,7 +55,7 @@ void OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::rebuildLevelAndInde
 	myOCLKernels->resetKernels();
 
 	_tuningMultTrans->setProblemSize(storage->size());
-	//_tuningMult->resetAutoTuning();
+	_tuningMult->softResetAutoTuning();
 }
 
 double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
