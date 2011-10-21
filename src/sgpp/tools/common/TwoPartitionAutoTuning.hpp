@@ -78,6 +78,8 @@ public:
 	 */
 	void setPartition2Divider(size_t partition2Divider);
 
+	void resetAutoTuning();
+
 protected:
 	/// store problemsize
 	size_t _problemSize;
@@ -93,6 +95,12 @@ protected:
 
 	/// (old) size of partition1
 	size_t _oldSizePartition1;
+
+	bool _testPartition1;
+	bool _testPartition2;
+	bool _isFirstTuning;
+
+	void rescaleAutoTuning(size_t newProblemSize);
 };
 
 }

@@ -55,6 +55,7 @@ void OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::rebuildLevelAndInde
 	myOCLKernels->resetKernels();
 
 	_tuningMultTrans->setProblemSize(storage->size());
+	//_tuningMult->resetAutoTuning();
 }
 
 double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
@@ -383,8 +384,6 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 			#pragma omp taskwait
     	}
     }
-
-    std::cout << cpu_time << " " << gpu_time << std::endl;
 
     _tuningMult->setExecutionTimes(cpu_time, gpu_time);
 

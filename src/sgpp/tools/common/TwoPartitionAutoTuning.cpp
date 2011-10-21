@@ -7,6 +7,7 @@
 
 #include "tools/common/TwoPartitionAutoTuning.hpp""
 #include <iostream>
+#include <algorithm>
 
 namespace sg
 {
@@ -14,7 +15,7 @@ namespace base
 {
 
 TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider)
-	: _problemSize(problemSize), _partition2Divider(partition2Divider), _timePartition1(1.0), _timePartition2(0.0), _oldSizePartition1(problemSize)
+	: _problemSize(problemSize), _partition2Divider(partition2Divider), _timePartition1(1.0), _timePartition2(0.0), _oldSizePartition1(problemSize), _testPartition1(true), _testPartition2(true), _isFirstTuning(true)
 {
 }
 
@@ -36,69 +37,118 @@ size_t TwoPartitionAutoTuning::getPartition1Size()
 	if (2*_partition2Divider > _problemSize)
 	{
 		partition1 = _problemSize;
+		_oldSizePartition1 = _problemSize;
+		partition2 = 0;
 	}
 	else
 	{
-		if (_timePartition2 == 0.0)
+		if (_testPartition1 == true)
 		{
-			partition1 = partition2 = _problemSize/2;
-			// ensure that whole problem is partitioned
-			partition1 = _problemSize - partition2;
+			partition1 = _problemSize;
+			partition2 = 0;
+
+			_oldSizePartition1 = partition1;
 		}
-		else
+		else if (_testPartition2 == true)
 		{
-			partition1 = _oldSizePartition1;
-			partition2 = _problemSize - _oldSizePartition1;
+			partition1 = 0;
+			partition2 = _problemSize;
+		    size_t partition2_remainder = partition2 % _partition2Divider;
+		    partition2 -=  partition2_remainder;
+		    partition1 = _problemSize - partition2;
 
-			// very unlikely ... do nothing since optimal
-			if (_timePartition1 == _timePartition2)
-			{
-			}
-			else
-			{
-				double factor;
-
-				if (_timePartition1 < _timePartition2)
-				{
-					factor = ((double)_timePartition2)/((double)_timePartition1);
-				}
-				else
-				{
-					factor = ((double)_timePartition1)/((double)_timePartition2);
-				}
-
-				partition1 = (size_t)(((double)partition1)*factor);
-				partition2 = _problemSize - partition1;
-			}
+		    _oldSizePartition1 = partition1;
 		}
+		else if (_isFirstTuning == true)
+		{
+			_isFirstTuning = false;
 
-		// Check if partition2 is dividable
-	    size_t partition2_remainder = partition2 % _partition2Divider;
-	    partition2 -= partition2_remainder;
-	    partition1 = _problemSize - partition2;
+			double maxtime = std::max<double>(_timePartition1, _timePartition2);
 
-	    std::cout <<  "AUTOTUNING-PARTITION-SIZES (" << _problemSize << "): Size1: " << partition1 << ", Size2: " << partition2 << std::endl;
+			double part1 = maxtime / _timePartition1;
+			double part2 = maxtime / _timePartition2;
+			double parts = part1 + part2;
+			double factor = 0.75 * part1 / parts;
+
+			partition1 = (size_t)std::min<double>(((double)_problemSize)*factor, (double)_problemSize);
+			partition2 = _problemSize - partition1;
+
+		    size_t partition2_remainder = partition2 % _partition2Divider;
+		    if (partition2 + (_partition2Divider - partition2_remainder) > _problemSize)
+		    {
+		    	partition2 -=  partition2_remainder;
+		    }
+		    else
+		    {
+		    	partition2 +=  (_partition2Divider - partition2_remainder);
+		    }
+		    partition1 = _problemSize - partition2;
+
+		    _oldSizePartition1 = partition1;
+		}
 	}
 
-	_oldSizePartition1 = partition1;
+	std::cout << "AUTOTUNING-PARTITION-SIZES (" << _problemSize << "): Time1: " << _timePartition1 << " Size1: " << _oldSizePartition1 << "(" << 100.0*(double)_oldSizePartition1/(double)_problemSize << "%); Time2: " << _timePartition2 << " Size2: " << _problemSize-_oldSizePartition1 << " (" << 100.0*(double)(_problemSize-_oldSizePartition1)/(double)_problemSize << "%)" << std::endl;
 
-	return partition1;
+	return _oldSizePartition1;
 }
 
 void TwoPartitionAutoTuning::setProblemSize(size_t problemSize)
 {
+	rescaleAutoTuning(problemSize);
 	_problemSize = problemSize;
 }
 
 void TwoPartitionAutoTuning::setPartition2Divider(size_t partition2Divider)
 {
 	_partition2Divider = partition2Divider;
+	rescaleAutoTuning(_problemSize);
 }
 
 void TwoPartitionAutoTuning::setExecutionTimes(double timePartition1, double timePartition2)
 {
-	_timePartition1 = timePartition1;
-	_timePartition2 = timePartition2;
+	if (_testPartition1 == true)
+	{
+		_testPartition1 = false;
+		_timePartition1 = timePartition1;
+	}
+	else if (_testPartition2 == true)
+	{
+		_testPartition2 = false;
+		_timePartition2 = timePartition2;
+	}
+	else
+	{
+		_timePartition1 = timePartition1;
+		_timePartition2 = timePartition2;
+	}
+}
+
+void TwoPartitionAutoTuning::resetAutoTuning()
+{
+	_testPartition1 = true;
+	_testPartition2 = true;
+	_isFirstTuning = true;
+}
+
+void TwoPartitionAutoTuning::rescaleAutoTuning(size_t newProblemSize)
+{
+	double factor = 0.75*((double)_oldSizePartition1)/((double)_problemSize);
+
+	size_t partition1 = 0;
+	size_t partition2 = 0;
+
+	partition1 = (size_t)(((double)newProblemSize)*factor);
+
+	partition1 = (size_t)std::min<double>(((double)newProblemSize)*factor, (double)newProblemSize);
+	partition2 = newProblemSize - partition1;
+
+    size_t partition2_remainder = partition2 % _partition2Divider;
+    partition2 -=  partition2_remainder;
+    partition1 = newProblemSize - partition2;
+
+    _problemSize = newProblemSize;
+    _oldSizePartition1 = partition1;
 }
 
 }
