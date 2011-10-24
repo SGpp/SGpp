@@ -28,7 +28,7 @@
 //#define USE_X86SIMD
 //#define USE_OCL
 //#define USE_ARBB
-#define USE_HYBRID_SSE_OCL
+#define USE_HYBRID_X86SIMD_OCL
 
 // do Test only after last refinement
 #define TEST_LAST_ONLY
@@ -182,8 +182,13 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 #ifdef USE_OCL
 	std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
 #endif
-#ifdef USE_HYBRID_SSE_OCL
-	std::cout << "Vectorized: Hybrid, SSE and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
+#ifdef USE_HYBRID_X86SIMD_OCL
+#if defined(__SSE3__) && !defined(__AVX__)
+	std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
+#endif
+#if defined(__SSE3__) && defined(__AVX__)
+	std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
+#endif
 #endif
 #ifdef USE_ARBB
 	std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
@@ -214,7 +219,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
+#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
     std::cout << "Classification Test App (Double Precision)" << std::endl;
 #else
     std::cout << "Classification Test App (Double Precision, recursive)" << std::endl;
@@ -292,15 +297,15 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     // Generate CG to solve System
     sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(cg_max_learning, cg_eps);
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
+#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
 #ifdef USE_X86SIMD
     sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "X86SIMD");
 #endif
 #ifdef USE_OCL
     sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");
 #endif
-#ifdef USE_HYBRID_SSE_OCL
-    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_SSE_OCL");
+#ifdef USE_HYBRID_X86SIMD_OCL
+    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_X86SIMD_OCL");
 #endif
 #ifdef USE_ARBB
     sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
@@ -328,7 +333,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
+#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
     		mySystem->rebuildLevelAndIndex();
 #endif
 
@@ -446,7 +451,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << "===============================================================" << std::endl;
     printSettings(dataFile, testFile, isRegression, start_level,
 			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, myGrid->getSize(), acc, accTest, execTime);
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
+#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
@@ -466,7 +471,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
 #ifndef USE_X86SIMD
 #ifndef USE_OCL
-#ifndef USE_HYBRID_SSE_OCL
+#ifndef USE_HYBRID_X86SIMD_OCL
 #ifndef USE_ARBB
     delete myC;
 #endif
@@ -569,15 +574,15 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     // Generate CG to solve System
     sg::solver::ConjugateGradientsSP* myCG = new sg::solver::ConjugateGradientsSP(cg_max_learning, cg_eps);
 
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
+#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
 #ifdef USE_X86SIMD
     sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "X86SIMD");
 #endif
 #ifdef USE_OCL
     sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "OCL");
 #endif
-#ifdef USE_HYBRID_SSE_OCL
-    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_SSE_OCL");
+#ifdef USE_HYBRID_X86SIMD_OCL
+    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_X86SIMD_OCL");
 #endif
 #ifdef USE_ARBB
     sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
@@ -602,7 +607,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_SSE_OCL) || defined(USE_ARBB)
+#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
     		mySystem->rebuildLevelAndIndex();
 #endif
 
