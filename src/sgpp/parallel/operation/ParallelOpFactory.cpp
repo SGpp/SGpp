@@ -48,7 +48,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_SSE_OCL")
+        else if (vecType == "HYBRID_X86SIMD_OCL")
           {
             return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
@@ -78,7 +78,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_SSE_OCL")
+        else if (vecType == "HYBRID_X86SIMD_OCL")
           {
             return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
@@ -105,7 +105,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeOCLModLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_SSE_OCL")
+        else if (vecType == "HYBRID_X86SIMD_OCL")
           {
             return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
           }
@@ -134,7 +134,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_SSE_OCL")
+        else if (vecType == "HYBRID_X86SIMD_OCL")
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
@@ -162,7 +162,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_SSE_OCL")
+        else if (vecType == "HYBRID_X86SIMD_OCL")
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
@@ -189,7 +189,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLModLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_SSE_OCL")
+        else if (vecType == "HYBRID_X86SIMD_OCL")
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
           }
