@@ -9,8 +9,12 @@
 #include "exception/operation_exception.hpp"
 #include "tools/common/AlignedMemory.hpp"
 
-#ifdef __ICC
+#if defined(__SSE3__) || defined(__AVX__)
 #include <x86intrin.h>
+#endif
+
+#ifdef __USEAVX128__
+#undef __AVX__
 #endif
 
 namespace sg
@@ -101,7 +105,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 			#pragma omp task shared(gpu_time, cpu_time)
     		{
     			myTimer->start();
-#ifdef __ICC
+#if defined(__SSE3__) && !defined(__AVX__)
     			for (size_t n = 0; n < source_size; n++)
     			{
     				for(size_t d = 0; d < dims; d++)
@@ -138,17 +142,17 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 
 								__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
 								__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
-
-								eval_0 = _mm_mul_ps(eval_0, level);
-								eval_1 = _mm_mul_ps(eval_1, level);
-								eval_2 = _mm_mul_ps(eval_2, level);
-								eval_3 = _mm_mul_ps(eval_3, level);
-
-								eval_0 = _mm_sub_ps(eval_0, index);
-								eval_1 = _mm_sub_ps(eval_1, index);
-								eval_2 = _mm_sub_ps(eval_2, index);
-								eval_3 = _mm_sub_ps(eval_3, index);
-
+#ifdef __FMA4__
+								eval_0 = _mm_msub_ps(eval_0, level, index);
+								eval_1 = _mm_msub_ps(eval_1, level, index);
+								eval_2 = _mm_msub_ps(eval_2, level, index);
+								eval_3 = _mm_msub_ps(eval_3, level, index);
+#else
+								eval_0 = _mm_sub_ps(_mm_mul_ps(eval_0, level), index);
+								eval_1 = _mm_sub_ps(_mm_mul_ps(eval_1, level), index);
+								eval_2 = _mm_sub_ps(_mm_mul_ps(eval_2, level), index);
+								eval_3 = _mm_sub_ps(_mm_mul_ps(eval_3, level), index);
+#endif
 								eval_0 = _mm_and_ps(mask, eval_0);
 								eval_1 = _mm_and_ps(mask, eval_1);
 								eval_2 = _mm_and_ps(mask, eval_2);
@@ -183,7 +187,95 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 						_mm_store_ss(&(ptrGlobalResult[j]), res);
 					}
 				}
+#endif
+#if defined(__SSE3__) && defined(__AVX__)
+    			for (size_t n = 0; n < source_size; n++)
+    			{
+    				for(size_t d = 0; d < dims; d++)
+    				{
+    					ptrTransData[(d*source_size)+n] = ptrData[(n*dims)+d];
+    				}
+    			}
+
+    			for (size_t j = gpu_partition; j < storageSize; j++)
+				{
+					#pragma omp task firstprivate(j)
+					{
+						__m256 res = _mm_set1_ps(0.0f);
+						int imask = 0x7FFFFFFF;
+						float* fmask = (float*)&imask;
+
+						for (size_t i = 0; i < source_size; i+=32)
+						{
+							__m256 support_0 = _mm_load_ps(&(ptrSource[i+0]));
+							__m256 support_1 = _mm_load_ps(&(ptrSource[i+8]));
+							__m256 support_2 = _mm_load_ps(&(ptrSource[i+16]));
+							__m256 support_3 = _mm_load_ps(&(ptrSource[i+24]));
+
+							__m256 one = _mm256_set1_ps(1.0f);
+							__m256 zero = _mm256_set1_ps(0.0f);
+							__m256 mask = _mm256_set1_ps(*fmask);
+
+							for (size_t d = 0; d < dims; d++)
+							{
+								__m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d*source_size)+i]));
+								__m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d*source_size)+i+8]));
+								__m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d*source_size)+i+16]));
+								__m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d*source_size)+i+24]));;
+
+								__m256 level = _mm256_broadcast_ss(&(ptrLevel[(j*dims)+d]));
+								__m256 index = _mm256_broadcast_ss(&(ptrIndex[(j*dims)+d]));
+#ifdef __FMA4__
+								eval_0 = _mm256_msub_ps(eval_0, level, index);
+								eval_1 = _mm256_msub_ps(eval_1, level, index);
+								eval_2 = _mm256_msub_ps(eval_2, level, index);
+								eval_3 = _mm256_msub_ps(eval_3, level, index);
 #else
+								eval_0 = _mm256_sub_ps(_mm256_mul_ps(eval_0, level), index);
+								eval_1 = _mm256_sub_ps(_mm256_mul_ps(eval_1, level), index);
+								eval_2 = _mm256_sub_ps(_mm256_mul_ps(eval_2, level), index);
+								eval_3 = _mm256_sub_ps(_mm256_mul_ps(eval_3, level), index);
+#endif
+								eval_0 = _mm256_and_ps(mask, eval_0);
+								eval_1 = _mm256_and_ps(mask, eval_1);
+								eval_2 = _mm256_and_ps(mask, eval_2);
+								eval_3 = _mm256_and_ps(mask, eval_3);
+
+								eval_0 = _mm256_sub_ps(one, eval_0);
+								eval_1 = _mm256_sub_ps(one, eval_1);
+								eval_2 = _mm256_sub_ps(one, eval_2);
+								eval_3 = _mm256_sub_ps(one, eval_3);
+
+								eval_0 = _mm256_max_ps(zero, eval_0);
+								eval_1 = _mm256_max_ps(zero, eval_1);
+								eval_2 = _mm256_max_ps(zero, eval_2);
+								eval_3 = _mm256_max_ps(zero, eval_3);
+
+								support_0 = _mm256_mul_ps(support_0, eval_0);
+								support_1 = _mm256_mul_ps(support_1, eval_1);
+								support_2 = _mm256_mul_ps(support_2, eval_2);
+								support_3 = _mm256_mul_ps(support_3, eval_3);
+							}
+
+							support_0 = _mm256_add_ps(support_0, support_1);
+							support_2 = _mm256_add_ps(support_2, support_3);
+							support_0 = _mm256_add_ps(support_0, support_2);
+
+							res = _mm256_add_ps(res, support_0);
+						}
+
+						const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
+
+						res = _mm256_hadd_ps(res, res);
+						__m256 tmp = _mm256_permute2f128_ps(res, res, 0x81);
+						res = _mm256_add_ps(res, tmp);
+						res = _mm256_hadd_ps(res, res);
+
+						_mm256_maskstore_ps(&(ptrResult[j]), ldStMaskSPAVX, res_0);
+					}
+				}
+#endif
+#if !defined(__SSE3__) && !defined(__AVX__)
 				for (size_t j = gpu_partition; j < storageSize; j++)
 				{
 					#pragma omp task firstprivate(j)
@@ -265,7 +357,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 			#pragma omp task shared(gpu_time, cpu_time)
     		{
     			myTimer->start();
-#ifdef __ICC
+#if defined(__SSE3__) && !defined(__AVX__)
 				for (size_t i = gpu_partition; i < result_size; i+=16)
 				{
 					#pragma omp task firstprivate(i)
@@ -308,17 +400,17 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 
 								__m128 level = _mm_load1_ps(&(ptrLevel[(j*dims)+d]));
 								__m128 index = _mm_load1_ps(&(ptrIndex[(j*dims)+d]));
-
-								eval_0 = _mm_mul_ps(eval_0, level);
-								eval_1 = _mm_mul_ps(eval_1, level);
-								eval_2 = _mm_mul_ps(eval_2, level);
-								eval_3 = _mm_mul_ps(eval_3, level);
-
-								eval_0 = _mm_sub_ps(eval_0, index);
-								eval_1 = _mm_sub_ps(eval_1, index);
-								eval_2 = _mm_sub_ps(eval_2, index);
-								eval_3 = _mm_sub_ps(eval_3, index);
-
+#ifdef __FMA4__
+								eval_0 = _mm_msub_ps(eval_0, level, index);
+								eval_1 = _mm_msub_ps(eval_1, level, index);
+								eval_2 = _mm_msub_ps(eval_2, level, index);
+								eval_3 = _mm_msub_ps(eval_3, level, index);
+#else
+								eval_0 = _mm_sub_ps(_mm_mul_ps(eval_0, level), index);
+								eval_1 = _mm_sub_ps(_mm_mul_ps(eval_1, level), index);
+								eval_2 = _mm_sub_ps(_mm_mul_ps(eval_2, level), index);
+								eval_3 = _mm_sub_ps(_mm_mul_ps(eval_3, level), index);
+#endif
 								eval_0 = _mm_and_ps(mask, eval_0);
 								eval_1 = _mm_and_ps(mask, eval_1);
 								eval_2 = _mm_and_ps(mask, eval_2);
@@ -354,7 +446,98 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 						_mm_store_ps(&(ptrResult[i+12]), res_3);
 					}
 				}
+#endif
+#if defined(__SSE3__) && defined(__AVX__)
+				for (size_t i = gpu_partition; i < result_size; i+=32)
+				{
+					#pragma omp task firstprivate(i)
+					{
+						int imask = 0x7FFFFFFF;
+						float* fmask = (float*)&imask;
+
+						__m256 res_0 = _mm256_load_ps(&(ptrResult[i]));
+						__m256 res_1 = _mm256_load_ps(&(ptrResult[i+8]));
+						__m256 res_2 = _mm256_load_ps(&(ptrResult[i+16]));
+						__m256 res_3 = _mm256_load_ps(&(ptrResult[i+24]));
+
+						// Do on-demand transpose
+						float* ptrTransData = new float[dims*32];
+						for (size_t n = 0; n < 32; n++)
+						{
+							for(size_t d = 0; d < dims; d++)
+							{
+								ptrTransData[(d*32)+n] = ptrData[((i+n)*dims)+d];
+							}
+						}
+
+						for (size_t j = 0; j < storageSize; j++)
+						{
+							__m256 support_0 = _mm256_broadcast_ss(&(ptrAlpha[j]));
+							__m256 support_1 = _mm256_broadcast_ss(&(ptrAlpha[j]));
+							__m256 support_2 = _mm256_broadcast_ss(&(ptrAlpha[j]));
+							__m256 support_3 = _mm256_broadcast_ss(&(ptrAlpha[j]));
+
+							__m256 one = _mm_set1_ps(1.0f);
+							__m256 zero = _mm_set1_ps(0.0f);
+							__m256 mask = _mm_set1_ps(*fmask);
+
+							for (size_t d = 0; d < dims; d++)
+							{
+								__m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d*32)]));
+								__m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d*32)+8]));
+								__m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d*32)+16]));
+								__m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d*32)+24]));;
+
+								__m256 level = _mm256_broadcast_ss(&(ptrLevel[(j*dims)+d]));
+								__m256 index = _mm256_broadcast_ss(&(ptrIndex[(j*dims)+d]));
+#ifdef __FMA4__
+								eval_0 = _mm256_msub_ps(eval_0, level, index);
+								eval_1 = _mm256_msub_ps(eval_1, level, index);
+								eval_2 = _mm256_msub_ps(eval_2, level, index);
+								eval_3 = _mm256_msub_ps(eval_3, level, index);
 #else
+								eval_0 = _mm256_sub_ps(_mm256_mul_ps(eval_0, level), index);
+								eval_1 = _mm256_sub_ps(_mm256_mul_ps(eval_1, level), index);
+								eval_2 = _mm256_sub_ps(_mm256_mul_ps(eval_2, level), index);
+								eval_3 = _mm256_sub_ps(_mm256_mul_ps(eval_3, level), index);
+#endif
+								eval_0 = _mm256_and_ps(mask, eval_0);
+								eval_1 = _mm256_and_ps(mask, eval_1);
+								eval_2 = _mm256_and_ps(mask, eval_2);
+								eval_3 = _mm256_and_ps(mask, eval_3);
+
+								eval_0 = _mm256_sub_ps(one, eval_0);
+								eval_1 = _mm256_sub_ps(one, eval_1);
+								eval_2 = _mm256_sub_ps(one, eval_2);
+								eval_3 = _mm256_sub_ps(one, eval_3);
+
+								eval_0 = _mm256_max_ps(zero, eval_0);
+								eval_1 = _mm256_max_ps(zero, eval_1);
+								eval_2 = _mm256_max_ps(zero, eval_2);
+								eval_3 = _mm256_max_ps(zero, eval_3);
+
+								support_0 = _mm256_mul_ps(support_0, eval_0);
+								support_1 = _mm256_mul_ps(support_1, eval_1);
+								support_2 = _mm256_mul_ps(support_2, eval_2);
+								support_3 = _mm256_mul_ps(support_3, eval_3);
+							}
+
+							res_0 = _mm256_add_ps(res_0, support_0);
+							res_1 = _mm256_add_ps(res_1, support_1);
+							res_2 = _mm256_add_ps(res_2, support_2);
+							res_3 = _mm256_add_ps(res_3, support_3);
+						}
+
+						delete[] ptrTransData;
+
+						_mm256_store_ps(&(ptrResult[i]), res_0);
+						_mm256_store_ps(&(ptrResult[i+8]), res_1);
+						_mm256_store_ps(&(ptrResult[i+16]), res_2);
+						_mm256_store_ps(&(ptrResult[i+24]), res_3);
+					}
+				}
+#endif
+#if !defined(__SSE3__) && !defined(__AVX__)
 				for (size_t i = gpu_partition; i < result_size; i++)
 				{
 					#pragma omp task firstprivate(i)
