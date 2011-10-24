@@ -172,6 +172,7 @@ void TwoPartitionAutoTuning::resetAutoTuning()
 	_testPartition1 = true;
 	_testPartition2 = true;
 	_isFirstTuning = true;
+	_tuneCounter = 0;
 }
 
 void TwoPartitionAutoTuning::softResetAutoTuning()
@@ -183,22 +184,33 @@ void TwoPartitionAutoTuning::softResetAutoTuning()
 
 void TwoPartitionAutoTuning::rescaleAutoTuning(size_t newProblemSize)
 {
-	double factor = _damping*((double)_oldSizePartition1)/((double)_problemSize);
+	if (_testPartition1 == false && _testPartition2 == false && _isFirstTuning == false)
+	{
+		double factor = _damping*((double)_oldSizePartition1)/((double)_problemSize);
 
-	size_t partition1 = 0;
-	size_t partition2 = 0;
+		size_t partition1 = 0;
+		size_t partition2 = 0;
 
-	partition1 = (size_t)(((double)newProblemSize)*factor);
+		partition1 = (size_t)(((double)newProblemSize)*factor);
 
-	partition1 = (size_t)std::min<double>(((double)newProblemSize)*factor, (double)newProblemSize);
-	partition2 = newProblemSize - partition1;
+		partition1 = (size_t)std::min<double>(((double)newProblemSize)*factor, (double)newProblemSize);
+		partition2 = newProblemSize - partition1;
 
-    size_t partition2_remainder = partition2 % _partition2Divider;
-    partition2 -=  partition2_remainder;
-    partition1 = newProblemSize - partition2;
+		size_t partition2_remainder = partition2 % _partition2Divider;
+		partition2 -=  partition2_remainder;
+		partition1 = newProblemSize - partition2;
 
-    _problemSize = newProblemSize;
-    _oldSizePartition1 = partition1;
+		_problemSize = newProblemSize;
+		_oldSizePartition1 = partition1;
+	}
+	else
+	{
+		_problemSize = newProblemSize;
+		_oldSizePartition1 = _problemSize;
+		_testPartition1 = true;
+		_testPartition2 = true;
+		_isFirstTuning = true;
+	}
 	_timePartition1 = 0.0;
 	_timePartition2 = 0.0;
 	_tuneCounter = 0;
