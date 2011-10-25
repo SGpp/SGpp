@@ -142,6 +142,8 @@ public:
 //		return currentScheme_[0].getCoef(i);
 	}
 
+	void setCoef(int i,double newCoef) {coefs_[i]=newCoef;}
+
 	std::vector<double> getCoef() {return coefs_;}
 
 	/** returns the array of flags, which shows for each dimensions if there are boundary points */
@@ -161,7 +163,7 @@ public:
 				coefs_[changes[i]]=newCoef[i];
 			}
 			else{
-				std::cout<<"in kernel: "<<i<<" "<<changes[i]<<std::endl;
+//				std::cout<<"in kernel: "<<i<<" "<<changes[i]<<std::endl;
 //				addFullGrid(currentScheme_[0].getLevel(changes[i]),hasBoundaryPts_,currentScheme_[0].getCoef(changes[i]));
 				addFullGrid(newFullGridLevel,hasBoundaryPts_,newCoef[i]);
 			}
