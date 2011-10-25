@@ -43,6 +43,8 @@ namespace combigrid{
 		/** see superclass for docu */
 		virtual int getNrFullGrid() const { return combikernel_->getNrFullGrids(); }
 
+		double evalSingleGrid(int index,std::vector<double> & coords) const;
+
 		/** see superclass for docu */
 		virtual double eval( std::vector<double>& coords ) const ;
 
