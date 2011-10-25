@@ -14,49 +14,61 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineNum)
+	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineNum, double percentOfAda)
     {
 		sg::base::GridStorage* gridStorage = SparseGrid.getStorage();
         this->grid = &SparseGrid;
+		this->type = gridType;
 		this->gridPoint = gridStorage->size();
+		this->level = gridLevel;
         this->lamb = lambda;
         this->data = &trainData;
         this->classes = &trainDataClass;
         this->numData = trainData.getNrows();
         this->dim = gridStorage->dim();
         this->numBaseLearners = NUM;
-		this->C = sg::op_factory::createOperationIdentity(SparseGrid);
         this->imax = IMAX;
         this->epsilon = eps;
 		this->labelOne = firstLabel;
 		this->labelTwo = secondLabel;
-		this->lambLogMax = log(maxLambda); 
-		this->lambStepsize = (log(maxLambda) - log(minLambda))/(searchNum - 1);
+		this->lambLogMax = log(maxLambda);
 		this->lambSteps = searchNum;
+		if(searchNum == 1)
+			this->lambStepsize = (log(maxLambda) - log(minLambda))/2;
+		else
+			this->lambStepsize = (log(maxLambda) - log(minLambda))/(searchNum - 1);
 		this->actualBaseLearners = 0;
 		this->refinement = refine;
 		this->refineTimes = refineNum;
+		this->perOfAda = percentOfAda;
     }
     
 	AlgorithmAdaBoost::~AlgorithmAdaBoost()
 	{
-		delete this->C;
+
 	}
 	
-	void AlgorithmAdaBoost::doAdaBoost(sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision)
+	void AlgorithmAdaBoost::doAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
 	{
+		if(this->refinement == true && this->perOfAda >= 1.0)
+		{
+			std::cout << "please choose the proper percentage of grid point to refine (between 0 and 1)" << std::endl;
+			exit(0);
+		}
 		sg::base::DataVector weight(this->numData);
 		weight.setAll(1.0/double(this->numData));
 		sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
 		// to store certain train data point
-		sg::base::DataVector p(this->dim);
+		sg::base::DataVector p_train(this->dim);
+		// to store certain train data point
+		sg::base::DataVector p_test(this->dim);
 		// create vector to store the hypothesis of the training data according to certain alpha vector(base learner)
 		sg::base::DataVector newclasses(this->numData);
 		// create vector to store the identity of comparing hypothesis of training data with class of
 		sg::base::DataVector identity(this->numData);
 		
 		sg::base::DataVector tmpweight(this->numData);
-		
+
 		for (size_t count = 0; count < this->numBaseLearners; count++)
 		{
 			(this->actualBaseLearners)++;
@@ -65,33 +77,31 @@ namespace datadriven
 			std::cout << std::endl;
 			
             // create coefficient vector
-			sg::base::DataVector alpha(this->gridPoint);
-			sg::base::DataVector rhs(this->gridPoint);
-			alpha.setAll(0.0);
-			rhs.setAll(0.0);
+			sg::base::DataVector alpha_train(this->gridPoint);
+			sg::base::DataVector alpha_learn(this->gridPoint);
+			std::cout << "gridPoint: " << this->gridPoint << std::endl;
+			alpha_train.setAll(0.0);
 			weights.setColumn(count, weight);
-			
-			sg::datadriven::DMWeightMatrix WMatrix(*grid, *data, *C, this->lamb, weight);
-			WMatrix.generateb(*classes, rhs);
-			sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
-			myCG.solve(WMatrix, alpha, rhs, false, true, -1.0);
+			sg::base::OperationMatrix* C = sg::op_factory::createOperationIdentity(*this->grid);
 
-			if(count == 0 && this->refinement)
+			// calculate alpha
+			alphaSolver(C, this->lamb, weight, alpha_train);
+
+			if(this->refinement)
 			{
-				for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++)
-					doRefinement(alpha, rhs, weight, adaptiveStep);
+				doRefinement(alpha_train, weight);
 				opEval = sg::op_factory::createOperationEval(*this->grid);
-				// resize the DataMatrix storageAlpha
-				storageAlpha.resizeZero(alpha.getSize());
+				alpha_learn.resizeZero(alpha_train.getSize());
 			}
+			//set the alpha for testing data(copy of alpha for training data)
+			for (size_t index = 0; index < alpha_train.getSize(); index++)
+				alpha_learn.set(index, alpha_train.get(index));
 
-			storageAlpha.setColumn(count, alpha);
-			
 			for (size_t i = 0; i < this->numData; i++)
 			{
-				this->data->getRow(i, p);
-				double value01 = opEval->eval(alpha, p);
-				newclasses.set(i, hValue(value01));
+				this->data->getRow(i, p_train);
+				double value_train = opEval->eval(alpha_train, p_train);
+				newclasses.set(i, hValue(value_train));
 			}
 			
 			for (size_t i = 0; i < this->numData; i++)
@@ -111,29 +121,29 @@ namespace datadriven
 			weightError.set(count, weight.dotProduct(identity));
 			
 			// find the optimal lambda to minimize the weighted error
-			if (count > 0)
+			if (this->lambSteps > 0 && count > 0)
 			{
 				double cur_lambda;
 				double weighterror;
 				double minWeightError = weightError.get(count);
+				sg::base::OperationMatrix* C_search = sg::op_factory::createOperationIdentity(*this->grid);
 				for (size_t it = 0; it < this->lambSteps; it++)
 				{
 					std::cout << std::endl;
 					std::cout << "This is the " << it + 1 << "th search of " << this->actualBaseLearners << "th weak learner." << std::endl;
 					std::cout << std::endl;
-					alpha.setAll(0.0);
+					alpha_train.setAll(0.0);
 					cur_lambda = exp(this->lambLogMax - it*this->lambStepsize);
-					
-					sg::datadriven::DMWeightMatrix WMatrix(*grid, *data, *C, cur_lambda, weight);
-					WMatrix.generateb(*classes, rhs);
-					sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
-					myCG.solve(WMatrix, alpha, rhs, false, true, -1.0);
-					
+
+					// calculate alpha
+					alphaSolver(C_search, cur_lambda, weight, alpha_train);
+
+
 					for (size_t i = 0; i < this->numData; i++)
 					{
-						this->data->getRow(i, p);
-						double value11 = opEval->eval(alpha, p);
-						newclasses.set(i, hValue(value11));
+						this->data->getRow(i, p_train);
+						double value_seach = opEval->eval(alpha_train, p_train);
+						newclasses.set(i, hValue(value_seach));
 					}
 					
 					for (size_t i = 0; i < this->numData; i++)
@@ -154,7 +164,9 @@ namespace datadriven
 					{
 						minWeightError = weighterror;
 						weightError.set(count, weighterror);
-						storageAlpha.setColumn(count, alpha);
+						//reset the alpha for testing data(copy of alpha for training data)
+						for (size_t index = 0; index < alpha_train.getSize(); index++)
+							alpha_learn.set(index, alpha_train.get(index));
 						for (size_t i = 0; i < this->numData; i++)
 						{
 							if (newclasses.get(i) == this->classes->get(i))
@@ -168,6 +180,7 @@ namespace datadriven
 						}
 					}
 				}
+				delete C_search;
 			}
 			
 			// to judge the classification whether match the simple condition of Adaboost
@@ -177,16 +190,49 @@ namespace datadriven
 				(this->actualBaseLearners)--;
 				break;
 			}
+			// calculate the weight of this weak classif
+			double hypoweight;
 			if (weightError.get(count) == 0)
 			{
-				std::cout << std::endl << "The training error rate is 0 after  " << count + 1 << " iterations" << std::endl;
-				(this->actualBaseLearners)--;
-				break;
+				hypoweight = log(1e+10);
+				hypoWeight.set(count, hypoweight);
 			}
-			
-			// calculate the weight of this weak classif
-			hypoWeight.set(count, 0.5 * (log((1.0 - weightError.get(count))/weightError.get(count))));
-			
+			else
+			{
+				hypoweight = 0.5 * (log((1.0 - weightError.get(count))/weightError.get(count)));
+				hypoWeight.set(count, hypoweight);
+			}
+
+			// calculate the algorithm value of the testing data and training data
+			// for training data
+			for (size_t i = 0; i < numData; i++)
+			{
+				this->data->getRow(i, p_train);
+				double value_train = opEval->eval(alpha_learn, p_train);
+				// when there is only one baselearner actually, we do as following, just use normal classify to get the value
+				if (this->numBaseLearners == 1)
+					algorithmValueTrain.set(i, count, value_train);
+				else if (count == 0)
+					algorithmValueTrain.set(i, count, hypoweight * hValue(value_train));
+				// each column is the sum value of baselearner respect to the column index
+				else
+					algorithmValueTrain.set(i, count, algorithmValueTrain.get(i, count - 1) + hypoweight * hValue(value_train));
+			}
+			// for testing data
+			for (size_t i = 0; i < testData.getNrows(); i++)
+			{
+				testData.getRow(i, p_test);
+				double value_test = opEval->eval(alpha_learn, p_test);
+				// when there is only one baselearner actually, we do as following, just use normal classify to get the value
+				if (this->numBaseLearners == 1)
+					algorithmValueTest.set(i, count, value_test);
+				else if (count == 0)
+					algorithmValueTest.set(i, count, hypoweight * hValue(value_test));
+				// each column is the sum value of baselearner respect to the column index
+				else
+					algorithmValueTest.set(i, count, algorithmValueTest.get(i, count - 1) + hypoweight * hValue(value_test));
+			}
+
 			double helper;
 			for (size_t i = 0; i < this->numData; i++)
 			{
@@ -202,242 +248,158 @@ namespace datadriven
 			tmpweight.mult(1.0/normalizer);
 			// get new weights vector
 			weight = tmpweight;
+
+			if(count < this->numBaseLearners - 1 && this->refinement)
+			{
+				//reset the grid to the regular grid
+				if(this->type == 1)
+				{
+					this->grid = sg::base::Grid::createLinearGrid(this->dim);
+					std::cout << "reset to the regular LinearGrid" << std::endl;
+				}
+				else if(this->type == 2)
+				{
+					this->grid = sg::base::Grid::createLinearBoundaryGrid(this->dim);
+					std::cout << "reset to the regular LinearBoundaryGrid" << std::endl;
+				}
+				else if(this->type == 3)
+				{
+					this->grid = sg::base::Grid::createModLinearGrid(this->dim);
+					std::cout << "reset to the regular ModLinearGrid" << std::endl;
+				}
+				else
+				{
+					std::cout << "please chose a proper type(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)" << std::endl;
+					break;
+				}
+				sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
+				gridGen->regular(this->level);
+				sg::base::GridStorage* gridStorage_reset = this->grid->getStorage();
+				std::cout << std::endl;
+				std::cout << "# number of grid points:  " << gridStorage_reset->size() << std::endl;
+				delete gridGen;
+			}
+			delete C;
 		}
+		delete opEval;
 	}
 	
-    void AlgorithmAdaBoost::eval(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmValue)
+    void AlgorithmAdaBoost::eval(sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
     {
-		sg::base::DataMatrix storageOfAlpha(this->gridPoint, this->numBaseLearners);
 		sg::base::DataVector theHypoWeight(this->numBaseLearners);
 		sg::base::DataVector theWeightError(this->numBaseLearners);
 		sg::base::DataMatrix weightsMatrix(this->numData, this->numBaseLearners);
 		sg::base::DataMatrix decisionMatrix(this->numData, this->numBaseLearners);
-		storageOfAlpha.setAll(0.0);
 		theHypoWeight.setAll(0.0);
 		theWeightError.setAll(0.0);
 		weightsMatrix.setAll(0.0);
 		decisionMatrix.setAll(0.0);
-		
-		doAdaBoost(storageOfAlpha, theHypoWeight, theWeightError, weightsMatrix, decisionMatrix);
-		
-		sg::base::DataMatrix baseLearnerMatr(testData.getNrows(), this->actualBaseLearners);
-		sg::base::DataVector p(this->dim);
-		sg::base::OperationEval* operateEval = sg::op_factory::createOperationEval(*this->grid);
-		sg::base::DataVector alphaT(storageOfAlpha.getNrows());
-		sg::base::DataVector baseLearnerVec(testData.getNrows());
-		for (size_t t = 0; t < this->actualBaseLearners; t++)
-		{
-			storageOfAlpha.getColumn(t, alphaT);
-			baseLearnerVec.setAll(0.0);
-			for (size_t i = 0; i < testData.getNrows(); i++)
-			{
-				testData.getRow(i, p);
-				double value01 = operateEval->eval(alphaT, p);
-				// when there is only one baselearner actually, we do as following, just use normal classify to get the value
-				if (this->actualBaseLearners == 1)
-					algorithmValue.set(i, value01);
-				else
-					baseLearnerVec.set(i, hValue(value01));
-			}
-			if (this->actualBaseLearners > 1)
-				baseLearnerMatr.setColumn(t, baseLearnerVec);
-		}
-		if (this->actualBaseLearners > 1)
-		{
-			double value02;
-			sg::base::DataVector tmp(this->actualBaseLearners);
-			for (size_t i = 0; i < testData.getNrows(); i++)
-			{
-				value02 = 0.0;
-				for(size_t k = 0; k < this->actualBaseLearners; k++)
-					tmp.set(k, baseLearnerMatr.get(i, k));
-				for(size_t j = 0; j < this->actualBaseLearners; j++)
-					value02 = value02 + theHypoWeight.get(j)*tmp.get(j);
-				algorithmValue.set(i, value02);
-			}
-		}
+		doAdaBoost(theHypoWeight, theWeightError, weightsMatrix, decisionMatrix, testData, algorithmValueTrain, algorithmValueTest);
 	}
 	
-	void AlgorithmAdaBoost::classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue)
+	void AlgorithmAdaBoost::classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClassTrain, sg::base::DataVector& algorithmClassTest, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
 	{
-		eval(testData, algorithmValue);
+		eval(testData, algorithmValueTrain, algorithmValueTest);
+		for (size_t i = 0; i < this->numData; i++)
+		{
+			algorithmClassTrain.set(i, hValue(algorithmValueTrain.get(i, this->actualBaseLearners - 1)));
+		}
 		for (size_t i = 0; i < testData.getNrows(); i++)
 		{
-			algorithmClass.set(i, hValue(algorithmValue.get(i)));
+			algorithmClassTest.set(i, hValue(algorithmValueTest.get(i, this->actualBaseLearners - 1)));
 		}
 	}
-	
-	void AlgorithmAdaBoost::getAccuracyAndError(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accruracy, double* error)
-	{
-		/* get the accuracy */
-		size_t right = 0;
-		sg::base::DataVector classOfAlgorithm(testDataClass.getSize());
-		sg::base::DataVector valueOfAlgorithm(testDataClass.getSize());
-		classOfAlgorithm.setAll(0.0);
-		valueOfAlgorithm.setAll(0.0);
-		classif(testData, classOfAlgorithm, valueOfAlgorithm);
-		for(size_t i = 0; i < testData.getNrows(); i++)
-		{
-			if(classOfAlgorithm.get(i) == testDataClass.get(i))
-				right = right + 1;
-		}
-		
-		*accruracy = double(right)/double(classOfAlgorithm.getSize());
-		
-		/* get the interpolation error */
-		valueOfAlgorithm.sub(testDataClass);
-		valueOfAlgorithm.sqr();
-		*error = valueOfAlgorithm.sum()/double(valueOfAlgorithm.getSize());
-	}
-	
-	double AlgorithmAdaBoost::getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass)
-	{
-		size_t right = 0;
-		sg::base::DataVector classOfAlgorithm(testDataClass.getSize());
-		sg::base::DataVector valueOfAlgorithm(testDataClass.getSize());
-		classif(testData, classOfAlgorithm, valueOfAlgorithm);
-		for(size_t i = 0; i < testData.getNrows(); i++)
-		{
-			if(classOfAlgorithm.get(i) == testDataClass.get(i))
-				right = right + 1;
-		}
-		return double(right)/double(classOfAlgorithm.getSize());
-	}
-	
-	double AlgorithmAdaBoost::getError(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass)
-	{
-		sg::base::DataVector helper(testData.getNrows());
-		eval(testData, helper);
-		helper.sub(testDataClass);
-		helper.sqr();
-		return helper.sum()/double(helper.getSize());
-	}
-	
-	void AlgorithmAdaBoost::evalBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner)
-	{
-		if (yourBaseLearner > this->actualBaseLearners)
-		{
-			std::cout << "Please choose your base learner number not larger than " << this->actualBaseLearners << std::endl;
-			abort();
-		}
-		else
-		{
-			sg::base::DataMatrix baseLearnerMatr(testData.getNrows(), yourBaseLearner);
-			sg::base::DataVector p(this->dim);
-			sg::base::OperationEval* operateEval = sg::op_factory::createOperationEval(*this->grid);
-			sg::base::DataVector alphaT(storageAlpha.getNrows());
-			sg::base::DataVector baseLearnerVec(testData.getNrows());
-			for (size_t t = 0; t < yourBaseLearner; t++)
-			{
-				storageAlpha.getColumn(t, alphaT);
-				baseLearnerVec.setAll(0.0);
-				for (size_t i = 0; i < testData.getNrows(); i++)
-				{
-					testData.getRow(i, p);
-					double value01 = operateEval->eval(alphaT, p);
-					// when there is only one baselearner actually, we do as following, just use normal classify to get the value
-					if (yourBaseLearner == 1)
-						algorithmValue.set(i, value01);
-					else
-						baseLearnerVec.set(i, hValue(value01));
-				}
-				if (yourBaseLearner > 1)
-					baseLearnerMatr.setColumn(t, baseLearnerVec);
-			}
-			if (yourBaseLearner > 1)
-			{
-				double value02;
-				sg::base::DataVector tmp(yourBaseLearner);
-				for (size_t i = 0; i < testData.getNrows(); i++)
-				{
-					value02 = 0.0;
-					for(size_t k = 0; k < yourBaseLearner; k++)
-						tmp.set(k, baseLearnerMatr.get(i, k));
-					for(size_t j = 0; j < yourBaseLearner; j++)
-						value02 = value02 + hypoWeight.get(j)*tmp.get(j);
-					algorithmValue.set(i, value02);
-				}
-			}
-		}
-	}
-	
-	void AlgorithmAdaBoost::classifBL(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClass, sg::base::DataVector& algorithmValue, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner)
-	{
-		evalBL(testData, algorithmValue, storageAlpha, hypoWeight, yourBaseLearner);
-		for (size_t i = 0; i < testData.getNrows(); i++)
-		{
-			algorithmClass.set(i, hValue(algorithmValue.get(i)));
-		}
-	}
-	
-	void AlgorithmAdaBoost::getAccuracyAndErrorBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, double* accruracy, double* error, size_t yourBaseLearner)
-	{
-		/* get the accuracy */
-		size_t right = 0;
-		sg::base::DataVector classOfAlgorithm(testDataClass.getSize());
-		sg::base::DataVector valueOfAlgorithm(testDataClass.getSize());
-		classOfAlgorithm.setAll(0.0);
-		valueOfAlgorithm.setAll(0.0);
-		classifBL(testData, classOfAlgorithm, valueOfAlgorithm, storageAlpha, hypoWeight, yourBaseLearner);
-		for(size_t i = 0; i < testData.getNrows(); i++)
-		{
-			if(classOfAlgorithm.get(i) == testDataClass.get(i))
-				right = right + 1;
-		}
-		
-		*accruracy = double(right)/double(testDataClass.getSize());
-		
-		/* get the interpolation error */
-		valueOfAlgorithm.sub(testDataClass);
-		valueOfAlgorithm.sqr();
-		*error = valueOfAlgorithm.sum()/double(valueOfAlgorithm.getSize());
-	}
-	
-	double AlgorithmAdaBoost::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& storageAlpha, sg::base::DataVector& hypoWeight, size_t yourBaseLearner)
-	{
-		size_t right = 0;
-		sg::base::DataVector classOfAlgorithm(testDataClass.getSize());
-		sg::base::DataVector valueOfAlgorithm(testDataClass.getSize());
-		classOfAlgorithm.setAll(0.0);
-		valueOfAlgorithm.setAll(0.0);
-		classifBL(testData, classOfAlgorithm, valueOfAlgorithm, storageAlpha, hypoWeight, yourBaseLearner);
-		for(size_t i = 0; i < testData.getNrows(); i++)
-		{
-			if(classOfAlgorithm.get(i) == testDataClass.get(i))
-				right = right + 1;
-		}
-		return double(right)/double(testDataClass.getSize());
-	}
-	
-	void AlgorithmAdaBoost::doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& rhs_ada, sg::base::DataVector& weight_ada, size_t ada_time)
-	{
-		sg::base::GridGenerator* myGenerator = this->grid->createGridGenerator();
-	
-		size_t refineNumber = 0.1 * (this->grid->getSize());
-		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha_ada, refineNumber, 0.0);
-		myGenerator->refine(myRefineFunc);
-		delete myRefineFunc;
 
-		sg::base::GridStorage* gridStorage_ada = this->grid->getStorage();
-		this->gridPoint = gridStorage_ada->size();
-		std::cout << std::endl;
-		std::cout << "Refinement time step: " << ada_time << ", new grid size: " << this->gridPoint << ", refined number of grid points: " << refineNumber << std::endl;
-		
-		// extend alpha vector (new entries uninitialized)
-		alpha_ada.resizeZero(this->gridPoint);
-		rhs_ada.resizeZero(this->gridPoint);
-		
-		// calculate new alpha
-		sg::datadriven::DMWeightMatrix WMatrix_ada(*grid, *data, *C, this->lamb, weight_ada);
-		WMatrix_ada.generateb(*classes, rhs_ada);
-		sg::solver::ConjugateGradients myCG_ada(this->imax, this->epsilon);
-		myCG_ada.solve(WMatrix_ada, alpha_ada, rhs_ada, false, true, -1.0);
+	void AlgorithmAdaBoost::getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test)
+	{
+		/* get the accuracy */
+		size_t right_test = 0;
+		size_t right_train = 0;
+		sg::base::DataVector classTrain(this->numData);
+		sg::base::DataVector classTest(testDataClass.getSize());
+		sg::base::DataMatrix valueTrain(this->numData, this->numBaseLearners);
+		sg::base::DataMatrix valueTest(testDataClass.getSize(), this->numBaseLearners);
+		classif(testData, classTrain, classTest, valueTrain, valueTest);
+		// for training data
+		for(size_t i = 0; i < this->numData; i++)
+		{
+			if(classTrain.get(i) == this->classes->get(i))
+				right_train = right_train + 1;
+			//			std::cout << i << " " << classTrain.get(i) << std::endl;
+		}
+		*accuracy_train = double(right_train)/double(this->numData);
+		// for testing data
+		for(size_t i = 0; i < testData.getNrows(); i++)
+		{
+			if(classTest.get(i) == testDataClass.get(i))
+				right_test = right_test + 1;
+			//			std::cout << i << " " << classTest.get(i) << std::endl;
+		}
+		*accuracy_test = double(right_test)/double(classTest.getSize());
+	}
+	
+	void AlgorithmAdaBoost::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner)
+	{
+		size_t right_test = 0;
+		size_t right_train = 0;
+
+		// for training data
+		for (size_t i = 0; i < this->numData; i++)
+		{
+			if (hValue(algorithmValueTrain.get(i, yourBaseLearner - 1)) == this->classes->get(i))
+				right_train = right_train + 1;
+		}
+		*accuracy_train = double(right_train)/double(this->numData);
+
+		// for testing data
+		for (size_t i = 0; i < testData.getNrows(); i++)
+		{
+			if (hValue(algorithmValueTest.get(i, yourBaseLearner - 1)) == testDataClass.get(i))
+				right_test = right_test + 1;
+		}
+		*accuracy_test = double(right_test)/double(testDataClass.getSize());
+	}
+	
+	void AlgorithmAdaBoost::doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada)
+	{
+		for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++)
+		{
+			sg::base::GridGenerator* myGenerator = this->grid->createGridGenerator();
+			size_t refineNumber = this->perOfAda * (this->grid->getSize());
+			sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha_ada, refineNumber, 0.0);
+			myGenerator->refine(myRefineFunc);
+			delete myRefineFunc;
+			delete myGenerator;
+
+			sg::base::GridStorage* gridStorage_ada = this->grid->getStorage();
+			size_t gridPts = gridStorage_ada->size();
+			std::cout << std::endl;
+			std::cout << "Refinement time step: " << adaptiveStep << ", new grid size: " << gridPts << ", refined number of grid points: " << refineNumber << std::endl;
+
+			// extend alpha vector (new entries uninitialized)
+			alpha_ada.resizeZero(gridPts);
+
+			sg::base::OperationMatrix* C_ada = sg::op_factory::createOperationIdentity(*this->grid);
+
+			// calculate new alpha
+			alphaSolver(C_ada, this->lamb, weight_ada, alpha_ada);
+
+			delete C_ada;
+		}
+	}
+
+	void AlgorithmAdaBoost::alphaSolver(sg::base::OperationMatrix*& C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha)
+	{
+			sg::datadriven::DMWeightMatrix WMatrix(*grid, *data, *C, lambda, weight);
+			sg::base::DataVector rhs(alpha.getSize());
+			WMatrix.generateb(*classes, rhs);
+			sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
+			myCG.solve(WMatrix, alpha, rhs, false, true, -1.0);
 	}
 
 	size_t AlgorithmAdaBoost::getActualBL()
 	{
 		return this->actualBaseLearners;
 	}
-
 }
 }
