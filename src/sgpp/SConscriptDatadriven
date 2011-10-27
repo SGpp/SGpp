@@ -12,6 +12,7 @@ algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
 algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
 algorithm/datadriven/DensitySystemMatrix.cpp
 algorithm/datadriven/DMWeightMatrix.cpp
+algorithm/datadriven/DMWeightMatrixVectorizedIdentity.cpp
 algorithm/datadriven/AlgorithmAdaBoost.cpp
 basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
 basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
