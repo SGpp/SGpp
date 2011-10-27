@@ -36,14 +36,12 @@ DMWeightMatrix::~DMWeightMatrix()
 void DMWeightMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp((*data).getNrows());
-	sg::base::DataVector tempwithweight((*data).getNrows());
         //size_t M = (*data).getNrows();
         //// Operation B
 	this->B->mult(alpha, temp);
-    tempwithweight = temp;
-    tempwithweight.componentwise_mult(*weight);
+    temp.componentwise_mult(*weight);
 
-    this->B->multTranspose(tempwithweight, result);
+    this->B->multTranspose(temp, result);
 
 	sg::base::DataVector temptwo(alpha.getSize());
 	this->C->mult(alpha, temptwo);
@@ -52,9 +50,9 @@ void DMWeightMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& res
 
 void DMWeightMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
 {
-	sg::base::DataVector classeswithweight(classes);
-    classeswithweight.componentwise_mult(*weight);
-	this->B->multTranspose(classeswithweight, b);
+	sg::base::DataVector myClassesWithWeights(classes);
+    myClassesWithWeights.componentwise_mult(*weight);
+	this->B->multTranspose(myClassesWithWeights, b);
 }
 
 }

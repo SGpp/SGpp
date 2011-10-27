@@ -16,9 +16,11 @@
 #include "operation/datadriven/OperationMultipleEval.hpp"
 #include "operation/common/OperationMatrix.hpp"
 #include "algorithm/datadriven/DMWeightMatrix.hpp"
+#include "algorithm/datadriven/DMWeightMatrixVectorizedIdentity.hpp"
 #include "operation/common/OperationHierarchisation.hpp"
 #include "grid/generation/SurplusRefinementFunctor.hpp"
 #include <math.h>
+#include <string>
 #include <utility>
 #include <iostream>
 #include <cstdlib>
@@ -55,7 +57,7 @@ namespace datadriven
         size_t numBaseLearners;
 		    /// the grid
 		sg::base::Grid* grid;
-		    /// type of grid(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid);
+		    /// type of grid possible value are 1, 2 or 3(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid);
 		size_t type;
     		/// Number of grid points
 		size_t gridPoint;
@@ -81,8 +83,13 @@ namespace datadriven
 		bool refinement;
     		/// Number of refinement with a certain percentage of Grid points
 		size_t refineTimes;
-		    /// percentage of Grid points to refine(between 0 and 1)
+		    /// Percentage of Grid points to refine(between 0 and 1)
 		double perOfAda;
+		    /// Different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
+		size_t alphaMethod;
+    		/// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
+		std::string vecMode;
+
 
     public:
 
@@ -106,8 +113,10 @@ namespace datadriven
 			 * @param refine the judgement of refine
 			 * @param refineNum the Number of refinement with a certain percentage of Grid points
 			 * @param percentOfAda the percentage of Grid points to refine
+			 * @param alphaMethod different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
+			 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
              */
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineNum, double percentOfAda);
+        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineNum, double percentOfAda, size_t alphaMethod, std::string vecMode);
         
 
             /**
@@ -180,7 +189,7 @@ namespace datadriven
 		void doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada);
 
             /**
-             * Performs a solver to get alpha
+             * Performs a solver to get alpha use DMWeightMatrix as the System Matrix
 			 *
              * @param C OperationMatrix for the regularisation mehtod
              * @param lambda the regularisation parameter
@@ -188,6 +197,16 @@ namespace datadriven
 			 * @param alpha output the coefficients of the sparse grid's basis functions
 			 */
 		void alphaSolver(sg::base::OperationMatrix*& C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha);
+
+            /**
+             * Performs a solver to get alpha use DMWeightMatrixVectorizedIdentity as the System Matrix
+			 *
+             * @param lambda the regularisation parameter
+			 * @param weight the weights of examples
+			 * @param alpha output the coefficients of the sparse grid's basis functions
+			 */
+		void alphaSolverVectorizedIdentity(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha);
+
 		    /**
              * Get the actual base learners after doing adaboosting
              *
