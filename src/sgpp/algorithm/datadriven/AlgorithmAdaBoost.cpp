@@ -37,6 +37,7 @@ namespace datadriven
         this->grid = &SparseGrid;
 		this->type = gridType;
 		this->gridPoint = gridStorage->size();
+		maxGridPoint = 0;
 		this->level = gridLevel;
         this->lamb = lambda;
         this->data = &trainData;
@@ -94,6 +95,8 @@ namespace datadriven
 			sg::base::DataVector alpha_train(this->gridPoint);
 			sg::base::DataVector alpha_learn(this->gridPoint);
 			std::cout << "gridPoint: " << this->gridPoint << std::endl;
+			if (maxGridPoint < this->gridPoint)
+				maxGridPoint = this->gridPoint;
 			alpha_train.setAll(0.0);
 			weights.setColumn(count, weight);
 			
@@ -405,6 +408,8 @@ namespace datadriven
 
 			sg::base::GridStorage* gridStorage_ada = this->grid->getStorage();
 			size_t gridPts = gridStorage_ada->size();
+			if (maxGridPoint < gridPts)
+				maxGridPoint = gridPts;
 			std::cout << std::endl;
 			std::cout << "Refinement time step: " << adaptiveStep << ", new grid size: " << gridPts << ", refined number of grid points: " << refineNumber << std::endl;
 
@@ -453,6 +458,11 @@ namespace datadriven
 	size_t AlgorithmAdaBoost::getActualBL()
 	{
 		return this->actualBaseLearners;
+	}
+
+	size_t AlgorithmAdaBoost::getGridPoint()
+	{
+		return maxGridPoint;
 	}
 }
 }

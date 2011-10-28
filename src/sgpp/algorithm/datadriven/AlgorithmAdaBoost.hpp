@@ -61,6 +61,8 @@ namespace datadriven
 		size_t type;
     		/// Number of grid points
 		size_t gridPoint;
+		    /// Number of the maximum grid points used in the algorithm
+		size_t maxGridPoint;
 		    /// grid level
 		size_t level;
             /// Parameter for CG solver
@@ -212,6 +214,13 @@ namespace datadriven
              *
 			 */
 		size_t getActualBL();
+
+		    /**
+             * Get the max GridPoint ever used in adaboosting
+             *
+			 */
+		size_t getGridPoint();
+
             /**
              * Performs a hypothesis classifier
 			 *
