@@ -21,8 +21,8 @@
 #include <cstdlib>
 
 // print grid in gnuplot readable format (1D and 2D only)
-#define GNUPLOT
-#define GRDIRESOLUTION 100
+//#define GNUPLOT
+//#define GRDIRESOLUTION 100
 
 // at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
 #define USE_X86SIMD
@@ -721,7 +721,6 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 		convertDataVectorSPToDataVector(alphaSP, alpha);
 		sg::base::GridPrinter* myPrinter = new sg::base::GridPrinter(*myGrid);
 		myPrinter->printGrid(alpha, "ClassifyBenchmark.gnuplot", GRDIRESOLUTION);
-//		myPrinter->printSparseGrid(alpha, "ClassifyBenchmark.gnuplot", false);
 		delete myPrinter;
 	}
 #endif
