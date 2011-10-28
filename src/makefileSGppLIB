@@ -280,6 +280,7 @@ OBJS =	DataVector.o\
 	ParallelOpFactory.o\
 	PdeOpFactory.o\
 	TwoPartitionAutoTuning.o\
+	DMWeightMatrixVectorizedIdentity.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1117,6 +1118,9 @@ PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
 TwoPartitionAutoTuning.o : $(SRCDIR)tools/common/TwoPartitionAutoTuning.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)tools/common/TwoPartitionAutoTuning.cpp
+	
+DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)algorithm/datadriven/DMWeightMatrixVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)algorithm/datadriven/DMWeightMatrixVectorizedIdentity.cpp
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
