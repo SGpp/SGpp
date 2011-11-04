@@ -401,6 +401,10 @@ namespace datadriven
 		{
 			sg::base::GridGenerator* myGenerator = this->grid->createGridGenerator();
 			size_t refineNumber = this->perOfAda * (this->grid->getSize());
+			//force to refine at least one point
+			if(refineNumber == 0)
+			  refineNumber = 1;
+
 			sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha_ada, refineNumber, 0.0);
 			myGenerator->refine(myRefineFunc);
 			delete myRefineFunc;
@@ -442,7 +446,7 @@ namespace datadriven
 		sg::base::DataVector rhs(alpha.getSize());
 		WMatrix.generateb(*classes, rhs);
 		sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
-		myCG.solve(WMatrix, alpha, rhs, false, true, -1.0);
+		myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
 	}
 
 	void AlgorithmAdaBoost::alphaSolverVectorizedIdentity(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha)
@@ -451,7 +455,7 @@ namespace datadriven
 		sg::base::DataVector rhs(alpha.getSize());
 		WMatrix.generateb(*classes, rhs);
 		sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
-		myCG.solve(WMatrix, alpha, rhs, false, true, -1.0);
+		myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
 	}
 
 
