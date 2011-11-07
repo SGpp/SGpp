@@ -9,23 +9,23 @@
 
 #include <cstring>
 
-#include "exception/factory_exception.hpp"
+#include "base/exception/factory_exception.hpp"
 
-#include "grid/type/PolyGrid.hpp"
-#include "grid/type/ModPolyGrid.hpp"
-#include "grid/type/PrewaveletGrid.hpp"
-#include "grid/type/ModBsplineGrid.hpp"
+#include "base/grid/type/PolyGrid.hpp"
+#include "base/grid/type/ModPolyGrid.hpp"
+#include "base/grid/type/PrewaveletGrid.hpp"
+#include "base/grid/type/ModBsplineGrid.hpp"
 
-#include "basis/linear/noboundary/operation/datadriven/OperationTestLinear.hpp"
-#include "basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.hpp"
-#include "basis/modbspline/operation/datadriven/OperationTestModBspline.hpp"
-#include "basis/modlinear/operation/datadriven/OperationTestModLinear.hpp"
-#include "basis/poly/operation/datadriven/OperationTestPoly.hpp"
-#include "basis/modpoly/operation/datadriven/OperationTestModPoly.hpp"
-#include "basis/modwavelet/operation/datadriven/OperationTestModWavelet.hpp"
-#include "basis/prewavelet/operation/datadriven/OperationTestPrewavelet.hpp"
-#include "basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.hpp"
-#include "basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationTestLinear.hpp"
+#include "datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.hpp"
+#include "datadriven/basis/modbspline/operation/OperationTestModBspline.hpp"
+#include "datadriven/basis/modlinear/operation/OperationTestModLinear.hpp"
+#include "datadriven/basis/poly/operation/OperationTestPoly.hpp"
+#include "datadriven/basis/modpoly/operation/OperationTestModPoly.hpp"
+#include "datadriven/basis/modwavelet/operation/OperationTestModWavelet.hpp"
+#include "datadriven/basis/prewavelet/operation/OperationTestPrewavelet.hpp"
+#include "datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp"
+#include "datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp"
 
 
 namespace sg

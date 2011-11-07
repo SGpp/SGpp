@@ -9,17 +9,17 @@
 #define PDE_HPP
 
 
-#include "algorithm/pde/HeatEquationParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
-#include "application/pde/HeatEquationSolver.hpp"
-#include "application/pde/HeatEquationSolverWithStretching.hpp"
-#include "application/pde/LaserHeatEquationSolver2D.hpp"
-#include "application/pde/PoissonEquationSolver.hpp"
-#include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
-#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
-#include "basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.hpp"
-#include "basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.hpp"
-#include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
+#include "pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
+#include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
+#include "pde/application/HeatEquationSolver.hpp"
+#include "pde/application/HeatEquationSolverWithStretching.hpp"
+#include "pde/application/LaserHeatEquationSolver2D.hpp"
+#include "pde/application/PoissonEquationSolver.hpp"
+#include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
+#include "pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"
+#include "pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
+#include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
+#include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
 //#include "pde/operation/PdeOpFactory.hpp"
 

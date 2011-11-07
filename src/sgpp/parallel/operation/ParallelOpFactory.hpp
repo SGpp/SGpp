@@ -8,12 +8,12 @@
 #ifndef PARALLEL_OP_FACTORY_HPP
 #define PARALLEL_OP_FACTORY_HPP
 
-#include "grid/Grid.hpp"
-#include "data/DataMatrix.hpp"
-#include "data/DataMatrixSP.hpp"
+#include "base/grid/Grid.hpp"
+#include "base/datatypes/DataMatrix.hpp"
+#include "base/datatypes/DataMatrixSP.hpp"
 
-#include "operation/datadriven/OperationMultipleEvalVectorized.hpp"
-#include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
+#include "datadriven/operation/OperationMultipleEvalVectorized.hpp"
+#include "datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
 
 /*
  * This file contains factory methods for operations.

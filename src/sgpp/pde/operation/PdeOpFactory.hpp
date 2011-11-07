@@ -8,9 +8,9 @@
 #ifndef PDE_OP_FACTORY_HPP
 #define PDE_OP_FACTORY_HPP
 
-#include "grid/Grid.hpp"
+#include "base/grid/Grid.hpp"
 
-#include "operation/common/OperationMatrix.hpp"
+#include "base/operation/OperationMatrix.hpp"
 
 /*
  * This file contains factory methods for operations.

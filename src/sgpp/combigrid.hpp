@@ -9,9 +9,9 @@
 #define COMBIGRID_HPP_
 
 // --------- Core SGpp includes -----------
-#include "data/DataVector.hpp"
-#include "grid/Grid.hpp"
-#include "grid/GridStorage.hpp"
+#include "base/datatypes/DataVector.hpp"
+#include "base/grid/Grid.hpp"
+#include "base/grid/GridStorage.hpp"
 
 // ----------- Combi Grid Includes ----------
 #include "combigrid/combigrid/AbstractCombiGrid.hpp"

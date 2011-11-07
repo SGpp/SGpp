@@ -7,16 +7,16 @@
 Import("env")
 
 srcs = Split("""
-solver/ode/AdamsBashforth.cpp
-solver/ode/CrankNicolson.cpp
-solver/ode/Euler.cpp
-solver/ode/StepsizeControlBDF.cpp
-solver/ode/StepsizeControlEJ.cpp
-solver/ode/StepsizeControlH.cpp
-solver/ode/VarTimestep.cpp
-solver/sle/BiCGStab.cpp
-solver/sle/ConjugateGradients.cpp
-solver/sle/ConjugateGradientsSP.cpp
+base/solver/ode/AdamsBashforth.cpp
+base/solver/ode/CrankNicolson.cpp
+base/solver/ode/Euler.cpp
+base/solver/ode/StepsizeControlBDF.cpp
+base/solver/ode/StepsizeControlEJ.cpp
+base/solver/ode/StepsizeControlH.cpp
+base/solver/ode/VarTimestep.cpp
+base/solver/sle/BiCGStab.cpp
+base/solver/sle/ConjugateGradients.cpp
+base/solver/sle/ConjugateGradientsSP.cpp
 """)
 
 

@@ -9,24 +9,24 @@
 
 #include <cstring>
 
-#include "exception/factory_exception.hpp"
+#include "base/exception/factory_exception.hpp"
 
-#include "grid/type/PrewaveletGrid.hpp"
+#include "base/grid/type/PrewaveletGrid.hpp"
 
-#include "basis/linear/noboundary/operation/pde/OperationLaplaceLinear.hpp"
-#include "basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.hpp"
-#include "basis/modlinear/operation/pde/OperationLaplaceModLinear.hpp"
-#include "basis/prewavelet/operation/datadriven/OperationLaplacePrewavelet.hpp"
-#include "basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.hpp"
-#include "basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.hpp"
+#include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
+#include "pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"
+#include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
+#include "datadriven/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp"
+#include "pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
+#include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.hpp"
-#include "basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.hpp"
-#include "basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.hpp"
-#include "basis/linearstretched/boundary/operation/pde/OperationLTwoDotProductLinearStretchedBoundary.hpp"
+#include "pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.hpp"
+#include "pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp"
+#include "pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp"
+#include "pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp"
 
 // @todo (heinecke) remove this when done
-#include "basis/linearstretched/boundary/operation/common/OperationUpDownTestLinearStretchedBoundary.hpp"
+#include "base/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.hpp"
 
 namespace sg
 {
