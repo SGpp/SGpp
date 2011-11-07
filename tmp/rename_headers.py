@@ -2,7 +2,6 @@
 
 import re, sys, os
 
-print sys.argv
 if len(sys.argv) <= 1:
     print """Usage: python %s file [files]
 Replaces all occuring old includes by the new ones in one or more files""" % (sys.argv[0])
@@ -34,7 +33,7 @@ for f in sys.argv[1:]:
     # do replacements:
     for rn in renames:
         if len(rn) == 2:
-            txt = re.sub(rn[0][2:], rn[1][2:], txt)
+            txt = re.sub('"'+rn[0][2:]+'"', '"'+rn[1][2:]+'"', txt)
     
     # feedback
     if not txtold == txt:
