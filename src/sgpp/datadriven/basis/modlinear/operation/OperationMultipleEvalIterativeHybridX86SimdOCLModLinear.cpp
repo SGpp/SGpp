@@ -423,7 +423,7 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multTransposeVec
 						__m256d tmp = _mm256_permute2f128_pd(res, res, 0x81);
 						res = _mm256_add_pd(res, tmp);
 
-						_mm256_maskstore_pd(&(ptrResult[j]), ldStMaskAVX, res_0);
+						_mm256_maskstore_pd(&(ptrGlobalResult[j]), ldStMaskAVX, res);
 					}
 				}
 #endif
@@ -750,25 +750,25 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multVectorized(s
 
 									__m256d level = _mm256_broadcast_sd(&(ptrLevel[(j*dims)+d]));
 
-									eval_0 = _mm_mul_pd(eval_0, level);
-									eval_1 = _mm_mul_pd(eval_1, level);
-									eval_2 = _mm_mul_pd(eval_2, level);
-									eval_3 = _mm_mul_pd(eval_3, level);
+									eval_0 = _mm256_mul_pd(eval_0, level);
+									eval_1 = _mm256_mul_pd(eval_1, level);
+									eval_2 = _mm256_mul_pd(eval_2, level);
+									eval_3 = _mm256_mul_pd(eval_3, level);
 
-									eval_0 = _mm_sub_pd(two, eval_0);
-									eval_1 = _mm_sub_pd(two, eval_1);
-									eval_2 = _mm_sub_pd(two, eval_2);
-									eval_3 = _mm_sub_pd(two, eval_3);
+									eval_0 = _mm256_sub_pd(two, eval_0);
+									eval_1 = _mm256_sub_pd(two, eval_1);
+									eval_2 = _mm256_sub_pd(two, eval_2);
+									eval_3 = _mm256_sub_pd(two, eval_3);
 
-									eval_0 = _mm_max_pd(zero, eval_0);
-									eval_1 = _mm_max_pd(zero, eval_1);
-									eval_2 = _mm_max_pd(zero, eval_2);
-									eval_3 = _mm_max_pd(zero, eval_3);
+									eval_0 = _mm256_max_pd(zero, eval_0);
+									eval_1 = _mm256_max_pd(zero, eval_1);
+									eval_2 = _mm256_max_pd(zero, eval_2);
+									eval_3 = _mm256_max_pd(zero, eval_3);
 
-									support_0 = _mm_mul_pd(support_0, eval_0);
-									support_1 = _mm_mul_pd(support_1, eval_1);
-									support_2 = _mm_mul_pd(support_2, eval_2);
-									support_3 = _mm_mul_pd(support_3, eval_3);
+									support_0 = _mm256_mul_pd(support_0, eval_0);
+									support_1 = _mm256_mul_pd(support_1, eval_1);
+									support_2 = _mm256_mul_pd(support_2, eval_2);
+									support_3 = _mm256_mul_pd(support_3, eval_3);
 								}
 								// most right basis function on every level
 								else if (ptrIndex[(j*dims)+d] == (ptrLevel[(j*dims)+d] - 1.0f))
