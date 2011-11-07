@@ -348,758 +348,758 @@ ifeq ($(CC),g++)
 endif
 	ranlib $(BINDIR)$(LIBNAME)
 
-DataVector.o : $(SRCDIR)data/DataVector.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)data/DataVector.cpp
+DataVector.o : $(SRCDIR)base/datatypes/DataVector.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)base/datatypes/DataVector.cpp
 	
-AlignedMemory.o : $(SRCDIR)tools/common/AlignedMemory.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)AlignedMemory.o $(SRCDIR)tools/common/AlignedMemory.cpp
+AlignedMemory.o : $(SRCDIR)base/tools/AlignedMemory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlignedMemory.o $(SRCDIR)base/tools/AlignedMemory.cpp
 
-DataMatrix.o : $(SRCDIR)data/DataMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrix.o $(SRCDIR)data/DataMatrix.cpp
+DataMatrix.o : $(SRCDIR)base/datatypes/DataMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrix.o $(SRCDIR)base/datatypes/DataMatrix.cpp
 	
-DataVectorSP.o : $(SRCDIR)data/DataVectorSP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DataVectorSP.o $(SRCDIR)data/DataVectorSP.cpp
+DataVectorSP.o : $(SRCDIR)base/datatypes/DataVectorSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataVectorSP.o $(SRCDIR)base/datatypes/DataVectorSP.cpp
 	
-DataMatrixSP.o : $(SRCDIR)data/DataMatrixSP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrixSP.o $(SRCDIR)data/DataMatrixSP.cpp
+DataMatrixSP.o : $(SRCDIR)base/datatypes/DataMatrixSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DataMatrixSP.o $(SRCDIR)base/datatypes/DataMatrixSP.cpp
 
-Grid.o : $(SRCDIR)grid/Grid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)Grid.o $(SRCDIR)grid/Grid.cpp
+Grid.o : $(SRCDIR)base/grid/Grid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Grid.o $(SRCDIR)base/grid/Grid.cpp
 
-LinearBoundaryGrid.o : $(SRCDIR)grid/type/LinearBoundaryGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LinearBoundaryGrid.o $(SRCDIR)grid/type/LinearBoundaryGrid.cpp
+LinearBoundaryGrid.o : $(SRCDIR)base/grid/type/LinearBoundaryGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearBoundaryGrid.o $(SRCDIR)base/grid/type/LinearBoundaryGrid.cpp
 
-LinearTrapezoidBoundaryGrid.o : $(SRCDIR)grid/type/LinearTrapezoidBoundaryGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LinearTrapezoidBoundaryGrid.o $(SRCDIR)grid/type/LinearTrapezoidBoundaryGrid.cpp
+LinearTrapezoidBoundaryGrid.o : $(SRCDIR)base/grid/type/LinearTrapezoidBoundaryGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearTrapezoidBoundaryGrid.o $(SRCDIR)base/grid/type/LinearTrapezoidBoundaryGrid.cpp
 	
-LinearStretchedTrapezoidBoundaryGrid.o : $(SRCDIR)grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedTrapezoidBoundaryGrid.o $(SRCDIR)grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
+LinearStretchedTrapezoidBoundaryGrid.o : $(SRCDIR)base/grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedTrapezoidBoundaryGrid.o $(SRCDIR)base/grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
 	
-LinearGrid.o : $(SRCDIR)grid/type/LinearGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LinearGrid.o $(SRCDIR)grid/type/LinearGrid.cpp
+LinearGrid.o : $(SRCDIR)base/grid/type/LinearGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearGrid.o $(SRCDIR)base/grid/type/LinearGrid.cpp
 	
-LinearStretchedGrid.o : $(SRCDIR)grid/type/LinearStretchedGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedGrid.o $(SRCDIR)grid/type/LinearStretchedGrid.cpp	
+LinearStretchedGrid.o : $(SRCDIR)base/grid/type/LinearStretchedGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedGrid.o $(SRCDIR)base/grid/type/LinearStretchedGrid.cpp	
 	
-ModLinearGrid.o : $(SRCDIR)grid/type/ModLinearGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ModLinearGrid.o $(SRCDIR)grid/type/ModLinearGrid.cpp
+ModLinearGrid.o : $(SRCDIR)base/grid/type/ModLinearGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModLinearGrid.o $(SRCDIR)base/grid/type/ModLinearGrid.cpp
 	
-ModWaveletGrid.o : $(SRCDIR)grid/type/ModWaveletGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ModWaveletGrid.o $(SRCDIR)grid/type/ModWaveletGrid.cpp
+ModWaveletGrid.o : $(SRCDIR)base/grid/type/ModWaveletGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModWaveletGrid.o $(SRCDIR)base/grid/type/ModWaveletGrid.cpp
 	
-PrewaveletGrid.o : $(SRCDIR)grid/type/PrewaveletGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGrid.o $(SRCDIR)grid/type/PrewaveletGrid.cpp
+PrewaveletGrid.o : $(SRCDIR)base/grid/type/PrewaveletGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGrid.o $(SRCDIR)base/grid/type/PrewaveletGrid.cpp
 	
-ModBsplineGrid.o : $(SRCDIR)grid/type/ModBsplineGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ModBsplineGrid.o $(SRCDIR)grid/type/ModBsplineGrid.cpp
+ModBsplineGrid.o : $(SRCDIR)base/grid/type/ModBsplineGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModBsplineGrid.o $(SRCDIR)base/grid/type/ModBsplineGrid.cpp
 
-ModPolyGrid.o : $(SRCDIR)grid/type/ModPolyGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ModPolyGrid.o $(SRCDIR)grid/type/ModPolyGrid.cpp
+ModPolyGrid.o : $(SRCDIR)base/grid/type/ModPolyGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModPolyGrid.o $(SRCDIR)base/grid/type/ModPolyGrid.cpp
 	
-SquareRootGrid.o : $(SRCDIR)grid/type/SquareRootGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SquareRootGrid.o $(SRCDIR)grid/type/SquareRootGrid.cpp
+SquareRootGrid.o : $(SRCDIR)base/grid/type/SquareRootGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SquareRootGrid.o $(SRCDIR)base/grid/type/SquareRootGrid.cpp
 	
-TruncatedTrapezoidGrid.o : $(SRCDIR)grid/type/TruncatedTrapezoidGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)TruncatedTrapezoidGrid.o $(SRCDIR)grid/type/TruncatedTrapezoidGrid.cpp
+TruncatedTrapezoidGrid.o : $(SRCDIR)base/grid/type/TruncatedTrapezoidGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TruncatedTrapezoidGrid.o $(SRCDIR)base/grid/type/TruncatedTrapezoidGrid.cpp
 	
-PolyGrid.o : $(SRCDIR)grid/type/PolyGrid.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PolyGrid.o $(SRCDIR)grid/type/PolyGrid.cpp
+PolyGrid.o : $(SRCDIR)base/grid/type/PolyGrid.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PolyGrid.o $(SRCDIR)base/grid/type/PolyGrid.cpp
 	
-StandardGridGenerator.o : $(SRCDIR)grid/generation/StandardGridGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StandardGridGenerator.o $(SRCDIR)grid/generation/StandardGridGenerator.cpp
+StandardGridGenerator.o : $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StandardGridGenerator.o $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
 	
-SquareRootGridGenerator.o : $(SRCDIR)grid/generation/SquareRootGridGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SquareRootGridGenerator.o $(SRCDIR)grid/generation/SquareRootGridGenerator.cpp
+SquareRootGridGenerator.o : $(SRCDIR)base/grid/generation/SquareRootGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SquareRootGridGenerator.o $(SRCDIR)base/grid/generation/SquareRootGridGenerator.cpp
 	
-TruncatedTrapezoidGridGenerator.o : $(SRCDIR)grid/generation/TruncatedTrapezoidGridGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)TruncatedTrapezoidGridGenerator.o $(SRCDIR)grid/generation/TruncatedTrapezoidGridGenerator.cpp
+TruncatedTrapezoidGridGenerator.o : $(SRCDIR)base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TruncatedTrapezoidGridGenerator.o $(SRCDIR)base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
 	
-BoundaryGridGenerator.o : $(SRCDIR)grid/generation/BoundaryGridGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BoundaryGridGenerator.o $(SRCDIR)grid/generation/BoundaryGridGenerator.cpp
+BoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BoundaryGridGenerator.o $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
 	
-SurplusRefinementFunctor.o : $(SRCDIR)grid/generation/SurplusRefinementFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)grid/generation/SurplusRefinementFunctor.cpp
+SurplusRefinementFunctor.o : $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
 	
-SurplusCoarseningFunctor.o : $(SRCDIR)grid/generation/SurplusCoarseningFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)grid/generation/SurplusCoarseningFunctor.cpp
+SurplusCoarseningFunctor.o : $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
 
-TrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)TrapezoidBoundaryGridGenerator.o $(SRCDIR)grid/generation/TrapezoidBoundaryGridGenerator.cpp
+TrapezoidBoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TrapezoidBoundaryGridGenerator.o $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 	
-PrewaveletGridGenerator.o : $(SRCDIR)grid/generation/PrewaveletGridGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGridGenerator.o $(SRCDIR)grid/generation/PrewaveletGridGenerator.cpp
+PrewaveletGridGenerator.o : $(SRCDIR)base/grid/generation/PrewaveletGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PrewaveletGridGenerator.o $(SRCDIR)base/grid/generation/PrewaveletGridGenerator.cpp
 
-OperationTestModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModWavelet.o $(SRCDIR)basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
+OperationTestModWavelet.o : $(SRCDIR)datadriven/basis/modwavelet/operation/OperationTestModWavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModWavelet.o $(SRCDIR)datadriven/basis/modwavelet/operation/OperationTestModWavelet.cpp
 
-OperationEvalModWavelet.o : $(SRCDIR)basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModWavelet.o $(SRCDIR)basis/modwavelet/operation/common/OperationEvalModWavelet.cpp
+OperationEvalModWavelet.o : $(SRCDIR)base/basis/modwavelet/operation/OperationEvalModWavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModWavelet.o $(SRCDIR)base/basis/modwavelet/operation/OperationEvalModWavelet.cpp
 
-OperationMultipleEvalModWavelet.o : $(SRCDIR)basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModWavelet.o $(SRCDIR)basis/modwavelet/operation/datadriven/OperationMultipleEvalModWavelet.cpp
+OperationMultipleEvalModWavelet.o : $(SRCDIR)datadriven/basis/modwavelet/operation/OperationMultipleEvalModWavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModWavelet.o $(SRCDIR)datadriven/basis/modwavelet/operation/OperationMultipleEvalModWavelet.cpp
 
-OperationHierarchisationModWavelet.o : $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModWavelet.o $(SRCDIR)basis/modwavelet/operation/common/OperationHierarchisationModWavelet.cpp
+OperationHierarchisationModWavelet.o : $(SRCDIR)base/basis/modwavelet/operation/OperationHierarchisationModWavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModWavelet.o $(SRCDIR)base/basis/modwavelet/operation/OperationHierarchisationModWavelet.cpp
 	
-OperationTestPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
+OperationTestPrewavelet.o : $(SRCDIR)datadriven/basis/prewavelet/operation/OperationTestPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestPrewavelet.o $(SRCDIR)datadriven/basis/prewavelet/operation/OperationTestPrewavelet.cpp
 
-OperationEvalPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationEvalPrewavelet.cpp
+OperationEvalPrewavelet.o : $(SRCDIR)base/basis/prewavelet/operation/OperationEvalPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalPrewavelet.o $(SRCDIR)base/basis/prewavelet/operation/OperationEvalPrewavelet.cpp
 
-OperationMultipleEvalPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalPrewavelet.o $(SRCDIR)basis/prewavelet/operation/datadriven/OperationMultipleEvalPrewavelet.cpp
+OperationMultipleEvalPrewavelet.o : $(SRCDIR)datadriven/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalPrewavelet.o $(SRCDIR)datadriven/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.cpp
 
-OperationHierarchisationPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationHierarchisationPrewavelet.cpp
+OperationHierarchisationPrewavelet.o : $(SRCDIR)base/basis/prewavelet/operation/OperationHierarchisationPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPrewavelet.o $(SRCDIR)base/basis/prewavelet/operation/OperationHierarchisationPrewavelet.cpp
 
-OperationConvertPrewavelet.o : $(SRCDIR)basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationConvertPrewavelet.o $(SRCDIR)basis/prewavelet/operation/common/OperationConvertPrewavelet.cpp
+OperationConvertPrewavelet.o : $(SRCDIR)base/basis/prewavelet/operation/OperationConvertPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationConvertPrewavelet.o $(SRCDIR)base/basis/prewavelet/operation/OperationConvertPrewavelet.cpp
 
-OperationTestModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
+OperationTestModBspline.o : $(SRCDIR)datadriven/basis/modbspline/operation/OperationTestModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModBspline.o $(SRCDIR)datadriven/basis/modbspline/operation/OperationTestModBspline.cpp
 
-OperationEvalModBspline.o : $(SRCDIR)basis/modbspline/operation/common/OperationEvalModBspline.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModBspline.o $(SRCDIR)basis/modbspline/operation/common/OperationEvalModBspline.cpp
+OperationEvalModBspline.o : $(SRCDIR)base/basis/modbspline/operation/OperationEvalModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModBspline.o $(SRCDIR)base/basis/modbspline/operation/OperationEvalModBspline.cpp
 
-OperationMultipleEvalModBspline.o : $(SRCDIR)basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModBspline.o $(SRCDIR)basis/modbspline/operation/datadriven/OperationMultipleEvalModBspline.cpp
+OperationMultipleEvalModBspline.o : $(SRCDIR)datadriven/basis/modbspline/operation/OperationMultipleEvalModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModBspline.o $(SRCDIR)datadriven/basis/modbspline/operation/OperationMultipleEvalModBspline.cpp
 
-OperationHierarchisationModBspline.o : $(SRCDIR)basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModBspline.o $(SRCDIR)basis/modbspline/operation/common/OperationHierarchisationModBspline.cpp
+OperationHierarchisationModBspline.o : $(SRCDIR)base/basis/modbspline/operation/OperationHierarchisationModBspline.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModBspline.o $(SRCDIR)base/basis/modbspline/operation/OperationHierarchisationModBspline.cpp
 
-OperationMultipleEvalLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalLinear.cpp
+OperationMultipleEvalLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp
 	
-OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.cpp
+OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
 
-OperationMultipleEvalIterativeSPX86SimdLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
+OperationMultipleEvalIterativeSPX86SimdLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 
-OperationTestLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
+OperationTestLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 
-OperationEvalLinear.o : $(SRCDIR)basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinear.o $(SRCDIR)basis/linear/noboundary/operation/common/OperationEvalLinear.cpp
+OperationEvalLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationEvalLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationEvalLinear.cpp
 
-OperationHierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/operation/common/OperationHierarchisationLinear.cpp
+OperationHierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
 	
-OperationQuadratureLinear.o : $(SRCDIR)basis/linear/noboundary/operation/common/OperationQuadratureLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureLinear.o $(SRCDIR)basis/linear/noboundary/operation/common/OperationQuadratureLinear.cpp
+OperationQuadratureLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
 
-OperationLTwoDotProductLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLTwoDotProductLinear.cpp
+OperationLTwoDotProductLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.cpp
 	
-OperationLBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLBLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLBLinear.cpp
+OperationLBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLBLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLBLinear.cpp
 	
-OperationLDLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLDLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLDLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLDLinear.cpp
+OperationLDLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLDLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLDLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLDLinear.cpp
 	
-OperationLELinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLELinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLELinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLELinear.cpp
+OperationLELinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLELinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLELinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLELinear.cpp
 	
-OperationLFLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLFLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLFLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/financeHW1D/OperationLFLinear.cpp
+OperationLFLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLFLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLFLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLFLinear.cpp
 
-OperationLaplaceLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/OperationLaplaceLinear.cpp
+OperationLaplaceLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	
-OperationDeltaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.cpp
+OperationDeltaLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.cpp
 	
-OperationGammaLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.cpp
+OperationGammaLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.cpp
 
-OperationDeltaLogLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.cpp
+OperationDeltaLogLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.cpp
 	
-OperationGammaLogLinear.o : $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinear.o $(SRCDIR)basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.cpp
+OperationGammaLogLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
 
-HierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+HierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
 
-DehierarchisationLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+DehierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 
-PhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
+PhiPhiDownBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
 
-PhiPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
+PhiPhiUpBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
 	
-SqXdPhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
+SqXdPhidPhiDownBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
 
-SqXdPhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
+SqXdPhidPhiUpBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
 	
-XdPhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
+XdPhiPhiDownBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
 	
-XdPhiPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp	
+XdPhiPhiUpBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp	
 	
-XPhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp	
+XPhidPhiDownBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp	
 	
-XPhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp		
+XPhidPhiUpBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp		
 	
-DPhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
+DPhiPhiDownBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
 	
-DPhiPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp	
+DPhiPhiUpBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp	
 	
-PhidPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp	
+PhidPhiDownBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp	
 	
-PhidPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp		
+PhidPhiUpBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp		
 	
-XPhiPhiDownBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiDownBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp	
+XPhiPhiDownBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiDownBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp	
 	
-XPhiPhiUpBBLinear.o : $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinear.o $(SRCDIR)basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp		
+XPhiPhiUpBBLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp		
 
-DowndPhidPhiBBIterativeLinear.o : $(SRCDIR)basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinear.o $(SRCDIR)basis/linear/noboundary/common/DowndPhidPhiBBIterativeLinear.cpp	
+DowndPhidPhiBBIterativeLinear.o : $(SRCDIR)base/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinear.o $(SRCDIR)base/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.cpp	
 	
-OperationLaplaceModLinear.o : $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)basis/modlinear/operation/pde/OperationLaplaceModLinear.cpp
+OperationLaplaceModLinear.o : $(SRCDIR)pde/basis/modlinear/operation/OperationLaplaceModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceModLinear.o $(SRCDIR)pde/basis/modlinear/operation/OperationLaplaceModLinear.cpp
 
-OperationMultipleEvalModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalModLinear.cpp
+OperationMultipleEvalModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalModLinear.cpp
 
-OperationTestModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
+OperationTestModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationTestModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationTestModLinear.cpp
 
-OperationEvalModLinear.o : $(SRCDIR)basis/modlinear/operation/common/OperationEvalModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModLinear.o $(SRCDIR)basis/modlinear/operation/common/OperationEvalModLinear.cpp
+OperationEvalModLinear.o : $(SRCDIR)base/basis/modlinear/operation/OperationEvalModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModLinear.o $(SRCDIR)base/basis/modlinear/operation/OperationEvalModLinear.cpp
 
-OperationHierarchisationModLinear.o : $(SRCDIR)basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModLinear.o $(SRCDIR)basis/modlinear/operation/common/OperationHierarchisationModLinear.cpp
+OperationHierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/operation/OperationHierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/operation/OperationHierarchisationModLinear.cpp
 
-HierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
+HierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
 
-DehierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
+DehierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
 
-OperationMultipleEvalIterativeSPX86SimdModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
+OperationMultipleEvalIterativeSPX86SimdModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
 
-OperationMultipleEvalIterativeX86SimdModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeX86SimdModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeX86SimdModLinear.cpp
+OperationMultipleEvalIterativeX86SimdModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
 
-dPhidPhiDownModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
+dPhidPhiDownModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 
-dPhidPhiUpModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiUpModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
+dPhidPhiUpModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiUpModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
 
-PhiPhiDownModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
+PhiPhiDownModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
 
-PhiPhiUpModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
+PhiPhiUpModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
 		
-OperationMultipleEvalModPoly.o : $(SRCDIR)basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModPoly.o $(SRCDIR)basis/modpoly/operation/datadriven/OperationMultipleEvalModPoly.cpp
+OperationMultipleEvalModPoly.o : $(SRCDIR)datadriven/basis/modpoly/operation/OperationMultipleEvalModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalModPoly.o $(SRCDIR)datadriven/basis/modpoly/operation/OperationMultipleEvalModPoly.cpp
 
-OperationTestModPoly.o : $(SRCDIR)basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModPoly.o $(SRCDIR)basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
+OperationTestModPoly.o : $(SRCDIR)datadriven/basis/modpoly/operation/OperationTestModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestModPoly.o $(SRCDIR)datadriven/basis/modpoly/operation/OperationTestModPoly.cpp
 
-OperationEvalModPoly.o : $(SRCDIR)basis/modpoly/operation/common/OperationEvalModPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModPoly.o $(SRCDIR)basis/modpoly/operation/common/OperationEvalModPoly.cpp
+OperationEvalModPoly.o : $(SRCDIR)base/basis/modpoly/operation/OperationEvalModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalModPoly.o $(SRCDIR)base/basis/modpoly/operation/OperationEvalModPoly.cpp
 
-OperationHierarchisationModPoly.o : $(SRCDIR)basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModPoly.o $(SRCDIR)basis/modpoly/operation/common/OperationHierarchisationModPoly.cpp
+OperationHierarchisationModPoly.o : $(SRCDIR)base/basis/modpoly/operation/OperationHierarchisationModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationModPoly.o $(SRCDIR)base/basis/modpoly/operation/OperationHierarchisationModPoly.cpp
 
-HierarchisationModPoly.o : $(SRCDIR)basis/modpoly/algorithm_sweep/HierarchisationModPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationModPoly.o $(SRCDIR)basis/modpoly/algorithm_sweep/HierarchisationModPoly.cpp
+HierarchisationModPoly.o : $(SRCDIR)base/basis/modpoly/algorithm_sweep/HierarchisationModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationModPoly.o $(SRCDIR)base/basis/modpoly/algorithm_sweep/HierarchisationModPoly.cpp
 
-DehierarchisationModPoly.o : $(SRCDIR)basis/modpoly/algorithm_sweep/DehierarchisationModPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModPoly.o $(SRCDIR)basis/modpoly/algorithm_sweep/DehierarchisationModPoly.cpp
+DehierarchisationModPoly.o : $(SRCDIR)base/basis/modpoly/algorithm_sweep/DehierarchisationModPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModPoly.o $(SRCDIR)base/basis/modpoly/algorithm_sweep/DehierarchisationModPoly.cpp
 
-OperationMultipleEvalPoly.o : $(SRCDIR)basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalPoly.o $(SRCDIR)basis/poly/operation/datadriven/OperationMultipleEvalPoly.cpp
+OperationMultipleEvalPoly.o : $(SRCDIR)datadriven/basis/poly/operation/OperationMultipleEvalPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalPoly.o $(SRCDIR)datadriven/basis/poly/operation/OperationMultipleEvalPoly.cpp
 
-OperationTestPoly.o : $(SRCDIR)basis/poly/operation/datadriven/OperationTestPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestPoly.o $(SRCDIR)basis/poly/operation/datadriven/OperationTestPoly.cpp
+OperationTestPoly.o : $(SRCDIR)datadriven/basis/poly/operation/OperationTestPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestPoly.o $(SRCDIR)datadriven/basis/poly/operation/OperationTestPoly.cpp
 
-OperationEvalPoly.o : $(SRCDIR)basis/poly/operation/common/OperationEvalPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalPoly.o $(SRCDIR)basis/poly/operation/common/OperationEvalPoly.cpp
+OperationEvalPoly.o : $(SRCDIR)base/basis/poly/operation/OperationEvalPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalPoly.o $(SRCDIR)base/basis/poly/operation/OperationEvalPoly.cpp
 
-OperationHierarchisationPoly.o : $(SRCDIR)basis/poly/operation/common/OperationHierarchisationPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPoly.o $(SRCDIR)basis/poly/operation/common/OperationHierarchisationPoly.cpp
+OperationHierarchisationPoly.o : $(SRCDIR)base/basis/poly/operation/OperationHierarchisationPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationPoly.o $(SRCDIR)base/basis/poly/operation/OperationHierarchisationPoly.cpp
 	
-OperationQuadraturePoly.o : $(SRCDIR)basis/poly/operation/common/OperationQuadraturePoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadraturePoly.o $(SRCDIR)basis/poly/operation/common/OperationQuadraturePoly.cpp
+OperationQuadraturePoly.o : $(SRCDIR)base/basis/poly/operation/OperationQuadraturePoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadraturePoly.o $(SRCDIR)base/basis/poly/operation/OperationQuadraturePoly.cpp
 
-HierarchisationPoly.o : $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationPoly.o $(SRCDIR)basis/poly/algorithm_sweep/HierarchisationPoly.cpp
+HierarchisationPoly.o : $(SRCDIR)base/basis/poly/algorithm_sweep/HierarchisationPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationPoly.o $(SRCDIR)base/basis/poly/algorithm_sweep/HierarchisationPoly.cpp
 
-DehierarchisationPoly.o : $(SRCDIR)basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationPoly.o $(SRCDIR)basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
+DehierarchisationPoly.o : $(SRCDIR)base/basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationPoly.o $(SRCDIR)base/basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
 
-OperationHierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationHierarchisationLinearBoundary.cpp
+OperationHierarchisationLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.cpp
 
-OperationEvalLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationEvalLinearBoundary.cpp
+OperationEvalLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/OperationEvalLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/OperationEvalLinearBoundary.cpp
 	
-OperationUpDownTestLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/common/OperationUpDownTestLinearBoundary.cpp
+OperationUpDownTestLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/OperationUpDownTestLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/OperationUpDownTestLinearBoundary.cpp
 
-OperationMultipleEvalLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationMultipleEvalLinearBoundary.cpp
+OperationMultipleEvalLinearBoundary.o : $(SRCDIR)datadriven/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearBoundary.o $(SRCDIR)datadriven/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.cpp
 
-OperationTestLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
+OperationTestLinearBoundary.o : $(SRCDIR)datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearBoundary.o $(SRCDIR)datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp
 	
-OperationDeltaLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.cpp
+OperationDeltaLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationDeltaLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationDeltaLinearBoundary.cpp
 	
-OperationGammaLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.cpp
+OperationGammaLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationGammaLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationGammaLinearBoundary.cpp
 	
-OperationDeltaLogLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.cpp
+OperationDeltaLogLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.cpp
 	
-OperationGammaLogLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.cpp
+OperationGammaLogLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.cpp
 	
-OperationLBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLBLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.cpp
+OperationLBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
 
-OperationLDLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLDLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.cpp
+OperationLDLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationLDLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLDLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationLDLinearBoundary.cpp
 	
-OperationLELinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLELinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.cpp
+OperationLELinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationLELinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLELinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationLELinearBoundary.cpp
 	
-OperationLFLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLFLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.cpp
+OperationLFLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationLFLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLFLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationLFLinearBoundary.cpp
 	
-OperationLTwoDotProductLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/OperationLTwoDotProductLinearBoundary.cpp
+OperationLTwoDotProductLinearBoundary.o : $(SRCDIR)pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearBoundary.o $(SRCDIR)pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.cpp
 	
-OperationLaplaceLinearBoundary.o : $(SRCDIR)basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearBoundary.o $(SRCDIR)basis/linear/boundary/operation/pde/OperationLaplaceLinearBoundary.cpp
+OperationLaplaceLinearBoundary.o : $(SRCDIR)pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearBoundary.o $(SRCDIR)pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.cpp
 
-HierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+HierarchisationLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
 
-DehierarchisationLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
+DehierarchisationLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.cpp
 
-PhiPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
+PhiPhiDownBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
 
-PhiPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
+PhiPhiUpBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
 	
-SqXdPhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
+SqXdPhidPhiDownBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
 
-SqXdPhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
+SqXdPhidPhiUpBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
 	
-XdPhiPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
+XdPhiPhiDownBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
 	
-XdPhiPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp	
+XdPhiPhiUpBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp	
 	
-XPhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp	
+XPhidPhiDownBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp	
 	
-XPhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp		
+XPhidPhiUpBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp		
 	
-DPhiPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
+DPhiPhiDownBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
 	
-DPhiPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp	
+DPhiPhiUpBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp	
 	
-PhidPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp	
+PhidPhiDownBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp	
 	
-PhidPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp	
+PhidPhiUpBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp	
 	
-XPhiPhiDownBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiDownBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp	
+XPhiPhiDownBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiDownBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp	
 	
-XPhiPhiUpBBLinearBoundary.o : $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinearBoundary.o $(SRCDIR)basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
+XPhiPhiUpBBLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
 	
-DowndPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/DowndPhidPhiBBIterativeLinearBoundary.cpp	
+DowndPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.cpp	
 	
-UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)basis/linear/boundary/common/UpdPhidPhiBBIterativeLinearBoundary.cpp	
+UpdPhidPhiBBIterativeLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.cpp	
 	
-StretchedTrapezoidBoundaryGridGenerator.o : $(SRCDIR)grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StretchedTrapezoidBoundaryGridGenerator.o $(SRCDIR)grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
+StretchedTrapezoidBoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StretchedTrapezoidBoundaryGridGenerator.o $(SRCDIR)base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
 
-OperationMultipleEvalLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationMultipleEvalLinearStretched.cpp
+OperationMultipleEvalLinearStretched.o : $(SRCDIR)datadriven/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretched.o $(SRCDIR)datadriven/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.cpp
 	
-OperationTestLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
+OperationTestLinearStretched.o : $(SRCDIR)datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearStretched.o $(SRCDIR)datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.cpp
 
-OperationEvalLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationEvalLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/common\/OperationEvalLinearStretched.cpp
+OperationEvalLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.cpp
 
-OperationHierarchisationLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/common/OperationHierarchisationLinearStretched.cpp
+OperationHierarchisationLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.cpp
 
-OperationLTwoDotProductLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLTwoDotProductLinearStretched.cpp
+OperationLTwoDotProductLinearStretched.o : $(SRCDIR)pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearStretched.o $(SRCDIR)pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.cpp
 
-OperationLaplaceLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/OperationLaplaceLinearStretched.cpp
+OperationLaplaceLinearStretched.o : $(SRCDIR)pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearStretched.o $(SRCDIR)pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.cpp
 	
-OperationDeltaLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.cpp
+OperationDeltaLinearStretched.o : $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationDeltaLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearStretched.o $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationDeltaLinearStretched.cpp
 	
-OperationGammaLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.cpp
+OperationGammaLinearStretched.o : $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationGammaLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearStretched.o $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationGammaLinearStretched.cpp
 
-OperationDeltaLogLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.cpp
+OperationDeltaLogLinearStretched.o : $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearStretched.o $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.cpp
 	
-OperationGammaLogLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.cpp
+OperationGammaLogLinearStretched.o : $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearStretched.o $(SRCDIR)finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.cpp
 
-HierarchisationLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
+HierarchisationLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.cpp
 
-DehierarchisationLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
+DehierarchisationLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.cpp
 
-PhiPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
+PhiPhiDownBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
 
-PhiPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
+PhiPhiUpBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
 	
-SqXdPhidPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
+SqXdPhidPhiDownBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
 
-SqXdPhidPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
+SqXdPhidPhiUpBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
 	
-XdPhiPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
+XdPhiPhiDownBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
 	
-XdPhiPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp	
+XdPhiPhiUpBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp	
 	
-XPhidPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp	
+XPhidPhiDownBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp	
 	
-XPhidPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp		
+XPhidPhiUpBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp		
 	
-DPhiPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
+DPhiPhiDownBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
 	
-DPhiPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp	
+DPhiPhiUpBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp	
 	
-PhidPhiDownBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp	
+PhidPhiDownBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp	
 	
-PhidPhiUpBBLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp		
+PhidPhiUpBBLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp		
 	
-DowndPhidPhiBBIterativeLinearStretched.o : $(SRCDIR)basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearStretched.o $(SRCDIR)basis/linearstretched/noboundary/common/DowndPhidPhiBBIterativeLinearStretched.cpp
+DowndPhidPhiBBIterativeLinearStretched.o : $(SRCDIR)base/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearStretched.o $(SRCDIR)base/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.cpp
 
-OperationHierarchisationLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationHierarchisationLinearStretchedBoundary.cpp
+OperationHierarchisationLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.cpp
 
-OperationEvalLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationEvalLinearStretchedBoundary.cpp
+OperationEvalLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.cpp
 	
-OperationUpDownTestLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationUpDownTestLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/common/OperationUpDownTestLinearStretchedBoundary.cpp
+OperationUpDownTestLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.cpp
 
-OperationMultipleEvalLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationMultipleEvalLinearStretchedBoundary.cpp
+OperationMultipleEvalLinearStretchedBoundary.o : $(SRCDIR)datadriven/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretchedBoundary.o $(SRCDIR)datadriven/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.cpp
 
-OperationTestLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.cpp
+OperationTestLinearStretchedBoundary.o : $(SRCDIR)datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinearStretchedBoundary.o $(SRCDIR)datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.cpp
 	
-OperationDeltaLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.cpp
+OperationDeltaLinearStretchedBoundary.o : $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationDeltaLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLinearStretchedBoundary.o $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationDeltaLinearStretchedBoundary.cpp
 	
-OperationGammaLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationGammaLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance\/OperationGammaLinearStretchedBoundary.cpp
+OperationGammaLinearStretchedBoundary.o : $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationGammaLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLinearStretchedBoundary.o $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationGammaLinearStretchedBoundary.cpp
 	
-OperationDeltaLogLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.cpp
+OperationDeltaLogLinearStretchedBoundary.o : $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDeltaLogLinearStretchedBoundary.o $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.cpp
 	
-OperationGammaLogLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.cpp
+OperationGammaLogLinearStretchedBoundary.o : $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearStretchedBoundary.o $(SRCDIR)finance/basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.cpp
 	
-OperationLTwoDotProductLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLTwoDotProductLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLTwoDotProductLinearStretchedBoundary.cpp
+OperationLTwoDotProductLinearStretchedBoundary.o : $(SRCDIR)pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductLinearStretchedBoundary.o $(SRCDIR)pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.cpp
 	
-OperationLaplaceLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/operation/pde/OperationLaplaceLinearStretchedBoundary.cpp
+OperationLaplaceLinearStretchedBoundary.o : $(SRCDIR)pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinearStretchedBoundary.o $(SRCDIR)pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.cpp
 
-HierarchisationLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
+HierarchisationLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HierarchisationLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.cpp
 
-DehierarchisationLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
+DehierarchisationLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.cpp
 
-PhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
+PhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
 
-PhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
+PhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
 	
-SqXdPhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
+SqXdPhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
 
-SqXdPhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
+SqXdPhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
 	
-XdPhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
+XdPhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
 	
-XdPhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp	
+XdPhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp	
 	
-XPhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp	
+XPhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp	
 	
-XPhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp		
+XPhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp		
 	
-DPhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
+DPhiPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiDownBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
 	
-DPhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp	
+DPhiPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhiPhiUpBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp	
 	
-PhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp	
+PhidPhiDownBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiDownBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp	
 	
-PhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp	
+PhidPhiUpBBLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PhidPhiUpBBLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp	
 	
-DowndPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/common/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/common/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp	
+DowndPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp	
 	
-UpdPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)basis/linearstretched/boundary/common/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearStretchedBoundary.o $(SRCDIR)basis/linearstretched/boundary/common/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp	
+UpdPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp	
 	
-ModifiedBlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ModifiedBlackScholesParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.cpp
+ModifiedBlackScholesParabolicPDESolverSystem.o : $(SRCDIR)pde/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModifiedBlackScholesParabolicPDESolverSystem.o $(SRCDIR)pde/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 	
-BlackScholesParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystem.cpp
+BlackScholesParabolicPDESolverSystem.o : $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystem.o $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystem.cpp
 
-BlackScholesPATParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystem.cpp
+BlackScholesPATParabolicPDESolverSystem.o : $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystem.o $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystem.cpp
 
-BlackScholesParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmer.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
+BlackScholesParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmer.o $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
 
-BlackScholesPATParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmer.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
+BlackScholesPATParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmer.o $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
 
-BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o : $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.o $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 
-BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o : $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 
-HullWhiteParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HullWhiteParabolicPDESolverSystem.cpp
+HullWhiteParabolicPDESolverSystem.o : $(SRCDIR)pde/algorithm/HullWhiteParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteParabolicPDESolverSystem.o $(SRCDIR)pde/algorithm/HullWhiteParabolicPDESolverSystem.cpp
 
-HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystem.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystem.cpp
+HeatEquationParabolicPDESolverSystem.o : $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystem.o $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystem.cpp
 	
-HeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelOMP.cpp	
+HeatEquationParabolicPDESolverSystemParallelOMP.o : $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelOMP.o $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystemParallelOMP.cpp	
 	
-LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o : $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o $(SRCDIR)algorithm/pde/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp	
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o : $(SRCDIR)pde/algorithm/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.o $(SRCDIR)pde/algorithm/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp	
 
-PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+PoissonEquationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichlet.o $(SRCDIR)pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
 
-DensitySystemMatrix.o : $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DensitySystemMatrix.o $(SRCDIR)algorithm/datadriven/DensitySystemMatrix.cpp	
+DensitySystemMatrix.o : $(SRCDIR)datadriven/algorithm/DensitySystemMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DensitySystemMatrix.o $(SRCDIR)datadriven/algorithm/DensitySystemMatrix.cpp	
 
-DMSystemMatrix.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)algorithm/datadriven/DMSystemMatrix.cpp
+DMSystemMatrix.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrix.o $(SRCDIR)datadriven/algorithm/DMSystemMatrix.cpp
 	
-DMWeightMatrix.o : $(SRCDIR)algorithm/datadriven/DMWeightMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrix.o $(SRCDIR)algorithm/datadriven/DMWeightMatrix.cpp
+DMWeightMatrix.o : $(SRCDIR)datadriven/algorithm/DMWeightMatrix.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrix.o $(SRCDIR)datadriven/algorithm/DMWeightMatrix.cpp
 	
-OperationQuadratureMC.o : $(SRCDIR)tools/common/OperationQuadratureMC.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureMC.o $(SRCDIR)tools/common/OperationQuadratureMC.cpp
+OperationQuadratureMC.o : $(SRCDIR)base/tools/OperationQuadratureMC.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureMC.o $(SRCDIR)base/tools/OperationQuadratureMC.cpp
 
-AlgorithmAdaBoost.o : $(SRCDIR)algorithm/datadriven/AlgorithmAdaBoost.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoost.o $(SRCDIR)algorithm/datadriven/AlgorithmAdaBoost.cpp
+AlgorithmAdaBoost.o : $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoost.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoost.o $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoost.cpp
 	
-DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
+DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 	
-DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentity.o $(SRCDIR)algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
+DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentity.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 	
-ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp
+ConjugateGradients.o : $(SRCDIR)base/solver/sle/ConjugateGradients.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)base/solver/sle/ConjugateGradients.cpp
 	
-ConjugateGradientsSP.o : $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsSP.o $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
+ConjugateGradientsSP.o : $(SRCDIR)base/solver/sle/ConjugateGradientsSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsSP.o $(SRCDIR)base/solver/sle/ConjugateGradientsSP.cpp
 
-BiCGStab.o : $(SRCDIR)solver/sle/BiCGStab.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStab.o $(SRCDIR)solver/sle/BiCGStab.cpp
+BiCGStab.o : $(SRCDIR)base/solver/sle/BiCGStab.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStab.o $(SRCDIR)base/solver/sle/BiCGStab.cpp
 
-Euler.o : $(SRCDIR)solver/ode/Euler.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)Euler.o $(SRCDIR)solver/ode/Euler.cpp
+Euler.o : $(SRCDIR)base/solver/ode/Euler.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Euler.o $(SRCDIR)base/solver/ode/Euler.cpp
 	
-CrankNicolson.o : $(SRCDIR)solver/ode/CrankNicolson.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)CrankNicolson.o $(SRCDIR)solver/ode/CrankNicolson.cpp
+CrankNicolson.o : $(SRCDIR)base/solver/ode/CrankNicolson.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)CrankNicolson.o $(SRCDIR)base/solver/ode/CrankNicolson.cpp
 	
-AdamsBashforth.o : $(SRCDIR)solver/ode/AdamsBashforth.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)AdamsBashforth.o $(SRCDIR)solver/ode/AdamsBashforth.cpp
+AdamsBashforth.o : $(SRCDIR)base/solver/ode/AdamsBashforth.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AdamsBashforth.o $(SRCDIR)base/solver/ode/AdamsBashforth.cpp
 
-VarTimestep.o : $(SRCDIR)solver/ode/VarTimestep.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)VarTimestep.o $(SRCDIR)solver/ode/VarTimestep.cpp
+VarTimestep.o : $(SRCDIR)base/solver/ode/VarTimestep.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)VarTimestep.o $(SRCDIR)base/solver/ode/VarTimestep.cpp
 	
-StepsizeControlH.o : $(SRCDIR)solver/ode/StepsizeControlH.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlH.o $(SRCDIR)solver/ode/StepsizeControlH.cpp
+StepsizeControlH.o : $(SRCDIR)base/solver/ode/StepsizeControlH.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlH.o $(SRCDIR)base/solver/ode/StepsizeControlH.cpp
 	
-StepsizeControlBDF.o : $(SRCDIR)solver/ode/StepsizeControlBDF.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlBDF.o $(SRCDIR)solver/ode/StepsizeControlBDF.cpp
+StepsizeControlBDF.o : $(SRCDIR)base/solver/ode/StepsizeControlBDF.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlBDF.o $(SRCDIR)base/solver/ode/StepsizeControlBDF.cpp
 
-StepsizeControlEJ.o : $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlEJ.o $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
+StepsizeControlEJ.o : $(SRCDIR)base/solver/ode/StepsizeControlEJ.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlEJ.o $(SRCDIR)base/solver/ode/StepsizeControlEJ.cpp
 		
-PDESolver.o : $(SRCDIR)application/pde/PDESolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PDESolver.o $(SRCDIR)application/pde/PDESolver.cpp
+PDESolver.o : $(SRCDIR)pde/application/PDESolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PDESolver.o $(SRCDIR)pde/application/PDESolver.cpp
 
-ParabolicPDESolver.o : $(SRCDIR)application/pde/ParabolicPDESolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ParabolicPDESolver.o $(SRCDIR)application/pde/ParabolicPDESolver.cpp
+ParabolicPDESolver.o : $(SRCDIR)pde/application/ParabolicPDESolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ParabolicPDESolver.o $(SRCDIR)pde/application/ParabolicPDESolver.cpp
 	
-EllipticPDESolver.o : $(SRCDIR)application/pde/EllipticPDESolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)EllipticPDESolver.o $(SRCDIR)application/pde/EllipticPDESolver.cpp
+EllipticPDESolver.o : $(SRCDIR)pde/application/EllipticPDESolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)EllipticPDESolver.o $(SRCDIR)pde/application/EllipticPDESolver.cpp
 
-BlackScholesSolver.o : $(SRCDIR)application/pde/BlackScholesSolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolver.o $(SRCDIR)application/pde/BlackScholesSolver.cpp
+BlackScholesSolver.o : $(SRCDIR)pde/application/BlackScholesSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolver.o $(SRCDIR)pde/application/BlackScholesSolver.cpp
 	
-BlackScholesSolverWithStretching.o : $(SRCDIR)application/pde/BlackScholesSolverWithStretching.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverWithStretching.o $(SRCDIR)application/pde/BlackScholesSolverWithStretching.cpp
+BlackScholesSolverWithStretching.o : $(SRCDIR)pde/application/BlackScholesSolverWithStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverWithStretching.o $(SRCDIR)pde/application/BlackScholesSolverWithStretching.cpp
 	
-HullWhiteSolver.o : $(SRCDIR)application/pde/HullWhiteSolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteSolver.o $(SRCDIR)application/pde/HullWhiteSolver.cpp
+HullWhiteSolver.o : $(SRCDIR)pde/application/HullWhiteSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HullWhiteSolver.o $(SRCDIR)pde/application/HullWhiteSolver.cpp
 
-BlackScholesHullWhiteSolver.o : $(SRCDIR)application/pde/BlackScholesHullWhiteSolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesHullWhiteSolver.o $(SRCDIR)application/pde/BlackScholesHullWhiteSolver.cpp
+BlackScholesHullWhiteSolver.o : $(SRCDIR)pde/application/BlackScholesHullWhiteSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesHullWhiteSolver.o $(SRCDIR)pde/application/BlackScholesHullWhiteSolver.cpp
 
-HeatEquationSolver.o : $(SRCDIR)application/pde/HeatEquationSolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolver.o $(SRCDIR)application/pde/HeatEquationSolver.cpp
+HeatEquationSolver.o : $(SRCDIR)pde/application/HeatEquationSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolver.o $(SRCDIR)pde/application/HeatEquationSolver.cpp
 	
-LaserHeatEquationSolver2D.o : $(SRCDIR)application/pde/LaserHeatEquationSolver2D.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationSolver2D.o $(SRCDIR)application/pde/LaserHeatEquationSolver2D.cpp
+LaserHeatEquationSolver2D.o : $(SRCDIR)pde/application/LaserHeatEquationSolver2D.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaserHeatEquationSolver2D.o $(SRCDIR)pde/application/LaserHeatEquationSolver2D.cpp
 	
-HeatEquationSolverWithStretching.o : $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverWithStretching.o $(SRCDIR)application/pde/HeatEquationSolverWithStretching.cpp
+HeatEquationSolverWithStretching.o : $(SRCDIR)pde/application/HeatEquationSolverWithStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverWithStretching.o $(SRCDIR)pde/application/HeatEquationSolverWithStretching.cpp
 
-PoissonEquationSolver.o : $(SRCDIR)application/pde/PoissonEquationSolver.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolver.o $(SRCDIR)application/pde/PoissonEquationSolver.cpp
+PoissonEquationSolver.o : $(SRCDIR)pde/application/PoissonEquationSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolver.o $(SRCDIR)pde/application/PoissonEquationSolver.cpp
 
-VariableDiscountFactor.o : $(SRCDIR)application/finance/VariableDiscountFactor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)VariableDiscountFactor.o $(SRCDIR)application/finance/VariableDiscountFactor.cpp
+VariableDiscountFactor.o : $(SRCDIR)finance/application/VariableDiscountFactor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)VariableDiscountFactor.o $(SRCDIR)finance/application/VariableDiscountFactor.cpp
 	
-BoundingBox.o : $(SRCDIR)grid/common/BoundingBox.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BoundingBox.o $(SRCDIR)grid/common/BoundingBox.cpp
+BoundingBox.o : $(SRCDIR)base/grid/common/BoundingBox.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BoundingBox.o $(SRCDIR)base/grid/common/BoundingBox.cpp
 	
-Stretching.o : $(SRCDIR)grid/common/Stretching.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)Stretching.o $(SRCDIR)grid/common/Stretching.cpp
+Stretching.o : $(SRCDIR)base/grid/common/Stretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Stretching.o $(SRCDIR)base/grid/common/Stretching.cpp
     	
-IOToolBonnSG.o : $(SRCDIR)tools/finance/IOToolBonnSG.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)IOToolBonnSG.o $(SRCDIR)tools/finance/IOToolBonnSG.cpp
+IOToolBonnSG.o : $(SRCDIR)finance/tools/IOToolBonnSG.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)IOToolBonnSG.o $(SRCDIR)finance/tools/IOToolBonnSG.cpp
 	
-Hedging.o : $(SRCDIR)tools/finance/Hedging.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)Hedging.o $(SRCDIR)tools/finance/Hedging.cpp
+Hedging.o : $(SRCDIR)finance/tools/Hedging.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Hedging.o $(SRCDIR)finance/tools/Hedging.cpp
 
-GridPrinter.o : $(SRCDIR)tools/common/GridPrinter.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinter.o $(SRCDIR)tools/common/GridPrinter.cpp
+GridPrinter.o : $(SRCDIR)base/tools/GridPrinter.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinter.o $(SRCDIR)base/tools/GridPrinter.cpp
 	
-GridPrinterForStretching.o : $(SRCDIR)tools/common/GridPrinterForStretching.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinterForStretching.o $(SRCDIR)tools/common/GridPrinterForStretching.cpp
+GridPrinterForStretching.o : $(SRCDIR)base/tools/GridPrinterForStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)GridPrinterForStretching.o $(SRCDIR)base/tools/GridPrinterForStretching.cpp
 	
-DirichletUpdateVector.o : $(SRCDIR)grid/common/DirichletUpdateVector.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DirichletUpdateVector.o $(SRCDIR)grid/common/DirichletUpdateVector.cpp	
+DirichletUpdateVector.o : $(SRCDIR)base/grid/common/DirichletUpdateVector.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DirichletUpdateVector.o $(SRCDIR)base/grid/common/DirichletUpdateVector.cpp	
 
-DirichletGridConverter.o : $(SRCDIR)grid/common/DirichletGridConverter.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DirichletGridConverter.o $(SRCDIR)grid/common/DirichletGridConverter.cpp	
+DirichletGridConverter.o : $(SRCDIR)base/grid/common/DirichletGridConverter.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DirichletGridConverter.o $(SRCDIR)base/grid/common/DirichletGridConverter.cpp	
 	
-StdNormalDistribution.o : $(SRCDIR)tools/common/StdNormalDistribution.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StdNormalDistribution.o $(SRCDIR)tools/common/StdNormalDistribution.cpp
+StdNormalDistribution.o : $(SRCDIR)base/tools/StdNormalDistribution.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StdNormalDistribution.o $(SRCDIR)base/tools/StdNormalDistribution.cpp
 	
-ScreenOutput.o : $(SRCDIR)application/common/ScreenOutput.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ScreenOutput.o $(SRCDIR)application/common/ScreenOutput.cpp
+ScreenOutput.o : $(SRCDIR)base/application/ScreenOutput.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ScreenOutput.o $(SRCDIR)base/application/ScreenOutput.cpp
 	
-SGppStopwatch.o : $(SRCDIR)tools/common/SGppStopwatch.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SGppStopwatch.o $(SRCDIR)tools/common/SGppStopwatch.cpp
+SGppStopwatch.o : $(SRCDIR)base/tools/SGppStopwatch.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SGppStopwatch.o $(SRCDIR)base/tools/SGppStopwatch.cpp
 
-EvalCuboidGenerator.o : $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGenerator.o $(SRCDIR)tools/common/EvalCuboidGenerator.cpp
+EvalCuboidGenerator.o : $(SRCDIR)base/tools/EvalCuboidGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGenerator.o $(SRCDIR)base/tools/EvalCuboidGenerator.cpp
 	
-EvalCuboidGeneratorForStretching.o : $(SRCDIR)tools/common/EvalCuboidGeneratorForStretching.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGeneratorForStretching.o $(SRCDIR)tools/common/EvalCuboidGeneratorForStretching.cpp
+EvalCuboidGeneratorForStretching.o : $(SRCDIR)base/tools/EvalCuboidGeneratorForStretching.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)EvalCuboidGeneratorForStretching.o $(SRCDIR)base/tools/EvalCuboidGeneratorForStretching.cpp
 	
-ARFFTools.o : $(SRCDIR)tools/datadriven/ARFFTools.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ARFFTools.o $(SRCDIR)tools/datadriven/ARFFTools.cpp
+ARFFTools.o : $(SRCDIR)datadriven/tools/ARFFTools.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ARFFTools.o $(SRCDIR)datadriven/tools/ARFFTools.cpp
 	
-StdUpDown.o : $(SRCDIR)algorithm/pde/StdUpDown.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StdUpDown.o $(SRCDIR)algorithm/pde/StdUpDown.cpp
+StdUpDown.o : $(SRCDIR)pde/algorithm/StdUpDown.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StdUpDown.o $(SRCDIR)pde/algorithm/StdUpDown.cpp
 	
-UpDownOneOpDim.o : $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDim.o $(SRCDIR)algorithm/pde/UpDownOneOpDim.cpp
+UpDownOneOpDim.o : $(SRCDIR)pde/algorithm/UpDownOneOpDim.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDim.o $(SRCDIR)pde/algorithm/UpDownOneOpDim.cpp
 
-UpDownTwoOpDims.o : $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownTwoOpDims.o $(SRCDIR)algorithm/pde/UpDownTwoOpDims.cpp
+UpDownTwoOpDims.o : $(SRCDIR)pde/algorithm/UpDownTwoOpDims.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownTwoOpDims.o $(SRCDIR)pde/algorithm/UpDownTwoOpDims.cpp
 	
-UpDownOneOpDimWithShadow.o : $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimWithShadow.o $(SRCDIR)algorithm/pde/UpDownOneOpDimWithShadow.cpp
+UpDownOneOpDimWithShadow.o : $(SRCDIR)pde/algorithm/UpDownOneOpDimWithShadow.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimWithShadow.o $(SRCDIR)pde/algorithm/UpDownOneOpDimWithShadow.cpp
 	
-OperationParabolicPDESolverSystem.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystem.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystem.cpp
+OperationParabolicPDESolverSystem.o : $(SRCDIR)pde/operation/OperationParabolicPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystem.o $(SRCDIR)pde/operation/OperationParabolicPDESolverSystem.cpp
 	
-OperationParabolicPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemNeumann.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemNeumann.cpp
+OperationParabolicPDESolverSystemNeumann.o : $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemNeumann.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemNeumann.o $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemNeumann.cpp
 	
-OperationParabolicPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemDirichlet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationParabolicPDESolverSystemDirichlet.cpp
+OperationParabolicPDESolverSystemDirichlet.o : $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemDirichlet.o $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemDirichlet.cpp
 	
-OperationEllipticPDESolverSystem.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystem.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystem.cpp
+OperationEllipticPDESolverSystem.o : $(SRCDIR)pde/operation/OperationEllipticPDESolverSystem.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystem.o $(SRCDIR)pde/operation/OperationEllipticPDESolverSystem.cpp
 	
-OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemDirichlet.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemDirichlet.cpp
+OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemDirichlet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemDirichlet.o $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemDirichlet.cpp
 	
-OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)operation/pde/OperationEllipticPDESolverSystemNeumann.cpp
+OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemNeumann.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemNeumann.cpp
 	
 BaseOpFactory.o : $(SRCDIR)base/operation/BaseOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BaseOpFactory.o $(SRCDIR)base/operation/BaseOpFactory.cpp
@@ -1116,95 +1116,95 @@ ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
 PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PdeOpFactory.o $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
-TwoPartitionAutoTuning.o : $(SRCDIR)tools/common/TwoPartitionAutoTuning.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)tools/common/TwoPartitionAutoTuning.cpp
+TwoPartitionAutoTuning.o : $(SRCDIR)base/tools/TwoPartitionAutoTuning.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)base/tools/TwoPartitionAutoTuning.cpp
 	
-DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)algorithm/datadriven/DMWeightMatrixVectorizedIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)algorithm/datadriven/DMWeightMatrixVectorizedIdentity.cpp
+DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 	
 # ArBB Extensions:
-OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
+OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
 
-OperationMultipleEvalIterativeSPArBBLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPArBBLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.cpp
+OperationMultipleEvalIterativeSPArBBLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPArBBLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.cpp
 	
-ArBBKernels.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels.cpp
+ArBBKernels.o : $(SRCDIR)datadriven/operation/ArBBKernels.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)datadriven/operation/ArBBKernels.cpp
 	
-ArBBKernels2D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels2D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels2D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels2D.cpp
+ArBBKernels2D.o : $(SRCDIR)datadriven/operation/ArBBKernels2D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels2D.o $(SRCDIR)datadriven/operation/ArBBKernels2D.cpp
 	
-ArBBKernels4D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels4D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels4D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels4D.cpp
+ArBBKernels4D.o : $(SRCDIR)datadriven/operation/ArBBKernels4D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels4D.o $(SRCDIR)datadriven/operation/ArBBKernels4D.cpp
 		
-ArBBKernels5D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels5D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels5D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels5D.cpp
+ArBBKernels5D.o : $(SRCDIR)datadriven/operation/ArBBKernels5D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels5D.o $(SRCDIR)datadriven/operation/ArBBKernels5D.cpp
 	
-ArBBKernels10D.o : $(SRCDIR)basis/common/operation/datadriven/ArBBKernels10D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels10D.o $(SRCDIR)basis/common/operation/datadriven/ArBBKernels10D.cpp
+ArBBKernels10D.o : $(SRCDIR)datadriven/operation/ArBBKernels10D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels10D.o $(SRCDIR)datadriven/operation/ArBBKernels10D.cpp
 
 # OCL Extensions:
-OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.cpp
+OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
 
-OperationMultipleEvalIterativeSPOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.cpp
+OperationMultipleEvalIterativeSPOCLLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.cpp
 	
-OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp	
+OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp	
 
-OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
+OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
 	
-OCLKernels.o : $(SRCDIR)basis/common/operation/datadriven/OCLKernels.cpp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_DP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_SP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_ModDP.imp $(SRCDIR)basis/common/operation/datadriven/OCLKernels_ModSP.imp
-	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)basis/common/operation/datadriven/OCLKernels.cpp
+OCLKernels.o : $(SRCDIR)datadriven/operation/OCLKernels.cpp $(SRCDIR)datadriven/operation/OCLKernels_DP.imp $(SRCDIR)datadriven/operation/OCLKernels_SP.imp $(SRCDIR)datadriven/operation/OCLKernels_ModDP.imp $(SRCDIR)datadriven/operation/OCLKernels_ModSP.imp
+	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)datadriven/operation/OCLKernels.cpp
 	
-OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.cpp
+OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
 
-OperationMultipleEvalIterativeSPOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.cpp
+OperationMultipleEvalIterativeSPOCLModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.cpp
 	
-OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp	
+OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp	
 
-OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o : $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp	
+OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp	
 
 # MPI Extensions:
-MPICommunicator.o : $(SRCDIR)tools/MPI/MPICommunicator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)MPICommunicator.o $(SRCDIR)tools/MPI/MPICommunicator.cpp
+MPICommunicator.o : $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)MPICommunicator.o $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
 	
-GlobalMPIComm.o : $(SRCDIR)tools/MPI/GlobalMPIComm.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)GlobalMPIComm.o $(SRCDIR)tools/MPI/GlobalMPIComm.cpp	
+GlobalMPIComm.o : $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)GlobalMPIComm.o $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp	
 	
-ConjugateGradientsMPI.o : $(SRCDIR)solver/sle/ConjugateGradientsMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)solver/sle/ConjugateGradientsMPI.cpp
+ConjugateGradientsMPI.o : $(SRCDIR)base/solver/sle/ConjugateGradientsMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)base/solver/sle/ConjugateGradientsMPI.cpp
 	
-PoissonEquationSolverMPI.o : $(SRCDIR)application/pde/PoissonEquationSolverMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolverMPI.o $(SRCDIR)application/pde/PoissonEquationSolverMPI.cpp
+PoissonEquationSolverMPI.o : $(SRCDIR)pde/application/PoissonEquationSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolverMPI.o $(SRCDIR)pde/application/PoissonEquationSolverMPI.cpp
 	
-PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o $(SRCDIR)algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
+PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o $(SRCDIR)pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
 
-HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
+HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
 
-HeatEquationSolverMPI.o : $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)application/pde/HeatEquationSolverMPI.cpp
+HeatEquationSolverMPI.o : $(SRCDIR)pde/application/HeatEquationSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)pde/application/HeatEquationSolverMPI.cpp
 	
-BlackScholesSolverMPI.o : $(SRCDIR)application/pde/BlackScholesSolverMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverMPI.o $(SRCDIR)application/pde/BlackScholesSolverMPI.cpp
+BlackScholesSolverMPI.o : $(SRCDIR)pde/application/BlackScholesSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverMPI.o $(SRCDIR)pde/application/BlackScholesSolverMPI.cpp
 	
-BiCGStabMPI.o : $(SRCDIR)solver/sle/BiCGStabMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)solver/sle/BiCGStabMPI.cpp
+BiCGStabMPI.o : $(SRCDIR)base/solver/sle/BiCGStabMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)base/solver/sle/BiCGStabMPI.cpp
 	
-BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
+BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
 
-BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)algorithm/pde/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
+BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
 		
 clean:
 	rm *
