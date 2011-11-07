@@ -140,7 +140,7 @@ using namespace sg::base;
 namespace sg
 {
 
-  namespace GridOperationFactory
+  namespace op_factory //GridOperationFactory
   {
 #ifdef SG_PDE
     using namespace sg::pde;
