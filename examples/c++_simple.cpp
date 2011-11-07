@@ -3,11 +3,11 @@
 #include "sgpp.hpp"
 
 // Or, include only those that are required
-//#include "data/DataVector.hpp"
-//#include "grid/Grid.hpp"
-//#include "grid/GridStorage.hpp"
-//#include "grid/generation/GridGenerator.hpp"
-//#include "operation/common/OperationEval.hpp"
+//#include "base/datatypes/DataVector.hpp"
+//#include "base/grid/Grid.hpp"
+//#include "base/grid/GridStorage.hpp"
+//#include "base/grid/generation/GridGenerator.hpp"
+//#include "base/operation/OperationEval.hpp"
 
 using namespace std;
 using namespace sg;

@@ -6,14 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "sgpp.hpp"
-#include "data/DataVectorSP.hpp"
-#include "data/DataMatrixSP.hpp"
-#include "algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.hpp"
-#include "solver/sle/ConjugateGradientsSP.hpp"
-#include "tools/datadriven/ARFFTools.hpp"
-#include "grid/type/ModLinearGrid.hpp"
-#include "grid/type/LinearGrid.hpp"
-#include "grid/type/LinearTrapezoidBoundaryGrid.hpp"
+#include "base/datatypes/DataVectorSP.hpp"
+#include "base/datatypes/DataMatrixSP.hpp"
+#include "datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
+#include "base/solver/sle/ConjugateGradientsSP.hpp"
+#include "datadriven/tools/ARFFTools.hpp"
+#include "base/grid/type/ModLinearGrid.hpp"
+#include "base/grid/type/LinearGrid.hpp"
+#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 
 #include <string>
