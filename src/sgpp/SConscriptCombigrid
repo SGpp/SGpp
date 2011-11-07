@@ -3,9 +3,9 @@
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
-#grid/combination/FullGrid.cpp
-#grid/combination/FullGridSet.cpp
-#grid/combination/LinearFullGrid.cpp
+#base/grid/combination/FullGrid.cpp
+#base/grid/combination/FullGridSet.cpp
+#base/grid/combination/LinearFullGrid.cpp
 
 Import("env")
 

@@ -67,7 +67,7 @@ namespace base
   $1 = $input;
 }
 
-%include "src/sgpp/tools/common/OperationQuadratureMC.hpp"
+%include "src/sgpp/base/tools/OperationQuadratureMC.hpp"
 
 // attach a new method to OperationQuadratureMC
 %extend sg::base::OperationQuadratureMC {

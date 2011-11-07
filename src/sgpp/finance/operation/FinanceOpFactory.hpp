@@ -8,11 +8,11 @@
 #ifndef FINANCE_OP_FACTORY_HPP
 #define FINANCE_OP_FACTORY_HPP
 
-#include "grid/Grid.hpp"
-#include "data/DataVector.hpp"
-#include "data/DataMatrix.hpp"
+#include "base/grid/Grid.hpp"
+#include "base/datatypes/DataVector.hpp"
+#include "base/datatypes/DataMatrix.hpp"
 
-#include "operation/common/OperationMatrix.hpp"
+#include "base/operation/OperationMatrix.hpp"
 
 /*
  * This file contains factory methods for operations.

@@ -15,9 +15,9 @@
 #include "combigrid/combigrid/AbstractCombiGrid.hpp"
 
 // ---- the SGpp includes --------
-#include "data/DataVector.hpp"
-#include "grid/Grid.hpp"
-#include "grid/GridStorage.hpp"
+#include "base/datatypes/DataVector.hpp"
+#include "base/grid/Grid.hpp"
+#include "base/grid/GridStorage.hpp"
 
 using namespace std;
 

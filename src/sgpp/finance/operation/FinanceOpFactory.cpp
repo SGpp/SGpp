@@ -9,39 +9,39 @@
 
 #include <cstring>
 
-#include "exception/factory_exception.hpp"
+#include "base/exception/factory_exception.hpp"
 
-#include "basis/linear/noboundary/operation/pde/finance/OperationGammaLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLinearStretched.hpp"
-#include "basis/linearstretched/boundary/operation/pde/finance/OperationGammaLogLinearStretchedBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationGammaLinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.hpp"
+#include "finance/basis/linearstretched/noboundary/operation/OperationGammaLinearStretched.hpp"
+#include "finance/basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationGammaLinearBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/finance/OperationGammaLogLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/pde/finance/OperationGammaLogLinearStretched.hpp"
-#include "basis/linearstretched/boundary/operation/pde/finance/OperationGammaLinearStretchedBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationGammaLogLinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.hpp"
+#include "finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp"
+#include "finance/basis/linearstretched/boundary/operation/OperationGammaLinearStretchedBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLBLinear.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLBLinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationLBLinear.hpp"
+#include "finance/basis/linear/boundary/operation/OperationLBLinearBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLELinear.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLELinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationLELinear.hpp"
+#include "finance/basis/linear/boundary/operation/OperationLELinearBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLDLinear.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLDLinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationLDLinear.hpp"
+#include "finance/basis/linear/boundary/operation/OperationLDLinearBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/financeHW1D/OperationLFLinear.hpp"
-#include "basis/linear/boundary/operation/pde/financeHW1D/OperationLFLinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationLFLinear.hpp"
+#include "finance/basis/linear/boundary/operation/OperationLFLinearBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLinearStretched.hpp"
-#include "basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLinearStretchedBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.hpp"
+#include "finance/basis/linearstretched/noboundary/operation/OperationDeltaLinearStretched.hpp"
+#include "finance/basis/linearstretched/boundary/operation/OperationDeltaLinearStretchedBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationDeltaLinearBoundary.hpp"
 
-#include "basis/linear/noboundary/operation/pde/finance/OperationDeltaLogLinear.hpp"
-#include "basis/linearstretched/noboundary/operation/pde/finance/OperationDeltaLogLinearStretched.hpp"
-#include "basis/linearstretched/boundary/operation/pde/finance/OperationDeltaLogLinearStretchedBoundary.hpp"
-#include "basis/linear/boundary/operation/pde/finance/OperationDeltaLogLinearBoundary.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.hpp"
+#include "finance/basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.hpp"
+#include "finance/basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.hpp"
 
 
 namespace sg

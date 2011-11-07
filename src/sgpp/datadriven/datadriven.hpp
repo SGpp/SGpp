@@ -9,12 +9,12 @@
 #define DATADRIVEN_HPP
 
 
-#include "algorithm/datadriven/test_dataset.hpp"
-#include "algorithm/datadriven/DMSystemMatrix.hpp"
-#include "algorithm/datadriven/DMSystemMatrixVectorizedIdentity.hpp"
-#include "algorithm/datadriven/DMWeightMatrix.hpp"
-#include "algorithm/datadriven/AlgorithmAdaBoost.hpp"
-#include "algorithm/datadriven/DensitySystemMatrix.hpp"
+#include "datadriven/algorithm/test_dataset.hpp"
+#include "datadriven/algorithm/DMSystemMatrix.hpp"
+#include "datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
+#include "datadriven/algorithm/DMWeightMatrix.hpp"
+#include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
+#include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
 //#include "datadriven/operation/DatadrivenOpFactory.hpp"
 

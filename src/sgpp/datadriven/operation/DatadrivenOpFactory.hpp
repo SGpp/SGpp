@@ -8,9 +8,9 @@
 #ifndef DATADRIVEN_OP_FACTORY_HPP
 #define DATADRIVEN_OP_FACTORY_HPP
 
-#include "grid/Grid.hpp"
+#include "base/grid/Grid.hpp"
 
-#include "operation/datadriven/OperationTest.hpp"
+#include "datadriven/operation/OperationTest.hpp"
 
 /*
  * This file contains factory methods for operations.

@@ -9,16 +9,16 @@
 #define FINANCE_HPP
 
 
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/HullWhiteParabolicPDESolverSystem.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
-#include "application/pde/BlackScholesSolver.hpp"
-#include "application/pde/BlackScholesSolverWithStretching.hpp"
-#include "application/pde/HullWhiteSolver.hpp"
-#include "application/pde/BlackScholesHullWhiteSolver.hpp"
-#include "tools/finance/IOToolBonnSG.hpp"
+#include "pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+#include "pde/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
+#include "pde/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
+#include "pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
+#include "pde/application/BlackScholesSolver.hpp"
+#include "pde/application/BlackScholesSolverWithStretching.hpp"
+#include "pde/application/HullWhiteSolver.hpp"
+#include "pde/application/BlackScholesHullWhiteSolver.hpp"
+#include "finance/tools/IOToolBonnSG.hpp"
 
 //#include "finance/operation/FinanceOpFactory.hpp"
 

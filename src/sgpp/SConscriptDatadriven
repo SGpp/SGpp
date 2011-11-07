@@ -7,23 +7,23 @@
 Import("env")
 
 srcs = Split("""
-algorithm/datadriven/DMSystemMatrix.cpp
-algorithm/datadriven/DMSystemMatrixSPVectorizedIdentity.cpp
-algorithm/datadriven/DMSystemMatrixVectorizedIdentity.cpp
-algorithm/datadriven/DensitySystemMatrix.cpp
-algorithm/datadriven/DMWeightMatrix.cpp
-algorithm/datadriven/DMWeightMatrixVectorizedIdentity.cpp
-algorithm/datadriven/AlgorithmAdaBoost.cpp
-basis/linear/boundary/operation/datadriven/OperationTestLinearBoundary.cpp
-basis/linear/noboundary/operation/datadriven/OperationTestLinear.cpp
-basis/modbspline/operation/datadriven/OperationTestModBspline.cpp
-basis/modlinear/operation/datadriven/OperationTestModLinear.cpp
-basis/modpoly/operation/datadriven/OperationTestModPoly.cpp
-basis/modwavelet/operation/datadriven/OperationTestModWavelet.cpp
-basis/poly/operation/datadriven/OperationTestPoly.cpp
-basis/prewavelet/operation/datadriven/OperationTestPrewavelet.cpp
-basis/linearstretched/boundary/operation/datadriven/OperationTestLinearStretchedBoundary.cpp
-basis/linearstretched/noboundary/operation/datadriven/OperationTestLinearStretched.cpp
+datadriven/algorithm/DMSystemMatrix.cpp
+datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
+datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
+datadriven/algorithm/DensitySystemMatrix.cpp
+datadriven/algorithm/DMWeightMatrix.cpp
+datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
+datadriven/algorithm/AlgorithmAdaBoost.cpp
+datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp
+datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
+datadriven/basis/modbspline/operation/OperationTestModBspline.cpp
+datadriven/basis/modlinear/operation/OperationTestModLinear.cpp
+datadriven/basis/modpoly/operation/OperationTestModPoly.cpp
+datadriven/basis/modwavelet/operation/OperationTestModWavelet.cpp
+datadriven/basis/poly/operation/OperationTestPoly.cpp
+datadriven/basis/prewavelet/operation/OperationTestPrewavelet.cpp
+datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.cpp
+datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.cpp
 
 datadriven/operation/DatadrivenOpFactory.cpp
 """)

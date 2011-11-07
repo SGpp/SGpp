@@ -8,15 +8,15 @@
 #ifndef BASE_OP_FACTORY_HPP
 #define BASE_OP_FACTORY_HPP
 
-#include "grid/Grid.hpp"
+#include "base/grid/Grid.hpp"
 
-#include "operation/common/OperationHierarchisation.hpp"
-#include "operation/common/OperationQuadrature.hpp"
-#include "operation/common/OperationConvert.hpp"
-#include "operation/common/OperationIdentity.hpp"
-#include "operation/common/OperationMatrix.hpp"
-#include "operation/common/OperationEval.hpp"
-#include "operation/datadriven/OperationMultipleEval.hpp"
+#include "base/operation/OperationHierarchisation.hpp"
+#include "base/operation/OperationQuadrature.hpp"
+#include "base/operation/OperationConvert.hpp"
+#include "base/operation/OperationIdentity.hpp"
+#include "base/operation/OperationMatrix.hpp"
+#include "base/operation/OperationEval.hpp"
+#include "datadriven/operation/OperationMultipleEval.hpp"
 
 /*
  * This file contains factory methods for operations.

@@ -9,23 +9,23 @@
 
 #include <cstring>
 
-#include "exception/factory_exception.hpp"
+#include "base/exception/factory_exception.hpp"
 
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeX86SimdLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeOCLModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.hpp"
+#include "datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
+#include "datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.hpp"
+#include "datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.hpp"
 
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPArBBLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
-#include "basis/modlinear/operation/datadriven/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp"
+#include "datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
+#include "datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
+#include "datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.hpp"
 
 namespace sg
 {

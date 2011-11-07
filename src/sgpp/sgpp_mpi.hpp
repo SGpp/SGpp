@@ -8,17 +8,17 @@
 #ifndef SGPP_MPI_HPP
 #define SGPP_MPI_HPP
 
-#include "tools/MPI/SGppMPITools.hpp"
+#include "parallel/parallel/tools/MPI/SGppMPITools.hpp"
 
-#include "solver/sle/ConjugateGradientsMPI.hpp"
-#include "solver/sle/BiCGStabMPI.hpp"
+#include "base/solver/sle/ConjugateGradientsMPI.hpp"
+#include "base/solver/sle/BiCGStabMPI.hpp"
 
-#include "application/pde/PoissonEquationSolverMPI.hpp"
-#include "application/pde/HeatEquationSolverMPI.hpp"
-#include "application/pde/BlackScholesSolverMPI.hpp"
+#include "pde/application/PoissonEquationSolverMPI.hpp"
+#include "pde/application/HeatEquationSolverMPI.hpp"
+#include "pde/application/BlackScholesSolverMPI.hpp"
 
-#include "algorithm/pde/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
-#include "algorithm/pde/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
-#include "algorithm/pde/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
+#include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
+#include "pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
+#include "pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 
 #endif /* SGPP_MPI_HPP */
