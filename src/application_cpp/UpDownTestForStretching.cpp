@@ -6,11 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 #include "sgpp.hpp"
-#include "exception/operation_exception.hpp"
-#include "grid/type/LinearStretchedGrid.hpp"
-//#include "grid/type/LinearBoundaryGrid.hpp"
-#include "grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
-//#include "grid/type/ModLinearGrid.hpp"
+#include "base/exception/operation_exception.hpp"
+#include "base/grid/type/LinearStretchedGrid.hpp"
+//#include "base/grid/type/LinearBoundaryGrid.hpp"
+#include "base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
+//#include "base/grid/type/ModLinearGrid.hpp"
 
 #include <iostream>
 #include <string>
