@@ -206,7 +206,7 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLLinear::multTransposeVector
 						long long imask = 0x7FFFFFFFFFFFFFFF;
 						double* fmask = (double*)&imask;
 
-						__m256d res = _mm_set1_pd(0.0f);
+						__m256d res = _mm256_set1_pd(0.0f);
 
 						for (size_t i = 0; i < source_size; i+=16)
 						{
@@ -273,7 +273,7 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLLinear::multTransposeVector
 						__m256d tmp = _mm256_permute2f128_pd(res, res, 0x81);
 						res = _mm256_add_pd(res, tmp);
 
-						_mm256_maskstore_pd(&(ptrResult[j]), ldStMaskAVX, res_0);
+						_mm256_maskstore_pd(&(ptrGlobalResult[j]), ldStMaskAVX, res);
 					}
 				}
 #endif

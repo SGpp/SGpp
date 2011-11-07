@@ -53,10 +53,10 @@ UPDOWN_PARADIMS=4
 ###################################################################
 # Compiler Flags
 ###################################################################	
-CFLAGS_GCC:=-Wall -pedantic -ansi -c -O3 -funroll-loops -fstrict-aliasing -mfpmath=sse -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
+CFLAGS_GCC:=-Wall -pedantic -ansi -c -O3 -funroll-loops -fstrict-aliasing -mfpmath=sse -I$(SRCDIR) 
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-CFLAGS_ICC:=-Wall -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -I$(SRCDIR) -DSG_BASE -DSG_PDE -DSG_DATADRIVEN -DSG_SOLVER -DSG_FINANCE -DSG_PARALLEL -DSG_COMBIGRID
+CFLAGS_ICC:=-Wall -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -I$(SRCDIR) 
 LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
 
 ifeq ($(CC),g++)

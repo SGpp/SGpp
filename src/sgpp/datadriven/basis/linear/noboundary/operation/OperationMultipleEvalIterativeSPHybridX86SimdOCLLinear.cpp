@@ -201,16 +201,17 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 				{
 					#pragma omp task firstprivate(j)
 					{
-						__m256 res = _mm_set1_ps(0.0f);
+						__m256 res = _mm256_set1_ps(0.0f);
+
 						int imask = 0x7FFFFFFF;
 						float* fmask = (float*)&imask;
 
 						for (size_t i = 0; i < source_size; i+=32)
 						{
-							__m256 support_0 = _mm_load_ps(&(ptrSource[i+0]));
-							__m256 support_1 = _mm_load_ps(&(ptrSource[i+8]));
-							__m256 support_2 = _mm_load_ps(&(ptrSource[i+16]));
-							__m256 support_3 = _mm_load_ps(&(ptrSource[i+24]));
+							__m256 support_0 = _mm256_load_ps(&(ptrSource[i+0]));
+							__m256 support_1 = _mm256_load_ps(&(ptrSource[i+8]));
+							__m256 support_2 = _mm256_load_ps(&(ptrSource[i+16]));
+							__m256 support_3 = _mm256_load_ps(&(ptrSource[i+24]));
 
 							__m256 one = _mm256_set1_ps(1.0f);
 							__m256 zero = _mm256_set1_ps(0.0f);
@@ -271,7 +272,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 						res = _mm256_add_ps(res, tmp);
 						res = _mm256_hadd_ps(res, res);
 
-						_mm256_maskstore_ps(&(ptrResult[j]), ldStMaskSPAVX, res_0);
+						_mm256_maskstore_ps(&(ptrGlobalResult[j]), ldStMaskSPAVX, res);
 					}
 				}
 #endif
@@ -477,9 +478,9 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 							__m256 support_2 = _mm256_broadcast_ss(&(ptrAlpha[j]));
 							__m256 support_3 = _mm256_broadcast_ss(&(ptrAlpha[j]));
 
-							__m256 one = _mm_set1_ps(1.0f);
-							__m256 zero = _mm_set1_ps(0.0f);
-							__m256 mask = _mm_set1_ps(*fmask);
+							__m256 one = _mm256_set1_ps(1.0f);
+							__m256 zero = _mm256_set1_ps(0.0f);
+							__m256 mask = _mm256_set1_ps(*fmask);
 
 							for (size_t d = 0; d < dims; d++)
 							{
