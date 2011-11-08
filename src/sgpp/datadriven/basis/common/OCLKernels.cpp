@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/operation/OCLKernels.hpp"
+#include "datadriven/basis/common/OCLKernels.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -312,10 +312,10 @@ OCLKernels::~OCLKernels()
     delete[] device_ids;
 }
 
-#include "datadriven/operation/OCLKernels_DP.imp"
-#include "datadriven/operation/OCLKernels_SP.imp"
-#include "datadriven/operation/OCLKernels_ModDP.imp"
-#include "datadriven/operation/OCLKernels_ModSP.imp"
+#include "datadriven/basis/common/OCLKernels_DP.imp"
+#include "datadriven/basis/common/OCLKernels_SP.imp"
+#include "datadriven/basis/common/OCLKernels_ModDP.imp"
+#include "datadriven/basis/common/OCLKernels_ModSP.imp"
 
 void OCLKernels::resetKernels()
 {
