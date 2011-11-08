@@ -9,11 +9,11 @@
 #define OPERATIONMULTIPLEEVALITERATIVEARBBLINEAR_HPP
 
 #include "datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "datadriven/operation/ArBBKernels.hpp"
-#include "datadriven/operation/ArBBKernels2D.hpp"
-#include "datadriven/operation/ArBBKernels4D.hpp"
-#include "datadriven/operation/ArBBKernels5D.hpp"
-#include "datadriven/operation/ArBBKernels10D.hpp"
+#include "datadriven/basis/common/ArBBKernels.hpp"
+#include "datadriven/basis/common/ArBBKernels2D.hpp"
+#include "datadriven/basis/common/ArBBKernels4D.hpp"
+#include "datadriven/basis/common/ArBBKernels5D.hpp"
+#include "datadriven/basis/common/ArBBKernels10D.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 

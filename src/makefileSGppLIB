@@ -1129,20 +1129,20 @@ OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)datadriven/basis/linear/no
 OperationMultipleEvalIterativeSPArBBLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPArBBLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.cpp
 	
-ArBBKernels.o : $(SRCDIR)datadriven/operation/ArBBKernels.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)datadriven/operation/ArBBKernels.cpp
+ArBBKernels.o : $(SRCDIR)datadriven/basis/common/ArBBKernels.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)datadriven/operabasis/commontion/ArBBKernels.cpp
 	
-ArBBKernels2D.o : $(SRCDIR)datadriven/operation/ArBBKernels2D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels2D.o $(SRCDIR)datadriven/operation/ArBBKernels2D.cpp
+ArBBKernels2D.o : $(SRCDIR)datadriven/basis/common/ArBBKernels2D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels2D.o $(SRCDIR)datadriven/basis/common/ArBBKernels2D.cpp
 	
-ArBBKernels4D.o : $(SRCDIR)datadriven/operation/ArBBKernels4D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels4D.o $(SRCDIR)datadriven/operation/ArBBKernels4D.cpp
+ArBBKernels4D.o : $(SRCDIR)datadriven/basis/common/ArBBKernels4D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels4D.o $(SRCDIR)datadriven/basis/common/ArBBKernels4D.cpp
 		
-ArBBKernels5D.o : $(SRCDIR)datadriven/operation/ArBBKernels5D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels5D.o $(SRCDIR)datadriven/operation/ArBBKernels5D.cpp
+ArBBKernels5D.o : $(SRCDIR)datadriven/basis/common/ArBBKernels5D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels5D.o $(SRCDIR)datadriven/basis/common/ArBBKernels5D.cpp
 	
-ArBBKernels10D.o : $(SRCDIR)datadriven/operation/ArBBKernels10D.cpp
-	$(CC) $(CFLAGS) -o ArBBKernels10D.o $(SRCDIR)datadriven/operation/ArBBKernels10D.cpp
+ArBBKernels10D.o : $(SRCDIR)datadriven/basis/common/ArBBKernels10D.cpp
+	$(CC) $(CFLAGS) -o ArBBKernels10D.o $(SRCDIR)datadriven/basis/common/ArBBKernels10D.cpp
 
 # OCL Extensions:
 OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
@@ -1157,8 +1157,8 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)datadriven/b
 OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
 	
-OCLKernels.o : $(SRCDIR)datadriven/operation/OCLKernels.cpp $(SRCDIR)datadriven/operation/OCLKernels_DP.imp $(SRCDIR)datadriven/operation/OCLKernels_SP.imp $(SRCDIR)datadriven/operation/OCLKernels_ModDP.imp $(SRCDIR)datadriven/operation/OCLKernels_ModSP.imp
-	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)datadriven/operation/OCLKernels.cpp
+OCLKernels.o : $(SRCDIR)datadriven/basis/common/OCLKernels.cpp $(SRCDIR)datadriven/basis/common/OCLKernels_DP.imp $(SRCDIR)datadriven/basis/common/OCLKernels_SP.imp $(SRCDIR)datadriven/basis/common/OCLKernels_ModDP.imp $(SRCDIR)datadriven/basis/common/OCLKernels_ModSP.imp
+	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)datadriven/basis/common/OCLKernels.cpp
 	
 OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp

@@ -9,7 +9,7 @@
 #define OPERATIONMULTIPLEEVALITERATIVEHYBRIDX86SIMDOCLLINEAR_HPP
 
 #include "datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "datadriven/operation/OCLKernels.hpp"
+#include "datadriven/basis/common/OCLKernels.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 #include "base/tools/TwoPartitionAutoTuning.hpp"
