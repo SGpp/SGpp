@@ -8,7 +8,7 @@
 #define STEPSIZECONTROLEJ_HPP
 
 #include "base/application/ScreenOutput.hpp"
-#include "base//ODESolver.hpp"
+#include "base/solver/ODESolver.hpp"
 
 namespace sg
 {

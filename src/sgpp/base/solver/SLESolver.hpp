@@ -8,7 +8,7 @@
 #ifndef SLESOLVER_HPP
 #define SLESOLVER_HPP
 
-#include "base//SGSolver.hpp"
+#include "base/solver/SGSolver.hpp"
 #include "base/datatypes/DataVector.hpp"
 
 #ifndef DEFAULT_RES_THRESHOLD

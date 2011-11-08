@@ -9,7 +9,7 @@
 #define EULER_HPP
 
 #include "base/application/ScreenOutput.hpp"
-#include "base//ODESolver.hpp"
+#include "base/solver/ODESolver.hpp"
 #include <string>
 
 namespace sg

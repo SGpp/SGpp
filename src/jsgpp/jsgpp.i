@@ -120,9 +120,9 @@ namespace std {
 %include "src/sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
 %include "src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
-%include "src/sgpp/base//SGSolver.hpp"
-%include "src/sgpp/base//SLESolver.hpp"
-%include "src/sgpp/base//ODESolver.hpp"
+%include "src/sgpp/base/solver/SGSolver.hpp"
+%include "src/sgpp/base/solver/SLESolver.hpp"
+%include "src/sgpp/base/solver/ODESolver.hpp"
 %feature("director") ConjugateGradients;
 %include "src/sgpp/base/solver/sle/ConjugateGradients.hpp"
 %include "src/sgpp/base/solver/sle/BiCGStab.hpp"
