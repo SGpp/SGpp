@@ -10,8 +10,8 @@
 
 #include "pde/operation/OperationParabolicPDESolverSystem.hpp"
 #include "base/operation/OperationMatrix.hpp"
-#include "base//SGSolverInfo.hpp"
-#include "base//SGSolverResult.hpp"
+#include "base/solver/SGSolverInfo.hpp"
+#include "base/solver/SGSolverResult.hpp"
 
 namespace sg
 {
