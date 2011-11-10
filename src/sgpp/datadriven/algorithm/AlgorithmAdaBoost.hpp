@@ -65,10 +65,14 @@ namespace datadriven
 		size_t maxGridPoint;
 		    /// grid level
 		size_t level;
-            /// Parameter for CG solver
+            /// Parameter for CG solver(during the refinement)
         size_t imax;
-		    /// Parameter for CG solver
+		    /// Parameter for CG solver(during the refinement)
         double epsilon;
+            /// Parameter for CG solver(for the last refinement)
+        size_t imax_final;
+		    /// Parameter for CG solver(for the last refinement)
+        double epsilon_final;
     		/// One label of the DataSet
 		double labelOne;
 		    /// Another label of the DataSet
@@ -83,8 +87,12 @@ namespace datadriven
 		size_t actualBaseLearners;
 		    /// Judgement of grid refine
 		bool refinement;
-    		/// Number of refinement with a certain percentage of Grid points
+		    /// Select the refine mode(1:use grid number, 2: use grid number percentage)
+		size_t refineMode;
+		    /// Number of refinement with a certain percentage of Grid points
 		size_t refineTimes;
+		    /// Number of Grid points to refine(between 0 and 1)
+		size_t numOfAda;
 		    /// Percentage of Grid points to refine(between 0 and 1)
 		double perOfAda;
 		    /// Different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
@@ -107,18 +115,22 @@ namespace datadriven
              * @param lambda the regularisation parameter
              * @param IMAX the parameter for ConjugateGradients
              * @param eps the parameter for ConjugateGradients
+             * @param IMAX_final the parameter for ConjugateGradients used for last refinement step
+             * @param eps_final the parameter for ConjugateGradients used for last refinement step
              * @param firstLabel one label from training dataset
 			 * @param secondLabel another label from training dataset
 			 * @param maxLambda the max lambda used in searching optimal lambda
 			 * @param minLambda the min lambda used in searching optimal lambda
 			 * @param searchNum the searching times used in searching for optimal lambda
 			 * @param refine the judgement of refine
+			 * @param refineMode Select the refine mode
 			 * @param refineNum the Number of refinement with a certain percentage of Grid points
+			 * @param numberOfAda the number of Grid points to refine
 			 * @param percentOfAda the percentage of Grid points to refine
 			 * @param alphaMethod different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
 			 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
              */
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineNum, double percentOfAda, size_t alphaMethod, std::string vecMode);
+        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t alphaMethod, std::string vecMode);
         
 
             /**
@@ -197,8 +209,9 @@ namespace datadriven
              * @param lambda the regularisation parameter
 			 * @param weight the weights of examples
 			 * @param alpha output the coefficients of the sparse grid's basis functions
+			 * @param final judgement the final step of this base learner
 			 */
-		void alphaSolver(sg::base::OperationMatrix*& C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha);
+		void alphaSolver(sg::base::OperationMatrix*& C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
 
             /**
              * Performs a solver to get alpha use DMWeightMatrixVectorizedIdentity as the System Matrix
@@ -206,8 +219,9 @@ namespace datadriven
              * @param lambda the regularisation parameter
 			 * @param weight the weights of examples
 			 * @param alpha output the coefficients of the sparse grid's basis functions
+			 * @param final judgement the final step of this base learner
 			 */
-		void alphaSolverVectorizedIdentity(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha);
+		void alphaSolverVectorizedIdentity(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
 
 		    /**
              * Get the actual base learners after doing adaboosting
