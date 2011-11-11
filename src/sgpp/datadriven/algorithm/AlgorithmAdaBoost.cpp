@@ -74,8 +74,7 @@ namespace datadriven
     
 	AlgorithmAdaBoost::~AlgorithmAdaBoost()
 	{
-		delete this->maxGridPoint;
-		delete this->sumGridPoint;
+
 	}
 	
 	void AlgorithmAdaBoost::doAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
@@ -311,17 +310,20 @@ namespace datadriven
 				if(this->type == 1)
 				{
 					this->grid = sg::base::Grid::createLinearGrid(this->dim);
-					std::cout << "reset to the regular LinearGrid" << std::endl;
+					std::cout << std::endl;
+					std::cout << "Reset to the regular LinearGrid" << std::endl;
 				}
 				else if(this->type == 2)
 				{
 					this->grid = sg::base::Grid::createLinearBoundaryGrid(this->dim);
-					std::cout << "reset to the regular LinearBoundaryGrid" << std::endl;
+					std::cout << std::endl;
+					std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
 				}
 				else if(this->type == 3)
 				{
 					this->grid = sg::base::Grid::createModLinearGrid(this->dim);
-					std::cout << "reset to the regular ModLinearGrid" << std::endl;
+					std::cout << std::endl;
+					std::cout << "Reset to the regular ModLinearGrid" << std::endl;
 				}
 				// should not happen because this exception should have been thrown some lines upwards!
 				else
@@ -330,9 +332,7 @@ namespace datadriven
 				}
 				sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
 				gridGen->regular(this->level);
-				sg::base::GridStorage* gridStorage_reset = this->grid->getStorage();
 				std::cout << std::endl;
-				std::cout << "# number of grid points:  " << gridStorage_reset->size() << std::endl;
 				delete gridGen;
 			}
 		}
