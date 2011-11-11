@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Zhongwen Song (tjsongzw@gmail.com)
+// @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
 
 #include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
@@ -14,7 +14,7 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t alphaMethod, std::string vecMode)
+	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, size_t alphaMethod, std::string vecMode)
     {
 		if (refine && (gridType != 1 && gridType != 2 && gridType != 3))
 		{
@@ -41,7 +41,6 @@ namespace datadriven
         this->grid = &SparseGrid;
 		this->type = gridType;
 		this->gridPoint = gridStorage->size();
-		maxGridPoint = 0;
 		this->level = gridLevel;
         this->lamb = lambda;
         this->data = &trainData;
@@ -69,11 +68,14 @@ namespace datadriven
 		this->perOfAda = percentOfAda;
 		this->alphaMethod = alphaMethod;
 		this->vecMode = vecMode;
+		this->maxGridPoint = new sg::base::DataVector(NUM);
+		this->sumGridPoint = new sg::base::DataVector(NUM);
     }
     
 	AlgorithmAdaBoost::~AlgorithmAdaBoost()
 	{
-
+		delete this->maxGridPoint;
+		delete this->sumGridPoint;
 	}
 	
 	void AlgorithmAdaBoost::doAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
@@ -103,8 +105,15 @@ namespace datadriven
 			sg::base::DataVector alpha_train(this->gridPoint);
 			sg::base::DataVector alpha_learn(this->gridPoint);
 			std::cout << "gridPoint: " << this->gridPoint << std::endl;
-			if (maxGridPoint < this->gridPoint)
-				maxGridPoint = this->gridPoint;
+			if (this->maxGridPoint->get(count) < this->gridPoint)
+				this->maxGridPoint->set(count, this->gridPoint);
+			if (!this->refinement)
+			{
+				if (count == 0)
+					this->sumGridPoint->set(count, gridPoint);
+				else
+					this->sumGridPoint->set(count, this->sumGridPoint->get(count-1) + gridPoint);
+			}
 			alpha_train.setAll(0.0);
 			weights.setColumn(count, weight);
 
@@ -128,7 +137,7 @@ namespace datadriven
 			   
 			if(this->refinement)
 			{
-				doRefinement(alpha_train, weight);
+				doRefinement(alpha_train, weight, count+1);
 				opEval = sg::op_factory::createOperationEval(*this->grid);
 				alpha_learn.resizeZero(alpha_train.getSize());
 			}
@@ -406,14 +415,12 @@ namespace datadriven
 		*accuracy_test = double(right_test)/double(testDataClass.getSize());
 	}
 	
-	void AlgorithmAdaBoost::doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada)
+	void AlgorithmAdaBoost::doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada, size_t curBaseLearner)
 	{
 		bool final_ada = false;
 
 		for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++)
 		{
-			if (adaptiveStep == this->refineTimes)
-				final_ada = true;
 
 			sg::base::GridGenerator* myGenerator = this->grid->createGridGenerator();
 			size_t refineNumber;
@@ -443,10 +450,27 @@ namespace datadriven
 
 			sg::base::GridStorage* gridStorage_ada = this->grid->getStorage();
 			size_t gridPts = gridStorage_ada->size();
-			if (maxGridPoint < gridPts)
-				maxGridPoint = gridPts;
+
 			std::cout << std::endl;
 			std::cout << "Refinement time step: " << adaptiveStep << ", new grid size: " << gridPts << ", refined number of grid points: " << refineNumber << std::endl;
+
+			if (adaptiveStep == this->refineTimes)
+			{
+				final_ada = true;
+				if (curBaseLearner == 1)
+				{
+					this->maxGridPoint->set(curBaseLearner - 1, gridPts);
+					this->sumGridPoint->set(curBaseLearner - 1, gridPts);
+				}
+				else
+				{
+					if (gridPts > this->maxGridPoint->get(curBaseLearner - 2))
+						this->maxGridPoint->set(curBaseLearner - 1, gridPts);
+					else
+						this->maxGridPoint->set(curBaseLearner - 1, this->maxGridPoint->get(curBaseLearner - 2));
+					this->sumGridPoint->set(curBaseLearner - 1, this->sumGridPoint->get(curBaseLearner - 2) + gridPts);
+				}
+			}
 
 			// extend alpha vector (new entries uninitialized)
 			alpha_ada.resizeZero(gridPts);
@@ -510,9 +534,22 @@ namespace datadriven
 		return this->actualBaseLearners;
 	}
 
-	size_t AlgorithmAdaBoost::getGridPoint()
+	size_t AlgorithmAdaBoost::getMeanGridPoint(size_t baselearner)
 	{
-		return maxGridPoint;
+		size_t mean = this->sumGridPoint->get(baselearner-1)/baselearner;
+		return mean;
+	}
+
+	size_t AlgorithmAdaBoost::getMaxGridPoint(size_t baselearner)
+	{
+		size_t max = this->maxGridPoint->get(baselearner-1);
+		return max;
+	}
+
+	size_t AlgorithmAdaBoost::getSumGridPoint(size_t baselearner)
+	{
+		size_t sum = this->sumGridPoint->get(baselearner-1);
+		return sum;
 	}
 }
 }
