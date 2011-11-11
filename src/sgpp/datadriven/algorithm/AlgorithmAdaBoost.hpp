@@ -3,8 +3,9 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Zhongwen Song (tjsongzw@gmail.com)
+// @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
+
 #ifndef ALGORITHMADABOOST_HPP
 #define ALGORITHMADABOOST_HPP
 
@@ -62,7 +63,9 @@ namespace datadriven
     		/// Number of grid points
 		size_t gridPoint;
 		    /// Number of the maximum grid points used in the algorithm
-		size_t maxGridPoint;
+		sg::base::DataVector* maxGridPoint;
+    		/// Number of the sum grid points used in the algorithm
+		sg::base::DataVector* sumGridPoint;
 		    /// grid level
 		size_t level;
             /// Parameter for CG solver(during the refinement)
@@ -91,8 +94,8 @@ namespace datadriven
 		size_t refineMode;
 		    /// Number of refinement with a certain percentage of Grid points
 		size_t refineTimes;
-		    /// Number of Grid points to refine(between 0 and 1)
-		size_t numOfAda;
+		    /// Number of Grid points to refine
+		int numOfAda;
 		    /// Percentage of Grid points to refine(between 0 and 1)
 		double perOfAda;
 		    /// Different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
@@ -130,7 +133,7 @@ namespace datadriven
 			 * @param alphaMethod different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
 			 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
              */
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t alphaMethod, std::string vecMode);
+        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, size_t alphaMethod, std::string vecMode);
         
 
             /**
@@ -199,8 +202,9 @@ namespace datadriven
              *
 			 * @param alpha_ada the coefficients of the sparse grid's basis functions and to be refined
 			 * @param weight_ada the weights of examples
+			 * @param curBaseLearner the current base learner
 			 */
-		void doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada);
+		void doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada, size_t curBaseLearner);
 
             /**
              * Performs a solver to get alpha use DMWeightMatrix as the System Matrix
@@ -230,10 +234,25 @@ namespace datadriven
 		size_t getActualBL();
 
 		    /**
+             * Get the mean GridPoint ever used in adaboosting
+			 * 
+             * @param baselearner number of baselearner
+			 */
+		size_t getMeanGridPoint(size_t baselearner);
+
+		    /**
              * Get the max GridPoint ever used in adaboosting
              *
+             * @param baselearner number of baselearner
 			 */
-		size_t getGridPoint();
+		size_t getMaxGridPoint(size_t baselearner);
+
+		    /**
+             * Get the sum GridPoint ever used in adaboosting
+             *
+             * @param baselearner number of baselearner
+			 */
+		size_t getSumGridPoint(size_t baselearner);
 
             /**
              * Performs a hypothesis classifier
