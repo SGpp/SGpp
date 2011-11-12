@@ -427,7 +427,7 @@ namespace datadriven
 			if (this->refineMode == 1)
 			{
 				if (this->numOfAda > this->grid->getSize())
-					throw new sg::base::operation_exception("please choose a refine number not larger than current grid size");
+					refineNumber = this->grid->getSize();
 				else
 					refineNumber = this->numOfAda;
 			}
