@@ -5,7 +5,7 @@
 ******************************************************************************/
 
 #include "base/grid/common/DirichletUpdateVector.hpp"
-#include "base/solver/ode/StepsizeControlBDF.hpp"
+#include "solver/ode/StepsizeControlBDF.hpp"
 
 #include <iostream>
 #include <string>

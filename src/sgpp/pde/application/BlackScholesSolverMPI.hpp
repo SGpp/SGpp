@@ -14,7 +14,7 @@
 #include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/common/BoundingBox.hpp"
-#include "base/solver/ODESolver.hpp"
+#include "solver/ODESolver.hpp"
 
 #include "base/grid/generation/SurplusRefinementFunctor.hpp"
 #include "base/grid/generation/SurplusCoarseningFunctor.hpp"

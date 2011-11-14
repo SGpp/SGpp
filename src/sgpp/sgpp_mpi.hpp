@@ -10,8 +10,8 @@
 
 #include "parallel/parallel/tools/MPI/SGppMPITools.hpp"
 
-#include "base/solver/sle/ConjugateGradientsMPI.hpp"
-#include "base/solver/sle/BiCGStabMPI.hpp"
+#include "solver/sle/ConjugateGradientsMPI.hpp"
+#include "solver/sle/BiCGStabMPI.hpp"
 
 #include "pde/application/PoissonEquationSolverMPI.hpp"
 #include "pde/application/HeatEquationSolverMPI.hpp"

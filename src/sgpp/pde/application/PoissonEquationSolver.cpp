@@ -7,7 +7,7 @@
 
 #include "pde/application/PoissonEquationSolver.hpp"
 #include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
-#include "base/solver/sle/ConjugateGradients.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/tools/SGppStopwatch.hpp"

@@ -11,7 +11,7 @@
 
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/Grid.hpp"
-#include "base/solver/sle/ConjugateGradients.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "datadriven/operation/OperationMultipleEval.hpp"

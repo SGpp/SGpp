@@ -9,12 +9,12 @@
 #define SOLVER_HPP
 
 
-#include "base/solver/sle/ConjugateGradients.hpp"
-#include "base/solver/sle/BiCGStab.hpp"
-#include "base/solver/ode/Euler.hpp"
-#include "base/solver/ode/CrankNicolson.hpp"
-#include "base/solver/ode/AdamsBashforth.hpp"
-#include "base/solver/ode/VarTimestep.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
+#include "solver/sle/BiCGStab.hpp"
+#include "solver/ode/Euler.hpp"
+#include "solver/ode/CrankNicolson.hpp"
+#include "solver/ode/AdamsBashforth.hpp"
+#include "solver/ode/VarTimestep.hpp"
 
 
 #endif /* SOLVER_HPP */

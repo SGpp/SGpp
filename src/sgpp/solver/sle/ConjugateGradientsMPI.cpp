@@ -9,7 +9,7 @@
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #endif
 
-#include "base/solver/sle/ConjugateGradientsMPI.hpp"
+#include "solver/sle/ConjugateGradientsMPI.hpp"
 
 namespace sg
 {

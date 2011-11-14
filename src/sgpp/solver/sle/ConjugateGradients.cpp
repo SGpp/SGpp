@@ -1,47 +1,49 @@
 /******************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/solver/sle/ConjugateGradientsSP.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 
 namespace sg
 {
 namespace solver
 {
 
-ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon) : nMaxIterations(imax), myEpsilon(epsilon)
+ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : SLESolver(imax, epsilon)
 {
 }
 
-ConjugateGradientsSP::~ConjugateGradientsSP()
+ConjugateGradients::~ConjugateGradients()
 {
 }
 
-void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold)
+void ConjugateGradients::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold)
 {
+	this->starting();
+
 	if (verbose == true)
 	{
 		std::cout << "Starting Conjugated Gradients" << std::endl;
 	}
 
 	// needed for residuum calculation
-	float epsilonSquared = this->myEpsilon*this->myEpsilon;
+	double epsilonSquared = this->myEpsilon*this->myEpsilon;
 	// number off current iterations
 	this->nIterations = 0;
 
 	// define temporal vectors
-	sg::base::DataVectorSP temp(alpha.getSize());
-	sg::base::DataVectorSP q(alpha.getSize());
-	sg::base::DataVectorSP r(b);
+	sg::base::DataVector temp(alpha.getSize());
+	sg::base::DataVector q(alpha.getSize());
+	sg::base::DataVector r(b);
 
-	float delta_0 = 0.0f;
-	float delta_old = 0.0f;
-	float delta_new = 0.0f;
-	float beta = 0.0f;
-	float a = 0.0f;
+	double delta_0 = 0.0;
+	double delta_old = 0.0;
+	double delta_new = 0.0;
+	double beta = 0.0;
+	double a = 0.0;
 
 	if (verbose == true)
 	{
@@ -50,23 +52,23 @@ void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::
 
 	if (reuse == true)
 	{
-		q.setAll(0.0f);
+		q.setAll(0.0);
 		SystemMatrix.mult(q, temp);
 		r.sub(temp);
 		delta_0 = r.dotProduct(r)*epsilonSquared;
 	}
 	else
 	{
-		alpha.setAll(0.0f);
+		alpha.setAll(0.0);
 	}
 
 	// calculate the starting residuum
 	SystemMatrix.mult(alpha, temp);
 	r.sub(temp);
 
-	sg::base::DataVectorSP d(r);
+	sg::base::DataVector d(r);
 
-	delta_old = 0.0f;
+	delta_old = 0.0;
 	delta_new = r.dotProduct(r);
 
 	if (reuse == false)
@@ -75,6 +77,7 @@ void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::
 	}
 
 	this->residuum = (delta_0/epsilonSquared);
+	this->calcStarting();
 
 	if (verbose == true)
 	{
@@ -107,13 +110,13 @@ void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::
 			r.axpy(-a, q);
 		}
 
-
 		// calculate new deltas and determine beta
 		delta_old = delta_new;
 		delta_new = r.dotProduct(r);
 		beta = delta_new/delta_old;
 
 		this->residuum = delta_new;
+		this->iterationComplete();
 
 		if (verbose == true)
 		{
@@ -127,6 +130,7 @@ void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::
 	}
 
 	this->residuum = delta_new;
+	this->complete();
 
 	if (verbose == true)
 	{
@@ -135,29 +139,20 @@ void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::
 	}
 }
 
-size_t ConjugateGradientsSP::getNumberIterations()
+void ConjugateGradients::starting()
 {
-	return nIterations;
 }
 
-float ConjugateGradientsSP::getResiduum()
+void ConjugateGradients::calcStarting()
 {
-	return residuum;
 }
 
-void ConjugateGradientsSP::setMaxIterations(size_t nIterations)
+void ConjugateGradients::iterationComplete()
 {
-	nMaxIterations = nIterations;
 }
 
-void ConjugateGradientsSP::setEpsilon(float eps)
+void ConjugateGradients::complete()
 {
-	myEpsilon = eps;
-}
-
-float ConjugateGradientsSP::getEpsilon()
-{
-	return myEpsilon;
 }
 
 }

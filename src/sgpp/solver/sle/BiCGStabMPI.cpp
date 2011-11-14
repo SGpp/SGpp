@@ -9,7 +9,7 @@
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #endif
 
-#include "base/solver/sle/BiCGStabMPI.hpp"
+#include "solver/sle/BiCGStabMPI.hpp"
 #include <cmath>
 
 namespace sg

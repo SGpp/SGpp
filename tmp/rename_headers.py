@@ -15,6 +15,12 @@ if not os.path.exists(sys.path[0]+'/move_headers.txt'):
 
 # read in renames:
 renames = open(sys.path[0]+'/move_headers.txt', 'r').readlines()
+# skip all lines starting with #
+for i in xrange(len(renames)-1,-1,-1):
+    if re.match("#", renames[i]):
+        print renames[i]
+        del renames[i]
+# split them
 renames = map(lambda x: x.split(), renames)
 
 # read in files:
@@ -33,8 +39,14 @@ for f in sys.argv[1:]:
     # do replacements:
     for rn in renames:
         if len(rn) == 2:
+            # for xpp files
             txt = re.sub('"'+rn[0][2:]+'"', '"'+rn[1][2:]+'"', txt)
-    
+            # for .i files
+            txt = re.sub('"src/sgpp/'+rn[0][2:]+'"', '"src/sgpp/'+rn[1][2:]+'"', txt)
+            # for SConstructs
+            regexp = re.compile('^'+rn[0][2:]+'$', re.MULTILINE)
+            txt = re.sub(regexp, rn[1][2:], txt)
+
     # feedback
     if not txtold == txt:
         print "... modified"

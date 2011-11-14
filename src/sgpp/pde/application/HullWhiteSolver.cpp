@@ -7,9 +7,9 @@
 
 #include "pde/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
 #include "pde/application/HullWhiteSolver.hpp"
-#include "base/solver/ode/Euler.hpp"
-#include "base/solver/ode/CrankNicolson.hpp"
-#include "base/solver/sle/BiCGStab.hpp"
+#include "solver/ode/Euler.hpp"
+#include "solver/ode/CrankNicolson.hpp"
+#include "solver/sle/BiCGStab.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/operation/BaseOpFactory.hpp"

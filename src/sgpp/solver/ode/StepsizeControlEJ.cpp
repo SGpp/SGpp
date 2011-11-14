@@ -5,8 +5,8 @@
 ******************************************************************************/
 
 #include "base/grid/common/DirichletUpdateVector.hpp"
-#include "base/solver/ode/StepsizeControlEJ.hpp"
-#include "base/solver/ode/StepsizeControlEJ.hpp"
+#include "solver/ode/StepsizeControlEJ.hpp"
+#include "solver/ode/StepsizeControlEJ.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/operation/OperationEval.hpp"
 #include "base/tools/GridPrinter.hpp"

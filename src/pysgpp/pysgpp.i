@@ -54,7 +54,7 @@ namespace std {
 #include "finance/finance.hpp"
 #endif
 #ifdef SG_SOLVER
-#include "base//solver.hpp"
+#include "solver/solver.hpp"
 #endif
 #ifdef SG_PARALLEL
 #include "parallel/parallel.hpp"
@@ -166,14 +166,14 @@ namespace std {
 %include "src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
 #ifdef SG_SOLVER
-%include "src/sgpp/base/solver/SGSolver.hpp"
-%include "src/sgpp/base/solver/SLESolver.hpp"
-%include "src/sgpp/base/solver/ODESolver.hpp"
+%include "src/sgpp/solver/SGSolver.hpp"
+%include "src/sgpp/solver/SLESolver.hpp"
+%include "src/sgpp/solver/ODESolver.hpp"
 %feature("director") ConjugateGradients;
-%include "src/sgpp/base/solver/sle/ConjugateGradients.hpp"
-%include "src/sgpp/base/solver/sle/BiCGStab.hpp"
-%include "src/sgpp/base/solver/ode/Euler.hpp"
-%include "src/sgpp/base/solver/ode/CrankNicolson.hpp"
+%include "src/sgpp/solver/sle/ConjugateGradients.hpp"
+%include "src/sgpp/solver/sle/BiCGStab.hpp"
+%include "src/sgpp/solver/ode/Euler.hpp"
+%include "src/sgpp/solver/ode/CrankNicolson.hpp"
 #endif
 
  // static factory methods

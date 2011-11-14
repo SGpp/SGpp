@@ -7,9 +7,9 @@
 
 #include "pde/algorithm/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.hpp"
 #include "pde/application/LaserHeatEquationSolver2D.hpp"
-#include "base/solver/ode/Euler.hpp"
-#include "base/solver/ode/CrankNicolson.hpp"
-#include "base/solver/sle/ConjugateGradients.hpp"
+#include "solver/ode/Euler.hpp"
+#include "solver/ode/CrankNicolson.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/grid/generation/SurplusRefinementFunctor.hpp"
