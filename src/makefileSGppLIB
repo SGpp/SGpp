@@ -963,35 +963,35 @@ DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)datadriven/algorithm/DMSystemMatri
 DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentity.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 	
-ConjugateGradients.o : $(SRCDIR)base/solver/sle/ConjugateGradients.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)base/solver/sle/ConjugateGradients.cpp
+ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	
-ConjugateGradientsSP.o : $(SRCDIR)base/solver/sle/ConjugateGradientsSP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsSP.o $(SRCDIR)base/solver/sle/ConjugateGradientsSP.cpp
+ConjugateGradientsSP.o : $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsSP.o $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
 
-BiCGStab.o : $(SRCDIR)base/solver/sle/BiCGStab.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStab.o $(SRCDIR)base/solver/sle/BiCGStab.cpp
+BiCGStab.o : $(SRCDIR)solver/sle/BiCGStab.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStab.o $(SRCDIR)solver/sle/BiCGStab.cpp
 
-Euler.o : $(SRCDIR)base/solver/ode/Euler.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)Euler.o $(SRCDIR)base/solver/ode/Euler.cpp
+Euler.o : $(SRCDIR)solver/ode/Euler.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Euler.o $(SRCDIR)solver/ode/Euler.cpp
 	
-CrankNicolson.o : $(SRCDIR)base/solver/ode/CrankNicolson.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)CrankNicolson.o $(SRCDIR)base/solver/ode/CrankNicolson.cpp
+CrankNicolson.o : $(SRCDIR)solver/ode/CrankNicolson.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)CrankNicolson.o $(SRCDIR)solver/ode/CrankNicolson.cpp
 	
-AdamsBashforth.o : $(SRCDIR)base/solver/ode/AdamsBashforth.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)AdamsBashforth.o $(SRCDIR)base/solver/ode/AdamsBashforth.cpp
+AdamsBashforth.o : $(SRCDIR)solver/ode/AdamsBashforth.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AdamsBashforth.o $(SRCDIR)solver/ode/AdamsBashforth.cpp
 
-VarTimestep.o : $(SRCDIR)base/solver/ode/VarTimestep.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)VarTimestep.o $(SRCDIR)base/solver/ode/VarTimestep.cpp
+VarTimestep.o : $(SRCDIR)solver/ode/VarTimestep.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)VarTimestep.o $(SRCDIR)solver/ode/VarTimestep.cpp
 	
-StepsizeControlH.o : $(SRCDIR)base/solver/ode/StepsizeControlH.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlH.o $(SRCDIR)base/solver/ode/StepsizeControlH.cpp
+StepsizeControlH.o : $(SRCDIR)solver/ode/StepsizeControlH.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlH.o $(SRCDIR)solver/ode/StepsizeControlH.cpp
 	
-StepsizeControlBDF.o : $(SRCDIR)base/solver/ode/StepsizeControlBDF.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlBDF.o $(SRCDIR)base/solver/ode/StepsizeControlBDF.cpp
+StepsizeControlBDF.o : $(SRCDIR)solver/ode/StepsizeControlBDF.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlBDF.o $(SRCDIR)solver/ode/StepsizeControlBDF.cpp
 
-StepsizeControlEJ.o : $(SRCDIR)base/solver/ode/StepsizeControlEJ.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlEJ.o $(SRCDIR)base/solver/ode/StepsizeControlEJ.cpp
+StepsizeControlEJ.o : $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlEJ.o $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
 		
 PDESolver.o : $(SRCDIR)pde/application/PDESolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PDESolver.o $(SRCDIR)pde/application/PDESolver.cpp
@@ -1179,8 +1179,8 @@ MPICommunicator.o : $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
 GlobalMPIComm.o : $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)GlobalMPIComm.o $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp	
 	
-ConjugateGradientsMPI.o : $(SRCDIR)base/solver/sle/ConjugateGradientsMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)base/solver/sle/ConjugateGradientsMPI.cpp
+ConjugateGradientsMPI.o : $(SRCDIR)solver/sle/ConjugateGradientsMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)solver/sle/ConjugateGradientsMPI.cpp
 	
 PoissonEquationSolverMPI.o : $(SRCDIR)pde/application/PoissonEquationSolverMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolverMPI.o $(SRCDIR)pde/application/PoissonEquationSolverMPI.cpp
@@ -1197,8 +1197,8 @@ HeatEquationSolverMPI.o : $(SRCDIR)pde/application/HeatEquationSolverMPI.cpp
 BlackScholesSolverMPI.o : $(SRCDIR)pde/application/BlackScholesSolverMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverMPI.o $(SRCDIR)pde/application/BlackScholesSolverMPI.cpp
 	
-BiCGStabMPI.o : $(SRCDIR)base/solver/sle/BiCGStabMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)base/solver/sle/BiCGStabMPI.cpp
+BiCGStabMPI.o : $(SRCDIR)solver/sle/BiCGStabMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)solver/sle/BiCGStabMPI.cpp
 	
 BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
