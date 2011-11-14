@@ -3,52 +3,39 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "base/grid/common/DirichletUpdateVector.hpp"
-#include "base/solver/ode/AdamsBashforth.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/tools/GridPrinter.hpp"
-#include "base/exception/solver_exception.hpp"
-
-#include <iostream>
-#include <string>
-#include <sstream>
+#include "solver/ode/CrankNicolson.hpp"
 
 namespace sg
 {
 namespace solver
 {
 
-AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, sg::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen)
+CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, sg::base::ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen)
 {
 	this->residuum = 0.0;
-
 }
 
-AdamsBashforth::~AdamsBashforth()
+CrankNicolson::~CrankNicolson()
 {
 }
 
-void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
+void CrankNicolson::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
 {
 	size_t allIter = 0;
-    sg::base::DataVector* rhs;
+    sg::base::DataVector* rhs = NULL;
 
 	for (size_t i = 0; i < this->nMaxIterations; i++)
 	{
-		if(i > 0)
-			System.setODESolver("AdBas");
-		else
-			System.setODESolver("ExEul");
-
 		// generate right hand side
 		rhs = System.generateRHS();
 
-
 		// solve the system of the current timestep
 		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
-
 	    allIter += LinearSystemSolver.getNumberIterations();
+
 	    if (verbose == true)
 	    {
 	    	if (myScreen == NULL)
@@ -70,6 +57,8 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPara
     			myScreen->update(100, soutput.str());
     		}
     	}
+
+	    // Do some adjustments on the boundaries if needed, copy values back
 	    if (bIdentifyLastStep == false)
 	    {
 			System.finishTimestep(false);
@@ -85,8 +74,6 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPara
 				System.finishTimestep(true);
 			}
 	    }
-	    System.saveAlpha();
-
 	}
 
 	// write some empty lines to console

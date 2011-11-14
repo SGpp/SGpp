@@ -8,7 +8,7 @@
 #ifndef CONJUGATEGRADIENTS_HPP
 #define CONJUGATEGRADIENTS_HPP
 
-#include "base/solver/SLESolver.hpp"
+#include "solver/SLESolver.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataVector.hpp"
 

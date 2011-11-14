@@ -9,7 +9,7 @@
 #include "base/datatypes/DataVectorSP.hpp"
 #include "base/datatypes/DataMatrixSP.hpp"
 #include "datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
-#include "base/solver/sle/ConjugateGradientsSP.hpp"
+#include "solver/sle/ConjugateGradientsSP.hpp"
 #include "datadriven/tools/ARFFTools.hpp"
 #include "base/grid/type/ModLinearGrid.hpp"
 #include "base/grid/type/LinearGrid.hpp"

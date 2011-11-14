@@ -3,13 +3,12 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef CRANKNICOLSON_HPP
-#define CRANKNICOLSON_HPP
+#ifndef STEPSIZECONTROLBDF_HPP
+#define STEPSIZECONTROLBDF_HPP
 
 #include "base/application/ScreenOutput.hpp"
-#include "base/solver/ODESolver.hpp"
+#include "solver/ODESolver.hpp"
 
 namespace sg
 {
@@ -17,7 +16,7 @@ namespace solver
 {
 
 /**
- * This class implements the Crank-Nicolson method
+ * This class implements a step size control using the midpoint method and BDF2
  * for solving ordinary partial equations
  *
  * For solving the system of linear equations the
@@ -25,11 +24,14 @@ namespace solver
  *
  * @version $HEAD$
  */
-class CrankNicolson : public ODESolver
+class StepsizeControlBDF : public ODESolver
 {
 private:
 	/// Pointer to sg::base::ScreenOutput object
 	sg::base::ScreenOutput* myScreen;
+
+	/// epsilon for the step size control
+	double myEps;
 
 public:
 	/**
@@ -37,14 +39,15 @@ public:
 	 *
 	 * @param nTimesteps number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
+	 * @param eps the epsilon for the step size control
 	 * @param screen possible pointer to a sg::base::ScreenOutput object
 	 */
-	CrankNicolson(size_t nTimesteps, double timestepSize, sg::base::ScreenOutput* screen = NULL);
+	StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~CrankNicolson();
+	virtual ~StepsizeControlBDF();
 
 	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
@@ -52,4 +55,4 @@ public:
 }
 }
 
-#endif /* CRANKNICOLSON_HPP */
+#endif /* STEPSIZECONTROLBDF_HPP */

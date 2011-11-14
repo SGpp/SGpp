@@ -1,14 +1,14 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BICGSTAB_HPP
-#define BICGSTAB_HPP
+#ifndef BICGSTABMPI_HPP
+#define BICGSTABMPI_HPP
 
-#include "base/solver/SLESolver.hpp"
+#include "solver/SLESolver.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataVector.hpp"
 
@@ -16,24 +16,31 @@
 
 namespace sg
 {
-namespace solver
+namespace parallel
 {
 
-class BiCGStab : public SLESolver
+class BiCGStabMPI : public sg::solver::SLESolver
 {
 private:
-
+	/**
+	 * Routine called by the MPI slaves, here just the execution of
+	 * of sub part of the SystemMatrix's mult-Routine is needed.
+	 *
+	 * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector multiplication
+	 * @param alpha the sparse grid's coefficients which have to be determined
+	 */
+	virtual void waitForTask(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha);
 
 public:
 	/**
 	 * Std-Constructor
 	 */
-	BiCGStab(size_t imax, double epsilon);
+	BiCGStabMPI(size_t imax, double epsilon);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BiCGStab();
+	virtual ~BiCGStabMPI();
 
 	/**
 	 * max_threashold is ignored in this solver
@@ -49,4 +56,4 @@ public:
 }
 }
 
-#endif /*BICGSTAB_HPP */
+#endif /*BICGSTABMPI_HPP */

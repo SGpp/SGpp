@@ -7,10 +7,10 @@
 
 
 #include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "base/solver/sle/ConjugateGradientsMPI.hpp"
+#include "solver/sle/ConjugateGradientsMPI.hpp"
 #include "pde/application/PoissonEquationSolverMPI.hpp"
 #include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
-#include "base/solver/sle/ConjugateGradients.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/tools/SGppStopwatch.hpp"

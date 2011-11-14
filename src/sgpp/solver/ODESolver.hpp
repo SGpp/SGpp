@@ -8,8 +8,8 @@
 #ifndef ODESOLVER_HPP
 #define ODESOLVER_HPP
 
-#include "base/solver/SGSolver.hpp"
-#include "base/solver/SLESolver.hpp"
+#include "solver/SGSolver.hpp"
+#include "solver/SLESolver.hpp"
 #include "base/datatypes/DataVector.hpp"
 
 namespace sg

@@ -6,12 +6,12 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "base/solver/sle/ConjugateGradientsMPI.hpp"
+#include "solver/sle/ConjugateGradientsMPI.hpp"
 #include "pde/application/HeatEquationSolverMPI.hpp"
 #include "pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
 
-#include "base/solver/ode/Euler.hpp"
-#include "base/solver/ode/CrankNicolson.hpp"
+#include "solver/ode/Euler.hpp"
+#include "solver/ode/CrankNicolson.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "stdlib.h"

@@ -4,51 +4,44 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 
-#ifndef STEPSIZECONTROLH_HPP
-#define STEPSIZECONTROLH_HPP
+#ifndef ADAMSBASHFORTH_HPP
+#define ADAMSBASHFORTH_HPP
 
 #include "base/application/ScreenOutput.hpp"
-#include "base/solver/ODESolver.hpp"
+#include "solver/ODESolver.hpp"
 #include <string>
-//
+
 namespace sg
 {
 namespace solver
 {
 
 /**
- * This class implements a step size control using Crank-Nicolson with different step sizes
+ * This class implements the explicit Adams-Bashforth method
  * for solving ordinary partial equations
  *
  * @version $HEAD$
  */
-class StepsizeControlH : public ODESolver
+class AdamsBashforth : public ODESolver
 {
 private:
-
 	/// Pointer to sg::base::ScreenOutput object
 	sg::base::ScreenOutput* myScreen;
-
-	/// epsilon for the step size control
-	double myEps;
-
 
 public:
 	/**
 	 * Std-Constructer
 	 *
-	 * @param Mode the mode of the euler that should be executed, must be ExEul or ImEul
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
-	 * @param eps the epsilon for the step size control
 	 * @param screen possible pointer to a sg::base::ScreenOutput object
 	 */
-	StepsizeControlH(size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL);
+	AdamsBashforth(size_t imax, double timestepSize, sg::base::ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~StepsizeControlH();
+	virtual ~AdamsBashforth();
 
 	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
@@ -56,4 +49,4 @@ public:
 }
 }
 
-#endif /* STEPSIZECONTROLH_HPP */
+#endif /* ADAMSBASHFORTH_HPP */
