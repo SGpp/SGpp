@@ -21,18 +21,21 @@ namespace solver
 /**
  * Abstract class that defines a solver used in Sparse Grids
  * Applications
+ * @todo (pflueged) move public variables to protected scope, add setters and getters
  */
 class SGSolver
 {
 private:
+
+protected:
+	/// residuum
+	double residuum;
 
 public:
 	/// Number of Iterations needed for the solve
 	size_t nIterations;
 	/// Number of maximum iterations for cg
 	size_t nMaxIterations;
-	/// residuum
-	double residuum;
 	/// epsilon needed in the, e.g. final error in the iterative solver, or a timestep
 	double myEpsilon;
 
