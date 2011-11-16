@@ -41,6 +41,7 @@ Libraries are generated for all modules, named sgppbase, sgpppde, etc. The follo
        - operations depending on datasets
        - data mining support
        - specialized regularization
+       - vectorization of evaluation of multiple on x86
      </td>
    </tr>
    <tr>
@@ -70,6 +71,7 @@ Libraries are generated for all modules, named sgppbase, sgpppde, etc. The follo
      <td>
        - support for the solution of financial problems
        - Black-Scholes equation
+       - Hull-White equation (1d,2d)
        - algorithmic schemes to support this
      </td>
    </tr>
@@ -91,6 +93,16 @@ Libraries are generated for all modules, named sgppbase, sgpppde, etc. The follo
        - special variants
        - data structures and algorithms
        - dimensional adaptivity
+     </td>
+   </tr>
+      <tr>
+     <td valign="top">
+       parallel
+     </td>
+     <td>
+       - extension to datadriven, finance and pde
+       - sophisticated parallelizations using GPUs (datadriven)
+       - MPI parallelization of PDE solvers
      </td>
    </tr>
 </table>
