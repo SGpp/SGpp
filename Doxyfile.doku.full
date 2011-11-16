@@ -1473,7 +1473,7 @@ DOT_PATH               =
 # contain dot files that are included in the documentation (see the
 # \dotfile command).
 
-DOTFILE_DIRS           =
+DOTFILE_DIRS           = doc/doxygen/dotfiles
 
 # The DOT_GRAPH_MAX_NODES tag can be used to set the maximum number of
 # nodes that will be shown in the graph. If the number of nodes in a graph
