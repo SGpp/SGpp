@@ -6,6 +6,7 @@
 <!-- ############################################################# -->
 @section manual__overview Overview
 - @subpage installation
+- @subpage modules
 - @subpage code_examples
 - @subpage continued_learning_examples
 - @subpage code_examples_refinement
