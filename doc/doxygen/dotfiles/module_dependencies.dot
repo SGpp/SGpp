@@ -1,9 +1,17 @@
 digraph G {
 	rankdir=BT;
-	node [shape=polygon];
+	node [shape=polygon,fontsize=10];
 	edge [group];
 	
 	{ rank=same; datadriven; solver; combigrid; }
+
+	base [URL="\ref sg::base"];
+	pde [URL="\ref sg::pde"];
+	datadriven [URL="\ref sg::datadriven"];
+	finance [URL="\ref sg::finance"];
+	solver [URL="\ref sg::solver"];
+	parallel [URL="\ref sg::parallel"];
+	combigrid [URL="\ref sg::combigrid"];
 
 	pde -> base;
 	pde -> solver;
