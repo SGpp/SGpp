@@ -10,9 +10,35 @@ SG++ is grouped into several modules. This ensures
 
 The modules correspond (roughly) to the corresponding namespaces in C++. Roughly, as all files belonging to a namespace belong to the respective module. But a module can contain files belonging to another namespace, especially static factory methods in the namespace sg::op_factory.
 
-<div align="center">
-@dotfile module_dependencies.dot "Dependencies within the modules"
-</div>
+@dot
+digraph G {
+	rankdir=BT;
+	node [shape=polygon,fontsize=10,height=0.25];
+	edge [group];
+	
+	{ rank=same; datadriven; solver; combigrid; }
+
+	base [URL="@ref sg::base"];
+	pde [URL="@ref sg::pde"];
+	datadriven [URL="@ref sg::datadriven"];
+	finance [URL="@ref sg::finance"];
+	solver [URL="@ref sg::solver"];
+	parallel [URL="@ref sg::parallel"];
+	combigrid [URL="@ref sg::combigrid"];
+
+	pde -> base;
+	pde -> solver;
+	datadriven -> base;
+	finance -> pde;
+	finance -> base;
+	solver -> base;
+	parallel -> base;
+	parallel -> pde;
+	parallel -> finance;
+	parallel -> datadriven [constraint=false];
+	combigrid -> base;
+}
+@enddot
 
 The modules can depdend on each other. Especially all depend on the base module.
 Libraries are generated for all modules, named sgppbase, sgpppde, etc. The following table briefly summarizes the main contents of each module:
@@ -30,6 +56,8 @@ Libraries are generated for all modules, named sgppbase, sgpppde, etc. The follo
        - basic operations such as hierarchization and dehierarchization
        - evaluation, evaluation of multiple data points
        - adaptive refinement
+       - refinement specified via functors
+       - quadrature
        - basic OpenMP support
      </td>
    </tr>
