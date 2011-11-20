@@ -19,6 +19,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 
 // print grid in gnuplot readable format (1D and 2D only)
 //#define GNUPLOT
@@ -34,6 +35,23 @@
 #define TEST_LAST_ONLY
 
 bool bUseFloat;
+
+void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
+{
+	std::ofstream fileout;
+
+	// Open filehandle
+	fileout.open(tFilename.c_str());
+
+	// plot values
+	for (size_t i = 0; i < ROC_curve.getNrows(); i++)
+	{
+		fileout <<  ROC_curve.get(i, 0) << " " << ROC_curve.get(i, 1) << std::endl;
+	}
+
+	// close filehandle
+	fileout.close();
+}
 
 void calcGFlopsAndGBytes(std::string gridtype, sg::base::Grid* myGrid, size_t nInstancesNo, size_t nGridsize, size_t nDim, size_t nIterations, size_t datatype_size, double& GFlops, double& GBytes)
 {
@@ -416,6 +434,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     		std::cout << "test false positives: " << charNumbers[2] << std::endl;
     		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
     		delete myTest;
+    		storeROCcurve(ROC_train, tfileTrain+".roc");
+    		storeROCcurve(ROC_test, tfileTest+".roc");
 
 			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
@@ -470,6 +490,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 		std::cout << "test false positives: " << charNumbers[2] << std::endl;
 		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
 		delete myTest;
+		storeROCcurve(ROC_train, tfileTrain+".roc");
+		storeROCcurve(ROC_test, tfileTest+".roc");
 	}
 #endif
 
@@ -727,6 +749,8 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     		std::cout << "test false positives: " << charNumbers[2] << std::endl;
     		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
     		delete myTest;
+    		storeROCcurve(ROC_train, tfileTrain+".roc");
+    		storeROCcurve(ROC_test, tfileTest+".roc");
 
 			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
@@ -782,6 +806,8 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 		std::cout << "test false positives: " << charNumbers[2] << std::endl;
 		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
 		delete myTest;
+		storeROCcurve(ROC_train, tfileTrain+".roc");
+		storeROCcurve(ROC_test, tfileTest+".roc");
 	}
 #endif
 
