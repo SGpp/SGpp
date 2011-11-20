@@ -132,9 +132,10 @@ namespace datadriven {
    * @param data the data the should be tested
    * @param classes the reference classes
    * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
+   * @param ROC_curve DataMatrix into which the ROC curve is stored
    */
   template<class BASIS>
-  double test_datasetWithCharacteristicNumber( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers)
+  double test_datasetWithCharacteristicNumber( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, base::DataMatrix& ROC_curve)
   {
     typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
@@ -144,7 +145,7 @@ namespace datadriven {
     double fp = 0;
     double fn = 0;
 
-#pragma omp parallel shared(correct, tp, tn, fp, fn)
+#pragma omp parallel shared(correct, tp, tn, fp, fn, ROC_curve)
     {
       size_t size = data.getNrows();
 
@@ -198,6 +199,9 @@ namespace datadriven {
                 fn++;
               }
             }
+
+          	ROC_curve.set(i, 0, (fp/(fp + tn)));
+          	ROC_curve.set(i, 1, (tp/(tp + fn)));
         }
     }
 

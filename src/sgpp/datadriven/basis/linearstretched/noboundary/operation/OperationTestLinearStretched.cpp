@@ -30,10 +30,10 @@ double OperationTestLinearStretched::testMSE(base::DataVector& alpha, base::Data
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestLinearStretched::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers)
+double OperationTestLinearStretched::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, base::DataMatrix& ROC_curve)
 {
   base::LinearStretchedBasis<unsigned int, unsigned int> base;
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, ROC_curve);
 }
 
 }
