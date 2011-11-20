@@ -43,7 +43,7 @@ namespace datadriven
 
     virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
     virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
-    virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers);
+    virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, base::DataMatrix& ROC_curve);
 
   protected:
     /// Pointer to base::GridStorage object

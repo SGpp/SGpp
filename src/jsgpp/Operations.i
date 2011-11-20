@@ -84,7 +84,7 @@ class OperationTest
 public:
 	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes) = 0;
 	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues) = 0;
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers, base::DataMatrix& ROC_curve) = 0;
 };
 }
 

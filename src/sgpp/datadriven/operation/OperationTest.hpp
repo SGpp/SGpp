@@ -72,8 +72,9 @@ public:
 	 * @param data the coordinates of the evaluation points
 	 * @param classes sg::base::DataVector the holds the class information
 	 * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
+	 * @param ROC_curve DataMatrix into which the ROC curve is stored
 	 */
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) = 0;
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers, sg::base::DataMatrix& ROC_curve) = 0;
 };
 
 }

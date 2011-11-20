@@ -27,10 +27,10 @@ namespace datadriven
     return test_dataset_mse(this->storage, base, alpha, data, refValues);
   }
 
-  double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
+  double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers, base::DataMatrix& ROC_curve)
   {
     base::LinearBoundaryBasis<unsigned int, unsigned int> base;
-    return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers);
+    return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, ROC_curve);
   }
 
 }

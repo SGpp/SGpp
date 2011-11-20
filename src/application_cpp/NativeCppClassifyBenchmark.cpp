@@ -378,7 +378,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 			acc = myTest->testMSE(alpha, data, classes);
 			std::cout << "MSE (train): " << acc << std::endl;
 			accTest = myTest->testMSE(alpha, testData, testclasses);
-			std::cout << "MSE (test): " << accTest << std::endl;
+			std::cout << "MSE (test): " << accTest << std::endl << std::endl;
 			delete myTest;
 
 			if (((i > 0) && (oldAcc <= accTest)) || accTest == 0.0)
@@ -392,13 +392,30 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	else
     	{
     		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-			acc = myTest->test(alpha, data, classes);
-			acc /= static_cast<double>(classes.getSize());
-			std::cout << "train acc.: " << acc << std::endl;
-			accTest = myTest->test(alpha, testData, testclasses);
-			accTest /= static_cast<double>(testclasses.getSize());
-			std::cout << "test acc.: " << accTest << std::endl;
-			delete myTest;
+    		DataVector charNumbers(4);
+    		DataMatrix ROC_train(classes.getSize(), 2);
+    		DataMatrix ROC_test(testclasses.getSize(), 2);
+    		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
+    		acc /= static_cast<double>(classes.getSize());
+    		std::cout << "train accuracy: " << acc << std::endl;
+    		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+    		std::cout << "train specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+    		std::cout << "train precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+    		std::cout << "train true positives: " << charNumbers[0] << std::endl;
+    		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
+    		std::cout << "train false positives: " << charNumbers[2] << std::endl;
+    		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
+    		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
+    		accTest /= static_cast<double>(testclasses.getSize());
+    		std::cout << "test accuracy: " << accTest << std::endl;
+    		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+    		std::cout << "test specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+    		std::cout << "test precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+    		std::cout << "test true positives: " << charNumbers[0] << std::endl;
+    		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
+    		std::cout << "test false positives: " << charNumbers[2] << std::endl;
+    		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
+    		delete myTest;
 
 			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
@@ -413,6 +430,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     delete myStopwatch;
 
+    std::cout << "Finished Learning!" << std::endl;
+
 #ifdef TEST_LAST_ONLY
     std::cout << std::endl << std::endl;
     if (isRegression)
@@ -421,24 +440,39 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 		acc = myTest->testMSE(alpha, data, classes);
 		std::cout << "MSE (train): " << acc << std::endl;
 		accTest = myTest->testMSE(alpha, testData, testclasses);
-		std::cout << "MSE (test): " << accTest << std::endl;
+		std::cout << "MSE (test): " << accTest << std::endl << std::endl;
 		delete myTest;
 	}
 	else
 	{
 		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-		acc = myTest->test(alpha, data, classes);
+		DataVector charNumbers(4);
+		DataMatrix ROC_train(classes.getSize(), 2);
+		DataMatrix ROC_test(testclasses.getSize(), 2);
+		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
 		acc /= static_cast<double>(classes.getSize());
-		std::cout << "train acc.: " << acc << std::endl;
-		accTest = myTest->test(alpha, testData, testclasses);
+		std::cout << "train accuracy: " << acc << std::endl;
+		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+		std::cout << "train specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+		std::cout << "train precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+		std::cout << "train true positives: " << charNumbers[0] << std::endl;
+		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
+		std::cout << "train false positives: " << charNumbers[2] << std::endl;
+		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
+		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
 		accTest /= static_cast<double>(testclasses.getSize());
-		std::cout << "test acc.: " << accTest << std::endl;
+		std::cout << "test accuracy: " << accTest << std::endl;
+		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+		std::cout << "test specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+		std::cout << "test precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+		std::cout << "test true positives: " << charNumbers[0] << std::endl;
+		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
+		std::cout << "test false positives: " << charNumbers[2] << std::endl;
+		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
 		delete myTest;
 	}
-
 #endif
 
-    std::cout << "Finished Learning!" << std::endl;
 #ifdef GNUPLOT
 	if (nDim <= 2)
 	{
@@ -655,7 +689,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 			acc = myTest->testMSE(alpha, data, classes);
 			std::cout << "MSE (train): " << acc << std::endl;
 			accTest = myTest->testMSE(alpha, testData, testclasses);
-			std::cout << "MSE (test): " << accTest << std::endl;
+			std::cout << "MSE (test): " << accTest << std::endl << std::endl;
 			delete myTest;
 
 			if (((i > 0) && (oldAcc <= accTest)) || accTest == 0.0)
@@ -669,13 +703,30 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	else
     	{
     		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-			acc = myTest->test(alpha, data, classes);
-			acc /= static_cast<double>(classes.getSize());
-			std::cout << "train acc.: " << acc << std::endl;
-			accTest = myTest->test(alpha, testData, testclasses);
-			accTest /= static_cast<double>(testclasses.getSize());
-			std::cout << "test acc.: " << accTest << std::endl;
-			delete myTest;
+    		DataVector charNumbers(4);
+    		DataMatrix ROC_train(classes.getSize(), 2);
+    		DataMatrix ROC_test(testclasses.getSize(), 2);
+    		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
+    		acc /= static_cast<double>(classes.getSize());
+    		std::cout << "train accuracy: " << acc << std::endl;
+    		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+    		std::cout << "train specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+    		std::cout << "train precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+    		std::cout << "train true positives: " << charNumbers[0] << std::endl;
+    		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
+    		std::cout << "train false positives: " << charNumbers[2] << std::endl;
+    		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
+    		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
+    		accTest /= static_cast<double>(testclasses.getSize());
+    		std::cout << "test accuracy: " << accTest << std::endl;
+    		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+    		std::cout << "test specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+    		std::cout << "test precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+    		std::cout << "test true positives: " << charNumbers[0] << std::endl;
+    		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
+    		std::cout << "test false positives: " << charNumbers[2] << std::endl;
+    		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
+    		delete myTest;
 
 			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
@@ -690,32 +741,49 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 
     delete myStopwatch;
 
+    std::cout << "Finished Learning!" << std::endl;
+
 #ifdef TEST_LAST_ONLY
 	convertDataVectorSPToDataVector(alphaSP, alpha);
-	std::cout << std::endl << std::endl;
-	if (isRegression)
+    std::cout << std::endl << std::endl;
+    if (isRegression)
 	{
 		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 		acc = myTest->testMSE(alpha, data, classes);
 		std::cout << "MSE (train): " << acc << std::endl;
 		accTest = myTest->testMSE(alpha, testData, testclasses);
-		std::cout << "MSE (test): " << accTest << std::endl;
+		std::cout << "MSE (test): " << accTest << std::endl << std::endl;
 		delete myTest;
 	}
 	else
 	{
 		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-		acc = myTest->test(alpha, data, classes);
+		DataVector charNumbers(4);
+		DataMatrix ROC_train(classes.getSize(), 2);
+		DataMatrix ROC_test(testclasses.getSize(), 2);
+		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
 		acc /= static_cast<double>(classes.getSize());
-		std::cout << "train acc.: " << acc << std::endl;
-		accTest = myTest->test(alpha, testData, testclasses);
+		std::cout << "train accuracy: " << acc << std::endl;
+		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+		std::cout << "train specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+		std::cout << "train precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+		std::cout << "train true positives: " << charNumbers[0] << std::endl;
+		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
+		std::cout << "train false positives: " << charNumbers[2] << std::endl;
+		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
+		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
 		accTest /= static_cast<double>(testclasses.getSize());
-		std::cout << "test acc.: " << accTest << std::endl;
+		std::cout << "test accuracy: " << accTest << std::endl;
+		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
+		std::cout << "test specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
+		std::cout << "test precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
+		std::cout << "test true positives: " << charNumbers[0] << std::endl;
+		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
+		std::cout << "test false positives: " << charNumbers[2] << std::endl;
+		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
 		delete myTest;
 	}
 #endif
-
-    std::cout << "Finished Learning!" << std::endl;
 
 #ifdef GNUPLOT
 	if (nDim <= 2)
