@@ -21,9 +21,9 @@ do
 			for REFINE in $REFINEMENTS
 			do
 				#  linear boundary
-				#../bin/ClassifyBenchmark ../input/CR_train_unit.labeled ../input/CR_test_unit.labeled 0 ${PREC} linearboundary ${LEVEL} 0.000001 40 0.01 ${REFINE} 0.0 100 200 0.0001 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_linearboundary_${PREC}_Level_${LEVEL}_Refinements_${REFINE}.log
+				#../bin/ClassifyBenchmark ../input/CR_train_unit.labeled ../input/CR_test_unit.labeled 0 ${PREC} linearboundary ${LEVEL} 0.000001 200 0.0001 ${REFINE} 0.0 100 40 0.01 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_linearboundary_${PREC}_Level_${LEVEL}_Refinements_${REFINE}.log
 				#  mod linear
-				../bin/ClassifyBenchmark ../input/CR_train_unit.labeled ../input/CR_test_unit.labeled 0 ${PREC} modlinear ${LEVEL} 0.000001 40 0.01 ${REFINE} 0.0 100 200 0.0001 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_modlinear_${PREC}_Level_${LEVEL}_Refinements_${REFINE}.log
+				../bin/ClassifyBenchmark ../input/CR_train_unit.labeled ../input/CR_test_unit.labeled 0 ${PREC} modlinear ${LEVEL} 0.000001 200 0.0001 ${REFINE} 0.0 100 40 0.01 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_modlinear_${PREC}_Level_${LEVEL}_Refinements_${REFINE}.log
 			done
 		done
 	done
