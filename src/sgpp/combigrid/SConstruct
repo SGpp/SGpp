@@ -83,8 +83,8 @@ sourceFiles = [
    Glob(buildpath + './multigridFG/operators/*.cpp'),   
    Glob(buildpath + './multigridFG/utils/*.cpp'),
 # SGpp objcets which are needed, in order to build a binary
-   Glob(buildpath + '../data/DataVector.cpp'),
-   Glob(buildpath + '../grid/common/BoundingBox.cpp')
+   Glob(buildpath + '../base/datatypes/DataVector.cpp'),
+   Glob(buildpath + '../base/grid/common/BoundingBox.cpp')
    ]
 
 testFile = ['./tests/test_main.cpp']
