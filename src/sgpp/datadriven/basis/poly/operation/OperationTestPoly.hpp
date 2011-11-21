@@ -43,7 +43,8 @@ namespace datadriven
 
     virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
     virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
-    virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, base::DataMatrix& ROC_curve);
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
+	virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve);
 
   protected:
     /// Pointer to base::GridStorage object

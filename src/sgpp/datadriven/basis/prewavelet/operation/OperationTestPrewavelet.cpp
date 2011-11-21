@@ -17,23 +17,29 @@ namespace sg
 namespace datadriven
 {
 
-  double OperationTestPrewavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
-  {
-    base::PrewaveletBasis<unsigned int, unsigned int> base;
-    return test_dataset(this->storage, base, alpha, data, classes);
-  }
+double OperationTestPrewavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
+{
+	base::PrewaveletBasis<unsigned int, unsigned int> base;
+	return test_dataset(this->storage, base, alpha, data, classes);
+}
 
-  double OperationTestPrewavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
-  {
-    base::PrewaveletBasis<unsigned int, unsigned int> base;
-    return test_dataset_mse(this->storage, base, alpha, data, refValues);
-  }
+double OperationTestPrewavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
+{
+	base::PrewaveletBasis<unsigned int, unsigned int> base;
+	return test_dataset_mse(this->storage, base, alpha, data, refValues);
+}
 
-  double OperationTestPrewavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers, base::DataMatrix& ROC_curve)
-  {
-    base::PrewaveletBasis<unsigned int, unsigned int> base;
-    return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, ROC_curve);
-  }
+double OperationTestPrewavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
+{
+	base::PrewaveletBasis<unsigned int, unsigned int> base;
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
+}
+
+void OperationTestPrewavelet::calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve)
+{
+	base::PrewaveletBasis<unsigned int, unsigned int> base;
+	test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
+}
 
 }
 }

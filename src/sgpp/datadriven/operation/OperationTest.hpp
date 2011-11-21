@@ -72,9 +72,23 @@ public:
 	 * @param data the coordinates of the evaluation points
 	 * @param classes sg::base::DataVector the holds the class information
 	 * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
+	 */
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) = 0;
+
+	/**
+	 * Computes the classification accuracy on some test data.
+	 *
+	 * The function is evaluated at the given points. Tests on the classes {+1, -1}, cut-off variable at threshold
+	 *
+	 * Also the number of the TP TN FP FN are determined
+	 *
+	 * @param alpha the coefficients of the sparse grid's base functions
+	 * @param data the coordinates of the evaluation points
+	 * @param classes sg::base::DataVector the holds the class information
+	 * @param thresholds the thresholds (between -1.0 and 1.0) for calculating the ROC curve
 	 * @param ROC_curve DataMatrix into which the ROC curve is stored
 	 */
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers, sg::base::DataMatrix& ROC_curve) = 0;
+	virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) = 0;
 };
 
 }

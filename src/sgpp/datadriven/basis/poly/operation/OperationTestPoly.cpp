@@ -26,9 +26,14 @@ double OperationTestPoly::testMSE(base::DataVector& alpha, base::DataMatrix& dat
 	return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-double OperationTestPoly::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, base::DataMatrix& ROC_curve)
+double OperationTestPoly::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers)
 {
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, ROC_curve);
+	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
+}
+
+void OperationTestPoly::calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve)
+{
+	test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
 }
 
 }

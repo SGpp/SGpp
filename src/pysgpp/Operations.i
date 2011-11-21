@@ -103,7 +103,8 @@ class OperationTest
 public:
   virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) = 0;
 	virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) = 0;
-	virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, base::DataMatrix& ROC_curve) = 0;
+	virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers) = 0;
+	virtual void calculateROCcurve(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) = 0;
 };
 }
 //- end namespace datadriven ------------------------------------------

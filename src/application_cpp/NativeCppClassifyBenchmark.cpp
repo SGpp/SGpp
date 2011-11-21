@@ -34,6 +34,10 @@
 // do Test only after last refinement
 #define TEST_LAST_ONLY
 
+// store ROC curve
+//#define STORE_ROC_CURVE
+#define ROC_POINTS 40
+
 bool bUseFloat;
 
 void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
@@ -411,9 +415,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	{
     		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
     		DataVector charNumbers(4);
-    		DataMatrix ROC_train(classes.getSize(), 2);
-    		DataMatrix ROC_test(testclasses.getSize(), 2);
-    		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
+    		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
     		acc /= static_cast<double>(classes.getSize());
     		std::cout << "train accuracy: " << acc << std::endl;
     		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -423,7 +425,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
     		std::cout << "train false positives: " << charNumbers[2] << std::endl;
     		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
-    		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
+    		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers);
     		accTest /= static_cast<double>(testclasses.getSize());
     		std::cout << "test accuracy: " << accTest << std::endl;
     		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -433,9 +435,27 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
     		std::cout << "test false positives: " << charNumbers[2] << std::endl;
     		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
+#ifdef STORE_ROC_CURVE
+    		std::cout << "calculating ROC curves ..." << std::endl;
+    		sg::base::DataVector thresholds(ROC_POINTS+1);
+    		double gap = 2.0/((double)ROC_POINTS);
+    		for (size_t t = 0; t < ROC_POINTS+1; t++)
+    		{
+    			thresholds.set(t, 1.0-(t*gap));
+    		}
+    		sg::base::DataMatrix ROC_train(ROC_POINTS+1, 2);
+    		sg::base::DataMatrix ROC_test(ROC_POINTS+1, 2);
+    		myTest->calculateROCcurve(alpha, data, classes, thresholds, ROC_train);
+    		myTest->calculateROCcurve(alpha, testData, testclasses, thresholds, ROC_test);
+    		std::cout << "calculating ROC curves done!" << std::endl << std::endl;
+    		std::stringstream filetrain;
+    		filetrain << tfileTrain << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+    		std::stringstream filetest;
+    		filetest << tfileTest << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+        	storeROCcurve(ROC_train, filetrain.str());
+        	storeROCcurve(ROC_test, filetest.str());
+#endif
     		delete myTest;
-    		storeROCcurve(ROC_train, tfileTrain+".roc");
-    		storeROCcurve(ROC_test, tfileTest+".roc");
 
 			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
@@ -467,9 +487,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	{
 		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 		DataVector charNumbers(4);
-		DataMatrix ROC_train(classes.getSize(), 2);
-		DataMatrix ROC_test(testclasses.getSize(), 2);
-		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
+		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train accuracy: " << acc << std::endl;
 		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -479,7 +497,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
 		std::cout << "train false positives: " << charNumbers[2] << std::endl;
 		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
-		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
+		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers);
 		accTest /= static_cast<double>(testclasses.getSize());
 		std::cout << "test accuracy: " << accTest << std::endl;
 		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -489,9 +507,27 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
 		std::cout << "test false positives: " << charNumbers[2] << std::endl;
 		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
-		delete myTest;
-		storeROCcurve(ROC_train, tfileTrain+".roc");
-		storeROCcurve(ROC_test, tfileTest+".roc");
+#ifdef STORE_ROC_CURVE
+		std::cout << "calculating ROC curves ..." << std::endl;
+		sg::base::DataVector thresholds(ROC_POINTS+1);
+		double gap = 2.0/((double)ROC_POINTS);
+		for (size_t t = 0; t < ROC_POINTS+1; t++)
+		{
+			thresholds.set(t, 1.0-(t*gap));
+		}
+		sg::base::DataMatrix ROC_train(ROC_POINTS+1, 2);
+		sg::base::DataMatrix ROC_test(ROC_POINTS+1, 2);
+		myTest->calculateROCcurve(alpha, data, classes, thresholds, ROC_train);
+		myTest->calculateROCcurve(alpha, testData, testclasses, thresholds, ROC_test);
+		std::cout << "calculating ROC curves done!" << std::endl << std::endl;
+		std::stringstream filetrain;
+		filetrain << tfileTrain << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+		std::stringstream filetest;
+		filetest << tfileTest << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+    	storeROCcurve(ROC_train, filetrain.str());
+    	storeROCcurve(ROC_test, filetest.str());
+#endif
+    	delete myTest;
 	}
 #endif
 
@@ -726,9 +762,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	{
     		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
     		DataVector charNumbers(4);
-    		DataMatrix ROC_train(classes.getSize(), 2);
-    		DataMatrix ROC_test(testclasses.getSize(), 2);
-    		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
+    		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
     		acc /= static_cast<double>(classes.getSize());
     		std::cout << "train accuracy: " << acc << std::endl;
     		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -738,7 +772,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
     		std::cout << "train false positives: " << charNumbers[2] << std::endl;
     		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
-    		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
+    		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers);
     		accTest /= static_cast<double>(testclasses.getSize());
     		std::cout << "test accuracy: " << accTest << std::endl;
     		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -748,9 +782,27 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
     		std::cout << "test false positives: " << charNumbers[2] << std::endl;
     		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
+#ifdef STORE_ROC_CURVE
+    		std::cout << "calculating ROC curves ..." << std::endl;
+    		sg::base::DataVector thresholds(ROC_POINTS+1);
+    		double gap = 2.0/((double)ROC_POINTS);
+    		for (size_t t = 0; t < ROC_POINTS+1; t++)
+    		{
+    			thresholds.set(t, 1.0-(t*gap));
+    		}
+    		sg::base::DataMatrix ROC_train(ROC_POINTS+1, 2);
+    		sg::base::DataMatrix ROC_test(ROC_POINTS+1, 2);
+    		myTest->calculateROCcurve(alpha, data, classes, thresholds, ROC_train);
+    		myTest->calculateROCcurve(alpha, testData, testclasses, thresholds, ROC_test);
+    		std::cout << "calculating ROC curves done!" << std::endl << std::endl;
+    		std::stringstream filetrain;
+    		filetrain << tfileTrain << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+    		std::stringstream filetest;
+    		filetest << tfileTest << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+        	storeROCcurve(ROC_train, filetrain.str());
+        	storeROCcurve(ROC_test, filetest.str());
+#endif
     		delete myTest;
-    		storeROCcurve(ROC_train, tfileTrain+".roc");
-    		storeROCcurve(ROC_test, tfileTest+".roc");
 
 			if (((i > 0) && (oldAcc >= accTest)) || accTest == 1.0)
 			{
@@ -783,9 +835,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	{
 		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
 		DataVector charNumbers(4);
-		DataMatrix ROC_train(classes.getSize(), 2);
-		DataMatrix ROC_test(testclasses.getSize(), 2);
-		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers, ROC_train);
+		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train accuracy: " << acc << std::endl;
 		std::cout << "train sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -795,7 +845,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 		std::cout << "train true negatives: " << charNumbers[1] << std::endl;
 		std::cout << "train false positives: " << charNumbers[2] << std::endl;
 		std::cout << "train false negatives: " << charNumbers[3] << std::endl << std::endl;
-		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers, ROC_test);
+		accTest = myTest->testWithCharacteristicNumber(alpha, testData, testclasses, charNumbers);
 		accTest /= static_cast<double>(testclasses.getSize());
 		std::cout << "test accuracy: " << accTest << std::endl;
 		std::cout << "test sensitivity: " << charNumbers[0]/(charNumbers[0] + charNumbers[3]) << std::endl;
@@ -805,9 +855,27 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 		std::cout << "test true negatives: " << charNumbers[1] << std::endl;
 		std::cout << "test false positives: " << charNumbers[2] << std::endl;
 		std::cout << "test false negatives: " << charNumbers[3] << std::endl << std::endl;
-		delete myTest;
-		storeROCcurve(ROC_train, tfileTrain+".roc");
-		storeROCcurve(ROC_test, tfileTest+".roc");
+#ifdef STORE_ROC_CURVE
+		std::cout << "calculating ROC curves ..." << std::endl;
+		sg::base::DataVector thresholds(ROC_POINTS+1);
+		double gap = 2.0/((double)ROC_POINTS);
+		for (size_t t = 0; t < ROC_POINTS+1; t++)
+		{
+			thresholds.set(t, 1.0-(t*gap));
+		}
+		sg::base::DataMatrix ROC_train(ROC_POINTS+1, 2);
+		sg::base::DataMatrix ROC_test(ROC_POINTS+1, 2);
+		myTest->calculateROCcurve(alpha, data, classes, thresholds, ROC_train);
+		myTest->calculateROCcurve(alpha, testData, testclasses, thresholds, ROC_test);
+		std::cout << "calculating ROC curves done!" << std::endl << std::endl;
+		std::stringstream filetrain;
+		filetrain << tfileTrain << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+		std::stringstream filetest;
+		filetest << tfileTest << "_SP" << "_level_" << start_level << "_refines_" << refine_count << "_lambda_" << lambda << ".roc";
+    	storeROCcurve(ROC_train, filetrain.str());
+    	storeROCcurve(ROC_test, filetest.str());
+#endif
+    	delete myTest;
 	}
 #endif
 
