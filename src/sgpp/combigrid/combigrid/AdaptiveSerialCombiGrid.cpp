@@ -7,6 +7,7 @@
 
 #include "combigrid/combigrid/AdaptiveSerialCombiGrid.hpp"
 
+
 void combigrid::AdaptiveSerialCombiGrid::addToCombiScheme(
 		std::vector<int> level) {
 	CombigridLevelVector current(combischeme_->getLevels(),

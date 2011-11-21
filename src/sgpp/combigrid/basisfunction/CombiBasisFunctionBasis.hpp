@@ -10,8 +10,6 @@
 
 #include "combigrid/utils/combigrid_ultils.hpp"
 
-using namespace std;
-
 namespace combigrid{
 
    /** The basis function for 1D Cell, the generalization for ND is simply

@@ -321,8 +321,8 @@ public:
     	std::vector<double> coords_tmp( 3 , 0.0);
     	std::vector<int> levels( 3 , 9);
     	std::vector<int> levels_trunc( 3 , 3);
-    	levels[0] = 9; levels[1] = 6; levels[2] = 8;
-    	levels_trunc[0] = 1; levels_trunc[1] = 3; levels_trunc[2] = 1;
+    	levels[0] = 7; levels[1] = 9; levels[2] = 8;
+    	levels_trunc[0] = 3; levels_trunc[1] = 2; levels_trunc[2] = 1;
     	CombiSchemeBasis* combischeme = new S_CT( 3 , levels , levels_trunc );
     	AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
     	AbstractCombiGrid* combigrid1 = new SerialCombiGrid(combischeme, false );
@@ -381,22 +381,22 @@ public:
 
     	coords[0] = min[0] + (max[0]-min[0])*0.7999; coords[1] = min[1] + (max[1]-min[1])*0.1201; coords[2] = min[2] + (max[2]-min[2])*0.899;
     	coords_tmp = coords; funcVal = testfunction3D1( coords[0] , coords[1] , coords[2]);
-    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 1e-4 , "" );coords_tmp = coords;
-    	gridVal = combigrid1->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 3e-4 , "" );coords_tmp = coords;
+    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 5e-4 , "" );coords_tmp = coords;
+    	gridVal = combigrid1->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 5e-4 , "" );coords_tmp = coords;
 
     	coords[0] = min[0] + (max[0]-min[0])*0.6099; coords[1] = min[1] + (max[1]-min[1])*0.1981; coords[2] = min[2] + (max[2]-min[2])*0.83;
     	coords_tmp = coords; funcVal = testfunction3D1( coords[0] , coords[1] , coords[2]);
-    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 1e-4 , "" );coords_tmp = coords;
-    	gridVal = combigrid1->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 1e-4 , "" );coords_tmp = coords;
+    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 5e-4 , "" );coords_tmp = coords;
+    	gridVal = combigrid1->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 5e-4 , "" );coords_tmp = coords;
 
     	coords[0] = min[0] + (max[0]-min[0])*0.999; coords[1] = min[1] + (max[1]-min[1])*0.95; coords[2] = min[2] + (max[2]-min[2])*0.95;
     	coords_tmp = coords; funcVal = testfunction3D1( coords[0] , coords[1] , coords[2]);
-    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 1e-4 , "" );coords_tmp = coords;
+    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 5e-4 , "" );coords_tmp = coords;
     	//gridVal = combigrid1->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 1e-4 , "" );coords_tmp = coords;
 
     	coords[0] = min[0] + (max[0]-min[0])*1.0; coords[1] = min[1] + (max[1]-min[1])*1.0; coords[2] = min[2] + (max[2]-min[2])*1.0;
     	coords_tmp = coords; funcVal = testfunction3D1( coords[0] , coords[1] , coords[2]);
-    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 1e-4 , "" );coords_tmp = coords;
+    	gridVal = combigrid->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 5e-4 , "" );coords_tmp = coords;
     	//gridVal = combigrid1->eval(coords_tmp); COMBIGRID_ERROR_TEST_EQUAL( gridVal , funcVal , 1e-4 , "" );coords_tmp = coords;
 
        	delete stretchingMaker;

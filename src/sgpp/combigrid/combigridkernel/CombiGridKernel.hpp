@@ -12,8 +12,6 @@
 #include "combigrid/fullgrid/CombiFullGrid.hpp"
 #include "combigrid/utils/CombigridLevelVector.hpp"
 
-using namespace std;
-
 namespace combigrid {
 
 /** This class is the kernel component of the combination technique. <br>
