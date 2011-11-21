@@ -84,7 +84,8 @@ class OperationTest
 public:
 	virtual double test(DataVector& alpha, DataMatrix& data, DataVector& classes) = 0;
 	virtual double testMSE(DataVector& alpha, DataMatrix& data, DataVector& refValues) = 0;
-	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers, base::DataMatrix& ROC_curve) = 0;
+	virtual double testWithCharacteristicNumber(DataVector& alpha, DataMatrix& data, DataVector& classes, DataVector& charaNumbers) = 0;
+  	virtual void calculateROCcurve(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) = 0;
 };
 }
 
