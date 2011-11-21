@@ -12,8 +12,6 @@
 #include "combigrid/utils/combigrid_ultils.hpp"
 #include "combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
 
-using namespace std;
-
 namespace combigrid{
 
    /** Linear basis function */

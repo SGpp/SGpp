@@ -11,8 +11,6 @@
 #include "combigrid/combigrid/AbstractCombiGrid.hpp"
 #include "combigrid/converter/CombiSGppConverter.hpp"
 
-using namespace std;
-
 namespace combigrid{
 
 	/** Simple serial implementation of the combi grid. */

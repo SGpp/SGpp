@@ -11,8 +11,6 @@
 #include "combigrid/utils/combigrid_ultils.hpp"
 //#include "combigrid/combigridkernel/CombiGridKernel.hpp"
 
-using namespace std;
-
 namespace combigrid {
 
 	/** base class for any combi scheme. From this class should all the scheme classes derived e.g. S-CT, TS-CT, ... <br>

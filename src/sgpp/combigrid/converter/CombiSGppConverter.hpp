@@ -19,8 +19,6 @@
 #include "base/grid/Grid.hpp"
 #include "base/grid/GridStorage.hpp"
 
-using namespace std;
-
 namespace combigrid {
 
 /** calss which converts a combi grid to a SGpp sparse grid and back <br>

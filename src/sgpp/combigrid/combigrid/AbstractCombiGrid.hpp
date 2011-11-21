@@ -18,8 +18,6 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/GridStorage.hpp"
 
-using namespace std;
-
 namespace combigrid{
 
 	/** full grid type definition */

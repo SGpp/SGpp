@@ -41,17 +41,17 @@ public:
 	virtual ~GridPlotter(){;}
 
 	/** plot one Full grid */
-	static void plotFullGrid(const string& filePath , const FullGridD* fg ,
+	static void plotFullGrid(const std::string& filePath , const FullGridD* fg ,
 			std::vector<double>& globalCoord_in , int resolution = 0);
 
 	/** plot one combination grid */
-	static void plotCombiGrid(const string& filePath , const AbstractCombiGrid* cg ,
+	static void plotCombiGrid(const std::string& filePath , const AbstractCombiGrid* cg ,
 			std::vector<double>& globalCoord_in , int resolution = 0);
 
 private:
 
 	static void plotObject(int dim ,
-			const string& filePath ,
+			const std::string& filePath ,
 			const Evaluable* obj ,
 			const GridDomain* domain ,
 			std::vector<double>& globalCoord_in ,

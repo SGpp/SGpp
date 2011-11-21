@@ -13,8 +13,6 @@
 #include "combigrid/basisfunction/CombiLinearBasisFunction.hpp"
 #include "combigrid/domain/CombiGridDomain.hpp"
 
-using namespace std;
-
 namespace combigrid {
 
 /** The full grid class which is the main building block of the combi grid <br>
@@ -143,7 +141,7 @@ public:
 			 // the value has to be between 0.0 and 1.0
 			 //coords[ii] = (coords[ii] > 1.0) ? 1.0 : coords[ii];
 			 //coords[ii] = (coords[ii] < 0.0) ? 0.0 : coords[ii];
-			 if ((coords[ii]<0.0)||(coords[ii]>1.0)) return 0.0;
+			 //if ((coords[ii]<-0.001)||(coords[ii]>1.0001)) return 0.0;
 		     // scale to the reference [0,1] interval the intersection point
 			 normcoord = coords[ii] * powerOfTwo[levels_[ii]];
 			 aindex[ii]=floor(normcoord);

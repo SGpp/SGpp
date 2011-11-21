@@ -12,8 +12,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+using namespace std;
 
-void combigrid::GridPlotter::plotFullGrid(const string& filePath , const FullGridD* fg ,
+void combigrid::GridPlotter::plotFullGrid(const std::string& filePath , const FullGridD* fg ,
 		std::vector<double>& globalCoord_in , int resolution)
 {
 	combigrid::Evaluable obj(fg);
@@ -21,7 +22,7 @@ void combigrid::GridPlotter::plotFullGrid(const string& filePath , const FullGri
 	plotObject( dim , filePath , &obj , fg->getDomain() , globalCoord_in , resolution);
 }
 
-void combigrid::GridPlotter::plotCombiGrid(const string& filePath , const combigrid::AbstractCombiGrid* cg ,
+void combigrid::GridPlotter::plotCombiGrid(const std::string& filePath , const combigrid::AbstractCombiGrid* cg ,
 		std::vector<double>& globalCoord_in , int resolution)
 {
 	combigrid::Evaluable obj(cg);
@@ -30,7 +31,7 @@ void combigrid::GridPlotter::plotCombiGrid(const string& filePath , const combig
 }
 
 void combigrid::GridPlotter::plotObject(int dim ,
-		const string& filePath ,
+		const std::string& filePath ,
 		const combigrid::Evaluable* obj ,
 		const combigrid::GridDomain* domain ,
 		std::vector<double>& globalCoord_in ,
