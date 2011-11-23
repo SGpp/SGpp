@@ -34,16 +34,15 @@
 
 #include "datadriven/algorithm/test_dataset.hpp"
 #include "datadriven/algorithm/DMSystemMatrix.hpp"
-#include "datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "datadriven/algorithm/DMWeightMatrix.hpp"
 #include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
 
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 #include "finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
 #include "finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
 #include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"

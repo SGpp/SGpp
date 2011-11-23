@@ -8,7 +8,7 @@
 #ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELOMP_HPP
 #define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELOMP_HPP
 
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 
 namespace sg
 {

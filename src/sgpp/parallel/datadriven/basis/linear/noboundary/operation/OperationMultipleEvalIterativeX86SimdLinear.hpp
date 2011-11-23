@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONBITERATIVESPX86SIMDLINEAR_HPP
-#define OPERATIONBITERATIVESPX86SIMDLINEAR_HPP
+#ifndef OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
+#define OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
 
-#include "parallel/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 
@@ -19,7 +19,7 @@ namespace parallel
 
 /**
  * This class implements OperationMultipleEvalVectorizedSP for grids with linear basis ansatzfunctions with or
- * without boundaries with single precision coefficients.
+ * without boundaries with double precision coefficients.
  *
  * However, in this case highly efficient vector code (SSE or AVX instructions) are generated
  * to implement a iterative OperationB version. In addition cache blocking is used
@@ -30,7 +30,7 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeSPX86SimdLinear : public sg::base::OperationMultipleEvalVectorizedSP
+class OperationMultipleEvalIterativeX86SimdLinear : public sg::base::OperationMultipleEvalVectorized
 {
 public:
 	/**
@@ -44,16 +44,16 @@ public:
 	 * @param storage Pointer to the grid's gridstorage object
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeSPX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
+	OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationMultipleEvalIterativeSPX86SimdLinear();
+	virtual ~OperationMultipleEvalIterativeX86SimdLinear();
 
-	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
+	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result);
+	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
 
 	virtual void rebuildLevelAndIndex();
 
@@ -67,4 +67,4 @@ protected:
 }
 }
 
-#endif /* OPERATIONBITERATIVESPX86SIMDLINEAR_HPP */
+#endif /* OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP */

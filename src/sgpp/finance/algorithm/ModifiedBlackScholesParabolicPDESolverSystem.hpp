@@ -11,7 +11,7 @@
 #include "base/grid/Grid.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 #include "finance/application/VariableDiscountFactor.hpp"
 
 namespace sg
