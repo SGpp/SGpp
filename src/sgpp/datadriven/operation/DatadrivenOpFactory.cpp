@@ -27,6 +27,7 @@
 #include "datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp"
 #include "datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp"
 
+#include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 
 namespace sg
 {
@@ -85,6 +86,17 @@ namespace op_factory
       throw base::factory_exception("OperationTest is not implemented for this grid type.");
   }
 
+  base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k)
+  {
+    if(strcmp(grid.getType(), "linear") == 0
+       || strcmp(grid.getType(), "linearBoundary") == 0 
+       || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0
+       || strcmp(grid.getType(), "modlinear") == 0) {
+      return new datadriven::OperationRegularizationDiagonalLinearBoundary(grid.getStorage(), mode, k);
+    }
+    else
+      throw base::factory_exception("OperationRegularizationDiagonal is not implemented for this grid type.");
+  }
 
 }
 }

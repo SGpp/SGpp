@@ -654,7 +654,7 @@ public:
      }
 
     /**
-      * Returns the sum of the one-dimensional levels, i.e. @f$ |\vec{l}|_1 @f$.
+      * Returns the sum of the one-dimensional levels, i.e., @f$ |\vec{l}|_1 @f$.
       *
       * @return the sum of the one-dimensional levels
       */
@@ -669,18 +669,33 @@ public:
      }
 
      /**
-       * Returns the maximum of the one-dimensional levels, i.e. @f$ |\vec{l}|_\infty @f$.
+       * Returns the maximum of the one-dimensional levels, i.e., @f$ |\vec{l}|_\infty @f$.
        *
-       * @return  the maximum of the one-dimensional levels
+       * @return the maximum of the one-dimensional levels
        */
       LT getLevelMax()
       {
-          LT levelmax = 0;
-          for (size_t i = 0; i < DIM; i++)
+          LT levelmax = level[0];
+          for (size_t i = 1; i < DIM; i++)
           {
               levelmax = std::max(levelmax, level[i]);
           }
           return levelmax;
+      }
+
+     /**
+       * Returns the minimum of the one-dimensional levels.
+       *
+       * @return the minimum of the one-dimensional levels
+       */
+      LT getLevelMin()
+      {
+          LT levelmin = level[0];
+          for (size_t i = 1; i < DIM; i++)
+          {
+              levelmin = std::min(levelmin, level[i]);
+          }
+          return levelmin;
       }
 
 private:

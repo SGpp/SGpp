@@ -11,6 +11,7 @@
 #include "base/grid/Grid.hpp"
 
 #include "datadriven/operation/OperationTest.hpp"
+#include "base/operation/OperationMatrix.hpp"
 
 /*
  * This file contains factory methods for operations.
@@ -18,19 +19,27 @@
  
 namespace sg
 {
-
 namespace op_factory
 {
   /**
    * Factory method, returning an OperationTest for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
-   * @param grid Grid which is to be used for hierarchisation
+   * @param grid Grid which is to be used for OperationTest
    * @return Pointer to the new OperationTest object for the Grid grid
    */
   datadriven::OperationTest* createOperationTest(base::Grid& grid);
-}
 
+  /**
+   * Factory method, returning an OperationTest for the grid at hand.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for OperationRegularizationDiagonal
+   * @return Pointer to the new OperationTest object for the Grid grid
+   */
+  base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k);
+
+}
 }
 
 #endif /*DATADRIVEN_OP_FACTORY_HPP*/

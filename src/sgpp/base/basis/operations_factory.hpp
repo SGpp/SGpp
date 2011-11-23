@@ -135,6 +135,9 @@
 #include "finance/basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.hpp"
 #include "finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp"
 
+#include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
+
+
 using namespace sg::base;
 
 namespace sg
@@ -652,6 +655,19 @@ namespace sg
       else
         throw factory_exception("OperationLaplace is not implemented for this grid type.");
     }
+
+  static OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k)
+  {
+    if(strcmp(grid.getType(), "linear") == 0
+       || strcmp(grid.getType(), "linearBoundary") == 0 
+       || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0
+       || strcmp(grid.getType(), "modlinear") == 0) {
+      return new datadriven::OperationRegularizationDiagonalLinearBoundary(grid.getStorage(), mode, k);
+    }
+    else
+      throw base::factory_exception("OperationRegularizationDiagonal is not implemented for this grid type.");
+  }
+
 #endif //SG_DATADRIVEN
 
     /**
@@ -756,7 +772,7 @@ namespace sg
         }
 
       else
-        throw factory_exception("OperationLaplace is not implemented for this grid type.");
+        throw factory_exception("OperationConvert is not implemented for this grid type.");
     }
 
 

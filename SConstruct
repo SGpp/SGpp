@@ -288,8 +288,20 @@ javaAvail = True
 
 # no checks if clean:
 if not env.GetOption('clean'):
+    print """
+******************************************
+* Configuring system                     *
+******************************************"""
+
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
+    # check whether swig installed
+    if not config.CheckExec('doxygen'):
+        sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
+
+    # check whether dot installed
+    if not config.CheckExec('dot'):
+        sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
 
     # check if the math header is available
     if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
@@ -349,11 +361,13 @@ if not env.GetOption('clean'):
 
     env = config.Finish()
 
+    print """******************************************
+* Finished configuring system            *
+******************************************"""
 
 # End of configuration
 #########################################################################
 Export('env')
-print "finished configuration"
 
 
 # Now compile

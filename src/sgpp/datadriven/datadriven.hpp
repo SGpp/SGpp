@@ -16,6 +16,7 @@
 #include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
+#include "datadriven/operation/OperationRegularizationDiagonal.hpp"
 //#include "datadriven/operation/DatadrivenOpFactory.hpp"
 
 #endif /* DATADRIVEN_HPP */

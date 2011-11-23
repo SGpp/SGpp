@@ -58,7 +58,8 @@
 #include "pde/application/PoissonEquationSolver.hpp"
 
 
-
+#include "datadriven/operation/OperationRegularizationDiagonal.hpp"
+#include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 
 // @todo (heinecke) check if this can be removed
 #include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"

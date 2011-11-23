@@ -27,7 +27,7 @@ namespace op_factory
 
   /**
    * Factory method, returning an OperationMultipleEvalVectorized for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used for evaluation
    * @param vecType Type of Vectorization used. Currently supported: SSE, AVX
@@ -38,7 +38,7 @@ namespace op_factory
   /**
    * Factory method, returning an OperationMultipleEvalVectorizedSP for the grid at hand,
    * single precision.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used for evaluation
    * @param vecType Type of Vectorization used. Currently supported: SSE, AVX

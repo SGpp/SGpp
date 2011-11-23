@@ -56,7 +56,7 @@ public:
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	/**
-	 * this functions provides the same functionality as the normal mult routine.
+	 * This functions provides the same functionality as the normal mult routine.
 	 * However, it doesn't set up an OpenMP task initialization as the mult routine.
 	 * This method has to be called within a OpenMP task parallelized region.
 	 *

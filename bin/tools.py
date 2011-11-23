@@ -246,20 +246,38 @@ def readData(filename):
 # @param alpha Corresponding coefficient DataVector
 # @param resolution Number of sampling points per dimension
 # @param (optional) mode: {'w'|'a'} to write or append, default 'w'
-def writeGnuplot(filename, grid, alpha, resolution, mode="w"):
+# @param (optional) data points to plot
+# @param (optional) corresponding function values
+def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=None):
     p = DataVector(grid.getStorage().dim())
     fout = gzOpen(filename, mode)
 
     # evaluate 1d function
     if grid.getStorage().dim() == 1:
-        fout.write("#plot '-' w l\n")
+        fout.write("#set term png truecolor enhanced\n")
+        fout.write("#set out '%s.png'\n" % (filename))
+        if data and fvals:
+            fout.write("plot '-' w p lw 2, '-' w l\n")
+            for i in xrange(len(fvals)):
+                fout.write("%g %g\n" % (data.get(i,0), fvals[i]))
+            fout.write("e\n")
+        else:
+            fout.write("plot '-' w l\n")
         for x in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
                 pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
     elif grid.getStorage().dim() == 2:
-        fout.write("#splot '-' w pm3d\n")
+        fout.write("#set term png truecolor enhanced\n")
+        fout.write("#set out '%s.png'\n" % (filename))
+        if data and fvals:
+            fout.write("splot '-' w p lw 2, '-' w pm3d\n")
+            for i in xrange(len(fvals)):
+                fout.write("%g %g %g\n" % (data.get(i,0), data.get(i, 1), fvals[i]))
+            fout.write("e\n")
+        else:
+            fout.write("splot '-' w pm3d\n")
         for x in xrange(resolution):
             for y in xrange(resolution):
                 p[0] = float(x) / (resolution - 1)
@@ -970,15 +988,16 @@ def readGridAlpha(fnamegrid, fnamealpha):
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 ## An array containing all modes and descriptions
-zeh_modes = {
+CModes = {
     "laplace" : "Classical Laplacian. See OpLaplaceAdaptive",
     "identity" : "Identity matrix, most efficient.",
     "identity_no_level1" : "Identity matrix, most efficient. But do not penalize Level 1",
-    "ratio" : "Preferres quadratical supports. See OpPseudo",
-    "levelsum" : "Sum of the levels, scaled by the gridlevel (usually 2 for adaptive SGs). See OpPseudo",
-    "energy" : "Energy-norm-like SGs. See OpPseudo",
-    "copy" : "Sum of the rows of classical Laplacian. See OpLaplaceAdaptive",
-    "pseudounit" : "???"}
+    "anisotropicpenalty" : "Preferres quadratical supports. See OperationRegularizationDiagonal.",
+    "levelsum" : "Sum of the levels, scaled by the gridlevel (usually 2 for adaptive SGs).",
+    "isotropicpenalty" : "Energy-norm-like SGs. See OperationRegularizationDiagonal.",
+    "rowsum" : "Sum of the rows of classical Laplacian. See OpLaplaceAdaptive",
+    "hkmix": "H^k_mix norm; requires parameter Hk",
+    "h0hklaplace" : "Pseudo-Laplace with H^k in one, and 'H^0' in the remaining dimensions each; requires paramer Hk"}
     
 ## base function types
 base_types = {
@@ -992,7 +1011,7 @@ base_types = {
 # the matrix C and computing the RHS b.
 # @todo fully update to pysgpp
 class Matrix:
-    def __init__(self, grid, x, l, mode, base = None):
+    def __init__(self, grid, x, l, mode, Hk, base = None):
         self.grid = grid
         self.x = x
         self.l = l
@@ -1007,24 +1026,44 @@ class Matrix:
             self.C = createOperationIdentity(grid)
         elif self.CMode == "identity_no_level1":
             pass
-        elif self.CMode == "ratio":
-            self.C = OpPseudo(grid)
-            self.C.initRatio()
+        elif self.CMode == "anisotropicpenalty":
+            self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.ANISOTROPIC_PENALTY, 0)
         elif self.CMode == "levelsum":
-            pass
-#            self.C = OpPseudo(grid)
-#            self.C.initLevelSum()
-        elif self.CMode == "energy":
-            self.C = OpPseudo(grid)
-            self.C.initEnergy()
-        elif self.CMode == "copy":
-#            self.C = OpPseudo(grid)
-#            self.C.initCopyFrom()
-            self.C = createOperationLaplace(grid)
+            temp = DataVector(grid.getStorage().size())
+            # fill temp vector with levelsums
+            gridStorage = self.grid.getStorage()
+            for i in range(gridStorage.size()):
+                gp = gridStorage.get(i)
+                temp[i] = gp.getLevelSum()
+            class Diagop(object):
+                def __init__(self, d):
+                    self.d = d
+                def mult(self, a, res):
+                    res.copyFrom(a)
+                    res.componentwise_mult(self.d)
+            self.C = Diagop(temp)
+
+        elif self.CMode == "isotropicpenalty":
+            self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.ISOTROPIC_PENALTY, 0)
+        elif self.CMode == "rowsum":
+            opL = createOperationLaplace(grid)
+            dva = DataVector(grid.getStorage().size())
+            dva.setAll(1)
+            dres = DataVector(len(dva))
+            opL.mult(dva, dres)
+            class Diagop(object):
+                def __init__(self, d):
+                    self.d = d
+                def mult(self, a, res):
+                    res.copyFrom(a)
+                    res.componentwise_mult(self.d)
+            self.C = Diagop(dres)
         elif self.CMode == "pseudounit":
-            self.C = OpPseudo(grid)
-            self.C.initPseudoUnit()
-        
+            raise Exception("not implemented")
+        elif self.CMode == "hkmix":
+            self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.HKMIX, Hk)
+        elif self.CMode == "h0hklaplace":
+            self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.H0HKLAPLACE, Hk)
     
     def generateb(self, y):
         b = DataVector(self.grid.getStorage().size())
@@ -1038,7 +1077,13 @@ class Matrix:
         self.B.mult(alpha, temp)
         self.B.multTranspose(temp, result)
 
-        if self.CMode == "laplace":
+        if (self.CMode == "laplace" or
+            self.CMode == "hkmix" or 
+            self.CMode == "h0hklaplace" or
+            self.CMode == "isotropicpenalty" or
+            self.CMode == "anisotropicpenalty" or
+            self.CMode == "rowsum" or
+            self.CMode == "levelsum"):
             temp = DataVector(len(alpha))
             self.C.mult(alpha, temp)
             result.axpy(M*self.l, temp)
@@ -1056,42 +1101,27 @@ class Matrix:
             i = gridStorage.seq(gi)
             result[i] = result[i] - M*self.l*alpha[i]
             
-        elif self.CMode == "ratio":
-            temp = DataVector(len(alpha))
-            # @todo: implement
-            self.C.applyRatio(alpha, temp)
-            result.axpy(M*self.l, temp)
-            
-        elif self.CMode == "levelsum":
-            temp = DataVector(len(alpha))
-            # fill temp vector with levelsums
-            gridStorage = self.grid.getStorage()
-            for i in range(gridStorage.size()):
-                gp = gridStorage.get(i)
-                temp[i] = gp.getLevelSum()*alpha[i]
-            result.axpy(M*self.l, temp)
-
-        elif self.CMode == "energy":
-            temp = DataVector(len(alpha))
-            # @todo: implement
-            self.C.applyRatio(alpha, temp)
-            result.axpy(M*self.l, temp)
-
-        elif self.CMode == "copy":
-            # completely inefficient, but sufficient for test purposes
-            temp = DataVector(len(alpha))
-            ones = DataVector(len(alpha))
-            ones.setAll(1)
-            self.C.mult(ones, temp)
-            for i in range(len(alpha)):
-                temp[i] = temp[i]*alpha[i]
-            result.axpy(M*self.l, temp)
+#        elif self.CMode == "levelsum":
+#            temp = DataVector(len(alpha))
+#            # fill temp vector with levelsums
+#            gridStorage = self.grid.getStorage()
+#            for i in range(gridStorage.size()):
+#                gp = gridStorage.get(i)
+#                temp[i] = gp.getLevelSum()*alpha[i]
+#            result.axpy(M*self.l, temp)
+#
+#        elif self.CMode == "rowsum":
+#            # completely inefficient, but sufficient for test purposes
+#            temp = DataVector(len(alpha))
+#            ones = DataVector(len(alpha))
+#            ones.setAll(1)
+#            self.C.mult(ones, temp)
+#            for i in range(len(alpha)):
+#                temp[i] = temp[i]*alpha[i]
+#            result.axpy(M*self.l, temp)
         
         elif self.CMode == "pseudounit":
-            temp = DataVector(len(alpha))
-            # @todo: implement
-            self.C.applyRatio(alpha,temp)
-            result.axpy(M*self.l,temp)
+            raise Exception("not implemented")
 
         else:
             sys.stderr.write("Error! Mode %s not existant!\n" % (self.CMode))

@@ -281,7 +281,7 @@ def doApply():
     print "Accuracy on test data: %9.5f%%" % (100*acc)
     
     if options.regression: 
-        m = Matrix(grid, buildTrainingVector(data), options.regparam, options.zeh)
+        m = Matrix(grid, buildTrainingVector(data), options.regparam, options.CMode, options.Hk)
         mse = evaluateError(buildYVector(data), alpha, m)[0]
             
     # get filename for output file
@@ -360,7 +360,7 @@ def doEval():
             classes.append(val)
         if compute_accuracy:
             # output accuracy:
-            m = Matrix(grid, x, options.regparam, options.zeh)
+            m = Matrix(grid, x, options.regparam, options.CMode, options.Hk)
             evaluateError(y, alpha, m)[0]
 
     # get filename for output file
@@ -475,7 +475,7 @@ def run(grid, training, classes):
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
 
-        m = Matrix(grid, training, options.regparam, options.zeh)
+        m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
         b = m.generateb(classes)
             
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
@@ -564,7 +564,7 @@ def doTest():
     adaptStep = 0
     while True: #loop exit condition on the end of the loop
         print "Adaptive Step:", (options.adapt_start + adaptStep)
-        m = Matrix(grid, training, options.regparam, options.zeh)
+        m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
         b = m.generateb(y)
         
         alpha = DataVector(grid.getStorage().size())
@@ -580,7 +580,7 @@ def doTest():
             tr, errors = evaluateError(y, alpha, m)
             tr_refine.append(tr)
             print "Test Data:"
-            m_test = Matrix(grid, test_data, options.regparam, options.zeh)
+            m_test = Matrix(grid, test_data, options.regparam, options.CMode, options.Hk)
             mse = evaluateError(test_classes, alpha, m_test)[0]
             te_refine.append(mse)
         else:     
@@ -644,6 +644,15 @@ def doTest():
         writeStats(options.stats, txt)
         if options.verbose: print txt
     
+    if(options.gnuplot != None):
+        if(dim != 1 and dim != 2):
+            print("Wrong dimension for gnuplot-Output!")
+        else:
+            if options.gnuplotdata:
+                writeGnuplot(options.gnuplot, grid, alpha, options.res, data=training, fvals=y)
+            else:
+                writeGnuplot(options.gnuplot, grid, alpha, options.res)
+
     return (tr_refine, te_refine, num_refine)
 
 ##
@@ -788,7 +797,7 @@ def performFold(dvec,cvec):
 #            alpha.setAll(0.0)
             training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
             
-            m = Matrix(grid, training, options.regparam, options.zeh)
+            m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
             b = m.generateb(classes)
 
             res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
@@ -874,7 +883,7 @@ def performFoldNew(dvec,cvec,ifold):
         # construct and solve CG
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
-        m = Matrix(grid, data_tr, options.regparam, options.zeh)
+        m = Matrix(grid, data_tr, options.regparam, options.CMode, options.Hk)
         b = m.generateb(class_tr)
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, 
                      options.reuse, options.verbose, max_threshold=options.max_r)
@@ -886,7 +895,7 @@ def performFoldNew(dvec,cvec,ifold):
 
         # compute accuracy on test set
         # Therefore construct and solve CG again for whole training data and evaluate on test data
-        m = Matrix(grid, training, options.regparam, options.zeh)
+        m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
         b = m.generateb(classes)
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, 
                      True, options.verbose, max_threshold=options.max_r)
@@ -947,7 +956,7 @@ def performFoldRegression(dvec,cvec):
 #            alpha.setAll(0.0)
             training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
             
-            m = Matrix(grid, training, options.regparam, options.zeh)
+            m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
             b = m.generateb(classes)
 
             res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
@@ -1205,7 +1214,7 @@ if __name__=='__main__':
     parser.add_option("--adapt_start", action="store", type="int", default=0, dest="adapt_start", metavar="NUM", help="The index of adapt step to begin with")
     parser.add_option("--adapt_threshold", action="store", type="float", default=0.0, dest="adapt_threshold", metavar="NUM", help="The threshold, an error or alpha has to be greater than in order to be reined.")
     parser.add_option("-m", "--mode", action="store", type="string", default="apply", dest="mode", help="Specifies the action to do. Get help for the mode please type --mode help.")
-    parser.add_option("-C", "--zeh", action="store", type="string", default="laplace", dest="zeh", help="Specifies the action to do.")
+    parser.add_option("-C", "--CMode", action="store", type="string", default="laplace", dest="CMode", help="Specifies the action to do.")
     parser.add_option("-f", "--foldlevel", action="store", type="int",default=10, metavar="LEVEL", dest="f_level", help="If a fold mode is selected, this specifies the number of sets generated")
     parser.add_option("--onlyfoldnum", action="store", type="int", default=-1, metavar="I", dest="onlyfoldnum", help="Run only fold I in n-fold cross-validation. Default: run all")
     parser.add_option("-L", "--lambda", action="store", type="float",default=0.000001, metavar="LAMBDA", dest="regparam", help="Lambda")
@@ -1220,6 +1229,7 @@ if __name__=='__main__':
     parser.add_option("-o", "--outfile", action="store", type="string", dest="outfile", help="Filename where the calculated alphas are stored")
     parser.add_option("--gridfile", action="store", type="string", dest="gridfile", help="Filename where the resulting grid is stored")
     parser.add_option("-g", "--gnuplot", action="store", type="string", dest="gnuplot", help="In 2D case, the generated can be stored in a gnuplot readable format.")
+    parser.add_option("--gnuplotdata", action="store_true", dest="gnuplotdata", default=False, help="In 2D case, the generated can be stored in a gnuplot readable format.")
     parser.add_option("-R", "--resolution", action="store", type="int",default=50, metavar="RESOLUTION", dest="res", help="Specifies the resolution of the gnuplotfile")
     parser.add_option("-s", "--stats", action="store", type="string", dest="stats", help="In this file the statistics from the test are stored")
     parser.add_option("-p", "--polynom", action="store", type="int", default=0, dest="polynom", help="Sets the maximum degree for high order basis functions. Set to 2 or larger to activate. Works only with 'identity' and 'fold'-modes.")
@@ -1238,6 +1248,7 @@ if __name__=='__main__':
     parser.add_option("--epochs_limit", action="store", type="int", default="0", dest="epochs_limit", help="Number of refinement iterations (epochs), MSE of test data have to increase, before refinement will stop.")
     parser.add_option("--mse_limit", action="store", type="float", default="0.0", dest="mse_limit", help="If MSE of test data fall below this limit, refinement will stop.")
     parser.add_option("--grid_limit", action="store", type="int", default="0", dest="grid_limit", help="If the number of points on grid exceed grid_limit, refinement will stop.")
+    parser.add_option("--Hk", action="store", type="float", default="1.0", dest="Hk", help="Parameter k for regularization with H^k norm. For certain CModes.")
 
     parser.add_option("--function_type", action="store", type="choice", default=None, dest="function_type", choices=['modWavelet'],
                       help="Choose type for non-standard basis functions")
@@ -1246,22 +1257,23 @@ if __name__=='__main__':
     (options,args)=parser.parse_args()
 
     # check some options
-    zeh = options.zeh.lower()
+    CMode = options.CMode.lower()
 
     #this incrementation is unobvious, the default value of options.adaptive 
     #options.adaptive = options.adaptive + 1
 
     # check C-mode
-    if zeh == "help":
+    if CMode == "help":
         print "The following C-modes are available:"
-        for m in zeh_modes.keys():
-            print "%15s: %s" % (m, zeh_modes[m])
+        for m in CModes.keys():
+            print "%15s: %s" % (m, CModes[m])
         sys.exit(0)
-    elif zeh not in zeh_modes.keys():
-        print("Wrong C-mode! Please refer to --C help for further information.")
+    elif CMode not in CModes.keys():
+        print CMode, CModes.keys()
+        print("Wrong C-mode! Please refer to '-C help' for further information.")
         sys.exit(1)
 
-    if options.polynom > 1 and zeh != "identity":
+    if options.polynom > 1 and CMode != "identity":
         print("Wrong C-mode selected for high-order grids.")
         sys.exit(1)
 
