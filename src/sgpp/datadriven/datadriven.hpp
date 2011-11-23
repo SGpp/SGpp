@@ -11,7 +11,6 @@
 
 #include "datadriven/algorithm/test_dataset.hpp"
 #include "datadriven/algorithm/DMSystemMatrix.hpp"
-#include "datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "datadriven/algorithm/DMWeightMatrix.hpp"
 #include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"

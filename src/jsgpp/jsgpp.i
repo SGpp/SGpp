@@ -94,8 +94,8 @@ namespace std {
 %include "src/sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp"
 %include "src/sgpp/base/algorithm/sweep.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
-%include "src/sgpp/finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-%include "src/sgpp/finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 %include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 %include "src/sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
 

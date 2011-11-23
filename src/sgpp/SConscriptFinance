@@ -8,7 +8,7 @@ Import("env")
 
 srcs = Split("""
 finance/algorithm/BlackScholesParabolicPDESolverSystem.cpp
-finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
+finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
 finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 finance/algorithm/BlackScholesPATParabolicPDESolverSystem.cpp
 finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp

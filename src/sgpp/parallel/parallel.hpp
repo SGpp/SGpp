@@ -10,6 +10,4 @@
 
 //#include "parallel/operation/ParallelOpFactory.hpp"
 
-
-
 #endif /* PARALLEL_HPP */

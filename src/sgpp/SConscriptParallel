@@ -7,11 +7,15 @@
 Import("env")
 
 srcs = Split("""
-datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
-datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 
-datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
-datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
+parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
+parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
+
+parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
+parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
+
+parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
+parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
 
 parallel/operation/ParallelOpFactory.cpp
 """)
