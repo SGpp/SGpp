@@ -8,6 +8,7 @@ PRECISION="SP DP"
 
 ###### DO NOT MODIFY BELOW THIS LINE #######
 export KMP_AFFINITY=compact,granularity=thread,verbose
+#export GOMP_CPU_AFFINITY="0-7"
 . /opt/intel/bin/compilervars.sh intel64
 . /opt/intel/arbb/1.0.0.026/tools/arbbvars.sh intel64
 for VEC in $VECTYPE
