@@ -30,7 +30,7 @@ namespace op_factory
 
   /**
    * Factory method, returning an OperationHierarchisation for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used for hierarchisation
    * @return Pointer to the new OperationHierarchisation object for the Grid grid
@@ -38,7 +38,7 @@ namespace op_factory
   base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid);
   /**
    * Factory method, returning an OperationQuadrature for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used for quadrature
    * @return Pointer to the new OperationQuadrature for the Grid grid
@@ -46,7 +46,7 @@ namespace op_factory
   base::OperationQuadrature* createOperationQuadrature(base::Grid& grid);
   /**
    * Factory method, returning an OperationConvert for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used for conversion
    * @return Pointer to the new OperationConvert object for the Grid grid
@@ -54,7 +54,7 @@ namespace op_factory
   base::OperationConvert* createOperationConvert(base::Grid& grid);
   /**
    * Factory method, returning an OperationIdentity for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    * Just calls OperationIdentity() independent of grid; factory method 
    * provided for uniform use.
    *
@@ -63,7 +63,7 @@ namespace op_factory
   base::OperationMatrix* createOperationIdentity(base::Grid& grid);
   /**
    * Factory method, returning an OperationEval for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationEval object for the Grid grid
@@ -71,7 +71,7 @@ namespace op_factory
   base::OperationEval* createOperationEval(base::Grid& grid);
   /**
    * Factory method, returning an OperationMultipleEval for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for

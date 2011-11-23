@@ -25,6 +25,9 @@ datadriven/basis/prewavelet/operation/OperationTestPrewavelet.cpp
 datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.cpp
 datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.cpp
 
+datadriven/operation/OperationRegularizationDiagonal.cpp
+datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.cpp
+
 datadriven/operation/DatadrivenOpFactory.cpp
 """)
 

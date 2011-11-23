@@ -116,6 +116,8 @@ namespace std {
 %include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
  //%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+%include "src/sgpp/datadriven/operation/OperationRegularizationDiagonal.hpp"
+%include "src/sgpp/datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 #endif
 
 #ifdef SG_PDE
@@ -244,12 +246,12 @@ namespace std {
 %rename(__sub__) combigrid::CombigridLevelVector::operator-;
 %rename(__new__) combigrid::CombigridLevelVector::operator=; 
 
-%template(ComplexDouble) complex<double>;
-
-%include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
-%template(doubleFullGrid) combigrid::FullGrid<double>;
-%template(FullGridC) combigrid::FullGrid< complex<double> >;
-%template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
-%template(CombiGridKernelD) combigrid::CombiGridKernel< double >;   
-%template(ComplexVector) std::vector< complex<double> >;
+//%template(ComplexDouble) complex<double>;
+//
+//%include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
+//%template(doubleFullGrid) combigrid::FullGrid<double>;
+//%template(FullGridC) combigrid::FullGrid< complex<double> >;
+//%template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
+//%template(CombiGridKernelD) combigrid::CombiGridKernel< double >;   
+//%template(ComplexVector) std::vector< complex<double> >;
 #endif

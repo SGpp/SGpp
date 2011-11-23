@@ -25,7 +25,7 @@ namespace op_factory
 {
   /**
    * Factory method, returning an OperationGamma (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * This operation calculates the following bilinear form which is 
    * needed to solve the Black Scholes equation:
@@ -38,7 +38,7 @@ namespace op_factory
   base::OperationMatrix* createOperationGamma(base::Grid& grid, base::DataMatrix& coef);
   /**
    * Factory method, returning an OperationGammaLog (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * This operation calculates the following bilinear form which is 
    * needed to solve the Black Scholes equation:
@@ -51,7 +51,7 @@ namespace op_factory
   base::OperationMatrix* createOperationGammaLog(base::Grid& grid, base::DataMatrix& coef);
   /**
    * Factory method, returning an OperationLB (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
@@ -59,7 +59,7 @@ namespace op_factory
   base::OperationMatrix* createOperationLB(base::Grid& grid);
   /**
    * Factory method, returning an OperationLE (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
@@ -67,7 +67,7 @@ namespace op_factory
   base::OperationMatrix* createOperationLE(base::Grid& grid);
   /**
    * Factory method, returning an OperationLD (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
@@ -75,7 +75,7 @@ namespace op_factory
   base::OperationMatrix* createOperationLD(base::Grid& grid);
   /**
    * Factory method, returning an OperationLF (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
@@ -83,7 +83,7 @@ namespace op_factory
   base::OperationMatrix* createOperationLF(base::Grid& grid);
   /**
    * Factory method, returning an OperationDelta (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * This operation calculates the following bilinear form which is 
    * needed to solve the Black Scholes equation:
@@ -96,7 +96,7 @@ namespace op_factory
   base::OperationMatrix* createOperationDelta(base::Grid& grid, base::DataVector& coef);
   /**
    * Factory method, returning an OperationDeltaLog (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * This operation calculates the following bilinear form which is 
    * needed to solve the Black Scholes equation:

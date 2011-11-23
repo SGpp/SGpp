@@ -23,7 +23,7 @@ namespace op_factory
 {
   /**
    * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
@@ -31,7 +31,7 @@ namespace op_factory
   base::OperationMatrix* createOperationLaplace(base::Grid& grid);
   /**
    * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @param coef Coefficient vector for OperationLaplace
@@ -40,7 +40,7 @@ namespace op_factory
   base::OperationMatrix* createOperationLaplace(base::Grid& grid, sg::base::DataVector& coef);
   /**
    * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
@@ -48,7 +48,7 @@ namespace op_factory
   base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid);
   /**
    * Factory method, returning an OperationUpDownTest (OperationMatrix) for the grid at hand.
-   * Note: object has to bee freed after use.
+   * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used
    * @return Pointer to the new OperationMatrix object for the Grid grid
