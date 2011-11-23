@@ -1,21 +1,21 @@
 #!/bin/sh
 # run specific variables, please adjust
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=32
 # prefix for result files
-RESPRE=Bulldozer
+RESPRE=SNB-EP
 VECTYPE="AVX"
 PRECISION="SP DP"
 
 ###### DO NOT MODIFY BELOW THIS LINE #######
 export KMP_AFFINITY=compact,granularity=thread,verbose
 . /opt/intel/bin/compilervars.sh intel64
-#. /opt/intel/arbb/1.0.0.026/tools/arbbvars.sh intel64
+. /opt/intel/arbb/1.0.0.026/tools/arbbvars.sh intel64
 for VEC in $VECTYPE
 do
 	for PREC in $PRECISION
 	do
 		# test Checkerboard, linear boundary
-		#../bin/ClassifyBenchmark ../input/chess_05D_3fields_tr.dat.arff ../input/chess_05D_3fields_te.dat.arff 0 ${PREC} linearboundary 3 0.000001 250 0.0001 6 0.0 100 250 0.0001 2>&1 | tee ../log/${RESPRE}_ChkBrd_${VEC}_linearboundary_${PREC}.log
+		../bin/ClassifyBenchmark ../input/chess_05D_3fields_tr.dat.arff ../input/chess_05D_3fields_te.dat.arff 0 ${PREC} linearboundary 3 0.000001 250 0.0001 6 0.0 100 250 0.0001 2>&1 | tee ../log/${RESPRE}_ChkBrd_${VEC}_linearboundary_${PREC}.log
 		# test Checkerboard, mod linear
 		../bin/ClassifyBenchmark ../input/chess_05D_3fields_tr.dat.arff ../input/chess_05D_3fields_te.dat.arff 0 ${PREC} modlinear 5 0.0000001 250 0.0001 8 0.0 100 250 0.0001 2>&1 | tee ../log/${RESPRE}_ChkBrd_${VEC}_modlinear_${PREC}.log
 		# test DR5, linear boundary
