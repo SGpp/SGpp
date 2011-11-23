@@ -54,7 +54,7 @@ namespace std {
 #include "finance/finance.hpp"
 #endif
 #ifdef SG_SOLVER
-#include "base/solver/solver.hpp"
+#include "solver/solver.hpp"
 #endif
 #ifdef SG_PARALLEL
 #include "parallel/parallel.hpp"
@@ -132,8 +132,8 @@ namespace std {
 
 
 #ifdef SG_FINANCE
-%include "src/sgpp/finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-%include "src/sgpp/finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 %include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 %include "src/sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
 %include "src/sgpp/finance/application/BlackScholesSolver.hpp"
