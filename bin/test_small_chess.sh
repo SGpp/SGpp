@@ -19,4 +19,5 @@ do
 	../bin/ClassifyBenchmark ../input/CB5d_train_unit.labeled ../input/CB5d_test_unit.labeled 0 ${PREC} modlinear 8 0.000001 250 0.00000001 0 0.0 100 20 0.000001 2>&1 | tee ../log/${RESPRE}_chess_small_modlinear_${PREC}_Level_8.log
 	../bin/ClassifyBenchmark ../input/CB5d_train_unit.labeled ../input/CB5d_test_unit.labeled 0 ${PREC} modlinear 9 0.000001 250 0.00000001 0 0.0 100 20 0.000001 2>&1 | tee ../log/${RESPRE}_chess_small_modlinear_${PREC}_Level_9.log
 	../bin/ClassifyBenchmark ../input/CB5d_train_unit.labeled ../input/CB5d_test_unit.labeled 0 ${PREC} modlinear 10 0.000001 250 0.00000001 0 0.0 100 20 0.000001 2>&1 | tee ../log/${RESPRE}_chess_small_modlinear_${PREC}_Level_10.log
+	../bin/ClassifyBenchmark ../input/CB5d_train_unit.labeled ../input/CB5d_test_unit.labeled 0 ${PREC} modlinear 4 0.000001 250 0.00000001 7 0.0 100 20 0.000001 2>&1 | tee ../log/${RESPRE}_chess_small_modlinear_${PREC}_adaptive.log
 done
