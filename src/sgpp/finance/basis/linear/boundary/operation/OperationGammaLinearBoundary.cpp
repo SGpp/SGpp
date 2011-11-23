@@ -7,17 +7,17 @@
 
 #include "finance/basis/linear/boundary/operation/OperationGammaLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

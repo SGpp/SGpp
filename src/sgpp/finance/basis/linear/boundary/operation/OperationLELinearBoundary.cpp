@@ -8,8 +8,8 @@
 #include "finance/basis/linear/boundary/operation/OperationLELinearBoundary.hpp"
 
 
-#include "base/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp"
-#include "base/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 
 namespace sg

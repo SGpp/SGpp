@@ -7,10 +7,10 @@
 
 #include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
-#include "base/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp"
-#include "base/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp"
-#include "base/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
-#include "base/basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
+#include "pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp"
+#include "pde/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp"
+#include "pde/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
+#include "pde/basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

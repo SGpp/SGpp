@@ -39,13 +39,14 @@ for f in sys.argv[1:]:
     # do replacements:
     for rn in renames:
         if len(rn) == 2:
+            rn = map(lambda l: os.path.relpath(l), rn)
             # for xpp files
-            txt = re.sub('"'+rn[0][2:]+'"', '"'+rn[1][2:]+'"', txt)
+            txt = re.sub('"'+rn[0]+'"', '"'+rn[1]+'"', txt)
             # for .i files
-            txt = re.sub('"src/sgpp/'+rn[0][2:]+'"', '"src/sgpp/'+rn[1][2:]+'"', txt)
+            txt = re.sub('"src/sgpp/'+rn[0]+'"', '"src/sgpp/'+rn[1]+'"', txt)
             # for SConstructs
-            regexp = re.compile('^'+rn[0][2:]+'$', re.MULTILINE)
-            txt = re.sub(regexp, rn[1][2:], txt)
+            regexp = re.compile('^'+rn[0]+'$', re.MULTILINE)
+            txt = re.sub(regexp, rn[1], txt)
 
     # feedback
     if not txtold == txt:

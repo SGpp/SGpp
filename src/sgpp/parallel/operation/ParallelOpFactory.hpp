@@ -12,8 +12,8 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/datatypes/DataMatrixSP.hpp"
 
-#include "datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include "parallel/operation/OperationMultipleEvalVectorized.hpp"
+#include "parallel/operation/OperationMultipleEvalVectorizedSP.hpp"
 
 /*
  * This file contains factory methods for operations.

@@ -9,7 +9,7 @@
 
 //#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp"
 //#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
-#include "base/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp"
+#include "pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp"
 #include "base/algorithm/sweep.hpp"
 
 namespace sg

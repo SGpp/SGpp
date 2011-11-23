@@ -7,16 +7,16 @@
 
 #include "finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp"
 
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp"
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
+#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp"
+#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
 
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.hpp"
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.hpp"
+#include "finance/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.hpp"
+#include "finance/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.hpp"
 
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.hpp"
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.hpp"
+#include "finance/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.hpp"
+#include "finance/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.hpp"
 
-#include "base/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp"
+#include "pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

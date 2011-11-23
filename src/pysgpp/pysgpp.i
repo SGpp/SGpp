@@ -54,7 +54,7 @@ namespace std {
 #include "finance/finance.hpp"
 #endif
 #ifdef SG_SOLVER
-#include "solver/solver.hpp"
+#include "base/solver/solver.hpp"
 #endif
 #ifdef SG_PARALLEL
 #include "parallel/parallel.hpp"
@@ -132,12 +132,12 @@ namespace std {
 
 
 #ifdef SG_FINANCE
-%include "src/sgpp/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-%include "src/sgpp/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
-%include "src/sgpp/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
+%include "src/sgpp/finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+%include "src/sgpp/finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 %include "src/sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
-%include "src/sgpp/pde/application/BlackScholesSolver.hpp"
-%include "src/sgpp/pde/application/BlackScholesSolverWithStretching.hpp"
+%include "src/sgpp/finance/application/BlackScholesSolver.hpp"
+%include "src/sgpp/finance/application/BlackScholesSolverWithStretching.hpp"
 %include "src/sgpp/pde/application/HeatEquationSolver.hpp"
 %include "src/sgpp/pde/application/HeatEquationSolverWithStretching.hpp"
 %include "src/sgpp/pde/application/EllipticPDESolver.hpp"
@@ -146,8 +146,8 @@ namespace std {
  //%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
 #endif
 
-%include "src/sgpp/datadriven/algorithm/AlgorithmDGEMV.hpp"
-%include "src/sgpp/datadriven/algorithm/AlgorithmMultipleEvaluation.hpp"
+%include "src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
+%include "src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"
 
 %include "src/sgpp/base/algorithm/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/base/algorithm/AlgorithmEvaluation.hpp"

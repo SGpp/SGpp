@@ -7,11 +7,11 @@
 
 #include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 
-#include "base/basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.hpp"
-#include "base/basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.hpp"
+#include "pde/basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.hpp"
+#include "pde/basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.hpp"
 
-#include "base/basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.hpp"
-#include "base/basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.hpp"
+#include "pde/basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.hpp"
+#include "pde/basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

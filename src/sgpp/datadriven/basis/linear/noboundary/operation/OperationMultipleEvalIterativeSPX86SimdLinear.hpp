@@ -8,7 +8,7 @@
 #ifndef OPERATIONBITERATIVESPX86SIMDLINEAR_HPP
 #define OPERATIONBITERATIVESPX86SIMDLINEAR_HPP
 
-#include "datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include "parallel/operation/OperationMultipleEvalVectorizedSP.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 

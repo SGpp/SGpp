@@ -14,7 +14,7 @@
 #include "solver/sle/ConjugateGradients.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
-#include "datadriven/operation/OperationMultipleEval.hpp"
+#include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "datadriven/algorithm/DMWeightMatrix.hpp"
 #include "datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp"
