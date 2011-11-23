@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
 #include "base/exception/operation_exception.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
 

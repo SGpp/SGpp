@@ -8,7 +8,7 @@
 #ifndef OPERATIONMULTIPLEEVALITERATIVESPOCLLINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVESPOCLLINEAR_HPP
 
-#include "parallel/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
 #include "parallel/datadriven/basis/common/OCLKernels.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"

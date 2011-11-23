@@ -8,7 +8,7 @@
 #ifndef OPERATIONMULTIPLEEVALITERATIVESPARBBLINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVESPARBBLINEAR_HPP
 
-#include "parallel/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
 #include "parallel/datadriven/basis/common/ArBBKernels.hpp"
 #include "parallel/datadriven/basis/common/ArBBKernels2D.hpp"
 #include "parallel/datadriven/basis/common/ArBBKernels4D.hpp"

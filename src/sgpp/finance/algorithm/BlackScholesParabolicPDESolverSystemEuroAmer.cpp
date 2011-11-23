@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 #include "base/exception/algorithm_exception.hpp"
 #include "base/grid/generation/SurplusCoarseningFunctor.hpp"
 #include "base/grid/generation/SurplusRefinementFunctor.hpp"

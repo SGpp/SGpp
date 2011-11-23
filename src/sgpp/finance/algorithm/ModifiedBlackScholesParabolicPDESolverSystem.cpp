@@ -6,7 +6,7 @@
 // @author Chao qi (qic@in.tum.de)
 
 #include "finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 #include "base/exception/algorithm_exception.hpp"
 #include "base/grid/generation/SurplusCoarseningFunctor.hpp"
 #include "base/grid/generation/SurplusRefinementFunctor.hpp"

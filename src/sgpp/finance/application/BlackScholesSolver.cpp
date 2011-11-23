@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "finance/algorithm/BlackScholesPATParabolicPDESolverSystem.hpp"
 #include "finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.hpp"
