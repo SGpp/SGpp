@@ -10,7 +10,7 @@
 
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationMultipleEvalVectorized.hpp"
+#include "parallel/operation/OperationMultipleEvalVectorized.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 

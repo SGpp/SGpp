@@ -7,8 +7,8 @@
 
 #include "finance/basis/linear/boundary/operation/OperationLBLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

@@ -8,7 +8,7 @@
 #ifndef OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
 
-#include "datadriven/operation/OperationMultipleEvalVectorized.hpp"
+#include "parallel/operation/OperationMultipleEvalVectorized.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 

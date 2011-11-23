@@ -10,15 +10,15 @@
 
 #include "parallel/parallel/tools/MPI/SGppMPITools.hpp"
 
-#include "solver/sle/ConjugateGradientsMPI.hpp"
-#include "solver/sle/BiCGStabMPI.hpp"
+#include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
+#include "parallel/solver/sle/BiCGStabMPI.hpp"
 
-#include "pde/application/PoissonEquationSolverMPI.hpp"
-#include "pde/application/HeatEquationSolverMPI.hpp"
-#include "pde/application/BlackScholesSolverMPI.hpp"
+#include "parallel/pde/application/PoissonEquationSolverMPI.hpp"
+#include "parallel/pde/application/HeatEquationSolverMPI.hpp"
+#include "parallel/finance/application/BlackScholesSolverMPI.hpp"
 
-#include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
-#include "pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
-#include "pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
+#include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
+#include "parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
+#include "parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 
 #endif /* SGPP_MPI_HPP */

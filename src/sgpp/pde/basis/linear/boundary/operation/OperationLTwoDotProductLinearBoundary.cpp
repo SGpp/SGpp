@@ -7,8 +7,8 @@
 
 #include "pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

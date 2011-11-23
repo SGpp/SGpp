@@ -26,7 +26,7 @@
 #include "pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp"
 
 // @todo (heinecke) remove this when done
-#include "base/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.hpp"
+#include "pde/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.hpp"
 
 namespace sg
 {

@@ -11,7 +11,7 @@
 
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationMultipleEval.hpp"
+#include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/OperationMatrix.hpp"
 
 namespace sg

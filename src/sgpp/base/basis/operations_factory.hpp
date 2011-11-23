@@ -20,11 +20,11 @@
 
 #include "base/operation/OperationMatrix.hpp"
 #include "base/operation/OperationEval.hpp"
-#include "datadriven/operation/OperationMultipleEval.hpp"
+#include "base/operation/OperationMultipleEval.hpp"
 #include "pde/operation/OperationParabolicPDESolverSystem.hpp"
 #include "datadriven/operation/OperationTest.hpp"
-#include "datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include "parallel/operation/OperationMultipleEvalVectorized.hpp"
+#include "parallel/operation/OperationMultipleEvalVectorizedSP.hpp"
 #include "base/operation/OperationHierarchisation.hpp"
 #include "base/operation/OperationQuadrature.hpp"
 #include "base/operation/OperationConvert.hpp"
@@ -62,14 +62,14 @@
 #include "base/basis/poly/operation/OperationEvalPoly.hpp"
 #include "base/basis/prewavelet/operation/OperationEvalPrewavelet.hpp"
 
-#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
-#include "datadriven/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
-#include "datadriven/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp"
-#include "datadriven/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp"
-#include "datadriven/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp"
-#include "datadriven/basis/modwavelet/operation/OperationMultipleEvalModWavelet.hpp"
-#include "datadriven/basis/poly/operation/OperationMultipleEvalPoly.hpp"
-#include "datadriven/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.hpp"
+#include "base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
+#include "base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
+#include "base/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp"
+#include "base/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp"
+#include "base/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp"
+#include "base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.hpp"
+#include "base/basis/poly/operation/OperationMultipleEvalPoly.hpp"
+#include "base/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.hpp"
 
 #include "datadriven/basis/linear/noboundary/operation/OperationTestLinear.hpp"
 #include "datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.hpp"
@@ -100,11 +100,11 @@
 #include "finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.hpp"
 
 #include "datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp"
-#include "datadriven/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
+#include "base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.hpp"
 // @todo (heinecke) removed this when done
-#include "base/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.hpp"
+#include "pde/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.hpp"
 
 #include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 //#include "basis/linearstretched/boundary/operation/pde/financeHW1D/OperationLBLinearStretchedBoundary.hpp"
@@ -118,7 +118,7 @@
 #include "finance/basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.hpp"
 
 // Include all operations on the linearstretched grid
-#include "datadriven/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
+#include "base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
 #include "datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp"
 #include "base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp"
 #include "base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.hpp"

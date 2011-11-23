@@ -8,8 +8,8 @@
 
 #include "pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp"
 
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp"
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
+#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp"
+#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

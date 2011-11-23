@@ -7,17 +7,17 @@
 
 #include "finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.hpp"
 
-#include "base/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp"
-#include "base/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

@@ -26,8 +26,8 @@
 
 #include "base/application/ScreenOutput.hpp"
 
-#include "datadriven/algorithm/AlgorithmDGEMV.hpp"
-#include "datadriven/algorithm/AlgorithmMultipleEvaluation.hpp"
+#include "base/algorithm/AlgorithmDGEMV.hpp"
+#include "base/algorithm/AlgorithmMultipleEvaluation.hpp"
 #include "base/algorithm/GetAffectedBasisFunctions.hpp"
 #include "base/algorithm/AlgorithmEvaluation.hpp"
 #include "base/algorithm/AlgorithmEvaluationTransposed.hpp"
@@ -40,18 +40,18 @@
 
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
-#include "pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-#include "pde/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
-#include "pde/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
-#include "pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
-#include "pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
+#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+#include "finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
+#include "finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
+#include "finance/pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
 #include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 
-#include "pde/application/BlackScholesSolver.hpp"
-#include "pde/application/BlackScholesSolverWithStretching.hpp"
-#include "pde/application/HullWhiteSolver.hpp"
-#include "pde/application/BlackScholesHullWhiteSolver.hpp"
+#include "finance/application/BlackScholesSolver.hpp"
+#include "finance/application/BlackScholesSolverWithStretching.hpp"
+#include "finance/application/HullWhiteSolver.hpp"
+#include "finance/application/BlackScholesHullWhiteSolver.hpp"
 #include "pde/application/HeatEquationSolver.hpp"
 #include "pde/application/HeatEquationSolverWithStretching.hpp"
 #include "pde/application/LaserHeatEquationSolver2D.hpp"
@@ -100,7 +100,7 @@
 #include "solver/ode/AdamsBashforth.hpp"
 #include "solver/ode/VarTimestep.hpp"
 
-#include "finance/tools/IOToolBonnSG.hpp"
+#include "base/tools/IOToolBonnSG.hpp"
 #include "base/tools/GridPrinter.hpp"
 #include "base/tools/GridPrinterForStretching.hpp"
 #include "base/tools/SGppStopwatch.hpp"

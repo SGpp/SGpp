@@ -24,9 +24,9 @@
 #ifndef OPERATIONLAPLACEPREWAVELET_HPP
 #define OPERATIONLAPLACEPREWAVELET_HPP
 
-#include "base/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.hpp"
-#include "base/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp"
-#include "base/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp"
+#include "pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.hpp"
+#include "pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp"
+#include "pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp"
 #include "pde/algorithm/UpDownOneOpDimWithShadow.hpp"
 
 #include "base/operation/OperationMatrix.hpp"

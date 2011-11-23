@@ -7,10 +7,10 @@
 
 #include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
 
-#include "base/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
-#include "base/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
+#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
+#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
 
-#include "base/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp"
+#include "pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

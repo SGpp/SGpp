@@ -44,16 +44,16 @@
 #include "base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.hpp"
 
-#include "datadriven/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
-#include "datadriven/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
-#include "datadriven/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp"
-#include "datadriven/basis/poly/operation/OperationMultipleEvalPoly.hpp"
-#include "datadriven/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp"
-#include "datadriven/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp"
-#include "datadriven/basis/modwavelet/operation/OperationMultipleEvalModWavelet.hpp"
-#include "datadriven/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.hpp"
-#include "datadriven/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
-#include "datadriven/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
+#include "base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
+#include "base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
+#include "base/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp"
+#include "base/basis/poly/operation/OperationMultipleEvalPoly.hpp"
+#include "base/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp"
+#include "base/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp"
+#include "base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.hpp"
+#include "base/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.hpp"
+#include "base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
+#include "base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
 
 
 namespace sg
