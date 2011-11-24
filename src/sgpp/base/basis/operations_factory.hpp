@@ -103,8 +103,6 @@
 #include "base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.hpp"
-// @todo (heinecke) removed this when done
-#include "pde/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.hpp"
 
 #include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 //#include "basis/linearstretched/boundary/operation/pde/financeHW1D/OperationLBLinearStretchedBoundary.hpp"
@@ -247,16 +245,6 @@ namespace sg
       else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
         {
           return new OperationLTwoDotProductLinearStretchedBoundary(grid.getStorage());
-        }
-      else
-        throw factory_exception("OperationLaplace is not implemented for this grid type.");
-    }
-
-    static OperationMatrix* createOperationUpDownTest(Grid& grid)
-    {
-      if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
-        {
-          return new OperationUpDownTestLinearStretchedBoundary(grid.getStorage());
         }
       else
         throw factory_exception("OperationLaplace is not implemented for this grid type.");

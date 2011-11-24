@@ -11,10 +11,7 @@
 #include "base/grid/Grid.hpp"
 #include "base/grid/common/BoundingBox.hpp"
 #include "base/grid/common/Stretching.hpp"
-
 #include "base/datatypes/DataVector.hpp"
-
-#include "base/tools/IOToolBonnSG.hpp"
 #include "base/tools/GridPrinter.hpp"
 
 #include <vector>
@@ -164,28 +161,6 @@ public:
 	 * @param dThreshold Threshold for a point's surplus for coarsening this point
 	 */
 	void coarsenInitialGridSurplus(sg::base::DataVector& alpha, double dThreshold);
-
-	/**
-	 * Use this routine the construct a regular grid to solve the multi-dimensional Black Scholes Equation
-	 *
-	 * Use this routine if you want to solve a problem stored in the format provided by the solving system
-	 * released by the University of Bonn, Germany
-	 *
-	 * @param tfilename absolute path of the file
-	 * @param emptyAlpha reference to a sg::base::DataVector object that contains no elements
-	 * @param ishierarchized is set to true if alpha contains surplus after reading the file, otherwise false
-	 */
-	void constructGridBonn(std::string tfilename, sg::base::DataVector& emptyAlpha, bool& ishierarchized);
-
-	/**
-	 * Use this routine if you wnat to store a grid in the format provided by the solving system
-	 * released by the University of Bonn, Germany
-	 *
-	 * @param tfilename absolute path of the file
-	 * @param alpha reference to a sg::base::DataVector object that contains the gird ansatzfunction's coefficients
-	 * @param ishierarchized set to true, the export is done on the nodal basis
-	 */
-	void storeGridBonn(std::string tfilename, sg::base::DataVector& alpha, bool ishierarchized);
 
 	/**
 	 * Determines the value of the function in the d-dimensional space

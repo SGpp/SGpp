@@ -100,7 +100,6 @@
 #include "solver/ode/AdamsBashforth.hpp"
 #include "solver/ode/VarTimestep.hpp"
 
-#include "base/tools/IOToolBonnSG.hpp"
 #include "base/tools/GridPrinter.hpp"
 #include "base/tools/GridPrinterForStretching.hpp"
 #include "base/tools/SGppStopwatch.hpp"

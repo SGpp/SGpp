@@ -59,7 +59,6 @@ finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
-base/tools/IOToolBonnSG.cpp
 finance/tools/Hedging.cpp
 finance/application/BlackScholesSolverWithStretching.cpp
 finance/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
