@@ -53,10 +53,10 @@ UPDOWN_PARADIMS=4
 ###################################################################
 # Compiler Flags
 ###################################################################	
-CFLAGS_GCC:=-Wall -pedantic -ansi -c -O3 -funroll-loops -fstrict-aliasing -mfpmath=sse -I$(SRCDIR) 
+CFLAGS_GCC:=-Wall -pedantic -ansi -c -O3 -funroll-loops -fstrict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-CFLAGS_ICC:=-Wall -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -I$(SRCDIR) 
+CFLAGS_ICC:=-Wall -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR) 
 LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
 
 ifeq ($(CC),g++)
@@ -169,19 +169,19 @@ CFLAGS:=$(CFLAGS) -DTASKS_PARALLEL_UPDOWN=$(UPDOWN_PARADIMS)
 default:
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/sgpplib_gcc
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "EXT=$(EXT)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc" "EXT=$(EXT)"
 endif
 ifeq ($(CC),opencc)
 	mkdir -p tmp/build_native/sgpplib_opencc
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_opencc "CC=/opt/x86_open64-4.2.5.2/bin/$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_opencc.a" "EXT=$(EXT)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_opencc "CC=/opt/x86_open64-4.2.5.2/bin/$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_opencc" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/sgpplib_icc
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "EXT=$(EXT)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc" "EXT=$(EXT)"
 endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/sgpplib_mpiicc
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "EXT=$(EXT)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc" "EXT=$(EXT)"
 endif
 
 

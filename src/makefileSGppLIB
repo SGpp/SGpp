@@ -233,8 +233,6 @@ OBJS =	DataVector.o\
 	DowndPhidPhiBBIterativeLinearStretched.o\
 	DowndPhidPhiBBIterativeLinearStretchedBoundary.o\
 	UpdPhidPhiBBIterativeLinearStretchedBoundary.o\
-	DMSystemMatrixSPVectorizedIdentity.o\
-	ModifiedBlackScholesParabolicPDESolverSystem.o\
 	PrewaveletGrid.o\
 	PrewaveletGridGenerator.o\
 	OperationMultipleEvalPrewavelet.o\
@@ -304,7 +302,7 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
 	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -fPIC -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA
 OCLCC=g++
 endif
 
@@ -318,7 +316,7 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
 	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU -DUSEOCL_INTEL
+OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -fPIC -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU -DUSEOCL_INTEL
 OCLCC=g++
 endif
 
@@ -338,17 +336,19 @@ endif
 
 default : $(OBJS)
 	mkdir -p $(BINDIR)
-	rm -f $(BINDIR)$(LIBNAME)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
 ifeq ($(CC),icpc)
-	xiar rc $(BINDIR)$(LIBNAME) $(OBJS)
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
 endif
 ifeq ($(CC),mpiicpc)
-	xiar rc $(BINDIR)$(LIBNAME) $(OBJS)
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
 endif
 ifeq ($(CC),g++)
-	ar rc $(BINDIR)$(LIBNAME) $(OBJS)
+	ar rc $(BINDIR)$(LIBNAME).a $(OBJS)
 endif
-	ranlib $(BINDIR)$(LIBNAME)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -o $(BINDIR)$(LIBNAME).so $(OBJS)
 
 DataVector.o : $(SRCDIR)base/datatypes/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)base/datatypes/DataVector.cpp
@@ -1165,7 +1165,7 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/dat
 OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
 	
-OCLKernels.o : $(SRCDIR)datadriven/basis/common/OCLKernels.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_DP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_SP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModDP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModSP.imp
+OCLKernels.o : $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_DP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_SP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModDP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModSP.imp
 	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp
 	
 OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
