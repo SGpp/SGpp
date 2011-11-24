@@ -312,10 +312,10 @@ OCLKernels::~OCLKernels()
     delete[] device_ids;
 }
 
-#include "datadriven/basis/common/OCLKernels_DP.imp"
-#include "datadriven/basis/common/OCLKernels_SP.imp"
-#include "datadriven/basis/common/OCLKernels_ModDP.imp"
-#include "datadriven/basis/common/OCLKernels_ModSP.imp"
+#include "parallel/datadriven/basis/common/OCLKernels_DP.imp"
+#include "parallel/datadriven/basis/common/OCLKernels_SP.imp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModDP.imp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModSP.imp"
 
 void OCLKernels::resetKernels()
 {
