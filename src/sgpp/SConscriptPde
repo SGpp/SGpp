@@ -23,7 +23,6 @@ pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
 pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
 pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.cpp
 pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.cpp
-pde/basis/linear/boundary/operation/OperationUpDownTestLinearBoundary.cpp
 pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.cpp
 pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.cpp
 pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
@@ -49,7 +48,6 @@ pde/basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBo
 pde/basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
 pde/basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp
 pde/basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp
-pde/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.cpp
 pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.cpp
 pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.cpp
 pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp

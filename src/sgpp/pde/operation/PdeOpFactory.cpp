@@ -25,9 +25,6 @@
 #include "pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp"
 #include "pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp"
 
-// @todo (heinecke) remove this when done
-#include "pde/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.hpp"
-
 namespace sg
 {
 
@@ -107,17 +104,6 @@ namespace op_factory
     else
       throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }
-
-  base::OperationMatrix* createOperationUpDownTest(base::Grid& grid)
-  {
-    if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
-      {
-        return new pde::OperationUpDownTestLinearStretchedBoundary(grid.getStorage());
-      }
-    else
-      throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
-  }
-
 
 }
 }

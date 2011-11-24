@@ -18,7 +18,6 @@
 #include "finance/application/BlackScholesSolverWithStretching.hpp"
 #include "finance/application/HullWhiteSolver.hpp"
 #include "finance/application/BlackScholesHullWhiteSolver.hpp"
-#include "base/tools/IOToolBonnSG.hpp"
 
 //#include "finance/operation/FinanceOpFactory.hpp"
 
