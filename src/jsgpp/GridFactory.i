@@ -66,19 +66,19 @@ public:
 	virtual ~Grid();
 
 public:	
-	virtual GridGenerator* createGridGenerator() = 0;	
-	virtual GridStorage* getStorage();
-	virtual BoundingBox* getBoundingBox();
-	virtual Stretching* getStretching();
+	virtual sg::base::GridGenerator* createGridGenerator() = 0;	
+	virtual sg::base::GridStorage* getStorage();
+	virtual sg::base::BoundingBox* getBoundingBox();
+	virtual sg::base::Stretching* getStretching();
 	
-	virtual void setBoundingBox(BoundingBox& bb); 
-    virtual void setStretching(Stretching& bb); 
+	virtual void setBoundingBox(sg::base::BoundingBox& bb); 
+    virtual void setStretching(sg::base::Stretching& bb); 
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr); 
 	virtual std::string serialize();
-	void refine(DataVector* vector, int num);
-	double eval(DataVector& alpha, DataVector& point);
+	void refine(sg::base::DataVector* vector, int num);
+	double eval(sg::base::DataVector& alpha, sg::base::DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	int getSize();
 	

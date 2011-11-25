@@ -46,14 +46,6 @@ namespace op_factory
    * @return Pointer to the new OperationMatrix object for the Grid grid
    */
   base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid);
-  /**
-   * Factory method, returning an OperationUpDownTest (OperationMatrix) for the grid at hand.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used
-   * @return Pointer to the new OperationMatrix object for the Grid grid
-   */
-  base::OperationMatrix* createOperationUpDownTest(base::Grid& grid);
 
 }
 
