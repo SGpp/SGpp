@@ -5,7 +5,12 @@
  ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de) and Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -225,7 +230,7 @@ void writeHelp()
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssets, DataVector& mu, DataVector& sigma, DataMatrix& rho)
+int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector& mu, sg::base::DataVector& sigma, sg::base::DataMatrix& rho)
 {
 	std::fstream file;
 	double cur_mu;
@@ -452,7 +457,7 @@ int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoun
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
+int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim)
 {
 	std::fstream file;
 	double cur_coord;
@@ -489,7 +494,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 	i = 0;
 	while (!file.eof())
 	{
-		DataVector line(dim);
+		sg::base::DataVector line(dim);
 		line.setAll(0.0);
 		for (size_t d = 0; d < dim; d++)
 		{
@@ -511,7 +516,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(DataVector& values, std::string tFile)
+int readOptionsValues(sg::base::DataVector& values, std::string tFile)
 {
 	std::fstream file;
 	double cur_value;
@@ -556,7 +561,7 @@ int readOptionsValues(DataVector& values, std::string tFile)
  *
  * @return error code
  */
-int writeDataMatrix(DataMatrix& data, std::string tFile)
+int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile)
 {
 	std::ofstream file;
 	file.open(tFile.c_str());
@@ -590,7 +595,7 @@ int writeDataMatrix(DataMatrix& data, std::string tFile)
  *
  * @return error code
  */
-int writeDataVector(DataVector& data, std::string tFile)
+int writeDataVector(sg::base::DataVector& data, std::string tFile)
 {
 	std::ofstream file;
 	file.open(tFile.c_str());
@@ -642,9 +647,9 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	double CGepsilon = CGeps;
 	double maxStock = 0.0;
 
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigma(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
 	double r = riskfree;
 
@@ -717,7 +722,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	myBSSolver->constructGridStretching(*myStretching, level);
 
 	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+	sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 	std::cout << "Grid has " << level << " Levels" << std::endl;
 	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -878,15 +883,15 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigma(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
-	DataMatrix EvalPoints(1, d);
+	sg::base::DataMatrix EvalPoints(1, d);
 
 	double r = riskfree;
 
-	std::vector<DataVector> results;
+	std::vector<sg::base::DataVector> results;
 
 
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
@@ -1007,7 +1012,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		}
 
 		// init the basis functions' coefficient vector
-		DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+		sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 		std::cout << "Grid has " << level << " Levels" << std::endl;
 		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -1110,7 +1115,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 		// Evaluate Cuboid
-		DataVector Prices(EvalPoints.getNrows());
+		sg::base::DataVector Prices(EvalPoints.getNrows());
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
 		results.push_back(Prices);
 
@@ -1141,8 +1146,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			// Calculate relative errors and some norms
 			for (size_t j = 0; j < i-start_l; j++)
 			{
-				DataVector maxLevel(results[i-start_l]);
-				DataVector relError(results [j]);
+				sg::base::DataVector maxLevel(results[i-start_l]);
+				sg::base::DataVector relError(results [j]);
 				double maxNorm = 0.0;
 				double l2Norm = 0.0;
 
@@ -1208,15 +1213,15 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigma(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
-	DataMatrix EvalPoints(1, 1);
+	sg::base::DataMatrix EvalPoints(1, 1);
 
 	double r = riskfree;
 
-	std::vector<DataVector> results;
+	std::vector<sg::base::DataVector> results;
 
 
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
@@ -1344,7 +1349,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		}
 
 		// init the basis functions' coefficient vector
-		DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+		sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 		std::cout << "Grid has " << level << " Levels" << std::endl;
 		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -1393,7 +1398,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		}
 
 		// get analytic solution and plot it and store
-		DataVector* alpha_analytic = new DataVector(myBSSolver->getNumberGridPoints());
+		sg::base::DataVector* alpha_analytic = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 		double maturity = ((double)(timesteps))*stepsize;
 		myBSSolver->getAnalyticAlpha1D(*alpha_analytic, dStrike, maturity, payoffType, true);
 		//myBSSolver->printGrid(*alpha_analytic, 50, "solvedBS_analytic.grid");
@@ -1407,7 +1412,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		}
 
 		// evaluate analytic solution at evaluation cuboid and store values
-		DataVector AnalyticOptionPrices(EvalPoints.getNrows());
+		sg::base::DataVector AnalyticOptionPrices(EvalPoints.getNrows());
 		myBSSolver->evaluate1DAnalyticCuboid(AnalyticOptionPrices, EvalPoints, dStrike, sigma.get(0), r, maturity, isCall);
 		writeDataVector(AnalyticOptionPrices, tFileEvalCuboidValues+".analytic");
 
@@ -1485,7 +1490,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
 
 		// Evaluate Cuboid
-		DataVector Prices(EvalPoints.getNrows());
+		sg::base::DataVector Prices(EvalPoints.getNrows());
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
 		results.push_back(Prices);
 
@@ -1517,8 +1522,8 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 			// Calculate relative errors and some norms
 			for (size_t j = 0; j < i-start_l; j++)
 			{
-				DataVector maxLevel(results[i-start_l]);
-				DataVector relError(results[j]);
+				sg::base::DataVector maxLevel(results[i-start_l]);
+				sg::base::DataVector relError(results[j]);
 				double maxNorm = 0.0;
 				double l2Norm = 0.0;
 
@@ -1553,7 +1558,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 			// Calculate relative errors and some norms
 			for (size_t j = 0; j < i+1-start_l; j++)
 			{
-				DataVector relErrorAna(results[j]);
+				sg::base::DataVector relErrorAna(results[j]);
 				double maxNorm = 0.0;
 				double l2Norm = 0.0;
 				double maxNormAbs = 0.0;
@@ -1561,7 +1566,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
 				// calculate relative error
 				relErrorAna.sub(AnalyticOptionPrices);
-				DataVector absErrorAna(relErrorAna);
+				sg::base::DataVector absErrorAna(relErrorAna);
 
 				// calculate norms abs error
 				maxNormAbs = absErrorAna.maxNorm();
@@ -1582,7 +1587,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 				// print rel. error of current level compared to analytic solution
 				if(j == i-start_l){
 					// dehierarchize before
-					DataVector alpha_relErr(*alpha);
+					sg::base::DataVector alpha_relErr(*alpha);
 					alpha_relErr.sub(*alpha_analytic);
 					myBSSolver->printGrid(alpha_relErr, 50, "errAbs.level_"+ level_string.str()+".gnuplot");
 					if (isLogSolve == true)
@@ -1662,9 +1667,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigma(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
 	double r = riskfree;
 
@@ -1737,7 +1742,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	}
 
 	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSSolver->getNumberGridPoints());
+	sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 	// Init the grid with on payoff function
 	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
@@ -1748,11 +1753,11 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	// estimate refine sigma from evaluation cuboid
 	// read Evaluation cuboid
-	DataMatrix EvalCuboid(1, dim);
+	sg::base::DataMatrix EvalCuboid(1, dim);
 	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
 	// read reference values for evaluation cuboid
-	DataVector EvalCuboidValues(1);
+	sg::base::DataVector EvalCuboidValues(1);
 	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
 
 	if (EvalCuboid.getNrows() != EvalCuboidValues.getSize())
@@ -1969,10 +1974,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 		std::cout << "Calculating relative errors..." << std::endl;
 		// Evaluate Cuboid
-		DataVector Prices(EvalCuboid.getNrows());
+		sg::base::DataVector Prices(EvalCuboid.getNrows());
 		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
-		DataVector relError(Prices);
+		sg::base::DataVector relError(Prices);
 
 		// calculate relative error
 		relError.sub(EvalCuboidValues);

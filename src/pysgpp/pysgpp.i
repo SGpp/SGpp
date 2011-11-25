@@ -42,21 +42,21 @@ namespace std {
 
 // This should include all necessary header files
 %{
-#include "base.hpp"
+#include "sgpp_base.hpp"
 #ifdef SG_DATADRIVEN
-#include "datadriven.hpp"
+#include "sgpp_datadriven.hpp"
 #endif
 #ifdef SG_PDE
-#include "pde.hpp"
+#include "sgpp_pde.hpp"
 #endif
 #ifdef SG_FINANCE
-#include "finance.hpp"
+#include "sgpp_finance.hpp"
 #endif
 #ifdef SG_SOLVER
-#include "solver.hpp"
+#include "sgpp_solver.hpp"
 #endif
 #ifdef SG_PARALLEL
-#include "parallel.hpp"
+#include "sgpp_parallel.hpp"
 #endif
 #ifdef SG_COMBIGRID
 #include "combigrid.hpp"

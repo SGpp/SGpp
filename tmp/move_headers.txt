@@ -921,3 +921,9 @@ finance/finance.hpp finance.hpp
 parallel/parallel.hpp parallel.hpp
 pde/pde.hpp pde.hpp
 solver/solver.hpp solver.hpp
+base.hpp sgpp_base.hpp
+datadriven.hpp sgpp_datadriven.hpp
+finance.hpp sgpp_finance
+parallel.hpp sgpp_parallel.hpp
+pde.hpp sgpp_pde.hpp
+solver.hpp sgpp_solver.hpp

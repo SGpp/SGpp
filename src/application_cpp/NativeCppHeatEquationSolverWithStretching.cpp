@@ -21,7 +21,12 @@
 #include <algorithm>
 #include <string>
 
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object
@@ -110,7 +115,7 @@ int readDiscreteStretchingData(std::string tFile, size_t numAssests, std::vector
 	for (size_t i = 0; i < numAssests; i++)
 	{
 		file >> gridLength;
-		discreteCoordinates[i] = vector<double>(gridLength,0);
+		discreteCoordinates[i] = std::vector<double>(gridLength,0);
 		for(size_t j=0; j<gridLength; j++){
 			file>>discreteCoordinates[i][j];
 		}
@@ -208,7 +213,7 @@ void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_
 	myHESolver->constructGrid(*myStretching, level);
 
 	// init the basis functions' coefficient vector (start solution)
-	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
+	sg::base::DataVector* alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
 	if (initFunc == "smooth")
 	{
 		myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);

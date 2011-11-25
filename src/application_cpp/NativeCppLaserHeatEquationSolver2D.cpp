@@ -14,7 +14,12 @@
 #include <algorithm>
 #include <string>
 
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object
@@ -82,7 +87,7 @@ void testLaserHeatEquation(	size_t level, size_t maxLevel, size_t initialRefines
 	myHESolver->constructGrid(*myBoundingBox, level);
 
 	// init the basis functions' coefficient vector (start solution)
-	DataVector* alpha = new DataVector(myHESolver->getNumberGridPoints());
+	sg::base::DataVector* alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
 	myHESolver->refineInitialGridWithLaserHeat(*alpha, initialRefines);
 
 	// Print the initial heat function into a gnuplot file

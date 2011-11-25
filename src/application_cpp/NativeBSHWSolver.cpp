@@ -5,7 +5,12 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de), Stefanie Schraufstetter 8schraufs@in.tum.de)
 
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -37,7 +42,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssests, DataVector& mu, DataVector& sigma, DataMatrix& rho)
+int readStochasticData(std::string tFile, size_t numAssests, sg::base::DataVector& mu, sg::base::DataVector& sigma, sg::base::DataMatrix& rho)
 {
 	std::fstream file;
 	double cur_mu;
@@ -118,7 +123,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::Dimension
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
+int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim)
 {
 	std::fstream file;
 	double cur_coord;
@@ -155,7 +160,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 	i = 0;
 	while (!file.eof())
 	{
-		DataVector line(dim);
+		sg::base::DataVector line(dim);
 		line.setAll(0.0);
 		for (size_t d = 0; d < dim; d++)
 		{
@@ -177,7 +182,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(DataVector& values, std::string tFile)
+int readOptionsValues(sg::base::DataVector& values, std::string tFile)
 {
 	std::fstream file;
 	double cur_value;
@@ -256,9 +261,9 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	double stepsize_general = dt;
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
-	DataVector mu(dim);
-	DataVector sigmabs(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigmabs(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
 
 	if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0)
@@ -298,7 +303,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 	myBSHWSolver->constructGrid(*myBoundingBox, level);
 
 	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSHWSolver->getNumberGridPoints());
+	sg::base::DataVector* alpha = new sg::base::DataVector(myBSHWSolver->getNumberGridPoints());
 
 	std::cout << "Grid has " << level << " Levels" << std::endl;
 	std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
@@ -355,7 +360,7 @@ void testBSHW(size_t d,size_t l, double sigma, double a, std::string fileStoch, 
 		double t_local = 0.0;
 
 
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 		myStopwatch->start();
 
 		for (int i=0; i<T/dt_outerCall; i++)
@@ -484,9 +489,9 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	double stepsize_general = dt;
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
-	DataVector mu(dim);
-	DataVector sigmabs(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigmabs(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
 	if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0)
 		{
@@ -525,7 +530,7 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	}
 
 	// init the basis functions' coefficient vector
-	DataVector* alpha = new DataVector(myBSHWSolver->getNumberGridPoints());
+	sg::base::DataVector* alpha = new sg::base::DataVector(myBSHWSolver->getNumberGridPoints());
 
 	std::cout << "Grid has " << level << " Levels" << std::endl;
 	std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
@@ -540,11 +545,11 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 
 	// estimate refine sigma from evaluation cuboid
 	// read Evaluation cuboid
-	DataMatrix EvalCuboid(1, dim);
+	sg::base::DataMatrix EvalCuboid(1, dim);
 	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
 	// read reference values for evaluation cuboid
-	DataVector EvalCuboidValues(1);
+	sg::base::DataVector EvalCuboidValues(1);
 	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
 
 	if (EvalCuboid.getNrows() != EvalCuboidValues.getSize())
@@ -675,7 +680,7 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 		double dt_outerCall = stepsize_general*static_cast<double>(timesteps_innerCall);
 		double t_local = 0.0;
 
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+		sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 		myStopwatch->start();
 
 		for (int i=0; i<T/dt_outerCall; i++)
