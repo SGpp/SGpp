@@ -619,7 +619,6 @@
 ./solver/ODESolver.hpp ./base/solver/ODESolver.hpp
 ./solver/SGSolver.hpp ./base/solver/SGSolver.hpp
 ./solver/SGSolverInfo.hpp ./base/solver/SGSolverInfo.hpp
-./solver/solver.hpp ./base/solver/solver.hpp
 ./solver/SLESolver.hpp ./base/solver/SLESolver.hpp
 ./tools/MPI/GlobalMPIComm.cpp ./parallel/tools/MPI/GlobalMPIComm.cpp
 ./tools/MPI/GlobalMPIComm.hpp ./parallel/tools/MPI/GlobalMPIComm.hpp
