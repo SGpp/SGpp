@@ -105,7 +105,6 @@ namespace std {
 #ifdef SG_DATADRIVEN
 %include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
-%include "src/sgpp/datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 #endif
 
 #ifdef SG_PDE

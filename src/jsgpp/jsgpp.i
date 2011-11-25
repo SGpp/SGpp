@@ -34,8 +34,6 @@ namespace std {
 	%template(SizeTVector) vector<size_t>;
 }
 
-
-
 // This should include all necessary header files
 %{
 #include "sgpp_base.hpp"
@@ -57,8 +55,17 @@ namespace std {
 #ifdef SG_COMBIGRID
 #include "combigrid.hpp"
 #endif
-  //#include "base/basis/operations_factory.hpp"
 %}
+
+// the Bad
+// really dirty
+%include "src/sgpp/base/datatypes/DataVectorDefinition.hpp"
+%include "src/sgpp/base/datatypes/DataVectorSP.hpp"
+%include "src/sgpp/base/datatypes/DataMatrixSP.hpp"
+%include "src/sgpp/base/datatypes/DataVector.hpp"
+%include "src/sgpp/base/datatypes/DataMatrix.hpp"
+%include "GridFactory.i"
+%include "Operations.i"
 
 // The Good, i.e. without any modifications
 %include "src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
@@ -69,8 +76,6 @@ namespace std {
 %include "src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "src/sgpp/base/grid/common/Stretching.hpp"
 %include "src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
-
-%include "Operations.i"
 
 %include "src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
@@ -84,21 +89,12 @@ namespace std {
 %include "src/sgpp/base/grid/generation/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/SurplusCoarseningFunctor.hpp"
 
-%include "GridFactory.i"
-
 %include "src/sgpp/base/tools/GridPrinter.hpp"
 %include "src/sgpp/base/tools/GridPrinterForStretching.hpp"
 %include "src/sgpp/base/tools/StdNormalDistribution.hpp"
 
 %include "src/sgpp/base/grid/GridDataBase.hpp"
 %include "src/sgpp/base/tools/OperationQuadratureMC.hpp"
-
-// the Bad
-%include "src/sgpp/base/datatypes/DataVector.hpp"
-%include "src/sgpp/base/datatypes/DataMatrix.hpp"
-
-// and the rest
-
 
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
