@@ -303,6 +303,11 @@ base/tools/EvalCuboidGenerator.cpp
 base/tools/EvalCuboidGeneratorForStretching.cpp
 base/tools/IOToolBonnSG.cpp
 
+datadriven/operation/DatadrivenOpFactory.cpp
+parallel/operation/ParallelOpFactory.cpp
+finance/operation/FinanceOpFactory.cpp
+pde/operation/PdeOpFactory.cpp
+base/operation/BaseOpFactory.cpp
 """)
 
 

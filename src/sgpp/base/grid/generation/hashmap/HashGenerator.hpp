@@ -60,16 +60,6 @@ public:
 			throw generation_exception("storage not empty");
 		}
 
-//		index_type index(storage->dim());
-//
-//		for(size_t d = 0; d < storage->dim(); d++)
-//		{
-//			index.push(d, 1, 1, false);
-//		}
-//
-//		size_t mydim = storage->dim();
-//		this->regular_rec(storage, index, ((storage->dim()) - 1), mydim, ((level + (storage->dim())) - 1));
-
 		this->regular_iter(storage, level);
 	}
 
