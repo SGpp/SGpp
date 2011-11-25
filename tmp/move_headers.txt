@@ -927,3 +927,7 @@ finance.hpp sgpp_finance
 parallel.hpp sgpp_parallel.hpp
 pde.hpp sgpp_pde.hpp
 solver.hpp sgpp_solver.hpp
+parallel/operation/OperationMultipleEvalVectorized.hpp parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp
+parallel/operation/OperationMultipleEvalVectorized.cpp parallel/datadriven/operation/OperationMultipleEvalVectorized.cpp
+parallel/operation/OperationMultipleEvalVectorizedSP.hpp parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp
+parallel/operation/OperationMultipleEvalVectorizedSP.cpp parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
