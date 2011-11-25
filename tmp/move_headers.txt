@@ -931,3 +931,6 @@ parallel/operation/OperationMultipleEvalVectorized.hpp parallel/datadriven/opera
 parallel/operation/OperationMultipleEvalVectorized.cpp parallel/datadriven/operation/OperationMultipleEvalVectorized.cpp
 parallel/operation/OperationMultipleEvalVectorizedSP.hpp parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp
 parallel/operation/OperationMultipleEvalVectorizedSP.cpp parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
+base/tools/TwoPartitionAutoTuning.cpp parallel/tools/TwoPartitionAutoTuning.cpp
+base/tools/TwoPartitionAutoTuning.hpp parallel/tools/TwoPartitionAutoTuning.hpp
+datadriven/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp pde/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp

@@ -106,6 +106,7 @@ OBJS =	DataVector.o\
 	ARFFTools.o\
 	OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o\
+	OperationLaplacePrewavelet.o\
 	StdUpDown.o\
 	UpDownOneOpDim.o\
 	UpDownTwoOpDims.o\
@@ -898,6 +899,9 @@ DowndPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)pde/basis/linearstre
 	
 UpdPhidPhiBBIterativeLinearStretchedBoundary.o : $(SRCDIR)pde/basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpdPhidPhiBBIterativeLinearStretchedBoundary.o $(SRCDIR)pde/basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp	
+
+OperationLaplacePrewavelet.o : $(SRCDIR)pde/basis/prewavelet/operation/OperationLaplacePrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplacePrewavelet.o $(SRCDIR)pde/basis/prewavelet/operation/OperationLaplacePrewavelet.cpp
 	
 ModifiedBlackScholesParabolicPDESolverSystem.o : $(SRCDIR)finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ModifiedBlackScholesParabolicPDESolverSystem.o $(SRCDIR)finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
@@ -1106,8 +1110,8 @@ ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
 PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PdeOpFactory.o $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
-TwoPartitionAutoTuning.o : $(SRCDIR)base/tools/TwoPartitionAutoTuning.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)base/tools/TwoPartitionAutoTuning.cpp
+TwoPartitionAutoTuning.o : $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
 	
 DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp

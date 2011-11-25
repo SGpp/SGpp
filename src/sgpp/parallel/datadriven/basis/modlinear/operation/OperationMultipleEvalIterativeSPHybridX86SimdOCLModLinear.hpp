@@ -10,9 +10,9 @@
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
 #include "parallel/datadriven/basis/common/OCLKernels.hpp"
+#include "parallel/tools/TwoPartitionAutoTuning.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
-#include "base/tools/TwoPartitionAutoTuning.hpp"
 
 namespace sg
 {
