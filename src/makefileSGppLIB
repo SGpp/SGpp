@@ -9,14 +9,6 @@
 SRCDIR = ./../../../src/sgpp/
 OUTDIR = ./
 BINDIR = ./../../../lib/sgpp/
-#only for extensions:
-#####################
-# NVidia OpenCL
-OCLINCLUDE = /usr/local/cuda/include
-OCLLIB = /usr/lib64
-# Intel OpenCL
-IOCLINCLUDE = /usr/include
-IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 
 OBJS =	DataVector.o\
  	Grid.o\
@@ -299,8 +291,6 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
 	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -fPIC -funroll-loops -I$(SRCDIR) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA
-OCLCC=g++
 endif
 
 ifeq ($(EXT), IOCL)
@@ -313,8 +303,6 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
 	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
-OCLCFLAGS=-Wall -ansi -c -fno-strict-aliasing -O3 -funroll-loops -fPIC -I$(SRCDIR) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_CPU -DUSEOCL_INTEL
-OCLCC=g++
 endif
 
 ifeq ($(EXT), MPI)
@@ -1163,7 +1151,7 @@ OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/datad
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
 	
 OCLKernels.o : $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_DP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_SP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModDP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModSP.imp
-	$(OCLCC) $(OCLCFLAGS) -o OCLKernels.o $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp
+	$(CC) $(CFLAGS) -o OCLKernels.o $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp
 	
 OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
