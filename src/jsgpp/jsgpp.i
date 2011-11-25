@@ -57,7 +57,7 @@ namespace std {
 #ifdef SG_COMBIGRID
 #include "combigrid.hpp"
 #endif
-#include "base/basis/operations_factory.hpp"
+  //#include "base/basis/operations_factory.hpp"
 %}
 
 // The Good, i.e. without any modifications
@@ -148,12 +148,12 @@ namespace std {
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
 
  // static factory methods
-%include "src/sgpp/base/basis/operations_factory.hpp"
-//%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
-//%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
-//%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
-//%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
-//%include "src/sgpp/base/operation/BaseOpFactory.hpp"
+ //%include "src/sgpp/base/basis/operations_factory.hpp"
+%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
+%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
+%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
+%include "src/sgpp/base/operation/BaseOpFactory.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 
