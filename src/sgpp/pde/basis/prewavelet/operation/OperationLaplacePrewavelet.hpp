@@ -32,7 +32,7 @@ namespace pde
  * of the detail-classes LaplaceDownGradientPrewavelet.hpp, LaplaceUpGradientPrewavelet.hpp and
  * LaplaceDownPrewavelet.hpp.
  */
-class OperationLaplacePrewavelet: public UpDownOneOpDimWithShadow
+class OperationLaplacePrewavelet : public UpDownOneOpDimWithShadow
 {
 public:
 	/**

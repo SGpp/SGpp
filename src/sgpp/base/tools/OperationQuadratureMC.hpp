@@ -39,7 +39,7 @@ public:
    *
    * @todo (pflueged) extend to error computation / arbitrary functions
    */
-  OperationQuadratureMC(Grid &grid, int mcPaths);
+  OperationQuadratureMC(sg::base::Grid &grid, int mcPaths);
 
   virtual ~OperationQuadratureMC() {}
 
@@ -48,7 +48,7 @@ public:
    *
    * @param alpha Coefficient vector for current grid
    */
-  virtual double doQuadrature(DataVector& alpha);
+  virtual double doQuadrature(sg::base::DataVector& alpha);
 
   /**
    * Quadrature of an arbitrary function using 
@@ -69,11 +69,11 @@ public:
    * @param clientdata Optional data to pass to FUNC
    * @param alpha Coefficient vector for current grid
    */
-  double doQuadratureL2Error(FUNC func, void *clientdata, DataVector& alpha);
+  double doQuadratureL2Error(FUNC func, void *clientdata, sg::base::DataVector& alpha);
 
 protected:
   // Pointer to the grid object
-  Grid* grid;
+  sg::base::Grid* grid;
   // Number of MC paths
   int mcPaths;
 };

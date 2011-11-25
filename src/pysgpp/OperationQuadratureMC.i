@@ -79,7 +79,7 @@ namespace base
      d = self->doQuadratureFunc(sg::base::PythonCallBackFunc, (void *) pyfunc);
      return d;
    }
-   double doQuadratureL2Error(PyObject *pyfunc, DataVector& alpha) {
+   double doQuadratureL2Error(PyObject *pyfunc, sg::base::DataVector& alpha) {
      double d;
      d = self->doQuadratureL2Error(sg::base::PythonCallBackFunc, (void *) pyfunc, alpha);
      return d;
