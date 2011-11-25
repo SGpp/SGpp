@@ -181,21 +181,6 @@ void writeHelp()
 	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
 	mySStream << std::endl << std::endl;
 
-	mySStream << "solveBonn" << std::endl << "---------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	file_grid_in: file the specifies the unsolved grid" << std::endl;
-	mySStream << "	file_grid_out: file that contains the solved grid when finished" << std::endl;
-	mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
-	mySStream << "	r: the riskfree rate" << std::endl;
-	mySStream << "	T: time to maturity" << std::endl;
-	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SCAC, SCH, SCBDF or SCEJ" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "grid.in grid.out " << "stoch.data " << "0.05 " << "1.0 " << "0.1 ImEul " << "400 " << "0.000001 " << std::endl;
-
 	mySStream << std::endl << std::endl;
 	std::cout << mySStream.str() << std::endl;
 }
@@ -1880,108 +1865,6 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 }
 
 /**
- * solves a predefined, in the format of University Bonn, grid.
- *
- * @param fileIn the file the contains the grid that should be solved
- * @param fileOut the file the contains the solution grid, written when finished
- * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
- * @param riskfree the riskfree rate of the marketmodel
- * @param timeSt the number of timesteps that are executed during the solving process
- * @param dt the size of delta t in the ODE solver
- * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
- * @param CGeps the epsilon used in the CG/BiCGStab
- * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
- */
-void solveBonn(std::string fileIn, std::string fileOut, std::string fileStoch, double riskfree, size_t timeSt,
-		double dt, size_t CGIt, double CGeps, std::string Solver)
-{
-	size_t dim;
-	bool hier;
-
-	size_t timesteps = timeSt;
-	double stepsize = dt;
-	size_t CGiterations = CGIt;
-	double CGepsilon = CGeps;
-
-	double r = riskfree;
-
-	sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver();
-	DataVector* alpha = new DataVector(0);
-
-	// init Screen Object
-	myBSSolver->initScreen();
-
-	// Construct a grid, read it from Bonn's format
-	myBSSolver->constructGridBonn(fileIn, *alpha, hier);
-	dim = myBSSolver->getNumberDimensions();
-
-	// read stochastic data
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataMatrix rho(dim, dim);
-	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
-	{
-		return;
-	}
-
-	// Print the payoff function into a gnuplot file
-	//myBSSolver->printGrid(*alpha, 50, "payoff.gnuplot");
-
-	// Set stochastic data
-	myBSSolver->setStochasticData(mu, sigma, rho, r);
-
-	// Start solving the Black Scholes Equation
-	if (Solver == "ExEul")
-	{
-		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	}
-	else if (Solver == "ImEul")
-	{
-		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	}
-	else if (Solver == "CrNic")
-	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-	}
-	else if (Solver == "AdBas")
-	{
-		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCAC")
-	{
-		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCH")
-	{
-		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCBDF")
-	{
-		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCEJ")
-	{
-		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
-	}
-	else
-	{
-		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-	}
-
-	if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic" || Solver == "AdBas" || Solver == "SCAC"  || Solver == "SCH" || Solver == "SCBDF" || Solver == "SCEJ")
-	{
-		// Print the solved Black Scholes Equation into a gnuplot file
-		//myBSSolver->printGrid(*alpha, 50, "solvedBS.gnuplot");
-
-		// export the grid, store it to Bonn's format
-		myBSSolver->storeGridBonn(fileOut, *alpha, hier);
-	}
-
-	delete myBSSolver;
-	delete alpha;
-}
-
-/**
  * main routine of the application, do some first cli
  * correction test and branches to right solver configuration
  *
@@ -2153,27 +2036,6 @@ int main(int argc, char *argv[])
 			}
 
 			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode, atof(argv[20]), coordsType, isNormalDist);
-		}
-	}
-	else if (option == "solveBonn")
-	{
-		if (argc != 11)
-		{
-			writeHelp();
-		}
-		else
-		{
-			std::string fileStoch;
-			std::string fileIn;
-			std::string fileOut;
-			std::string solver;
-
-			fileIn.assign(argv[2]);
-			fileOut.assign(argv[3]);
-			fileStoch.assign(argv[4]);
-			solver.assign(argv[8]);
-
-			solveBonn(fileIn, fileOut, fileStoch, atof(argv[5]), (size_t)(atof(argv[6])/atof(argv[7])), atof(argv[7]), atoi(argv[9]), atof(argv[10]), solver);
 		}
 	}
 	else

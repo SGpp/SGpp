@@ -53,7 +53,6 @@ void writeHelp()
 	mySStream << "  solveNDadaptSurplusSubDomain   Same as above but" << std::endl;
 	mySStream << "						a normal distribution is used" << std::endl;
 	mySStream << "						to do refinement just near the strike!" << std::endl << std::endl;
-	//	mySStream << "  solveBonn  Solves an option delivered in Bonn's format" << std::endl << std::endl << std::endl;
 
 	mySStream << "Several files are needed to specify inputs:" << std::endl;
 	mySStream << "-----------------------------------------------------" << std::endl;
