@@ -5,21 +5,19 @@
 ******************************************************************************/
 // @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
+namespace sg
+{
+namespace base
+{
 
 %apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
-%rename(__str__) DataVector::toString;
+%rename(__str__) sg::base::DataVector::toString;
 
 %rename(__getitem__) DataVector::get(size_t i) const;
 %rename(__setitem__) DataVector::set(size_t i, double value);
 %rename(assign) DataVector::operator=;
 %rename(__len__) DataVector::getSize;
-
-
-namespace sg
-{
-namespace base
-{
 
 class DataVector
 {
