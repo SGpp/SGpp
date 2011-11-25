@@ -5,7 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 #include "base/datatypes/DataVectorSP.hpp"
 #include "base/datatypes/DataMatrixSP.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
@@ -119,7 +124,7 @@ void calcGFlopsAndGBytes(std::string gridtype, sg::base::Grid* myGrid, size_t nI
 	}
 }
 
-void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
+void convertDataVectorToDataVectorSP(sg::base::DataVector& src, sg::base::DataVectorSP& dest)
 {
 	if (src.getSize() != dest.getSize())
 	{
@@ -134,7 +139,7 @@ void convertDataVectorToDataVectorSP(DataVector& src, DataVectorSP& dest)
 	}
 }
 
-void convertDataMatrixToDataMatrixSP(DataMatrix& src, DataMatrixSP& dest)
+void convertDataMatrixToDataMatrixSP(sg::base::DataMatrix& src, sg::base::DataMatrixSP& dest)
 {
 	if (src.getNcols() != dest.getNcols() || src.getNrows() != dest.getNrows())
 	{
@@ -152,7 +157,7 @@ void convertDataMatrixToDataMatrixSP(DataMatrix& src, DataMatrixSP& dest)
 	}
 }
 
-void convertDataVectorSPToDataVector(DataVectorSP& src, DataVector& dest)
+void convertDataVectorSPToDataVector(sg::base::DataVectorSP& src, sg::base::DataVector& dest)
 {
 	if (src.getSize() != dest.getSize())
 	{
@@ -297,12 +302,12 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	delete myGenerator;
 
 	// Define DP data
-	DataMatrix data(nInstancesNo, nDim);
-    DataVector classes(nInstancesNo);
-    DataMatrix testData(nInstancesTestNo, nDim);
-    DataVector testclasses(nInstancesTestNo);
-    DataVector result(nInstancesNo);
-    DataVector alpha(myGrid->getSize());
+	sg::base::DataMatrix data(nInstancesNo, nDim);
+	sg::base::DataVector classes(nInstancesNo);
+	sg::base::DataMatrix testData(nInstancesTestNo, nDim);
+	sg::base::DataVector testclasses(nInstancesTestNo);
+	sg::base::DataVector result(nInstancesNo);
+	sg::base::DataVector alpha(myGrid->getSize());
 
 	// Read data from file
     ARFFTool.readTrainingData(tfileTrain, data);
@@ -368,7 +373,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     		std::cout << "Grid Size: " << myGrid->getStorage()->size() << std::endl;
     	}
 
-    	DataVector b(alpha.getSize());
+    	sg::base::DataVector b(alpha.getSize());
     	mySystem->generateb(classes, b);
 
     	if (i == refine_count)
@@ -415,7 +420,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     	else
     	{
     		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-    		DataVector charNumbers(4);
+    		sg::base::DataVector charNumbers(4);
     		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
     		acc /= static_cast<double>(classes.getSize());
     		std::cout << "train accuracy: " << acc << std::endl;
@@ -487,7 +492,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 	else
 	{
 		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-		DataVector charNumbers(4);
+		sg::base::DataVector charNumbers(4);
 		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train accuracy: " << acc << std::endl;
@@ -632,18 +637,18 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	delete myGenerator;
 
 	// Define DP data
-	DataMatrix data(nInstancesNo, nDim);
-    DataVector classes(nInstancesNo);
-    DataMatrix testData(nInstancesTestNo, nDim);
-    DataVector testclasses(nInstancesTestNo);
-    DataVector result(nInstancesNo);
-    DataVector alpha(myGrid->getSize());
+	sg::base::DataMatrix data(nInstancesNo, nDim);
+	sg::base::DataVector classes(nInstancesNo);
+	sg::base::DataMatrix testData(nInstancesTestNo, nDim);
+	sg::base::DataVector testclasses(nInstancesTestNo);
+	sg::base::DataVector result(nInstancesNo);
+	sg::base::DataVector alpha(myGrid->getSize());
 
     // Define SP data
-	DataMatrixSP dataSP(nInstancesNo, nDim);
-    DataVectorSP classesSP(nInstancesNo);
-    DataVectorSP resultSP(nInstancesNo);
-    DataVectorSP alphaSP(myGrid->getSize());
+	sg::base::DataMatrixSP dataSP(nInstancesNo, nDim);
+	sg::base::DataVectorSP classesSP(nInstancesNo);
+	sg::base::DataVectorSP resultSP(nInstancesNo);
+	sg::base::DataVectorSP alphaSP(myGrid->getSize());
 
 	// Read data from file
     ARFFTool.readTrainingData(tfileTrain, data);
@@ -714,7 +719,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     		std::cout << "Grid Size: " << myGrid->getStorage()->size() << std::endl;
     	}
 
-    	DataVectorSP bSP(alphaSP.getSize());
+    	sg::base::DataVectorSP bSP(alphaSP.getSize());
     	mySystem->generateb(classesSP, bSP);
 
     	if (i == refine_count)
@@ -762,7 +767,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	else
     	{
     		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-    		DataVector charNumbers(4);
+    		sg::base::DataVector charNumbers(4);
     		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
     		acc /= static_cast<double>(classes.getSize());
     		std::cout << "train accuracy: " << acc << std::endl;
@@ -835,7 +840,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 	else
 	{
 		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
-		DataVector charNumbers(4);
+		sg::base::DataVector charNumbers(4);
 		acc = myTest->testWithCharacteristicNumber(alpha, data, classes, charNumbers);
 		acc /= static_cast<double>(classes.getSize());
 		std::cout << "train accuracy: " << acc << std::endl;

@@ -5,7 +5,12 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)
 
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -90,7 +95,7 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
 		myHWSolver->constructGrid(*myBoundingBox, level);
 
 		// init the basis functions' coefficient vector
-		DataVector* alpha = new DataVector(myHWSolver->getNumberGridPoints());
+		sg::base::DataVector* alpha = new sg::base::DataVector(myHWSolver->getNumberGridPoints());
 
 		std::cout << "Grid has " << level << " Levels" << std::endl;
 		std::cout << "Initial Grid size: " << myHWSolver->getNumberGridPoints() << std::endl;

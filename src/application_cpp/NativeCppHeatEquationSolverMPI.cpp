@@ -18,7 +18,12 @@
 #define NUMEVALPOINTS 11
 
 #include <mpi.h>
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 #include "sgpp_mpi.hpp"
 
 #include <cstdlib>
@@ -36,7 +41,7 @@
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
+int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim)
 {
 	std::fstream file;
 	double cur_coord;
@@ -73,7 +78,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 	i = 0;
 	while (!file.eof())
 	{
-		DataVector line(dim);
+		sg::base::DataVector line(dim);
 		line.setAll(0.0);
 		for (size_t d = 0; d < dim; d++)
 		{
@@ -95,7 +100,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readCuboidValues(DataVector& values, std::string tFile)
+int readCuboidValues(sg::base::DataVector& values, std::string tFile)
 {
 	std::fstream file;
 	double cur_value;
@@ -140,7 +145,7 @@ int readCuboidValues(DataVector& values, std::string tFile)
  *
  * @return error code
  */
-int writeDataMatrix(DataMatrix& data, std::string tFile)
+int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile)
 {
 	std::ofstream file;
 	file.open(tFile.c_str());
@@ -174,7 +179,7 @@ int writeDataMatrix(DataMatrix& data, std::string tFile)
  *
  * @return error code
  */
-int writeDataVector(DataVector& data, std::string tFile)
+int writeDataVector(sg::base::DataVector& data, std::string tFile)
 {
 	std::ofstream file;
 	file.open(tFile.c_str());
@@ -293,12 +298,12 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 {
 	size_t timesteps = (size_t)(T/dt);
 	sg::parallel::HeatEquationSolverMPI* myHESolver = new sg::parallel::HeatEquationSolverMPI();
-	DataVector* alpha = NULL;
-	DataMatrix EvalPoints(1, dim);
+	sg::base::DataVector* alpha = NULL;
+	sg::base::DataMatrix EvalPoints(1, dim);
 	std::string tFileEvalCuboid = "EvalPointsHeatEquationMPI.data";
 	std::string tFileEvalCuboidValues = "EvalValuesHeatEquationMPI.data";
 	size_t evalPoints = NUMEVALPOINTS;
-	std::vector<DataVector> results;
+	std::vector<sg::base::DataVector> results;
 
 	for (size_t l = start_level; l <= end_level; l++)
 	{
@@ -334,7 +339,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 			myHESolver->constructGrid(*myBoundingBox, l);
 
 			// init the basis functions' coefficient vector (start solution)
-			alpha = new DataVector(myHESolver->getNumberGridPoints());
+			alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
 			if (initFunc == "smooth")
 			{
 				myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
@@ -363,7 +368,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 			sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
 			myHESolver->setGrid(serialized_grid);
 
-			alpha = new DataVector(myHESolver->getNumberGridPoints());
+			alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
 		}
 
 		// Communicate coefficients
@@ -407,7 +412,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 
 			// Calculate Norms
 			// Evaluate Cuboid
-			DataVector PoisEvals(EvalPoints.getNrows());
+			sg::base::DataVector PoisEvals(EvalPoints.getNrows());
 			myHESolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
 			results.push_back(PoisEvals);
 
@@ -430,8 +435,8 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 				// Calculate relative errors and some norms
 				for (size_t j = 0; j < l-start_level; j++)
 				{
-					DataVector maxLevel(results[l-start_level]);
-					DataVector relError(results[j]);
+					sg::base::DataVector maxLevel(results[l-start_level]);
+					sg::base::DataVector relError(results[j]);
 					double maxNorm = 0.0;
 					double l2Norm = 0.0;
 
@@ -468,12 +473,12 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 						std::string initFunc, double cg_eps, size_t cg_its)
 {
 	sg::parallel::PoissonEquationSolverMPI* myPoisSolver = new sg::parallel::PoissonEquationSolverMPI();
-	DataVector* alpha = NULL;
-	DataMatrix EvalPoints(1, dim);
+	sg::base::DataVector* alpha = NULL;
+	sg::base::DataMatrix EvalPoints(1, dim);
 	std::string tFileEvalCuboid = "EvalPointsPoissonMPI.data";
 	std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
 	size_t evalPoints = NUMEVALPOINTS;
-	std::vector<DataVector> results;
+	std::vector<sg::base::DataVector> results;
 
 	for (size_t l = start_level; l <= end_level; l++)
 	{
@@ -508,7 +513,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 			myPoisSolver->constructGrid(*myBoundingBox, l);
 
 			// init the basis functions' coefficient vector (start solution)
-			alpha = new DataVector(myPoisSolver->getNumberGridPoints());
+			alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
 			if (initFunc == "smooth")
 			{
 				myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
@@ -545,7 +550,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 			sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
 			myPoisSolver->setGrid(serialized_grid);
 
-			alpha = new DataVector(myPoisSolver->getNumberGridPoints());
+			alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
 		}
 
 		// Communicate coefficients
@@ -573,7 +578,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
 			// Calculate Norms
 			// Evaluate Cuboid
-			DataVector PoisEvals(EvalPoints.getNrows());
+			sg::base::DataVector PoisEvals(EvalPoints.getNrows());
 			myPoisSolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
 			results.push_back(PoisEvals);
 
@@ -596,8 +601,8 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 				// Calculate relative errors and some norms
 				for (size_t j = 0; j < l-start_level; j++)
 				{
-					DataVector maxLevel(results[l-start_level]);
-					DataVector relError(results[j]);
+					sg::base::DataVector maxLevel(results[l-start_level]);
+					sg::base::DataVector relError(results[j]);
 					double maxNorm = 0.0;
 					double l2Norm = 0.0;
 
@@ -634,7 +639,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 						std::string initFunc, double cg_eps, size_t cg_its)
 {
 	sg::parallel::PoissonEquationSolverMPI* myPoisSolver = new sg::parallel::PoissonEquationSolverMPI();
-	DataVector* alpha = NULL;
+	sg::base::DataVector* alpha = NULL;
 	std::string tFileEvalCuboid = "EvalPointsPoissonMPI.data";
 	std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
 
@@ -661,7 +666,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 
 		// init the basis functions' coefficient vector (start solution)
 		// init the basis functions' coefficient vector (start solution)
-		alpha = new DataVector(myPoisSolver->getNumberGridPoints());
+		alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
 		if (initFunc == "smooth")
 		{
 			std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
@@ -744,7 +749,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 		sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
 		myPoisSolver->setGrid(serialized_grid);
 
-		alpha = new DataVector(myPoisSolver->getNumberGridPoints());
+		alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
 	}
 
 	// Communicate coefficients
@@ -774,11 +779,11 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 		////////////////////////////
 
 		// read Evaluation cuboid
-		DataMatrix EvalCuboid(1, dim);
+		sg::base::DataMatrix EvalCuboid(1, dim);
 		int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
 		// read reference values for evaluation cuboid
-		DataVector EvalCuboidValues(1);
+		sg::base::DataVector EvalCuboidValues(1);
 		int retCuboidValues = readCuboidValues(EvalCuboidValues, tFileEvalCuboidValues);
 
 		double maxNorm = 0.0;
@@ -788,10 +793,10 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
 		{
 			std::cout << "Calculating relative errors..." << std::endl;
 			// Evaluate Cuboid
-			DataVector curVals(EvalCuboid.getNrows());
+			sg::base::DataVector curVals(EvalCuboid.getNrows());
 			myPoisSolver->evaluateCuboid(*alpha, curVals, EvalCuboid);
 
-			DataVector relError(curVals);
+			sg::base::DataVector relError(curVals);
 
 			// calculate relative error
 			relError.sub(EvalCuboidValues);

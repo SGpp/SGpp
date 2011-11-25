@@ -6,7 +6,12 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include <mpi.h>
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 #include "sgpp_mpi.hpp"
 
 #include <iostream>
@@ -156,17 +161,17 @@ void writeHelp()
 
 /**
  * reads the values of mu, sigma and rho of all assets from
- * a file and stores them into three separated DataVectors
+ * a file and stores them into three separated sg::base::DataVectors
  *
  * @param tFile the file that contains the stochastic data
  * @param numAssets the of Assets stored in the file
- * @param mu DataVector for the exspected values
- * @param sigma DataVector for standard deviation
- * @param rho DataMatrix for the correlations
+ * @param mu sg::base::DataVector for the exspected values
+ * @param sigma sg::base::DataVector for standard deviation
+ * @param rho sg::base::DataMatrix for the correlations
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssets, DataVector& mu, DataVector& sigma, DataMatrix& rho)
+int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector& mu, sg::base::DataVector& sigma, sg::base::DataMatrix& rho)
 {
 	std::fstream file;
 	double cur_mu;
@@ -330,13 +335,13 @@ int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoun
 
 /**
  * reads a cuboid defined by several points from a file. These points are stored in the
- * cuboid DataMatrix
+ * cuboid sg::base::DataMatrix
  *
- * @param cuboid DataMatrix into which the evaluations points are stored
+ * @param cuboid sg::base::DataMatrix into which the evaluations points are stored
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
+int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim)
 {
 	std::fstream file;
 	double cur_coord;
@@ -355,7 +360,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 		return -1;
 	}
 
-	// Get number of lines and resize DataMatrix
+	// Get number of lines and resize sg::base::DataMatrix
 	size_t i = 0;
 	while (!file.eof())
 	{
@@ -373,7 +378,7 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 	i = 0;
 	while (!file.eof())
 	{
-		DataVector line(dim);
+		sg::base::DataVector line(dim);
 		line.setAll(0.0);
 		for (size_t d = 0; d < dim; d++)
 		{
@@ -391,11 +396,11 @@ int readEvalutionCuboid(DataMatrix& cuboid, std::string tFile, size_t dim)
 /**
  * reads function values (here option prices) from a file
  *
- * @param values DataVector into which the values will be stored
+ * @param values sg::base::DataVector into which the values will be stored
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(DataVector& values, std::string tFile)
+int readOptionsValues(sg::base::DataVector& values, std::string tFile)
 {
 	std::fstream file;
 	double cur_value;
@@ -433,14 +438,14 @@ int readOptionsValues(DataVector& values, std::string tFile)
 }
 
 /**
- * Writes a DataMatrix into a file
+ * Writes a sg::base::DataMatrix into a file
  *
- * @param data the DataMatrix that should be written into a file
+ * @param data the sg::base::DataMatrix that should be written into a file
  * @param tFile the file into which the data is written
  *
  * @return error code
  */
-int writeDataMatrix(DataMatrix& data, std::string tFile)
+int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile)
 {
 	std::ofstream file;
 	file.open(tFile.c_str());
@@ -467,14 +472,14 @@ int writeDataMatrix(DataMatrix& data, std::string tFile)
 
 
 /**
- * Writes a DataVector into a file
+ * Writes a sg::base::DataVector into a file
  *
- * @param data the DataVector that should be written into a file
+ * @param data the sg::base::DataVector that should be written into a file
  * @param tFile the file into which the data is written
  *
  * @return error code
  */
-int writeDataVector(DataVector& data, std::string tFile)
+int writeDataVector(sg::base::DataVector& data, std::string tFile)
 {
 	std::ofstream file;
 	file.open(tFile.c_str());
@@ -523,17 +528,17 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
 
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigma(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
-	DataMatrix EvalPoints(1, d);
+	sg::base::DataMatrix EvalPoints(1, d);
 
 	double r = riskfree;
 
-	DataVector* alpha;
+	sg::base::DataVector* alpha;
 
-	std::vector<DataVector> results;
+	std::vector<sg::base::DataVector> results;
 
 	// read process configuration
 	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
@@ -629,7 +634,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			}
 
 			// init the basis functions' coefficient vector
-			alpha = new DataVector(myBSSolver->getNumberGridPoints());
+			alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 			std::cout << "Grid has " << level << " Levels" << std::endl;
 			std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -679,7 +684,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
 			myBSSolver->setGrid(serialized_grid);
 
-			alpha = new DataVector(myBSSolver->getNumberGridPoints());
+			alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 			// Set stochastic data
 			myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -755,7 +760,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 			}
 
 			// Evaluate Cuboid
-			DataVector Prices(EvalPoints.getNrows());
+			sg::base::DataVector Prices(EvalPoints.getNrows());
 			myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
 			results.push_back(Prices);
 
@@ -780,8 +785,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				std::cout << "------------------------------------------------------------------------------" << std::endl;
 				for (size_t j = 0; j < i-start_l; j++)
 				{
-					DataVector maxLevel(results[i-start_l]);
-					DataVector relError(results[j]);
+					sg::base::DataVector maxLevel(results[i-start_l]);
+					sg::base::DataVector relError(results[j]);
 					double maxNorm = 0.0;
 					double l2Norm = 0.0;
 
@@ -855,14 +860,14 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 	double refineSigma = DFLT_SIGMA_REFINE_NORMDIST;
 
-	DataVector mu(dim);
-	DataVector sigma(dim);
-	DataMatrix rho(dim,dim);
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigma(dim);
+	sg::base::DataMatrix rho(dim,dim);
 
-	DataVector* alpha = NULL;
+	sg::base::DataVector* alpha = NULL;
 
-	DataVector EvalCuboidValues(1);
-	DataMatrix EvalCuboid(1, dim);
+	sg::base::DataVector EvalCuboidValues(1);
+	sg::base::DataMatrix EvalCuboid(1, dim);
 
 	int retCuboid = -1;
 	int retCuboidValues = -1;
@@ -923,7 +928,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		delete myBoundingBox;
 
 		// init the basis functions' coefficient vector
-		alpha = new DataVector(myBSSolver->getNumberGridPoints());
+		alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 		// Set stochastic data
 		myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -1058,7 +1063,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 		sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
 		myBSSolver->setGrid(serialized_grid);
 
-		alpha = new DataVector(myBSSolver->getNumberGridPoints());
+		alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
 
 		// Set stochastic data
 		myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -1138,10 +1143,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
 			std::cout << "Calculating relative errors..." << std::endl;
 			// Evaluate Cuboid
-			DataVector Prices(EvalCuboid.getNrows());
+			sg::base::DataVector Prices(EvalCuboid.getNrows());
 			myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
-			DataVector relError(Prices);
+			sg::base::DataVector relError(Prices);
 
 			// calculate relative error
 			relError.sub(EvalCuboidValues);
