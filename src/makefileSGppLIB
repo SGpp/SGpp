@@ -70,7 +70,6 @@ OBJS =	DataVector.o\
 	StdNormalDistribution.o\
 	BiCGStab.o\
 	DirichletUpdateVector.o\
-	IOToolBonnSG.o\
 	OperationLTwoDotProductLinearBoundary.o\
 	OperationLTwoDotProductLinear.o\
 	GridPrinter.o\
@@ -107,7 +106,6 @@ OBJS =	DataVector.o\
 	ARFFTools.o\
 	OperationLaplaceLinear.o\
 	OperationLaplaceModLinear.o\
-	OperationUpDownTestLinearBoundary.o\
 	StdUpDown.o\
 	UpDownOneOpDim.o\
 	UpDownTwoOpDims.o\
@@ -195,7 +193,6 @@ OBJS =	DataVector.o\
 	OperationLaplaceLinearStretchedBoundary.o\
 	OperationTestLinearStretched.o\
 	OperationTestLinearStretchedBoundary.o\
-	OperationUpDownTestLinearStretchedBoundary.o\
 	OperationDeltaLinearStretched.o\
 	OperationGammaLinearStretched.o\
 	OperationDeltaLogLinearStretchedBoundary.o\
@@ -656,9 +653,6 @@ OperationHierarchisationLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/o
 OperationEvalLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/OperationEvalLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/OperationEvalLinearBoundary.cpp
 	
-OperationUpDownTestLinearBoundary.o : $(SRCDIR)pde/basis/linear/boundary/operation/OperationUpDownTestLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearBoundary.o $(SRCDIR)pde/basis/linear/boundary/operation/OperationUpDownTestLinearBoundary.cpp
-
 OperationMultipleEvalLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.cpp
 
@@ -833,9 +827,6 @@ OperationHierarchisationLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearst
 OperationEvalLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEvalLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.cpp
 	
-OperationUpDownTestLinearStretchedBoundary.o : $(SRCDIR)pde/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationUpDownTestLinearStretchedBoundary.o $(SRCDIR)pde/basis/linearstretched/boundary/operation/OperationUpDownTestLinearStretchedBoundary.cpp
-
 OperationMultipleEvalLinearStretchedBoundary.o : $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinearStretchedBoundary.o $(SRCDIR)base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.cpp
 
@@ -1036,9 +1027,6 @@ BoundingBox.o : $(SRCDIR)base/grid/common/BoundingBox.cpp
 	
 Stretching.o : $(SRCDIR)base/grid/common/Stretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)Stretching.o $(SRCDIR)base/grid/common/Stretching.cpp
-    	
-IOToolBonnSG.o : $(SRCDIR)base/tools/IOToolBonnSG.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)IOToolBonnSG.o $(SRCDIR)base/tools/IOToolBonnSG.cpp
 	
 Hedging.o : $(SRCDIR)finance/tools/Hedging.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)Hedging.o $(SRCDIR)finance/tools/Hedging.cpp
