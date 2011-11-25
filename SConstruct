@@ -103,8 +103,14 @@ vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
 vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
 vars.Add('SG_PYTHON', 'Build Python Support', False)
 vars.Add('SG_JAVA', 'Build Java Support', False)
-moduleList = ['SG_BASE', 'SG_DATADRIVEN', 'SG_SOLVER', 'SG_FINANCE',
-              'SG_PDE', 'SG_PARALLEL', 'SG_COMBIGRID']
+# modules and dependencies
+moduleList = {'SG_BASE': (), 
+              'SG_DATADRIVEN': ('SG_BASE'), 
+              'SG_SOLVER': ('SG_BASE'), 
+              'SG_FINANCE': ('SG_BASE', 'SG_PDE'),
+              'SG_PDE': ('SG_BASE'), 
+              'SG_PARALLEL': ('SG_BASE', 'SG_PDE', 'SG_DATADRIVEN', 'SG_FINANCE'), 
+              'SG_COMBIGRID': ('SG_BASE')}
 supportList = ['SG_PYTHON', 'SG_JAVA']
 
 # initialize environment
@@ -235,45 +241,45 @@ env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
 
 
 
-
 # Decide what to compile
 #########################################################################
 
 # for clean enable everything:
 if env.GetOption('clean'):
-    for entry in moduleList+supportList:
+    for entry in moduleList.keys()+supportList:
         env[entry] = True
+
+# if neither module nor support language set, do all
+anySet = False
+for entry in moduleList.keys() + supportList:
+    if env[entry]:
+        anySet = True
+if not anySet:
+    env['SG_ALL'] = True
 
 # SG_ALL activates all modules and Python 
 if env['SG_ALL']:
-    for entry in moduleList + supportList:
+    print "Compiling all modules..."
+    print "Compiling all support..."
+    for entry in moduleList.keys() + supportList:
         env[entry] = True
 
-# compile all if nothing set
-anyModl = False
-for modl in moduleList:
+# check dependencies
+for modl in moduleList.keys():
+    if env[modl]:
+        for dep in moduleList[modl]:
+            env[dep] = True
+for modl in moduleList.keys():
     if env[modl]:
         print "Compiling module", modl
-        anyModl = True
-if not anyModl:
-    print "Compiling all modules..."
-    for modl in moduleList:
-        env[modl] = True
 # support for non-C++
-anySup = False
 for sup in supportList:
     if env[sup]:
         print "Compiling support for", sup
-        anySup = True
-# if nothing set (no module, no support), enable both JAVA and Python
-if not anySup and not anyModl:
-    print "Compiling all support..."
-    for sup in supportList:
-        env[sup] = True
 
 # add C++ defines for all modules
 cppdefines = []
-for modl in moduleList:
+for modl in moduleList.keys():
     if env[modl]:
         cppdefines.append(modl)
 env.Append(CPPDEFINES=cppdefines)
