@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/tools/TwoPartitionAutoTuning.hpp""
+#include "parallel/tools/TwoPartitionAutoTuning.hpp""
 #include <iostream>
 #include <algorithm>
 

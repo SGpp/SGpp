@@ -16,7 +16,7 @@
 #include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
 #include "pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"
 #include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
-#include "datadriven/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp"
+#include "pde/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp"
 #include "pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
 #include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 
