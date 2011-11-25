@@ -248,7 +248,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::mult(sg::base::DataVector&
 	else
 	{
 		myGlobalMPIComm->Abort();
-		throw new algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelMPI::mult : An unknown operation mode was specified!");
+		throw new base::algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelMPI::mult : An unknown operation mode was specified!");
 	}
 
 	// aggregate all results
@@ -329,7 +329,7 @@ sg::base::DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateR
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
+		throw new base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// aggregate all results
@@ -404,7 +404,7 @@ sg::base::DataVector* HeatEquationParabolicPDESolverSystemParallelMPI::generateR
 	}
 	else
 	{
-		throw new algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
+		throw new base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
 	}
 
 	// aggregate all results

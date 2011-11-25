@@ -11,9 +11,6 @@ OUTDIR = ./
 BINDIR = ./../../../lib/sgpp/
 #only for extensions:
 #####################
-# Intel Array Building Blocks
-ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
-ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
 OCLINCLUDE = /usr/local/cuda/include
 OCLLIB = /usr/lib64
@@ -283,6 +280,8 @@ OBJS =	DataVector.o\
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	OperationMultipleEvalIterativeSPArBBLinear.o\
+ 	OperationMultipleEvalIterativeArBBModLinear.o\
+ 	OperationMultipleEvalIterativeSPArBBModLinear.o\
  	ArBBKernels.o\
  	ArBBKernels2D.o\
  	ArBBKernels4D.o\
@@ -1123,14 +1122,20 @@ OperationRegularizationDiagonal.o : $(SRCDIR)datadriven/operation/OperationRegul
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationRegularizationDiagonal.o $(SRCDIR)datadriven/operation/OperationRegularizationDiagonal.cpp
 	
 # ArBB Extensions:
-OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeArBBLinear.cpp
+OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
 
 OperationMultipleEvalIterativeSPArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPArBBLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.cpp
 	
+OperationMultipleEvalIterativeArBBModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeArBBModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeArBBModLinear.cpp
+
+OperationMultipleEvalIterativeSPArBBModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPArBBModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPArBBModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPArBBModLinear.cpp
+
 ArBBKernels.o : $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)parallel/datadriven/operabasis/commontion/ArBBKernels.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ArBBKernels.o $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels.cpp
 	
 ArBBKernels2D.o : $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels2D.cpp
 	$(CC) $(CFLAGS) -o ArBBKernels2D.o $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels2D.cpp
@@ -1179,32 +1184,32 @@ MPICommunicator.o : $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
 GlobalMPIComm.o : $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)GlobalMPIComm.o $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp	
 	
-ConjugateGradientsMPI.o : $(SRCDIR)solver/sle/ConjugateGradientsMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)solver/sle/ConjugateGradientsMPI.cpp
+ConjugateGradientsMPI.o : $(SRCDIR)parallel/solver/sle/ConjugateGradientsMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)parallel/solver/sle/ConjugateGradientsMPI.cpp
 	
-PoissonEquationSolverMPI.o : $(SRCDIR)pde/application/PoissonEquationSolverMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolverMPI.o $(SRCDIR)pde/application/PoissonEquationSolverMPI.cpp
+PoissonEquationSolverMPI.o : $(SRCDIR)parallel/pde/application/PoissonEquationSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolverMPI.o $(SRCDIR)parallel/pde/application/PoissonEquationSolverMPI.cpp
 	
-PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o $(SRCDIR)pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
+PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o $(SRCDIR)parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
 
-HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
+HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
 
-HeatEquationSolverMPI.o : $(SRCDIR)pde/application/HeatEquationSolverMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)pde/application/HeatEquationSolverMPI.cpp
+HeatEquationSolverMPI.o : $(SRCDIR)parallel/pde/application/HeatEquationSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)parallel/pde/application/HeatEquationSolverMPI.cpp
 	
-BlackScholesSolverMPI.o : $(SRCDIR)pde/application/BlackScholesSolverMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverMPI.o $(SRCDIR)pde/application/BlackScholesSolverMPI.cpp
+BlackScholesSolverMPI.o : $(SRCDIR)parallel/finance/application/BlackScholesSolverMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverMPI.o $(SRCDIR)parallel/finance/application/BlackScholesSolverMPI.cpp
 	
-BiCGStabMPI.o : $(SRCDIR)solver/sle/BiCGStabMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)solver/sle/BiCGStabMPI.cpp
+BiCGStabMPI.o : $(SRCDIR)parallel/solver/sle/BiCGStabMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)parallel/solver/sle/BiCGStabMPI.cpp
 	
-BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)pde/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
+BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
 
-BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)pde/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
+BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
 		
 clean:
 	rm *
