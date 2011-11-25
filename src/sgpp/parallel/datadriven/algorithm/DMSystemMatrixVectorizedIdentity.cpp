@@ -12,7 +12,7 @@
 
 namespace sg
 {
-namespace datadriven
+namespace parallel
 {
 
 DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, std::string vecMode)

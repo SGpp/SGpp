@@ -18,7 +18,7 @@
 
 namespace sg
 {
-namespace datadriven
+namespace parallel
 {
 
 /**

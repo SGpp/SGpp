@@ -322,16 +322,16 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(cg_max_learning, cg_eps_learning);
 #if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
 #ifdef USE_X86SIMD
-    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "X86SIMD");
+    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "X86SIMD");
 #endif
 #ifdef USE_OCL
-    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");
+    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");
 #endif
 #ifdef USE_HYBRID_X86SIMD_OCL
-    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_X86SIMD_OCL");
+    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_X86SIMD_OCL");
 #endif
 #ifdef USE_ARBB
-    sg::datadriven::DMSystemMatrixVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
+    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
 #endif
 #else
     sg::base::OperationMatrix* myC = sg::op_factory::createOperationIdentity(*myGrid);
@@ -670,19 +670,19 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 
 #if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
 #ifdef USE_X86SIMD
-    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "X86SIMD");
+    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "X86SIMD");
 #endif
 #ifdef USE_OCL
-    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "OCL");
+    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "OCL");
 #endif
 #ifdef USE_HYBRID_X86SIMD_OCL
-    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_X86SIMD_OCL");
+    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_X86SIMD_OCL");
 #endif
 #ifdef USE_ARBB
-    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
+    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
 #endif
 #else
-    sg::datadriven::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::datadriven::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
+    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
 #endif
 
     std::cout << "Starting Learning...." << std::endl;
