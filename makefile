@@ -13,8 +13,8 @@ SRCDIR=./../../../src/sgpp
 #only for extensions:
 #####################
 # Intel Array Building Blocks
-ARBBINCLUDE = /opt/intel/arbb/1.0.0.022/include
-ARBBLIB = /opt/intel/arbb/1.0.0.022/lib/intel64
+ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
+ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
 OCLINCLUDE = /usr/local/cuda/include
 OCLLIB = /usr/lib64
@@ -300,33 +300,6 @@ endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icc
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC" "EXT=$(EXT)"
-endif
-
-###################################################################
-# Builds a Up/Down Test Application
-###################################################################	
-UpDownTest: default
-ifeq ($(CC),g++)
-	mkdir -p tmp/build_native/UpDownTest_gcc
-	make -j $(JOBS) -f ./../../../src/makefileUpDownTest --directory=./tmp/build_native/UpDownTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTest_GCC" "EXT=$(EXT)"
-endif
-
-###################################################################
-# Builds a Up/Down Test Application
-###################################################################	
-UpDownTestForStretching: default
-ifeq ($(CC),g++)
-	mkdir -p tmp/build_native/UpDownTestForStretching_gcc
-	make -j $(JOBS) -f ./../../../src/makefileUpDownTestForStretching --directory=./tmp/build_native/UpDownTestForStretching_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=UpDownTestForStretching_GCC" "EXT=$(EXT)"
-endif
-
-###################################################################
-# Builds a Refine/Coarsen Test Application
-###################################################################	
-RefineCoarsenTest: default
-ifeq ($(CC),g++)
-	mkdir -p tmp/build_native/RefineCoarsen_gcc
-	make -j $(JOBS) -f ./../../../src/makefileRefineCoarsenTest --directory=./tmp/build_native/RefineCoarsen_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=RefineCoarsen_gcc" "EXT=$(EXT)"
 endif
 
 ###################################################################
