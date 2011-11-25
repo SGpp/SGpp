@@ -16,6 +16,8 @@
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
 #include "datadriven/operation/OperationRegularizationDiagonal.hpp"
-//#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "datadriven/operation/OperationTest.hpp"
+
+#include "datadriven/operation/DatadrivenOpFactory.hpp"
 
 #endif /* DATADRIVEN_HPP */

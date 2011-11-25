@@ -33,10 +33,6 @@
 %apply std::string *OUTPUT { std::string& ostr };
 %apply std::string *INPUT { std::string& istr };
 
-
-
-//void getMemento();
-
 using namespace sg;
 namespace sg
 {
@@ -70,20 +66,7 @@ public:
 	virtual ~Grid();
 
 public:	
-	virtual GridGenerator* createGridGenerator() = 0;
-	//virtual OperationMultipleEval* createOperationMultipleEval(DataMatrix* dataset) = 0;
-	//virtual OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(const std::string& VecType, DataMatrix* dataset) = 0;
-	//virtual OperationEval* createOperationEval() = 0;
-	//virtual sg::datadriven::OperationTest* createOperationTest() = 0;
-	//virtual OperationMatrix* createOperationLaplace() = 0;
-	//virtual OperationMatrix* createOperationLTwoDotProduct() = 0;
-	//virtual OperationMatrix* createOperationIdentity() = 0;
-	//virtual OperationHierarchisation* createOperationHierarchisation() = 0;
-	//virtual OperationConvert* createOperationConvert() = 0;
-	
-	//virtual OperationMatrix* createOperationDelta(DataVector& coef) = 0;
-	//virtual OperationMatrix* createOperationGamma(DataMatrix& coef) = 0;
-	
+	virtual GridGenerator* createGridGenerator() = 0;	
 	virtual GridStorage* getStorage();
 	virtual BoundingBox* getBoundingBox();
 	virtual Stretching* getStretching();
@@ -105,12 +88,12 @@ public:
 
 //these are just two new interfaces for consistency with Memento design pattern
 %extend sg::base::Grid{
-	Grid* createMemento(){
+	sg::base::Grid* createMemento(){
 		return $self;
 	}
 	
-	static Grid* setMemento(std::string& istr){
-		return Grid::unserialize(istr);
+	static sg::base::Grid* setMemento(std::string& istr){
+		return sg::base::Grid::unserialize(istr);
 	}
 };
 

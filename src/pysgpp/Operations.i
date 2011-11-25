@@ -16,7 +16,7 @@ class RefinementFunctor
 public:
 	typedef double value_type;
 
-	virtual double operator()(GridStorage* storage, size_t seq) = 0;
+	virtual double operator()(sg::base::GridStorage* storage, size_t seq) = 0;
 	virtual double start() = 0;	
 };
 
@@ -25,7 +25,7 @@ class CoarseningFunctor
 public:
 	typedef double value_type;
 
-	virtual double operator()(GridStorage* storage, size_t seq) = 0;
+	virtual double operator()(sg::base::GridStorage* storage, size_t seq) = 0;
 	virtual double start() = 0;	
 };
 
@@ -34,54 +34,54 @@ class GridGenerator
 public:
 	virtual void regular(size_t level) = 0;
 	virtual void truncated(size_t level,size_t l_user) = 0;
-	virtual void refine(RefinementFunctor* func) = 0;
-	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
-	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) = 0;
+	virtual void refine(sg::base::RefinementFunctor* func) = 0;
+	virtual void coarsen(sg::base::CoarseningFunctor* func, sg::base::DataVector* alpha) = 0;
+	virtual void coarsenNFirstOnly(sg::base::CoarseningFunctor* func, sg::base::DataVector* alpha, size_t numFirstOnly) = 0;
 	virtual int getNumberOfRefinablePoints() = 0;
 	virtual int getNumberOfRemoveablePoints() = 0;
-	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;
+	virtual void refineMaxLevel(sg::base::RefinementFunctor* func, unsigned int maxLevel) = 0;
 	virtual int getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
 
 class OperationMultipleEval
 {
 public:
-	virtual void mult(DataVector& alpha, DataVector& result) = 0;
-	virtual void multTranspose(DataVector& soruce, DataVector& result) = 0;
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+	virtual void multTranspose(sg::base::DataVector& soruce, sg::base::DataVector& result) = 0;
 };
 
 class OperationMultipleEvalVectorized
 {
 public:
-	virtual double multVectorized(DataVector& alpha, DataVector& result) = 0;
-	virtual double multTransposeVectorized(DataVector& source, DataVector& result) = 0;
+	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
 	virtual void rebuildLevelAndIndex() = 0;
 };
 
 class OperationMatrix
 {
 public:
-	virtual void mult(DataVector& alpha, DataVector& result) = 0;
+	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 };
 
 class OperationConvert
 {
 public:
-	virtual void doConvertToLinear(DataVector& alpha) = 0;
-	virtual void doConvertFromLinear(DataVector& alpha) = 0;
+	virtual void doConvertToLinear(sg::base::DataVector& alpha) = 0;
+	virtual void doConvertFromLinear(sg::base::DataVector& alpha) = 0;
 };
 
 class OperationEval
 {
 public:
-	virtual double eval(DataVector& alpha, DataVector& point) = 0;
+	virtual double eval(sg::base::DataVector& alpha, sg::base::DataVector& point) = 0;
 };
 
 class OperationHierarchisation
 {
 public:
-	virtual void doHierarchisation(DataVector& node_values) = 0;
-	virtual void doDehierarchisation(DataVector& alpha) = 0;
+	virtual void doHierarchisation(sg::base::DataVector& node_values) = 0;
+	virtual void doDehierarchisation(sg::base::DataVector& alpha) = 0;
 };
 }
 
@@ -89,7 +89,7 @@ namespace base {
 class OperationQuadrature
 {
 public:
-	virtual double doQuadrature(DataVector& alpha) = 0;
+	virtual double doQuadrature(sg::base::DataVector& alpha) = 0;
 };
 
 }
@@ -101,11 +101,21 @@ namespace datadriven {
 class OperationTest
 {
 public:
-  virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) = 0;
-	virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) = 0;
-	virtual double testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers) = 0;
-	virtual void calculateROCcurve(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) = 0;
+  virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes) = 0;
+	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues) = 0;
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) = 0;
+	virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) = 0;
 };
+
+class OperationTest
+{
+public:
+  virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes) = 0;
+	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues) = 0;
+	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) = 0;
+	virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) = 0;
+};
+
 }
 //- end namespace datadriven ------------------------------------------
 

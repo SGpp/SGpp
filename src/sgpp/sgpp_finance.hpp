@@ -19,6 +19,6 @@
 #include "finance/application/HullWhiteSolver.hpp"
 #include "finance/application/BlackScholesHullWhiteSolver.hpp"
 
-//#include "finance/operation/FinanceOpFactory.hpp"
+#include "finance/operation/FinanceOpFactory.hpp"
 
 #endif /* FINANCE_HPP */

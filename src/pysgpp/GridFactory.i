@@ -10,9 +10,9 @@
 %newobject sg::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sg::base::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(BoudingBox& BB);
+%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(sg::base::BoudingBox& BB);
 %newobject sg::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(Stretching& BB);
+%newobject sg::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(sg::base::Stretching& BB);
 %newobject sg::base::Grid::createModLinearGrid(size_t dim);
 %newobject sg::base::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sg::base::Grid::createModPolyGrid(size_t dim, size_t degree);
@@ -32,9 +32,6 @@
 %apply std::string *OUTPUT { std::string& ostr };
 %apply std::string *INPUT { std::string& istr };
 
-
-
-//void getMemento();
 
 using namespace sg;
 namespace sg
@@ -69,15 +66,15 @@ public:
 	virtual ~Grid();
 
 public:	
-	virtual GridGenerator* createGridGenerator() = 0;
-	virtual GridStorage* getStorage();
-	virtual BoundingBox* getBoundingBox();
-	virtual Stretching* getStretching();
+	virtual sg::base::GridGenerator* createGridGenerator() = 0;
+	virtual sg::base::GridStorage* getStorage();
+	virtual sg::base::BoundingBox* getBoundingBox();
+	virtual sg::base::Stretching* getStretching();
 
 	virtual const char* getType() = 0;	
 	virtual void serialize(std::string& ostr);
-	void refine(DataVector* vector, int num);
-	double eval(DataVector& alpha, DataVector& point);
+	void refine(sg::base::DataVector* vector, int num);
+	double eval(sg::base::DataVector& alpha, sg::base::DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	int getSize();
 	
@@ -87,12 +84,12 @@ public:
 
 //these are just two new interfaces for consistency with Memento design pattern
 %extend sg::base::Grid{
-	Grid* createMemento(){
+	sg::base::Grid* createMemento(){
 		return $self;
 	}
 	
-	static Grid* setMemento(std::string& istr){
-		return Grid::unserialize(istr);
+	static sg::base::Grid* setMemento(std::string& istr){
+		return sg::base::Grid::unserialize(istr);
 	}
 };
 

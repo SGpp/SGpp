@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-//namespace sg
-//{
-//namespace base
-//{
+namespace sg
+{
+namespace base
+{
 
 %apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
@@ -132,5 +132,5 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
 };
 
-//}
-//}
+}
+}

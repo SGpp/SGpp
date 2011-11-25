@@ -57,6 +57,7 @@
 #include "base/tools/SGppStopwatch.hpp"
 #include "base/tools/EvalCuboidGenerator.hpp"
 #include "base/tools/EvalCuboidGeneratorForStretching.hpp"
-//#include "base/operation/BaseOpFactory.hpp"
+
+#include "base/operation/BaseOpFactory.hpp"
 
 #endif /* BASE_HPP */

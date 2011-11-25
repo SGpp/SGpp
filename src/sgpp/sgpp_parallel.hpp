@@ -8,6 +8,6 @@
 #ifndef PARALLEL_HPP
 #define PARALLEL_HPP
 
-//#include "parallel/operation/ParallelOpFactory.hpp"
+#include "parallel/operation/ParallelOpFactory.hpp"
 
 #endif /* PARALLEL_HPP */

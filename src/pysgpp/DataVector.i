@@ -16,10 +16,10 @@
 %rename(__len__) DataVector::getSize;
 
 
-//namespace sg
-//{
-//namespace base
-//{
+namespace sg
+{
+namespace base
+{
 
 class DataVector
 {
@@ -105,5 +105,5 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
 };
 
-//}
-//}
+}
+}

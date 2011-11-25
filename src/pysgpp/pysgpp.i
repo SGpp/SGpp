@@ -67,6 +67,13 @@ namespace std {
 %include "Operations.i"
 %include "OperationQuadratureMC.i"
 
+// the Bad
+%include "DataVector.i"
+%include "DataMatrix.i"
+%include "GridFactory.i"
+// really drity
+%include "src/sgpp/base/datatypes/DataVectorSP.hpp"
+%include "src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications
 %include "src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
@@ -93,27 +100,13 @@ namespace std {
 %include "src/sgpp/base/grid/generation/SurplusRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/SurplusCoarseningFunctor.hpp"
-
-
-
-%include "GridFactory.i"
-
 %include "src/sgpp/base/grid/GridDataBase.hpp"
 
-// the Bad
-
-%include "DataVector.i"
-%include "DataMatrix.i"
 
 // and the rest
-
- //%include "src/sgpp/base/operation/BaseOpFactory.hpp"
- //%include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
-
 #ifdef SG_DATADRIVEN
 %include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
- //%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
 %include "src/sgpp/datadriven/operation/OperationRegularizationDiagonal.hpp"
 %include "src/sgpp/datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 #endif
@@ -125,9 +118,7 @@ namespace std {
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemNeumann.hpp"
 %include "src/sgpp/pde/application/HeatEquationSolver.hpp"
- //%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
 #endif
-
 
 #ifdef SG_FINANCE
 %include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
@@ -141,7 +132,6 @@ namespace std {
 %include "src/sgpp/pde/application/EllipticPDESolver.hpp"
 %include "src/sgpp/pde/application/PoissonEquationSolver.hpp"
 %include "src/sgpp/finance/application/VariableDiscountFactor.hpp"
- //%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
 #endif
 
 %include "src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
@@ -176,8 +166,8 @@ namespace std {
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
 #endif
 
- // static factory methods
- //%include "src/sgpp/base/basis/operations_factory.hpp"
+// static factory methods
+//%include "src/sgpp/base/basis/operations_factory.hpp"
 %include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
 %include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
 %include "src/sgpp/finance/operation/FinanceOpFactory.hpp"

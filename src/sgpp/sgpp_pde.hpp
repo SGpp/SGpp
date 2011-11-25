@@ -21,6 +21,6 @@
 #include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 #include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
 
-//#include "pde/operation/PdeOpFactory.hpp"
+#include "pde/operation/PdeOpFactory.hpp"
 
 #endif /* PDE_HPP */
