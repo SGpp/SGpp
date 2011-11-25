@@ -61,19 +61,17 @@ namespace std {
 #ifdef SG_COMBIGRID
 #include "combigrid.hpp"
 #endif
-  //#include "base/basis/operations_factory.hpp"
 %}
 
-%include "Operations.i"
-%include "OperationQuadratureMC.i"
-
 // the Bad
+// really dirty
+%include "src/sgpp/base/datatypes/DataVectorSP.hpp"
+%include "src/sgpp/base/datatypes/DataMatrixSP.hpp"
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"
-// really drity
-%include "src/sgpp/base/datatypes/DataVectorSP.hpp"
-%include "src/sgpp/base/datatypes/DataMatrixSP.hpp"
+%include "Operations.i"
+%include "OperationQuadratureMC.i"
 
 // The Good, i.e. without any modifications
 %include "src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
@@ -107,7 +105,6 @@ namespace std {
 #ifdef SG_DATADRIVEN
 %include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
-%include "src/sgpp/datadriven/operation/OperationRegularizationDiagonal.hpp"
 %include "src/sgpp/datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 #endif
 
