@@ -8,7 +8,7 @@
 #ifndef SGPP_MPI_HPP
 #define SGPP_MPI_HPP
 
-#include "parallel/parallel/tools/MPI/SGppMPITools.hpp"
+#include "parallel/tools/MPI/SGppMPITools.hpp"
 
 #include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
 #include "parallel/solver/sle/BiCGStabMPI.hpp"
