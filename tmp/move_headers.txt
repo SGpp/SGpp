@@ -914,3 +914,11 @@ base/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp pde/basis/modlinear
 base/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.hpp pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.hpp
 base/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp
 base/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp
+#Fri Nov 25 18:16:48 2011
+base/base.hpp base.hpp
+combigrid/combigrid.hpp combigrid.hpp
+datadriven/datadriven.hpp datadriven.hpp
+finance/finance.hpp finance.hpp
+parallel/parallel.hpp parallel.hpp
+pde/pde.hpp pde.hpp
+solver/solver.hpp solver.hpp
