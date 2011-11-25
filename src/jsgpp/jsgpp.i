@@ -38,7 +38,26 @@ namespace std {
 
 // This should include all necessary header files
 %{
-#include "sgpp.hpp"
+#include "base.hpp"
+#ifdef SG_DATADRIVEN
+#include "datadriven.hpp"
+#endif
+#ifdef SG_PDE
+#include "pde.hpp"
+#endif
+#ifdef SG_FINANCE
+#include "finance.hpp"
+#endif
+#ifdef SG_SOLVER
+#include "solver.hpp"
+#endif
+#ifdef SG_PARALLEL
+#include "parallel.hpp"
+#endif
+#ifdef SG_COMBIGRID
+#include "combigrid.hpp"
+#endif
+#include "base/basis/operations_factory.hpp"
 %}
 
 // The Good, i.e. without any modifications
@@ -80,7 +99,6 @@ namespace std {
 
 // and the rest
 
-%include "src/sgpp/sgpp.hpp"
 
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
