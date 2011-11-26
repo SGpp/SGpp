@@ -12,7 +12,8 @@
 #include "datadriven/algorithm/test_dataset.hpp"
 #include "datadriven/algorithm/DMSystemMatrix.hpp"
 #include "datadriven/algorithm/DMWeightMatrix.hpp"
-#include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
+#include "datadriven/algorithm/AlgorithmAdaBoostBase.hpp"
+#include "datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp"
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
 #include "datadriven/operation/OperationRegularizationDiagonal.hpp"

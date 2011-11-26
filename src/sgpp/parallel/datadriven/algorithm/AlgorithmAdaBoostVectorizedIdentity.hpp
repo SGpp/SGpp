@@ -7,10 +7,10 @@
 // @author Benjamin (pehersto@in.tum.de)
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#ifndef ALGORITHMADABOOSTVECTORIZED_HPP
-#define ALGORITHMADABOOSTVECTORIZED_HPP
+#ifndef ALGORITHMADABOOSTVECTORIZEDIDENTITY_HPP
+#define ALGORITHMADABOOSTVECTORIZEDIDENTITY_HPP
 
-#include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
+#include "datadriven/algorithm/AlgorithmAdaBoostBase.hpp"
 
 namespace sg
 {
@@ -27,13 +27,13 @@ namespace parallel
  *
  * Vectorized MultipleEvalulation Operations are used!
  */
-class AlgorithmAdaBoostVectorized : public sg::datadriven::AlgorithmAdaBoost
+class AlgorithmAdaBoostVectorizedIdentity : public sg::datadriven::AlgorithmAdaBoostBase
 {
 protected:
 	/// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	std::string vecMode;
 
-	virtual void alphaSolver(sg::base::OperationMatrix* C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
+	virtual void alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
 
 public:
 	/**
@@ -62,16 +62,16 @@ public:
 	 * @param percentOfAda the percentage of Grid points to refine
 	 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	 */
-	AlgorithmAdaBoostVectorized(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, std::string vecMode);
+	AlgorithmAdaBoostVectorizedIdentity(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, std::string vecMode);
         
 	/**
 	 * Std-Deconstructor
 	 */
-	virtual ~AlgorithmAdaBoostVectorized();
+	virtual ~AlgorithmAdaBoostVectorizedIdentity();
 };
 
 }
 
 }
 
-#endif /* ALGORITHMADABOOSTVECTORIZED_HPP */
+#endif /* ALGORITHMADABOOSTVECTORIZEDIDENTITY_HPP */

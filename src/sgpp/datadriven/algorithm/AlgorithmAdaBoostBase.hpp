@@ -7,8 +7,8 @@
 // @author Benjamin (pehersto@in.tum.de)
 // @auther Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#ifndef ALGORITHMADABOOST_HPP
-#define ALGORITHMADABOOST_HPP
+#ifndef ALGORITHMADABOOSTBASE_HPP
+#define ALGORITHMADABOOSTBASE_HPP
 
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/Grid.hpp"
@@ -44,7 +44,7 @@ namespace datadriven
  * The main idea behind the algorithm is to get a better accuracy in classify dateset according to the training dataset
  *
  */
-class AlgorithmAdaBoost
+class AlgorithmAdaBoostBase
 {
     protected:
             /// the lambda, the regularisation parameter
@@ -103,16 +103,14 @@ class AlgorithmAdaBoost
 		double perOfAda;
 
         /**
-         * Performs a solver to get alpha use DMWeightMatrix as the System Matrix
+         * Performs a solver to get alpha
 		 *
-         * @param C OperationMatrix for the regularisation mehtod
          * @param lambda the regularisation parameter
 		 * @param weight the weights of examples
 		 * @param alpha output the coefficients of the sparse grid's basis functions
 		 * @param final judgement the final step of this base learner
 		 */
-	virtual void alphaSolver(sg::base::OperationMatrix* C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
-
+	virtual void alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final) = 0;
 
     public:
 
@@ -141,13 +139,13 @@ class AlgorithmAdaBoost
 			 * @param numberOfAda the number of Grid points to refine
 			 * @param percentOfAda the percentage of Grid points to refine
              */
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
+		AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
         
 
             /**
              * Std-Deconstructor
              */
-        virtual ~AlgorithmAdaBoost();
+        virtual ~AlgorithmAdaBoostBase();
 
             /**
              * Performs the algorithm

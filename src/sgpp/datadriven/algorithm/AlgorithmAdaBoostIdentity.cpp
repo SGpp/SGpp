@@ -5,43 +5,36 @@
 ******************************************************************************/
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
-// @author Alexander Heinecke (alexander.heinecke@mytum.de)
+// @auther Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#include "parallel/datadriven/algorithm/AlgorithmAdaBoostVectorized.hpp"
-#include "parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp"
-#include "base/exception/operation_exception.hpp"
+#include "datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp"
+#include "datadriven/algorithm/DMWeightMatrix.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 
 namespace sg
 {
-namespace parallel
+namespace datadriven
 {
 
-AlgorithmAdaBoostVectorized::AlgorithmAdaBoostVectorized(sg::base::Grid& SparseGrid, size_t gridType,
+AlgorithmAdaBoostIdentity::AlgorithmAdaBoostIdentity(sg::base::Grid& SparseGrid, size_t gridType,
 		size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass,
 		size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final,
 		double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum,
-		bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda,
-		std::string vecMode) : AlgorithmAdaBoost(SparseGrid, gridType,
+		bool refine, size_t refineMode, size_t refineNum, int numberOfAda,
+		double percentOfAda) : AlgorithmAdaBoostBase(SparseGrid, gridType,
 		gridLevel, trainData, trainDataClass, NUM, lambda, IMAX, eps, IMAX_final, eps_final,
 		firstLabel, secondLabel, maxLambda, minLambda, searchNum, refine, refineMode, refineNum, numberOfAda, percentOfAda)
 {
-		if (vecMode != "X86SIMD" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_X86SIMD_OCL")
-		{
-			throw new sg::base::operation_exception("AlgorithmAdaboost : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
-		}
-
-		this->vecMode = vecMode;
-    }
+}
     
-AlgorithmAdaBoostVectorized::~AlgorithmAdaBoostVectorized()
+AlgorithmAdaBoostIdentity::~AlgorithmAdaBoostIdentity()
 {
-
 }
 	
-void AlgorithmAdaBoostVectorized::alphaSolver(sg::base::OperationMatrix* C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final)
+void AlgorithmAdaBoostIdentity::alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final)
 {
-	DMWeightMatrixVectorizedIdentity WMatrix(*this->grid, *this->data, lambda, weight, this->vecMode);
+	sg::base::OperationMatrix* C = sg::op_factory::createOperationIdentity(*this->grid);
+	sg::datadriven::DMWeightMatrix WMatrix(*this->grid, *this->data, *C, lambda, weight);
 	sg::base::DataVector rhs(alpha.getSize());
 	WMatrix.generateb(*this->classes, rhs);
 	if (final)
@@ -54,8 +47,8 @@ void AlgorithmAdaBoostVectorized::alphaSolver(sg::base::OperationMatrix* C, doub
 		sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
 		myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
 	}
+	delete C;
 }
 
 }
-
 }
