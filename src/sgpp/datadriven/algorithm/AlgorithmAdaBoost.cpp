@@ -14,7 +14,7 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, size_t alphaMethod, std::string vecMode)
+	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda)
     {
 		if (refine && (gridType != 1 && gridType != 2 && gridType != 3))
 		{
@@ -24,17 +24,9 @@ namespace datadriven
 		{
 			throw new sg::base::operation_exception("AlgorithmAdaboost : Only number between 0 and 1 is the supported percent to Adaptive!");
 		}
-		if (alphaMethod != 1 && alphaMethod != 2)
-		{
-			throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 are supported method to solve alpha(1 : use normal DMWeightMatrix as System Matrix, 2 : use DMWeightMatrixVectorizedIdentity as System Matrix)!");
-		}
 		if (refineMode !=1 && refineMode !=2)
 		{
 			throw new sg::base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported refine mode(1 : use grid point number, 2: use grid point percentage)!");
-		}
-		if (vecMode != "X86SIMD" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_X86SIMD_OCL")
-		{
-			throw new sg::base::operation_exception("AlgorithmAdaboost : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
 		}
 
 		sg::base::GridStorage* gridStorage = SparseGrid.getStorage();
@@ -66,8 +58,6 @@ namespace datadriven
 		this->refineTimes = refineNum;
 		this->numOfAda = numberOfAda;
 		this->perOfAda = percentOfAda;
-		this->alphaMethod = alphaMethod;
-		this->vecMode = vecMode;
 		this->maxGridPoint = new sg::base::DataVector(NUM);
 		this->sumGridPoint = new sg::base::DataVector(NUM);
     }
@@ -119,20 +109,11 @@ namespace datadriven
 			bool final_step = false;
 			if (this->refinement == 0)
 				final_step = true;
+
 			// calculate alpha
-			if (this->alphaMethod == 1)
-			{
-				sg::base::OperationMatrix* C = sg::op_factory::createOperationIdentity(*this->grid);
-				alphaSolver(C, this->lamb, weight, alpha_train, final_step);
-				delete C;
-			}
-			else if (this->alphaMethod == 2)
-				alphaSolverVectorizedIdentity(this->lamb, weight, alpha_train, final_step);
-			// should not happen because this exception should have been thrown some lines upwards!
-			else
-			{
-				throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 are supported method to solve alpha(1 : use normal DMWeightMatrix as System Matrix, 2 : use DMWeightMatrixVectorizedIdentity as System Matrix)!");
-			}
+			sg::base::OperationMatrix* C = sg::op_factory::createOperationIdentity(*this->grid);
+			alphaSolver(C, this->lamb, weight, alpha_train, final_step);
+			delete C;
 			   
 			if(this->refinement)
 			{
@@ -181,19 +162,9 @@ namespace datadriven
 					alpha_train.setAll(0.0);
 					cur_lambda = exp(this->lambLogMax - it*this->lambStepsize);
 
-					if (this->alphaMethod == 1)
-					{
-						sg::base::OperationMatrix* C_search = sg::op_factory::createOperationIdentity(*this->grid);
-						alphaSolver(C_search, cur_lambda, weight, alpha_train, true);
-						delete C_search;
-					}
-					else if (this->alphaMethod == 2)
-						alphaSolverVectorizedIdentity(cur_lambda, weight, alpha_train, true);
-					// should not happen because this exception should have been thrown some lines upwards!
-					else
-					{
-						throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 are supported method to solve alpha(1 : use normal DMWeightMatrix as System Matrix, 2 : use DMWeightMatrixVectorizedIdentity as System Matrix)!");
-					}
+					sg::base::OperationMatrix* C_search = sg::op_factory::createOperationIdentity(*this->grid);
+					alphaSolver(C_search, cur_lambda, weight, alpha_train, true);
+					delete C_search;
 
 					for (size_t i = 0; i < this->numData; i++)
 					{
@@ -315,9 +286,9 @@ namespace datadriven
 				}
 				else if(this->type == 2)
 				{
-					this->grid = sg::base::Grid::createLinearBoundaryGrid(this->dim);
+					this->grid = sg::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
 					std::cout << std::endl;
-					std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
+					std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
 				}
 				else if(this->type == 3)
 				{
@@ -476,25 +447,13 @@ namespace datadriven
 			alpha_ada.resizeZero(gridPts);
 
 			// calculate new alpha
-			if (this->alphaMethod == 1)
-			{
-				sg::base::OperationMatrix* C_ada = sg::op_factory::createOperationIdentity(*this->grid);
-				alphaSolver(C_ada, this->lamb, weight_ada, alpha_ada, final_ada);
-				delete C_ada;
-			}
-			else if (this->alphaMethod == 2)
-			{
-				alphaSolverVectorizedIdentity(this->lamb, weight_ada, alpha_ada, final_ada);
-			}
-			// should not happen because this exception should have been thrown some lines upwards!
-			else
-			{
-				throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 are supported method to solve alpha(1 : use normal DMWeightMatrix as System Matrix, 2 : use DMWeightMatrixVectorizedIdentity as System Matrix)!");
-			}
+			sg::base::OperationMatrix* C_ada = sg::op_factory::createOperationIdentity(*this->grid);
+			alphaSolver(C_ada, this->lamb, weight_ada, alpha_ada, final_ada);
+			delete C_ada;
 		}
 	}
 
-	void AlgorithmAdaBoost::alphaSolver(sg::base::OperationMatrix*& C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final)
+	void AlgorithmAdaBoost::alphaSolver(sg::base::OperationMatrix* C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final)
 	{
 		sg::datadriven::DMWeightMatrix WMatrix(*grid, *data, *C, lambda, weight);
 		sg::base::DataVector rhs(alpha.getSize());
@@ -510,24 +469,6 @@ namespace datadriven
 			myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
 		}
 	}
-
-	void AlgorithmAdaBoost::alphaSolverVectorizedIdentity(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final)
-	{
-		sg::datadriven::DMWeightMatrixVectorizedIdentity WMatrix(*grid, *data, lambda, weight, this->vecMode);
-		sg::base::DataVector rhs(alpha.getSize());
-		WMatrix.generateb(*classes, rhs);
-		if (final)
-		{
-			sg::solver::ConjugateGradients myCG(this->imax_final, this->epsilon_final);
-			myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
-		}
-		else
-		{
-			sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
-			myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
-		}
-	}
-
 
 	size_t AlgorithmAdaBoost::getActualBL()
 	{

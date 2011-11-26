@@ -5,21 +5,25 @@
 ******************************************************************************/
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
+// @auther Alexander Heinecke (alexander.heinecke@mytum.de)
 
 #ifndef ALGORITHMADABOOST_HPP
 #define ALGORITHMADABOOST_HPP
 
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/Grid.hpp"
+#include "base/operation/OperationHierarchisation.hpp"
+#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+
 #include "solver/sle/ConjugateGradients.hpp"
+
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/OperationMatrix.hpp"
+
 #include "datadriven/algorithm/DMWeightMatrix.hpp"
-#include "datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp"
-#include "base/operation/OperationHierarchisation.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+
 #include <math.h>
 #include <string>
 #include <utility>
@@ -40,10 +44,9 @@ namespace datadriven
  * The main idea behind the algorithm is to get a better accuracy in classify dateset according to the training dataset
  *
  */
-    class AlgorithmAdaBoost
-    {
-
-    private:
+class AlgorithmAdaBoost
+{
+    protected:
             /// the lambda, the regularisation parameter
         double lamb;
             /// the size of the grid
@@ -98,10 +101,17 @@ namespace datadriven
 		int numOfAda;
 		    /// Percentage of Grid points to refine(between 0 and 1)
 		double perOfAda;
-		    /// Different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
-		size_t alphaMethod;
-    		/// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
-		std::string vecMode;
+
+        /**
+         * Performs a solver to get alpha use DMWeightMatrix as the System Matrix
+		 *
+         * @param C OperationMatrix for the regularisation mehtod
+         * @param lambda the regularisation parameter
+		 * @param weight the weights of examples
+		 * @param alpha output the coefficients of the sparse grid's basis functions
+		 * @param final judgement the final step of this base learner
+		 */
+	virtual void alphaSolver(sg::base::OperationMatrix* C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
 
 
     public:
@@ -130,10 +140,8 @@ namespace datadriven
 			 * @param refineNum the Number of refinement with a certain percentage of Grid points
 			 * @param numberOfAda the number of Grid points to refine
 			 * @param percentOfAda the percentage of Grid points to refine
-			 * @param alphaMethod different SystemMatrixWithWeights to solve alpha, possible value are 1 or 2(1 = DMWeightMatrix, 2 = DMWeightMatrixVectorizedIdentity)
-			 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
              */
-        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, size_t alphaMethod, std::string vecMode);
+        AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
         
 
             /**
@@ -205,27 +213,6 @@ namespace datadriven
 			 * @param curBaseLearner the current base learner
 			 */
 		void doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada, size_t curBaseLearner);
-
-            /**
-             * Performs a solver to get alpha use DMWeightMatrix as the System Matrix
-			 *
-             * @param C OperationMatrix for the regularisation mehtod
-             * @param lambda the regularisation parameter
-			 * @param weight the weights of examples
-			 * @param alpha output the coefficients of the sparse grid's basis functions
-			 * @param final judgement the final step of this base learner
-			 */
-		void alphaSolver(sg::base::OperationMatrix*& C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
-
-            /**
-             * Performs a solver to get alpha use DMWeightMatrixVectorizedIdentity as the System Matrix
-			 *
-             * @param lambda the regularisation parameter
-			 * @param weight the weights of examples
-			 * @param alpha output the coefficients of the sparse grid's basis functions
-			 * @param final judgement the final step of this base learner
-			 */
-		void alphaSolverVectorizedIdentity(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
 
 		    /**
              * Get the actual base learners after doing adaboosting

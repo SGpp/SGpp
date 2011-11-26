@@ -10,7 +10,6 @@ srcs = Split("""
 datadriven/algorithm/DMSystemMatrix.cpp
 datadriven/algorithm/DensitySystemMatrix.cpp
 datadriven/algorithm/DMWeightMatrix.cpp
-datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 datadriven/algorithm/AlgorithmAdaBoost.cpp
 datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp
 datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
