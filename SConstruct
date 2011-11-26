@@ -256,6 +256,16 @@ for entry in moduleList.keys() + supportList:
         anySet = True
 if not anySet:
     env['SG_ALL'] = True
+else:
+    # if no module set (but at least one support language), select all modules
+    anyModule = False
+    for entry in moduleList.keys():
+        if env[entry]:
+            anyModule = True
+    if not anyModule:
+        print "Compiling all modules..."
+        for entry in moduleList.keys():
+            env[entry] = True
 
 # SG_ALL activates all modules and Python 
 if env['SG_ALL']:

@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #include "base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
 #include "base/grid/GridStorage.hpp"
@@ -30,6 +30,12 @@ void StretchedTrapezoidBoundaryGridGenerator::regular(size_t level)
 {
 	HashGenerator gen;
 	gen.regularWithBoundaries(this->storage, level, true);
+}
+
+void StretchedTrapezoidBoundaryGridGenerator::full(size_t level)
+{
+	HashGenerator gen;
+	gen.fullWithBoundary(this->storage, level);
 }
 
 void StretchedTrapezoidBoundaryGridGenerator::refine(RefinementFunctor* func)

@@ -2,8 +2,7 @@
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
-/* Copyright (C) 2008 Jörg Blank (blankj@in.tum.de)                          */
-/* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de)  */
+/* Copyright (C) 2010 Richard Röttger                                        */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -65,6 +64,7 @@ public:
 	virtual ~PrewaveletGridGenerator();
 
 	virtual void regular(size_t level);
+	virtual void full(size_t level);
 	virtual void refine(RefinementFunctor* func);
 	virtual size_t getNumberOfRefinablePoints();
 

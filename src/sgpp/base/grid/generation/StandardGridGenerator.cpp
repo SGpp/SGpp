@@ -33,6 +33,12 @@ void StandardGridGenerator::regular(size_t level)
 	gen.regular(this->storage, level);
 }
 
+void StandardGridGenerator::full(size_t level)
+{
+	HashGenerator gen;
+	gen.full(this->storage, level);
+}
+
 void StandardGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinement refine;

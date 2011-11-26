@@ -38,6 +38,7 @@ public:
 	 * Is the same as the regular trapezoid grid
 	 * */
 	virtual void regular(size_t level);
+        virtual void full(size_t level){};
 	/**
 	 * Creates a super trapezoid boundary grid with given level and l_user
 	 * @param level the maximum level of the grid

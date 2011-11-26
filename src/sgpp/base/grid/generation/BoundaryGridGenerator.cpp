@@ -32,6 +32,12 @@ void BoundaryGridGenerator::regular(size_t level)
 	gen.regularWithBoundaries(this->storage, level, false);
 }
 
+void BoundaryGridGenerator::full(size_t level)
+{
+	HashGenerator gen;
+	gen.fullWithBoundary(this->storage, level);
+}
+
 void BoundaryGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinementBoundaries refine;
