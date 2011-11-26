@@ -5,8 +5,9 @@
 ******************************************************************************/
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
+// @auther Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#include "datadriven/algorithm/AlgorithmAdaBoost.hpp"
+#include "datadriven/algorithm/AlgorithmAdaBoostBase.hpp"
 #include "base/exception/operation_exception.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 
@@ -14,19 +15,19 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoost::AlgorithmAdaBoost(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda)
+	AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda)
     {
 		if (refine && (gridType != 1 && gridType != 2 && gridType != 3))
 		{
-			throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+			throw new sg::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
 		}
 		if (refine && (percentOfAda >= 1.0 || percentOfAda <= 0.0))
 		{
-			throw new sg::base::operation_exception("AlgorithmAdaboost : Only number between 0 and 1 is the supported percent to Adaptive!");
+			throw new sg::base::operation_exception("AlgorithmAdaBoostBase : Only number between 0 and 1 is the supported percent to Adaptive!");
 		}
 		if (refineMode !=1 && refineMode !=2)
 		{
-			throw new sg::base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported refine mode(1 : use grid point number, 2: use grid point percentage)!");
+			throw new sg::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 are supported refine mode(1 : use grid point number, 2: use grid point percentage)!");
 		}
 
 		sg::base::GridStorage* gridStorage = SparseGrid.getStorage();
@@ -62,12 +63,12 @@ namespace datadriven
 		this->sumGridPoint = new sg::base::DataVector(NUM);
     }
     
-	AlgorithmAdaBoost::~AlgorithmAdaBoost()
+	AlgorithmAdaBoostBase::~AlgorithmAdaBoostBase()
 	{
 
 	}
 	
-	void AlgorithmAdaBoost::doAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
+	void AlgorithmAdaBoostBase::doAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
 	{
 		sg::base::DataVector weight(this->numData);
 		weight.setAll(1.0/double(this->numData));
@@ -111,9 +112,7 @@ namespace datadriven
 				final_step = true;
 
 			// calculate alpha
-			sg::base::OperationMatrix* C = sg::op_factory::createOperationIdentity(*this->grid);
-			alphaSolver(C, this->lamb, weight, alpha_train, final_step);
-			delete C;
+			alphaSolver(this->lamb, weight, alpha_train, final_step);
 			   
 			if(this->refinement)
 			{
@@ -162,9 +161,7 @@ namespace datadriven
 					alpha_train.setAll(0.0);
 					cur_lambda = exp(this->lambLogMax - it*this->lambStepsize);
 
-					sg::base::OperationMatrix* C_search = sg::op_factory::createOperationIdentity(*this->grid);
-					alphaSolver(C_search, cur_lambda, weight, alpha_train, true);
-					delete C_search;
+					alphaSolver(cur_lambda, weight, alpha_train, true);
 
 					for (size_t i = 0; i < this->numData; i++)
 					{
@@ -310,7 +307,7 @@ namespace datadriven
 		delete opEval;
 	}
 	
-    void AlgorithmAdaBoost::eval(sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
+    void AlgorithmAdaBoostBase::eval(sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
     {
 		sg::base::DataVector theHypoWeight(this->numBaseLearners);
 		sg::base::DataVector theWeightError(this->numBaseLearners);
@@ -323,7 +320,7 @@ namespace datadriven
 		doAdaBoost(theHypoWeight, theWeightError, weightsMatrix, decisionMatrix, testData, algorithmValueTrain, algorithmValueTest);
 	}
 	
-	void AlgorithmAdaBoost::classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClassTrain, sg::base::DataVector& algorithmClassTest, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
+	void AlgorithmAdaBoostBase::classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClassTrain, sg::base::DataVector& algorithmClassTest, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
 	{
 		eval(testData, algorithmValueTrain, algorithmValueTest);
 		for (size_t i = 0; i < this->numData; i++)
@@ -336,7 +333,7 @@ namespace datadriven
 		}
 	}
 
-	void AlgorithmAdaBoost::getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test)
+	void AlgorithmAdaBoostBase::getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test)
 	{
 		/* get the accuracy */
 		size_t right_test = 0;
@@ -364,7 +361,7 @@ namespace datadriven
 		*accuracy_test = double(right_test)/double(classTest.getSize());
 	}
 	
-	void AlgorithmAdaBoost::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner)
+	void AlgorithmAdaBoostBase::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner)
 	{
 		size_t right_test = 0;
 		size_t right_train = 0;
@@ -386,7 +383,7 @@ namespace datadriven
 		*accuracy_test = double(right_test)/double(testDataClass.getSize());
 	}
 	
-	void AlgorithmAdaBoost::doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada, size_t curBaseLearner)
+	void AlgorithmAdaBoostBase::doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada, size_t curBaseLearner)
 	{
 		bool final_ada = false;
 
@@ -447,47 +444,28 @@ namespace datadriven
 			alpha_ada.resizeZero(gridPts);
 
 			// calculate new alpha
-			sg::base::OperationMatrix* C_ada = sg::op_factory::createOperationIdentity(*this->grid);
-			alphaSolver(C_ada, this->lamb, weight_ada, alpha_ada, final_ada);
-			delete C_ada;
+			alphaSolver(this->lamb, weight_ada, alpha_ada, final_ada);
 		}
 	}
 
-	void AlgorithmAdaBoost::alphaSolver(sg::base::OperationMatrix* C, double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final)
-	{
-		sg::datadriven::DMWeightMatrix WMatrix(*grid, *data, *C, lambda, weight);
-		sg::base::DataVector rhs(alpha.getSize());
-		WMatrix.generateb(*classes, rhs);
-		if (final)
-		{
-			sg::solver::ConjugateGradients myCG(this->imax_final, this->epsilon_final);
-			myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
-		}
-		else
-		{
-			sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
-			myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
-		}
-	}
-
-	size_t AlgorithmAdaBoost::getActualBL()
+	size_t AlgorithmAdaBoostBase::getActualBL()
 	{
 		return this->actualBaseLearners;
 	}
 
-	size_t AlgorithmAdaBoost::getMeanGridPoint(size_t baselearner)
+	size_t AlgorithmAdaBoostBase::getMeanGridPoint(size_t baselearner)
 	{
 		size_t mean = this->sumGridPoint->get(baselearner-1)/baselearner;
 		return mean;
 	}
 
-	size_t AlgorithmAdaBoost::getMaxGridPoint(size_t baselearner)
+	size_t AlgorithmAdaBoostBase::getMaxGridPoint(size_t baselearner)
 	{
 		size_t max = this->maxGridPoint->get(baselearner-1);
 		return max;
 	}
 
-	size_t AlgorithmAdaBoost::getSumGridPoint(size_t baselearner)
+	size_t AlgorithmAdaBoostBase::getSumGridPoint(size_t baselearner)
 	{
 		size_t sum = this->sumGridPoint->get(baselearner-1);
 		return sum;

@@ -250,7 +250,7 @@ OBJS =	DataVector.o\
 	DensitySystemMatrix.o\
 	DMWeightMatrix.o\
 	DehierarchisationPoly.o\
-	AlgorithmAdaBoost.o\
+	AlgorithmAdaBoostIdentity.o\
 	BlackScholesPATParabolicPDESolverSystem.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmer.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.o\
@@ -268,7 +268,8 @@ OBJS =	DataVector.o\
 	DMWeightMatrixVectorizedIdentity.o\
 	OperationRegularizationDiagonalLinearBoundary.o\
 	OperationRegularizationDiagonal.o\
-	AlgorithmAdaBoostVectorized.o\
+	AlgorithmAdaBoostVectorizedIdentity.o\
+	AlgorithmAdaBoostBase.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -939,11 +940,14 @@ DMWeightMatrix.o : $(SRCDIR)datadriven/algorithm/DMWeightMatrix.cpp
 OperationQuadratureMC.o : $(SRCDIR)base/tools/OperationQuadratureMC.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureMC.o $(SRCDIR)base/tools/OperationQuadratureMC.cpp
 
-AlgorithmAdaBoost.o : $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoost.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoost.o $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoost.cpp
+AlgorithmAdaBoostBase.o : $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoostBase.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoostBase.o $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoostBase.cpp
+
+AlgorithmAdaBoostIdentity.o : $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoostIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoostIdentity.o $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoostIdentity.cpp
 	
-AlgorithmAdaBoostVectorized.o : $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostVectorized.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoostVectorized.o $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostVectorized.cpp
+AlgorithmAdaBoostVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoostVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostVectorizedIdentity.cpp
 	
 DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
