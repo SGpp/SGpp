@@ -268,6 +268,7 @@ OBJS =	DataVector.o\
 	DMWeightMatrixVectorizedIdentity.o\
 	OperationRegularizationDiagonalLinearBoundary.o\
 	OperationRegularizationDiagonal.o\
+	AlgorithmAdaBoostVectorized.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -941,6 +942,9 @@ OperationQuadratureMC.o : $(SRCDIR)base/tools/OperationQuadratureMC.cpp
 AlgorithmAdaBoost.o : $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoost.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoost.o $(SRCDIR)datadriven/algorithm/AlgorithmAdaBoost.cpp
 	
+AlgorithmAdaBoostVectorized.o : $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostVectorized.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoostVectorized.o $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostVectorized.cpp
+	
 DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 	
@@ -1100,8 +1104,8 @@ PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 TwoPartitionAutoTuning.o : $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
 	
-DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
+DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 	
 OperationRegularizationDiagonalLinearBoundary.o : $(SRCDIR)datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationRegularizationDiagonalLinearBoundary.o $(SRCDIR)datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.cpp

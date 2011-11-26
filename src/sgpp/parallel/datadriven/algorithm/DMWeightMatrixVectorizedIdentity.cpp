@@ -6,17 +6,16 @@
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
 
-#include "datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp"
-#include "base/exception/operation_exception.hpp"
+#include "parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
-#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "base/exception/operation_exception.hpp"
 
 namespace sg
 {
-namespace datadriven
+namespace parallel
 {
 
-	DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, sg::base::DataVector& w, std::string vecMode)
+DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, sg::base::DataVector& w, std::string vecMode)
 {
 	// handle unsupported vector extensions
 	if (vecMode != "X86SIMD" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_X86SIMD_OCL")
