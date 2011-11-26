@@ -35,6 +35,7 @@ public:
 	virtual ~StandardGridGenerator();
 
 	virtual void regular(size_t level);
+	virtual void full(size_t level);
 	virtual void refine(RefinementFunctor* func);
 	virtual size_t getNumberOfRefinablePoints();
 

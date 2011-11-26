@@ -32,6 +32,12 @@ void TrapezoidBoundaryGridGenerator::regular(size_t level)
 	gen.regularWithBoundaries(this->storage, level, true);
 }
 
+void TrapezoidBoundaryGridGenerator::full(size_t level)
+{
+	HashGenerator gen;
+	gen.fullWithBoundary(this->storage, level);
+}
+
 void TrapezoidBoundaryGridGenerator::refine(RefinementFunctor* func)
 {
 	HashRefinementBoundaries refine;

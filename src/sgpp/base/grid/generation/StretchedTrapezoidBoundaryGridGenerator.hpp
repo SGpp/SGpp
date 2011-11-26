@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #ifndef STRETCHEDTRAPEZOIDBOUNDARYGRIDGENERATOR_HPP
 #define STRETCHEDTRAPEZOIDBOUNDARYGRIDGENERATOR_HPP
@@ -36,6 +36,7 @@ public:
 	virtual ~StretchedTrapezoidBoundaryGridGenerator();
 
 	virtual void regular(size_t level);
+        virtual void full(size_t level);
 	virtual void refine(RefinementFunctor* func);
 	virtual size_t getNumberOfRefinablePoints();
 

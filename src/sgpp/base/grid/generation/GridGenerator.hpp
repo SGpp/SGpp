@@ -35,15 +35,24 @@ public:
 	virtual ~GridGenerator() {}
 
 	/**
-	 * Creates a regular grid for a certain level @f$ n @f$, i.e., @f$ V_n^{(1)} = \bigoplus_{|\vec{l}|_1 \leq n+d-1} W_{\vec{l}}@f$.
+	 * Creates a regular sparse grid for a certain level @f$ n @f$, i.e., @f$ V_n^{(1)} = \bigoplus_{|\vec{l}|_1 \leq n+d-1} W_{\vec{l}}@f$.
 	 *
-	 * @param level maximum level of the grid
+	 * @param level Grid level
 	 */
 	virtual void regular(size_t level) = 0;
+
+	/**
+	 * Creates a full grid for a certain level @f$ n @f$, i.e., @f$ V_n = \bigoplus_{|\vec{l}|_\infty \leq n} W_{\vec{l}}@f$.
+	 *
+	 * @param level Grid level
+	 */
+	virtual void full(size_t level) = 0;
+
 	/**
 	 * Creates a grid which doesn't contain the fullgrids with li<l_user, for any li level_t
 	 * */
 	virtual void truncated(size_t level, size_t l_user){};
+
 	/**
 	 * Refines a grid according to the settings of the RefinementFunctor func.
 	 *
