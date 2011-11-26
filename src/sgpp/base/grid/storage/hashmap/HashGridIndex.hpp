@@ -262,7 +262,7 @@ public:
 
 
 	/**
-	 * sets the Leaf option of this index
+	 * Set the leaf property; a grid point is called a leaf, if it has <b>not a single</b> child.
 	 *
 	 * @param isLeaf specifies if the current index is a leaf (i.e. has <b>no</b> child nodes) or not
 	 */
@@ -272,9 +272,9 @@ public:
 	}
 
 	/**
-	 * checks if this grid point has any successors in any dimension
+	 * Checks if this grid point has <b>not a single</b> child in any dimension.
 	 *
-	 * @return returns true if this grid point has no children otherwise false
+	 * @return Returns true if this grid point has <b>no</b> children, otherwise false
 	 */
 	bool isLeaf()
 	{
