@@ -15,7 +15,7 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda)
+	AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda)
     {
 		if (refine && (gridType != 1 && gridType != 2 && gridType != 3))
 		{
@@ -47,6 +47,7 @@ namespace datadriven
 		this->epsilon_final = eps_final;
 		this->labelOne = firstLabel;
 		this->labelTwo = secondLabel;
+		this->threshold = threshold;
 		this->lambLogMax = log(maxLambda);
 		this->lambSteps = searchNum;
 		if(searchNum == 1)
@@ -348,7 +349,6 @@ namespace datadriven
 		{
 			if(classTrain.get(i) == this->classes->get(i))
 				right_train = right_train + 1;
-			//			std::cout << i << " " << classTrain.get(i) << std::endl;
 		}
 		*accuracy_train = double(right_train)/double(this->numData);
 		// for testing data
@@ -356,16 +356,53 @@ namespace datadriven
 		{
 			if(classTest.get(i) == testDataClass.get(i))
 				right_test = right_test + 1;
-			//			std::cout << i << " " << classTest.get(i) << std::endl;
 		}
 		*accuracy_test = double(right_test)/double(classTest.getSize());
+	}
+
+	void AlgorithmAdaBoostBase::getROC(sg::base::DataMatrix& validationData, sg::base::DataVector& validationDataClass, double* acc, double* sensitivity, double* specificity, double* precision, double* recall, double* fOneScore)
+	{
+		size_t truePos = 0;
+		size_t predictPos = 0;
+		size_t trueNeg = 0;
+		size_t predictNeg = 0;
+		size_t actualPos = 0;
+		size_t actualNeg = 0;
+
+		sg::base::DataVector classTrain(this->numData);
+		sg::base::DataVector classValidation(validationDataClass.getSize());
+		sg::base::DataMatrix valueTrain(this->numData, this->numBaseLearners);
+		sg::base::DataMatrix valueValidation(validationDataClass.getSize(), this->numBaseLearners);
+		classif(validationData, classTrain, classValidation, valueTrain, valueValidation);
+		// for validation data
+		for(size_t i = 0; i < validationData.getNrows(); i++)
+		{
+			if (validationDataClass.get(i) == this->labelOne)
+				actualPos += 1;
+			else
+				actualNeg += 1;
+			if (classValidation.get(i) == this->labelOne)
+				predictPos += 1;
+			else
+				predictNeg += 1;
+			if (classValidation.get(i) == validationDataClass.get(i) && validationDataClass.get(i) == this->labelOne)
+				truePos += 1;
+			if (classValidation.get(i) == validationDataClass.get(i) && validationDataClass.get(i) == this->labelTwo)
+				trueNeg += 1;
+		}
+		*acc = double(truePos + trueNeg)/double(classValidation.getSize());
+		*sensitivity = double(truePos)/double(actualPos);
+		*specificity = 1 - double(trueNeg)/double(actualNeg);
+		*precision = double(truePos)/double(predictPos);
+		*recall = *sensitivity;
+		*fOneScore = 2 * (*precision) * (*recall) / ((*precision) + (*recall));
 	}
 	
 	void AlgorithmAdaBoostBase::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner)
 	{
 		size_t right_test = 0;
 		size_t right_train = 0;
-
+		
 		// for training data
 		for (size_t i = 0; i < this->numData; i++)
 		{
@@ -445,6 +482,24 @@ namespace datadriven
 
 			// calculate new alpha
 			alphaSolver(this->lamb, weight_ada, alpha_ada, final_ada);
+		}
+	}
+
+	double AlgorithmAdaBoostBase::hValue(double realValue)
+	{
+		if (realValue >= this->threshold)
+		{
+			if (labelOne > labelTwo)
+				return labelOne;
+			else 
+				return labelTwo;
+		}
+		else 
+		{
+			if (labelOne > labelTwo)
+				return labelTwo;
+			else 
+				return labelOne;
 		}
 	}
 

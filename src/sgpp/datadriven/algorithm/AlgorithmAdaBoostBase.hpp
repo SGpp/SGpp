@@ -83,6 +83,8 @@ class AlgorithmAdaBoostBase
 		double labelOne;
 		    /// Another label of the DataSet
 		double labelTwo;
+	        /// Threshold to predict class
+	    double threshold;
     		/// Log of the Max lambda in searching for optimal lambda
 		double lambLogMax;
      		/// Interval size with logrange used in searching optimal lambda
@@ -130,6 +132,7 @@ class AlgorithmAdaBoostBase
              * @param eps_final the parameter for ConjugateGradients used for last refinement step
              * @param firstLabel one label from training dataset
 			 * @param secondLabel another label from training dataset
+			 * @param threshold the parameter for predicting a class
 			 * @param maxLambda the max lambda used in searching optimal lambda
 			 * @param minLambda the min lambda used in searching optimal lambda
 			 * @param searchNum the searching times used in searching for optimal lambda
@@ -139,7 +142,7 @@ class AlgorithmAdaBoostBase
 			 * @param numberOfAda the number of Grid points to refine
 			 * @param percentOfAda the percentage of Grid points to refine
              */
-		AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
+	AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
         
 
             /**
@@ -191,6 +194,20 @@ class AlgorithmAdaBoostBase
         void getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test);
 
             /**
+             * Performs an evaluation to get ROC related parameter
+             *
+             * @param validationData reference to the validation dataset
+             * @param validationDataClass reference to the class of validation dataset
+			 * @param acc reference to the accuracy for the validation dataset
+			 * @param sensitivity reference to the sensitivity for the validation dataset
+			 * @param specificity reference to the specificity for the validation dataset
+			 * @param precision reference to the precision for the validation dataset
+			 * @param recall reference to the recall for the validation dataset
+			 * @param fOneScore reference to the specificity for the validation dataset
+             */
+	    void getROC(sg::base::DataMatrix& validationData, sg::base::DataVector& validationDataClass, double* acc, double* sensitivity, double* specificity, double* precision, double* recall, double* fOneScore);
+
+            /**
              * Performs an accuracy evaluation for the testing dataset with a specified number of base learner
              *
              * @param testData reference to the testing dataset
@@ -237,33 +254,15 @@ class AlgorithmAdaBoostBase
              *
              * @param baselearner number of baselearner
 			 */
-		size_t getSumGridPoint(size_t baselearner);
+	    size_t getSumGridPoint(size_t baselearner);
 
             /**
              * Performs a hypothesis classifier
 			 *
 			 * @param realvalue real value of function 
              */
-		double hValue(double realValue)
-		{
-			double meanValue = (this->labelOne + this->labelTwo) / 2;
-			if (realValue > meanValue)
-			{
-				if (labelOne > labelTwo)
-					return labelOne;
-				else 
-					return labelTwo;
-			}
-			else 
-			{
-				if (labelOne > labelTwo)
-					return labelTwo;
-				else 
-					return labelOne;
-			}
-		};
-		
-	};
+    	double hValue(double realValue);
+};
 }
 }
 #endif
