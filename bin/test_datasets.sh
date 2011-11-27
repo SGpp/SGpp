@@ -16,9 +16,9 @@ do
 	for PREC in $PRECISION
 	do
 		# test Checkerboard, linear boundary
-		../bin/ClassifyBenchmark ../input/chess_05D_3fields_tr.dat.arff ../input/chess_05D_3fields_te.dat.arff 0 ${PREC} linearboundary 3 0.000001 250 0.0001 6 0.0 100 250 0.0001 2>&1 | tee ../log/${RESPRE}_ChkBrd_${VEC}_linearboundary_${PREC}.log
+		../bin/ClassifyBenchmark ../input/chess_05D_3fields_tr.dat.arff ../input/chess_05D_3fields_te.dat.arff 0 ${PREC} linearboundary 3 0.000001 250 0.0001 6 0.0 100 250 0.0001 2>&1 | tee ../log/${RESPRE}_ChkBrd_05D_${VEC}_linearboundary_${PREC}.log
 		# test Checkerboard, mod linear
-		../bin/ClassifyBenchmark ../input/chess_05D_3fields_tr.dat.arff ../input/chess_05D_3fields_te.dat.arff 0 ${PREC} modlinear 5 0.0000001 250 0.0001 8 0.0 100 250 0.0001 2>&1 | tee ../log/${RESPRE}_ChkBrd_${VEC}_modlinear_${PREC}.log
+		../bin/ClassifyBenchmark ../input/chess_05D_3fields_tr.dat.arff ../input/chess_05D_3fields_te.dat.arff 0 ${PREC} modlinear 5 0.0000001 250 0.0001 8 0.0 100 250 0.0001 2>&1 | tee ../log/${RESPRE}_ChkBrd_05D_${VEC}_modlinear_${PREC}.log
 		# test DR5, linear boundary
 		../bin/ClassifyBenchmark ../input/DR5_nowarnings_less05_train.arff ../input/DR5_nowarnings_less05_test.arff 1 ${PREC} linearboundary 3 0.000001 150 0.0001 6 0.0 100 150 0.0001 2>&1 | tee ../log/${RESPRE}_DR5_${VEC}_linearboundary_${PREC}.log
 		# test DR5, mod linear
