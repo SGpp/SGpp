@@ -54,6 +54,7 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase
              * @param eps_final the parameter for ConjugateGradients used for last refinement step
              * @param firstLabel one label from training dataset
 			 * @param secondLabel another label from training dataset
+			 * @param threshold the parameter for predicting a class
 			 * @param maxLambda the max lambda used in searching optimal lambda
 			 * @param minLambda the min lambda used in searching optimal lambda
 			 * @param searchNum the searching times used in searching for optimal lambda
@@ -63,7 +64,7 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase
 			 * @param numberOfAda the number of Grid points to refine
 			 * @param percentOfAda the percentage of Grid points to refine
              */
-	AlgorithmAdaBoostIdentity(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
+	AlgorithmAdaBoostIdentity(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
         
             /**
              * Std-Deconstructor
