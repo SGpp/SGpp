@@ -270,6 +270,7 @@ OBJS =	DataVector.o\
 	OperationRegularizationDiagonal.o\
 	AlgorithmAdaBoostVectorizedIdentity.o\
 	AlgorithmAdaBoostBase.o\
+	PrecisionConverter.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1116,6 +1117,9 @@ OperationRegularizationDiagonalLinearBoundary.o : $(SRCDIR)datadriven/basis/line
 	
 OperationRegularizationDiagonal.o : $(SRCDIR)datadriven/operation/OperationRegularizationDiagonal.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationRegularizationDiagonal.o $(SRCDIR)datadriven/operation/OperationRegularizationDiagonal.cpp
+	
+PrecisionConverter.o : $(SRCDIR)base/tools/PrecisionConverter.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PrecisionConverter.o $(SRCDIR)base/tools/PrecisionConverter.cpp
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
