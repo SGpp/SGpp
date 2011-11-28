@@ -9,6 +9,8 @@ Import("env")
 srcs = Split("""
 parallel/datadriven/algorithm/AlgorithmAdaBoostVectorizedIdentity.cpp
 parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
+parallel/datadriven/algorithm/AlgorithmAdaBoostSPVectorizedIdentity.cpp
+parallel/datadriven/algorithm/DMWeightMatrixSPVectorizedIdentity.cpp
 parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 
