@@ -124,54 +124,6 @@ void calcGFlopsAndGBytes(std::string gridtype, sg::base::Grid* myGrid, size_t nI
 	}
 }
 
-void convertDataVectorToDataVectorSP(sg::base::DataVector& src, sg::base::DataVectorSP& dest)
-{
-	if (src.getSize() != dest.getSize())
-	{
-		return;
-	}
-	else
-	{
-		for (size_t i = 0; i < src.getSize(); i++)
-		{
-			dest.set(i, static_cast<float>(src.get(i)));
-		}
-	}
-}
-
-void convertDataMatrixToDataMatrixSP(sg::base::DataMatrix& src, sg::base::DataMatrixSP& dest)
-{
-	if (src.getNcols() != dest.getNcols() || src.getNrows() != dest.getNrows())
-	{
-		return;
-	}
-	else
-	{
-		for (size_t i = 0; i < src.getNrows(); i++)
-		{
-			for (size_t j = 0; j < src.getNcols(); j++)
-			{
-				dest.set(i, j, static_cast<float>(src.get(i, j)));
-			}
-		}
-	}
-}
-
-void convertDataVectorSPToDataVector(sg::base::DataVectorSP& src, sg::base::DataVector& dest)
-{
-	if (src.getSize() != dest.getSize())
-	{
-		return;
-	}
-	else
-	{
-		for (size_t i = 0; i < src.getSize(); i++)
-		{
-			dest.set(i, static_cast<double>(src.get(i)));
-		}
-	}
-}
-
 void printSettings(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
 		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points, std::string gridtype,
 		size_t gridsize = 0, double finaltr = 0.0, double finalte = 0.0, double time = 0.0)
@@ -659,11 +611,11 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     result.setAll(0.0);
     alpha.setAll(0.0);
 
-    convertDataMatrixToDataMatrixSP(data, dataSP);
-    convertDataVectorToDataVectorSP(alpha, alphaSP);
-    convertDataVectorToDataVectorSP(classes, classesSP);
-    convertDataVectorToDataVectorSP(result, resultSP);
-    convertDataVectorToDataVectorSP(alpha, alphaSP);
+    sg::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);
+    sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(alpha, alphaSP);
+    sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(classes, classesSP);
+    sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(result, resultSP);
+    sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(alpha, alphaSP);
 
     // Variable to save MSE/Acc from former iteration
 #ifndef TEST_LAST_ONLY
@@ -701,7 +653,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     	// Do Refinements
     	if (i > 0)
     	{
-    		convertDataVectorSPToDataVector(alphaSP, alpha);
+    		sg::base::PrecisionConverter::convertDataVectorSPToDataVector(alphaSP, alpha);
     		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha, refine_points, refine_thresh);
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
@@ -746,7 +698,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 
     	// Do tests on test data
 #ifndef TEST_LAST_ONLY
-    	convertDataVectorSPToDataVector(alphaSP, alpha);
+        sg::base::PrecisionConverter::convertDataVectorSPToDataVector(alphaSP, alpha);
     	if (isRegression)
     	{
     		sg::datadriven::OperationTest* myTest = sg::op_factory::createOperationTest(*myGrid);
@@ -826,7 +778,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << "Finished Learning!" << std::endl;
 
 #ifdef TEST_LAST_ONLY
-	convertDataVectorSPToDataVector(alphaSP, alpha);
+    sg::base::PrecisionConverter::convertDataVectorSPToDataVector(alphaSP, alpha);
     std::cout << std::endl << std::endl;
     if (isRegression)
 	{
@@ -888,7 +840,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
 #ifdef GNUPLOT
 	if (nDim <= 2)
 	{
-		convertDataVectorSPToDataVector(alphaSP, alpha);
+		sg::base::PrecisionConverter::convertDataVectorSPToDataVector(alphaSP, alpha);
 		sg::base::GridPrinter* myPrinter = new sg::base::GridPrinter(*myGrid);
 		myPrinter->printGrid(alpha, "ClassifyBenchmark.gnuplot", GRDIRESOLUTION);
 		delete myPrinter;

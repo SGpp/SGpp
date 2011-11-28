@@ -96,6 +96,7 @@ base/grid/type/LinearStretchedTrapezoidBoundaryGrid.cpp
 base/tools/EvalCuboidGeneratorForStretching.cpp
 base/tools/GridPrinterForStretching.cpp
 base/tools/OperationQuadratureMC.cpp
+base/tools/PrecisionConverter.cpp
 
 base/operation/BaseOpFactory.cpp
 """)

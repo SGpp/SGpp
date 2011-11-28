@@ -57,6 +57,7 @@
 #include "base/tools/SGppStopwatch.hpp"
 #include "base/tools/EvalCuboidGenerator.hpp"
 #include "base/tools/EvalCuboidGeneratorForStretching.hpp"
+#include "base/tools/PrecisionConverter.hpp"
 
 #include "base/operation/BaseOpFactory.hpp"
 
