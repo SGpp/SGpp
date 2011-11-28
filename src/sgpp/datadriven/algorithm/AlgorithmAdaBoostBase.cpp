@@ -392,7 +392,7 @@ namespace datadriven
 		}
 		*acc = double(truePos + trueNeg)/double(classValidation.getSize());
 		*sensitivity = double(truePos)/double(actualPos);
-		*specificity = 1 - double(trueNeg)/double(actualNeg);
+		*specificity = double(trueNeg)/double(actualNeg);
 		*precision = double(truePos)/double(predictPos);
 		*recall = *sensitivity;
 		*fOneScore = 2 * (*precision) * (*recall) / ((*precision) + (*recall));
