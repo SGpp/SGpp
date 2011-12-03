@@ -112,6 +112,10 @@ class OperationRegularizationDiagonal
 {
 public:
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+	static const int HKMIX = 1;
+	static const int H0HKLAPLACE = 2;
+	static const int ISOTROPIC_PENALTY = 3;
+	static const int ANISOTROPIC_PENALTY = 4;
 };
 
 }
