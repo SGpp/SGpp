@@ -310,6 +310,30 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
 endif
 
+ifeq ($(EXT), AMDOCLGPU)
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
+ 	OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
+	OCLKernels.o\
+	OperationMultipleEvalIterativeOCLModLinear.o\
+	OperationMultipleEvalIterativeSPOCLModLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+endif
+
+ifeq ($(EXT), AMDOCLCPU)
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
+ 	OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
+	OCLKernels.o\
+	OperationMultipleEvalIterativeOCLModLinear.o\
+	OperationMultipleEvalIterativeSPOCLModLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+endif
+
 ifeq ($(EXT), MPI)
 OBJS:=$(OBJS) MPICommunicator.o\
 	GlobalMPIComm.o\
