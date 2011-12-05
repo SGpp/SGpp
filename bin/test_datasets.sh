@@ -1,15 +1,15 @@
 #!/bin/sh
 # run specific variables, please adjust
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=24
 # prefix for result files
-RESPRE=Bulldozer
-VECTYPE="AVX256"
+RESPRE=WSM-EP
+VECTYPE="SSE"
 PRECISION="SP DP"
 
 ###### DO NOT MODIFY BELOW THIS LINE #######
-#export KMP_AFFINITY=compact,granularity=thread,verbose
-export GOMP_CPU_AFFINITY="0-7"
-#. /opt/intel/bin/compilervars.sh intel64
+export KMP_AFFINITY=compact,granularity=thread,verbose
+#export GOMP_CPU_AFFINITY="0-7"
+. /opt/intel/bin/compilervars.sh intel64
 #. /opt/intel/arbb/1.0.0.026/tools/arbbvars.sh intel64
 for VEC in $VECTYPE
 do
