@@ -21,6 +21,9 @@ OCLLIB = /usr/lib64
 # Intel OpenCL
 IOCLINCLUDE = /usr/include
 IOCLLIB = /usr/lib64/OpenCL/vendors/intel
+# AMD OpenCL
+AMDOCLINCLUDE = /opt/AMDAPP/include
+AMDOCLLIB = /opt/AMDAPP/lib/x86_64
 
 ###################################################################
 # Default Variables, overwirtten by CLI
@@ -100,6 +103,10 @@ ifeq ($(EXT), IOCL)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DDUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
+ifeq ($(EXT), AMDOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
+LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
+endif
 endif
 
 ifeq ($(CC),icpc)
@@ -138,6 +145,10 @@ endif
 ifeq ($(EXT), IOCL)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -openmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -openmp
+endif
+ifeq ($(EXT), AMDOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
+LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
 endif
 endif
 
