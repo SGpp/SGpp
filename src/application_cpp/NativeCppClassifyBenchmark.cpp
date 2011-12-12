@@ -31,11 +31,8 @@
 //#define GNUPLOT
 //#define GRDIRESOLUTION 100
 
-// at least one has to be defined, otherwise scalar&recursive version is used for DP, SSE for SP
-#define USE_X86SIMD
-//#define USE_OCL
-//#define USE_ARBB
-//#define USE_HYBRID_X86SIMD_OCL
+// Use fast iterative methods
+#define ITERATIVE
 
 // do Test only after last refinement
 #define TEST_LAST_ONLY
@@ -126,7 +123,7 @@ void calcGFlopsAndGBytes(std::string gridtype, sg::base::Grid* myGrid, size_t nI
 
 void printSettings(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
 		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points, std::string gridtype,
-		size_t gridsize = 0, double finaltr = 0.0, double finalte = 0.0, double time = 0.0)
+		 std::string vectorization, size_t gridsize = 0, double finaltr = 0.0, double finalte = 0.0, double time = 0.0)
 {
 	std::cout << std::endl;
 	std::cout << "Train dataset: " << dataFile << std::endl;
@@ -151,28 +148,36 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 		std::cout << "Precision: Double Precision (double)" << std::endl << std::endl;
 	}
 
-#ifdef USE_X86SIMD
+	if (vectorization == "X86SIMD")
+	{
 #if defined(__SSE3__) && !defined(__AVX__)
-	std::cout << "Vectorized: X86SIMD (SSE3)" << std::endl << std::endl;
+		std::cout << "Vectorized: X86SIMD (SSE3)" << std::endl << std::endl;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-	std::cout << "Vectorized: X86SIMD (AVX)" << std::endl << std::endl;
+		std::cout << "Vectorized: X86SIMD (AVX)" << std::endl << std::endl;
 #endif
-#endif
-#ifdef USE_OCL
-	std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
-#endif
-#ifdef USE_HYBRID_X86SIMD_OCL
+	}
+	else if (vectorization == "OCL")
+	{
+		std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
+	}
+	else if (vectorization == "HYBRID_X86SIMD_OCL")
+	{
 #if defined(__SSE3__) && !defined(__AVX__)
-	std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
+		std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-	std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
+		std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
 #endif
-#endif
-#ifdef USE_ARBB
-	std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
-#endif
+	}
+	else if (vectorization == "ArBB")
+	{
+		std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "Scalar Version" << std::endl << std::endl;
+	}
 
 	if (isRegression)
 	{
@@ -195,19 +200,20 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 
 void adaptClassificationTest(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
 		double lambda, size_t cg_max, double cg_eps, size_t refine_count, double refine_thresh, size_t refine_points,
-		std::string gridtype, size_t cg_max_learning, double cg_eps_learning)
+		std::string gridtype, size_t cg_max_learning, double cg_eps_learning, std::string vectorization)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
+#ifdef ITERATIVE
     std::cout << "Classification Test App (Double Precision)" << std::endl;
 #else
     std::cout << "Classification Test App (Double Precision, recursive)" << std::endl;
 #endif
+
     std::cout << "===============================================================" << std::endl << std::endl;
 
     printSettings(dataFile, testFile, isRegression, start_level,
-			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype);
+			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, vectorization);
 
     double execTime = 0.0;
     double acc = 0.0;
@@ -277,19 +283,9 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
     // Generate CG to solve System
     sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(cg_max_learning, cg_eps_learning);
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
-#ifdef USE_X86SIMD
-    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "X86SIMD");
-#endif
-#ifdef USE_OCL
-    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "OCL");
-#endif
-#ifdef USE_HYBRID_X86SIMD_OCL
-    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "HYBRID_X86SIMD_OCL");
-#endif
-#ifdef USE_ARBB
-    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, "ArBB");
-#endif
+
+#ifdef ITERATIVE
+    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, vectorization);
 #else
     sg::base::OperationMatrix* myC = sg::op_factory::createOperationIdentity(*myGrid);
     //sg::OperationMatrix* myC = myGrid->createOperationLaplace();
@@ -313,7 +309,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
+#ifdef ITERATIVE
     		mySystem->rebuildLevelAndIndex();
 #endif
 
@@ -501,8 +497,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings(dataFile, testFile, isRegression, start_level,
-			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, myGrid->getSize(), acc, accTest, execTime);
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
+			lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, vectorization, myGrid->getSize(), acc, accTest, execTime);
+#ifdef ITERATIVE
     std::cout << "Needed time: " << execTime << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
@@ -520,14 +516,8 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
-#ifndef USE_X86SIMD
-#ifndef USE_OCL
-#ifndef USE_HYBRID_X86SIMD_OCL
-#ifndef USE_ARBB
+#ifndef ITERATIVE
     delete myC;
-#endif
-#endif
-#endif
 #endif
     delete myCG;
     delete mySystem;
@@ -536,7 +526,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
 
 void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool isRegression, size_t start_level,
 		float lambda, size_t cg_max, float cg_eps, size_t refine_count, double refine_thresh, size_t refine_points,
-		std::string gridtype, size_t cg_max_learning, float cg_eps_learning)
+		std::string gridtype, size_t cg_max_learning, float cg_eps_learning, std::string vectorization)
 {
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
@@ -544,7 +534,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << "===============================================================" << std::endl << std::endl;
 
     printSettings(dataFile, testFile, isRegression, start_level,
-			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, gridtype);
+			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, gridtype, vectorization);
 
 	double execTime = 0.0;
     double acc = 0.0;
@@ -625,22 +615,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     // Generate CG to solve System
     sg::solver::ConjugateGradientsSP* myCG = new sg::solver::ConjugateGradientsSP(cg_max_learning, cg_eps_learning);
 
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
-#ifdef USE_X86SIMD
-    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "X86SIMD");
-#endif
-#ifdef USE_OCL
-    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "OCL");
-#endif
-#ifdef USE_HYBRID_X86SIMD_OCL
-    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "HYBRID_X86SIMD_OCL");
-#endif
-#ifdef USE_ARBB
-    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "ArBB");
-#endif
-#else
-    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, "SSE");
-#endif
+    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, vectorization);
 
     std::cout << "Starting Learning...." << std::endl;
     // execute adaptsteps
@@ -658,9 +633,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     		myGrid->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-#if defined(USE_X86SIMD) || defined(USE_OCL) || defined(USE_HYBRID_X86SIMD_OCL) || defined(USE_ARBB)
     		mySystem->rebuildLevelAndIndex();
-#endif
 
     		std::cout << "New Grid Size: " << myGrid->getStorage()->size() << std::endl;
     		alpha.resizeZero(myGrid->getStorage()->size());
@@ -850,7 +823,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     printSettings(dataFile, testFile, isRegression, start_level,
-			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, gridtype, myGrid->getSize(), acc, accTest, execTime);
+			(double)lambda, cg_max, (double)cg_eps, refine_count, refine_thresh, refine_points, gridtype, vectorization, myGrid->getSize(), acc, accTest, execTime);
     std::cout << "Needed time: " << execTime << " seconds (Single Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
     double computeMult, completeMult, computeMultTrans, completeMultTrans;
@@ -880,6 +853,7 @@ int main(int argc, char *argv[])
 	std::string testFile;
 	std::string gridtype;
 	std::string precision;
+	std::string vectorization;
 
 	double lambda = 0.0;
 	double cg_eps = 0.0;
@@ -894,7 +868,7 @@ int main(int argc, char *argv[])
 
 	bool regression;
 
-	if (argc != 15)
+	if (argc != 16)
 	{
 		std::cout << std::endl;
 		std::cout << "Help for classification/regression benchmark" << std::endl << std::endl;
@@ -912,9 +886,10 @@ int main(int argc, char *argv[])
 		std::cout << "	Refinement threshold" << std::endl;
 		std::cout << "	#points refined" << std::endl;
 		std::cout << "	CG max. iterations, first refinement steps" << std::endl;
-		std::cout << "	CG epsilon, first refinement steps" << std::endl << std::endl << std::endl;
+		std::cout << "	CG epsilon, first refinement steps" << std::endl;
+		std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB" << std::endl << std::endl << std::endl;
 		std::cout << "Example call:" << std::endl;
-		std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1" << std::endl << std::endl << std::endl;
+		std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1 X86SIMD" << std::endl << std::endl << std::endl;
 	}
 	else
 	{
@@ -936,18 +911,25 @@ int main(int argc, char *argv[])
 		refine_points = atoi(argv[12]);
 		cg_max_learning = atoi(argv[13]);
 		cg_eps_learning = atof(argv[14]);
+		vectorization.assign(argv[15]);
+
+		// Fallback
+		if (vectorization != "X86SIMD" && vectorization != "OCL" && vectorization != "HYBRID_X86SIMD_OCL" && vectorization != "ArBB")
+		{
+			vectorization = "X86SIMD";
+		}
 
 		if (precision == "SP")
 		{
 			bUseFloat = true;
 			adaptClassificationTestSP(dataFile, testFile, regression, start_level,
-				(float)lambda, cg_max, (float)cg_eps, refine_count, refine_thresh, refine_points, gridtype, cg_max_learning, (float)cg_eps_learning);
+				(float)lambda, cg_max, (float)cg_eps, refine_count, refine_thresh, refine_points, gridtype, cg_max_learning, (float)cg_eps_learning, vectorization);
 		}
 		else if (precision == "DP")
 		{
 			bUseFloat = false;
 			adaptClassificationTest(dataFile, testFile, regression, start_level,
-				lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, cg_max_learning, cg_eps_learning);
+				lambda, cg_max, cg_eps, refine_count, refine_thresh, refine_points, gridtype, cg_max_learning, cg_eps_learning, vectorization);
 		}
 		else
 		{
