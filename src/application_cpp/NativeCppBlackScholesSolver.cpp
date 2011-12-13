@@ -109,6 +109,7 @@ void writeHelp()
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
 	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SC2:epsilon:gamma, SCH:epsilon:gamma or SCI:epsilon:sc:gamma" << std::endl;
+	mySStream << "          (for explanations of the options, see end of help!)" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << std::endl;
@@ -122,7 +123,7 @@ void writeHelp()
 
 	mySStream << "solveNDanalyze" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords; PAT principal axis transform" << std::endl;
+	mySStream << "	Coordinates: cart: cartesian coordinates; log: log coords; PAT principal axis transform" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level_start: number of levels within the Sparse Grid (start)" << std::endl;
 	mySStream << "	level_end: number of levels within the Sparse Grid (end)" << std::endl;
@@ -134,7 +135,8 @@ void writeHelp()
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
 	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SC2:epsilon:gamma, SCH:epsilon:gamma or SCI:epsilon:sc:gamma" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "          (for explanations of the options, see end of help!)" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG method" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	file_analyze: file containing the analyzing options" << std::endl;
 	mySStream << std::endl;
@@ -158,7 +160,7 @@ void writeHelp()
 
 	mySStream << "solveNDadaptSurplus/solveNDadaptSurplusSubDomain" << std::endl << "------" << std::endl;
 	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords; PAT principal axis transform" << std::endl;
+	mySStream << "	Coordinates: cart: cartesian coordinates; log: log coords; PAT principal axis transform" << std::endl;
 	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
 	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
 	mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
@@ -169,7 +171,8 @@ void writeHelp()
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
 	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SC2:epsilon:gamma, SCH:epsilon:gamma or SCI:epsilon:sc:gamma" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+	mySStream << "          (for explanations of the options, see end of help!)" << std::endl;
+	mySStream << "	CGIterations: Maxmimum number of iterations used in CG method" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	RefinementMode: classic or maxLevel" << std::endl;
 	mySStream << "	MaxRefinement Level: Max. Level for refinement" << std::endl;
@@ -191,6 +194,16 @@ void writeHelp()
 	mySStream << "same function call as in 'solveNDanalyze' plus additional parameters: " << std::endl;
 	mySStream << "epsTime: epsilon for timestepping " << std::endl;
 	mySStream << "cTime: constant for timestepping (optional, only in case of SCEJ needed)" << std::endl;
+	mySStream << std::endl << std::endl;
+
+	mySStream << "options for time-stepping:" << std::endl << "------" << std::endl;
+	mySStream << "	  * ExEul                  explicit Euler" << std::endl;
+	mySStream << "	  * ImEul                  implicit Euler" << std::endl;
+	mySStream << "	  * CrNic                  Crank-Nicoloson" << std::endl;
+	mySStream << "	  * AdBas                  Adams-Bashforth (explicit 2-step method)" << std::endl;
+	mySStream << "	  * SC2:epsilon:gamma      " << std::endl;
+	mySStream << "	  * SCH:epsilon:gamma      " << std::endl;
+	mySStream << "	  * SCI:epsilon:sc:gamma   " << std::endl;
 	mySStream << std::endl << std::endl;
 
 	mySStream << std::endl << std::endl;
