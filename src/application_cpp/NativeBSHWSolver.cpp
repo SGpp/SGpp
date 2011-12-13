@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Chao qi (qic@in.tum.de), Stefanie Schraufstetter 8schraufs@in.tum.de)
+// @author Chao qi (qic@in.tum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
 #include "sgpp_base.hpp"
 #include "sgpp_pde.hpp"
@@ -751,7 +751,8 @@ void testBSHW_adaptive(size_t d,size_t l, double sigma, double a, std::string fi
 	point_strike.push_back(PB);
 	point_strike.push_back(rr);
 
-	std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] << "] (at-the-money!!): " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] << "] (at-the-money!!): "
+			<< ::std::setprecision( 12 ) << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl << std::endl;
 
 	delete alpha;
 	delete myBSHWSolver;

@@ -27,7 +27,7 @@ void VariableDiscountFactor::getDiscountFactor(sg::base::DataVector& factor, dou
 	{
 		std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
 		std::stringstream coordsStream(coords);
-		double* dblFuncValues = new double[2];
+		double dblFuncValues[2];
 		for (size_t j = 0; j < 2; j++)
 		{
 			coordsStream >> tmp;

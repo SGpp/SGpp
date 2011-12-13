@@ -61,7 +61,9 @@ public:
 	 */
 	virtual ~HeatEquationParabolicPDESolverSystemParallelOMP();
 
-	virtual void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep();
+
+	virtual void coarsenAndRefine(bool isLastTimestep = false);
 
 	virtual void startTimestep();
 

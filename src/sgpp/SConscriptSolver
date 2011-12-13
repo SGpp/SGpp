@@ -13,6 +13,8 @@ solver/ode/Euler.cpp
 solver/ode/StepsizeControlBDF.cpp
 solver/ode/StepsizeControlEJ.cpp
 solver/ode/StepsizeControlH.cpp
+solver/ode/StepsizeControl.cpp
+solver/ode/StepsizeControlMC.cpp
 solver/ode/VarTimestep.cpp
 solver/sle/BiCGStab.cpp
 solver/sle/ConjugateGradients.cpp

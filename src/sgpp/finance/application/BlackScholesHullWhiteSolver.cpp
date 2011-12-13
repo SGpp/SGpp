@@ -131,7 +131,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		//DimensionBoundary* myBoundaries = new DimensionBoundary[2];
 		BoundingBox* t = this->myGrid->getBoundingBox();
 
-		DimensionBoundary* myBoundaries = new DimensionBoundary[dim];
+		DimensionBoundary myBoundaries[dim];
 
 		myBoundaries[0].leftBoundary = t->getIntervalOffset(0);
 		myBoundaries[0].rightBoundary = t->getIntervalOffset(0) + t->getIntervalWidth(0);
@@ -251,7 +251,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
 				DataVector coords(this->dim);
 				this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
 
-				if (payoffType == "std_euro_call" || payoffType == "GMIB")
+				if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "GMIB")
 				{
 					for (size_t d = 0; d < this->dim; d++)
 					{
@@ -294,11 +294,12 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 
 	if (this->bGridConstructed)
 	{
+		double* dblFuncValues = new double[dim];
+
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 		{
 			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 			std::stringstream coordsStream(coords);
-			double* dblFuncValues = new double[dim];
 
 			for (size_t j = 0; j < this->dim; j++)
 			{
@@ -310,6 +311,10 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 			if (payoffType == "std_euro_call")
 			{
 				alpha[i] = std::max<double>(dblFuncValues[this->dim_BS]-strike, 0.0);
+			}
+			else if (payoffType == "std_euro_put")
+			{
+				alpha[i] = std::max<double>(strike-dblFuncValues[this->dim_BS], 0.0);
 			}
 			else if (payoffType == "GMIB")
 			{
@@ -328,8 +333,10 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(DataVector& alpha, doub
 				throw new application_exception("BlackScholesSolver::initGridWithPayoffBSHW : An unknown payoff-type was specified!");
 			}
 
-			delete[] dblFuncValues;
+
+
 		}
+		delete[] dblFuncValues;
 
 		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);

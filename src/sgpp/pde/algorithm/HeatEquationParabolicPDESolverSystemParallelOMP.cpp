@@ -183,11 +183,16 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(sg::ba
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep(bool isLastTimestep)
+void HeatEquationParabolicPDESolverSystemParallelOMP::finishTimestep()
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 }
+
+void HeatEquationParabolicPDESolverSystemParallelOMP::coarsenAndRefine(bool isLastTimestep)
+{
+}
+
 
 void HeatEquationParabolicPDESolverSystemParallelOMP::startTimestep()
 {

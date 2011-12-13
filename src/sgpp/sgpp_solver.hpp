@@ -15,6 +15,11 @@
 #include "solver/ode/CrankNicolson.hpp"
 #include "solver/ode/AdamsBashforth.hpp"
 #include "solver/ode/VarTimestep.hpp"
+#include "solver/ode/StepsizeControl.hpp"
+#include "solver/ode/StepsizeControlEJ.hpp"
+#include "solver/ode/StepsizeControlH.hpp"
+#include "solver/ode/StepsizeControlMC.hpp"
+#include "solver/ode/StepsizeControlBDF.hpp"
 
 
 #endif /* SOLVER_HPP */

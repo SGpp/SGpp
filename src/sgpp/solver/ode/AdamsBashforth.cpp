@@ -1,8 +1,9 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
+// @author Peter Hoffmann (peter.hoffmann@mytum.de)
 
 #include "base/grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/AdamsBashforth.hpp"
@@ -46,20 +47,20 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPara
 
 
 		// solve the system of the current timestep
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 
 	    allIter += LinearSystemSolver.getNumberIterations();
 	    if (verbose == true)
 	    {
 	    	if (myScreen == NULL)
 	    	{
-		  std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
+	    		std::cout << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
 	    	}
 	    }
 	    if (myScreen != NULL)
     	{
     		std::stringstream soutput;
-    		soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
+    		soutput << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
     		if (i < this->nMaxIterations-1)
     		{
@@ -70,21 +71,23 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPara
     			myScreen->update(100, soutput.str());
     		}
     	}
+
+	    System.finishTimestep();
 	    if (bIdentifyLastStep == false)
-	    {
-			System.finishTimestep(false);
-	    }
-	    else
-	    {
+		{
+			System.coarsenAndRefine(false);
+		}
+		else
+		{
 			if (i < (this->nMaxIterations-1))
 			{
-				System.finishTimestep(false);
+				System.coarsenAndRefine(false);
 			}
 			else
 			{
-				System.finishTimestep(true);
+				System.coarsenAndRefine(true);
 			}
-	    }
+		}
 	    System.saveAlpha();
 
 	}

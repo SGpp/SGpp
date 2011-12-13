@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Peter Hoffmann (peter.hoffmann@mytum.de)
 
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEM_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEM_HPP
@@ -36,6 +36,10 @@ protected:
 	sg::base::DataVector* alpha_complete_old;
 	/// Pointer to temporary alphas, needed when using variable timestep sizes
 	sg::base::DataVector* alpha_complete_tmp;
+	/// Pointer to the grid from the last iteration
+	sg::base::GridStorage* oldGridStorage;
+	/// Pointer to the grid from the last aborted iteration
+	sg::base::GridStorage* secondGridStorage;
 
 	/**
 	 *  specifies in which solver this matrix is used, valid values are:
@@ -92,7 +96,10 @@ public:
 	 *
 	 * @param isLastTimestep denotes of this is the clean up for the last time of solving the ODE
 	 */
-	virtual void finishTimestep(bool isLastTimestep = false) = 0;
+	virtual void finishTimestep() = 0;
+
+	virtual void coarsenAndRefine(bool isLastTimestep = false) = 0;
+
 
 	/**
 	 * Implements some start jobs of every timestep, e.g.discounting boundaries
@@ -175,6 +182,12 @@ public:
 	 * @param sg::base::DataVector in which the values will be stored
 	 */
 	void getGridCoefficientsForSC(sg::base::DataVector& Values);
+
+	sg::base::GridStorage* getGridStorage();
+
+	sg::base::GridStorage* getOldGridStorage();
+
+	sg::base::GridStorage* getSecondGridStorage();
 };
 
 }

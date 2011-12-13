@@ -33,20 +33,20 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParab
 		rhs = System.generateRHS();
 
 		// solve the system of the current timestep
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false);
+		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 	    allIter += LinearSystemSolver.getNumberIterations();
 
 	    if (verbose == true)
 	    {
 	    	if (myScreen == NULL)
 	    	{
-		  std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
+	    		std::cout << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
 	    	}
 	    }
 	    if (myScreen != NULL)
     	{
     		std::stringstream soutput;
-    		soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
+    		soutput << "Final residuum " << LinearSystemSolver.residuum << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
     		if (i < this->nMaxIterations-1)
     		{
@@ -58,20 +58,21 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParab
     		}
     	}
 
+	    System.finishTimestep();
 	    // Do some adjustments on the boundaries if needed, copy values back
 	    if (bIdentifyLastStep == false)
 	    {
-			System.finishTimestep(false);
+	    	System.coarsenAndRefine(false);
 	    }
 	    else
 	    {
 			if (i < (this->nMaxIterations-1))
 			{
-				System.finishTimestep(false);
+				System.coarsenAndRefine(false);
 			}
 			else
 			{
-				System.finishTimestep(true);
+				System.coarsenAndRefine(true);
 			}
 	    }
 	}

@@ -5,12 +5,15 @@
 ******************************************************************************/
 // @author Peter Hoffmann (peter.hoffmann@mytum.de)
 
-#ifndef ADAMSBASHFORTH_HPP
-#define ADAMSBASHFORTH_HPP
+#ifndef STEPSIZECONTROLMC_HPP
+#define STEPSIZECONTROLMC_HPP
 
 #include "base/application/ScreenOutput.hpp"
-#include "solver/ODESolver.hpp"
+#include "solver/ode/StepsizeControl.hpp"
+#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 #include <string>
+#include "VarTimestep.hpp"
+
 
 namespace sg
 {
@@ -18,16 +21,16 @@ namespace solver
 {
 
 /**
- * This class implements the explicit Adams-Bashforth method
+ * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
  * for solving ordinary partial equations
  *
  * @version $HEAD$
  */
-class AdamsBashforth : public ODESolver
+class StepsizeControlMC : public VarTimestep
 {
-private:
-	/// Pointer to sg::base::ScreenOutput object
-	sg::base::ScreenOutput* myScreen;
+protected:
+
+	double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon);
 
 public:
 	/**
@@ -35,19 +38,18 @@ public:
 	 *
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
-	 * @param screen possible pointer to a sg::base::ScreenOutput object
+	 * @param eps the epsilon for the step size control
+	 * @param screen possible pointer to a ScreenOutput object
 	 */
-	AdamsBashforth(size_t imax, double timestepSize, sg::base::ScreenOutput* screen = NULL);
+	StepsizeControlMC(size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~AdamsBashforth();
-
-	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+	virtual ~StepsizeControlMC();
 };
 
 }
 }
 
-#endif /* ADAMSBASHFORTH_HPP */
+#endif /* STEPSIZECONTROLMC_HPP */

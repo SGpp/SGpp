@@ -97,7 +97,9 @@ public:
 	 */
 	virtual ~HullWhiteParabolicPDESolverSystem();
 
-	void finishTimestep(bool isLastTimestep = false);
+	void finishTimestep();
+
+	void coarsenAndRefine(bool isLastTimestep = false);
 
 	void startTimestep();
 
