@@ -932,7 +932,7 @@ void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double
 		qwe >> epsilon;
 		iss >> gamma;
 		std::cout<<"2 " << "AdBas"<<", "  <<"CrNic"  << " Epsilon: "<< epsilon << " Gamma: "  << gamma   << std::endl;
-		myODESolver = new VarTimestep("AdBasC","CrNic",numTimesteps, timestepsize, epsilon, myScreen, gamma);
+		myODESolver = new VarTimestep("AdBas","CrNic",numTimesteps, timestepsize, epsilon, myScreen, gamma);
 
 	} else if (Solver[2] == 'H') {
 		getline(iss,tmp,':');
