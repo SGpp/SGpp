@@ -109,10 +109,14 @@ void HeatEquationParabolicPDESolverSystem::applyLOperatorInner(sg::base::DataVec
 	result.axpy((-1.0)*this->a,temp);
 }
 
-void HeatEquationParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
+void HeatEquationParabolicPDESolverSystem::finishTimestep()
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
+}
+
+void HeatEquationParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep)
+{
 }
 
 void HeatEquationParabolicPDESolverSystem::startTimestep()

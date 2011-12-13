@@ -227,6 +227,8 @@ public:
 
 	void solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, void *myODESolverV = NULL, std::string Solver = "ImEul");
 
+	void solveSC(std::string Solver,size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+
 	void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
 	void solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
@@ -237,6 +239,7 @@ public:
 
 	void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
+	//void solveSCMC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
 	/**
 	 * evaluates the analytic solution of the 1D Black Scholes equation

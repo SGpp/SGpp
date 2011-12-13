@@ -33,6 +33,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+
 using namespace sg::pde;
 using namespace sg::solver;
 using namespace sg::base;
@@ -89,7 +90,6 @@ namespace finance
   {
     if (this->bGridConstructed)
       {
-        double tmp;
         double value;
         StdNormalDistribution myNormDistr;
         double* s_coords = new double[this->dim];
@@ -917,16 +917,61 @@ namespace finance
     delete myODESolver;
   }
 
+void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
+{
+	std::string tmp;
+	float epsilon = 0.001;
+	float sc = 1;
+	float gamma = 0.5;
+	ODESolver* myODESolver;
+	std::istringstream iss(Solver);
+	if(Solver[2] == '2') {
+		getline(iss,tmp,':');
+		getline(iss,tmp,':');
+		std::istringstream qwe(tmp);
+		qwe >> epsilon;
+		iss >> gamma;
+		std::cout<<"2 " << "AdBas"<<", "  <<"CrNic"  << " Epsilon: "<< epsilon << " Gamma: "  << gamma   << std::endl;
+		myODESolver = new VarTimestep("AdBasC","CrNic",numTimesteps, timestepsize, epsilon, myScreen, gamma);
+
+	} else if (Solver[2] == 'H') {
+		getline(iss,tmp,':');
+		getline(iss,tmp,':');
+		std::istringstream qwe(tmp);
+		qwe >> epsilon;
+		iss >> gamma;
+		std::cout<< "H "  <<"CrNic"  << " Epsilon: "<< epsilon << " Gamma: "  << gamma   << std::endl;
+		myODESolver = new StepsizeControlH("CrNic",numTimesteps, timestepsize, epsilon, myScreen, gamma);
+
+
+	}else if (Solver[2] == 'I') {
+		getline(iss,tmp,':');
+		getline(iss,tmp,':');
+		std::istringstream qwe(tmp);
+		qwe >> epsilon;
+		getline(iss,tmp,':');
+		std::istringstream qwe2(tmp);
+		qwe >> sc;
+		iss >> gamma;
+		std::cout << "I "   << " Epsilon: "<< epsilon<< " SC: "<<sc<< " Gamma: "  << gamma   << std::endl;
+		myODESolver = new StepsizeControlEJ("CrNic",numTimesteps, timestepsize, epsilon, sc,  myScreen, gamma);
+
+	} else std::cerr << "BlackScholesSolver::solveSC(): Unknown Stepsize Control #" << Solver[3] << "#" << Solver << std::endl;
+
+	BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
+	delete myODESolver;
+}
+
   void BlackScholesSolver::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
   {
-    ODESolver* myODESolver = new VarTimestep(numTimesteps, timestepsize, epsilon, myScreen);
+	ODESolver* myODESolver = new VarTimestep("AdBasC","CrNic",numTimesteps, timestepsize, epsilon, myScreen, -1);
     BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
     delete myODESolver;
   }
 
   void BlackScholesSolver::solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
   {
-    ODESolver* myODESolver = new StepsizeControlH(numTimesteps, timestepsize, epsilon, myScreen);
+	ODESolver* myODESolver = new StepsizeControlH("CrNic",numTimesteps, timestepsize, epsilon, myScreen, 0.9);
     BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
     delete myODESolver;
   }
@@ -940,7 +985,7 @@ namespace finance
 
   void BlackScholesSolver::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
   {
-    ODESolver* myODESolver = new StepsizeControlEJ(numTimesteps, timestepsize, epsilon, myAlpha,  myScreen);
+	ODESolver* myODESolver = new StepsizeControlEJ("CrNic",numTimesteps, timestepsize, epsilon, myAlpha,  myScreen, 0.5);
     BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "SCEJ");
     delete myODESolver;
   }
@@ -1040,7 +1085,6 @@ namespace finance
     double dOne = (log((stock/strike)) + ((r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
     double dTwo = dOne - (vola*sqrt(t));
 
-    double prem;
     if (isCall)
       {
         return (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*r*t)));

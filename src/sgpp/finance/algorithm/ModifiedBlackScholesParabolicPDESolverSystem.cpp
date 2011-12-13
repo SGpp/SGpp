@@ -56,7 +56,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(sg::base::DataV
 		//std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
 		std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*this->BoundGrid->getBoundingBox());
 		std::stringstream coordsStream(coords);
-		double* dblFuncValues = new double[2];
+		double dblFuncValues[2];
         for (size_t j = 0; j < 2; j++)
 			{
 			    coordsStream >> tmp;
@@ -99,21 +99,25 @@ void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(sg::base::Data
 	this->multiplyrBSHW(temp);
 	result.add(temp);
 }
-void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
+
+void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep()
 {
-	   sg::base::DataVector* factor = new sg::base::DataVector(this->alpha_complete->getSize());
+	   sg::base::DataVector factor(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
+	   this->variableDiscountFactor->getDiscountFactor(factor, this->TimestepSize);
 
 		if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 		{
-			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
+			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,factor);
 		}
 	// add number of Gridpoints
 	this->numSumGridpointsInner += 0;
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
+}
 
-	if (this->useCoarsen == true && isLastTimestep == false)
+void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep)
+{
+	if (this->useCoarsen == true) //  && isLastTimestep == false)  // do it always as mostly only 1 timestep is executed
 	{
 		///////////////////////////////////////////////////
 		// Start integrated refinement & coarsening
@@ -162,14 +166,16 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTim
 
 void ModifiedBlackScholesParabolicPDESolverSystem::startTimestep()
 {
-	   sg::base::DataVector* factor = new sg::base::DataVector(this->alpha_complete->getSize());
+	   sg::base::DataVector factor(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
+
+	   this->variableDiscountFactor->getDiscountFactor(factor, this->TimestepSize);
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
-			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
+			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,factor);
 		}
+
 }
 }
 }

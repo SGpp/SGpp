@@ -233,6 +233,8 @@ OBJS =	DataVector.o\
 	StepsizeControlH.o\
 	StepsizeControlBDF.o\
 	StepsizeControlEJ.o\
+	StepsizeControlMC.o\
+	StepsizeControl.o\
 	PoissonEquationSolver.o\
 	EllipticPDESolver.o\
 	OperationEllipticPDESolverSystem.o\
@@ -1011,6 +1013,12 @@ StepsizeControlBDF.o : $(SRCDIR)solver/ode/StepsizeControlBDF.cpp
 
 StepsizeControlEJ.o : $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlEJ.o $(SRCDIR)solver/ode/StepsizeControlEJ.cpp
+	
+StepsizeControlMC.o : $(SRCDIR)solver/ode/StepsizeControlMC.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControlMC.o $(SRCDIR)solver/ode/StepsizeControlMC.cpp
+
+StepsizeControl.o : $(SRCDIR)solver/ode/StepsizeControl.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StepsizeControl.o $(SRCDIR)solver/ode/StepsizeControl.cpp
 		
 PDESolver.o : $(SRCDIR)pde/application/PDESolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PDESolver.o $(SRCDIR)pde/application/PDESolver.cpp

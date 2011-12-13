@@ -29,6 +29,8 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 
 	this->alpha_complete_old = new sg::base::DataVector(*this->alpha_complete);
 	this->alpha_complete_tmp = new sg::base::DataVector(*this->alpha_complete);
+	this->oldGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+	this->secondGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
 
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
@@ -139,7 +141,11 @@ void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVect
 	result.add(temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
+void BlackScholesPATParabolicPDESolverSystem::finishTimestep() {
+
+}
+
+void BlackScholesPATParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep)
 {
 	// add number of Gridpoints
 	this->numSumGridpointsInner += 0;

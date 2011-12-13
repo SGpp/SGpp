@@ -161,7 +161,9 @@ public:
 	 */
 	virtual ~BlackScholesParabolicPDESolverSystemEuroAmer();
 
-	virtual void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep();
+
+	virtual void coarsenAndRefine(bool isLastTimestep = false);
 
 	void startTimestep();
 };

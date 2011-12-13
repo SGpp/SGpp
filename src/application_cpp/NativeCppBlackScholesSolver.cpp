@@ -108,7 +108,7 @@ void writeHelp()
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SCAC, SCH, SCBDF or SCEJ" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SC2:epsilon:gamma, SCH:epsilon:gamma or SCI:epsilon:sc:gamma" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << std::endl;
@@ -133,7 +133,7 @@ void writeHelp()
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SC2:epsilon:gamma, SCH:epsilon:gamma or SCI:epsilon:sc:gamma" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	file_analyze: file containing the analyzing options" << std::endl;
@@ -168,7 +168,7 @@ void writeHelp()
 	mySStream << "	r: the riskfree rate" << std::endl;
 	mySStream << "	T: time to maturity" << std::endl;
 	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic, AdBas, SC2:epsilon:gamma, SCH:epsilon:gamma or SCI:epsilon:sc:gamma" << std::endl;
 	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
 	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
 	mySStream << "	RefinementMode: classic or maxLevel" << std::endl;
@@ -184,6 +184,13 @@ void writeHelp()
 	mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
 	mySStream << "	payoff.gnuplot: the start condition" << std::endl;
 	mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+	mySStream << std::endl << std::endl;
+
+	mySStream << "analyzeTimeStepping" << std::endl << "------" << std::endl;
+	mySStream << "for analyzing time-stepping of SCAC, SCH, SCBDF or SCEJ" << std::endl;
+	mySStream << "same function call as in 'solveNDanalyze' plus additional parameters: " << std::endl;
+	mySStream << "epsTime: epsilon for timestepping " << std::endl;
+	mySStream << "cTime: constant for timestepping (optional, only in case of SCEJ needed)" << std::endl;
 	mySStream << std::endl << std::endl;
 
 	mySStream << std::endl << std::endl;
@@ -693,7 +700,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	}
 	else if (Solver == "SCAC")
 	{
-		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+		myBSSolver->solveSCAC(timesteps, stepsize, 0.01, CGiterations, CGepsilon, *alpha, false);
 	}
 	else if (Solver == "SCH")
 	{
@@ -706,6 +713,10 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	else if (Solver == "SCEJ")
 	{
 		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
+	}
+	else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
+	{
+		myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	}
 	else
 	{
@@ -917,6 +928,10 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 		{
 			myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 		}
+		else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
+		{
+			myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+		}
 		else
 		{
 			std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
@@ -963,6 +978,302 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 				EvalPoints.setRow(v, r);
 			}
 		}
+
+		// Evaluate Cuboid
+		sg::base::DataVector Prices(EvalPoints.getNrows());
+		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
+		results.push_back(Prices);
+
+		// write solution in a additional file
+		std::stringstream level_string;
+		level_string << i;
+		writeDataVector(Prices, tFileEvalCuboidValues+".level_"+ level_string.str());
+		writeDataVector(Prices, tFileEvalCuboidValues);
+
+		if (i > start_l)
+		{
+			std::cout << "=====================================================================" << std::endl;
+			std::cout << "=====================================================================" << std::endl << std::endl;
+			std::cout << "Calculating norms of relative errors to a grid" << std::endl;
+			std::cout << "with " << i << " levels and testing-coboid" << std::endl;
+			std::cout << "with the bounding box:" << std::endl;
+			for (size_t j = 0; j < d; j++)
+			{
+				std::cout << myEvalBoundingBox->getBoundary(j).leftBoundary << " " << myEvalBoundingBox->getBoundary(j).rightBoundary << std::endl;
+			}
+			std::cout << std::endl << std::endl;
+
+			double oldMaxNorm = 0.0;
+			double oldTwoNorm = 0.0;
+
+			std::cout << "Level, max-norm(rel-error), two-norm(rel-error), rate max-norm,  rate two-norm" << std::endl;
+			std::cout << "------------------------------------------------------------------------------" << std::endl;
+			// Calculate relative errors and some norms
+			for (size_t j = 0; j < i-start_l; j++)
+			{
+				sg::base::DataVector maxLevel(results[i-start_l]);
+				sg::base::DataVector relError(results[j]);
+				double maxNorm = 0.0;
+				double l2Norm = 0.0;
+
+				// calculate relative error
+				relError.sub(maxLevel);
+				relError.componentwise_div(maxLevel);
+
+				// calculate max. norm of relative error
+				maxNorm = relError.maxNorm();
+
+				// calculate two norm of relative error
+				l2Norm = relError.RMSNorm();
+
+				// Printing norms
+				//std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+				std::cout << j + start_l << ", " << maxNorm << ", " << l2Norm << ", " << log(oldMaxNorm/maxNorm) << ", " << log(oldTwoNorm/l2Norm) << std::endl;
+
+				oldMaxNorm = maxNorm;
+				oldTwoNorm = l2Norm;
+			}
+		}
+		std::cout << std::endl << std::endl;
+
+		myBSSolver->deleteGrid();
+		delete alpha;
+
+		std::cout << std::endl;
+	}
+
+	delete myEvalBoundingBox;
+	delete myEvalCuboidGen;
+	delete myBSSolver;
+	delete myBoundingBox;
+}
+
+
+
+
+/**
+ * Do a Black Scholes solver test with n assets (ND Sparse Grid) European call option <br>
+ * this function is for aanalysis of time-stepping and allows to se the time-stepping values via the function call
+ * (can be deleted later?!)
+ *
+ * @param d the number of dimensions used in the Sparse Grid
+ * @param start_l the number of levels used in the Sparse Grid (first test)
+ * @param end_l the number of level used in the Sparse Grid (last test)
+ * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
+ * @param fileBound filename of the file that contains the grid's bounding box
+ * @param dStrike the strike of the option
+ * @param payoffType method that is used to determine the multidimensional payoff function
+ * @param riskfree the riskfree rate of the marketmodel
+ * @param timeSt the number of timesteps that are executed during the solving process
+ * @param dt the size of delta t in the ODE solver
+ * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
+ * @param CGeps the epsilon used in the CG/BiCGStab
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic, etc. are the possibilities
+ * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
+ * @param epsTime epsilon of timeStepping
+ * @param cTime contstant for time-stepping (optional, depends on time-stepping mode)
+ */
+void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
+		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, std::string fileAnalyze, bool isLogSolve,
+		double epsTime, double cTime)
+{
+	size_t dim = d;
+	size_t timesteps = timeSt;
+	double stepsize = dt;
+	size_t CGiterations = CGIt;
+	double CGepsilon = CGeps;
+
+
+	sg::base::DataVector mu(dim);
+	sg::base::DataVector sigma(dim);
+	sg::base::DataMatrix rho(dim,dim);
+
+	sg::base::DataMatrix EvalPoints(1, d);
+
+	double r = riskfree;
+
+	std::vector<sg::base::DataVector> results;
+
+
+	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
+	{
+		return;
+	}
+
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+	{
+		return;
+	}
+
+	size_t points = 0;
+ 	sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
+ 	if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0)
+	{
+		return;
+	}
+
+	sg::finance::BlackScholesSolver* myBSSolver;
+	if (isLogSolve == true)
+	{
+		myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
+	}
+	else
+	{
+		myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
+	}
+
+	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+	sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
+	sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+	delete[] myBoundaries;
+	delete[] myEvalBoundaries;
+
+	// init Screen Object
+	myBSSolver->initScreen();
+
+	for (size_t i = start_l; i <= end_l; i++)
+	{
+		size_t level = i;
+
+		// Construct a grid
+		myBSSolver->constructGrid(*myBoundingBox, level);
+
+		// in first iteration -> calculate the evaluation points
+		if (i == start_l)
+		{
+			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
+
+			writeDataMatrix(EvalPoints, tFileEvalCuboid);
+
+			// If the log-transformed Black Scholes Eqaution is used -> transform Eval-cuboid
+			if (isLogSolve == true)
+			{
+				for (size_t v = 0; v < EvalPoints.getNrows(); v++)
+				{
+					for (size_t w = 0; w < EvalPoints.getNcols(); w++)
+					{
+						EvalPoints.set(v, w, log(EvalPoints.get(v,w)));
+					}
+				}
+			}
+		}
+
+		// init the basis functions' coefficient vector
+		sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+
+		std::cout << "Grid has " << level << " Levels" << std::endl;
+		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+		// Init the grid with on payoff function
+		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+
+		// Gridpoints @Money
+		std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+
+		// Print the payoff function into a gnuplot file
+		if (dim < 3)
+		{
+			myBSSolver->printGrid(*alpha, 20, "payoff.gnuplot");
+		}
+		if (dim < 4)
+		{
+			myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+			myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+
+			if (isLogSolve == true)
+			{
+				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
+				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+			}
+		}
+
+		// Set stochastic data
+		myBSSolver->setStochasticData(mu, sigma, rho, r);
+
+		// Start solving the Black Scholes Equation
+		if (Solver == "ExEul")
+		{
+			myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		}
+		else if (Solver == "ImEul")
+		{
+			myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		}
+		else if (Solver == "CrNic")
+		{
+			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+		}
+		else if (Solver == "AdBas")
+		{
+			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+		}
+		// Adams-Bashforth / Crank-Nicolson
+		else if (Solver == "SCAC")
+		{
+			// double epsTime = 0.0001;
+			myBSSolver->solveSCAC(timesteps, stepsize, epsTime, CGiterations, CGepsilon, *alpha, false);
+		}
+		// stepwith halfening
+		else if (Solver == "SCH")
+		{
+			// double epsTime = 0.0001;
+			myBSSolver->solveSCH(timesteps, stepsize, epsTime, CGiterations, CGepsilon, *alpha, false);
+		}
+		// BDF time-stepping
+		else if (Solver == "SCBDF")
+		{
+			// double epsTime = 0.0001;
+			myBSSolver->solveSCBDF(timesteps, stepsize, epsTime, CGiterations, CGepsilon, *alpha, false);
+		}
+		// increase-in-value
+		else if (Solver == "SCEJ")
+		{
+			// double epsTime = 0.001;
+			// double cTime = 1.0;
+			myBSSolver->solveSCEJ(timesteps, stepsize, epsTime, cTime, CGiterations, CGepsilon, *alpha, false);
+		}
+		else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
+		{
+			myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+		}
+		else
+		{
+			std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
+		}
+
+		if (dim < 3)
+		{
+			// Print the solved Black Scholes Equation into a gnuplot file
+			myBSSolver->printGrid(*alpha, 20, "solvedBS.gnuplot");
+		}
+		if (dim < 4)
+		{
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+
+			if (isLogSolve == true)
+			{
+				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
+				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
+			}
+		}
+
+		// Test call @ the money
+		std::vector<double> point;
+		for (size_t j = 0; j < d; j++)
+		{
+			if (isLogSolve == true)
+			{
+				point.push_back(log(dStrike));
+			}
+			else
+			{
+				point.push_back(dStrike);
+			}
+		}
+		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
 		// Evaluate Cuboid
 		sg::base::DataVector Prices(EvalPoints.getNrows());
@@ -1248,6 +1559,10 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 		else if (Solver == "SCEJ")
 		{
 			myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
+		}
+		else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
+		{
+			myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 		}
 		else
 		{
@@ -1706,6 +2021,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 	{
 		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 	}
+	else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
+	{
+		myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+	}
 	else
 	{
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
@@ -1943,6 +2262,55 @@ int main(int argc, char *argv[])
 			coordsType.assign(argv[2]);
 
 			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coordsType);
+		}
+	}
+	else if (option == "analyzeTimeStepping")
+	{
+		if (argc != 18 && argc != 19)
+		{
+			writeHelp();
+		}
+		else
+		{
+			std::string fileStoch;
+			std::string fileBound;
+			double dStrike;
+			std::string fileAnalyze;
+			std::string ani;
+			std::string solver;
+			std::string payoff;
+
+			fileStoch.assign(argv[7]);
+			fileBound.assign(argv[6]);
+			dStrike = atof(argv[8]);
+			fileAnalyze.assign(argv[16]);
+			payoff.assign(argv[9]);
+			solver.assign(argv[13]);
+
+			std::string coordsType;
+			bool coords = false;
+			coordsType.assign(argv[2]);
+			if (coordsType == "cart")
+			{
+				coords = false;
+			}
+			else if (coordsType == "log")
+			{
+				coords = true;
+			}
+			else
+			{
+				std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
+				std::cout << std::endl << std::endl;
+				writeHelp();
+			}
+
+			double epsTime = atof(argv[17]);
+			double cTime = 1.0;
+			if(argc==19){
+				cTime = atof(argv[18]);
+			}
+			testNUnderlyingsAnalyzeTimeStepping(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coords, epsTime, cTime);
 		}
 	}
 	else if (option == "solve1Danalyze")

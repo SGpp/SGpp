@@ -33,7 +33,7 @@ LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::~LaserHeatEquationParabo
 {
 }
 
-void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool isLastTimestep)
+void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep()
 {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
@@ -118,6 +118,10 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep(bool
 
 	// rebuild the inner grid + coefficients
 	this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+}
+
+void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::coarsenAndRefine(bool isLastTimestep)
+{
 }
 
 void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::startTimestep()

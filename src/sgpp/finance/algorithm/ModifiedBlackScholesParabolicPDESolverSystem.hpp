@@ -64,14 +64,16 @@ public:
 	 *
 	 * @param updateVector the vector that should be updated
 	 */
-   	void multiplyrBSHW(sg::base::DataVector& updateVector);
+   	virtual void multiplyrBSHW(sg::base::DataVector& updateVector);
 
    	/**
 	 * Std-Destructor
 	 */
 	virtual ~ModifiedBlackScholesParabolicPDESolverSystem();
 
-	virtual void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep();
+
+	virtual void coarsenAndRefine(bool isLastTimestep = false);
 
 	virtual void startTimestep();
 

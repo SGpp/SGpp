@@ -29,6 +29,8 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(sg::b
 
 	this->alpha_complete_old = new sg::base::DataVector(*this->alpha_complete);
 	this->alpha_complete_tmp = new sg::base::DataVector(*this->alpha_complete);
+	this->oldGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+	this->secondGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
 
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
@@ -150,6 +152,8 @@ BlackScholesParabolicPDESolverSystem::~BlackScholesParabolicPDESolverSystem()
 	}
 	delete this->alpha_complete_old;
 	delete this->alpha_complete_tmp;
+	delete this->oldGridStorage;
+	delete this->secondGridStorage;
 }
 
 void BlackScholesParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -186,7 +190,7 @@ void BlackScholesParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVector&
 	result.add(temp);
 }
 
-void BlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
+void BlackScholesParabolicPDESolverSystem::finishTimestep()
 {
 #ifndef NOBOUNDARYDISCOUNT
 	// Adjust the boundaries with the riskfree rate
@@ -203,6 +207,10 @@ void BlackScholesParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 	this->numSumGridpointsInner += 0;
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
 
+}
+
+void BlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep)
+{
 	if (this->useCoarsen == true && isLastTimestep == false)
 	{
 		///////////////////////////////////////////////////

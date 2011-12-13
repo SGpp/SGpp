@@ -9,6 +9,7 @@
 
 #include "base/application/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
+#include "solver/ode/StepsizeControl.hpp"
 
 namespace sg
 {
@@ -24,17 +25,18 @@ namespace solver
  *
  * @version $HEAD$
  */
-class StepsizeControlEJ : public ODESolver
+class StepsizeControlEJ : public StepsizeControl
 {
 private:
-	/// Pointer to sg::base::ScreenOutput object
-	sg::base::ScreenOutput* myScreen;
+	virtual void predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
+			double tmp_timestepsize, sg::base::DataVector &dv, sg::base::DataVector &corr, sg::base::DataVector *rhs);
 
-	/// epsilon for the stepsize control
-	double myEps;
+	virtual void corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,double tmp_timestepsize, sg::base::DataVector &dv, sg::base::DataVector *rhs);
 
-	double mySC;
+	virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon);
 
+	virtual double norm(sg::pde::OperationParabolicPDESolverSystem& System,sg::base::DataVector &dv1, sg::base::DataVector &dv2);
+	std::string _odesolver;
 public:
 	/**
 	 * Std-Constructer
@@ -45,14 +47,12 @@ public:
 	 * @param sc
 	 * @param screen possible pointer to a sg::base::ScreenOutput object
 	 */
-	StepsizeControlEJ(size_t nTimesteps, double timestepSize, double eps, double sc, sg::base::ScreenOutput* screen = NULL);
+	StepsizeControlEJ(std::string odesolver, size_t nTimesteps, double timestepSize, double eps, double sc, sg::base::ScreenOutput* screen = NULL, double gamma = 0.5);
 
 	/**
 	 * Std-Destructor
 	 */
 	virtual ~StepsizeControlEJ();
-
-	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }

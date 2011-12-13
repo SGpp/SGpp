@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Peter Hoffmann (peter.hoffmann@mytum.de)
 
 #include "pde/operation/OperationParabolicPDESolverSystem.hpp"
 #include "base/exception/algorithm_exception.hpp"
@@ -54,12 +54,23 @@ void OperationParabolicPDESolverSystem::setTimestepSize(double newTimestepSize)
 
 void OperationParabolicPDESolverSystem::abortTimestep()
 {
+	delete this->secondGridStorage;
+	this->secondGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+	if((this->alpha_complete)->getSize() != (this->alpha_complete_tmp)->getSize()) {
+		(this->alpha_complete)->resize((this->alpha_complete_tmp)->getSize());
+	}
 	*(this->alpha_complete) = *(this->alpha_complete_tmp);
 }
 
 void OperationParabolicPDESolverSystem::saveAlpha()
 {
+	delete this->oldGridStorage;
+	this->oldGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+	if((this->alpha_complete_old)->getSize() != (this->alpha_complete_tmp)->getSize())
+		(this->alpha_complete_old)->resize((this->alpha_complete_tmp)->getSize());
 	*(this->alpha_complete_old) = *(this->alpha_complete_tmp);
+	if((this->alpha_complete_tmp)->getSize() != (this->alpha_complete)->getSize())
+		(this->alpha_complete_tmp)->resize((this->alpha_complete)->getSize());
 	*(this->alpha_complete_tmp) = *(this->alpha_complete);
 }
 
@@ -79,6 +90,18 @@ void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(sg::base::DataV
 	sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*BoundGrid);
 	myHierarchisation->doDehierarchisation(Values);
 	delete myHierarchisation;
+}
+
+sg::base::GridStorage* OperationParabolicPDESolverSystem::getGridStorage() {
+	return (this->BoundGrid)->getStorage();
+}
+
+sg::base::GridStorage* OperationParabolicPDESolverSystem::getOldGridStorage() {
+	return oldGridStorage;
+}
+
+sg::base::GridStorage* OperationParabolicPDESolverSystem::getSecondGridStorage() {
+	return secondGridStorage;
 }
 
 }

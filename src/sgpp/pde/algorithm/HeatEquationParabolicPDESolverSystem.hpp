@@ -61,9 +61,11 @@ public:
 	 */
 	virtual ~HeatEquationParabolicPDESolverSystem();
 
-	void finishTimestep(bool isLastTimestep = false);
+	virtual void finishTimestep();
 
-	void startTimestep();
+	virtual void coarsenAndRefine(bool isLastTimestep = false);
+
+	virtual void startTimestep();
 };
 
 }

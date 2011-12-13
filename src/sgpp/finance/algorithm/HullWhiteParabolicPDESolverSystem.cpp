@@ -30,10 +30,9 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(sg::base::G
 	this->alpha_complete = &alpha;
 
 	this->alpha_complete_old = new sg::base::DataVector(this->alpha_complete->getSize());
-	this->alpha_complete_old->setAll(0.0);
 	this->alpha_complete_tmp = new sg::base::DataVector(this->alpha_complete->getSize());
-	this->alpha_complete_tmp->setAll(0.0);
-	this->alpha_complete_tmp->add(*this->alpha_complete);
+	this->oldGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+	this->secondGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
 
 	this->tOperationMode = OperationMode;
 	this->TimestepSize = TimestepSize;
@@ -87,6 +86,8 @@ HullWhiteParabolicPDESolverSystem::~HullWhiteParabolicPDESolverSystem()
 	}
 	delete this->alpha_complete_old;
 	delete this->alpha_complete_tmp;
+	delete this->oldGridStorage;
+	delete this->secondGridStorage;
 }
 
 void HullWhiteParabolicPDESolverSystem::applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -130,22 +131,26 @@ void HullWhiteParabolicPDESolverSystem::applyMassMatrix(sg::base::DataVector& al
 	result.add(temp);
 }
 
-void HullWhiteParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
+void HullWhiteParabolicPDESolverSystem::finishTimestep()
 {
-	sg::base::DataVector* factor = new sg::base::DataVector(this->alpha_complete->getSize());
+	sg::base::DataVector factor(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
+	this->variableDiscountFactor->getDiscountFactor(factor, this->TimestepSize);
 
 	if (this->tOperationMode == "ExEul" || this->tOperationMode == "AdBas")
 	{
-		this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
+		this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,factor);
 	}
 
 	// add number of Gridpoints
 	this->numSumGridpointsInner += 0;
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
 
-	if (this->useCoarsen == true && isLastTimestep == false)
+}
+
+void HullWhiteParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep)
+{
+	if (this->useCoarsen == true) // && isLastTimestep == false) // do it always as mostly only 1 timestep is executed
 	{
 		///////////////////////////////////////////////////
 		// Start integrated refinement & coarsening
@@ -194,13 +199,13 @@ void HullWhiteParabolicPDESolverSystem::finishTimestep(bool isLastTimestep)
 
 void HullWhiteParabolicPDESolverSystem::startTimestep()
 {
-	   sg::base::DataVector* factor = new sg::base::DataVector(this->alpha_complete->getSize());
+	   sg::base::DataVector factor(this->alpha_complete->getSize());
 	// Adjust the boundaries with the riskfree rate
-	   this->variableDiscountFactor->getDiscountFactor(*factor, this->TimestepSize);
+	   this->variableDiscountFactor->getDiscountFactor(factor, this->TimestepSize);
 
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
-			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,*factor);
+			this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete,factor);
 		}
 
 }

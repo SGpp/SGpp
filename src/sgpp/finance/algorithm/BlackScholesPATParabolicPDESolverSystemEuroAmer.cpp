@@ -29,6 +29,8 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 
 	this->alpha_complete_old = new sg::base::DataVector(*this->alpha_complete);
 	this->alpha_complete_tmp = new sg::base::DataVector(*this->alpha_complete);
+	this->oldGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+	this->secondGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
 
 	this->InnerGrid = NULL;
 	this->alpha_inner = NULL;
@@ -191,10 +193,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::b
 	result.add(temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLastTimestep)
-{
-	this->nExecTimesteps++;
 
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep() {
 	// Replace the inner coefficients on the boundary grid
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
@@ -250,6 +250,9 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep(bool isLast
 		delete myBB;
 	}
 
+}
+void BlackScholesPATParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimestep)
+	{
 	// add number of Gridpoints
 	this->numSumGridpointsInner += this->InnerGrid->getSize();
 	this->numSumGridpointsComplete += this->BoundGrid->getSize();
