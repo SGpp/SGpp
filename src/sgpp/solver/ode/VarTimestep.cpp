@@ -42,7 +42,7 @@ void VarTimestep::predictor(SLESolver& LinearSystemSolver, sg::pde::OperationPar
 {
 	System.setTimestepSize(tmp_timestepsize);
 
-	System.setODESolver("AdBasC");
+	System.setODESolver("AdBas");
 
 	// generate right hand side
 	rhs = System.generateRHS();
