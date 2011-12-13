@@ -197,13 +197,14 @@ void writeHelp()
 	mySStream << std::endl << std::endl;
 
 	mySStream << "options for time-stepping:" << std::endl << "------" << std::endl;
-	mySStream << "	  * ExEul                  explicit Euler" << std::endl;
-	mySStream << "	  * ImEul                  implicit Euler" << std::endl;
-	mySStream << "	  * CrNic                  Crank-Nicoloson" << std::endl;
-	mySStream << "	  * AdBas                  Adams-Bashforth (explicit 2-step method)" << std::endl;
-	mySStream << "	  * SC2:epsilon:gamma      " << std::endl;
-	mySStream << "	  * SCH:epsilon:gamma      " << std::endl;
-	mySStream << "	  * SCI:epsilon:sc:gamma   " << std::endl;
+	mySStream << "   * ExEul                  explicit Euler" << std::endl;
+	mySStream << "   * ImEul                  implicit Euler" << std::endl;
+	mySStream << "   * CrNic                  Crank-Nicoloson" << std::endl;
+	mySStream << "   * AdBas                  Adams-Bashforth (explicit 2-step method)" << std::endl;
+	mySStream << " adaptive time-steppings:" << std::endl;
+	mySStream << "   * SC2:epsilon:gamma      predictor-corrector scheme (Crank-Nicolson/Adams-Bashforth)" << std::endl;
+	mySStream << "   * SCH:epsilon:gamma      step-doubling (Crank-Nicolson)" << std::endl;
+	mySStream << "   * SCI:epsilon:sc:gamma   increase-in-value (Crank-Nicolson)" << std::endl;
 	mySStream << std::endl << std::endl;
 
 	mySStream << std::endl << std::endl;
