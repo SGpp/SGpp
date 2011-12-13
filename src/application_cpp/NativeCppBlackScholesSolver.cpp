@@ -205,6 +205,13 @@ void writeHelp()
 	mySStream << "   * SC2:epsilon:gamma      predictor-corrector scheme (Crank-Nicolson/Adams-Bashforth)" << std::endl;
 	mySStream << "   * SCH:epsilon:gamma      step-doubling (Crank-Nicolson)" << std::endl;
 	mySStream << "   * SCI:epsilon:sc:gamma   increase-in-value (Crank-Nicolson)" << std::endl;
+	mySStream << " hereby: " << std::endl;
+	mySStream << "   epsilon = rel. discretization accuracy " << std::endl;
+	mySStream << "             (typically eps = 5e-3 to 1e-4)" << std::endl;
+	mySStream << "   gamma   = factor by which the step size is decreased (dt = gamma*dt) in case of rejection" << std::endl;
+	mySStream << "             (typically gamma = 0.5 to 0.9)" << std::endl;
+	mySStream << "   sc      = specific factor of increase-in-value for limiting the increase" << std::endl;
+	mySStream << "             (typically sc = 1 or 10)" << std::endl;
 	mySStream << std::endl << std::endl;
 
 	mySStream << std::endl << std::endl;
