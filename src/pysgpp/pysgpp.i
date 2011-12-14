@@ -17,6 +17,16 @@
 
 %include "exception.i"
 
+%{
+#define SWIG_FILE_WITH_INIT
+%}
+%include "numpy.i"
+%init %{
+import_array();
+%}
+%apply (double** ARGOUTVIEW_ARRAY1, int *DIM1) {(double** vec, int* n)}
+
+
 %exception {
   try {
     $action
