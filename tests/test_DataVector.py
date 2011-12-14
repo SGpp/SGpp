@@ -151,6 +151,23 @@ class TestDataVector(unittest.TestCase):
             x += d[i] * d[i]
             
         self.assertEqual(d.dotProduct(d), x)
+        
+    ##
+    # Converting DataVector to ndarray
+    # @test DataVector::array()
+    def testArray(self):
+        from pysgpp import DataVector
+        from numpy import array,ndarray
+        
+        x = DataVector([1,2,3])
+        y = array([1,2,3])
+        a = x.array()
+        
+        x = 'foo'
+        self.assertIsInstance(a, ndarray)
+        self.assertItemsEqual(a, y)
+        
+        
 
 # Run tests for this file if executed as application 
 if __name__=='__main__':
