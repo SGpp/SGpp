@@ -79,7 +79,11 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multTransDP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+#ifndef NO_OCL_OPTS
+	    err = clBuildProgram(program_multTransDP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+#else
+	    err = clBuildProgram(program_multTransDP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+#endif
 
 	    if (err != CL_SUCCESS)
 	    {
@@ -330,7 +334,11 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multDP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+#ifndef NO_OCL_OPTS
+	    err = clBuildProgram(program_multDP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+#else
+	    err = clBuildProgram(program_multDP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+#endif
 
 	    if (err != CL_SUCCESS)
 	    {

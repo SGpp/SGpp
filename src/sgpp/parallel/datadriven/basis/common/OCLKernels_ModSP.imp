@@ -88,7 +88,11 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 		}
 
 		// compiling the program
-		err = clBuildProgram(program_multTransModSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+#ifndef NO_OCL_OPTS
+	    err = clBuildProgram(program_multTransModSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+#else
+	    err = clBuildProgram(program_multTransModSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+#endif
 
 		if (err != CL_SUCCESS)
 		{
@@ -360,7 +364,11 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multModSP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math", NULL, NULL);
+#ifndef NO_OCL_OPTS
+	    err = clBuildProgram(program_multModSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+#else
+	    err = clBuildProgram(program_multModSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+#endif
 
 	    if (err != CL_SUCCESS)
 	    {
