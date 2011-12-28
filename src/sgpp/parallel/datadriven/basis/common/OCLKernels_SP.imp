@@ -78,9 +78,12 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
 		}
 
 	    // compiling the program
+#ifndef NO_OCL_OPTS
 	    err = clBuildProgram(program_multTransSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
-	    //err = clBuildProgram(program_multTransSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
-	    //err = clBuildProgram(program_multTransSP, 0, NULL, NULL, NULL, NULL);
+#else
+	    err = clBuildProgram(program_multTransSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+#endif
+
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OCL Error: OpenCL Build Error. Error Code: " << err << std::endl;
@@ -329,9 +332,12 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
 		}
 
 	    // compiling the program
-	    err = clBuildProgram(program_multSP, 0, NULL,  "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
-	    //err = clBuildProgram(program_multSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
-	    //err = clBuildProgram(program_multSP, 0, NULL, NULL, NULL, NULL);
+#ifndef NO_OCL_OPTS
+	    err = clBuildProgram(program_multSP, 0, NULL, "-cl-finite-math-only -cl-strict-aliasing -cl-fast-relaxed-math -cl-single-precision-constant", NULL, NULL);
+#else
+	    err = clBuildProgram(program_multSP, 0, NULL, "-cl-opt-disable", NULL, NULL);
+#endif
+
 	    if (err != CL_SUCCESS)
 	    {
 	    	std::cout << "OCL Error: OpenCL Build Error. Error Code: " << err << std::endl;
