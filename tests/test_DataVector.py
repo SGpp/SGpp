@@ -156,6 +156,7 @@ class TestDataVector(unittest.TestCase):
     # Converting DataVector to ndarray
     # @test DataVector::array()
     def testArray(self):
+        from sys import version_info
         from pysgpp import DataVector
         from numpy import array,ndarray
         
@@ -164,8 +165,15 @@ class TestDataVector(unittest.TestCase):
         a = x.array()
         
         x = 'foo'
-        self.assertIsInstance(a, ndarray)
-        self.assertItemsEqual(a, y)
+        
+        if version_info < (2,7):
+            self.assertEqual(a.__class__, ndarray)
+            self.assertEqual(len(a), len(y))
+            for i in xrange(len(a)):
+                self.assertEqual(a[i], y[i])
+        else:
+            self.assertIsInstance(a, ndarray)
+            self.assertItemsEqual(a, y)
         
         
 
