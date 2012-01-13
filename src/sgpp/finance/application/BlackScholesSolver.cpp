@@ -428,22 +428,40 @@ namespace finance
         this->eigvec_covar->set(2, 2, 0.961355170313971441);
 
         // american put test case, steffi
-        //		this->eigval_covar->set(0, 0.0941905506508006474);
-        //		this->eigval_covar->set(1, 0.211230588426859212);
-        //		this->eigval_covar->set(2, 0.174578860922339874);
-        //
-        //
-        //		this->eigvec_covar->set(0, 0, 0.592851303426220277);
-        //		this->eigvec_covar->set(0, 1, -0.610834162257256286);
-        //		this->eigvec_covar->set(0, 2, 0.524794205613311915);
-        //
-        //		this->eigvec_covar->set(1, 0, -0.658103087561460964);
-        //		this->eigvec_covar->set(1, 1, -0.743068675017919733);
-        //		this->eigvec_covar->set(1, 2, -0.121446574052896814);
-        //
-        //		this->eigvec_covar->set(2, 0, -0.464141851342780687);
-        //		this->eigvec_covar->set(2, 1, 0.273368927324575406);
-        //		this->eigvec_covar->set(2, 2, 0.842521080689087154);
+//		this->eigval_covar->set(0, 0.0941905506508006474);
+//		this->eigval_covar->set(1, 0.211230588426859212);
+//		this->eigval_covar->set(2, 0.174578860922339874);
+//
+//
+//		this->eigvec_covar->set(0, 0, 0.592851303426220277);
+//		this->eigvec_covar->set(0, 1, -0.610834162257256286);
+//		this->eigvec_covar->set(0, 2, 0.524794205613311915);
+//
+//		this->eigvec_covar->set(1, 0, -0.658103087561460964);
+//		this->eigvec_covar->set(1, 1, -0.743068675017919733);
+//		this->eigvec_covar->set(1, 2, -0.121446574052896814);
+//
+//		this->eigvec_covar->set(2, 0, -0.464141851342780687);
+//		this->eigvec_covar->set(2, 1, 0.273368927324575406);
+//		this->eigvec_covar->set(2, 2, 0.842521080689087154);
+
+        // high correlation test case, used in pat paper
+//        this->eigval_covar->set(0, 0.270540383283956520);
+//        this->eigval_covar->set(1, 0.00229466642251533728);
+//        this->eigval_covar->set(2, 0.0171649502935281723);
+//
+//
+//        this->eigvec_covar->set(0, 0, 0.374905067582085139);
+//        this->eigvec_covar->set(0, 1, 0.926977022002479889);
+//        this->eigvec_covar->set(0, 2, -0.0126408457266993599);
+//
+//        this->eigvec_covar->set(1, 0, 0.538484085791040124);
+//        this->eigvec_covar->set(1, 1, -0.206643791785037056);
+//        this->eigvec_covar->set(1, 2, 0.816904665592313894);
+//
+//        this->eigvec_covar->set(2, 0, -0.754639701878359714);
+//        this->eigvec_covar->set(2, 1, 0.313068593116774152);
+//        this->eigvec_covar->set(2, 2, 0.576634178966893840);
       }
     // 4d test case
     if (mydim == 4)
