@@ -6,7 +6,6 @@ RESPRE=WSM-EP
 VECTYPE="X86SIMD"
 PRECISION="SP DP"
 LEVELS="2 3 4 5 6"
-REFINEMENTS="0 1 2 3 4 5 6 7"
 
 # best known config, so far: Level 5, 5 refinements
 
@@ -20,13 +19,10 @@ do
 	do
 		for LEVEL in $LEVELS
 		do
-			for REFINE in $REFINEMENTS
-			do
-				#  linear boundary
-				../bin/ClassifyBenchmark ../input/cod-rna_train_unit.arff ../input/cod-rna_test_unit.arff 0 ${PREC} linearboundary ${LEVEL} 0.000001 200 0.0001 ${REFINE} 0.0 100 40 0.01 ${VEC} 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_linearboundary_${PREC}_Level_${LEVEL}_Refinements_${REFINE}.log
-				#  mod linear
-				../bin/ClassifyBenchmark ../input/cod-rna_train_unit.arff ../input/cod-rna_test_unit.arff 0 ${PREC} modlinear ${LEVEL} 0.000001 200 0.0001 ${REFINE} 0.0 100 40 0.01 ${VEC} 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_modlinear_${PREC}_Level_${LEVEL}_Refinements_${REFINE}.log
-			done
+			# mod linear
+			../bin/ClassifyBenchmark ../input/cod-rna_train_unit.arff ../input/cod-rna_test_unit.arff 0 ${PREC} modlinear ${LEVEL} 0.000001 200 0.0001 0 0.0 100 40 0.01 ${VEC} 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_modlinear_${PREC}_Level_${LEVEL}.log
 		done
+		# mod linear, adaptive
+		../bin/ClassifyBenchmark ../input/cod-rna_train_unit.arff ../input/cod-rna_test_unit.arff 0 ${PREC} modlinear 5 0.000001 200 0.0001 6 0.0 100 40 0.001 ${VEC} 2>&1 | tee ../log/${RESPRE}_cod-rna_${VEC}_modlinear_${PREC}_adaptive.log
 	done
 done
