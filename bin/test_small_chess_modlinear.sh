@@ -19,5 +19,5 @@ do
 	../bin/ClassifyBenchmark ../input/chess_05D_small_3fields_tr.dat.arff ../input/chess_05D_small_3fields_te.dat.arff 0 ${PREC} modlinear 8 0.000001 250 0.0001 0 0.0 100 20 0.0001 ${VEC} 2>&1 | tee ../log/${RESPRE}_ChkBrd_05D_small_modlinear_${PREC}_Level_8.log
 	../bin/ClassifyBenchmark ../input/chess_05D_small_3fields_tr.dat.arff ../input/chess_05D_small_3fields_te.dat.arff 0 ${PREC} modlinear 9 0.000001 250 0.0001 0 0.0 100 20 0.0001 ${VEC} 2>&1 | tee ../log/${RESPRE}_ChkBrd_05D_small_modlinear_${PREC}_Level_9.log
 	../bin/ClassifyBenchmark ../input/chess_05D_small_3fields_tr.dat.arff ../input/chess_05D_small_3fields_te.dat.arff 0 ${PREC} modlinear 10 0.000001 250 0.0001 0 0.0 100 20 0.0001 ${VEC} 2>&1 | tee ../log/${RESPRE}_ChkBrd_05D_small_modlinear_${PREC}_Level_10.log
-	../bin/ClassifyBenchmark ../input/chess_05D_small_3fields_tr.dat.arff ../input/chess_05D_small_3fields_te.dat.arff 0 ${PREC} modlinear 8 0.000001 240 0.0001 30 0.0 500 20 0.0001 ${VEC} 2>&1 | tee ../log/${RESPRE}_ChkBrd_05D_small_modlinear_${PREC}_adaptive.log
+	../bin/ClassifyBenchmark ../input/chess_05D_small_3fields_tr.dat.arff ../input/chess_05D_small_3fields_te.dat.arff 0 ${PREC} modlinear 8 0.000001 190 0.0001 35 0.0 500 20 0.0001 ${VEC} 2>&1 | tee ../log/${RESPRE}_ChkBrd_05D_small_modlinear_${PREC}_adaptive.log
 done
