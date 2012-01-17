@@ -24,7 +24,8 @@
 %init %{
 import_array();
 %}
-%apply (double** ARGOUTVIEW_ARRAY1, int *DIM1) {(double** vec, int* n)}
+//%apply (double** ARGOUTVIEW_ARRAY1, int *DIM1) {(double** vec, int* n)}
+%apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
 
 
 %exception {
