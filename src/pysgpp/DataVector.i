@@ -40,7 +40,7 @@ class DataVector
 public:
 
 // typemap allowing to pass sequence of numbers to constructor
-%typemap(in) (double *input, int size)
+/*%typemap(in) (double *input, int size)
 {
   if (!PySequence_Check($input)) {
     PyErr_SetString(PyExc_ValueError, "Expected a sequence");
@@ -66,7 +66,7 @@ public:
 {
 $1 = PySequence_Check($input) ? 1 : 0;
 }
-
+*/
         // Constructors
 	DataVector(size_t size);
 	DataVector(DataVector& vec);
