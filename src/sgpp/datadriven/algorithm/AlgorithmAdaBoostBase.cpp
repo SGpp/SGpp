@@ -125,10 +125,12 @@ namespace datadriven
 			for (size_t index = 0; index < alpha_train.getSize(); index++)
 				alpha_learn.set(index, alpha_train.get(index));
 
+			#pragma omp parallel for schedule(static)
 			for (size_t i = 0; i < this->numData; i++)
 			{
-				this->data->getRow(i, p_train);
-				double value_train = opEval->eval(alpha_train, p_train);
+				sg::base::DataVector p_train_private(this->dim);
+				this->data->getRow(i, p_train_private);
+				double value_train = opEval->eval(alpha_train, p_train_private);
 				newclasses.set(i, hValue(value_train));
 			}
 			
@@ -229,10 +231,12 @@ namespace datadriven
 
 			// calculate the algorithm value of the testing data and training data
 			// for training data
+			#pragma omp parallel for schedule(static)
 			for (size_t i = 0; i < numData; i++)
 			{
-				this->data->getRow(i, p_train);
-				double value_train = opEval->eval(alpha_learn, p_train);
+				sg::base::DataVector p_train_private(this->dim);
+				this->data->getRow(i, p_train_private);
+				double value_train = opEval->eval(alpha_learn, p_train_private);
 				// when there is only one baselearner actually, we do as following, just use normal classify to get the value
 				if (this->numBaseLearners == 1)
 					algorithmValueTrain.set(i, count, value_train);
@@ -243,10 +247,12 @@ namespace datadriven
 					algorithmValueTrain.set(i, count, algorithmValueTrain.get(i, count - 1) + hypoweight * hValue(value_train));
 			}
 			// for testing data
+			#pragma omp parallel for schedule(static)
 			for (size_t i = 0; i < testData.getNrows(); i++)
 			{
-				testData.getRow(i, p_test);
-				double value_test = opEval->eval(alpha_learn, p_test);
+				sg::base::DataVector p_test_private(this->dim);
+				testData.getRow(i, p_test_private);
+				double value_test = opEval->eval(alpha_learn, p_test_private);
 				// when there is only one baselearner actually, we do as following, just use normal classify to get the value
 				if (this->numBaseLearners == 1)
 					algorithmValueTest.set(i, count, value_test);
