@@ -29,6 +29,7 @@
 
 #include "base/operation/OperationQuadrature.hpp"
 #include "base/basis/linear/noboundary/operation/OperationQuadratureLinear.hpp"
+#include "base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.hpp"
 #include "base/basis/poly/operation/OperationQuadraturePoly.hpp"
 
 #include "base/basis/prewavelet/operation/OperationConvertPrewavelet.hpp"
@@ -124,6 +125,11 @@ namespace op_factory
     if(strcmp(grid.getType(), "linear") == 0)
       {
         return new base::OperationQuadratureLinear(grid.getStorage());
+      }
+    else if(strcmp(grid.getType(), "linearBoundary") == 0 ||
+	    strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+      {
+	return new base::OperationQuadratureLinearBoundary(grid.getStorage());
       }
     else if(strcmp(grid.getType(), "poly") == 0 )
       {

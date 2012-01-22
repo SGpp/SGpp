@@ -13,6 +13,7 @@ base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.cpp
 base/basis/linear/boundary/operation/OperationEvalLinearBoundary.cpp
 base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.cpp
 base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.cpp
+base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.cpp
 base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
 base/basis/linear/noboundary/operation/OperationEvalLinear.cpp
