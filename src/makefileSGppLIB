@@ -275,6 +275,7 @@ OBJS =	DataVector.o\
 	PrecisionConverter.o\
 	AlgorithmAdaBoostSPVectorizedIdentity.o\
 	DMWeightMatrixSPVectorizedIdentity.o\
+	OperationQuadratureLinearBoundary.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1160,6 +1161,9 @@ DMWeightMatrixSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DM
 	
 AlgorithmAdaBoostSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostSPVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)AlgorithmAdaBoostSPVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/AlgorithmAdaBoostSPVectorizedIdentity.cpp
+	
+OperationQuadratureLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.cpp
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
