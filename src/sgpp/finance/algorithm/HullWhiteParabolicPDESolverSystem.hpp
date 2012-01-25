@@ -12,7 +12,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/common/DirichletUpdateVector.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemNeumann.hpp"
+#include "pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 #include "finance/application/VariableDiscountFactor.hpp"
 
 namespace sg
@@ -24,7 +24,7 @@ namespace finance
  * This class implements the ParabolicPDESolverSystem for the HullWhite
  * Equation.
  */
-class HullWhiteParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemNeumann
+class HullWhiteParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries
 {
 protected:
 	double theta;

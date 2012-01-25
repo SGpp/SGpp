@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/operation/OperationEllipticPDESolverSystemNeumann.hpp"
+#include "pde/operation/OperationEllipticPDESolverSystemFreeBoundaries.hpp"
 #include "base/exception/algorithm_exception.hpp"
 
 namespace sg
@@ -13,20 +13,20 @@ namespace sg
 namespace pde
 {
 
-OperationEllipticPDESolverSystemNeumann::OperationEllipticPDESolverSystemNeumann(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
+OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
 {
 }
 
-OperationEllipticPDESolverSystemNeumann::~OperationEllipticPDESolverSystemNeumann()
+OperationEllipticPDESolverSystemFreeBoundaries::~OperationEllipticPDESolverSystemFreeBoundaries()
 {
 }
 
-void OperationEllipticPDESolverSystemNeumann::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void OperationEllipticPDESolverSystemFreeBoundaries::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	applyLOperator(alpha, result);
 }
 
-sg::base::DataVector* OperationEllipticPDESolverSystemNeumann::generateRHS()
+sg::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS()
 {
 	return this->rhs;
 }
