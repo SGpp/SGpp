@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -76,7 +76,7 @@ public:
 	void writeEmptyLines(size_t numLines);
 
 private:
-#ifdef WINDOWS
+#ifdef _WIN32
 	/// coordinates of the cusor's position
 	COORD pos;
 	/// buffers of the CMD

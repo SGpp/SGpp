@@ -23,7 +23,7 @@ namespace std {
 // errors:
 // See:
 // http://software.intel.com/en-us/forums/intel-c-compiler/topic/65041/
-#ifndef WINDOWS
+#ifndef _WIN32
 #define __aligned__   ignored
 #include <tr1/unordered_map>
 #undef __aligned__

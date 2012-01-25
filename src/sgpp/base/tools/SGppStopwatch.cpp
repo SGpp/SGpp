@@ -14,10 +14,10 @@ namespace base
 
 SGppStopwatch::SGppStopwatch()
 {
-#ifdef WINDOWS
+#ifdef _WIN32
 	QueryPerformanceFrequency(&ticksPerSecond);
 #endif
-#ifndef WINDOWS
+#ifndef _WIN32
 
 #endif
 }
@@ -28,17 +28,17 @@ SGppStopwatch::~SGppStopwatch()
 
 void SGppStopwatch::start()
 {
-#ifdef WINDOWS
+#ifdef _WIN32
 	QueryPerformanceCounter(&begin);
 #endif
-#ifndef WINDOWS
+#ifndef _WIN32
 	gettimeofday(&begin,(struct timezone *)0);
 #endif
 }
 
 double SGppStopwatch::stop()
 {
-#ifdef WINDOWS
+#ifdef _WIN32
 	QueryPerformanceCounter(&end);
 
 	double ret, ticksps;
@@ -50,7 +50,7 @@ double SGppStopwatch::stop()
 
 	return ret;
 #endif
-#ifndef WINDOWS
+#ifndef _WIN32
 	gettimeofday(&end,(struct timezone *)0);
 	double seconds, useconds;
 	double ret, tmp;
