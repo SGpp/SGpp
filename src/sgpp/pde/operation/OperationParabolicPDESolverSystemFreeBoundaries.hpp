@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONELLIPTICPDESOLVERSYSTEMNEUMANN_HPP
-#define OPERATIONELLITPICPDESOLVERSYSTEMNEUMANN_HPP
+#ifndef OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
+#define OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 
-#include "pde/operation/OperationEllipticPDESolverSystem.hpp"
+#include "pde/operation/OperationParabolicPDESolverSystem.hpp"
 
 namespace sg
 {
@@ -16,20 +16,29 @@ namespace pde
 {
 
 /**
- * Defines a System that is used to solve elliptic partial
+ * Defines a System that is used to solve parabolic partial
  * differential equations. So an instance of this class has to pass to
- * any SLE Solver used in SGpp, here degrees of freedom exists on
- * the boundaries!
+ * any ODE Solver used in SGpp.
  *
- * \f$L \vec{u} = rhs\f$
+ * \f$A \dot{u} = L \vec{u}\f$
  *
+ * A: mass matrix
  * L: space discretization (L-Operator)
- * rhs: right hand sider)
  *
+ * This class defines an elliptic problem in every timestep which is solved
+ * using an iterative SLE solver, that solving step is integrated in the
+ * ODE Solver.
  */
-class OperationEllipticPDESolverSystemNeumann : public OperationEllipticPDESolverSystem
+class OperationParabolicPDESolverSystemFreeBoundaries : public OperationParabolicPDESolverSystem
 {
 protected:
+	/**
+	 * applies the PDE's mass matrix, on complete grid - with boundaries
+	 *
+	 * @param alpha the coefficients of the sparse grid's ansatzfunctions
+	 * @param result reference to the sg::base::DataVector into which the result is written
+	 */
+	virtual void applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * applies the PDE's system matrix, on complete grid - with boundaries
@@ -42,23 +51,22 @@ protected:
 public:
 	/**
 	 * Constructor
-	 *
-	 * @param SparseGrid the grid, for which the system should be solved
-	 * @param rhs the right hand side of the corresponding system
 	 */
-	OperationEllipticPDESolverSystemNeumann(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
+	OperationParabolicPDESolverSystemFreeBoundaries();
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationEllipticPDESolverSystemNeumann();
+	virtual ~OperationParabolicPDESolverSystemFreeBoundaries();
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	virtual sg::base::DataVector* generateRHS();
+
+	virtual sg::base::DataVector* getGridCoefficientsForCG();
 };
 
 }
 }
 
-#endif /* OPERATIONELLITPTICPDESOLVERMATRIXNEUMANN_HPP */
+#endif /* OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP */

@@ -123,7 +123,7 @@ namespace std {
 %include "src/sgpp/pde/application/ParabolicPDESolver.hpp"
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
-%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemNeumann.hpp"
+%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 %include "src/sgpp/pde/application/HeatEquationSolver.hpp"
 #endif
 

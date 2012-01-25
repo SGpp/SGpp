@@ -37,10 +37,10 @@ pde/basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
 pde/basis/modlinear/operation/OperationLaplaceModLinear.cpp
 pde/operation/OperationEllipticPDESolverSystem.cpp
 pde/operation/OperationEllipticPDESolverSystemDirichlet.cpp
-pde/operation/OperationEllipticPDESolverSystemNeumann.cpp
+pde/operation/OperationEllipticPDESolverSystemFreeBoundaries.cpp
 pde/operation/OperationParabolicPDESolverSystem.cpp
 pde/operation/OperationParabolicPDESolverSystemDirichlet.cpp
-pde/operation/OperationParabolicPDESolverSystemNeumann.cpp
+pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.cpp
 pde/algorithm/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp
 pde/application/HeatEquationSolverWithStretching.cpp
 pde/application/LaserHeatEquationSolver2D.cpp

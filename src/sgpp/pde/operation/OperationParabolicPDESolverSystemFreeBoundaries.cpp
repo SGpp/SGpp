@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/operation/OperationParabolicPDESolverSystemNeumann.hpp"
+#include "pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 #include "base/exception/algorithm_exception.hpp"
 
 namespace sg
@@ -13,17 +13,17 @@ namespace sg
 namespace pde
 {
 
-OperationParabolicPDESolverSystemNeumann::OperationParabolicPDESolverSystemNeumann()
+OperationParabolicPDESolverSystemFreeBoundaries::OperationParabolicPDESolverSystemFreeBoundaries()
 {
 	this->numSumGridpointsInner = 0;
 	this->numSumGridpointsComplete = 0;
 }
 
-OperationParabolicPDESolverSystemNeumann::~OperationParabolicPDESolverSystemNeumann()
+OperationParabolicPDESolverSystemFreeBoundaries::~OperationParabolicPDESolverSystemFreeBoundaries()
 {
 }
 
-void OperationParabolicPDESolverSystemNeumann::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
+void OperationParabolicPDESolverSystemFreeBoundaries::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	if (this->tOperationMode == "ExEul")
 	{
@@ -91,7 +91,7 @@ void OperationParabolicPDESolverSystemNeumann::mult(sg::base::DataVector& alpha,
 	}
 }
 
-sg::base::DataVector* OperationParabolicPDESolverSystemNeumann::generateRHS()
+sg::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::generateRHS()
 {
 	sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
@@ -217,12 +217,12 @@ void OperationParabolicPDESolverSystemNeumann::finishTimestep(bool isLastTimeste
 	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 }
 
-void OperationParabolicPDESolverSystemNeumann::startTimestep()
+void OperationParabolicPDESolverSystemFreeBoundaries::startTimestep()
 {
 }
 */
 
-sg::base::DataVector* OperationParabolicPDESolverSystemNeumann::getGridCoefficientsForCG()
+sg::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::getGridCoefficientsForCG()
 {
 	return this->alpha_complete;
 }

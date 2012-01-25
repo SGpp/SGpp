@@ -12,7 +12,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/common/DirichletUpdateVector.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemNeumann.hpp"
+#include "pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 
 namespace sg
 {
@@ -22,7 +22,7 @@ namespace finance
  * This class implements the ParabolicPDESolverSystem for the BlackScholes
  * Equation.
  */
-class BlackScholesParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemNeumann
+class BlackScholesParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries
 {
 protected:
 	/// the riskfree interest rate

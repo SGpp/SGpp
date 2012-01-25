@@ -229,7 +229,7 @@ OBJS =	DataVector.o\
 	OperationHierarchisationPrewavelet.o\
 	UpDownOneOpDimWithShadow.o\
 	OperationParabolicPDESolverSystemDirichlet.o\
-	OperationParabolicPDESolverSystemNeumann.o\
+	OperationParabolicPDESolverSystemFreeBoundaries.o\
 	StepsizeControlH.o\
 	StepsizeControlBDF.o\
 	StepsizeControlEJ.o\
@@ -239,7 +239,7 @@ OBJS =	DataVector.o\
 	EllipticPDESolver.o\
 	OperationEllipticPDESolverSystem.o\
 	OperationEllipticPDESolverSystemDirichlet.o\
-	OperationEllipticPDESolverSystemNeumann.o\
+	OperationEllipticPDESolverSystemFreeBoundaries.o\
 	PoissonEquationEllipticPDESolverSystemDirichlet.o\
 	HeatEquationParabolicPDESolverSystemParallelOMP.o\
 	VariableDiscountFactor.o\
@@ -1111,8 +1111,8 @@ UpDownOneOpDimWithShadow.o : $(SRCDIR)pde/algorithm/UpDownOneOpDimWithShadow.cpp
 OperationParabolicPDESolverSystem.o : $(SRCDIR)pde/operation/OperationParabolicPDESolverSystem.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystem.o $(SRCDIR)pde/operation/OperationParabolicPDESolverSystem.cpp
 	
-OperationParabolicPDESolverSystemNeumann.o : $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemNeumann.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemNeumann.o $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemNeumann.cpp
+OperationParabolicPDESolverSystemFreeBoundaries.o : $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemFreeBoundaries.o $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.cpp
 	
 OperationParabolicPDESolverSystemDirichlet.o : $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemDirichlet.o $(SRCDIR)pde/operation/OperationParabolicPDESolverSystemDirichlet.cpp
@@ -1123,8 +1123,8 @@ OperationEllipticPDESolverSystem.o : $(SRCDIR)pde/operation/OperationEllipticPDE
 OperationEllipticPDESolverSystemDirichlet.o : $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemDirichlet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemDirichlet.o $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemDirichlet.cpp
 	
-OperationEllipticPDESolverSystemNeumann.o : $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemNeumann.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemNeumann.o $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemNeumann.cpp
+OperationEllipticPDESolverSystemFreeBoundaries.o : $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemFreeBoundaries.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationEllipticPDESolverSystemFreeBoundaries.o $(SRCDIR)pde/operation/OperationEllipticPDESolverSystemFreeBoundaries.cpp
 	
 BaseOpFactory.o : $(SRCDIR)base/operation/BaseOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BaseOpFactory.o $(SRCDIR)base/operation/BaseOpFactory.cpp

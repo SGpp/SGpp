@@ -12,7 +12,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/common/DirichletUpdateVector.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemNeumann.hpp"
+#include "pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 
 namespace sg
 {
@@ -27,7 +27,7 @@ namespace finance
  *
  * @revision HEAD
  */
-class BlackScholesPATParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemNeumann
+class BlackScholesPATParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries
 {
 protected:
 	/// the Laplace Operation, on boundary grid
