@@ -18,7 +18,7 @@
 #define aligned_malloc(size, alignment) _mm_malloc(size, alignment)
 #define aligned_free(addr) _mm_free(addr)
 #else
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <pmmintrin.h>
 #undef aligned_malloc
 #undef aligned_free

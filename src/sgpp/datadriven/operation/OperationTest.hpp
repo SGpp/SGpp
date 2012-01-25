@@ -11,7 +11,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #pragma warning(disable: 4267)
 #endif
 

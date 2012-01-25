@@ -12,7 +12,7 @@ namespace sg
 namespace base
 {
 
-#ifdef WINDOWS
+#ifdef _WIN32
 ScreenOutput::ScreenOutput()
 {
 	hCon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -51,7 +51,7 @@ void ScreenOutput::update(size_t progress, std::string status)
 }
 #endif
 
-#ifndef WINDOWS
+#ifndef _WIN32
 ScreenOutput::ScreenOutput()
 {
 	first_run = true;

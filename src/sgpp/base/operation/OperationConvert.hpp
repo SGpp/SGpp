@@ -26,7 +26,7 @@
 
 #include "base/datatypes/DataVector.hpp"
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #pragma warning(disable: 4267)
 #endif
 

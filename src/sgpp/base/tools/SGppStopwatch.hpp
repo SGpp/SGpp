@@ -8,10 +8,10 @@
 #ifndef SGPPSTOPWATCH_H
 #define SGPPSTOPWATCH_H
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
-#ifndef WINDOWS
+#ifndef _WIN32
 #include <sys/time.h>
 #endif
 
@@ -28,12 +28,12 @@ namespace base
 class SGppStopwatch
 {
 private:
-#ifdef WINDOWS
+#ifdef _WIN32
 	LARGE_INTEGER ticksPerSecond;
 	LARGE_INTEGER begin;
 	LARGE_INTEGER end;
 #endif
-#ifndef WINDOWS
+#ifndef _WIN32
 	timeval begin;
 	timeval end;
 #endif
