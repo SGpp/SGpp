@@ -41,13 +41,6 @@ public:
 	 *
 	 * @param vec Reference to another instance of DataMatrix
 	 */
-	DataVector(DataVector& vec);
-
-	/**
-	 * Create a new DataVector that is a copy of vec.
-	 *
-	 * @param vec Reference to another instance of DataMatrix
-	 */
 	DataVector(const DataVector& vec);
 
 	/**

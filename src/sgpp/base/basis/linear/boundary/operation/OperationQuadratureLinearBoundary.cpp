@@ -31,7 +31,7 @@ double OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha)
       for(size_t d = 0; d < iter->first->dim(); d++) {
 	cur_ind = iter->first->getIndex(d);
 	cur_lev = iter->first->getLevel(d);
-	if(cur_ind == 0 or pow(2, cur_lev) == cur_ind)
+	if((cur_ind == 0) || (pow(2, cur_lev) == cur_ind))
 	  nr_boundaries++;
       }
       tmp *= (pow(2.0, -nr_boundaries));

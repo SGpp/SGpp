@@ -983,4 +983,6 @@ int main(int argc, char *argv[])
 	{
 		writeHelp();
 	}
+
+	return 0;
 }

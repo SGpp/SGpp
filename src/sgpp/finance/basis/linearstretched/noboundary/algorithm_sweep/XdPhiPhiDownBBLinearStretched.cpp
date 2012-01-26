@@ -47,8 +47,6 @@ void XdPhiPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::
 
 	double baseLength = posr - posl;
 	double leftLength = posc - posl;
-	double rightLength = posr - posc;
-
 
 	result[seq] = fl*(-1.0/6.0)*(posc+posl+posr)-fr*(-1.0/6.0)*(posc+posl+posr)
 					- (1.0/6.0)*baseLength*alpha_value;	// diagonal entry

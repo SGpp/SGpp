@@ -25,7 +25,7 @@ namespace sg
 namespace pde
 {
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), done_steps_(0), HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode)
+LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode), beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), done_steps_(0)
 {
 }
 

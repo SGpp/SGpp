@@ -967,4 +967,6 @@ int main(int argc, char *argv[])
 
 	delete sg::parallel::myGlobalMPIComm;
 	MPI_Finalize();
+
+	return 0;
 }

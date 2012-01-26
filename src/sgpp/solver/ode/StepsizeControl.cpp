@@ -52,7 +52,7 @@ double StepsizeControl::maxNorm(sg::pde::OperationParabolicPDESolverSystem& Syst
 		double *Data = YkImEul.getPointer();
 	    // calculate the max norm
 	    if(!useCoarsen) {
-			for(int j=0;j<System.getGridCoefficientsForCG()->getSize();j++)
+			for(size_t j=0;j<System.getGridCoefficientsForCG()->getSize();j++)
 			{
 				double t2 = std::max(fabs(Data[j]),fabs(OldData[j]));
 				double tmpData = fabs(Data[j]-OldData[j])/std::max(sc,t2);
@@ -112,6 +112,8 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPar
 	fileout << std::endl;
 
 	System.getGridCoefficientsForSC(YkImEul);
+
+	rhs = NULL;
 
 	for (size_t i = 0; i < maxIter && time < maxTimestep; i++)
 	{

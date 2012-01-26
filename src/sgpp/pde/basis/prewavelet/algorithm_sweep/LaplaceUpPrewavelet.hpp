@@ -89,7 +89,6 @@ public:
 		sg::base::GridStorage::index_type::index_type last_index;
 		size_t _seq;
 		size_t _seql1;
-		size_t _seql2;
 		size_t _seqr1;
 		size_t _seqr2;
 		double _val, _vall1, _vall2, _valr1, _valr2;
@@ -193,8 +192,6 @@ public:
 
 			for (i = 2; i < last_index - 1; i++)
 			{
-
-				_seql2 = _seql1;
 				_seql1 = _seq;
 				_seq = _seqr1;
 				_seqr1 = _seqr2;
@@ -220,7 +217,6 @@ public:
 
 			//Main loop--------------------------------------
 
-			_seql2 = _seql1;
 			_seql1 = _seq;
 			_seq = _seqr1;
 			_seqr1 = _seqr2;
@@ -235,7 +231,6 @@ public:
 					+ 2.0 / 15.0 * h * _vall1//
 					- 1.0 / 75.0 * h * _vall2;//
 
-			_seql2 = _seql1;
 			_seql1 = _seq;
 			_seq = _seqr1;
 			_vall2 = _vall1;

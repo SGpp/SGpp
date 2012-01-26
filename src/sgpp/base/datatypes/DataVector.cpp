@@ -27,15 +27,6 @@ DataVector::DataVector(size_t size) :
 	this->data = new double[size];
 }
 
-DataVector::DataVector(DataVector &vec) :
-    unused(0), inc_elems(100) {
-    this->size = vec.size;
-	// create new vector
-    this->data = new double[size];
-	// copy data
-    memcpy(this->data, vec.data, size * sizeof(double));
-}
-
 DataVector::DataVector(const DataVector &vec) :
     unused(0), inc_elems(100) {
     this->size = vec.size;

@@ -671,7 +671,9 @@ void Stretching::calculateNeighborLookup(int maxlevel){
 	outfile2<<"{";
 
 	int lLevel,lIndex,rLevel,rIndex,temp;
+	temp = 0;
 	double elemPerLevel;
+
 	for(int l=1; l<=maxlevel;l++){
 		elemPerLevel = pow(2,l);
 		for(int i=1; i < elemPerLevel;i = i+2){
