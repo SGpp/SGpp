@@ -10,7 +10,11 @@
 #include "base/tools/AlignedMemory.hpp"
 
 #if defined(__SSE3__) || defined(__AVX__)
+#ifdef _WIN32
+#include <immintrin.h>
+#else
 #include <x86intrin.h>
+#endif
 #endif
 
 #ifdef __USEAVX128__
