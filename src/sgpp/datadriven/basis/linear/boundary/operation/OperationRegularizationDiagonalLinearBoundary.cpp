@@ -47,10 +47,10 @@ namespace datadriven
 	resd = pow(2, (2*k-1) * gi->getLevel(d) -1);
 	// "H0" in remaining dimensions
 	for (int d2=0; d2<d; d2++) {
-	  resd *= pow(2, -1 -gi->getLevel(d2));
+	  resd *= pow(2.0, -1 -gi->getLevel(d2));
 	}
 	for (int d2=d+1; d2<dim; d2++) {
-	  resd *= pow(2, -1 -gi->getLevel(d2));
+	  resd *= pow(2.0, -1 -gi->getLevel(d2));
 	}
 	res += resd;
       }

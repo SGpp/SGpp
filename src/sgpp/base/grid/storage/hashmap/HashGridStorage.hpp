@@ -1089,7 +1089,7 @@ private:
 				for (size_t i = 0; i < DIM; i++)
 				{
 					istream >> discreteLevel;
-					vectorLength = pow(2,discreteLevel)+1;
+					vectorLength = pow(2.0,discreteLevel)+1;
 					vec[i]= std::vector<double>(vectorLength,0);
 					for(int j=0; j<vectorLength;j++){
 						istream >> vec[i][j];

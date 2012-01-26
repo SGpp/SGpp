@@ -28,9 +28,9 @@ namespace std {
 #include <tr1/unordered_map>
 #undef __aligned__
 #else
-#define __aligned__   ignored
+//#define __aligned__   ignored
 #include <unordered_map>
-#undef __aligned__
+//#undef __aligned__
 #endif
 
 #endif

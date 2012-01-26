@@ -46,7 +46,7 @@ void DehierarchisationModPoly::rec(DataVector& source, DataVector& result, grid_
 	index.get(dim, cur_lev, cur_ind);
 		
 	// Dehierarchisation
-	result[seq] = source[seq] + this->base->evalHierToTop(cur_lev, cur_ind, koeffs, cur_ind/(pow(2.0, cur_lev)));
+	result[seq] = source[seq] + this->base->evalHierToTop(cur_lev, cur_ind, koeffs, cur_ind/(pow(2.0, static_cast<int>(cur_lev))));
 	
 	// recursive calls for the right and left side of the current node
 	if(index.hint() == false)
