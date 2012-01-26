@@ -26,15 +26,6 @@ DataVectorSP::DataVectorSP(size_t size) :
 	this->data = new float[size];
 }
 
-DataVectorSP::DataVectorSP(DataVectorSP &vec) :
-    unused(0), inc_elems(100) {
-    this->size = vec.size;
-	// create new vector
-    this->data = new float[size];
-	// copy data
-    memcpy(this->data, vec.data, size * sizeof(float));
-}
-
 DataVectorSP::DataVectorSP(const DataVectorSP &vec) :
     unused(0), inc_elems(100) {
     this->size = vec.size;

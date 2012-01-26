@@ -44,7 +44,6 @@ void XPhidPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::
 	this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl, posr );
 	double baseLength = posr - posl;
 	double leftLength = posc - posl;
-	double rightLength = posr - posc;
 
 	result[seq] = fl*(1.0/6.0)*(2*posc+2*posl-posr) - fr*(1.0/6.0)*(2*posc-posl+2*posr)
 								- 1.0/6.0*(baseLength)*alpha_value;	// diagonal entry

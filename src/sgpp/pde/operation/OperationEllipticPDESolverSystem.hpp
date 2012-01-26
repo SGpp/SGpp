@@ -30,10 +30,10 @@ namespace pde
 class OperationEllipticPDESolverSystem : public sg::base::OperationMatrix
 {
 protected:
-	/// the right hand side of the system
-	sg::base::DataVector* rhs;
 	/// Pointer to the grid object
 	sg::base::Grid* BoundGrid;
+	/// the right hand side of the system
+	sg::base::DataVector* rhs;
 	/// Stores number of gridpoints, inner grid
 	size_t numGridpointsInner;
 	/// Stores number of gridpoints, complete grid

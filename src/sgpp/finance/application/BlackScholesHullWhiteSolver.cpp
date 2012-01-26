@@ -131,7 +131,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		//DimensionBoundary* myBoundaries = new DimensionBoundary[2];
 		BoundingBox* t = this->myGrid->getBoundingBox();
 
-		DimensionBoundary myBoundaries[dim];
+		DimensionBoundary* myBoundaries = new DimensionBoundary[dim];
 
 		myBoundaries[0].leftBoundary = t->getIntervalOffset(0);
 		myBoundaries[0].rightBoundary = t->getIntervalOffset(0) + t->getIntervalWidth(0);
@@ -155,7 +155,6 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		ModifiedBlackScholesParabolicPDESolverSystem* myBSSystem = new ModifiedBlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel, this->dim_HW);
 		//std::cout << alpha.toString() << std::endl;
 		myEuler->solve(*myCG, *myBSSystem, true, verbose);
-
 
 		// step 2: do HW along dim_HW
 		myBoundaries[this->dim_BS].bDirichletLeft = false;
@@ -196,6 +195,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double
 		delete myCG;
 		delete myEuler;
 		delete myStopwatch;
+		delete myBoundaries;
 	}
 	else
 	{

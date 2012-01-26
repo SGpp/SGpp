@@ -26,7 +26,7 @@ namespace sg
 namespace pde
 {
 
-LaserHeatEquationSolver2D::LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, size_t max_level, double refine_threshold, double coarsen_threshold, double heat) : beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), heat_(heat), HeatEquationSolver()
+LaserHeatEquationSolver2D::LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, size_t max_level, double refine_threshold, double coarsen_threshold, double heat) : HeatEquationSolver(), beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold)
 {
 }
 
@@ -87,7 +87,6 @@ void LaserHeatEquationSolver2D::refineInitialGridWithLaserHeat(base::DataVector&
 		for (size_t r = 0; r < nRefinements; r++)
 		{
 			double* dblFuncValues = new double[dim];
-			size_t point_to_refine = 0;
 
 			for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 			{

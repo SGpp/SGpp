@@ -1098,21 +1098,19 @@ void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double
 
   double BlackScholesSolver::getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike)
   {
-    StdNormalDistribution* myStdNDis = new StdNormalDistribution();
+    StdNormalDistribution myStdNDis;
 
     double dOne = (log((stock/strike)) + ((r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
     double dTwo = dOne - (vola*sqrt(t));
 
     if (isCall)
       {
-        return (stock*myStdNDis->getCumulativeDensity(dOne)) - (strike*myStdNDis->getCumulativeDensity(dTwo)*(exp((-1.0)*r*t)));
+        return (stock*myStdNDis.getCumulativeDensity(dOne)) - (strike*myStdNDis.getCumulativeDensity(dTwo)*(exp((-1.0)*r*t)));
       }
     else
       {
-        return (strike*myStdNDis->getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*r*t))) - (stock*myStdNDis->getCumulativeDensity(dOne*(-1.0)));
+        return (strike*myStdNDis.getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*r*t))) - (stock*myStdNDis.getCumulativeDensity(dOne*(-1.0)));
       }
-
-    delete myStdNDis;
   }
 
 
@@ -1195,14 +1193,14 @@ void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double
 
   void BlackScholesSolver::evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall)
   {
-    int n = EvaluationPoints.getNrows();
+    size_t n = EvaluationPoints.getNrows();
 
     if (AnalyticOptionPrices.getSize() != n)
       {
         throw new sg::base::application_exception("PDESolver::evaluate1DAnalyticCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
       }
 
-    for(int k=0; k<n; k++)
+    for(size_t k=0; k<n; k++)
       {
         double x = EvaluationPoints.get(k,0); // get first coordinate
 

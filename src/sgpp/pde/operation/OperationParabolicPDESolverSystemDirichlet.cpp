@@ -266,7 +266,6 @@ sg::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 			temp_tmp.add(*this->alpha_complete_old);
 
 			double *OldData = alpha_old.getPointer();
-			double *Data = temp.getPointer();
 			double *DataTmp = temp_tmp.getPointer();
 			sg::base::GridStorage *gs = getGridStorage();
 			sg::base::GridStorage *ogs = getOldGridStorage();
@@ -277,7 +276,7 @@ sg::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 				if((q->first)->equals(*p->first)) {
 					int i = p->second;
 					int j = q->second;
-					if(j < temp_tmp.getSize())
+					if(j < (int)temp_tmp.getSize())
 						OldData[i] = DataTmp[j];
 					else {
 						OldData[i] =0;

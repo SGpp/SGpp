@@ -43,7 +43,7 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha)
 double OperationQuadratureMC::doQuadratureFunc(FUNC func, void *clientdata)
 {
   int dim = grid->getStorage()->dim();
-  double p[dim];
+  double* p = new double[dim];
   
   // create number of paths (uniformly drawn from [0,1]^d)
   double res = 0;
@@ -53,6 +53,7 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void *clientdata)
     }
     res += func(dim, p, clientdata);
   }
+  delete p;
   return res / static_cast<double>(mcPaths);
 }
 
@@ -60,7 +61,8 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void *clientdata, D
 {
   int dim = grid->getStorage()->dim();
   double x;
-  double p[dim];
+  double* p = new double[dim];
+
   sg::base::DataVector point(dim);
   OperationEval* opEval = sg::op_factory::createOperationEval(*grid);  
   // create number of paths (uniformly drawn from [0,1]^d)
@@ -73,6 +75,7 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void *clientdata, D
     }
     res += pow(func(dim, p, clientdata) - opEval->eval(alpha, point), 2);
   }
+  delete p;
   return sqrt(res / static_cast<double>(mcPaths));
 }
 

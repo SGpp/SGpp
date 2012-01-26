@@ -159,4 +159,6 @@ int main(int argc, char *argv[])
 	animation = atoi(argv[14]);
 
 	testLaserHeatEquation(level, maxLevel, initialRefines, refine_threshold, coarsen_threshold, v, a, heat, heat_sigma, T, dt, cg_its, cg_eps, animation);
+
+	return 0;
 }

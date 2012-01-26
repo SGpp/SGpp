@@ -34,12 +34,12 @@ private:
 	double heat_sigma_;
 	/// stores the grid's max. refinement level
 	size_t max_level_;
+	/// heating factor
+	double heat_;
 	/// threshold for refineing the grid during solution process
 	double refine_threshold_;
 	/// threshold for coarsening the grid during solution process
 	double coarsen_threshold_;
-	/// heating factor
-	double heat_;
 
 public:
 	/**

@@ -70,7 +70,7 @@ public:
   /** 
    * Std-Destructor
    */
-  ~DensitySystemMatrix();
+  virtual ~DensitySystemMatrix();
 };
 
 }
