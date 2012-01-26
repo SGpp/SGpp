@@ -350,7 +350,7 @@ public:
 				for (size_t i = cur_index + 2; i
 						< (unsigned int) (1 << (depth)); i = i + 2)
 				{
-					this->set(dim, cur_level, i);
+					this->set(dim, cur_level, static_cast<index_type::index_type>(i));
 					//does this index exist?
 					if (!storage->end(this->seq()))
 					{

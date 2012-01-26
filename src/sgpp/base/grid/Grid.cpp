@@ -146,6 +146,20 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		 * Insert factories here. This methods may NOT read the grid type.
 		 * This map takes a string, function pointer pair.
 		 */
+#ifdef _WIN32
+		tMap->insert(std::pair<std::string, Grid::Factory>("NULL",Grid::nullFactory));
+		tMap->insert(std::pair<std::string, Grid::Factory>("linear", LinearGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("linearStretched", LinearStretchedGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("modWavelet", ModWaveletGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
+#else
 		tMap->insert(std::make_pair("NULL",Grid::nullFactory));
 		tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
 		tMap->insert(std::make_pair("linearStretched", LinearStretchedGrid::unserialize));
@@ -158,6 +172,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
 		tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
 		tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
+#endif
 	}
 
 	return *tMap;
