@@ -103,6 +103,8 @@ class AlgorithmAdaBoostBase
 		int numOfAda;
 		    /// Percentage of Grid points to refine(between 0 and 1)
 		double perOfAda;
+		    /// Set the boost mode (1: Discrete Adaboost, 2: Real Adaboost)
+	    size_t boostMode;
 
         /**
          * Performs a solver to get alpha
@@ -141,8 +143,9 @@ class AlgorithmAdaBoostBase
 			 * @param refineNum the Number of refinement with a certain percentage of Grid points
 			 * @param numberOfAda the number of Grid points to refine
 			 * @param percentOfAda the percentage of Grid points to refine
+			 * @param mode the adaboost type to choose
              */
-	AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda);
+	AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, size_t mode);
         
 
             /**
@@ -151,7 +154,7 @@ class AlgorithmAdaBoostBase
         virtual ~AlgorithmAdaBoostBase();
 
             /**
-             * Performs the algorithm
+             * Performs the Discrete Adaboost
 			 *
 			 * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
 			 * @param weightError the vector to store the weight error of each iteration
@@ -161,7 +164,17 @@ class AlgorithmAdaBoostBase
 			 * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
 			 * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
              */
-        void doAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
+        void doDiscreteAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
+
+            /**
+             * Performs the Real Adaboost
+			 *
+			 * @param weights the matrix to store weights of every training date for every weak learner
+			 * @param testData reference to the testing dataset
+			 * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
+			 * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+             */
+        void doRealAdaBoost(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
 
             /**
              * Performs a real value calculate for the testing dataset
