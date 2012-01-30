@@ -26,22 +26,30 @@ protected:
 
 	sg::base::Grid* grid_;
 
+	bool verbose_;
+
+	void createInitialGrid(sg::base::RegularGridConfiguration& GridConfig);
+
+	void trainGrid(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes, sg::base::DataMatrix& testDataset,
+			sg::solver::SLESolverConfiguration& SolverConfigRefine, sg::solver::SLESolverConfiguration& SolverConfigFinal,
+			sg::base::AdpativityConfiguration& AdaptConfig, sg::base::OperationMatrix& SLESystem);
+
 	void trainGrid(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-			sg::solver::SLESolver& solver, sg::base::AdpativityConfiguration& AdaptConfig, double finalEps, size_t maxIterations);
+			sg::solver::SLESolverConfiguration& SolverConfig, sg::base::OperationMatrix& SLESystem);
 
 public:
-	Learner();
+	Learner(bool verbose);
 
-	~Learner();
+	virtual ~Learner();
 
-	void train(sg::base::DataMatrix& testDataset, sg::base::RegularGridConfiguration& GridConfig,
-			sg::base::AdpativityConfiguration& AdaptConfig, sg::solver::SLESolverConfiguration& SolverRefine,
-			sg::solver::SLESolverConfiguration& SolverFinal);
+	virtual void train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
+			sg::base::RegularGridConfiguration& GridConfig, sg::base::AdpativityConfiguration& AdaptConfig,
+			sg::solver::SLESolverConfiguration& SolverConfigRefine, sg::solver::SLESolverConfiguration& SolverConfigFinal);
 
-	void train(sg::base::DataMatrix& testDataset, sg::base::RegularGridConfiguration& GridConfig,
+	virtual void train(sg::base::DataMatrix& testDataset, sg::base::RegularGridConfiguration& GridConfig,
 			sg::solver::SLESolverConfiguration& SolverConfig);
 
-	void test(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes, bool isRegression);
+	virtual void test(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes, bool isRegression);
 
 	void store(std::string tGridFilename, std::string tAlphaFilename);
 
