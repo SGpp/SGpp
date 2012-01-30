@@ -22,6 +22,8 @@ namespace base
 
 /**
  * enum to address different gridtypes in a standardized way
+ *
+ * @TODO: use this also for unserialization!
  */
 enum GridType {
    Linear,
