@@ -109,7 +109,7 @@ void DMSystemMatrixSPVectorizedIdentity::mult(sg::base::DataVectorSP& alpha, sg:
     this->computeTimeMultTrans += this->B->multTransposeVectorized(temp, result);
     this->completeTimeMultTrans += this->myTimer->stop();
 
-    result.axpy(numTrainingInstances*this->lamb, alpha);
+    result.axpy(((float)numTrainingInstances)*this->lamb, alpha);
 }
 
 void DMSystemMatrixSPVectorizedIdentity::generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b)

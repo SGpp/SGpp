@@ -20,6 +20,22 @@ namespace sg
 namespace solver
 {
 
+/**
+ * enum to address different SLE solvers in a standardized way
+ */
+enum SLESolverType {
+   CG,
+   BiCGSTAB
+};
+
+struct SLESolverConfiguration
+{
+	sg::solver::SLESolverType type_;
+	double eps_;
+	size_t maxIterations_;
+	double threshold_;
+};
+
 class SLESolver : public SGSolver
 {
 public:

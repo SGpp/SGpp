@@ -21,6 +21,55 @@ namespace base
 {
 
 /**
+ * enum to address different gridtypes in a standardized way
+ */
+enum GridType {
+   Linear,
+   LinearStretched,
+   LinearBoundary,
+   LinearTrapezoidBoundary,
+   LinearStretchedTrapezoidBoundary,
+   ModLinear,
+   Poly,
+   ModPoly,
+   ModWavelet,
+   ModBspline,
+   Prewavelet,
+   SquareRoot,
+   TruncatedTrapezoid
+};
+
+/**
+ * structure that can be used by applications to cluster regular grid information
+ */
+struct RegularGridConfiguration
+{
+	/// Grid Type, see enum
+	sg::base::GridType type_;
+	/// number of dimensions
+	size_t dim_;
+	/// number of levels
+	size_t level_;
+};
+
+/**
+ * structure that can be used by application to define adaptivity strategies
+ */
+struct AdpativityConfiguration
+{
+	/// number of refinements
+	size_t noRefinements_;
+	/// refinement threshold for surpluses
+	double threshold_;
+	/// refinement type: false: classic, true: maxLevel
+	bool maxLevelType_;
+	/// max. number of points to be refined
+	size_t noPoints_;
+	/// max. percent of points to be refined
+	double percent_;
+};
+
+/**
  * abstract base class for all types grids used in sgpp
  * the class gives pure virtual function definitions that
  * have to be implemented by all types of grids
