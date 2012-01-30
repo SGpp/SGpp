@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BASEDMSYSTEMMATRIX_HPP
-#define BASEDMSYSTEMMATRIX_HPP
+#ifndef BASEDMSYSTEMMATRIXSP_HPP
+#define BASEDMSYSTEMMATRIXSP_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/operation/OperationMatrix.hpp"
+#include "base/datatypes/DataVectorSP.hpp"
+#include "base/datatypes/DataMatrixSP.hpp"
+#include "base/operation/OperationMatrixSP.hpp"
 
 namespace sg
 {
@@ -19,13 +19,13 @@ namespace datadriven
 
 /**
  * Abstract class that defines the virtual class sg::base::OperationMatrix for
- * classification and regression problems
+ * classification and regression problems (single precision version)
  */
-class BaseDMSystemMatrix : public sg::base::OperationMatrix
+class BaseDMSystemMatrixSP : public sg::base::OperationMatrixSP
 {
 private:
 	/// the dataset
-	sg::base::DataMatrix* data_;
+	sg::base::DataMatrixSP* data_;
 	/// the lambda, the regularisation parameter
 	double lambda_;
 
@@ -35,14 +35,14 @@ public:
 	 *
 	 * @param lambda the lambda, the regression parameter
 	 */
-	BaseDMSystemMatrix(sg::base::DataMatrix& trainData, double lambda);
+	BaseDMSystemMatrixSP(sg::base::DataMatrixSP& trainData, double lambda);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BaseDMSystemMatrix();
+	virtual ~BaseDMSystemMatrixSP();
 
-	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+	virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) = 0;
 
 	/**
 	 * Generates the right hand side of the classification equation
@@ -50,10 +50,10 @@ public:
 	 * @param classes the class information of the training data
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
-	virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b) = 0;
+	virtual void generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b) = 0;
 };
 
 }
 }
 
-#endif /* BASEDMSYSTEMMATRIX_HPP */
+#endif /* BASEDMSYSTEMMATRIXSP_HPP */
