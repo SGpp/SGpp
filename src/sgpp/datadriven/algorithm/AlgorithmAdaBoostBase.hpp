@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
-// @auther Alexander Heinecke (alexander.heinecke@mytum.de)
+// @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
 #ifndef ALGORITHMADABOOSTBASE_HPP
 #define ALGORITHMADABOOSTBASE_HPP

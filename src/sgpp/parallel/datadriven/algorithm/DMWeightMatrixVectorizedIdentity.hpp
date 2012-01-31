@@ -11,9 +11,11 @@
 
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "base/tools/SGppStopwatch.hpp"
+
+#include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
+#include "parallel/tools/TypesParallel.hpp"
 
 #include <string>
 
@@ -38,7 +40,7 @@ private:
 	/// the lambda, the regularisation parameter
 	double lamb;
 	/// OperationB for calculating the data matrix
-	sg::base::OperationMultipleEvalVectorized* B;
+	sg::parallel::OperationMultipleEvalVectorized* B;
 	/// Pointer to the data vector
 	sg::base::DataMatrix* data;
 	/// Pointer to the weight vector
@@ -48,7 +50,7 @@ private:
 	/// Number of patched and used training instances
 	size_t numPatchedTrainingInstances;
 	/// vectorization mode, possible values are SSE, AVX, OCL, ArBB
-	std::string vecMode;
+	VectorizationType vecMode;
 	/// vector width, class internal variable to enable padding and patching of vectors
 	size_t vecWidth;
 	// save some timings during computation
@@ -73,7 +75,7 @@ public:
 	 * @param w the weights to the training data
 	 * @param vecMode vectorization mode, possible values are X86SIMD, OCL, ArBB, HYBRID_X86SIMD_OCL
 	 */
-	DMWeightMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, sg::base::DataVector& w, std::string vecMode);
+	DMWeightMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, sg::base::DataVector& w, VectorizationType vecMode);
 
 	/**
 	 * Std-Destructor

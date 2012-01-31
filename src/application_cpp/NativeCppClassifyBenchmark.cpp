@@ -285,7 +285,7 @@ void adaptClassificationTest(std::string dataFile, std::string testFile, bool is
     sg::solver::ConjugateGradients* myCG = new sg::solver::ConjugateGradients(cg_max_learning, cg_eps_learning);
 
 #ifdef ITERATIVE
-    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, vectorization);
+    sg::parallel::DMSystemMatrixVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixVectorizedIdentity(*myGrid, data, lambda, sg::parallel::X86SIMD);
 #else
     sg::base::OperationMatrix* myC = sg::op_factory::createOperationIdentity(*myGrid);
     //sg::OperationMatrix* myC = myGrid->createOperationLaplace();
@@ -615,7 +615,7 @@ void adaptClassificationTestSP(std::string dataFile, std::string testFile, bool 
     // Generate CG to solve System
     sg::solver::ConjugateGradientsSP* myCG = new sg::solver::ConjugateGradientsSP(cg_max_learning, cg_eps_learning);
 
-    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, vectorization);
+    sg::parallel::DMSystemMatrixSPVectorizedIdentity* mySystem = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*myGrid, dataSP, lambda, sg::parallel::X86SIMD);
 
     std::cout << "Starting Learning...." << std::endl;
     // execute adaptsteps

@@ -26,7 +26,7 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
 {
 	this->storage = storage;
 

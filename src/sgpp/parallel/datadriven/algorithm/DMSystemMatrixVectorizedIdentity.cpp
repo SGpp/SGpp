@@ -5,112 +5,110 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "base/exception/operation_exception.hpp"
+
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
-#include "datadriven/operation/DatadrivenOpFactory.hpp"
 
 namespace sg
 {
 namespace parallel
 {
 
-DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, std::string vecMode)
+DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
+	: BaseDMSystemMatrix(trainData, lambda), vecMode_(vecMode), vecWidth_(0), numTrainingInstances_(0), numPatchedTrainingInstances_(0)
 {
 	// handle unsupported vector extensions
-	if (vecMode != "X86SIMD" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_X86SIMD_OCL")
+	// @TODO (heinecke) refactor: better way to set vector width
+	if (this->vecMode_ == X86SIMD)
 	{
-		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
+		this->vecWidth_ = 24;
 	}
-
-	resetTimers();
-
-	// create the operations needed in ApplyMatrix
-	this->vecMode = vecMode;
-	this->lamb = lambda;
-	this->data = new sg::base::DataMatrix(trainData);
-
-	if (this->vecMode == "X86SIMD")
+	else if (this->vecMode_ == OpenCL)
 	{
-		this->vecWidth = 24;
+		this->vecWidth_ = 128;
 	}
-	else if (this->vecMode == "OCL")
+	else if (this->vecMode_ == Hybrid_X86SIMD_OpenCL)
 	{
-		this->vecWidth = 128;
+		this->vecWidth_ = 128;
 	}
-	else if (this->vecMode == "HYBRID_X86SIMD_OCL")
+	else if (this->vecMode_ == ArBB)
 	{
-		this->vecWidth = 128;
+		this->vecWidth_ = 16;
 	}
-	else if (this->vecMode == "ArBB")
+	else if (this->vecMode_ == MIC)
 	{
-		this->vecWidth = 16;
+		this->vecWidth_ = 96;
 	}
-	// should not happen because this exception should have been thrown some lines upwards!
+	else if (this->vecMode_ == Hybrid_X86SIMD_MIC)
+	{
+		this->vecWidth_ = 96;
+	}
 	else
 	{
-		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
+		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : un-supported vector extensions!");
 	}
 
-	numTrainingInstances = data->getNrows();
+	this->dataset_ = new sg::base::DataMatrix(trainData);
+
+	this->numTrainingInstances_ = this->dataset_->getNrows();
 
 	// Assure that data has a even number of instances -> padding might be needed
-	size_t remainder = data->getNrows() % this->vecWidth;
-	size_t loopCount = this->vecWidth - remainder;
+	size_t remainder = this->dataset_->getNrows() % this->vecWidth_;
+	size_t loopCount = this->vecWidth_ - remainder;
 
-	if (loopCount != this->vecWidth)
+	if (loopCount != this->vecWidth_)
 	{
-		sg::base::DataVector lastRow(data->getNcols());
+		sg::base::DataVector lastRow(this->dataset_->getNcols());
 		for (size_t i = 0; i < loopCount; i++)
 		{
-			data->getRow(data->getNrows()-1, lastRow);
-			data->resize(data->getNrows()+1);
-			data->setRow(data->getNrows()-1, lastRow);
+			this->dataset_->getRow(this->dataset_->getNrows()-1, lastRow);
+			this->dataset_->resize(this->dataset_->getNrows()+1);
+			this->dataset_->setRow(this->dataset_->getNrows()-1, lastRow);
 		}
 	}
 
-	numPatchedTrainingInstances = data->getNrows();
+	this->numPatchedTrainingInstances_ = this->dataset_->getNrows();
 
-	if (this->vecMode != "OCL" && this->vecMode != "ArBB"  && this->vecMode != "HYBRID_X86SIMD_OCL")
+	if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB  && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
 	{
-		data->transpose();
+		this->dataset_->transpose();
 	}
 
-	this->myTimer = new sg::base::SGppStopwatch();
+	this->myTimer_ = new sg::base::SGppStopwatch();
 
-	this->B = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode, this->data);
+	this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_, this->dataset_);
 }
 
 DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity()
 {
-	delete this->B;
-	delete this->data;
-	delete this->myTimer;
+	delete this->B_;
+	delete this->dataset_;
 }
 
 void DMSystemMatrixVectorizedIdentity::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	sg::base::DataVector temp(numPatchedTrainingInstances);
+	sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 
     // Operation B
-	this->myTimer->start();
-	this->computeTimeMult += this->B->multVectorized(alpha, temp);
-    this->completeTimeMult += this->myTimer->stop();
+	this->myTimer_->start();
+	this->computeTimeMult_ += this->B_->multVectorized(alpha, temp);
+    this->completeTimeMult_ += this->myTimer_->stop();
 
     // patch result -> set additional entries zero
-    if (numTrainingInstances != temp.getSize())
+    if (this->numTrainingInstances_ != temp.getSize())
     {
-    	for (size_t i = 0; i < (temp.getSize()-numTrainingInstances); i++)
+    	for (size_t i = 0; i < (temp.getSize()-this->numTrainingInstances_); i++)
     	{
     		temp.set(temp.getSize()-(i+1), 0.0f);
     	}
     }
 
-    this->myTimer->start();
-    this->computeTimeMultTrans += this->B->multTransposeVectorized(temp, result);
-    this->completeTimeMultTrans += this->myTimer->stop();
+    this->myTimer_->start();
+    this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);
+    this->completeTimeMultTrans_ += this->myTimer_->stop();
 
-    result.axpy(numTrainingInstances*this->lamb, alpha);
+    result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 }
 
 void DMSystemMatrixVectorizedIdentity::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
@@ -118,35 +116,19 @@ void DMSystemMatrixVectorizedIdentity::generateb(sg::base::DataVector& classes, 
 	sg::base::DataVector myClasses(classes);
 
 	// Apply padding
-	if (numPatchedTrainingInstances != myClasses.getSize())
+	if (this->numPatchedTrainingInstances_ != myClasses.getSize())
 	{
-		myClasses.resizeZero(numPatchedTrainingInstances);
+		myClasses.resizeZero(this->numPatchedTrainingInstances_);
 	}
 
-	this->myTimer->start();
-	this->computeTimeMultTrans += this->B->multTransposeVectorized(myClasses, b);
-	this->completeTimeMultTrans += this->myTimer->stop();
+	this->myTimer_->start();
+	this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(myClasses, b);
+	this->completeTimeMultTrans_ += this->myTimer_->stop();
 }
 
 void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex()
 {
-	this->B->rebuildLevelAndIndex();
-}
-
-void DMSystemMatrixVectorizedIdentity::resetTimers()
-{
-	this->completeTimeMult = 0.0;
-	this->computeTimeMult = 0.0;
-	this->completeTimeMultTrans = 0.0;
-	this->computeTimeMultTrans = 0.0;
-}
-
-void DMSystemMatrixVectorizedIdentity::getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans)
-{
-	timeMult = this->completeTimeMult;
-	computeMult = this->computeTimeMult;
-	timeMultTrans = this->completeTimeMultTrans;
-	computeMultTrans = this->computeTimeMultTrans;
+	this->B_->rebuildLevelAndIndex();
 }
 
 }

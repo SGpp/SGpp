@@ -11,6 +11,7 @@
 #include "base/datatypes/DataVectorSP.hpp"
 #include "base/datatypes/DataMatrixSP.hpp"
 #include "base/operation/OperationMatrixSP.hpp"
+#include "base/tools/SGppStopwatch.hpp"
 
 namespace sg
 {
@@ -23,11 +24,21 @@ namespace datadriven
  */
 class BaseDMSystemMatrixSP : public sg::base::OperationMatrixSP
 {
-private:
+protected:
 	/// the dataset
-	sg::base::DataMatrixSP* data_;
+	sg::base::DataMatrixSP* dataset_;
 	/// the lambda, the regularisation parameter
-	double lambda_;
+	float lambda_;
+	/// time needed for Mult
+	double completeTimeMult_;
+	/// time needed only for the computation of mult, interesting on accelerator boards
+	double computeTimeMult_;
+	/// time needed for Mult transposed
+	double completeTimeMultTrans_;
+	/// time needed only for the computation of mult transposed, interesting on accelerator boards
+	double computeTimeMultTrans_;
+	/// Stopwatch needed to determine the durations of mult and mult transposed
+	sg::base::SGppStopwatch* myTimer_;
 
 public:
 	/**
@@ -35,7 +46,7 @@ public:
 	 *
 	 * @param lambda the lambda, the regression parameter
 	 */
-	BaseDMSystemMatrixSP(sg::base::DataMatrixSP& trainData, double lambda);
+	BaseDMSystemMatrixSP(sg::base::DataMatrixSP& trainData, float lambda);
 
 	/**
 	 * Std-Destructor
@@ -51,6 +62,30 @@ public:
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
 	virtual void generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b) = 0;
+
+	/**
+	 * forward declaration
+	 *
+	 * rebuilds the sg::base::DataMatrix for Level and Index
+	 * this routine is needed for supporting adaptiva grids
+	 * with vectorized high performance kernels
+	 */
+	virtual void rebuildLevelAndIndex();
+
+	/**
+	 * resets all timers to 0
+	 */
+	virtual void resetTimers();
+
+	/**
+	 * gets the timer's values by saving them into call by reference values
+	 *
+	 * @param timeMult variable to store overall time needed for Mult
+	 * @param computeMult variable to store compute time needed for Mult
+	 * @param timeMultTrans variable to store everall time needed for Mult Transposed
+	 * @param computeMultTrans variable to store compute time needed for Mult Transposed
+	 */
+	virtual void getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans);
 };
 
 }

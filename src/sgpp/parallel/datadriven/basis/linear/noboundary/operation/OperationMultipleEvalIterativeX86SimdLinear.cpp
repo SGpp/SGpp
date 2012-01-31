@@ -32,7 +32,7 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 

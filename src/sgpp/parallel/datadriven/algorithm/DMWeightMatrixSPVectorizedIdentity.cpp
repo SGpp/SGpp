@@ -14,43 +14,39 @@ namespace sg
 namespace parallel
 {
 
-DMWeightMatrixSPVectorizedIdentity::DMWeightMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, double lambda, sg::base::DataVectorSP& w, std::string vecMode)
+DMWeightMatrixSPVectorizedIdentity::DMWeightMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, double lambda, sg::base::DataVectorSP& w, VectorizationType vecMode)
 {
 	// handle unsupported vector extensions
-	if (vecMode != "X86SIMD" && vecMode != "OCL" && vecMode != "ArBB" && vecMode != "HYBRID_X86SIMD_OCL")
+	// @TODO (heinecke) find a better way to determine vectorwidth
+	if (this->vecMode == parallel::X86SIMD)
+	{
+		this->vecWidth = 48;
+	}
+	else if (this->vecMode == parallel::OpenCL)
+	{
+		this->vecWidth = 128;
+	}
+	else if (this->vecMode == parallel::Hybrid_X86SIMD_OpenCL)
+	{
+		this->vecWidth = 128;
+	}
+	else if (this->vecMode == parallel::ArBB)
+	{
+		this->vecWidth = 16;
+	}
+	else
 	{
 		throw new sg::base::operation_exception("DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
 	}
 
 	resetTimers();
 
+
 	// create the operations needed in ApplyMatrix
 	this->vecMode = vecMode;
 	this->lamb = lambda;
 	this->data = new sg::base::DataMatrixSP(trainData);
     this->weight = new sg::base::DataVectorSP(w);
-
-	if (this->vecMode == "X86SIMD")
-	{
-		this->vecWidth = 48;
-	}
-	else if (this->vecMode == "OCL")
-	{
-		this->vecWidth = 128;
-	}
-	else if (this->vecMode == "HYBRID_X86SIMD_OCL")
-	{
-		this->vecWidth = 128;
-	}
-	else if (this->vecMode == "ArBB")
-	{
-		this->vecWidth = 16;
-	}
-	// should not happen because this exception should have been thrown some lines upwards!
-	else
-	{
-		throw new sg::base::operation_exception("DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
-	}
 
 	numTrainingInstances = data->getNrows();
 
@@ -75,7 +71,7 @@ DMWeightMatrixSPVectorizedIdentity::DMWeightMatrixSPVectorizedIdentity(sg::base:
 
 	numPatchedTrainingInstances = data->getNrows();
 
-	if (this->vecMode != "OCL" && this->vecMode != "ArBB"  && this->vecMode != "HYBRID_X86SIMD_OCL")
+	if (this->vecMode != OpenCL && this->vecMode != ArBB  && this->vecMode != Hybrid_X86SIMD_OpenCL)
 	{
 		data->transpose();
 	}

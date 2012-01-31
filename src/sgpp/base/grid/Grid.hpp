@@ -379,6 +379,8 @@ public:
 	/**
 	 * Returns a string that identifies the grid type uniquely
 	 *
+	 * @TODO use enum instead!!
+	 *
 	 * @return string that identifies the grid type uniquely
 	 */
 	virtual const char* getType() = 0;

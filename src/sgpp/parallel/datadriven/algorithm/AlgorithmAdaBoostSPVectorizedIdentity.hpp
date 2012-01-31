@@ -10,6 +10,8 @@
 
 #include "datadriven/algorithm/AlgorithmAdaBoostBase.hpp"
 
+#include "parallel/tools/TypesParallel.hpp"
+
 namespace sg
 {
 namespace parallel
@@ -29,7 +31,7 @@ class AlgorithmAdaBoostSPVectorizedIdentity : public sg::datadriven::AlgorithmAd
 {
 protected:
 	/// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
-	std::string vecMode;
+	VectorizationType vecMode;
 
 	virtual void alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
 
@@ -62,7 +64,7 @@ public:
 	 * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
 	 * @param mode the adaboost type to choose
 	 */
-	AlgorithmAdaBoostSPVectorizedIdentity(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, std::string vecMode, size_t mode);
+	AlgorithmAdaBoostSPVectorizedIdentity(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, VectorizationType vecMode, size_t mode);
         
 	/**
 	 * Std-Deconstructor

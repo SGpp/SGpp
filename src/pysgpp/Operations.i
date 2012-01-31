@@ -51,14 +51,6 @@ public:
 	virtual void multTranspose(sg::base::DataVector& soruce, sg::base::DataVector& result) = 0;
 };
 
-class OperationMultipleEvalVectorized
-{
-public:
-	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
-	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
-	virtual void rebuildLevelAndIndex() = 0;
-};
-
 class OperationMatrix
 {
 public:
@@ -120,6 +112,20 @@ public:
 
 }
 //- end namespace datadriven ------------------------------------------
+
+//-     namespace parallel --------------------------------------------
+namespace parallel {
+
+class OperationMultipleEvalVectorized
+{
+public:
+	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
+	virtual void rebuildLevelAndIndex() = 0;
+};
+
+}
+//- end namespace parallel --------------------------------------------
 
 }
 

@@ -14,7 +14,7 @@ namespace sg
 namespace parallel
 {
 
-  OperationMultipleEvalIterativeOCLModLinear::OperationMultipleEvalIterativeOCLModLinear(base::GridStorage* storage, base::DataMatrix* dataset) : base::OperationMultipleEvalVectorized(dataset)
+  OperationMultipleEvalIterativeOCLModLinear::OperationMultipleEvalIterativeOCLModLinear(base::GridStorage* storage, base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
   {
     this->storage = storage;
 

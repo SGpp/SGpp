@@ -15,7 +15,7 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeArBBModLinear::OperationMultipleEvalIterativeArBBModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::base::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeArBBModLinear::OperationMultipleEvalIterativeArBBModLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
 {
 	this->storage = storage;
 
