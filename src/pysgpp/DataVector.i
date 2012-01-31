@@ -13,7 +13,7 @@
 * automatically. 
 */
 void free_array(void* ptr, void* dv){
-			double* vec = (double *) ptr;
+  // double* vec = (double *) ptr;
 			PyObject* datavector = (PyObject*)dv;
 			Py_DECREF(datavector);
 		}

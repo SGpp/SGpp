@@ -45,10 +45,19 @@ void Thread :: wakeUp ()
 
 
 
+@verbatim
+Naming:
+- directories: all lowercase
+- constants, defines: all uppercase
+- functions, variables: starting lowercase, camel-case
+- nothing starting with underscores (only system/builtin/compiler)
+- classes: starting uppercase, camel-case
 
+Don't
+- include sgpp.hpp - only include the header files you require. Reason: faster compilation times
+- use "using namespace"s
 
-
-
+@endverbatim
 
 
 
