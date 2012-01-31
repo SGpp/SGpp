@@ -27,7 +27,8 @@
 # both the data dimensions to [0,1]^d and the class attribute to {-1,+1}.
 
 from optparse import OptionParser
-import sys
+import sys, os
+sys.path.append(os.path.join(sys.path[0], "../.."))
 from bin.tools import *
 
 if __name__=='__main__':
