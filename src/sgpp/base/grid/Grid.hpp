@@ -60,7 +60,7 @@ struct RegularGridConfiguration
 struct AdpativityConfiguration
 {
 	/// number of refinements
-	size_t noRefinements_;
+	size_t numRefinements_;
 	/// refinement threshold for surpluses
 	double threshold_;
 	/// refinement type: false: classic, true: maxLevel
