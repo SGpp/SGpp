@@ -41,11 +41,13 @@ protected:
 
 	bool isRegression_;
 
+	bool isTrained_;
+
 	virtual void postProcessing();
 
 	void createInitialGrid(sg::base::RegularGridConfiguration& GridConfig);
 
-	virtual void trainGrid(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes, sg::base::DataMatrix& testDataset,
+	virtual void trainGrid(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			sg::solver::SLESolverConfiguration& SolverConfigRefine, sg::solver::SLESolverConfiguration& SolverConfigFinal,
 			sg::base::AdpativityConfiguration& AdaptConfig, sg::datadriven::BaseDMSystemMatrix& SLESystem,
 			bool testAccDuringAdapt);
@@ -54,9 +56,9 @@ protected:
 			sg::solver::SLESolverConfiguration& SolverConfig, sg::datadriven::BaseDMSystemMatrix& SLESystem);
 
 public:
-	Learner(bool isRegression, bool verbose);
+	Learner(bool isRegression, bool verbose = true);
 
-	Learner(std::string tGridFilename, std::string tAlphaFilename, bool isRegression, bool verbose);
+	Learner(std::string tGridFilename, std::string tAlphaFilename, bool isRegression, bool verbose = true);
 
 	virtual ~Learner();
 

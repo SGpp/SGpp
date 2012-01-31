@@ -13,8 +13,13 @@ namespace sg
 namespace datadriven
 {
 
-Learner::Learner(bool is Regression, bool verbose) : alpha_(NULL), grid_(NULL), verbose_(verbose), isRegression_(isRegression)
+Learner::Learner(bool isRegression, bool verbose) : alpha_(NULL), grid_(NULL), verbose_(verbose), isRegression_(isRegression), isTrained_(false)
 {
+}
+
+Learner::Learner(std::string tGridFilename, std::string tAlphaFilename, bool isRegression, bool verbose) : alpha_(NULL), grid_(NULL), verbose_(verbose), isRegression_(isRegression), isTrained_(false)
+{
+	// @TODO (heinecke)
 }
 
 Learner::~Learner()
@@ -57,9 +62,9 @@ void Learner::postProcessing()
 {
 }
 
-void Learner::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes, sg::base::DataMatrix& testDataset,
+void Learner::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes,
 		sg::solver::SLESolverConfiguration& SolverConfigRefine, sg::solver::SLESolverConfiguration& SolverConfigFinal,
-		sg::base::AdpativityConfiguration& AdaptConfig,sg::datadriven::BaseDMSystemMatrix& SLESystem,
+		sg::base::AdpativityConfiguration& AdaptConfig, sg::datadriven::BaseDMSystemMatrix& SLESystem,
 		bool testAccDuringAdapt)
 {
     double execTime = 0.0;
@@ -171,43 +176,48 @@ void Learner::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVector
     }
 
     if (verbose_)
-    	std::cout << "Finished Learning!" << std::endl;
+    {
+    	std::cout << "Finished Training!" << std::endl << std::endl;
+    	std::cout << "Training took: " << execTime << " seconds" << std::endl << std::endl;
+    }
+
+    isTrained_ = true;
 
     delete myStopwatch;
     delete myCG;
 }
 
-void Learner::trainGrid(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
+void Learner::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes,
 		sg::solver::SLESolverConfiguration& SolverConfig, sg::datadriven::BaseDMSystemMatrix& SLESystem)
 {
+	sg::base::AdpativityConfiguration AdaptConfig;
 
+	AdaptConfig.maxLevelType_ = false;
+	AdaptConfig.noPoints_ = 0;
+	AdaptConfig.numRefinements_ = 0;
+	AdaptConfig.percent_ = 0.0;
+	AdaptConfig.threshold_ = 0.0;
+
+	trainGrid(trainDataset, classes, SolverConfig, SolverConfig, AdaptConfig, SLESystem, false);
 }
 
-void Learner::train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-		sg::base::RegularGridConfiguration& GridConfig, sg::base::AdpativityConfiguration& AdaptConfig,
-		sg::solver::SLESolverConfiguration& SolverConfigRefine, sg::solver::SLESolverConfiguration& SolverConfigFinal,
-		bool testAccDuringAdapt)
+sg::base::DataVector Learner::test(sg::base::DataMatrix& testDataset)
 {
+	sg::base::DataVector classesComputed(testDataset.getNrows());
 
-}
-
-void Learner::train(sg::base::DataMatrix& testDataset, sg::base::RegularGridConfiguration& GridConfig,
-		sg::solver::SLESolverConfiguration& SolverConfig)
-{
-
-}
-
-void sg::base::DataVector Learner::test(sg::base::DataMatrix& testDataset)
-{
-	sg::base::DataVector classesComputed(testDataset.getNroes());
+	sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*grid_, &testDataset);
+	MultEval->mult(*alpha_, classesComputed);
+	delete MultEval;
 
 	return classesComputed;
 }
 
 void Learner::store(std::string tGridFilename, std::string tAlphaFilename)
 {
-
+	// @TODO (heinecke)
 }
+
+
 
 }
 
