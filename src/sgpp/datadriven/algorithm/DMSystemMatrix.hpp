@@ -14,6 +14,8 @@
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/OperationMatrix.hpp"
 
+#include "datadriven/algorithm/BaseDMSystemMatrix.hpp"
+
 namespace sg
 {
 namespace datadriven
@@ -23,17 +25,13 @@ namespace datadriven
  * Class that implements the virtual class sg::base::OperationMatrix for the
  * application of classification for the Systemmatrix
  */
-class DMSystemMatrix : public sg::base::OperationMatrix
+class DMSystemMatrix : public sg::datadriven::BaseDMSystemMatrix
 {
 private:
-	/// the lambda, the regularisation parameter
-	double lamb;
 	/// sg::base::OperationMatrix, the regularisation mehtod
 	sg::base::OperationMatrix* C;
 	/// OperationB for calculating the data matrix
 	sg::base::OperationMultipleEval* B;
-	/// Pointer to the data vector
-	sg::base::DataMatrix* data;
 
 public:
 	/**
@@ -59,7 +57,7 @@ public:
 	 * @param classes the class information of the training data
 	 * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
 	 */
-	void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
+	virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
 };
 
 }

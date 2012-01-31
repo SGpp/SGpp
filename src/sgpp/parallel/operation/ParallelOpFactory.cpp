@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
+// @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
 #include "parallel/operation/ParallelOpFactory.hpp"
 
@@ -23,6 +24,12 @@
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.hpp"
 #endif
+#ifdef USEMIC
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeMICLinear.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdMICLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeMICModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdMICModLinear.hpp"
+#endif
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
@@ -35,6 +42,12 @@
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.hpp"
 #endif
+#ifdef USEMIC
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPMICLinear.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdMICLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPMICModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdMICModLinear.hpp"
+#endif
 
 namespace sg
 {
@@ -43,29 +56,39 @@ namespace op_factory
 {
 
   
-  base::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const std::string& vecType, base::DataMatrix* dataset)
+  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset)
   {
 
     if(strcmp(grid.getType(), "linear") == 0)
       {
-        if (vecType == "X86SIMD")
+        if (vecType == parallel::X86SIMD)
           {
             return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
-        else if (vecType == "OCL")
+        else if (vecType == parallel::OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_X86SIMD_OCL")
+        else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB
-        else if (vecType == "ArBB")
+        else if (vecType == parallel::ArBB)
           {
             return new parallel::OperationMultipleEvalIterativeArBBLinear(grid.getStorage(), dataset);
+          }
+#endif
+#ifdef USEMIC
+        else if (vecType == parallel::MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeMICLinear(grid.getStorage(), dataset);
+          }
+        else if (vecType == parallel::Hybrid_X86SIMD_MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeHybridX86SimdMICLinear(grid.getStorage(), dataset);
           }
 #endif
         else
@@ -78,24 +101,34 @@ namespace op_factory
     else if(strcmp(grid.getType(), "linearBoundary") == 0
             || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
       {
-        if (vecType == "X86SIMD")
+        if (vecType == parallel::X86SIMD)
           {
             return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
-        else if (vecType == "OCL")
+        else if (vecType == parallel::OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_X86SIMD_OCL")
+        else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB
-        else if (vecType == "ArBB")
+        else if (vecType == parallel::ArBB)
           {
             return new parallel::OperationMultipleEvalIterativeArBBLinear(grid.getStorage(), dataset);
+          }
+#endif
+#ifdef USEMIC
+        else if (vecType == parallel::MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeMICLinear(grid.getStorage(), dataset);
+          }
+        else if (vecType == parallel::Hybrid_X86SIMD_MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeHybridX86SimdMICLinear(grid.getStorage(), dataset);
           }
 #endif
         else
@@ -105,18 +138,28 @@ namespace op_factory
       }
     else if(strcmp(grid.getType(), "modlinear") == 0)
       {
-        if (vecType == "X86SIMD")
+        if (vecType == parallel::X86SIMD)
           {
             return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
-        else if (vecType == "OCL")
+        else if (vecType == parallel::OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeOCLModLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_X86SIMD_OCL")
+        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
           {
             return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
+          }
+#endif
+#ifdef USEMIC
+        else if (vecType == parallel::MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeMICModLinear(grid.getStorage(), dataset);
+          }
+        else if (vecType == parallel::Hybrid_X86SIMD_MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeHybridX86SimdMICModLinear(grid.getStorage(), dataset);
           }
 #endif
         else
@@ -130,28 +173,38 @@ namespace op_factory
       }
   }
 
-  base::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const std::string& vecType, base::DataMatrixSP* dataset)
+  parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset)
   {
     if(strcmp(grid.getType(), "linear") == 0)
       {
-        if (vecType == "X86SIMD")
+        if (vecType == parallel::X86SIMD)
           {
             return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
-        else if (vecType == "OCL")
+        else if (vecType == parallel::OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_X86SIMD_OCL")
+        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB
-        else if (vecType == "ArBB")
+        else if (vecType == parallel::ArBB)
           {
             return new parallel::OperationMultipleEvalIterativeSPArBBLinear(grid.getStorage(), dataset);
+          }
+#endif
+#ifdef USEOCL
+        else if (vecType == parallel::MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeSPMICLinear(grid.getStorage(), dataset);
+          }
+        else if (vecType == parallel::Hybrid_X86SIMD_MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdMICLinear(grid.getStorage(), dataset);
           }
 #endif
         else
@@ -162,24 +215,34 @@ namespace op_factory
     else if(strcmp(grid.getType(), "linearBoundary") == 0
             || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
       {
-        if (vecType == "X86SIMD")
+        if (vecType == parallel::X86SIMD)
           {
             return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
-        else if (vecType == "OCL")
+        else if (vecType == parallel::OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_X86SIMD_OCL")
+        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
 #endif
 #ifdef USEARBB
-        else if (vecType == "ArBB")
+        else if (vecType == parallel::ArBB)
           {
             return new parallel::OperationMultipleEvalIterativeSPArBBLinear(grid.getStorage(), dataset);
+          }
+#endif
+#ifdef USEMIC
+        else if (vecType == parallel::MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeSPMICLinear(grid.getStorage(), dataset);
+          }
+        else if (vecType == parallel::Hybrid_X86SIMD_MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdMICLinear(grid.getStorage(), dataset);
           }
 #endif
         else
@@ -189,18 +252,28 @@ namespace op_factory
       }
     else if(strcmp(grid.getType(), "modlinear") == 0)
       {
-        if (vecType == "X86SIMD")
+        if (vecType == parallel::X86SIMD)
           {
             return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
-        else if (vecType == "OCL")
+        else if (vecType == parallel::OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLModLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == "HYBRID_X86SIMD_OCL")
+        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
+          }
+#endif
+#ifdef USEMIC
+        else if (vecType == parallel::MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeSPMICModLinear(grid.getStorage(), dataset);
+          }
+        else if (vecType == parallel::Hybrid_X86SIMD_MIC)
+          {
+            return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdMICModLinear(grid.getStorage(), dataset);
           }
 #endif
         else

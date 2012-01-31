@@ -7,6 +7,8 @@
 Import("env")
 
 srcs = Split("""
+datadriven/algorithm/BaseDMSystemMatrixSP.cpp
+datadriven/algorithm/BaseDMSystemMatrix.cpp
 datadriven/algorithm/DMSystemMatrix.cpp
 datadriven/algorithm/DensitySystemMatrix.cpp
 datadriven/algorithm/DMWeightMatrix.cpp

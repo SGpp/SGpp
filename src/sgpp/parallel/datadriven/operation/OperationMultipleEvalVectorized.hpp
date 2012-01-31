@@ -14,7 +14,7 @@
 
 namespace sg
 {
-namespace base
+namespace parallel
 {
 
 /**
@@ -30,11 +30,11 @@ class OperationMultipleEvalVectorized
 {
 protected:
 	/// Pointer to the dataset that should be evaluated on the grid
-	DataMatrix* dataset_;
+	sg::base::DataMatrix* dataset_;
 	/// Member to store the sparse grid's levels for better vectorization
-	DataMatrix* level_;
+	sg::base::DataMatrix* level_;
 	/// Member to store the sparse grid's indices for better vectorization
-	DataMatrix* index_;
+	sg::base::DataMatrix* index_;
 
 public:
 	/**
@@ -42,7 +42,7 @@ public:
 	 *
 	 * @param dataset data set that should be evaluated on the sparse grid
 	 */
-	OperationMultipleEvalVectorized(DataMatrix* dataset) {
+	OperationMultipleEvalVectorized(sg::base::DataMatrix* dataset) {
 		this->dataset_ = dataset;
 		this->level_ = NULL;
 		this->index_ = NULL;
@@ -72,7 +72,7 @@ public:
 	 * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual double multVectorized(DataVector& alpha, DataVector& result) = 0;
+	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
 	/**
 	 * Multiplication of @f$B@f$ with vector @f$\alpha@f$
@@ -85,7 +85,7 @@ public:
 	 * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
 	 * @param result the result vector of the matrix vector multiplication
 	 */
-	virtual double multTransposeVectorized(DataVector& source, DataVector& result) = 0;
+	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
 
 	/**
 	 * rebuilds the DataMatrix for Level and Index in Derivatives

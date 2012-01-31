@@ -12,8 +12,36 @@ namespace sg
 namespace datadriven
 {
 
-BaseDMSystemMatrixSP::BaseDMSystemMatrixSP(sg::base::DataMatrixSP& trainData, double lambda) : data_(&trainData), lambda_(lambda)
+BaseDMSystemMatrixSP::BaseDMSystemMatrixSP(sg::base::DataMatrixSP& trainData, float lambda)
+	: dataset_(&trainData), lambda_(lambda), completeTimeMult_(0.0), computeTimeMult_(0.0),
+	  completeTimeMultTrans_(0.0), computeTimeMultTrans_(0.0)
 {
+	myTimer_ = new sg::base::SGppStopwatch();
+}
+
+BaseDMSystemMatrixSP::~BaseDMSystemMatrixSP()
+{
+	delete myTimer_;
+}
+
+void BaseDMSystemMatrixSP::rebuildLevelAndIndex()
+{
+}
+
+void BaseDMSystemMatrixSP::resetTimers()
+{
+	completeTimeMult_ = 0.0;
+	computeTimeMult_ = 0.0;
+	completeTimeMultTrans_ = 0.0;
+	computeTimeMultTrans_ = 0.0;
+}
+
+void BaseDMSystemMatrixSP::getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans)
+{
+	timeMult = completeTimeMult_;
+	computeMult = computeTimeMult_;
+	timeMultTrans = completeTimeMultTrans_;
+	computeMultTrans = computeTimeMultTrans_;
 }
 
 }

@@ -15,12 +15,11 @@ namespace datadriven
 {
 
 DMSystemMatrix::DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda)
+	: BaseDMSystemMatrix(trainData, lambda)
 {
 	// create the operations needed in ApplyMatrix
 	this->C = &C;
-	this->lamb = lambda;
-	this->data = &trainData;
-	this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, this->data);
+	this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, this->dataset_);
 }
 
 DMSystemMatrix::~DMSystemMatrix()
@@ -30,8 +29,8 @@ DMSystemMatrix::~DMSystemMatrix()
 
 void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-  sg::base::DataVector temp((*data).getNrows());
-  size_t M = (*data).getNrows();
+	sg::base::DataVector temp((*this->dataset_).getNrows());
+	size_t M = (*this->dataset_).getNrows();
 
     // Operation B
     this->B->mult(alpha, temp);
@@ -39,7 +38,7 @@ void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& res
 
 	sg::base::DataVector temptwo(alpha.getSize());
 	this->C->mult(alpha, temptwo);
-	result.axpy(M*this->lamb, temptwo);
+	result.axpy(static_cast<double>(M)*this->lambda_, temptwo);
 }
 
 void DMSystemMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
@@ -48,4 +47,5 @@ void DMSystemMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVect
 }
 
 }
+
 }

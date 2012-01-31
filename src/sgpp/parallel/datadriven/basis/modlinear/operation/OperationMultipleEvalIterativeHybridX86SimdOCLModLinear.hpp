@@ -32,7 +32,7 @@ namespace parallel
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeHybridX86SimdOCLModLinear : public sg::base::OperationMultipleEvalVectorized
+class OperationMultipleEvalIterativeHybridX86SimdOCLModLinear : public sg::parallel::OperationMultipleEvalVectorized
 {
 public:
 	/**

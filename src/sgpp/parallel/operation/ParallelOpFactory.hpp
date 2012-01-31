@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
+// @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
 #ifndef PARALLEL_OP_FACTORY_HPP
 #define PARALLEL_OP_FACTORY_HPP
@@ -14,6 +15,7 @@
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include "parallel/tools/TypesParallel.hpp"
 
 /*
  * This file contains factory methods for operations.
@@ -34,7 +36,7 @@ namespace op_factory
    * @param dataset Dataset (DataMatrix, data points per row) that is to be evaluated
    * @return Pointer to the new OperationMultipleEvalVectorized for the Grid grid
    */
-  base::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const std::string& vecType, base::DataMatrix* dataset);
+  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset);
   /**
    * Factory method, returning an OperationMultipleEvalVectorizedSP for the grid at hand,
    * single precision.
@@ -45,7 +47,7 @@ namespace op_factory
    * @param dataset Dataset (DataMatrixSP, data points per row) that is to be evaluated
    * @return Pointer to the new OperationMultipleEvalVectorizedSP for the Grid grid
    */
-  base::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const std::string& vecType, base::DataMatrixSP* dataset);
+  parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset);
 }
 
 }
