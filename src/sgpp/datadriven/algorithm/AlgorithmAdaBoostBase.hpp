@@ -251,28 +251,28 @@ class AlgorithmAdaBoostBase
 		    /**
              * Get the mean GridPoint ever used in adaboosting
 			 * 
-             * @param baselearner number of baselearner
+             * @param baseLearner number of baselearner
 			 */
-		size_t getMeanGridPoint(size_t baselearner);
+		size_t getMeanGridPoint(size_t baseLearner);
 
 		    /**
              * Get the max GridPoint ever used in adaboosting
              *
-             * @param baselearner number of baselearner
+             * @param baseLearner number of baselearner
 			 */
-		size_t getMaxGridPoint(size_t baselearner);
+		size_t getMaxGridPoint(size_t baseLearner);
 
 		    /**
              * Get the sum GridPoint ever used in adaboosting
              *
-             * @param baselearner number of baselearner
+             * @param baseLearner number of baselearner
 			 */
-	    size_t getSumGridPoint(size_t baselearner);
+	    size_t getSumGridPoint(size_t baseLearner);
 
             /**
              * Performs a hypothesis classifier
 			 *
-			 * @param realvalue real value of function 
+			 * @param realValue real value of function 
              */
     	double hValue(double realValue);
 };

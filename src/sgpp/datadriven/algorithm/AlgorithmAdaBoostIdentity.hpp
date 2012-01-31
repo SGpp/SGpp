@@ -28,7 +28,6 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase
         /**
          * Performs a solver to get alpha use DMWeightMatrix as the System Matrix
 		 *
-         * @param C OperationMatrix for the regularisation mehtod
          * @param lambda the regularisation parameter
 		 * @param weight the weights of examples
 		 * @param alpha output the coefficients of the sparse grid's basis functions

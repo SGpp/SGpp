@@ -51,9 +51,9 @@ namespace datadriven
 		this->lambLogMax = log(maxLambda);
 		this->lambSteps = searchNum;
 		if(searchNum == 1)
-			this->lambStepsize = (log(maxLambda) - log(minLambda))/2;
+			this->lambStepsize = (log((double)maxLambda) - log((double)minLambda))/2;
 		else
-			this->lambStepsize = (log(maxLambda) - log(minLambda))/(searchNum - 1);
+			this->lambStepsize = (log((double)maxLambda) - log((double)minLambda))/((double)searchNum - 1);
 		this->actualBaseLearners = 0;
 		this->refinement = refine;
 		this->refineMode = refineMode;
@@ -98,13 +98,13 @@ namespace datadriven
 			sg::base::DataVector alpha_learn(this->gridPoint);
 			std::cout << "gridPoint: " << this->gridPoint << std::endl;
 			if (this->maxGridPoint->get(count) < this->gridPoint)
-				this->maxGridPoint->set(count, this->gridPoint);
+				this->maxGridPoint->set(count, (double)this->gridPoint);
 			if (!this->refinement)
 			{
 				if (count == 0)
-					this->sumGridPoint->set(count, gridPoint);
+					this->sumGridPoint->set(count, (double)gridPoint);
 				else
-					this->sumGridPoint->set(count, this->sumGridPoint->get(count-1) + gridPoint);
+					this->sumGridPoint->set(count, this->sumGridPoint->get(count-1) + (double)gridPoint);
 			}
 			alpha_train.setAll(0.0);
 			weights.setColumn(count, weight);
@@ -163,7 +163,7 @@ namespace datadriven
 					std::cout << "This is the " << it + 1 << "th search of " << this->actualBaseLearners << "th weak learner." << std::endl;
 					std::cout << std::endl;
 					alpha_train.setAll(0.0);
-					cur_lambda = exp(this->lambLogMax - it*this->lambStepsize);
+					cur_lambda = exp(this->lambLogMax - (double)it*this->lambStepsize);
 
 					alphaSolver(cur_lambda, weight, alpha_train, true);
 
@@ -347,13 +347,13 @@ namespace datadriven
 			sg::base::DataVector alpha_learn(this->gridPoint);
 			std::cout << "gridPoint: " << this->gridPoint << std::endl;
 			if (this->maxGridPoint->get(count) < this->gridPoint)
-				this->maxGridPoint->set(count, this->gridPoint);
+				this->maxGridPoint->set(count, (double)this->gridPoint);
 			if (!this->refinement)
 			{
 				if (count == 0)
-					this->sumGridPoint->set(count, gridPoint);
+					this->sumGridPoint->set(count, (double)gridPoint);
 				else
-					this->sumGridPoint->set(count, this->sumGridPoint->get(count-1) + gridPoint);
+					this->sumGridPoint->set(count, this->sumGridPoint->get(count-1) + (double)gridPoint);
 			}
 			alpha_train.setAll(0.0);
 			weights.setColumn(count, weight);
@@ -593,7 +593,7 @@ namespace datadriven
 			}
 			else if (this->refineMode == 2)
 			{
-				refineNumber = this->perOfAda * (this->grid->getSize());
+				refineNumber = (size_t)(this->perOfAda * (this->grid->getSize()));
 				//force to refine at least one point
 				if(refineNumber == 0)
 					refineNumber = 1;
@@ -619,16 +619,16 @@ namespace datadriven
 				final_ada = true;
 				if (curBaseLearner == 1)
 				{
-					this->maxGridPoint->set(curBaseLearner - 1, gridPts);
-					this->sumGridPoint->set(curBaseLearner - 1, gridPts);
+					this->maxGridPoint->set(curBaseLearner - 1, (double)gridPts);
+					this->sumGridPoint->set(curBaseLearner - 1, (double)gridPts);
 				}
 				else
 				{
 					if (gridPts > this->maxGridPoint->get(curBaseLearner - 2))
-						this->maxGridPoint->set(curBaseLearner - 1, gridPts);
+						this->maxGridPoint->set(curBaseLearner - 1, (double)gridPts);
 					else
 						this->maxGridPoint->set(curBaseLearner - 1, this->maxGridPoint->get(curBaseLearner - 2));
-					this->sumGridPoint->set(curBaseLearner - 1, this->sumGridPoint->get(curBaseLearner - 2) + gridPts);
+					this->sumGridPoint->set(curBaseLearner - 1, this->sumGridPoint->get(curBaseLearner - 2) + (double)gridPts);
 				}
 			}
 
@@ -665,19 +665,19 @@ namespace datadriven
 
 	size_t AlgorithmAdaBoostBase::getMeanGridPoint(size_t baselearner)
 	{
-		size_t mean = this->sumGridPoint->get(baselearner-1)/baselearner;
+		size_t mean = (size_t)(this->sumGridPoint->get(baselearner-1)/(double)baselearner);
 		return mean;
 	}
 
 	size_t AlgorithmAdaBoostBase::getMaxGridPoint(size_t baselearner)
 	{
-		size_t max = this->maxGridPoint->get(baselearner-1);
+		size_t max = (size_t)(this->maxGridPoint->get(baselearner-1));
 		return max;
 	}
 
 	size_t AlgorithmAdaBoostBase::getSumGridPoint(size_t baselearner)
 	{
-		size_t sum = this->sumGridPoint->get(baselearner-1);
+		size_t sum = (size_t)(this->sumGridPoint->get(baselearner-1));
 		return sum;
 	}
 }
