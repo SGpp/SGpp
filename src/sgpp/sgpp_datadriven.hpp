@@ -16,6 +16,8 @@
 #include "datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp"
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
+#include 'datadrive/application/Leaner.hpp'
+
 #include "datadriven/operation/OperationRegularizationDiagonal.hpp"
 #include "datadriven/operation/OperationTest.hpp"
 

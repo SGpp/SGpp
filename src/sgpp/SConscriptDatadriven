@@ -14,6 +14,8 @@ datadriven/algorithm/DensitySystemMatrix.cpp
 datadriven/algorithm/DMWeightMatrix.cpp
 datadriven/algorithm/AlgorithmAdaBoostIdentity.cpp
 datadriven/algorithm/AlgorithmAdaBoostBase.cpp
+datadriven/application/LearnerBase.cpp
+datadriven/application/Learner.cpp
 datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp
 datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 datadriven/basis/modbspline/operation/OperationTestModBspline.cpp
