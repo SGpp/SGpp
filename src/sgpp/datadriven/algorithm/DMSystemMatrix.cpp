@@ -15,7 +15,7 @@ namespace datadriven
 {
 
 DMSystemMatrix::DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda)
-	: BaseDMSystemMatrix(trainData, lambda)
+	: DMSystemMatrixBase(trainData, lambda)
 {
 	// create the operations needed in ApplyMatrix
 	this->C = &C;

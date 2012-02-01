@@ -16,7 +16,7 @@ namespace parallel
 {
 
 DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
-	:  BaseDMSystemMatrixSP(trainData, lambda), vecMode_(vecMode), vecWidth_(0), numTrainingInstances_(0), numPatchedTrainingInstances_(0)
+	:  DMSystemMatrixSPBase(trainData, lambda), vecMode_(vecMode), vecWidth_(0), numTrainingInstances_(0), numPatchedTrainingInstances_(0)
 {
 	// handle unsupported vector extensions and set vector width
 	// @TODO (heinecke) refactor: better way to set vector width

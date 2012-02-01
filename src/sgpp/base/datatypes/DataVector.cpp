@@ -220,7 +220,7 @@ void DataVector::add(DataVector &vec) {
     }
 }
 
-void DataVector::sub(DataVector &vec) {
+void DataVector::sub(const DataVector &vec) {
     if (size != vec.size) {
 		throw new sg::base::data_exception(
 				"DataVector::sub : Dimensions do not match");
@@ -385,8 +385,6 @@ std::string DataVector::toString() {
     return str;
 }
 
-#ifndef LARRABEE
-
 double DataVector::min() {
     double min = data[0];
     for (size_t i = 1; i < size; i++) {
@@ -421,7 +419,6 @@ void DataVector::minmax(double* min, double* max) {
     (*min) = min_t;
     (*max) = max_t;
 }
-#endif
 
 double* DataVector::getPointer() {
     return data;

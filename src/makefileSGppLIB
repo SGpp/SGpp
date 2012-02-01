@@ -276,8 +276,8 @@ OBJS =	DataVector.o\
 	AlgorithmAdaBoostSPVectorizedIdentity.o\
 	DMWeightMatrixSPVectorizedIdentity.o\
 	OperationQuadratureLinearBoundary.o\
-	BaseDMSystemMatrix.o\
-	BaseDMSystemMatrixSP.o\
+	DMSystemMatrixBase.o\
+	DMSystemMatrixSPBase.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1167,11 +1167,11 @@ AlgorithmAdaBoostSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm
 OperationQuadratureLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureLinearBoundary.o $(SRCDIR)base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.cpp
 	
-BaseDMSystemMatrix.o : $(SRCDIR)datadriven/algorithm/BaseDMSystemMatrix.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BaseDMSystemMatrix.o $(SRCDIR)datadriven/algorithm/BaseDMSystemMatrix.cpp	
+DMSystemMatrixBase.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixBase.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixBase.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixBase.cpp	
 
-BaseDMSystemMatrixSP.o : $(SRCDIR)datadriven/algorithm/BaseDMSystemMatrixSP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BaseDMSystemMatrixSP.o $(SRCDIR)datadriven/algorithm/BaseDMSystemMatrixSP.cpp
+DMSystemMatrixSPBase.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPBase.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPBase.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPBase.cpp
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp

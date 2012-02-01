@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef LEARNER_HPP
-#define LEARNER_HPP
+#ifndef LEARNERBASE_HPP
+#define LEARNERBASE_HPP
 
 #include "base/grid/Grid.hpp"
 #include "base/datatypes/DataVector.hpp"
@@ -14,7 +14,7 @@
 
 #include "solver/SLESolver.hpp"
 
-#include "datadriven/algorithm/BaseDMSystemMatrix.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
 
 namespace sg
 {
@@ -24,13 +24,22 @@ namespace datadriven
 
 struct ClassificatorQuality
 {
-    double truePositive;
-    double trueNegative;
-    double falsePositive;
-    double falseNegative;
+    size_t truePositive_;
+    size_t trueNegative_;
+    size_t falsePositive_;
+    size_t falseNegative_;
 };
 
-class Learner
+struct ClassificatorTimining
+{
+	double timeComplete_;
+	double timeMultComplete_;
+	double timeMultCompute_;
+	double timeMultTransComplete_;
+	double timeMultTransCompute_;
+};
+
+class LearnerBase
 {
 protected:
 	sg::base::DataVector* alpha_;
@@ -49,18 +58,18 @@ protected:
 
 	virtual void trainGrid(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			sg::solver::SLESolverConfiguration& SolverConfigRefine, sg::solver::SLESolverConfiguration& SolverConfigFinal,
-			sg::base::AdpativityConfiguration& AdaptConfig, sg::datadriven::BaseDMSystemMatrix& SLESystem,
+			sg::base::AdpativityConfiguration& AdaptConfig, sg::datadriven::DMSystemMatrixBase& SLESystem,
 			bool testAccDuringAdapt);
 
 	virtual void trainGrid(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-			sg::solver::SLESolverConfiguration& SolverConfig, sg::datadriven::BaseDMSystemMatrix& SLESystem);
+			sg::solver::SLESolverConfiguration& SolverConfig, sg::datadriven::DMSystemMatrixBase& SLESystem);
 
 public:
-	Learner(bool isRegression, bool verbose = true);
+	LearnerBase(bool isRegression, bool verbose = true);
 
-	Learner(std::string tGridFilename, std::string tAlphaFilename, bool isRegression, bool verbose = true);
+	LearnerBase(std::string tGridFilename, std::string tAlphaFilename, bool isRegression, bool verbose = true);
 
-	virtual ~Learner();
+	virtual ~LearnerBase();
 
 	virtual void train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			sg::base::RegularGridConfiguration& GridConfig, sg::base::AdpativityConfiguration& AdaptConfig,
@@ -92,7 +101,7 @@ public:
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(sg::base::DataMatrix& testDataset, sg::base::DataVector& classesReference, double threshold = 0.0)
+	virtual double getAccuracy(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold = 0.0)
 
 	/**
 	 * compute the accuracy for given testDataset.
@@ -100,14 +109,13 @@ public:
 	 * In case if classification (isRegression == false) this routine returns the learner's accuracy
 	 * In case of regressions (isRegression == true) this routine returns the learner's MSE
 	 *
-	 * @param testDataset dataset to be tested
 	 * @param classesComputed regression results of the test dataset
 	 * @param classesReference reference labels of the test dataset
 	 * @param threshold threshold used for classification, ignored when performing regressions
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(sg::base::DataMatrix& testDataset, sg::base::DataVector& classesComputed, sg::base::DataVector& classesReference, double threshold = 0.0)
+	virtual double getAccuracy(const sg::base::DataVector& classesComputed, const sg::base::DataVector& classesReference, const double threshold = 0.0)
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
@@ -120,19 +128,18 @@ public:
 	 *
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
-	virtual ClassificatorQuality getCassificatorQuality(sg::base::DataMatrix& testDataset, sg::base::DataVector& classesReference, double threshold = 0.0)
+	virtual ClassificatorQuality getCassificatorQuality(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold = 0.0)
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
 	 *
-	 * @param testDataset dataset to be tested
 	 * @param classesComputed regression results of the test dataset
 	 * @param classesReference reference labels of the test dataset
 	 * @param threshold threshold used for classification, ignored when performing regressions
 	 *
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
-	virtual ClassificatorQuality getCassificatorQuality(sg::base::DataMatrix& testDataset, sg::base::DataVector& classesComputed, sg::base::DataVector& classesReference, double threshold = 0.0)
+	virtual ClassificatorQuality getCassificatorQuality(const sg::base::DataVector& classesComputed, const sg::base::DataVector& classesReference, const double threshold = 0.0)
 
 	/**
 	 * store the grid and its current coefficients into files for
@@ -148,25 +155,25 @@ public:
 	 *
 	 * @return returns whether the current mode is regression or not
 	 */
-	bool getIsRegression();
+	bool getIsRegression() const;
 
 	/**
 	 * determines the current verbose mode of learner
 	 *
 	 * @return returns whether the current learner has verbose output
 	 */
-	bool getVerbose();
+	bool getVerbose() const;
 
 	/**
 	 * sets the current verbose mode of learner
 	 *
 	 * @param verbose the current learner's verbose output
 	 */
-	bool setVerbose(bool verbose);
+	void setVerbose(bool verbose);
 };
 
 }
 
 }
 
-#endif /* LEARNER_HPP */
+#endif /* LEARNERBASE_HPP */

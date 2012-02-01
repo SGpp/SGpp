@@ -115,7 +115,7 @@ namespace std {
 // and the rest
 #ifdef SG_DATADRIVEN
 %include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
-%include "src/sgpp/datadriven/algorithm/BaseDMSystemMatrix.hpp"
+%include "src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 #endif
 

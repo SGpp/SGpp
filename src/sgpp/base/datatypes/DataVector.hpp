@@ -212,7 +212,7 @@ public:
  	 *
  	 * @param vec The DataMatrix which is subtracted from the current values
  	 */
-	void sub(DataVector& vec);
+	void sub(const DataVector& vec);
 
     /**
      * Multiplies the current DataVector component-wise with another DataVector.
@@ -296,7 +296,6 @@ public:
 	 */
 	double l2Norm();
 
-#ifndef LARRABEE
 	/**
 	 * Returns the minimum over all entries.
 	 *
@@ -318,7 +317,6 @@ public:
      * @param max Reference variable for the maximum
 	 */
 	void minmax(double* min, double* max);
-#endif
 
 	/**
 	 * Adds a*x to current vector.

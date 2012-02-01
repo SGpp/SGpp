@@ -14,7 +14,7 @@
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/OperationMatrix.hpp"
 
-#include "datadriven/algorithm/BaseDMSystemMatrix.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
 
 namespace sg
 {
@@ -25,7 +25,7 @@ namespace datadriven
  * Class that implements the virtual class sg::base::OperationMatrix for the
  * application of classification for the Systemmatrix
  */
-class DMSystemMatrix : public sg::datadriven::BaseDMSystemMatrix
+class DMSystemMatrix : public sg::datadriven::DMSystemMatrixBase
 {
 private:
 	/// sg::base::OperationMatrix, the regularisation mehtod
