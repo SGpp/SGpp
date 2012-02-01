@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef BASEDMSYSTEMMATRIX_HPP
-#define BASEDMSYSTEMMATRIX_HPP
+#ifndef DMSYSTEMMATRIXBASE_HPP
+#define DMSYSTEMMATRIXBASE_HPP
 
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
@@ -22,7 +22,7 @@ namespace datadriven
  * Abstract class that defines the virtual class sg::base::OperationMatrix for
  * classification and regression problems
  */
-class BaseDMSystemMatrix : public sg::base::OperationMatrix
+class DMSystemMatrixBase : public sg::base::OperationMatrix
 {
 protected:
 	/// the dataset
@@ -46,12 +46,12 @@ public:
 	 *
 	 * @param lambda the lambda, the regression parameter
 	 */
-	BaseDMSystemMatrix(sg::base::DataMatrix& trainData, double lambda);
+	DMSystemMatrixBase(sg::base::DataMatrix& trainData, double lambda);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~BaseDMSystemMatrix();
+	virtual ~DMSystemMatrixBase();
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
@@ -91,4 +91,4 @@ public:
 }
 }
 
-#endif /* BASEDMSYSTEMMATRIX_HPP */
+#endif /* DMSYSTEMMATRIXBASE_HPP */

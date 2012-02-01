@@ -11,7 +11,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
 
-#include "datadriven/algorithm/BaseDMSystemMatrix.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "parallel/tools/TypesParallel.hpp"
@@ -32,7 +32,7 @@ namespace parallel
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-class DMSystemMatrixVectorizedIdentity : public sg::datadriven::BaseDMSystemMatrix
+class DMSystemMatrixVectorizedIdentity : public sg::datadriven::DMSystemMatrixBase
 {
 private:
 	/// vectorization mode
