@@ -5,7 +5,20 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/application/Learner.hpp"
+#include "datadriven/application/LearnerBase.hpp"
+
+#include "base/grid/type/LinearGrid.hpp"
+#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
+#include "base/grid/type/ModLinearGrid.hpp"
+#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/operation/OperationMultipleEval.hpp"
+#include "base/operation/BaseOpFactory.hpp"
+
+#include "solver/sle/ConjugateGradients.hpp"
+#include "solver/sle/BiCGStab.hpp"
+
+
+#include <iostream>
 
 namespace sg
 {
@@ -13,17 +26,34 @@ namespace sg
 namespace datadriven
 {
 
-LearnerBase::LearnerBase(bool isRegression, bool verbose) : alpha_(NULL), grid_(NULL), verbose_(verbose), isRegression_(isRegression), isTrained_(false)
+LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
+	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false)
 {
 }
 
-LearnerBase::LearnerBase(std::string tGridFilename, std::string tAlphaFilename, bool isRegression, bool verbose) : alpha_(NULL), grid_(NULL), verbose_(verbose), isRegression_(isRegression), isTrained_(false)
+LearnerBase::LearnerBase(const std::string tGridFilename, const std::string tAlphaFilename, const bool isRegression, const bool isVerbose)
+	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false)
 {
 	// @TODO (heinecke)
 }
 
+LearnerBase::LearnerBase(const LearnerBase& copyMe)
+{
+	// safety, should not happen
+	if (alpha_ != NULL)
+		delete alpha_;
+
+	if (grid_ != NULL)
+		delete grid_;
+
+	// @TODO (heinecke) grid copy constructor
+	grid_ = sg::base::Grid::unserialize(copyMe.grid_->serialize());
+	alpha_ = new sg::base::DataVector(*(copyMe.alpha_));
+}
+
 LearnerBase::~LearnerBase()
 {
+	// if user does no cleaning
 	if (alpha_ != NULL)
 		delete alpha_;
 
@@ -31,7 +61,7 @@ LearnerBase::~LearnerBase()
 		delete grid_;
 }
 
-void LearnerBase::createInitialGrid(sg::base::RegularGridConfiguration& GridConfig)
+void LearnerBase::InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig)
 {
 	if (GridConfig.type_ == sg::base::LinearTrapezoidBoundary)
 	{
@@ -50,27 +80,63 @@ void LearnerBase::createInitialGrid(sg::base::RegularGridConfiguration& GridConf
 		std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
 		grid_ = NULL;
 		return;
+		// @TODO (heinecke) throw exception
 	}
 
 	// Generate regular Grid with LEVELS Levels
 	sg::base::GridGenerator* myGenerator = grid_->createGridGenerator();
 	myGenerator->regular(GridConfig.level_);
 	delete myGenerator;
+
+	// Create alpha
+	alpha_ = new sg::base::DataVector(grid_->getSize());
+	alpha_->setAll(0.0);
 }
 
 void LearnerBase::postProcessing()
 {
 }
 
-void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes,
-		sg::solver::SLESolverConfiguration& SolverConfigRefine, sg::solver::SLESolverConfiguration& SolverConfigFinal,
-		sg::base::AdpativityConfiguration& AdaptConfig, sg::datadriven::DMSystemMatrixBase& SLESystem,
-		bool testAccDuringAdapt)
+LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes,
+		const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
+		const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
+		const bool testAccDuringAdapt, const double lambda)
 {
-    double execTime = 0.0;
+	LearnerTiming result;
+
+	result.timeComplete_ = 0.0;
+	result.timeMultComplete_ = 0.0;
+	result.timeMultCompute_ = 0.0;
+	result.timeMultTransComplete_ = 0.0;
+	result.timeMultTransCompute_ = 0.0;
+	result.timeRegularization_ = 0.0;
+
+	double execTime = 0.0;
     double oldAcc = 0.0;
 
-	// Generate CG to solve System
+    // Construct Grid
+	if (alpha_ != NULL)
+		delete alpha_;
+
+	if (grid_ != NULL)
+		delete grid_;
+
+	if (isTrained_ == true)
+		isTrained_ = false;
+
+	InitializeGrid(GridConfig);
+
+	// check if grid was created
+	if (grid_ == NULL)
+		return result;
+
+	// create DMSystem
+	sg::datadriven::DMSystemMatrixBase* DMSystem = createDMSystem(trainDataset, lambda);
+
+	// check if System was created
+	if (DMSystem == NULL)
+		return result;
+
 	sg::solver::SLESolver* myCG;
 
 	if (SolverConfigRefine.type_ != sg::solver::CG)
@@ -86,7 +152,7 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
 		// @TODO: Error
 	}
 
-	if (verbose_)
+	if (isVerbose_)
 		std::cout << "Starting Learning...." << std::endl;
 
     // execute adaptsteps
@@ -94,7 +160,7 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
 
     for (size_t i = 0; i < AdaptConfig.numRefinements_+1; i++)
     {
-    	if (verbose_)
+    	if (isVerbose_)
     		std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
     	myStopwatch->start();
@@ -106,31 +172,32 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
     		grid_->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
-    		SLESystem.rebuildLevelAndIndex();
+    		DMSystem->rebuildLevelAndIndex();
 
-    		if (verbose_)
+    		if (isVerbose_)
     			std::cout << "New Grid Size: " << grid_->getSize() << std::endl;
 
     		alpha_->resizeZero(grid_->getSize());
     	}
     	else
     	{
-    		std::cout << "Grid Size: " << grid_->getSize() << std::endl;
+    		if (isVerbose_)
+    			std::cout << "Grid Size: " << grid_->getSize() << std::endl;
     	}
 
     	sg::base::DataVector b(alpha_->getSize());
-    	SLESystem.generateb(classes, b);
+    	DMSystem->generateb(classes, b);
 
     	if (i == AdaptConfig.numRefinements_)
     	{
     		myCG->setMaxIterations(SolverConfigFinal.maxIterations_);
     		myCG->setEpsilon(SolverConfigFinal.eps_);
     	}
-    	myCG->solve(SLESystem, *alpha_, b, true, false, 0.0);
+    	myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
 
         execTime += myStopwatch->stop();
 
-        if (verbose_)
+        if (isVerbose_)
         {
         	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
         	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
@@ -142,19 +209,25 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
         {
  			double acc = getAccuracy(trainDataset, classes);
 
- 			if (verbose_)
+ 			if (isVerbose_)
  			{
  				if (isRegression_)
- 					std::cout << "MSE (train): " << acc << std::endl;
+ 				{
+ 					if (isVerbose_)
+ 						std::cout << "MSE (train): " << acc << std::endl;
+ 				}
  				else
- 					std::cout << "Acc (train): " << acc << std::endl;
+ 				{
+ 					if (isVerbose_)
+ 						std::cout << "Acc (train): " << acc << std::endl;
+ 				}
  			}
 
  			if (isRegression_)
  			{
 				if ((i > 0) && (oldAcc <= acc))
 				{
-					if (verbose_)
+					if (isVerbose_)
 						std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 
 					break;
@@ -164,7 +237,7 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
  			{
 				if ((i > 0) && (oldAcc >= acc))
 				{
-					if (verbose_)
+					if (isVerbose_)
 						std::cout << "The grid is becoming worse --> stop learning" << std::endl;
 
 					break;
@@ -175,7 +248,7 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
         }
     }
 
-    if (verbose_)
+    if (isVerbose_)
     {
     	std::cout << "Finished Training!" << std::endl << std::endl;
     	std::cout << "Training took: " << execTime << " seconds" << std::endl << std::endl;
@@ -185,10 +258,14 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
 
     delete myStopwatch;
     delete myCG;
+    delete DMSystem;
+
+    return result;
 }
 
-void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes,
-		sg::solver::SLESolverConfiguration& SolverConfig, sg::datadriven::DMSystemMatrixBase& SLESystem)
+LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes,
+		const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
+		const double lambda)
 {
 	sg::base::AdpativityConfiguration AdaptConfig;
 
@@ -198,7 +275,7 @@ void LearnerBase::trainGrid(sg::base::DataMatrix& trainDataset, sg::base::DataVe
 	AdaptConfig.percent_ = 0.0;
 	AdaptConfig.threshold_ = 0.0;
 
-	trainGrid(trainDataset, classes, SolverConfig, SolverConfig, AdaptConfig, SLESystem, false);
+	return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
 }
 
 sg::base::DataVector LearnerBase::test(sg::base::DataMatrix& testDataset)
@@ -217,7 +294,7 @@ void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename)
 	// @TODO (heinecke)
 }
 
-double LearnerBase::getAccuracy(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold = 0.0)
+double LearnerBase::getAccuracy(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold)
 {
 	// evaluate test dataset
 	sg::base::DataVector classesComputed = test(testDataset);
@@ -225,7 +302,7 @@ double LearnerBase::getAccuracy(sg::base::DataMatrix& testDataset, const sg::bas
 	return getAccuracy(classesComputed, classesReference, threshold);
 }
 
-double LearnerBase::getAccuracy(const sg::base::DataVector& classesComputed, const sg::base::DataVector& classesReference, const double threshold = 0.0)
+double LearnerBase::getAccuracy(const sg::base::DataVector& classesComputed, const sg::base::DataVector& classesReference, const double threshold)
 {
 	double result = -1.0;
 
@@ -248,8 +325,8 @@ double LearnerBase::getAccuracy(const sg::base::DataVector& classesComputed, con
 
 		for(size_t i = 0; i < classesComputed.getSize(); i++)
 		{
-			if( (classesComputed[i] >= threshold && classesReference[i] >= 0.0)
-					|| (classesComputed[i] < threshold && classesReference[i] < 0.0) )
+			if( (classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0)
+					|| (classesComputed.get(i) < threshold && classesReference.get(i) < 0.0) )
 			{
 				correct++;
 			}
@@ -261,7 +338,7 @@ double LearnerBase::getAccuracy(const sg::base::DataVector& classesComputed, con
 	return result;
 }
 
-ClassificatorQuality LearnerBase::getCassificatorQuality(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold = 0.0)
+ClassificatorQuality LearnerBase::getCassificatorQuality(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold)
 {
 	// evaluate test dataset
 	sg::base::DataVector classesComputed = test(testDataset);
@@ -269,7 +346,7 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(sg::base::DataMatrix& t
 	return getCassificatorQuality(classesComputed, classesReference, threshold);
 }
 
-ClassificatorQuality LearnerBase::getCassificatorQuality(const sg::base::DataVector& classesComputed, const sg::base::DataVector& classesReference, const double threshold = 0.0)
+ClassificatorQuality LearnerBase::getCassificatorQuality(const sg::base::DataVector& classesComputed, const sg::base::DataVector& classesReference, const double threshold)
 {
 	ClassificatorQuality result;
 
@@ -285,19 +362,19 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(const sg::base::DataVec
 
 	for(size_t i = 0; i < classesComputed.getSize(); i++)
 	{
-		if( (classesComputed[i] >= threshold && classesReference[i] >= 0) )
+		if( (classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0) )
 		{
 			result.truePositive_++;
 		}
-		else if( (classesComputed[i] < threshold && classesReference[i] < 0) )
+		else if( (classesComputed.get(i) < threshold && classesReference.get(i) < 0.0) )
 		{
 			result.trueNegative_++;
 		}
-		else if( (classesComputed[i] >= threshold && classesReference[i] < 0) )
+		else if( (classesComputed.get(i) >= threshold && classesReference.get(i) < 0.0) )
 		{
 			result.falsePositive_++;
 		}
-		else // ( (classesComputed[i] < threshold && classesReference[i] >= 0) )
+		else // ( (classesComputed.get(i) < threshold && classesReference.get(i) >= 0) )
 		{
 			result.falseNegative_++;
 		}
@@ -311,14 +388,14 @@ bool LearnerBase::getIsRegression() const
 	return isRegression_;
 }
 
-bool LearnerBase::getVerbose() const
+bool LearnerBase::getIsVerbose() const
 {
-	return verbose_;
+	return isVerbose_;
 }
 
-void LearnerBase::setVerbose(bool verbose)
+void LearnerBase::setIsVerbose(const bool isVerbose)
 {
-	verbose_ = verbose;
+	isVerbose_ = isVerbose;
 }
 
 }
