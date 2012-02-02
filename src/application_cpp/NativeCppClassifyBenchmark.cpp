@@ -201,13 +201,13 @@ void printResults()
     std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds" << std::endl;
     std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ << " seconds" << std::endl;
     std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ << " seconds" << std::endl;
-    std::cout << std::endl << std::endl;
+    std::cout << std::endl;
     std::cout << "GFlop/s (complete): " << gtimings.GFlop_/gtimings.timeComplete_ << std::endl;
     std::cout << "GByte/s (complete): " << gtimings.GByte_/gtimings.timeComplete_ << std::endl;
     std::cout << "GFlop/s (compute): " << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl;
-    std::cout << "GByte/s (compute): " << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl;
+    std::cout << "GByte/s (compute): " << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl << std::endl;
 #else
-    std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision, recursive)" << std::endl;
+    std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision, recursive)" << std::endl << std::endl;
 #endif
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;

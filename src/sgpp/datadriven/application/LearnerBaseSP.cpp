@@ -156,11 +156,11 @@ LearnerTiming LearnerBaseSP::train(sg::base::DataMatrixSP& trainDataset, sg::bas
 
 	sg::solver::SLESolverSP* myCG;
 
-	if (SolverConfigRefine.type_ != sg::solver::CG)
+	if (SolverConfigRefine.type_ == sg::solver::CG)
 	{
 		myCG = new sg::solver::ConjugateGradientsSP(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
 	}
-	else if (SolverConfigRefine.type_ != sg::solver::BiCGSTAB)
+	else if (SolverConfigRefine.type_ == sg::solver::BiCGSTAB)
 	{
 		myCG = new sg::solver::BiCGStabSP(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
 	}
