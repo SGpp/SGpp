@@ -24,6 +24,7 @@ LearnerVectorizedSP::LearnerVectorizedSP(const std::string tGridFilename, const 
 		const VectorizationType vecType, const bool isRegression, const bool verbose)
 	: sg::datadriven::LearnerBaseSP(tGridFilename, tAlphaFilename, isRegression, verbose), vecType_(vecType)
 {
+	// @TODO implement
 }
 
 LearnerVectorizedSP::~LearnerVectorizedSP()
@@ -44,8 +45,8 @@ void LearnerVectorizedSP::postProcessing(const sg::base::DataMatrixSP& trainData
 	LearnerVectorizedPerformance currentPerf = LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(*this->grid_,
 			trainDataset.getNrows(), solver, numNeededIterations, sizeof(float));
 
-	this->GFlop_ = currentPerf.GFlop_;
-	this->GByte_ = currentPerf.GByte_;
+	this->GFlop_ += currentPerf.GFlop_;
+	this->GByte_ += currentPerf.GByte_;
 
 	// Caluate GFLOPS and GBytes/s and write them to console
 	if (this->isVerbose_)

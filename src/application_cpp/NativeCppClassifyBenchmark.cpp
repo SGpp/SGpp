@@ -1,15 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "sgpp_base.hpp"
-#include "sgpp_pde.hpp"
-#include "sgpp_finance.hpp"
 #include "sgpp_parallel.hpp"
-#include "sgpp_solver.hpp"
 #include "sgpp_datadriven.hpp"
 
 #include <string>
@@ -25,14 +22,14 @@
 #define ITERATIVE
 
 bool bUseFloat;
-std::string vectorization;
+
 std::string ggridtype;
 std::string gdataFile;
-std::string gtestFile
+std::string gtestFile;
 bool gisRegression;
-sg::datadriven::ClassificatorQuality TrainQual;
-sg::datadriven::ClassificatorQuality TestQual;
-sg::datadriven::LearnerTiming timings;
+sg::datadriven::ClassificatorQuality gTrainQual;
+sg::datadriven::ClassificatorQuality gTestQual;
+sg::datadriven::LearnerTiming gtimings;
 double gtrainAcc;
 double gtestAcc;
 sg::solver::SLESolverConfiguration gSLEfinal;
@@ -159,63 +156,58 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 
 void printResults()
 {
-	double gflops = 0.0;
-	double gbytes = 0.0;
-
 	if (gisRegression)
 	{
-		std::cout << "Training MSE: " << gtrainAcc << std::endl;
-		std::cout << "Test MSE: " << gtestAcc << std::endl;
+		std::cout << "training MSE: " << gtrainAcc << std::endl;
+		std::cout << "testing MSE: " << gtestAcc << std::endl;
 	}
 	else
 	{
-		double trainSens = TrainQual.truePositive_/(TrainQual.truePositive_ + TrainQual.falseNegative_);
-		double trainSpec = TrainQual.trueNegative_/(TrainQual.trueNegative_ + TrainQual.falsePositive_);
-		double trainPrec = TrainQual.truePositive_/(TrainQual.truePositive_ + TrainQual.falsePositive_);
+		double trainSens = static_cast<double>(gTrainQual.truePositive_)/static_cast<double>(gTrainQual.truePositive_ + gTrainQual.falseNegative_);
+		double trainSpec = static_cast<double>(gTrainQual.trueNegative_)/static_cast<double>(gTrainQual.trueNegative_ + gTrainQual.falsePositive_);
+		double trainPrec = static_cast<double>(gTrainQual.truePositive_)/static_cast<double>(gTrainQual.truePositive_ + gTrainQual.falsePositive_);
 
-		double testSens = TestQual.truePositive_/(TestQual.truePositive_ + TestQual.falseNegative_);
-		double testSpec = TestQual.trueNegative_/(TestQual.trueNegative_ + TestQual.falsePositive_);
-		double testPrec = TestQual.truePositive_/(TestQual.truePositive_ + TestQual.falsePositive_);
+		double testSens = static_cast<double>(gTestQual.truePositive_)/static_cast<double>(gTestQual.truePositive_ + gTestQual.falseNegative_);
+		double testSpec = static_cast<double>(gTestQual.trueNegative_)/static_cast<double>(gTestQual.trueNegative_ + gTestQual.falsePositive_);
+		double testPrec = static_cast<double>(gTestQual.truePositive_)/static_cast<double>(gTestQual.truePositive_ + gTestQual.falsePositive_);
 
 		std::cout << "training accuracy: " << gtrainAcc << std::endl;
 		std::cout << "training sensitivity: " << trainSens << std::endl;
 		std::cout << "training specificity: " << trainSpec << std::endl;
 		std::cout << "training precision: " << trainPrec << std::endl << std::endl;
-		std::cout << "training true positives: " << TrainQual.truePositive_ << std::endl;
-		std::cout << "training true negatives: " << TrainQual.trueNegative_ << std::endl;
-		std::cout << "training false positives: " << TrainQual.falsePositive_ << std::endl;
-		std::cout << "training false negatives: " << TrainQual.falseNegative_ << std::endl << std::endl;
+		std::cout << "training true positives: " << gTrainQual.truePositive_ << std::endl;
+		std::cout << "training true negatives: " << gTrainQual.trueNegative_ << std::endl;
+		std::cout << "training false positives: " << gTrainQual.falsePositive_ << std::endl;
+		std::cout << "training false negatives: " << gTrainQual.falseNegative_ << std::endl << std::endl;
 
 		std::cout << "testing accuracy: " << gtestAcc << std::endl;
-		std::cout << "testing sensitivity: " << TestQual.truePositive_/TestQual.truePositive_ + TestQual.falseNegative_) << std::endl;
-		std::cout << "testing specificity: " << TestQual.trueNegative_/(TestQual.trueNegative_ + TestQual.falsePositive_) << std::endl;
-		std::cout << "testing precision: " << TestQual.truePositive_/(TestQual.truePositive_ + TestQual.falsePositive_) << std::endl << std::endl;
-		std::cout << "testing true positives: " << TestQual.truePositive_ << std::endl;
-		std::cout << "testing true negatives: " << TestQual.trueNegative_ << std::endl;
-		std::cout << "testing false positives: " << TestQual.falsePositive_ << std::endl;
-		std::cout << "testing false negatives: " << TestQual.falseNegative_ << std::endl << std::endl;
+		std::cout << "testing sensitivity: " << testSens << std::endl;
+		std::cout << "testing specificity: " << testSpec << std::endl;
+		std::cout << "testing precision: " << testPrec << std::endl << std::endl;
+		std::cout << "testing true positives: " << gTestQual.truePositive_ << std::endl;
+		std::cout << "testing true negatives: " << gTestQual.trueNegative_ << std::endl;
+		std::cout << "testing false positives: " << gTestQual.falsePositive_ << std::endl;
+		std::cout << "testing false negatives: " << gTestQual.falseNegative_ << std::endl << std::endl;
 
 	}
     std::cout << std::endl;
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
-
-
 #ifdef ITERATIVE
-    std::cout << "Needed time: " << timings.timeComplete_ << " seconds (Double Precision)" << std::endl;
+    std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
-    std::cout << "         mult (complete): " << timings.timeMultComplete_ << " seconds" << std::endl;
-    std::cout << "         mult (compute) : " << timings.timeMultCompute_ << " seconds" << std::endl;
-    std::cout << "  mult trans. (complete): " << timings.timeMultTransComplete_ << " seconds" << std::endl;
-    std::cout << "  mult trans. (compute) : " << timings.timeMultTransCompute_ << " seconds" << std::endl;
+    std::cout << "         mult (complete): " << gtimings.timeMultComplete_ << " seconds" << std::endl;
+    std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds" << std::endl;
+    std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ << " seconds" << std::endl;
+    std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ << " seconds" << std::endl;
     std::cout << std::endl << std::endl;
-    std::cout << "GFlop/s (complete): " << timings.GFlop_/timings.timeComplete_ << std::endl;
-    std::cout << "GByte/s (complete): " << timings.GByte_/timings.timeComplete_ << std::endl;
-    std::cout << "GFlop/s (compute): " << timings.GFlop_/(timings.timeMultCompute_+timings.timeMultTransCompute_) << std::endl;
-    std::cout << "GByte/s (compute): " << timings.GByte_/(timings.timeMultCompute_+timings.timeMultTransCompute_) << std::endl;
+    std::cout << "GFlop/s (complete): " << gtimings.GFlop_/gtimings.timeComplete_ << std::endl;
+    std::cout << "GByte/s (complete): " << gtimings.GByte_/gtimings.timeComplete_ << std::endl;
+    std::cout << "GFlop/s (compute): " << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl;
+    std::cout << "GByte/s (compute): " << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl;
 #else
-    std::cout << "Needed time: " << timings.timeComplete_ << " seconds (Double Precision, recursive)" << std::endl;
+    std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision, recursive)" << std::endl;
 #endif
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
@@ -223,10 +215,10 @@ void printResults()
 	std::cout << "$" << gdataFile << ";" << gtestFile << ";" << gisRegression << ";" << bUseFloat << ";"
 	<< ggridtype << ";" << gstart_level << ";" << glambda << ";" << gSLEfinal.maxIterations_ << ";" << gSLEfinal.eps_ << ";"
 	<< gAdapConfig.numRefinements_ << ";"  << gAdapConfig.threshold_ << ";" << gAdapConfig.noPoints_ << ";"
-	<< gtrainAcc << ";" << gtestAcc << ";" << timings.timeComplete_ << ";" << timings.timeMultComplete_
-	<< ";" << timings.timeMultCompute_ << ";" << timings.timeMultTransComplete_ << ";" << timings.timeMultTransCompute_
-	<< ";" << timings.GFlop_/timings.timeComplete_ << ";"
-	<< timings.GByte_/timings.timeComplete_ <<  std::endl << std::endl;
+	<< gtrainAcc << ";" << gtestAcc << ";" << gtimings.timeComplete_ << ";" << gtimings.timeMultComplete_
+	<< ";" << gtimings.timeMultCompute_ << ";" << gtimings.timeMultTransComplete_ << ";" << gtimings.timeMultTransCompute_
+	<< ";" << gtimings.GFlop_/gtimings.timeComplete_ << ";"
+	<< gtimings.GByte_/gtimings.timeComplete_ <<  std::endl << std::endl;
 }
 
 void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,
@@ -234,13 +226,7 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
 		const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
 		const double lambda, const sg::parallel::VectorizationType vecType)
 {
-    double trainAcc = 0.0;
-    double testAcc = 0.0;
-
     sg::datadriven::LearnerBase* myLearner;
-    sg::datadriven::LearnerTiming myTiming;
-    sg::datadriven::ClassificatorQuality myQualityTrain;
-    sg::datadriven::ClassificatorQuality myQualityTest;
 
 #ifdef ITERATIVE
     myLearner = new sg::parallel::LearnerVectorized(vecType, isRegression, true);
@@ -248,11 +234,10 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
     //sg::base::OperationMatrix* myC = sg::op_factory::createOperationIdentity(*myGrid);
     //myLearner = new sg::parallel::Learner(C, isRegression, true);
 #endif
+    gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
 
-    myTiming = myLearner->train(data, classes, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
-
-	trainAcc = myLearner->getAccuracy(data, classes);
-	testAcc = myLearner->getAccuracy(testdata, testclasses);
+	gtrainAcc = myLearner->getAccuracy(data, classes);
+	gtestAcc = myLearner->getAccuracy(testdata, testclasses);
 
 	// test datast
 	if (isRegression)
@@ -260,9 +245,8 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
 	}
 	else
 	{
-		myQualityTrain = myLearner->getCassificatorQuality(data, classes);
-		myQualityTest = myLearner->getCassificatorQuality(testdata, testclasses);
-
+		gTrainQual = myLearner->getCassificatorQuality(data, classes);
+		gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
 	}
 
 #ifdef GNUPLOT
@@ -272,6 +256,8 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
 #ifndef ITERATIVE
     //delete myC;
 #endif
+
+    printResults();
 }
 
 void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVectorSP& classesSP, sg::base::DataMatrixSP& testdataSP, sg::base::DataVectorSP& testclassesSP, bool isRegression,
@@ -279,19 +265,12 @@ void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVec
 		const sg::solver::SLESolverSPConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
 		const float lambda, const sg::parallel::VectorizationType vecType)
 {
-    double trainAcc = 0.0;
-    double testAcc = 0.0;
-
     sg::datadriven::LearnerBaseSP* myLearner;
-    sg::datadriven::LearnerTiming myTiming;
-    sg::datadriven::ClassificatorQuality myQualityTrain;
-    sg::datadriven::ClassificatorQuality myQualityTest;
-
     myLearner = new sg::parallel::LearnerVectorizedSP(vecType, isRegression, true);
-    myTiming = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
+    gtimings = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
 
-	trainAcc = myLearner->getAccuracy(dataSP, classesSP);
-	testAcc = myLearner->getAccuracy(testdataSP, testclassesSP);
+	gtrainAcc = myLearner->getAccuracy(dataSP, classesSP);
+	gtestAcc = myLearner->getAccuracy(testdataSP, testclassesSP);
 
 	// test datast
 	if (isRegression)
@@ -299,15 +278,16 @@ void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVec
 	}
 	else
 	{
-		myQualityTrain = myLearner->getCassificatorQuality(dataSP, classesSP);
-		myQualityTest = myLearner->getCassificatorQuality(testdataSP, testclassesSP);
-
+		gTrainQual = myLearner->getCassificatorQuality(dataSP, classesSP);
+		gTestQual = myLearner->getCassificatorQuality(testdataSP, testclassesSP);
 	}
 
 #ifdef GNUPLOT
 #endif
 
     delete myLearner;
+
+    printResults();
 }
 
 /**
@@ -466,7 +446,6 @@ int main(int argc, char *argv[])
 		size_t nDim = ARFFTool.getDimension(tfileTrain);
 		size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
 		size_t nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
-		size_t nGridsize = 0;
 
 		// Define DP data
 		sg::base::DataMatrix data(nInstancesNo, nDim);
@@ -491,10 +470,9 @@ int main(int argc, char *argv[])
 	    sg::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(testdata, testdataSP);
 	    sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(testclasses, testclassesSP);
 
-		std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
-
 		// Set Grid-Information
 		gridConfig.dim_ = nDim;
+		ggridtype = gridtype;
 		if (gridtype == "linearboundary")
 		{
 			gridConfig.type_ = sg::base::LinearTrapezoidBoundary;
@@ -513,19 +491,36 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 		gridConfig.level_ = start_level;
+		glambda = lambda;
+		gisRegression = regression;
+		gdataFile = dataFile;
+		gtestFile = testFile;
+		gSLEfinal = SLESolverConfigFinal;
+		gAdapConfig = adaptConfig;
+		gstart_level = start_level;
 
+
+		std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
 		if (precision == "SP")
 		{
 			bUseFloat = true;
+
+			printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
+							SLESolverConfigFinal, adaptConfig, lambda, vecType);
+
 			adaptClassificationTestSP(dataSP, classesSP, testdataSP, testclassesSP, regression, gridConfig, SLESolverSPConfigRefine,
 					SLESolverSPConfigFinal, adaptConfig, (float)lambda, vecType);
 		}
 		else if (precision == "DP")
 		{
 			bUseFloat = false;
+
+			printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
+							SLESolverConfigFinal, adaptConfig, lambda, vecType);
+
 			adaptClassificationTest(data, classes, testdata, testclasses, regression, gridConfig, SLESolverConfigRefine,
-					SLESolverConfigFinal, adaptConfig, (float)lambda, vecType);
+					SLESolverConfigFinal, adaptConfig, lambda, vecType);
 		}
 		else
 		{

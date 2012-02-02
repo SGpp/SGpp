@@ -21,6 +21,8 @@
 #include "datadriven/operation/OperationRegularizationDiagonal.hpp"
 #include "datadriven/operation/OperationTest.hpp"
 
+#include "datadriven/tools/ARFFTools.hpp"
+
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 
 #endif /* DATADRIVEN_HPP */
