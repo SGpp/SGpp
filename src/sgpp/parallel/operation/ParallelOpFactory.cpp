@@ -147,7 +147,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeOCLModLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
+        else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
           }
@@ -186,7 +186,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
+        else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
@@ -197,7 +197,7 @@ namespace op_factory
             return new parallel::OperationMultipleEvalIterativeSPArBBLinear(grid.getStorage(), dataset);
           }
 #endif
-#ifdef USEOCL
+#ifdef USEMIC
         else if (vecType == parallel::MIC)
           {
             return new parallel::OperationMultipleEvalIterativeSPMICLinear(grid.getStorage(), dataset);
@@ -224,7 +224,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
+        else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear(grid.getStorage(), dataset);
           }
@@ -261,7 +261,7 @@ namespace op_factory
           {
             return new parallel::OperationMultipleEvalIterativeSPOCLModLinear(grid.getStorage(), dataset);
           }
-        else if (vecType == parallel::Hybrid_X86SIMD_OCL)
+        else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
             return new parallel::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
           }
