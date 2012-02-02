@@ -24,14 +24,18 @@
 // Use fast iterative methods
 #define ITERATIVE
 
-// do Test only after last refinement
-#define TEST_LAST_ONLY
-
-// store ROC curve
-//#define STORE_ROC_CURVE
-#define ROC_POINTS 40
-
 bool bUseFloat;
+std::string vectorization;
+std::string ggridtype;
+std::string gdataFile;
+std::string gtestFile
+bool isRegression;
+sg::datadriven::ClassificatorQuality TrainQual;
+sg::datadriven::ClassificatorQuality TestQual;
+sg::datadriven::LearnerTiming timings;
+double gtrainAcc;
+double gtestAcc;
+sg::solver::SLESolverConfiguration gSLEfinal;
 
 void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
 {
@@ -152,52 +156,73 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 
 void printResults()
 {
+	double trainSens = 1.0;
+	double trainSpec = 1.0;
+	double trainPrec = 1.0;
 
-//	std::cout << "Training MSE: " << trainAcc << std::endl;
-//	std::cout << "Test MSE: " << testAcc << std::endl << std::endl;
+	double testSens = 1.0;
+	double testSpec = 1.0;
+	double testPrec = 1.0;
 
-//	std::cout << "training accuracy: " << trainAcc << std::endl;
-//	std::cout << "training sensitivity: " << myQualityTrain.truePositive_/(charNumbers[0] + charNumbers[3]) << std::endl;
-//	std::cout << "training specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
-//	std::cout << "training precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
-//	std::cout << "training true positives: " << charNumbers[0] << std::endl;
-//	std::cout << "training true negatives: " << charNumbers[1] << std::endl;
-//	std::cout << "training false positives: " << charNumbers[2] << std::endl;
-//	std::cout << "training false negatives: " << charNumbers[3] << std::endl << std::endl;
-//
-//	std::cout << "testing accuracy: " << testAcc << std::endl;
-//	std::cout << "testing sensitivity: " << myQualityTrain.truePositive_/(charNumbers[0] + charNumbers[3]) << std::endl;
-//	std::cout << "testing specificity: " << charNumbers[1]/(charNumbers[1] + charNumbers[2]) << std::endl;
-//	std::cout << "testing precision: " << charNumbers[0]/(charNumbers[0] + charNumbers[2]) << std::endl << std::endl;
-//	std::cout << "testing true positives: " << charNumbers[0] << std::endl;
-//	std::cout << "testing true negatives: " << charNumbers[1] << std::endl;
-//	std::cout << "testing false positives: " << charNumbers[2] << std::endl;
-//	std::cout << "testing false negatives: " << charNumbers[3] << std::endl << std::endl;
+	if (isRegression)
+	{
+		std::cout << "Training MSE: " << gtrainAcc << std::endl;
+		std::cout << "Test MSE: " << gtestAcc << std::endl;
+	}
+	else
+	{
+		double trainSens = TrainQual.truePositive_/(TrainQual.truePositive_ + TrainQual.falseNegative_);
+		double trainSpec = TrainQual.trueNegative_/(TrainQual.trueNegative_ + TrainQual.falsePositive_);
+		double trainPrec = TrainQual.truePositive_/(TrainQual.truePositive_ + TrainQual.falsePositive_);
 
-//    std::cout << std::endl;
-//    std::cout << "===============================================================" << std::endl;
-//
-//#ifdef ITERATIVE
-//    std::cout << "Needed time: " << myTiming.timeComplete_ << " seconds (Double Precision)" << std::endl;
-//    std::cout << std::endl << "Timing Details:" << std::endl;
-//    std::cout << "         mult (complete): " << myTiming.timeMultComplete_ << " seconds" << std::endl;
-//    std::cout << "         mult (compute) : " << myTiming.timeMultCompute_ << " seconds" << std::endl;
-//    std::cout << "  mult trans. (complete): " << myTiming.timeMultTransComplete_ << " seconds" << std::endl;
-//    std::cout << "  mult trans. (compute) : " << myTiming.timeMultTransCompute_ << " seconds" << std::endl;
-//    std::cout << std::endl << std::endl;
-//    std::cout << "GFlop/s (complete): " << myTiming.GFlop_/myTiming.timeComplete_ << std::endl;
-//    std::cout << "GByte/s (complete): " << myTiming.GByte_/myTiming.timeComplete_ << std::endl;
-//    std::cout << "GFlop/s (compute): " << myTiming.GFlop_/(myTiming.timeMultCompute_+myTiming.timeMultTransCompute_) << std::endl;
-//    std::cout << "GByte/s (compute): " << myTiming.GByte_/(myTiming.timeMultCompute_+myTiming.timeMultTransCompute_) << std::endl;
-//#else
-//    std::cout << "Needed time: " << execTime << " seconds (Double Precision, recursive)" << std::endl;
-//#endif
-//    std::cout << "===============================================================" << std::endl;
-//    std::cout << std::endl;
+		double testSens = TestQual.truePositive_/(TestQual.truePositive_ + TestQual.falseNegative_);
+		double testSpec = TestQual.trueNegative_/(TestQual.trueNegative_ + TestQual.falsePositive_);
+		double testPrec = TestQual.truePositive_/(TestQual.truePositive_ + TestQual.falsePositive_);
 
-//	std::cout << "$" << dataFile << ";" << testFile << ";" << isRegression << ";" << bUseFloat << ";" << gridtype << ";" << start_level
-//	<< ";" << lambda << ";" << cg_max << ";" << cg_eps << ";" << refine_count << ";"  << refine_thresh
-//	<< ";" << refine_points << ";" << gridsize << ";" << finaltr << ";" << finalte << ";" << time << std::endl << std::endl;
+		std::cout << "training accuracy: " << gtrainAcc << std::endl;
+		std::cout << "training sensitivity: " << trainSens << std::endl;
+		std::cout << "training specificity: " << trainSpec << std::endl;
+		std::cout << "training precision: " << trainPrec << std::endl << std::endl;
+		std::cout << "training true positives: " << TrainQual.truePositive_ << std::endl;
+		std::cout << "training true negatives: " << TrainQual.trueNegative_ << std::endl;
+		std::cout << "training false positives: " << TrainQual.falsePositive_ << std::endl;
+		std::cout << "training false negatives: " << TrainQual.falseNegative_ << std::endl << std::endl;
+
+		std::cout << "testing accuracy: " << gtestAcc << std::endl;
+		std::cout << "testing sensitivity: " << TestQual.truePositive_/TestQual.truePositive_ + TestQual.falseNegative_) << std::endl;
+		std::cout << "testing specificity: " << TestQual.trueNegative_/(TestQual.trueNegative_ + TestQual.falsePositive_) << std::endl;
+		std::cout << "testing precision: " << TestQual.truePositive_/(TestQual.truePositive_ + TestQual.falsePositive_) << std::endl << std::endl;
+		std::cout << "testing true positives: " << TestQual.truePositive_ << std::endl;
+		std::cout << "testing true negatives: " << TestQual.trueNegative_ << std::endl;
+		std::cout << "testing false positives: " << TestQual.falsePositive_ << std::endl;
+		std::cout << "testing false negatives: " << TestQual.falseNegative_ << std::endl << std::endl;
+
+	}
+    std::cout << std::endl;
+    std::cout << "===============================================================" << std::endl;
+    std::cout << std::endl;
+
+#ifdef ITERATIVE
+    std::cout << "Needed time: " << timings.timeComplete_ << " seconds (Double Precision)" << std::endl;
+    std::cout << std::endl << "Timing Details:" << std::endl;
+    std::cout << "         mult (complete): " << timings.timeMultComplete_ << " seconds" << std::endl;
+    std::cout << "         mult (compute) : " << timings.timeMultCompute_ << " seconds" << std::endl;
+    std::cout << "  mult trans. (complete): " << timings.timeMultTransComplete_ << " seconds" << std::endl;
+    std::cout << "  mult trans. (compute) : " << timings.timeMultTransCompute_ << " seconds" << std::endl;
+    std::cout << std::endl << std::endl;
+    std::cout << "GFlop/s (complete): " << timings.GFlop_/timings.timeComplete_ << std::endl;
+    std::cout << "GByte/s (complete): " << timings.GByte_/timings.timeComplete_ << std::endl;
+    std::cout << "GFlop/s (compute): " << timings.GFlop_/(timings.timeMultCompute_+timings.timeMultTransCompute_) << std::endl;
+    std::cout << "GByte/s (compute): " << timings.GByte_/(timings.timeMultCompute_+timings.timeMultTransCompute_) << std::endl;
+#else
+    std::cout << "Needed time: " << timings.timeComplete_ << " seconds (Double Precision, recursive)" << std::endl;
+#endif
+    std::cout << "===============================================================" << std::endl;
+    std::cout << std::endl;
+
+	std::cout << "$" << gdataFile << ";" << gtestFile << ";" << gisRegression << ";" << bUseFloat << ";"
+	<< ggridtype << ";" << start_level << ";" << glambda << ";" << gSLEfinal << ";" << cg_eps << ";" << refine_count << ";"  << refine_thresh
+	<< ";" << refine_points << ";" << gtrainAcc << ";" << gtestAcc << ";" << timings.timeComplete_ << ";" << timings.timeMultComplete_ << ";" << timings.timeMultCompute_ << ";" << timings.timeMultTransComplete_ << ";" << timings.timeMultTransCompute_ << std::endl << std::endl;
 
 }
 
