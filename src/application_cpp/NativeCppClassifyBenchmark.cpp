@@ -29,13 +29,16 @@ std::string vectorization;
 std::string ggridtype;
 std::string gdataFile;
 std::string gtestFile
-bool isRegression;
+bool gisRegression;
 sg::datadriven::ClassificatorQuality TrainQual;
 sg::datadriven::ClassificatorQuality TestQual;
 sg::datadriven::LearnerTiming timings;
 double gtrainAcc;
 double gtestAcc;
 sg::solver::SLESolverConfiguration gSLEfinal;
+sg::base::AdpativityConfiguration gAdapConfig;
+size_t gstart_level;
+double glambda;
 
 void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
 {
@@ -156,15 +159,10 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 
 void printResults()
 {
-	double trainSens = 1.0;
-	double trainSpec = 1.0;
-	double trainPrec = 1.0;
+	double gflops = 0.0;
+	double gbytes = 0.0;
 
-	double testSens = 1.0;
-	double testSpec = 1.0;
-	double testPrec = 1.0;
-
-	if (isRegression)
+	if (gisRegression)
 	{
 		std::cout << "Training MSE: " << gtrainAcc << std::endl;
 		std::cout << "Test MSE: " << gtestAcc << std::endl;
@@ -202,6 +200,8 @@ void printResults()
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
+
+
 #ifdef ITERATIVE
     std::cout << "Needed time: " << timings.timeComplete_ << " seconds (Double Precision)" << std::endl;
     std::cout << std::endl << "Timing Details:" << std::endl;
@@ -221,9 +221,12 @@ void printResults()
     std::cout << std::endl;
 
 	std::cout << "$" << gdataFile << ";" << gtestFile << ";" << gisRegression << ";" << bUseFloat << ";"
-	<< ggridtype << ";" << start_level << ";" << glambda << ";" << gSLEfinal << ";" << cg_eps << ";" << refine_count << ";"  << refine_thresh
-	<< ";" << refine_points << ";" << gtrainAcc << ";" << gtestAcc << ";" << timings.timeComplete_ << ";" << timings.timeMultComplete_ << ";" << timings.timeMultCompute_ << ";" << timings.timeMultTransComplete_ << ";" << timings.timeMultTransCompute_ << std::endl << std::endl;
-
+	<< ggridtype << ";" << gstart_level << ";" << glambda << ";" << gSLEfinal.maxIterations_ << ";" << gSLEfinal.eps_ << ";"
+	<< gAdapConfig.numRefinements_ << ";"  << gAdapConfig.threshold_ << ";" << gAdapConfig.noPoints_ << ";"
+	<< gtrainAcc << ";" << gtestAcc << ";" << timings.timeComplete_ << ";" << timings.timeMultComplete_
+	<< ";" << timings.timeMultCompute_ << ";" << timings.timeMultTransComplete_ << ";" << timings.timeMultTransCompute_
+	<< ";" << timings.GFlop_/timings.timeComplete_ << ";"
+	<< timings.GByte_/timings.timeComplete_ <<  std::endl << std::endl;
 }
 
 void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,
