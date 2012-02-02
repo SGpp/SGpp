@@ -56,6 +56,10 @@ struct LearnerTiming
 	double timeMultTransCompute_;
 	/// time of regularization
 	double timeRegularization_;
+	/// number of executed Floating Point operations
+	double GFlop_;
+	/// number of transferred Gbytes
+	double GByte_;
 };
 
 /**
@@ -80,14 +84,31 @@ protected:
 	bool isRegression_;
 	/// is the grid trained
 	bool isTrained_;
+	/// execution time
+	double execTime_;
+	/// number of executed Floating Point operations
+	double GFlop_;
+	/// number of transferred Gbytes
+	double GByte_;
+
+	/**
+	 * Hook-Method for pre-processing before
+	 * starting learning.
+	 *
+	 * can be overwritten by derived classes
+	 */
+	virtual void preProcessing();
 
 	/**
 	 * Hook-Method for post-processing after each
 	 * refinement learning.
 	 *
 	 * can be overwritten by derived classes
+	 *
+	 *
 	 */
-	virtual void postProcessing();
+	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+			const size_t numNeededIterations);
 
 	/**
 	 * Initialize the grid and its coefficients

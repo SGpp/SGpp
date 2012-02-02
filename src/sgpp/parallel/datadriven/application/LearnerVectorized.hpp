@@ -5,60 +5,67 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef LEARNER_HPP
-#define LEARNER_HPP
+#ifndef LEARNERVECTORIZED_HPP
+#define LEARNERVECTORIZED_HPP
 
 #include "datadriven/application/LearnerBase.hpp"
+
+#include "parallel/tools/TypesParallel.hpp"
 
 namespace sg
 {
 
-namespace datadriven
+namespace parallel
 {
 
 /**
  * This class implements standard sparse grid regression
- * with an arbitrary regularization operator
+ * with an Identity matrix as regularization operator.
+ *
+ * Furthermore this Learner provides support for several
+ * vectorization approaches covering GPUs, CPUs and coprocessors.
  */
-class Learner : public LearnerBase
+class LearnerVectorized : public sg::datadriven::LearnerBase
 {
 protected:
-	/// regularization operator
-	sg::base::OperationMatrix* C_;
+	/// vectorization selector
+	VectorizationType vecType_;
 
-	/// construct system matrix
 	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix trainDataset, double lambda);
+
+	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+			const size_t numNeededIterations);
 
 public:
 	/**
 	 * Constructor
 	 *
-	 * @param regularization OperationMatrix instance that implements the regularization operator C
+	 * @param vecType selection of vectorization to employ
 	 * @param isRegression
 	 * @param verbose
 	 */
-	Learner(sg::base::OperationMatrix& regularization, const bool isRegression, const bool isVerbose = true);
+	LearnerVectorized(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
 	 *
 	 * @param tGridFilename path to file that contains a serialized grid
 	 * @param tAlphaFilenment path to file that contains the grid's coefficients
-	 * @param regularization OperationMatrix instance that implements the regularization operator C
+	 * @param vecType selection of vectorization to employ
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param verbose set to true in order to allow console output
 	 */
-	Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::base::OperationMatrix& regularization,
+	LearnerVectorized(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
 			const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~Learner();
+	virtual ~LearnerVectorized();
 };
 
 }
 
 }
 
-#endif /* LEARNER_HPP */
+#endif /* LEARNERVECTORIZED_HPP */

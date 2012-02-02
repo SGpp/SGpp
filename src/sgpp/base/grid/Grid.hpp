@@ -442,7 +442,7 @@ public:
 	 * Returns the number of points on the grid
 	 * @return the number of points on the grid
 	 */
-	int getSize();
+	size_t getSize();
 
 	/**
 	 * returns the algorithmic dimensions (the dimensions in which the Up Down
