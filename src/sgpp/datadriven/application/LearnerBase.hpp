@@ -85,7 +85,7 @@ protected:
 	 * @param trainDataset training dataset
 	 * @param lambda lambda regularization parameter
 	 */
-	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix trainDataset, double lambda) = 0;
+	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda) = 0;
 
 public:
 	/**

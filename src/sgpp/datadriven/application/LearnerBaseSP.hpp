@@ -13,7 +13,7 @@
 #include "base/datatypes/DataMatrixSP.hpp"
 #include "base/tools/PrecisionConverter.hpp"
 
-#include "solver/SLESolver.hpp"
+#include "solver/SLESolverSP.hpp"
 
 #include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
 #include "datadriven/tools/TypesDatadriven.hpp"
@@ -88,7 +88,7 @@ protected:
 	 * @param trainDataset training dataset
 	 * @param lambda lambda regularization parameter
 	 */
-	virtual sg::datadriven::DMSystemMatrixBaseSP* createDMSystem(sg::base::DataMatrixSP trainDataset, double lambda) = 0;
+	virtual sg::datadriven::DMSystemMatrixBaseSP* createDMSystem(sg::base::DataMatrixSP& trainDataset, float lambda) = 0;
 
 public:
 	/**

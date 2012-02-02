@@ -9,6 +9,7 @@
 #define PARALLEL_HPP
 
 #include "parallel/datadriven/application/LearnerVectorized.hpp"
+#include "parallel/datadriven/application/LearnerVectorizedSP.hpp"
 
 #include "parallel/operation/ParallelOpFactory.hpp"
 

@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef LEARNERVECTORIZED_HPP
-#define LEARNERVECTORIZED_HPP
+#ifndef LEARNERVECTORIZEDSP_HPP
+#define LEARNERVECTORIZEDSP_HPP
 
-#include "datadriven/application/LearnerBase.hpp"
+#include "datadriven/application/LearnerBaseSP.hpp"
 
 #include "parallel/tools/TypesParallel.hpp"
 
@@ -24,16 +24,18 @@ namespace parallel
  *
  * Furthermore this Learner provides support for several
  * vectorization approaches covering GPUs, CPUs and coprocessors.
+ *
+ * This version supports single precision floating point numbers.
  */
-class LearnerVectorized : public sg::datadriven::LearnerBase
+class LearnerVectorizedSP : public sg::datadriven::LearnerBaseSP
 {
 protected:
 	/// vectorization selector
 	VectorizationType vecType_;
 
-	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+	virtual sg::datadriven::DMSystemMatrixBaseSP* createDMSystem(sg::base::DataMatrixSP& trainDataset, float lambda);
 
-	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+	virtual void postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,
 			const size_t numNeededIterations);
 
 public:
@@ -44,7 +46,7 @@ public:
 	 * @param isRegression
 	 * @param verbose
 	 */
-	LearnerVectorized(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
+	LearnerVectorizedSP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
@@ -55,17 +57,17 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param verbose set to true in order to allow console output
 	 */
-	LearnerVectorized(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
+	LearnerVectorizedSP(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
 			const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~LearnerVectorized();
+	virtual ~LearnerVectorizedSP();
 };
 
 }
 
 }
 
-#endif /* LEARNERVECTORIZED_HPP */
+#endif /* LEARNERVECTORIZEDSP_HPP */

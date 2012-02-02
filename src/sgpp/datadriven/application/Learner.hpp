@@ -27,7 +27,7 @@ protected:
 	sg::base::OperationMatrix* C_;
 
 	/// construct system matrix
-	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix trainDataset, double lambda);
+	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
 
 public:
 	/**
