@@ -16,20 +16,43 @@ namespace sg
 namespace datadriven
 {
 
+/**
+ * This class implements standard sparse grid regression
+ * with an arbitrary regularization operator
+ */
 class Learner : public LearnerBase
 {
 protected:
 	/// regularization operator
 	sg::base::OperationMatrix* C_;
-
+	/// construct system matrix
 	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix trainDataset, double lambda);
 
 public:
+	/**
+	 * Constructor
+	 *
+	 * @param regularization OperationMatrix instance that implements the regularization operator C
+	 * @param isRegression
+	 * @param verbose
+	 */
 	Learner(sg::base::OperationMatrix& regularization, const bool isRegression, const bool isVerbose = true);
 
+	/**
+	 * Constructor
+	 *
+	 * @param tGridFilename path to file that contains a serialized grid
+	 * @param tAlphaFilenment path to file that contains the grid's coefficients
+	 * @param regularization OperationMatrix instance that implements the regularization operator C
+	 * @param isRegression set to true if a regression task should be executed
+	 * @param verbose set to true in order to allow console output
+	 */
 	Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::base::OperationMatrix& regularization,
 			const bool isRegression, const bool isVerbose = true);
 
+	/**
+	 * Destructor
+	 */
 	virtual ~Learner();
 };
 
