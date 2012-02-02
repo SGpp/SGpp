@@ -8,6 +8,8 @@
 #ifndef PARALLEL_HPP
 #define PARALLEL_HPP
 
+#include "parallel/datadriven/application/LearnerVectorized.hpp"
+
 #include "parallel/operation/ParallelOpFactory.hpp"
 
 #endif /* PARALLEL_HPP */

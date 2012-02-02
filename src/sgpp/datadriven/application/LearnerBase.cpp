@@ -27,12 +27,12 @@ namespace datadriven
 {
 
 LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
-	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false)
+	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(0.0), GFlop_(0.0), GByte_(0.0)
 {
 }
 
 LearnerBase::LearnerBase(const std::string tGridFilename, const std::string tAlphaFilename, const bool isRegression, const bool isVerbose)
-	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false)
+	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(0.0), GFlop_(0.0), GByte_(0.0)
 {
 	// @TODO (heinecke)
 }
@@ -93,8 +93,19 @@ void LearnerBase::InitializeGrid(const sg::base::RegularGridConfiguration& GridC
 	alpha_->setAll(0.0);
 }
 
-void LearnerBase::postProcessing()
+void LearnerBase::preProcessing()
 {
+}
+
+void LearnerBase::postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+		const size_t numNeededIterations)
+{
+	if (this->isVerbose_)
+	{
+    	std::cout << std::endl;
+        std::cout << "Current Execution Time: " << execTime_ << std::endl;
+        std::cout << std::endl;
+	}
 }
 
 LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes,
@@ -110,8 +121,13 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 	result.timeMultTransComplete_ = 0.0;
 	result.timeMultTransCompute_ = 0.0;
 	result.timeRegularization_ = 0.0;
+	result.GFlop_ = 0.0;
+	result.GByte_ = 0.0;
 
-	double execTime = 0.0;
+	execTime_ = 0.0;
+	GFlop_ = 0.0;
+	GByte_ = 0.0;
+
     double oldAcc = 0.0;
 
     // Construct Grid
@@ -151,6 +167,9 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 	{
 		// @TODO: Error
 	}
+
+	// Pre-Procession
+	preProcessing();
 
 	if (isVerbose_)
 		std::cout << "Starting Learning...." << std::endl;
@@ -195,7 +214,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
     	}
     	myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
 
-        execTime += myStopwatch->stop();
+        execTime_ += myStopwatch->stop();
 
         if (isVerbose_)
         {
@@ -203,7 +222,29 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
         	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
         }
 
-        postProcessing();
+        // use post-processing to determine Flops and time
+        if (i < AdaptConfig.numRefinements_)
+        {
+        	postProcessing(trainDataset, SolverConfigRefine.type_,
+    			myCG->getNumberIterations());
+        }
+        else
+        {
+        	postProcessing(trainDataset, SolverConfigFinal.type_,
+    			myCG->getNumberIterations());
+        }
+
+        double tmp1, tmp2, tmp3, tmp4;
+        DMSystem->getTimers(tmp1, tmp2, tmp3, tmp4);
+    	result.timeComplete_ = execTime_;
+    	result.timeMultComplete_ = tmp1;
+    	result.timeMultCompute_ = tmp2;
+    	result.timeMultTransComplete_ = tmp3;
+    	result.timeMultTransCompute_ = tmp4;
+    	// @TODO fix regularization timings, if needed
+    	result.timeRegularization_ = 0.0;
+    	result.GFlop_ = GFlop_;
+    	result.GByte_ = GByte_;
 
         if(testAccDuringAdapt || i == AdaptConfig.numRefinements_)
         {
@@ -251,7 +292,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
     if (isVerbose_)
     {
     	std::cout << "Finished Training!" << std::endl << std::endl;
-    	std::cout << "Training took: " << execTime << " seconds" << std::endl << std::endl;
+    	std::cout << "Training took: " << execTime_ << " seconds" << std::endl << std::endl;
     }
 
     isTrained_ = true;

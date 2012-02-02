@@ -13,6 +13,8 @@ parallel/datadriven/algorithm/AlgorithmAdaBoostSPVectorizedIdentity.cpp
 parallel/datadriven/algorithm/DMWeightMatrixSPVectorizedIdentity.cpp
 parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
+parallel/datadriven/application/LearnerVectorized.cpp
+parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.cpp
 
 parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
 parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp

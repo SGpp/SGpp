@@ -295,7 +295,7 @@ void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[]
 	storage->insert(pointIndex);
 }
 
-int Grid::getSize(){
+size_t Grid::getSize(){
 	return this->storage->size();
 }
 
