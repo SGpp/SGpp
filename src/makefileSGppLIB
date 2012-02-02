@@ -277,7 +277,14 @@ OBJS =	DataVector.o\
 	DMWeightMatrixSPVectorizedIdentity.o\
 	OperationQuadratureLinearBoundary.o\
 	DMSystemMatrixBase.o\
-	DMSystemMatrixSPBase.o\
+	DMSystemMatrixBaseSP.o\
+	Learner.o\
+	LearnerBase.o\
+	LearnerBaseSP.o\
+	LearnerVectorized.o\
+	LearnerVectorizedSP.o\
+	LearnerVectorizedPerformanceCalculator.o\
+	BiCGStabSP.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1170,8 +1177,30 @@ OperationQuadratureLinearBoundary.o : $(SRCDIR)base/basis/linear/boundary/operat
 DMSystemMatrixBase.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixBase.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixBase.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixBase.cpp	
 
-DMSystemMatrixSPBase.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPBase.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPBase.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixSPBase.cpp
+DMSystemMatrixBaseSP.o : $(SRCDIR)datadriven/algorithm/DMSystemMatrixBaseSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixBaseSP.o $(SRCDIR)datadriven/algorithm/DMSystemMatrixBaseSP.cpp
+	
+Learner.o : $(SRCDIR)datadriven/application/Learner.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)Learner.o $(SRCDIR)datadriven/application/Learner.cpp
+	
+LearnerBase.o : $(SRCDIR)datadriven/application/LearnerBase.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerBase.o $(SRCDIR)datadriven/application/LearnerBase.cpp
+	
+LearnerBaseSP.o : $(SRCDIR)datadriven/application/LearnerBaseSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerBaseSP.o $(SRCDIR)datadriven/application/LearnerBaseSP.cpp
+
+LearnerVectorized.o : $(SRCDIR)parallel/datadriven/application/LearnerVectorized.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorized.o $(SRCDIR)parallel/datadriven/application/LearnerVectorized.cpp
+
+LearnerVectorizedSP.o : $(SRCDIR)parallel/datadriven/application/LearnerVectorizedSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorizedSP.o $(SRCDIR)parallel/datadriven/application/LearnerVectorizedSP.cpp	
+
+LearnerVectorizedPerformanceCalculator.o : $(SRCDIR)parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorizedPerformanceCalculator.o $(SRCDIR)parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.cpp	
+
+BiCGStabSP.o : $(SRCDIR)solver/sle/BiCGStabSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabSP.o $(SRCDIR)solver/sle/BiCGStabSP.cpp
+
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
