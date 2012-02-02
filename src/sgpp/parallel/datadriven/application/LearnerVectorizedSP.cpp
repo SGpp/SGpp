@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/datadriven/application/LearnerVectorized.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
+#include "parallel/datadriven/application/LearnerVectorizedSP.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 
 namespace sg
@@ -15,34 +15,34 @@ namespace sg
 namespace parallel
 {
 
-LearnerVectorized::LearnerVectorized(const VectorizationType vecType, const bool isRegression, const bool verbose)
-	: sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType)
+LearnerVectorizedSP::LearnerVectorizedSP(const VectorizationType vecType, const bool isRegression, const bool verbose)
+	: sg::datadriven::LearnerBaseSP(isRegression, verbose), vecType_(vecType)
 {
 }
 
-LearnerVectorized::LearnerVectorized(const std::string tGridFilename, const std::string tAlphaFilename,
+LearnerVectorizedSP::LearnerVectorizedSP(const std::string tGridFilename, const std::string tAlphaFilename,
 		const VectorizationType vecType, const bool isRegression, const bool verbose)
-	: sg::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), vecType_(vecType)
+	: sg::datadriven::LearnerBaseSP(tGridFilename, tAlphaFilename, isRegression, verbose), vecType_(vecType)
 {
 }
 
-LearnerVectorized::~LearnerVectorized()
+LearnerVectorizedSP::~LearnerVectorizedSP()
 {
 }
 
-sg::datadriven::DMSystemMatrixBase* LearnerVectorized::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda)
+sg::datadriven::DMSystemMatrixBaseSP* LearnerVectorizedSP::createDMSystem(sg::base::DataMatrixSP& trainDataset, float lambda)
 {
 	if (this->grid_ == NULL)
 		return NULL;
 
-	return new sg::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
+	return new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
 }
 
-void LearnerVectorized::postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+void LearnerVectorizedSP::postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,
 		const size_t numNeededIterations)
 {
 	LearnerVectorizedPerformance currentPerf = LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(*this->grid_,
-			trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
+			trainDataset.getNrows(), solver, numNeededIterations, sizeof(float));
 
 	this->GFlop_ = currentPerf.GFlop_;
 	this->GByte_ = currentPerf.GByte_;

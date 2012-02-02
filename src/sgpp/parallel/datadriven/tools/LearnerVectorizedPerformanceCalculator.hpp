@@ -50,7 +50,7 @@ public:
 	 *
 	 * @return a LearnerVectorizedPerformance struct containing the results
 	 */
-	LearnerVectorizedPerformance getGFlopAndGByte(sg::base::Grid& Grid, size_t numInstances,
+	static LearnerVectorizedPerformance getGFlopAndGByte(sg::base::Grid& Grid, size_t numInstances,
 			sg::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype);
 };
 

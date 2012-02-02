@@ -29,7 +29,7 @@ Learner::~Learner()
 {
 }
 
-sg::datadriven::DMSystemMatrixBase* Learner::createDMSystem(sg::base::DataMatrix trainDataset, double lambda)
+sg::datadriven::DMSystemMatrixBase* Learner::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda)
 {
 	if (this->grid_ == NULL)
 		return NULL;
