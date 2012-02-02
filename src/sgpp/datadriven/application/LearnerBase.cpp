@@ -246,7 +246,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
     	result.GFlop_ = GFlop_;
     	result.GByte_ = GByte_;
 
-        if(testAccDuringAdapt || i == AdaptConfig.numRefinements_)
+        if(testAccDuringAdapt)
         {
  			double acc = getAccuracy(trainDataset, classes);
 
