@@ -178,7 +178,7 @@ void DataVectorSP::add(DataVectorSP &vec) {
     }
 }
 
-void DataVectorSP::sub(DataVectorSP &vec) {
+void DataVectorSP::sub(const DataVectorSP &vec) {
     if (size != vec.size) {
 		throw new sg::base::data_exception(
 				"DataVectorSP::sub : Dimensions do not match");

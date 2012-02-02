@@ -7,13 +7,14 @@
 Import("env")
 
 srcs = Split("""
-datadriven/algorithm/DMSystemMatrixSPBase.cpp
+datadriven/algorithm/DMSystemMatrixBaseSP.cpp
 datadriven/algorithm/DMSystemMatrixBase.cpp
 datadriven/algorithm/DMSystemMatrix.cpp
 datadriven/algorithm/DensitySystemMatrix.cpp
 datadriven/algorithm/DMWeightMatrix.cpp
 datadriven/algorithm/AlgorithmAdaBoostIdentity.cpp
 datadriven/algorithm/AlgorithmAdaBoostBase.cpp
+datadriven/application/LearnerBaseSP.cpp
 datadriven/application/LearnerBase.cpp
 datadriven/application/Learner.cpp
 datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp

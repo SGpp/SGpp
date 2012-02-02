@@ -182,7 +182,7 @@ public:
  	 *
  	 * @param vec The DataVectorSP which is subtracted from the current values
  	 */
-	void sub(DataVectorSP& vec);
+	void sub(const DataVectorSP& vec);
 
     /**
      * Multiplies the current DataVectorSP component-wise with another DataVectorSP.

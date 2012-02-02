@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef SGSOLVER_HPP
-#define SGSOLVER_HPP
+#ifndef SGSOLVERSP_HPP
+#define SGSOLVERSP_HPP
 
 #include "solver/TypesSolver.hpp"
 
@@ -22,7 +22,7 @@ namespace solver
  * Applications
  * @todo (pflueged) move public variables to protected scope, add setters and getters
  */
-class SGSolver
+class SGSolverSP
 {
 protected:
 	/// Number of Iterations needed for the solve
@@ -30,9 +30,9 @@ protected:
 	/// Number of maximum iterations for cg
 	size_t nMaxIterations;
 	/// residuum
-	double residuum;
+	float residuum;
 	/// epsilon needed in the, e.g. final error in the iterative solver, or a timestep
-	double myEpsilon;
+	float myEpsilon;
 
 public:
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param nMaximumIterations number of maximum executed iterations
 	 * @param epsilon the final error in the iterative solver, or the size of one timestep
 	 */
-	SGSolver(size_t nMaximumIterations, double epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon)
+	SGSolverSP(size_t nMaximumIterations, float epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon)
 	{
 		nIterations = 0;
 		residuum = 0.0;
@@ -50,7 +50,7 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~SGSolver() { }
+	virtual ~SGSolverSP() { }
 
 
 	/**
@@ -68,7 +68,7 @@ public:
 	 *
 	 * @return the residuum
 	 */
-	double getResiduum()
+	float getResiduum()
 	{
 		return residuum;
 	}
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @param eps the new value of epsilon
 	 */
-	void setEpsilon(double eps)
+	void setEpsilon(float eps)
 	{
 		myEpsilon = eps;
 	}
@@ -98,7 +98,7 @@ public:
 	 *
 	 * @return the epsilon, used in the solver
 	 */
-	double getEpsilon()
+	float getEpsilon()
 	{
 		return myEpsilon;
 	}
@@ -107,4 +107,4 @@ public:
 }
 }
 
-#endif /* SGSOLVER_HPP */
+#endif /* SGSOLVERSP_HPP */

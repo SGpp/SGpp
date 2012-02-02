@@ -8,9 +8,12 @@
 #ifndef ODESOLVER_HPP
 #define ODESOLVER_HPP
 
+#include "base/datatypes/DataVector.hpp"
+
+#include "pde/operation/OperationParabolicPDESolverSystem.hpp"
+
 #include "solver/SGSolver.hpp"
 #include "solver/SLESolver.hpp"
-#include "base/datatypes/DataVector.hpp"
 
 namespace sg
 {

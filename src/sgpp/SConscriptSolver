@@ -17,6 +17,7 @@ solver/ode/StepsizeControl.cpp
 solver/ode/StepsizeControlMC.cpp
 solver/ode/VarTimestep.cpp
 solver/sle/BiCGStab.cpp
+solver/sle/BiCGStabSP.cpp
 solver/sle/ConjugateGradients.cpp
 solver/sle/ConjugateGradientsSP.cpp
 """)

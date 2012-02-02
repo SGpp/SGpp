@@ -244,7 +244,7 @@ void DataMatrixSP::add(DataMatrixSP &matr) {
 	}
 }
 
-void DataMatrixSP::sub(DataMatrixSP& matr) {
+void DataMatrixSP::sub(const DataMatrixSP& matr) {
 	if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
 		throw new sg::base::data_exception(
 				"DataMatrixSP::sub : Dimensions do not match");

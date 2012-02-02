@@ -22,7 +22,7 @@ namespace datadriven
  * Abstract class that defines the virtual class sg::base::OperationMatrix for
  * classification and regression problems (single precision version)
  */
-class DMSystemMatrixSPBase : public sg::base::OperationMatrixSP
+class DMSystemMatrixBaseSP : public sg::base::OperationMatrixSP
 {
 protected:
 	/// the dataset
@@ -46,12 +46,12 @@ public:
 	 *
 	 * @param lambda the lambda, the regression parameter
 	 */
-	DMSystemMatrixSPBase(sg::base::DataMatrixSP& trainData, float lambda);
+	DMSystemMatrixBaseSP(sg::base::DataMatrixSP& trainData, float lambda);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~DMSystemMatrixSPBase();
+	virtual ~DMSystemMatrixBaseSP();
 
 	virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) = 0;
 

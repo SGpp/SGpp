@@ -9,7 +9,6 @@
 #define CONJUGATEGRADIENTS_HPP
 
 #include "solver/SLESolver.hpp"
-#include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataVector.hpp"
 
 #include <iostream>
@@ -21,9 +20,6 @@ namespace solver
 
 class ConjugateGradients : public SLESolver
 {
-private:
-
-
 public:
 	/**
 	 * Std-Constructor
