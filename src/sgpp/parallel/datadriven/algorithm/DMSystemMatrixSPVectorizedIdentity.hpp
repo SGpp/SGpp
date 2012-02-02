@@ -11,7 +11,7 @@
 #include "base/datatypes/DataVectorSP.hpp"
 #include "base/grid/Grid.hpp"
 
-#include "datadriven/algorithm/DMSystemMatrixSPBase.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
 #include "parallel/tools/TypesParallel.hpp"
@@ -34,7 +34,7 @@ namespace parallel
  *
  * In this class single precision DataVectors are used.
  */
-class DMSystemMatrixSPVectorizedIdentity : public sg::datadriven::DMSystemMatrixSPBase
+class DMSystemMatrixSPVectorizedIdentity : public sg::datadriven::DMSystemMatrixBaseSP
 {
 private:
 	/// vectorization mode

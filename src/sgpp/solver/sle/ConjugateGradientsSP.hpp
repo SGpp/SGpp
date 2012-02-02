@@ -11,6 +11,8 @@
 #include "base/operation/OperationMatrixSP.hpp"
 #include "base/datatypes/DataVectorSP.hpp"
 
+#include "solver/SLESolverSP.hpp"
+
 #include <iostream>
 
 namespace sg
@@ -18,18 +20,8 @@ namespace sg
 namespace solver
 {
 
-class ConjugateGradientsSP
+class ConjugateGradientsSP : public SLESolverSP
 {
-private:
-	/// Number of Iterations needed for the solve
-	size_t nIterations;
-	/// Number of maximum iterations for cg
-	size_t nMaxIterations;
-	/// residuum
-	float residuum;
-	/// epsilon needed in the, e.g. final error in the iterative solver, or a timestep
-	float myEpsilon;
-
 public:
 	/**
 	 * Std-Constructor
@@ -54,40 +46,27 @@ public:
 	 */
 	void solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = -1.0);
 
-	/**
-	 * function that returns the number of needed solve steps
-	 *
-	 * @return the number of needed solve steps of the sovler
-	 */
-	size_t getNumberIterations();
+	// Define functions for observer pattern in python
 
 	/**
-	 * function the returns the residuum (current or final), error of the solver
-	 *
-	 * @return the residuum
+	 * function that signals the start of the CG method (used in python)
 	 */
-	float getResiduum();
+	virtual void starting();
 
 	/**
-	 * resets the number of maximum iterations
-	 *
-	 * @param nIterations the new number of maximum iterations
+	 * function that signals the start of the calculation of the CG method (used in python)
 	 */
-	void setMaxIterations(size_t nIterations);
+	virtual void calcStarting();
 
 	/**
-	 * resets the epsilon, that is used in the SGSolver
-	 *
-	 * @param eps the new value of epsilon
+	 * function that signals that one iteration step of the CG method has been completed (used in python)
 	 */
-	void setEpsilon(float eps);
+	virtual void iterationComplete();
 
 	/**
-	 * gets the the epsilon, that is used in the SGSolver
-	 *
-	 * @return the epsilon, used in the solver
+	 * function that signals the finish of the cg method (used in python)
 	 */
-	float getEpsilon();
+	virtual void complete();
 };
 
 }

@@ -234,7 +234,7 @@ public:
  	 *
  	 * @param matr The DataMatrixSP which is subtracted from the current values
  	 */
-	void sub(DataMatrixSP& matr);
+	void sub(const DataMatrixSP& matr);
 
     /**
      * Multiplies the current DataMatrixSP component-wise with another DataMatrixSP.

@@ -5,13 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef SLESOLVER_HPP
-#define SLESOLVER_HPP
+#ifndef SLESOLVERSP_HPP
+#define SLESOLVERSP_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/operation/OperationMatrix.hpp"
+#include "base/datatypes/DataVectorSP.hpp"
+#include "base/operation/OperationMatrixSP.hpp"
 
-#include "solver/SGSolver.hpp"
+#include "solver/SGSolverSP.hpp"
 
 #ifndef DEFAULT_RES_THRESHOLD
 #define DEFAULT_RES_THRESHOLD -1.0
@@ -22,7 +22,7 @@ namespace sg
 namespace solver
 {
 
-class SLESolver : public SGSolver
+class SLESolverSP : public SGSolverSP
 {
 public:
 	/**
@@ -31,14 +31,14 @@ public:
 	 * @param imax number of maximum executed iterations
 	 * @param epsilon the final error in the iterative solver
 	 */
-	SLESolver(size_t imax, double epsilon) : SGSolver(imax, epsilon)
+	SLESolverSP(size_t imax, float epsilon) : SGSolverSP(imax, epsilon)
 	{
 	}
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~SLESolver() { }
+	virtual ~SLESolverSP() { }
 
 	/**
 	 * Pure virtual Function that defines a solve method for an iterative solver
@@ -50,7 +50,7 @@ public:
 	 * @param verbose prints information during execution of the solver
 	 * @param max_threshold additional abort criteria for solver, default value is 10^-9!
 	 */
-	virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = DEFAULT_RES_THRESHOLD) = 0;
+	virtual void solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = DEFAULT_RES_THRESHOLD) = 0;
 };
 
 }

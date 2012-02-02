@@ -12,7 +12,7 @@ namespace sg
 namespace solver
 {
 
-ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon) : nMaxIterations(imax), myEpsilon(epsilon)
+ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon) : SLESolverSP(imax, epsilon)
 {
 }
 
@@ -135,29 +135,20 @@ void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::
 	}
 }
 
-size_t ConjugateGradientsSP::getNumberIterations()
+void ConjugateGradientsSP::starting()
 {
-	return nIterations;
 }
 
-float ConjugateGradientsSP::getResiduum()
+void ConjugateGradientsSP::calcStarting()
 {
-	return residuum;
 }
 
-void ConjugateGradientsSP::setMaxIterations(size_t nIterations)
+void ConjugateGradientsSP::iterationComplete()
 {
-	nMaxIterations = nIterations;
 }
 
-void ConjugateGradientsSP::setEpsilon(float eps)
+void ConjugateGradientsSP::complete()
 {
-	myEpsilon = eps;
-}
-
-float ConjugateGradientsSP::getEpsilon()
-{
-	return myEpsilon;
 }
 
 }

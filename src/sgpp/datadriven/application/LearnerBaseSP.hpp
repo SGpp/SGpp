@@ -5,16 +5,17 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef LEARNERBASE_HPP
-#define LEARNERBASE_HPP
+#ifndef LEARNERBASESP_HPP
+#define LEARNERBASESP_HPP
 
 #include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include "base/datatypes/DataVectorSP.hpp"
+#include "base/datatypes/DataMatrixSP.hpp"
+#include "base/tools/PrecisionConverter.hpp"
 
 #include "solver/SLESolver.hpp"
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
 #include "datadriven/tools/TypesDatadriven.hpp"
 
 namespace sg
@@ -31,12 +32,14 @@ namespace datadriven
  * for adavanded regression and classification methods
  * by allowing to override basic routines like train
  * and test.
+ *
+ * This versions supports single precision datatypes.
  */
-class LearnerBase
+class LearnerBaseSP
 {
 protected:
 	/// the grid's coefficients
-	sg::base::DataVector* alpha_;
+	sg::base::DataVectorSP* alpha_;
 	/// sparse grid object
 	sg::base::Grid* grid_;
 	/// is verbose output enabled
@@ -68,7 +71,7 @@ protected:
 	 *
 	 *
 	 */
-	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+	virtual void postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,
 			const size_t numNeededIterations);
 
 	/**
@@ -85,7 +88,7 @@ protected:
 	 * @param trainDataset training dataset
 	 * @param lambda lambda regularization parameter
 	 */
-	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix trainDataset, double lambda) = 0;
+	virtual sg::datadriven::DMSystemMatrixBaseSP* createDMSystem(sg::base::DataMatrixSP trainDataset, double lambda) = 0;
 
 public:
 	/**
@@ -94,7 +97,7 @@ public:
 	 * @param isRegression
 	 * @param verbose
 	 */
-	LearnerBase(const bool isRegression, const bool isVerbose = true);
+	LearnerBaseSP(const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
@@ -104,19 +107,19 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param verbose set to true in order to allow console output
 	 */
-	LearnerBase(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression, const bool isVerbose = true);
+	LearnerBaseSP(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Copy-Constructor
 	 *
 	 * @param copyMe LearnerBase that should be duplicated
 	 */
-	LearnerBase(const LearnerBase& copyMe);
+	LearnerBaseSP(const LearnerBaseSP& copyMe);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~LearnerBase();
+	virtual ~LearnerBaseSP();
 
 	/**
 	 * Learning a dataset with spatially adaptive sparse grids
@@ -130,10 +133,10 @@ public:
 	 * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
 	 * @param lambda regularization parameter lambda
 	 */
-	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-			const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-			bool testAccDuringAdapt, const double lambda);
+	virtual LearnerTiming train(sg::base::DataMatrixSP& testDataset, sg::base::DataVectorSP& classes,
+			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverSPConfiguration& SolverConfigRefine,
+			const sg::solver::SLESolverSPConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
+			bool testAccDuringAdapt, const float lambda);
 
 	/**
 	 * Learning a dataset with regular sparse grids
@@ -144,9 +147,9 @@ public:
 	 * @param SolverConfig configuration of the SLE solver
 	 * @param lambda regularization parameter lambda
 	 */
-	virtual LearnerTiming train(sg::base::DataMatrix& testDataset,  sg::base::DataVector& classes,
-			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
-			const double lamda);
+	virtual LearnerTiming train(sg::base::DataMatrixSP& testDataset,  sg::base::DataVectorSP& classes,
+			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverSPConfiguration& SolverConfig,
+			const float lamda);
 
 	/**
 	 * executes a Regression test for a given dataset and returns the result
@@ -155,7 +158,7 @@ public:
 	 *
 	 * @return regression values of testDataset
 	 */
-	virtual sg::base::DataVector test(sg::base::DataMatrix& testDataset);
+	virtual sg::base::DataVectorSP test(sg::base::DataMatrixSP& testDataset);
 
 	/**
 	 * compute the accuracy for given testDataset. test is automatically called
@@ -170,8 +173,8 @@ public:
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(sg::base::DataMatrix& testDataset,
-			const sg::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual double getAccuracy(sg::base::DataMatrixSP& testDataset,
+			const sg::base::DataVectorSP& classesReference, const float threshold = 0.0);
 
 	/**
 	 * compute the accuracy for given testDataset.
@@ -185,8 +188,8 @@ public:
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(const sg::base::DataVector& classesComputed,
-			const sg::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual double getAccuracy(const sg::base::DataVectorSP& classesComputed,
+			const sg::base::DataVectorSP& classesReference, const float threshold = 0.0);
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
@@ -199,8 +202,8 @@ public:
 	 *
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
-	virtual ClassificatorQuality getCassificatorQuality(sg::base::DataMatrix& testDataset,
-			const sg::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual ClassificatorQuality getCassificatorQuality(sg::base::DataMatrixSP& testDataset,
+			const sg::base::DataVectorSP& classesReference, const float threshold = 0.0);
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
@@ -211,8 +214,8 @@ public:
 	 *
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
-	virtual ClassificatorQuality getCassificatorQuality(const sg::base::DataVector& classesComputed,
-			const sg::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual ClassificatorQuality getCassificatorQuality(const sg::base::DataVectorSP& classesComputed,
+			const sg::base::DataVectorSP& classesReference, const float threshold = 0.0);
 
 	/**
 	 * store the grid and its current coefficients into files for
@@ -249,4 +252,4 @@ public:
 
 }
 
-#endif /* LEARNERBASE_HPP */
+#endif /* LEARNERBASESP_HPP */
