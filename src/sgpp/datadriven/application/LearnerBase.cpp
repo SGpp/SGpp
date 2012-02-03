@@ -5,18 +5,18 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/application/LearnerBase.hpp"
-
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "base/grid/type/ModLinearGrid.hpp"
 #include "base/grid/generation/SurplusRefinementFunctor.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/BaseOpFactory.hpp"
+#include "base/exception/application_exception.hpp"
 
 #include "solver/sle/ConjugateGradients.hpp"
 #include "solver/sle/BiCGStab.hpp"
 
+#include "datadriven/application/LearnerBase.hpp"
 
 #include <iostream>
 
@@ -34,7 +34,8 @@ LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
 LearnerBase::LearnerBase(const std::string tGridFilename, const std::string tAlphaFilename, const bool isRegression, const bool isVerbose)
 	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(0.0), GFlop_(0.0), GByte_(0.0)
 {
-	// @TODO (heinecke)
+	// @TODO (heinecke) implement
+	throw base::application_exception("LearnerBase::LearnerBase: This construct isn't implemented, yet!");
 }
 
 LearnerBase::LearnerBase(const LearnerBase& copyMe)
@@ -77,10 +78,8 @@ void LearnerBase::InitializeGrid(const sg::base::RegularGridConfiguration& GridC
 	}
 	else
 	{
-		std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
 		grid_ = NULL;
-		return;
-		// @TODO (heinecke) throw exception
+		throw base::application_exception("LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
 	}
 
 	// Generate regular Grid with LEVELS Levels
@@ -114,6 +113,11 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 		const bool testAccDuringAdapt, const double lambda)
 {
 	LearnerTiming result;
+
+	if (trainDataset.getNrows() != classes.getSize())
+	{
+		throw base::application_exception("LearnerBase::train: length of classes vector does not match to dataset!");
+	}
 
 	result.timeComplete_ = 0.0;
 	result.timeMultComplete_ = 0.0;
@@ -165,7 +169,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 	}
 	else
 	{
-		// @TODO: Error
+		throw base::application_exception("LearnerBaseSP::train: An unsupported SLE solver type was chosen!");
 	}
 
 	// Pre-Procession
@@ -332,7 +336,8 @@ sg::base::DataVector LearnerBase::predict(sg::base::DataMatrix& testDataset)
 
 void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename)
 {
-	// @TODO (heinecke)
+	// @TODO (heinecke) implement
+	throw base::application_exception("LearnerBase::store: This method isn't implemented, yet!");
 }
 
 double LearnerBase::getAccuracy(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold)
@@ -349,7 +354,7 @@ double LearnerBase::getAccuracy(const sg::base::DataVector& classesComputed, con
 
 	if (classesComputed.getSize() != classesReference.getSize())
 	{
-		// @TODO (heinecke) throw exception
+		throw base::application_exception("LearnerBase::getAccuracy: lengths of classes vectors do not match!");
 	}
 
 	if (isRegression_)
@@ -393,7 +398,12 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(const sg::base::DataVec
 
 	if (isRegression_)
 	{
-		// @TODO (heinecke) throw exception
+		throw base::application_exception("LearnerBase::getCassificatorQuality: this method is not valid for regression problems!");
+	}
+
+	if (classesComputed.getSize() != classesReference.getSize())
+	{
+		throw base::application_exception("LearnerBase::getCassificatorQuality: lengths of classes vectors do not match!");
 	}
 
 	result.truePositive_ = 0;
