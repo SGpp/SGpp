@@ -16,6 +16,12 @@ namespace sg
 namespace datadriven
 {
 
+enum LearnerRegularizationType
+{
+	Laplace,
+	Identity
+};
+
 /**
  * This class implements standard sparse grid regression
  * with an arbitrary regularization operator
@@ -23,6 +29,8 @@ namespace datadriven
 class Learner : public LearnerBase
 {
 protected:
+	/// regularization mode
+	LearnerRegularizationType CMode_;
 	/// regularization operator
 	sg::base::OperationMatrix* C_;
 
@@ -37,7 +45,7 @@ public:
 	 * @param isRegression
 	 * @param verbose
 	 */
-	Learner(sg::base::OperationMatrix& regularization, const bool isRegression, const bool isVerbose = true);
+	Learner(LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
@@ -48,7 +56,7 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param verbose set to true in order to allow console output
 	 */
-	Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::base::OperationMatrix& regularization,
+	Learner(const std::string tGridFilename, const std::string tAlphaFilename, LearnerRegularizationType& regularization,
 			const bool isRegression, const bool isVerbose = true);
 
 	/**
