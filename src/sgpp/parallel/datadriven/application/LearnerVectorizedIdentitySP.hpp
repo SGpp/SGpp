@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef LEARNERVECTORIZEDSP_HPP
-#define LEARNERVECTORIZEDSP_HPP
+#ifndef LEARNERVECTORIZEDIDENTITYSP_HPP
+#define LEARNERVECTORIZEDIDENTITYSP_HPP
 
 #include "datadriven/application/LearnerBaseSP.hpp"
 
@@ -27,7 +27,7 @@ namespace parallel
  *
  * This version supports single precision floating point numbers.
  */
-class LearnerVectorizedSP : public sg::datadriven::LearnerBaseSP
+class LearnerVectorizedIdentitySP : public sg::datadriven::LearnerBaseSP
 {
 protected:
 	/// vectorization selector
@@ -46,7 +46,7 @@ public:
 	 * @param isRegression
 	 * @param verbose
 	 */
-	LearnerVectorizedSP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
+	LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
@@ -57,17 +57,17 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param verbose set to true in order to allow console output
 	 */
-	LearnerVectorizedSP(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
+	LearnerVectorizedIdentitySP(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
 			const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~LearnerVectorizedSP();
+	virtual ~LearnerVectorizedIdentitySP();
 };
 
 }
 
 }
 
-#endif /* LEARNERVECTORIZEDSP_HPP */
+#endif /* LEARNERVECTORIZEDIDENTITYSP_HPP */

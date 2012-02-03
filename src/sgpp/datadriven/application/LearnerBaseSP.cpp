@@ -323,7 +323,7 @@ LearnerTiming LearnerBaseSP::train(sg::base::DataMatrixSP& trainDataset, sg::bas
 	return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
 }
 
-sg::base::DataVectorSP LearnerBaseSP::test(sg::base::DataMatrixSP& testDataset)
+sg::base::DataVectorSP LearnerBaseSP::predict(sg::base::DataMatrixSP& testDataset)
 {
 	sg::base::DataVectorSP classesComputed(testDataset.getNrows());
 
@@ -351,7 +351,7 @@ void LearnerBaseSP::store(std::string tGridFilename, std::string tAlphaFilename)
 double LearnerBaseSP::getAccuracy(sg::base::DataMatrixSP& testDataset, const sg::base::DataVectorSP& classesReference, const float threshold)
 {
 	// evaluate test dataset
-	sg::base::DataVectorSP classesComputed = test(testDataset);
+	sg::base::DataVectorSP classesComputed = predict(testDataset);
 
 	return getAccuracy(classesComputed, classesReference, threshold);
 }
@@ -395,7 +395,7 @@ double LearnerBaseSP::getAccuracy(const sg::base::DataVectorSP& classesComputed,
 ClassificatorQuality LearnerBaseSP::getCassificatorQuality(sg::base::DataMatrixSP& testDataset, const sg::base::DataVectorSP& classesReference, const float threshold)
 {
 	// evaluate test dataset
-	sg::base::DataVectorSP classesComputed = test(testDataset);
+	sg::base::DataVectorSP classesComputed = predict(testDataset);
 
 	return getCassificatorQuality(classesComputed, classesReference, threshold);
 }

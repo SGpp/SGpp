@@ -281,8 +281,8 @@ OBJS =	DataVector.o\
 	Learner.o\
 	LearnerBase.o\
 	LearnerBaseSP.o\
-	LearnerVectorized.o\
-	LearnerVectorizedSP.o\
+	LearnerVectorizedIdentity.o\
+	LearnerVectorizedIdentitySP.o\
 	LearnerVectorizedPerformanceCalculator.o\
 	BiCGStabSP.o\
 	
@@ -1189,11 +1189,11 @@ LearnerBase.o : $(SRCDIR)datadriven/application/LearnerBase.cpp
 LearnerBaseSP.o : $(SRCDIR)datadriven/application/LearnerBaseSP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerBaseSP.o $(SRCDIR)datadriven/application/LearnerBaseSP.cpp
 
-LearnerVectorized.o : $(SRCDIR)parallel/datadriven/application/LearnerVectorized.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorized.o $(SRCDIR)parallel/datadriven/application/LearnerVectorized.cpp
+LearnerVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/application/LearnerVectorizedIdentity.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorizedIdentity.o $(SRCDIR)parallel/datadriven/application/LearnerVectorizedIdentity.cpp
 
-LearnerVectorizedSP.o : $(SRCDIR)parallel/datadriven/application/LearnerVectorizedSP.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorizedSP.o $(SRCDIR)parallel/datadriven/application/LearnerVectorizedSP.cpp	
+LearnerVectorizedIdentitySP.o : $(SRCDIR)parallel/datadriven/application/LearnerVectorizedIdentitySP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorizedIdentitySP.o $(SRCDIR)parallel/datadriven/application/LearnerVectorizedIdentitySP.cpp	
 
 LearnerVectorizedPerformanceCalculator.o : $(SRCDIR)parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerVectorizedPerformanceCalculator.o $(SRCDIR)parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.cpp	

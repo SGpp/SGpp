@@ -225,7 +225,7 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
 {
     sg::datadriven::LearnerBase* myLearner;
 
-    myLearner = new sg::parallel::LearnerVectorized(vecType, isRegression, true);
+    myLearner = new sg::parallel::LearnerVectorizedIdentity(vecType, isRegression, true);
 
     // training
     gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
@@ -289,7 +289,7 @@ void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVec
 {
     sg::datadriven::LearnerBaseSP* myLearner;
 
-    myLearner = new sg::parallel::LearnerVectorizedSP(vecType, isRegression, true);
+    myLearner = new sg::parallel::LearnerVectorizedIdentitySP(vecType, isRegression, true);
 
     // training
     gtimings = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);

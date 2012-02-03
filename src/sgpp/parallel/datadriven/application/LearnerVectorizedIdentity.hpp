@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef LEARNERVECTORIZED_HPP
-#define LEARNERVECTORIZED_HPP
+#ifndef LEARNERVECTORIZEDIDENTITY_HPP
+#define LEARNERVECTORIZEDIDENTITY_HPP
 
 #include "datadriven/application/LearnerBase.hpp"
 
@@ -25,7 +25,7 @@ namespace parallel
  * Furthermore this Learner provides support for several
  * vectorization approaches covering GPUs, CPUs and coprocessors.
  */
-class LearnerVectorized : public sg::datadriven::LearnerBase
+class LearnerVectorizedIdentity : public sg::datadriven::LearnerBase
 {
 protected:
 	/// vectorization selector
@@ -44,7 +44,7 @@ public:
 	 * @param isRegression
 	 * @param verbose
 	 */
-	LearnerVectorized(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
+	LearnerVectorizedIdentity(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
@@ -55,17 +55,17 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param verbose set to true in order to allow console output
 	 */
-	LearnerVectorized(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
+	LearnerVectorizedIdentity(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
 			const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~LearnerVectorized();
+	virtual ~LearnerVectorizedIdentity();
 };
 
 }
 
 }
 
-#endif /* LEARNERVECTORIZED_HPP */
+#endif /* LEARNERVECTORIZEDIDENTITY_HPP */

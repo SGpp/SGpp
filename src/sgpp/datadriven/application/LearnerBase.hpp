@@ -155,7 +155,7 @@ public:
 	 *
 	 * @return regression values of testDataset
 	 */
-	virtual sg::base::DataVector test(sg::base::DataMatrix& testDataset);
+	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 
 	/**
 	 * compute the accuracy for given testDataset. test is automatically called
