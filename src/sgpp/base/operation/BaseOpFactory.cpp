@@ -7,8 +7,6 @@
 
 #include "base/operation/BaseOpFactory.hpp"
 
-#include <cstring>
-
 #include "base/exception/factory_exception.hpp"
 
 #include "base/grid/type/PolyGrid.hpp"
@@ -56,6 +54,7 @@
 #include "base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
 
+#include <cstring>
 
 namespace sg
 {
