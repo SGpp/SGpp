@@ -30,7 +30,7 @@ class Learner : public LearnerBase
 {
 protected:
 	/// regularization mode
-	LearnerRegularizationType CMode_;
+	sg::datadriven::LearnerRegularizationType CMode_;
 	/// regularization operator
 	sg::base::OperationMatrix* C_;
 
@@ -41,22 +41,22 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param regularization OperationMatrix instance that implements the regularization operator C
+	 * @param regularization enum that gives the regurlarization method
 	 * @param isRegression
 	 * @param verbose
 	 */
-	Learner(LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
+	Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
 	 *
 	 * @param tGridFilename path to file that contains a serialized grid
 	 * @param tAlphaFilenment path to file that contains the grid's coefficients
-	 * @param regularization OperationMatrix instance that implements the regularization operator C
+	 * @param regularization enum that gives the regurlarization method
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param verbose set to true in order to allow console output
 	 */
-	Learner(const std::string tGridFilename, const std::string tAlphaFilename, LearnerRegularizationType& regularization,
+	Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization,
 			const bool isRegression, const bool isVerbose = true);
 
 	/**
