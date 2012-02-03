@@ -8,8 +8,8 @@
 #ifndef PARALLEL_HPP
 #define PARALLEL_HPP
 
-#include "parallel/datadriven/application/LearnerVectorized.hpp"
-#include "parallel/datadriven/application/LearnerVectorizedSP.hpp"
+#include "parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
+#include "parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
 
 #include "parallel/operation/ParallelOpFactory.hpp"
 

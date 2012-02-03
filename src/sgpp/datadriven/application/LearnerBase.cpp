@@ -319,7 +319,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 	return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
 }
 
-sg::base::DataVector LearnerBase::test(sg::base::DataMatrix& testDataset)
+sg::base::DataVector LearnerBase::predict(sg::base::DataMatrix& testDataset)
 {
 	sg::base::DataVector classesComputed(testDataset.getNrows());
 
@@ -338,7 +338,7 @@ void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename)
 double LearnerBase::getAccuracy(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold)
 {
 	// evaluate test dataset
-	sg::base::DataVector classesComputed = test(testDataset);
+	sg::base::DataVector classesComputed = predict(testDataset);
 
 	return getAccuracy(classesComputed, classesReference, threshold);
 }
@@ -382,7 +382,7 @@ double LearnerBase::getAccuracy(const sg::base::DataVector& classesComputed, con
 ClassificatorQuality LearnerBase::getCassificatorQuality(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference, const double threshold)
 {
 	// evaluate test dataset
-	sg::base::DataVector classesComputed = test(testDataset);
+	sg::base::DataVector classesComputed = predict(testDataset);
 
 	return getCassificatorQuality(classesComputed, classesReference, threshold);
 }
