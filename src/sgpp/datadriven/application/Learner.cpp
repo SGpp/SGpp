@@ -18,12 +18,12 @@ namespace sg
 namespace datadriven
 {
 
-Learner::Learner(LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)
+Learner::Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)
 	: LearnerBase(isRegression, verbose), CMode_(regularization), C_(NULL)
 {
 }
 
-Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename, LearnerRegularizationType& regularization,
+Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization,
 		const bool isRegression, const bool verbose)
 	: LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), CMode_(regularization), C_(NULL)
 {

@@ -18,9 +18,6 @@
 //#define GNUPLOT
 //#define GRDIRESOLUTION 100
 
-// Use fast iterative methods
-#define ITERATIVE
-
 bool bUseFloat;
 
 std::string ggridtype;
@@ -37,22 +34,22 @@ sg::base::AdpativityConfiguration gAdapConfig;
 size_t gstart_level;
 double glambda;
 
-void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
-{
-	std::ofstream fileout;
-
-	// Open filehandle
-	fileout.open(tFilename.c_str());
-
-	// plot values
-	for (size_t i = 0; i < ROC_curve.getNrows(); i++)
-	{
-		fileout <<  ROC_curve.get(i, 0) << " " << ROC_curve.get(i, 1) << std::endl;
-	}
-
-	// close filehandle
-	fileout.close();
-}
+//void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
+//{
+//	std::ofstream fileout;
+//
+//	// Open filehandle
+//	fileout.open(tFilename.c_str());
+//
+//	// plot values
+//	for (size_t i = 0; i < ROC_curve.getNrows(); i++)
+//	{
+//		fileout <<  ROC_curve.get(i, 0) << " " << ROC_curve.get(i, 1) << std::endl;
+//	}
+//
+//	// close filehandle
+//	fileout.close();
+//}
 
 void printSettings(std::string dataFile, std::string testFile, bool isRegression,
 		const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
@@ -228,22 +225,15 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
 {
     sg::datadriven::LearnerBase* myLearner;
 
-#ifdef ITERATIVE
     myLearner = new sg::parallel::LearnerVectorized(vecType, isRegression, true);
-#else
-    //sg::base::OperationMatrix* myC = sg::op_factory::createOperationIdentity(*myGrid);
-    //myLearner = new sg::parallel::Learner(C, isRegression, true);
-#endif
+
+    // training
     gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
 
-	gtrainAcc = myLearner->getAccuracy(data, classes);
+	// testing
+    gtrainAcc = myLearner->getAccuracy(data, classes);
 	gtestAcc = myLearner->getAccuracy(testdata, testclasses);
-
-	// test datast
-	if (isRegression)
-	{
-	}
-	else
+	if (!isRegression)
 	{
 		gTrainQual = myLearner->getCassificatorQuality(data, classes);
 		gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
@@ -253,9 +243,41 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
 #endif
 
     delete myLearner;
-#ifndef ITERATIVE
-    //delete myC;
+
+    printResults();
+}
+
+void adaptClassificationTestRecursive(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,
+		sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
+		const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
+		const double lambda, const sg::parallel::VectorizationType vecType)
+{
+    sg::datadriven::LearnerBase* myLearner;
+    sg::datadriven::LearnerRegularizationType C_type;
+
+#ifdef USE_REC_LAPLACE
+    C_type = sg::datadriven::Laplace;
+#else
+    C_type = sg::datadriven::Identity;
 #endif
+    myLearner = new sg::datadriven::Learner(C_type, isRegression, true);
+
+    // training
+    gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
+
+    // testing
+	gtrainAcc = myLearner->getAccuracy(data, classes);
+	gtestAcc = myLearner->getAccuracy(testdata, testclasses);
+	if (!isRegression)
+	{
+		gTrainQual = myLearner->getCassificatorQuality(data, classes);
+		gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
+	}
+
+#ifdef GNUPLOT
+#endif
+
+    delete myLearner;
 
     printResults();
 }
@@ -266,17 +288,16 @@ void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVec
 		const float lambda, const sg::parallel::VectorizationType vecType)
 {
     sg::datadriven::LearnerBaseSP* myLearner;
+
     myLearner = new sg::parallel::LearnerVectorizedSP(vecType, isRegression, true);
+
+    // training
     gtimings = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
 
+    // testing
 	gtrainAcc = myLearner->getAccuracy(dataSP, classesSP);
 	gtestAcc = myLearner->getAccuracy(testdataSP, testclassesSP);
-
-	// test datast
-	if (isRegression)
-	{
-	}
-	else
+	if (!isRegression)
 	{
 		gTrainQual = myLearner->getCassificatorQuality(dataSP, classesSP);
 		gTestQual = myLearner->getCassificatorQuality(testdataSP, testclassesSP);
@@ -348,7 +369,8 @@ int main(int argc, char *argv[])
 		std::cout << "	#points refined" << std::endl;
 		std::cout << "	CG max. iterations, first refinement steps" << std::endl;
 		std::cout << "	CG epsilon, first refinement steps" << std::endl;
-		std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB" << std::endl << std::endl << std::endl;
+		std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
+		std::cout << "			for classical sparse grid algorithms choose: REC" << std::endl << std::endl << std::endl;
 		std::cout << "Example call:" << std::endl;
 		std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1 X86SIMD" << std::endl << std::endl << std::endl;
 	}
@@ -376,11 +398,6 @@ int main(int argc, char *argv[])
 
 		// Set Vectorization
 		// Fallback
-		if (vectorization != "X86SIMD" && vectorization != "OCL" && vectorization != "HYBRID_X86SIMD_OCL" && vectorization != "ArBB")
-		{
-			vectorization = "X86SIMD";
-		}
-
 		if (vectorization == "X86SIMD")
 		{
 			vecType = sg::parallel::X86SIMD;
@@ -502,30 +519,43 @@ int main(int argc, char *argv[])
 
 		std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " << nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl << std::endl;
 
-		if (precision == "SP")
-		{
-			bUseFloat = true;
-
-			printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
-							SLESolverConfigFinal, adaptConfig, lambda, vecType);
-
-			adaptClassificationTestSP(dataSP, classesSP, testdataSP, testclassesSP, regression, gridConfig, SLESolverSPConfigRefine,
-					SLESolverSPConfigFinal, adaptConfig, (float)lambda, vecType);
-		}
-		else if (precision == "DP")
+		if (vectorization == "REC")
 		{
 			bUseFloat = false;
 
 			printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
 							SLESolverConfigFinal, adaptConfig, lambda, vecType);
 
-			adaptClassificationTest(data, classes, testdata, testclasses, regression, gridConfig, SLESolverConfigRefine,
+			adaptClassificationTestRecursive(data, classes, testdata, testclasses, regression, gridConfig, SLESolverConfigRefine,
 					SLESolverConfigFinal, adaptConfig, lambda, vecType);
 		}
 		else
 		{
-			std::cout << "Unsupported precision type has been chosen! Existing...." << std::endl << std::endl;
-			return -1;
+			if (precision == "SP")
+			{
+				bUseFloat = true;
+
+				printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
+								SLESolverConfigFinal, adaptConfig, lambda, vecType);
+
+				adaptClassificationTestSP(dataSP, classesSP, testdataSP, testclassesSP, regression, gridConfig, SLESolverSPConfigRefine,
+						SLESolverSPConfigFinal, adaptConfig, (float)lambda, vecType);
+			}
+			else if (precision == "DP")
+			{
+				bUseFloat = false;
+
+				printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
+								SLESolverConfigFinal, adaptConfig, lambda, vecType);
+
+				adaptClassificationTest(data, classes, testdata, testclasses, regression, gridConfig, SLESolverConfigRefine,
+						SLESolverConfigFinal, adaptConfig, lambda, vecType);
+			}
+			else
+			{
+				std::cout << "Unsupported precision type has been chosen! Existing...." << std::endl << std::endl;
+				return -1;
+			}
 		}
 	}
 
