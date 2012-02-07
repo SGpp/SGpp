@@ -10,7 +10,6 @@
 
 #include "base/application/ScreenOutput.hpp"
 #include "solver/ode/StepsizeControl.hpp"
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 #include <string>
 #include "VarTimestep.hpp"
 
