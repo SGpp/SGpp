@@ -10,7 +10,7 @@
 
 #include "base/application/ScreenOutput.hpp"
 #include "solver/ODESolver.hpp"
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+#include "pde/operation/OperationParabolicPDESolverSystem.hpp"
 #include <string>
 //
 namespace sg
