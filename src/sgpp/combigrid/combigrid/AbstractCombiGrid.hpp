@@ -57,6 +57,7 @@ namespace combigrid{
 		~AbstractCombiGrid(){
 			// delete the kernel, and with it all the full grids
 			delete combikernel_;
+			delete gridDomain_;
 		}
 
 		/** sets the domain of the combi grid, this sets globaly for the combi grid,
