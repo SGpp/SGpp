@@ -149,21 +149,21 @@ public:
 
 
 	/** changing the levels and coefs*/
-	void updateCombiScheme(/* CombiSchemeBasis* currentScheme_,*/std::vector<int> newCoef,std::vector<int> newFullGridLevel,std::vector<int> changes){
+	void updateCombiScheme(/* CombiSchemeBasis* currentScheme_,*/std::vector<int> newCoef,std::vector<std::vector<int> > newFullGridLevels,std::vector<int> changes){
 //		CombigridLevelVector current(currentScheme_[0].getLevels(),currentScheme_[0].getCoef());
 //		current=current.getChanges(newFullGridLevel);
 //		std::vector<int> changes=(*currentScheme_).updateScheme(current.getLevelVec(),current.getCoef());
 //		std::cout<<"length of coeff: "<<currentScheme_->getCoef().size()<<std::endl;
-
+		int coef_orig_size=coefs_.size();
 		for(unsigned int i=0;i<changes.size();i++){
 			if(changes[i]<(int) coefs_.size()){
 //				coefs_[changes[i]]=currentScheme_[0].getCoef(changes[i]);
 				coefs_[changes[i]]=newCoef[i];
 			}
 			else{
-//				std::cout<<"in kernel: "<<i<<" "<<changes[i]<<std::endl;
+//				std::cout<<"in kernel: "<<i<<" "<<changes[i]<<' '<<newCoef[i]<<std::endl;
 //				addFullGrid(currentScheme_[0].getLevel(changes[i]),hasBoundaryPts_,currentScheme_[0].getCoef(changes[i]));
-				addFullGrid(newFullGridLevel,hasBoundaryPts_,newCoef[i]);
+				addFullGrid(newFullGridLevels[changes[i]-coef_orig_size],hasBoundaryPts_,newCoef[i]);
 			}
 		}
 

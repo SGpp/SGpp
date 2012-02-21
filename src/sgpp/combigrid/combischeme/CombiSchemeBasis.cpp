@@ -39,7 +39,6 @@ void combigrid::CombiSchemeBasis::removeDuplicates() {
 			i++;
 	}
 }
-
 std::vector<int> combigrid::CombiSchemeBasis::updateScheme(
 		std::vector<std::vector<int> > levelsNew, std::vector<double> coef) {
 	removeDuplicates();

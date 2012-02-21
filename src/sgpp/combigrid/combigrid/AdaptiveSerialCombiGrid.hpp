@@ -29,7 +29,7 @@ public:
 	/** Method to add an extra fullgrid to the combination.
 	 * The coefficients are set accordingly ( zero coefficients are allowed).
 	 */
-	void addToCombiScheme(std::vector<int> level);
+	std::vector<int> addToCombiScheme(std::vector<int> level);
 };
 
 }
