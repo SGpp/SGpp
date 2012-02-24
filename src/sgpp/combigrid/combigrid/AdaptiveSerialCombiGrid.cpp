@@ -9,6 +9,9 @@
 
 std::vector<int> combigrid::AdaptiveSerialCombiGrid::addToCombiScheme(
 		std::vector<int> level) {
+
+	COMBIGRID_ERROR_TEST(level.size()==abs(combikernel_->getDim()),
+			"new level vector has the wrong size!")
 	CombigridLevelVector current(combischeme_->getLevels(),
 			combischeme_->getCoef());
 	int currentSize = combischeme_->getNrSapces();
@@ -26,22 +29,23 @@ std::vector<int> combigrid::AdaptiveSerialCombiGrid::addToCombiScheme(
 	}
 	(*combikernel_).updateCombiScheme(/*combischeme_*/newCoef, newLevels,
 			changes);
+
 //	for (int i = 0; i < newLevels.size(); i++) {
 //		for (int j = 0; j < newLevels[i].size(); j++)
 //			std::cout << newLevels[i][j] << '\t';
 //		std::cout << std::endl;
-
+//	}
 //	std::cout << "changes: ";
 //	for (int i = 0; i < changes.size(); i++)
 //		std::cout << changes[i] << '\t';
 //	std::cout << std::endl;
+
 	std::vector<int> newGridsIndices;
-	for (int i = 0; i < changes.size(); i++) {
+	for (unsigned int i = 0; i < changes.size(); i++) {
 		if (changes[i] >= currentSize)
 			newGridsIndices.push_back(changes[i]);
 	}
 	return newGridsIndices;
-
 
 //	for ( int i = 0; i < combischeme_->getNrSapces(); i++) {
 //		for ( int j = 0; j < combischeme_->getDim(); j++) {

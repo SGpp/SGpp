@@ -26,8 +26,11 @@ public:
 		;
 	}
 
+//	~AdaptiveSerialCombiGrid();
+
 	/** Method to add an extra fullgrid to the combination.
 	 * The coefficients are set accordingly ( zero coefficients are allowed).
+	 * returns the indices of fullgrids, which have to be filled with new data
 	 */
 	std::vector<int> addToCombiScheme(std::vector<int> level);
 };

@@ -224,7 +224,6 @@ namespace std {
 %include "src/sgpp/combigrid/domain/AbstractStretchingMaker.hpp"
 %include "src/sgpp/combigrid/domain/CombiDomain1D.hpp" 
 %include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
-//%include "src/sgpp/combigrid/domain/CombiGridDomain.hpp"
 %include "src/sgpp/combigrid/domain/CombiAtanSpecialStretching.hpp"
 %include "src/sgpp/combigrid/domain/CombiTanStretching.hpp"
 %include "src/sgpp/combigrid/domain/CombiUniformStretching.hpp"   
@@ -235,7 +234,8 @@ namespace std {
 %include "src/sgpp/combigrid/combigridkernel/CombiGridKernel.hpp"
 %include "src/sgpp/combigrid/combigrid/AbstractCombiGrid.hpp"
 %include "src/sgpp/combigrid/combigrid/SerialCombiGrid.hpp"
-%include "src/sgpp/combigrid/combigrid/AdaptiveSerialCombiGrid.hpp" 
+%include "src/sgpp/combigrid/combigrid/AdaptiveSerialCombiGrid.hpp"
+%include "src/sgpp/combigrid/combigrid/AdaptiveSerialCombiGridVariableCoefficients.hpp" 
 
 %rename(__add__) combigrid::CombigridLevelVector::operator+;
 %rename(__mul__) combigrid::CombigridLevelVector::operator*;
@@ -244,10 +244,10 @@ namespace std {
 
 //%template(ComplexDouble) complex<double>;
 //
-//%include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
-//%template(doubleFullGrid) combigrid::FullGrid<double>;
+%include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
+%template(doubleFullGrid) combigrid::FullGrid<double>;
 //%template(FullGridC) combigrid::FullGrid< complex<double> >;
 //%template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
-//%template(CombiGridKernelD) combigrid::CombiGridKernel< double >;   
+%template(CombiGridKernelD) combigrid::CombiGridKernel< double >;   
 //%template(ComplexVector) std::vector< complex<double> >;
 #endif

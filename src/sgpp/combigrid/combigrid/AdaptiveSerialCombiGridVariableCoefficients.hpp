@@ -1,5 +1,5 @@
 /*
- * AdaptiveSerialCombigridVariableCoefficients.hpp
+ * AdaptiveSerialCombiGridVariableCoefficients.hpp
  *
  *  Created on: 21.02.2012
  *      Author: ckow
@@ -8,21 +8,23 @@
 #ifndef ADAPTIVESERIALCOMBIGRIDVARIABLECOEFFICIENTS_HPP_
 #define ADAPTIVESERIALCOMBIGRIDVARIABLECOEFFICIENTS_HPP_
 
-#include "SerialCombiGrid.hpp"
+#include "combigrid/combigrid/SerialCombiGrid.hpp"
+#include "combigrid/utils/combigrid_ultils.hpp"
 
 namespace combigrid {
 
-class AdaptiveSerialCombigridVariableCoefficients: public combigrid::SerialCombiGrid {
+class AdaptiveSerialCombiGridVariableCoefficients: public combigrid::SerialCombiGrid {
 public:
-	AdaptiveSerialCombigridVariableCoefficients(
+	AdaptiveSerialCombiGridVariableCoefficients(
 			const CombiSchemeBasis * combischeme,
 			const std::vector<bool>& hasBoundaryPts) :
 			SerialCombiGrid(combischeme, hasBoundaryPts) {
 		;
 	}
-	virtual ~AdaptiveSerialCombigridVariableCoefficients();
+//	virtual ~AdaptiveSerialCombiGridVariableCoefficients();
 
-	void changeCoefficient();
+	void changeCoefficients(std::vector<double> newCoef);
+	void changeCoefficients(int i,double newCoef);
 };
 
 } /* namespace combigrid */

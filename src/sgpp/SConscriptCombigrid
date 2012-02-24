@@ -13,6 +13,7 @@ srcs = Split("""
 combigrid/basisfunction/CombiLinearBasisFunction.cpp
 combigrid/combigrid/SerialCombiGrid.cpp
 combigrid/combigrid/AdaptiveSerialCombiGrid.cpp
+combigrid/combigrid/AdaptiveSerialCombiGridVariableCoefficients.cpp
 combigrid/combischeme/CombiS_CT.cpp  
 combigrid/combischeme/CombiSchemeBasis.cpp  
 combigrid/combischeme/CombiTS_CT.cpp
