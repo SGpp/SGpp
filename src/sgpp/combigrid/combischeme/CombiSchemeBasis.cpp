@@ -64,12 +64,22 @@ std::vector<int> combigrid::CombiSchemeBasis::updateScheme(
 		}
 		if (found) {
 			cofficients_[found_ind] += coef[i];
-		}
-		else{
+		} else {
 			levels_vector_.push_back(levelsNew[i]);
 			cofficients_.push_back(coef[i]);
-			result.push_back(cofficients_.size()-1);
+			result.push_back(cofficients_.size() - 1);
 		}
 	}
 	return result;
+}
+
+void combigrid::CombiSchemeBasis::setCoef(std::vector<double> newCoef) {
+	COMBIGRID_ERROR_TEST((newCoef.size()==cofficients_.size()),
+			"New coefficient vector does not have the size of the old one");
+
+	cofficients_=newCoef;
+}
+
+void combigrid::CombiSchemeBasis::setCoef(int i,double newCoef){
+	cofficients_[i]=newCoef;
 }
