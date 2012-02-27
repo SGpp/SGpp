@@ -288,7 +288,7 @@ void DataMatrix::add(DataMatrix &matr) {
 	}
 }
 
-void DataMatrix::sub(DataMatrix& matr) {
+void DataMatrix::sub(const DataMatrix& matr) {
 	if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
 		throw new sg::base::data_exception(
 				"DataMatrix::sub : Dimensions do not match");
@@ -298,6 +298,40 @@ void DataMatrix::sub(DataMatrix& matr) {
 	for (size_t i = 0; i < n; i++) {
 		data[i] -= matr.data[i];
 	}
+}
+
+void DataMatrix::addReduce(DataVector& reduction)
+{
+    if (this->nrows != reduction.getSize() ) {
+            throw new sg::base::data_exception(
+                    "DataMatrix::addReduce : Dimensions do not match");
+        }
+
+    for (size_t i = 0; i < this->ncols; i++)
+    {
+        double tmp = 0.0;
+        for (size_t j = 0; j < this->ncols; j++)
+        {
+            tmp += this->data[(i*this->ncols)+j];
+        }
+        reduction.set(i, tmp);
+    }
+}
+
+void DataMatrix::expand(const DataVector& expand)
+{
+    if (this->nrows != expand.getSize() ) {
+            throw new sg::base::data_exception(
+                    "DataMatrix::expand : Dimensions do not match");
+        }
+
+    for (size_t i = 0; i < this->ncols; i++)
+    {
+        for (size_t j = 0; j < this->ncols; j++)
+        {
+            this->data[(i*this->ncols)+j] = expand.get(i);
+        }
+    }
 }
 
 void DataMatrix::componentwise_mult(DataMatrix& matr) {

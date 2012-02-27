@@ -231,7 +231,23 @@ public:
  	 *
  	 * @param matr The DataMatrix which is subtracted from the current values
  	 */
-	void sub(DataMatrix& matr);
+	void sub(const DataMatrix& matr);
+
+	/**
+	 * Reduce the DataMatrix along the
+	 * columns by adding all entries in one row.
+	 *
+	 * @param reduction DataVector into which the reduce columns are stored
+	 */
+	void addReduce(DataVector& reduction);
+
+	/**
+	 * expands a given DataVector into a
+	 * DataMatrix.
+	 *
+	 * @param expand DataVector that should be expanded
+	 */
+	void expand(const DataVector& expand);
 
     /**
      * Multiplies the current DataMatrix component-wise with another DataMatrix.
