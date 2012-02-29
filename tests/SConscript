@@ -16,7 +16,7 @@ bld = Builder(action = "python $SOURCE")
 test_env.Append(BUILDERS = {'Test' : bld})
 tests = test_env.Test('test_pysgpp.py')
 Requires(tests, ti)
-AlwaysBuild(tests)
+AlwaysBuild(tests) 
 
 test_env.Alias('test', tests)
 
