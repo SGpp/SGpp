@@ -26,7 +26,7 @@ import tbin.tlearner.testsuite as learnertests
 import tbin.tdata.testsuite as datatests
 import tbin.tcontroller.testsuite as controllertests
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     sys.stdout.write("Running unit tests. ")
     if not toolsKbhitCountdown.countdown(3):
         
