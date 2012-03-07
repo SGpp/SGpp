@@ -53,6 +53,10 @@ base/datatypes/DataVectorSP.cpp
 base/grid/common/BoundingBox.cpp
 base/grid/common/DirichletGridConverter.cpp
 base/grid/common/DirichletUpdateVector.cpp
+base/grid/generation/hashmap/HashRefinementAbstract.cpp
+base/grid/generation/hashmap/HashRefinement.cpp
+base/grid/generation/hashmap/HashRefinementBoundaries.cpp
+base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
 base/grid/generation/BoundaryGridGenerator.cpp
 base/grid/generation/PrewaveletGridGenerator.cpp
 base/grid/generation/SquareRootGridGenerator.cpp
