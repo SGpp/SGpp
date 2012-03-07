@@ -263,7 +263,7 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction)
                     "DataMatrixSP::addReduce : Dimensions do not match");
         }
 
-    for (size_t i = 0; i < this->ncols; i++)
+    for (size_t i = 0; i < this->nrows; i++)
     {
         float tmp = 0.0;
         for (size_t j = 0; j < this->ncols; j++)
@@ -281,7 +281,7 @@ void DataMatrixSP::expand(const DataVectorSP& expand)
                     "DataMatrixSP::expand : Dimensions do not match");
         }
 
-    for (size_t i = 0; i < this->ncols; i++)
+    for (size_t i = 0; i < this->nrows; i++)
     {
         for (size_t j = 0; j < this->ncols; j++)
         {
