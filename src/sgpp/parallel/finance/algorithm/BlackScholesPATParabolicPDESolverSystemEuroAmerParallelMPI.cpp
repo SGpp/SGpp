@@ -9,8 +9,8 @@
 
 #include "parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 #include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "pde/algorithm/StdUpDown.hpp"
 #include "pde/algorithm/UpDownOneOpDim.hpp"
 #include "pde/algorithm/UpDownTwoOpDims.hpp"

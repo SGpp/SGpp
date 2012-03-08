@@ -10,7 +10,7 @@
 
 #include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
 #include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/RefinementFunctor.hpp"
+#include "base/grid/generation/functors/RefinementFunctor.hpp"
 
 
 namespace sg

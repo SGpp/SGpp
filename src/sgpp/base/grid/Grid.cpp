@@ -23,7 +23,7 @@
 #include "base/grid/type/TruncatedTrapezoidGrid.hpp"
 #include "base/grid/type/PrewaveletGrid.hpp"
 
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
 #include "base/operation/BaseOpFactory.hpp"
 

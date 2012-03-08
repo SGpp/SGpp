@@ -3,13 +3,13 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de)
+// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef SURPLUSVOLUMEREFINEMENTFUNCTOR_HPP
-#define SURPLUSVOLUMEREFINEMENTFUNCTOR_HPP
+#ifndef SURPLUSREFINEMENTFUNCTOR_HPP
+#define SURPLUSREFINEMENTFUNCTOR_HPP
 
 #include "base/datatypes/DataVector.hpp"
-#include "base/grid/generation/RefinementFunctor.hpp"
+#include "base/grid/generation/functors/RefinementFunctor.hpp"
 #include "base/grid/GridStorage.hpp"
 
 namespace sg
@@ -18,27 +18,25 @@ namespace base
 {
 
 /**
- * A refinement functor, refining according to the maximal absolute values in a DataVector provided,
- * weighted with the corresponding basis function's surplus, i.e., with @f$2^{-|\vec{l}|_1} = 2^{\sum_{k=1}^d l_d}@f$.
+ * A refinement functor, refining according to the maximal absolute values in a DataVector provided.
  * @version $HEAD$
- * @todo (pflueged) add unit tests
  */
-class SurplusVolumeRefinementFunctor : public RefinementFunctor
+class SurplusRefinementFunctor : public RefinementFunctor
 {
 public:
 	/**
 	 * Constructor.
 	 *
 	 * @param alpha DataVector that is basis for refinement decisions. The i-th entry corresponds to the i-th grid point.
-	 * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points), default: 1
-	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold, default: 0.0
+	 * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points)
+	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold
 	 */
-	SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num = 1, double threshold = 0.0);
+	SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num = 1, double threshold = 0.0);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~SurplusVolumeRefinementFunctor();
+	virtual ~SurplusRefinementFunctor();
 
 	virtual double operator()(GridStorage* storage, size_t seq);
 
@@ -62,4 +60,4 @@ protected:
 }
 }
 
-#endif /* SURPLUSVOLUMEREFINEMENTFUNCTOR_HPP */
+#endif /* SURPLUSREFINEMENTFUNCTOR_HPP */

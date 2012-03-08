@@ -8,8 +8,8 @@
 #ifndef GRIDGENERATOR_HPP
 #define GRIDGENERATOR_HPP
 
-#include "base/grid/generation/RefinementFunctor.hpp"
-#include "base/grid/generation/CoarseningFunctor.hpp"
+#include "base/grid/generation/functors/RefinementFunctor.hpp"
+#include "base/grid/generation/functors/CoarseningFunctor.hpp"
 
 #include "base/datatypes/DataVector.hpp"
 

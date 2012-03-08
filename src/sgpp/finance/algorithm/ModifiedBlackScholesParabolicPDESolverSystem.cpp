@@ -8,8 +8,8 @@
 #include "finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 #include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "finance/application/VariableDiscountFactor.hpp"
 #include "finance/operation/FinanceOpFactory.hpp"
 
