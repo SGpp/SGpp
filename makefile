@@ -11,7 +11,6 @@
 ###################################################################
 SRCDIR=./../../../src/sgpp
 #only for extensions:
-# test change
 #####################
 # Intel Array Building Blocks
 ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
