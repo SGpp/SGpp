@@ -63,9 +63,9 @@ base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/SquareRootGridGenerator.cpp
 base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
-base/grid/generation/SurplusRefinementFunctor.cpp
-base/grid/generation/SurplusVolumeRefinementFunctor.cpp
-base/grid/generation/SurplusCoarseningFunctor.cpp
+base/grid/generation/functors/SurplusRefinementFunctor.cpp
+base/grid/generation/functors/SurplusVolumeRefinementFunctor.cpp
+base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 base/grid/generation/PrewaveletGridGenerator.cpp
 
 base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp

@@ -13,7 +13,7 @@
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/operation/OperationHierarchisation.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
 #include "solver/sle/ConjugateGradients.hpp"
 

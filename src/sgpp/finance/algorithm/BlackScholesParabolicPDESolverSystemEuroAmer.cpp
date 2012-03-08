@@ -7,8 +7,8 @@
 
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
 #include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 #include "pde/operation/PdeOpFactory.hpp"
 #include "finance/operation/FinanceOpFactory.hpp"
