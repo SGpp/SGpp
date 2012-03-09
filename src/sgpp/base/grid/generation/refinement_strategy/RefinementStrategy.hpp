@@ -24,7 +24,7 @@ class RefinementStrategy {
 public:
 	/*RefinementStrategy();*/
 	RefinementStrategy(RefinementFunctor* functor){refinement_functor_ = functor;};
-	//virtual ~RefinementStrategy();
+	virtual ~RefinementStrategy(){};
 
 	virtual void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement)=0;
 
