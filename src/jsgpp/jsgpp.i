@@ -78,9 +78,12 @@ namespace std {
 %include "src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
 
 %include "src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/RefinementStrategy.hpp"
+%include "src/sgpp/base/grid/generation/hashmap/HashRefinementAbstract.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/RefinementANOVAStrategy.hpp"
 %include "src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/TrapezoidBoundaryGridGenerator.hpp"

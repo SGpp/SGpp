@@ -7,6 +7,7 @@
 
 
 #include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
+#include "base/grid/generation/refinement_strategy/RefinementStrategy.hpp"
 
 
 namespace sg
@@ -39,6 +40,12 @@ void HashRefinementAbstract::create_gridpoint_1d(index_type& index,
 		// restore values
 		index.set(d, source_level, source_index);
 	}
+}
+
+void HashRefinementAbstract::strategy_refine(GridStorage* storage,
+										RefinementStrategy& refinement_strategy)
+{
+		refinement_strategy.refine(storage, this);
 }
 
 }
