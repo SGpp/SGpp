@@ -8,16 +8,17 @@
 #ifndef REFINEMENTANOVASTRATEGY_HPP_
 #define REFINEMENTANOVASTRATEGY_HPP_
 
-#include "RefinementStrategy.hpp"
+#include "base/grid/generation/refinement_strategy/RefinementStrategy.hpp"
+#include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
 
 namespace sg {
 namespace base {
 
-class RefinementANOVAStrategy: public sg::base::RefinementStrategy {
+class RefinementANOVAStrategy: public RefinementStrategy {
 public:
-	RefinementANOVAStrategy();
-	virtual ~RefinementANOVAStrategy();
-	void refine_gridpoint_directional(GridStorage* storage, size_t refine_index, size_t d, HashRefinementAbstract*);
+	void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement);
+	RefinementANOVAStrategy(RefinementFunctor* refinement_functor):RefinementStrategy(refinement_functor){};
+	/*virtual ~RefinementANOVAStrategy();*/
 };
 
 } /* namespace base */

@@ -22,11 +22,11 @@ class HashRefinementAbstract;
 
 class RefinementStrategy {
 public:
-	RefinementStrategy();
-	RefinementStrategy(RefinementFunctor* functor);
-	virtual ~RefinementStrategy();
+	/*RefinementStrategy();*/
+	RefinementStrategy(RefinementFunctor* functor){refinement_functor_ = functor;};
+	//virtual ~RefinementStrategy();
 
-	virtual void refine(GridStorage* storage, HashRefinementAbstract*) = 0;
+	virtual void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement)=0;
 
 protected:
 

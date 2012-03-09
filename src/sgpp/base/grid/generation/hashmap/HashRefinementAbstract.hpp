@@ -17,7 +17,7 @@ namespace sg
 namespace base
 {
 
-
+//class RefinementStrategy;
 /**
  * Standard free refinement class for sparse grids without boundaries
  */
@@ -49,12 +49,14 @@ public:
 	 */
 	virtual size_t getNumberOfRefinablePoints(GridStorage* storage) = 0;
 
-	/*virtual void strategy_refine(GridStorage* storage, RefinementStrategy& refinement_strategy){
+	virtual void strategy_refine(GridStorage* storage, RefinementStrategy& refinement_strategy);
+	/*{
 		refinement_strategy.refine(storage, this);
 	}*/
 
+	virtual void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d) = 0;
 
-	//virtual ~HashRefinementAbstract();
+	//~HashRefinementAbstract();
 
 protected:
 	/**
@@ -108,7 +110,8 @@ protected:
 	virtual void create_gridpoint_1d(index_type& index,
 			size_t d, GridStorage * storage, index_t& source_index, level_t& source_level);
 
-	virtual void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d) = 0;
+
+
 
 };
 
