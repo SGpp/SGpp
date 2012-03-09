@@ -56,7 +56,7 @@ public:
 
 	virtual void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d) = 0;
 
-	//~HashRefinementAbstract();
+	~HashRefinementAbstract(){};
 
 protected:
 	/**

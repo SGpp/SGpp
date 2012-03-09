@@ -1113,10 +1113,41 @@ class HashGenerator(_object):
 HashGenerator_swigregister = _pysgpp.HashGenerator_swigregister
 HashGenerator_swigregister(HashGenerator)
 
-class HashRefinement(_object):
+class RefinementStrategy(_object):
     __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, RefinementStrategy, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, RefinementStrategy, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _pysgpp.delete_RefinementStrategy
+    __del__ = lambda self : None;
+    def refine(self, *args): return _pysgpp.RefinementStrategy_refine(self, *args)
+RefinementStrategy_swigregister = _pysgpp.RefinementStrategy_swigregister
+RefinementStrategy_swigregister(RefinementStrategy)
+
+class HashRefinementAbstract(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, HashRefinementAbstract, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, HashRefinementAbstract, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    def free_refine(self, *args): return _pysgpp.HashRefinementAbstract_free_refine(self, *args)
+    def getNumberOfRefinablePoints(self, *args): return _pysgpp.HashRefinementAbstract_getNumberOfRefinablePoints(self, *args)
+    def strategy_refine(self, *args): return _pysgpp.HashRefinementAbstract_strategy_refine(self, *args)
+    def refine_gridpoint_1d(self, *args): return _pysgpp.HashRefinementAbstract_refine_gridpoint_1d(self, *args)
+    __swig_destroy__ = _pysgpp.delete_HashRefinementAbstract
+    __del__ = lambda self : None;
+HashRefinementAbstract_swigregister = _pysgpp.HashRefinementAbstract_swigregister
+HashRefinementAbstract_swigregister(HashRefinementAbstract)
+
+class HashRefinement(HashRefinementAbstract):
+    __swig_setmethods__ = {}
+    for _s in [HashRefinementAbstract]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
     __setattr__ = lambda self, name, value: _swig_setattr(self, HashRefinement, name, value)
     __swig_getmethods__ = {}
+    for _s in [HashRefinementAbstract]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
     __getattr__ = lambda self, name: _swig_getattr(self, HashRefinement, name)
     __repr__ = _swig_repr
     def free_refine(self, *args): return _pysgpp.HashRefinement_free_refine(self, *args)
@@ -1148,10 +1179,12 @@ class HashCoarsening(_object):
 HashCoarsening_swigregister = _pysgpp.HashCoarsening_swigregister
 HashCoarsening_swigregister(HashCoarsening)
 
-class HashRefinementBoundaries(_object):
+class HashRefinementBoundaries(HashRefinementAbstract):
     __swig_setmethods__ = {}
+    for _s in [HashRefinementAbstract]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
     __setattr__ = lambda self, name, value: _swig_setattr(self, HashRefinementBoundaries, name, value)
     __swig_getmethods__ = {}
+    for _s in [HashRefinementAbstract]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
     __getattr__ = lambda self, name: _swig_getattr(self, HashRefinementBoundaries, name)
     __repr__ = _swig_repr
     def free_refine(self, *args): return _pysgpp.HashRefinementBoundaries_free_refine(self, *args)
@@ -1164,6 +1197,24 @@ class HashRefinementBoundaries(_object):
     __del__ = lambda self : None;
 HashRefinementBoundaries_swigregister = _pysgpp.HashRefinementBoundaries_swigregister
 HashRefinementBoundaries_swigregister(HashRefinementBoundaries)
+
+class RefinementANOVAStrategy(RefinementStrategy):
+    __swig_setmethods__ = {}
+    for _s in [RefinementStrategy]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, RefinementANOVAStrategy, name, value)
+    __swig_getmethods__ = {}
+    for _s in [RefinementStrategy]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, RefinementANOVAStrategy, name)
+    __repr__ = _swig_repr
+    def refine(self, *args): return _pysgpp.RefinementANOVAStrategy_refine(self, *args)
+    def __init__(self, *args): 
+        this = _pysgpp.new_RefinementANOVAStrategy(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _pysgpp.delete_RefinementANOVAStrategy
+    __del__ = lambda self : None;
+RefinementANOVAStrategy_swigregister = _pysgpp.RefinementANOVAStrategy_swigregister
+RefinementANOVAStrategy_swigregister(RefinementANOVAStrategy)
 
 class StandardGridGenerator(GridGenerator):
     __swig_setmethods__ = {}
