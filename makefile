@@ -232,6 +232,22 @@ ifeq ($(CC),icpc)
 endif
 
 ###################################################################
+# Builds a Heston Solver
+###################################################################	
+HestonSolver: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/HestonSolver_gcc
+	make -j $(JOBS) -f ./../../../src/makefileNativeHestonSolver --directory=./tmp/build_native/HestonSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HestonSolver_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/HestonSolver_icc
+	make -j $(JOBS) -f ./../../../src/makefileNativeHestonSolver --directory=./tmp/build_native/HestonSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HestonSolver_ICC" "EXT=$(EXT)"
+endif
+#ifeq ($(CC),mpiicpc)	
+#   Not implemented	
+#endif
+
+###################################################################
 # Builds a Hull White Solver
 ###################################################################	
 HWSolver: default
@@ -367,6 +383,16 @@ test_BSS_3d:
 test_BSS_all: test_BSS_1d test_BSS_2d test_BSS_3d
 	echo "executed all BS tests!"
 		
+###################################################################
+# test Heston Solver
+###################################################################			
+
+test_Heston_1d:
+	cd bin; \
+	./copyHestonSolverToTest.sh; \
+	cd ./../tests/CPP_Apps/HestonSolver/1d; \
+	./test_HestonSolver_1d.sh;
+
 ###################################################################
 # test Combined Hull Wihte Solver Solver
 ###################################################################			
