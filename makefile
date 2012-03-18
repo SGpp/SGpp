@@ -56,11 +56,11 @@ UPDOWN_PARADIMS=4
 ###################################################################
 # Compiler Flags
 ###################################################################	
-CFLAGS_GCC:=-Wall -Wconversion -pedantic -ansi -c -O3 -funroll-loops -fstrict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
-LFLAGS_GCC:=-Wall -pedantic -ansi -O3
+CFLAGS_GCC:=-Wall -Wconversion -pedantic -ansi -c -g -O0 -funroll-loops -fstrict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
+LFLAGS_GCC:=-Wall -pedantic -ansi -g -O0
 
-CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR) 
-LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
+CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -g -O0 -funroll-loops -fPIC -I$(SRCDIR) 
+LFLAGS_ICC:=-Wall -ipo -ip -ansi -g -O0 -static-intel
 
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
