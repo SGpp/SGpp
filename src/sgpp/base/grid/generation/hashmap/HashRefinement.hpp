@@ -48,6 +48,7 @@ public:
 	size_t getNumberOfRefinablePoints(GridStorage* storage);
 
 
+	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d);
 
 protected:
 	/**
@@ -70,7 +71,6 @@ protected:
 	/*void refine_gridpoint_1d(index_type& index,
 				size_t d, GridStorage * storage, index_t& souce_index, level_t& source_level);*/
 
-	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d);
 
 };
 

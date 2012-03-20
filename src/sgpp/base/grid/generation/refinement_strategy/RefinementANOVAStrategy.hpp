@@ -14,11 +14,18 @@
 namespace sg {
 namespace base {
 
+struct IndexDimension{
+	HashRefinementAbstract::index_type* index;
+	size_t d;
+};
+
 class RefinementANOVAStrategy: public RefinementStrategy {
 public:
 	void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement);
 	RefinementANOVAStrategy(RefinementFunctor* refinement_functor):RefinementStrategy(refinement_functor){};
 	/*virtual ~RefinementANOVAStrategy();*/
+private:
+	IndexDimension createIndexDimensionItem(HashRefinementAbstract::index_type* index, size_t d);
 };
 
 } /* namespace base */

@@ -90,7 +90,7 @@ public:
 	 *
 	 * @return the number of points on the grid that can be removed
 	 */
-	virtual size_t getNumberOfRemoveablePoints() = 0;
+	virtual size_t getNumberOfRemovablePoints() = 0;
 
 	/**
 	 * Refines a grid according to the settings of the RefinementFunctor func.

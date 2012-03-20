@@ -577,7 +577,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 
 			if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
 			{
-				size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+				size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 				base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
 				myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 				delete myCoarsenFunctor;

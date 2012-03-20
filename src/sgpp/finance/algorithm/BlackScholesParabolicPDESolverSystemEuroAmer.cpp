@@ -394,7 +394,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastT
 
 		if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
 		{
-			size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+			size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 			sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
 			myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 			delete myCoarsenFunctor;

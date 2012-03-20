@@ -53,7 +53,7 @@ void SquareRootGridGenerator::regular(size_t level)
 //	coarsen.free_coarsen(this->storage, func, alpha);
 //}
 //
-//size_t BoundaryGridGenerator::getNumberOfRemoveablePoints()
+//size_t BoundaryGridGenerator::getNumberOfRemovablePoints()
 //{
 //	HashCoarsening coarsen;
 //	return coarsen.getNumberOfRemovablePoints(this->storage);

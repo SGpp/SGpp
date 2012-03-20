@@ -71,6 +71,16 @@ public:
 	 * @return threshold value for refinement. Default value: 0.
 	 */
 	virtual double getRefinementThreshold() = 0;
+
+	virtual double getTotalRefinementValue(GridStorage* storage) {
+		double sum = 0;
+		GridStorage::grid_map_iterator end_iter = storage->end();
+		for (GridStorage::grid_map_iterator iter = storage->begin();
+					iter != end_iter; iter++) {
+			sum += operator()(storage, iter->second);
+		}
+		return sum;
+	}
 };
 
 }

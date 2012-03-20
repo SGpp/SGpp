@@ -62,7 +62,7 @@ void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func, DataVecto
 	coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
 }
 
-size_t BoundaryGridGenerator::getNumberOfRemoveablePoints()
+size_t BoundaryGridGenerator::getNumberOfRemovablePoints()
 {
 	HashCoarsening coarsen;
 	return coarsen.getNumberOfRemovablePoints(this->storage);

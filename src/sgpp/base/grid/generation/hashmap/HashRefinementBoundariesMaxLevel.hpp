@@ -44,6 +44,7 @@ public:
 	size_t getNumberOfRefinablePointsToMaxLevel(GridStorage* storage, unsigned int maxLevel);
 
 
+	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d, unsigned int maxLevel);
 
 
 protected:
@@ -57,7 +58,6 @@ protected:
 	 */
 	void refine_gridpoint(GridStorage* storage, size_t refine_index, unsigned int maxLevel);
 
-	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d, unsigned int maxLevel);
 
 };
 
