@@ -104,7 +104,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep()
 
 	if (this->BoundGrid->getStorage()->getNumInnerPoints() > 100)
 	{
-		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+		size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 		base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsen_threshold_);
 		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 		delete myCoarsenFunctor;

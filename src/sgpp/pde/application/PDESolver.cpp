@@ -240,7 +240,7 @@ void PDESolver::coarsenInitialGridSurplus(sg::base::DataVector& alpha, double dT
 	if (bGridConstructed)
 	{
 		sg::base::GridGenerator* myGenerator =  myGrid->createGridGenerator();
-		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+		size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 		size_t originalGridSize = myGrid->getStorage()->size();
 		sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(&alpha, numCoarsen, dThreshold);
 
