@@ -27,6 +27,8 @@
 
 #include "base/operation/OperationQuadrature.hpp"
 #include "base/basis/linear/noboundary/operation/OperationQuadratureLinear.hpp"
+#include "base/basis/linear/noboundary/operation/OperationFirstMomentLinear.hpp"
+#include "base/basis/linear/noboundary/operation/OperationSecondMomentLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.hpp"
 #include "base/basis/poly/operation/OperationQuadraturePoly.hpp"
 
@@ -141,6 +143,28 @@ namespace op_factory
       }
     else
       throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");
+  }
+
+  base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid)
+  {
+
+    if(strcmp(grid.getType(), "linear") == 0)
+      {
+        return new base::OperationFirstMomentLinear(grid.getStorage());
+      }
+    else
+      throw base::factory_exception("OperationFirstMoment is not implemented for this grid type.");
+  }
+
+  base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid)
+  {
+
+    if(strcmp(grid.getType(), "linear") == 0)
+      {
+        return new base::OperationSecondMomentLinear(grid.getStorage());
+      }
+    else
+      throw base::factory_exception("OperationSecondMoment is not implemented for this grid type.");
   }
 
   base::OperationConvert* createOperationConvert(base::Grid& grid)
