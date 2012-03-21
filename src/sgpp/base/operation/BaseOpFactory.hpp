@@ -12,6 +12,8 @@
 
 #include "base/operation/OperationHierarchisation.hpp"
 #include "base/operation/OperationQuadrature.hpp"
+#include "base/operation/OperationFirstMoment.hpp"
+#include "base/operation/OperationSecondMoment.hpp"
 #include "base/operation/OperationConvert.hpp"
 #include "base/operation/OperationIdentity.hpp"
 #include "base/operation/OperationMatrix.hpp"
@@ -44,6 +46,22 @@ namespace op_factory
    * @return Pointer to the new OperationQuadrature for the Grid grid
    */
   base::OperationQuadrature* createOperationQuadrature(base::Grid& grid);
+  /**
+   * Factory method, returning an OperationFirstMoment for the grid at hand.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for quadrature
+   * @return Pointer to the new OperationFirstMoment for the Grid grid
+   */
+  base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid);
+  /**
+   * Factory method, returning an OperationSecondMoment for the grid at hand.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for quadrature
+   * @return Pointer to the new OperationSecondMoment for the Grid grid
+   */
+  base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid);
   /**
    * Factory method, returning an OperationConvert for the grid at hand.
    * Note: object has to be freed after use.

@@ -77,6 +77,7 @@ datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 base/basis/linear/noboundary/operation/OperationEvalLinear.cpp
 base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
 base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
+base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.cpp
 pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationLBLinear.cpp
