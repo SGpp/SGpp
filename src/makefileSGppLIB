@@ -285,6 +285,8 @@ OBJS =	DataVector.o\
 	LearnerVectorizedIdentitySP.o\
 	LearnerVectorizedPerformanceCalculator.o\
 	BiCGStabSP.o\
+	OperationSecondMomentLinear.o\
+	OperationFirstMomentLinear.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1200,7 +1202,13 @@ LearnerVectorizedPerformanceCalculator.o : $(SRCDIR)parallel/datadriven/tools/Le
 
 BiCGStabSP.o : $(SRCDIR)solver/sle/BiCGStabSP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabSP.o $(SRCDIR)solver/sle/BiCGStabSP.cpp
+	
+OperationSecondMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationSecondMomentLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationSecondMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationSecondMomentLinear.cpp
 
+OperationFirstMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationFirstMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
+	
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
