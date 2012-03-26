@@ -14,6 +14,8 @@
 #include "base/grid/type/PrewaveletGrid.hpp"
 #include "base/grid/type/ModBsplineGrid.hpp"
 
+#include "base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.hpp"
+#include "base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.hpp"
 #include "base/basis/linear/noboundary/operation/OperationHierarchisationLinear.hpp"
 #include "base/basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
@@ -70,6 +72,14 @@ namespace op_factory
     if(strcmp(grid.getType(), "linear") == 0)
       {
         return new base::OperationHierarchisationLinear(grid.getStorage());
+      }
+    else if(strcmp(grid.getType(), "linearstencil") == 0 )
+      {
+        return new base::OperationStencilHierarchisationLinear(grid.getStorage());
+      }
+    else if(strcmp(grid.getType(), "modlinearstencil") == 0 )
+      {
+        return new base::OperationStencilHierarchisationModLinear(grid.getStorage());
       }
     else if(strcmp(grid.getType(), "modlinear") == 0 )
       {

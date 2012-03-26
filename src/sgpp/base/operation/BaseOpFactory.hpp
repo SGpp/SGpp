@@ -19,6 +19,7 @@
 #include "base/operation/OperationMatrix.hpp"
 #include "base/operation/OperationEval.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
+#include "base/operation/OperationStencilHierarchisation.hpp"
 
 /*
  * This file contains factory methods for operations.
