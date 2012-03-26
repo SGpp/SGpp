@@ -9,6 +9,8 @@
 
 #include "base/exception/factory_exception.hpp"
 
+#include "base/grid/type/LinearGridStencil.hpp"
+#include "base/grid/type/ModLinearGridStencil.hpp"
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/type/LinearStretchedGrid.hpp"
 #include "base/grid/type/LinearBoundaryGrid.hpp"
@@ -32,6 +34,16 @@ namespace sg
 {
 namespace base
 {
+
+Grid* Grid::createLinearGridStencil(size_t dim)
+{
+	return new LinearGridStencil(dim);
+}
+
+Grid* Grid::createModLinearGridStencil(size_t dim)
+{
+	return new ModLinearGridStencil(dim);
+}
 
 Grid* Grid::createLinearGrid(size_t dim)
 {
