@@ -534,11 +534,11 @@ OperationEvalLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/Operatio
 OperationHierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
 
-OperationStencilHierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/common/OperationStencilHierarchisationLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationStencilHierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/common/OperationStencilHierarchisationLinear.cpp
+OperationStencilHierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationStencilHierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.cpp
 	
-OperationStencilHierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/operation/common/OperationStencilHierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationStencilHierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/operation/common/OperationStencilHierarchisationModLinear.cpp
+OperationStencilHierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationStencilHierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.cpp
 	
 OperationQuadratureLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
@@ -586,9 +586,9 @@ StencilDehierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorit
 	$(CC) $(CFLAGS) -o $(OUTDIR)StencilDehierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.cpp
 
 StencilHierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)StencilHierarchisationModLinear.o $(SRCDIR)basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StencilHierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.cpp
 
-StencilDehierarchisationModLinear.o : $(SRCDIR)basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.cpp
+StencilDehierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StencilDehierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.cpp
 
 PhiPhiDownBBLinear.o : $(SRCDIR)pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp

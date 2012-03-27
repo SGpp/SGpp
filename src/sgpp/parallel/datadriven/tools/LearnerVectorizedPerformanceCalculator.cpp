@@ -6,6 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
+#include <cstring>
 
 namespace sg
 {
@@ -24,7 +25,7 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
 	size_t nDim = Grid.getStorage()->dim();
 	size_t nGridsize = Grid.getSize();
 
-	if (Grid.getType() == "modlinear")
+	if (strcmp(Grid.getType(),"modlinear") == 0)
 	{
 		for (size_t g = 0; g < Grid.getSize(); g++)
 		{

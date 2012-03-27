@@ -19,6 +19,7 @@
 //#define GRDIRESOLUTION 100
 
 bool bUseFloat;
+bool bUseRecursion;
 
 std::string ggridtype;
 std::string gdataFile;
@@ -191,21 +192,24 @@ void printResults()
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
-#ifdef ITERATIVE
-    std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision)" << std::endl;
-    std::cout << std::endl << "Timing Details:" << std::endl;
-    std::cout << "         mult (complete): " << gtimings.timeMultComplete_ << " seconds" << std::endl;
-    std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds" << std::endl;
-    std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ << " seconds" << std::endl;
-    std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ << " seconds" << std::endl;
-    std::cout << std::endl;
-    std::cout << "GFlop/s (complete): " << gtimings.GFlop_/gtimings.timeComplete_ << std::endl;
-    std::cout << "GByte/s (complete): " << gtimings.GByte_/gtimings.timeComplete_ << std::endl;
-    std::cout << "GFlop/s (compute): " << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl;
-    std::cout << "GByte/s (compute): " << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl << std::endl;
-#else
-    std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision, recursive)" << std::endl << std::endl;
-#endif
+    if (bUseRecursion == false)
+    {
+        std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision)" << std::endl;
+        std::cout << std::endl << "Timing Details:" << std::endl;
+        std::cout << "         mult (complete): " << gtimings.timeMultComplete_ << " seconds" << std::endl;
+        std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds" << std::endl;
+        std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ << " seconds" << std::endl;
+        std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ << " seconds" << std::endl;
+        std::cout << std::endl;
+        std::cout << "GFlop/s (complete): " << gtimings.GFlop_/gtimings.timeComplete_ << std::endl;
+        std::cout << "GByte/s (complete): " << gtimings.GByte_/gtimings.timeComplete_ << std::endl;
+        std::cout << "GFlop/s (compute): " << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl;
+        std::cout << "GByte/s (compute): " << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl << std::endl;
+    }
+    else
+    {
+        std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision, recursive)" << std::endl << std::endl;
+    }
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
@@ -522,6 +526,7 @@ int main(int argc, char *argv[])
 		if (vectorization == "REC")
 		{
 			bUseFloat = false;
+			bUseRecursion = true;
 
 			printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
 							SLESolverConfigFinal, adaptConfig, lambda, vecType);
@@ -531,6 +536,8 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
+		    bUseRecursion = false;
+
 			if (precision == "SP")
 			{
 				bUseFloat = true;
