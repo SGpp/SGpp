@@ -232,6 +232,11 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
     	clReleaseMemObject(clSource[i]);
     	clReleaseMemObject(clResult[i]);
     }
+    for (size_t i = 0; i < MAX_OCL_DEVICE_COUNT; i++)
+    {
+        clReleaseEvent(clTimings[i]);
+        clReleaseEvent(GPUDone[i]);
+    }
 
     isFirstTimeMultTransDP = false;
 
@@ -483,6 +488,11 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
     {
     	clReleaseMemObject(clAlpha[i]);
     	clReleaseMemObject(clResult[i]);
+    }
+    for (size_t i = 0; i < MAX_OCL_DEVICE_COUNT; i++)
+    {
+        clReleaseEvent(clTimings[i]);
+        clReleaseEvent(GPUDone[i]);
     }
 
     isFirstTimeMultDP = false;
