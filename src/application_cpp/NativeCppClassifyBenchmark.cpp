@@ -194,7 +194,14 @@ void printResults()
 
     if (bUseRecursion == false)
     {
-        std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision)" << std::endl;
+        if (bUseFloat)
+        {
+            std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Single Precision)" << std::endl;
+        }
+        else
+        {
+            std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision)" << std::endl;
+        }
         std::cout << std::endl << "Timing Details:" << std::endl;
         std::cout << "         mult (complete): " << gtimings.timeMultComplete_ << " seconds" << std::endl;
         std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds" << std::endl;
