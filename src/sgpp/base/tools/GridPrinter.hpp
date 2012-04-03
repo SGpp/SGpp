@@ -49,7 +49,7 @@ public:
 	 * @param tFilename absolute path to the file the grid is written into
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
-	virtual void printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension);
+	virtual void printGrid(DataVector& alpha, std::string tFilename, size_t PointsPerDimension);
 
 	/**
 	 * Print the grid with its function to a file; front end
@@ -59,7 +59,7 @@ public:
 	 * @param GridArea The area in which the function should be plotted
 	 * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
 	 */
-	virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension);
+	virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, size_t PointsPerDimension);
 
 	/**
 	 * Prints the Grid Points of the Sparse Grid either with their node basis value
