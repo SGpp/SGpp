@@ -695,18 +695,18 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		return;
 	}
 
-	sg::finance::BlackScholesSolver* myBSSolver;
+	sg::finance::HestonSolver* myHestonSolver;
 	if (coordsType == "log")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true);
+		myHestonSolver = new sg::finance::HestonSolver(true);
 	}
 	else if (coordsType == "cart")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(false);
+		myHestonSolver = new sg::finance::HestonSolver(false);
 	}
 	else if (coordsType == "PAT")
 	{
-		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
+		myHestonSolver = new sg::finance::HestonSolver(true, true);
 	}
 	else
 	{
@@ -724,31 +724,31 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	delete[] myBoundaries;
 
 	// init Screen Object
-	myBSSolver->initScreen();
+	myHestonSolver->initScreen();
 
 	// Construct a grid
-	myBSSolver->constructGrid(*myBoundingBox, level);
+	myHestonSolver->constructGrid(*myBoundingBox, level);
 
 	// init the basis functions' coefficient vector
-	sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+	sg::base::DataVector* alpha = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
 
 	std::cout << "Grid has " << level << " Levels" << std::endl;
-	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+	std::cout << "Initial Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
+	std::cout << "Initial Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
 	// Set stochastic data
-	myBSSolver->setStochasticData(mu, variance, hMatrix, r);
+	myHestonSolver->setStochasticData(mu, variance, hMatrix, r);
 
 	// Init the grid with on payoff function
-	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+	myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
 
 	// Gridpoints @Money
-	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+	std::cout << "Gridpoints @Money: " << myHestonSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
 	// Print interpolation-error at strike
 	if (dim == 2 && coordsType == "cart")
 	{
-		myBSSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
+		myHestonSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
 	}
 
 	// Print the payoff function into a gnuplot file
@@ -759,75 +759,75 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 		if (payoffType == "std_euro_call")
 		{
 			std::vector< std::pair<double, double> > prems;
-			myBSSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, true);
-			myBSSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
+			myHestonSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, true);
+			myHestonSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
 		}
 		if (payoffType == "std_euro_put")
 		{
 			std::vector< std::pair<double, double> > prems;
-			myBSSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, false);
-			myBSSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
+			myHestonSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, false);
+			myHestonSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
 		}
 	}
 
 	if (dim < 3)
 	{
-		myBSSolver->printGrid(*alpha, 50, "payoff.gnuplot");
+		myHestonSolver->printGrid(*alpha, 50, "payoff.gnuplot");
 	}
 
 	if (dim < 4)
 	{
-		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+		myHestonSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+		myHestonSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
 
 		if (coordsType == "log")
 		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+			myHestonSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
+			myHestonSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 		}
 		if (coordsType == "PAT")
 		{
-			myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
-			myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
+			myHestonSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+			myHestonSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
 		}
 	}
 
 	// Start solving the Black Scholes Equation
 	if (Solver == "ExEul")
 	{
-		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myHestonSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 	}
 	else if (Solver == "ImEul")
 	{
-		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+		myHestonSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
 	}
 	else if (Solver == "CrNic")
 	{
-		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+		myHestonSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
 	}
 	else if (Solver == "AdBas")
 	{
-		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+		myHestonSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	}
 	else if (Solver == "SCAC")
 	{
-		myBSSolver->solveSCAC(timesteps, stepsize, 0.01, CGiterations, CGepsilon, *alpha, false);
+		myHestonSolver->solveSCAC(timesteps, stepsize, 0.01, CGiterations, CGepsilon, *alpha, false);
 	}
 	else if (Solver == "SCH")
 	{
-		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+		myHestonSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
 	}
 	else if (Solver == "SCBDF")
 	{
-		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+		myHestonSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
 	}
 	else if (Solver == "SCEJ")
 	{
-		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
+		myHestonSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
 	}
 	else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
 	{
-		myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+		myHestonSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	}
 	else
 	{
@@ -837,22 +837,22 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	if (dim < 3)
 	{
 		// Print the solved Black Scholes Equation into a gnuplot file
-		myBSSolver->printGrid(*alpha, 50, "solvedHeston.gnuplot");
+		myHestonSolver->printGrid(*alpha, 50, "solvedHeston.gnuplot");
 	}
 	if (dim < 4)
 	{
-		myBSSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
-		myBSSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
+		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
+		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
 
 		if (coordsType == "log")
 		{
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
-			myBSSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
+			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
+			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
 		}
 		if (coordsType == "PAT")
 		{
-			myBSSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
-			myBSSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
+			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
+			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
 		}
 	}
 
@@ -862,10 +862,10 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
 	{
 		point.push_back(dStrike);
 	}
-	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
+	std::cout << "Optionprice at testpoint (Strike): " << myHestonSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
 	delete alpha;
-	delete myBSSolver;
+	delete myHestonSolver;
 	delete myBoundingBox;
 }
 
