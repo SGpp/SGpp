@@ -46,6 +46,7 @@ OBJS =	DataVector.o\
 	HullWhiteParabolicPDESolverSystem.o\
 	BlackScholesSolver.o\
 	BlackScholesSolverWithStretching.o\
+	HestonSolver.o\
 	HullWhiteSolver.o\
 	BlackScholesHullWhiteSolver.o\
 	ConjugateGradients.o\
@@ -1041,6 +1042,9 @@ EllipticPDESolver.o : $(SRCDIR)pde/application/EllipticPDESolver.cpp
 
 BlackScholesSolver.o : $(SRCDIR)finance/application/BlackScholesSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolver.o $(SRCDIR)finance/application/BlackScholesSolver.cpp
+
+HestonSolver.o : $(SRCDIR)finance/application/HestonSolver.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HestonSolver.o $(SRCDIR)finance/application/HestonSolver.cpp
 	
 BlackScholesSolverWithStretching.o : $(SRCDIR)finance/application/BlackScholesSolverWithStretching.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverWithStretching.o $(SRCDIR)finance/application/BlackScholesSolverWithStretching.cpp
