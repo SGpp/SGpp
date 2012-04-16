@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#ifndef OPERATIONHESTONBLINEAR_HPP
-#define OPERATIONHESTONBLINEAR_HPP
+#ifndef OPERATIONHESTONELINEAR_HPP
+#define OPERATIONHESTONELINEAR_HPP
 
 #include "pde/algorithm/UpDownOneOpDim.hpp"
 
@@ -16,13 +16,13 @@ namespace finance
 {
 
 /**
- * Implements the Heston B-Operation (corresponds to matrix B in Master's thesis), that is needed
+ * Implements the Heston E-Operation (corresponds to matrix E in Master's thesis), that is needed
  * the solve the multidimensional Heston
  * equation, on grids with fix Dirichlet-0-Boundaries.
  *
  * @version $HEAD$
  */
-class OperationHestonBLinear : public sg::pde::UpDownOneOpDim
+class OperationHestonELinear : public sg::pde::UpDownOneOpDim
 {
 public:
 	/**
@@ -31,12 +31,12 @@ public:
 	 * @param storage the grid's sg::base::GridStorage object
 	 * @param coef reference to a sg::base::DataVector object that contains the bilinear form's constant coefficients
 	 */
-	OperationHestonBLinear(sg::base::GridStorage* storage, sg::base::DataVector& coef);
+	OperationHestonELinear(sg::base::GridStorage* storage, sg::base::DataVector& coef);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationHestonBLinear();
+	virtual ~OperationHestonELinear();
 
 protected:
 	/**
@@ -79,4 +79,4 @@ protected:
 }
 }
 
-#endif /* OPERATIONHESTONBLINEAR_HPP */
+#endif /* OPERATIONHESTONELINEAR_HPP */
