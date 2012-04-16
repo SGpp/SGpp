@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+ * Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 #include "finance/operation/FinanceOpFactory.hpp"
@@ -50,175 +50,199 @@ namespace sg
 namespace op_factory
 {
 
-  base::OperationMatrix* createOperationGamma(base::Grid& grid, base::DataMatrix& coef)
-  {
+base::OperationMatrix* createOperationGamma(base::Grid& grid, base::DataMatrix& coef)
+{
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationGammaLinear(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretched") == 0)
-      {
-        return new finance::OperationGammaLinearStretched(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationGammaLinearStretchedBoundary(grid.getStorage(), coef);
-      }
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationGammaLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretched") == 0)
+	{
+		return new finance::OperationGammaLinearStretched(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationGammaLinearStretchedBoundary(grid.getStorage(), coef);
+	}
 
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationGammaLinearBoundary(grid.getStorage(), coef);
-      }
-    else
-      throw base::factory_exception("OperationGamma is not implemented for this grid type.");
+	else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationGammaLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationGamma is not implemented for this grid type.");
 
-  }
+}
 
-  base::OperationMatrix* createOperationGammaLog(base::Grid& grid, base::DataMatrix& coef)
-  {
+base::OperationMatrix* createOperationGammaLog(base::Grid& grid, base::DataMatrix& coef)
+{
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationGammaLogLinear(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretched") == 0)
-      {
-        return new finance::OperationGammaLogLinearStretched(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationGammaLogLinearStretchedBoundary(grid.getStorage(), coef);
-      }
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationGammaLogLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretched") == 0)
+	{
+		return new finance::OperationGammaLogLinearStretched(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationGammaLogLinearStretchedBoundary(grid.getStorage(), coef);
+	}
 
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationGammaLogLinearBoundary(grid.getStorage(), coef);
-      }
-    else
-      throw base::factory_exception("OperationGammaLog is not implemented for this grid type.");
+	else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationGammaLogLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationGammaLog is not implemented for this grid type.");
 
-  }
-
-
-  base::OperationMatrix* createOperationLB(base::Grid& grid)
-  {
-
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationLBLinear(grid.getStorage());
-      }
+}
 
 
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationLBLinearBoundary(grid.getStorage());
-      }
-    else
-      throw base::factory_exception("OperationLB is not implemented for this grid type.");
-  }
+base::OperationMatrix* createOperationLB(base::Grid& grid)
+{
 
-  base::OperationMatrix* createOperationLE(base::Grid& grid)
-  {
-
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationLELinear(grid.getStorage());
-      }
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationLBLinear(grid.getStorage());
+	}
 
 
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationLELinearBoundary(grid.getStorage());
-      }
-    else
-      throw base::factory_exception("OperationLE is not implemented for this grid type.");
-  }
+	else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationLBLinearBoundary(grid.getStorage());
+	}
+	else
+		throw base::factory_exception("OperationLB is not implemented for this grid type.");
+}
 
-  base::OperationMatrix* createOperationLD(base::Grid& grid)
-  {
+base::OperationMatrix* createOperationLE(base::Grid& grid)
+{
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationLDLinear(grid.getStorage());
-      }
-
-
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationLDLinearBoundary(grid.getStorage());
-      }
-    else
-      throw base::factory_exception("OperationLD is not implemented for this grid type.");
-  }
-
-  base::OperationMatrix* createOperationLF(base::Grid& grid)
-  {
-
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationLFLinear(grid.getStorage());
-      }
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationLELinear(grid.getStorage());
+	}
 
 
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationLFLinearBoundary(grid.getStorage());
-      }
-    else
-      throw base::factory_exception("OperationLF is not implemented for this grid type.");
-  }
+	else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationLELinearBoundary(grid.getStorage());
+	}
+	else
+		throw base::factory_exception("OperationLE is not implemented for this grid type.");
+}
 
-  base::OperationMatrix* createOperationDelta(base::Grid& grid, base::DataVector& coef)
-  {
+base::OperationMatrix* createOperationLD(base::Grid& grid)
+{
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationDeltaLinear(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretched") == 0)
-      {
-        return new finance::OperationDeltaLinearStretched(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationDeltaLinearStretchedBoundary(grid.getStorage(), coef);
-      }
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationLDLinear(grid.getStorage());
+	}
 
-    else if(strcmp(grid.getType(), "linearBoundary") == 0
-            || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationDeltaLinearBoundary(grid.getStorage(), coef);
-      }
 
-    else
-      throw base::factory_exception("OperationDelta is not implemented for this grid type.");
-  }
+	else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationLDLinearBoundary(grid.getStorage());
+	}
+	else
+		throw base::factory_exception("OperationLD is not implemented for this grid type.");
+}
 
-  base::OperationMatrix* createOperationDeltaLog(base::Grid& grid, base::DataVector& coef)
-  {
+base::OperationMatrix* createOperationLF(base::Grid& grid)
+{
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new finance::OperationDeltaLogLinear(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretched") == 0)
-      {
-        return new finance::OperationDeltaLogLinearStretched(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
-      {
-        return new finance::OperationDeltaLogLinearStretchedBoundary(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearBoundary") == 0
-            || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0 )
-      {
-        return new finance::OperationDeltaLogLinearBoundary(grid.getStorage(), coef);
-      }
-    else
-      throw base::factory_exception("OperationDeltaLog is not implemented for this grid type.");
-  }
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationLFLinear(grid.getStorage());
+	}
 
+
+	else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationLFLinearBoundary(grid.getStorage());
+	}
+	else
+		throw base::factory_exception("OperationLF is not implemented for this grid type.");
+}
+
+base::OperationMatrix* createOperationDelta(base::Grid& grid, base::DataVector& coef)
+{
+
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationDeltaLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretched") == 0)
+	{
+		return new finance::OperationDeltaLinearStretched(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationDeltaLinearStretchedBoundary(grid.getStorage(), coef);
+	}
+
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationDeltaLinearBoundary(grid.getStorage(), coef);
+	}
+
+	else
+		throw base::factory_exception("OperationDelta is not implemented for this grid type.");
+}
+
+base::OperationMatrix* createOperationDeltaLog(base::Grid& grid, base::DataVector& coef)
+{
+
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationDeltaLogLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretched") == 0)
+	{
+		return new finance::OperationDeltaLogLinearStretched(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationDeltaLogLinearStretchedBoundary(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0 )
+	{
+		return new finance::OperationDeltaLogLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationDeltaLog is not implemented for this grid type.");
+}
+
+base::OperationMatrix* createOperationHestonBLog(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonBLinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonCLog(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonCLinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonDLog(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonDLinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonELog(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonELinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonHLinear(grid.getStorage(), coef);
+}
 
 }
 }
