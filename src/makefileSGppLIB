@@ -72,6 +72,11 @@ OBJS =	DataVector.o\
 	OperationLDLinearBoundary.o\
 	OperationLELinearBoundary.o\
 	OperationLFLinearBoundary.o\
+	OperationHestonBLinear.o\
+	OperationHestonCLinear.o\
+	OperationHestonDLinear.o\
+	OperationHestonELinear.o\
+	OperationHestonHLinear.o\
 	OperationLaplaceLinearBoundary.o\
 	ScreenOutput.o\
 	ModWaveletGrid.o\
@@ -117,6 +122,8 @@ OBJS =	DataVector.o\
 	SqXdPhidPhiUpBBLinear.o\
 	XdPhiPhiDownBBLinear.o\
 	XdPhiPhiUpBBLinear.o\
+	XdPhidPhiDownBBLinear.o\
+	XdPhidPhiUpBBLinear.o\
 	XPhidPhiDownBBLinear.o\
 	XPhidPhiUpBBLinear.o\
 	XPhiPhiDownBBLinear.o\
@@ -169,6 +176,7 @@ OBJS =	DataVector.o\
 	DMSystemMatrixSPVectorizedIdentity.o\
 	ModifiedBlackScholesParabolicPDESolverSystem.o\
 	BlackScholesParabolicPDESolverSystemEuroAmer.o\
+	HestonParabolicPDESolverSystemEuroAmer.o\
 	StretchedTrapezoidBoundaryGridGenerator.o\
 	OperationMultipleEvalLinearStretched.o\
 	OperationEvalLinearStretched.o\
@@ -533,6 +541,21 @@ OperationLELinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/Ope
 OperationLFLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLFLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLFLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationLFLinear.cpp
 
+OperationHestonBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonBLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonBLinear.cpp
+
+OperationHestonCLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonCLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.cpp
+
+OperationHestonDLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonDLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.cpp
+
+OperationHestonELinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonELinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.cpp
+
+OperationHestonHLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonHLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
+
 OperationLaplaceLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	
@@ -571,6 +594,12 @@ XdPhiPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_swee
 	
 XdPhiPhiUpBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp	
+
+XdPhidPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhidPhiDownBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiDownBBLinear.cpp
+	
+XdPhidPhiUpBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhidPhiUpBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.cpp
 	
 XPhidPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp	
@@ -943,6 +972,9 @@ BlackScholesPATParabolicPDESolverSystem.o : $(SRCDIR)finance/algorithm/BlackScho
 
 BlackScholesParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmer.o $(SRCDIR)finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
+
+HestonParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HestonParabolicPDESolverSystemEuroAmer.o $(SRCDIR)finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.cpp
 
 BlackScholesPATParabolicPDESolverSystemEuroAmer.o : $(SRCDIR)finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmer.o $(SRCDIR)finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
