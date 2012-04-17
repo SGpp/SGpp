@@ -13,11 +13,13 @@ finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 finance/algorithm/BlackScholesPATParabolicPDESolverSystem.cpp
 finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
 finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.cpp
 finance/algorithm/HullWhiteParabolicPDESolverSystem.cpp
 finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
 finance/application/VariableDiscountFactor.cpp
 finance/application/BlackScholesHullWhiteSolver.cpp
 finance/application/BlackScholesSolver.cpp
+finance/application/HestonSolver.cpp
 finance/application/HullWhiteSolver.cpp
 finance/basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
 finance/basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
@@ -45,6 +47,8 @@ finance/basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
 finance/basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
 finance/basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
 finance/basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
+finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiDownBBLinear.cpp
+finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.cpp
 finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
 finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
 finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
@@ -59,6 +63,11 @@ finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
+finance/basis/linear/noboundary/operation/pde/OperationHestonBLinear.cpp
+finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.cpp
+finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.cpp
+finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.cpp
+finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
 finance/tools/Hedging.cpp
 finance/application/BlackScholesSolverWithStretching.cpp
 finance/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
