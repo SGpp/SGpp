@@ -25,8 +25,8 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		sg::base::DataVector& kappas,
 		sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 		double dStrike, std::string option_type,
-		bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
-		int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0)
+		bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
+		int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
@@ -58,10 +58,11 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	}
 
 	// test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
-	if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize())
-	{
-		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't match the grid's dimensions!");
-	}
+	// todo: test thetas, volvols, kappas etc.
+//	if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize())
+//	{
+//		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't match the grid's dimensions!");
+//	}
 
 	// test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
 	if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols())
@@ -228,30 +229,30 @@ HestonParabolicPDESolverSystemEuroAmer::~HestonParabolicPDESolverSystemEuroAmer(
 {
 	// Todo: update
 
-	delete this->OpDeltaBound;
-	delete this->OpGammaBound;
-	delete this->OpLTwoBound;
-	delete this->OpDeltaInner;
-	delete this->OpGammaInner;
-	delete this->OpLTwoInner;
-	delete this->gammaCoef;
-	delete this->deltaCoef;
-	delete this->BoundaryUpdate;
-	delete this->GridConverter;
-	if (this->InnerGrid != NULL)
-	{
-		delete this->InnerGrid;
-	}
-	if (this->alpha_inner != NULL)
-	{
-		delete this->alpha_inner;
-	}
-	if (this->rhs != NULL)
-	{
-		delete this->rhs;
-	}
-	delete this->alpha_complete_old;
-	delete this->alpha_complete_tmp;
+//	delete this->OpDeltaBound;
+//	delete this->OpGammaBound;
+//	delete this->OpLTwoBound;
+//	delete this->OpDeltaInner;
+//	delete this->OpGammaInner;
+//	delete this->OpLTwoInner;
+//	delete this->gammaCoef;
+//	delete this->deltaCoef;
+//	delete this->BoundaryUpdate;
+//	delete this->GridConverter;
+//	if (this->InnerGrid != NULL)
+//	{
+//		delete this->InnerGrid;
+//	}
+//	if (this->alpha_inner != NULL)
+//	{
+//		delete this->alpha_inner;
+//	}
+//	if (this->rhs != NULL)
+//	{
+//		delete this->rhs;
+//	}
+//	delete this->alpha_complete_old;
+//	delete this->alpha_complete_tmp;
 
 #ifdef HEDGE
 	delete myHedge;
@@ -606,7 +607,9 @@ void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		this->cCoeff->set(i, -this->rhos[i][i]*this->volvols[i]);
+		double rho = this->rhos->get(i,i);
+		double volvol = volvols->get(i);
+		this->cCoeff->set(i, -rho * volvol);
 	}
 }
 
@@ -617,7 +620,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		double volvol = this->volvols[i];
+		double volvol = this->volvols->get(i);
 		this->dCoeff->set(i, -0.5*pow(volvol,2.0));
 	}
 }
@@ -629,8 +632,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform()
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		double volvol = this->volvols[i];
-		this->eCoeff->set(i, this->r - this->rhos[i][i]*this->volvols[i]);
+		this->eCoeff->set(i, this->r - this->rhos->get(i,i)*this->volvols->get(i));
 	}
 }
 
@@ -641,9 +643,9 @@ void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		double volvol = this->volvols[i];
-		double kappa = this->kappas[i];
-		double theta = this->thetas[i];
+		double volvol = this->volvols->get(i);
+		double kappa = this->kappas->get(i);
+		double theta = this->thetas->get(i);
 		this->fCoeff->set(i, kappa*theta - 0.5*pow(volvol,2.0));
 	}
 }
@@ -655,7 +657,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		double kappa = this->kappas[i];
+		double kappa = this->kappas->get(i);
 		this->gCoeff->set(i, -kappa);
 	}
 }

@@ -38,8 +38,8 @@ namespace finance
 
 
 /**
- * This class provides a simple-to-use solver of the multi dimensional Black
- * Scholes Equation that uses Sparse Grids.
+ * This class provides a simple-to-use solver of the multi dimensional Heston
+ * Equation that uses Sparse Grids.
  *
  * The class's aim is, to hide all complex details of solving the Black Scholes
  * Equation with Sparse Grids!
@@ -49,10 +49,12 @@ namespace finance
 class HestonSolver : public sg::pde::ParabolicPDESolver
 {
 protected:
-	/// vector that contains the assets' weight
-	sg::base::DataVector* mus;
-	/// vector that contains the standard deviations
-	sg::base::DataVector* sigmas;
+	/// vector that contains the thetas
+	sg::base::DataVector* thetas;
+	/// vector that contains the kappas
+	sg::base::DataVector* kappas;
+	/// vector that contains the volatilities of the volatilities
+	sg::base::DataVector* volvols;
 	/// Matrix that contains the correlations
 	sg::base::DataMatrix* rhos;
 	/// the riskfree rate
@@ -164,7 +166,7 @@ public:
 	 * @param useLogTransform speciefies if a log transformed formulation should be used for solving BlackScholes Equation
 	 * @param usePAT speciefies if a principal axis transformation (also enabling a log-transformation) should be used for solving BlackScholes Equation
 	 */
-	HestonSolver(bool useLogTransform = false, bool usePAT = false);
+	HestonSolver(bool useLogTransform = true, bool usePAT = false);
 
 	/**
 	 * Std-Destructor of the solver
@@ -217,7 +219,7 @@ public:
 	 * @param rhos a sg::base::DataMatrix that contains the correlations between the underlyings
 	 * @param r the riskfree rate used in the market model
 	 */
-	virtual void setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r);
+	virtual void setStochasticData(sg::base::DataVector& thetas_arg, sg::base::DataVector& kappas_arg, sg::base::DataVector& volvols_arg, sg::base::DataMatrix& rhos, double r);
 
 	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 

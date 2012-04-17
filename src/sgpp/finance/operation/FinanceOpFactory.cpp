@@ -43,6 +43,11 @@
 #include "finance/basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.hpp"
 #include "finance/basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.hpp"
 
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonBLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.hpp"
 
 namespace sg
 {
