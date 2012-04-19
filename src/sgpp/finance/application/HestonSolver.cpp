@@ -71,7 +71,7 @@ namespace finance
         delete this->thetas;
         delete this->kappas;
         delete this->volvols;
-        delete this->rhos;
+        delete this->hMatrix;
         delete this->eigval_covar;
         delete this->eigvec_covar;
         delete this->mu_hat;
@@ -140,6 +140,11 @@ namespace finance
   void HestonSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
   {
     this->dim = BoundingBox.getDimensions();
+
+    if((dim%2) != 0)
+    	throw new application_exception("HestonSolver::constructGrid : The number of dimensions in the grid is not an even number! This doesn't correspond to an integer number of assets. The number of dimensions in the grid must be divisible by two.");
+
+    this->numAssets = this->dim/2;
     this->levels = level;
 
     this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
@@ -327,19 +332,20 @@ namespace finance
       }
   }
 
-  void HestonSolver::setStochasticData(DataVector& thetas_arg, DataVector& kappas_arg, DataVector& volvols_arg, DataMatrix& rhos, double r)
+  void HestonSolver::setStochasticData(DataVector& thetas_arg, DataVector& kappas_arg, DataVector& volvols_arg, DataMatrix& hMatrix_arg, double r)
   {
     this->thetas = new sg::base::DataVector(thetas_arg);
     this->kappas = new sg::base::DataVector(kappas_arg);
     this->volvols = new sg::base::DataVector(volvols_arg);
-    this->rhos = new sg::base::DataMatrix(rhos);
+    this->hMatrix = new sg::base::DataMatrix(hMatrix_arg);
     this->r = r;
 
     // calculate eigenvalues, eigenvectors and mu_hat from stochastic data for PAT
-    size_t mydim = this->thetas->getSize();
-    this->eigval_covar = new sg::base::DataVector(mydim);
-    this->eigvec_covar = new sg::base::DataMatrix(mydim,mydim);
-    this->mu_hat = new sg::base::DataVector(mydim);
+    // (not required yet)
+//    size_t mydim = this->thetas->getSize();
+//    this->eigval_covar = new sg::base::DataVector(mydim);
+//    this->eigvec_covar = new sg::base::DataMatrix(mydim,mydim);
+//    this->mu_hat = new sg::base::DataVector(mydim);
 
     //PAT stuff (not required yet)
 //    for (size_t i = 0; i < mydim; i++)
@@ -500,7 +506,7 @@ namespace finance
         if (this->tBoundaryType == "Dirichlet")
           {
                 myCG = new BiCGStab(maxCGIterations, epsilonCG);
-                myHestonSystem = new HestonParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->thetas, *this->volvols, *this->kappas, *this->rhos, this->r, timestepsize, "CrNic", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+                myHestonSystem = new HestonParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->thetas, *this->volvols, *this->kappas, *this->hMatrix, this->r, timestepsize, "CrNic", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
           }
         else
           {
@@ -870,8 +876,8 @@ void HestonSolver::solveSC(std::string Solver, size_t numTimesteps, double times
   void HestonSolver::initScreen()
   {
     this->myScreen = new ScreenOutput();
-    this->myScreen->writeTitle("SGpp - Black Scholes Solver, 2.0.0", "TUM (C) 2009-2010, by Alexander Heinecke");
-    this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
+    this->myScreen->writeTitle("SGpp - Heston Solver, 1.0.0", "TUM (C) 2009-2010, by Sam Maurus");
+    this->myScreen->writeStartSolve("Multidimensional Heston Solver");
   }
 
   void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
@@ -1054,21 +1060,28 @@ void HestonSolver::solveSC(std::string Solver, size_t numTimesteps, double times
 
             if (payoffType == "std_euro_call")
               {
+            	// Here we have to be a little careful in comparison to the Black-Scholes solver.
+            	// In the Black-Scholes solver, every dimension represents an asset price, so determining the payoff value at this particular point
+            	// is simply a case of adding up all the dimension (asset) values and inserting that into the payoff function.
+            	// In the Heston model, however, only every second dimension represents an asset price. Every other dimension represents a variance, which
+            	// we MUST NOT use to determine the payoff value.
+            	// Thus, in oder to determine the payoff value, we have to only iterate over the first, third, fifth... dimensions.
+
                 tmp = 0.0;
-                for (size_t j = 0; j < dim; j++)
+                for (size_t j = 0; j < numAssets; j++)
                   {
-                    tmp += exp(dblFuncValues[j]);
+                    tmp += exp(dblFuncValues[2*j]);
                   }
-                alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
+                alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
               }
             else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
               {
                 tmp = 0.0;
-                for (size_t j = 0; j < dim; j++)
+                for (size_t j = 0; j < numAssets; j++)
                   {
-                    tmp += exp(dblFuncValues[j]);
+                    tmp += exp(dblFuncValues[2*j]);
                   }
-                alpha[i] = std::max<double>(strike-((tmp/static_cast<double>(dim))), 0.0);
+                alpha[i] = std::max<double>(strike-((tmp/static_cast<double>(numAssets))), 0.0);
               }
             else
               {

@@ -56,7 +56,9 @@ protected:
 	/// vector that contains the volatilities of the volatilities
 	sg::base::DataVector* volvols;
 	/// Matrix that contains the correlations
-	sg::base::DataMatrix* rhos;
+	sg::base::DataMatrix* hMatrix;
+	// The number of assets (half the dimension of the PDE)
+	size_t numAssets;
 	/// the riskfree rate
 	double r;
 	/// stores if the stochastic asset data was passed to the solver
