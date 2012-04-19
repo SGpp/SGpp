@@ -47,46 +47,45 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	this->thetas = &thetas;
 	this->volvols = &volvols;
 	this->kappas = &kappas;
-	this->rhos = &rho;
-	this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
+	this->hMatrix = &rho;
+	this->HestonAlgoDims = this->BoundGrid->getAlgorithmicDimensions();
 	this->nExecTimesteps = 0;
 
 	// throw exception if grid dimensions not equal algorithmic dimensions
-	if (this->BSalgoDims.size() != this->BoundGrid->getStorage()->dim())
+	if (this->HestonAlgoDims.size() != this->BoundGrid->getStorage()->dim())
 	{
 		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Number of algorithmic dimensions is not equal to the number of grid's dimensions.");
 	}
 
-	// test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
-	// todo: test thetas, volvols, kappas etc.
-//	if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize())
-//	{
-//		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't match the grid's dimensions!");
-//	}
-
-	// test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
-	if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols())
+	// test if 2*dimC = dimG, where dimC is the number of dimensions in the coefficient vectors and dimG is the number of grid dimensions
+	if (this->BoundGrid->getStorage()->dim() != (2*this->thetas->getSize()) || this->BoundGrid->getStorage()->dim() != (2*this->kappas->getSize()) || this->BoundGrid->getStorage()->dim() != (2*this->volvols->getSize()))
 	{
-		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Row or col of rho parameter don't match the grid's dimensions!");
+		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Dimension of theta/volvol/kappa parameters != half of grid's dimensions!");
+	}
+
+	// test if number of dimensions in the coefficients match the numbers of grid dimensions (hmatrix)
+	if (this->BoundGrid->getStorage()->dim() != this->hMatrix->getNrows() || this->BoundGrid->getStorage()->dim() != this->hMatrix->getNcols())
+	{
+		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Row or col of hmatrix parameter don't match the grid's dimensions!");
 	}
 
 	// test if all algorithmic dimensions are inside the grid's dimensions
-	for (size_t i = 0; i < this->BSalgoDims.size(); i++)
+	for (size_t i = 0; i < this->HestonAlgoDims.size(); i++)
 	{
-		if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim())
+		if (this->HestonAlgoDims[i] >= this->BoundGrid->getStorage()->dim())
 		{
 			throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Minimum one algorithmic dimension is not inside the grid's dimensions!");
 		}
 	}
 
 	// test if there are double algorithmic dimensions
-	std::vector<size_t> tempAlgoDims(this->BSalgoDims);
-	for (size_t i = 0; i < this->BSalgoDims.size(); i++)
+	std::vector<size_t> tempAlgoDims(this->HestonAlgoDims);
+	for (size_t i = 0; i < this->HestonAlgoDims.size(); i++)
 	{
 		size_t dimCount = 0;
 		for (size_t j = 0; j < tempAlgoDims.size(); j++)
 		{
-			if (this->BSalgoDims[i] == tempAlgoDims[j])
+			if (this->HestonAlgoDims[i] == tempAlgoDims[j])
 			{
 				dimCount++;
 			}
@@ -99,8 +98,8 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	}
 
 	// build the coefficient matrices for the operations
-	// size of each matrix is equal to the number of dimensions divided by two, which gives the number of assets
-	int coefficientVectorSize = this->BSalgoDims.size() / 2;
+	// We essentially have a linear system to solve for this->HestonAlgoDims.size() unknowns, right? So this means that the coefficient vectors have to be the same size, right?
+	int coefficientVectorSize = this->HestonAlgoDims.size();
 	this->bCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->cCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->dCoeff = new sg::base::DataVector(coefficientVectorSize);
@@ -514,85 +513,85 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 #endif
 }
 
-void HestonParabolicPDESolverSystemEuroAmer::buildGammaCoefficients()
-{
-	size_t dim = this->BSalgoDims.size();
+//void HestonParabolicPDESolverSystemEuroAmer::buildGammaCoefficients()
+//{
+//	size_t dim = this->HestonAlgoDims.size();
+//
+//	for (size_t i = 0; i < dim; i++)
+//	{
+//		for (size_t j = 0; j < dim; j++)
+//		{
+//			// handle diagonal
+//			if (i == j)
+//			{
+//				this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[j]))*this->rhos->get(this->HestonAlgoDims[i],this->HestonAlgoDims[j])));
+//			}
+//			else
+//			{
+//				this->gammaCoef->set(i, j, ((this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[j]))*this->rhos->get(this->HestonAlgoDims[i],this->HestonAlgoDims[j])));
+//			}
+//		}
+//	}
+//}
 
-	for (size_t i = 0; i < dim; i++)
-	{
-		for (size_t j = 0; j < dim; j++)
-		{
-			// handle diagonal
-			if (i == j)
-			{
-				this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],this->BSalgoDims[j])));
-			}
-			else
-			{
-				this->gammaCoef->set(i, j, ((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],this->BSalgoDims[j])));
-			}
-		}
-	}
-}
+//void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients()
+//{
+//	size_t dim = this->HestonAlgoDims.size();
+//	double covar_sum = 0.0;
+//
+//	for (size_t i = 0; i < dim; i++)
+//	{
+//		covar_sum = 0.0;
+//		for (size_t j = 0; j < dim; j++)
+//		{
+//			// handle diagonal
+//			if (i == j)
+//			{
+//				covar_sum += ((this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[j]))*this->rhos->get(this->HestonAlgoDims[i],this->HestonAlgoDims[j]));
+//			}
+//			else
+//			{
+//				covar_sum += (0.5*((this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[j]))*this->rhos->get(this->HestonAlgoDims[i],this->HestonAlgoDims[j])));
+//			}
+//		}
+//		this->deltaCoef->set(i, this->mus->get(this->HestonAlgoDims[i])-covar_sum);
+//	}
+//}
 
-void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients()
-{
-	size_t dim = this->BSalgoDims.size();
-	double covar_sum = 0.0;
+//void HestonParabolicPDESolverSystemEuroAmer::buildGammaCoefficientsLogTransform()
+//{
+//	size_t dim = this->HestonAlgoDims.size();
+//
+//	for (size_t i = 0; i < dim; i++)
+//	{
+//		for (size_t j = 0; j < dim; j++)
+//		{
+//			// handle diagonal
+//			if (i == j)
+//			{
+//				this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[j]))*this->rhos->get(this->HestonAlgoDims[i],this->HestonAlgoDims[j])));
+//			}
+//			else
+//			{
+//				this->gammaCoef->set(i, j, ((this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[j]))*this->rhos->get(this->HestonAlgoDims[i],this->HestonAlgoDims[j])));
+//			}
+//		}
+//	}
+//}
 
-	for (size_t i = 0; i < dim; i++)
-	{
-		covar_sum = 0.0;
-		for (size_t j = 0; j < dim; j++)
-		{
-			// handle diagonal
-			if (i == j)
-			{
-				covar_sum += ((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],this->BSalgoDims[j]));
-			}
-			else
-			{
-				covar_sum += (0.5*((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],this->BSalgoDims[j])));
-			}
-		}
-		this->deltaCoef->set(i, this->mus->get(this->BSalgoDims[i])-covar_sum);
-	}
-}
-
-void HestonParabolicPDESolverSystemEuroAmer::buildGammaCoefficientsLogTransform()
-{
-	size_t dim = this->BSalgoDims.size();
-
-	for (size_t i = 0; i < dim; i++)
-	{
-		for (size_t j = 0; j < dim; j++)
-		{
-			// handle diagonal
-			if (i == j)
-			{
-				this->gammaCoef->set(i, j, 0.5*((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],this->BSalgoDims[j])));
-			}
-			else
-			{
-				this->gammaCoef->set(i, j, ((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],this->BSalgoDims[j])));
-			}
-		}
-	}
-}
-
-void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform()
-{
-	size_t dim = this->BSalgoDims.size();
-
-	for (size_t i = 0; i < dim; i++)
-	{
-		this->deltaCoef->set(i, this->mus->get(this->BSalgoDims[i])-(0.5*(this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(this->BSalgoDims[i]))));
-	}
-}
+//void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform()
+//{
+//	size_t dim = this->HestonAlgoDims.size();
+//
+//	for (size_t i = 0; i < dim; i++)
+//	{
+//		this->deltaCoef->set(i, this->mus->get(this->HestonAlgoDims[i])-(0.5*(this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[i]))));
+//	}
+//}
 
 void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 {
-	size_t dim = this->BSalgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size() / 2;
 
 	for (size_t i = 0; i < dim; i++)
 	{
@@ -602,12 +601,12 @@ void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 {
-	size_t dim = this->BSalgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size() / 2;
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		double rho = this->rhos->get(i,i);
+		double rho = this->hMatrix->get(i,i);
 		double volvol = volvols->get(i);
 		this->cCoeff->set(i, -rho * volvol);
 	}
@@ -615,7 +614,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 {
-	size_t dim = this->BSalgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size() / 2;
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
@@ -627,18 +626,18 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform()
 {
-	size_t dim = this->BSalgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size() / 2;
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		this->eCoeff->set(i, this->r - this->rhos->get(i,i)*this->volvols->get(i));
+		this->eCoeff->set(i, this->r - this->hMatrix->get(i,i)*this->volvols->get(i));
 	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 {
-	size_t dim = this->BSalgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size() / 2;
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
@@ -652,7 +651,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 {
-	size_t dim = this->BSalgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size() / 2;
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
@@ -664,7 +663,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform()
 {
-	size_t dim = this->BSalgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size() / 2;
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)

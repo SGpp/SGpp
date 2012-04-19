@@ -62,7 +62,7 @@ protected:
 	sg::base::DataVector* thetas;
 
 	/// Pointer to the rhos;
-	sg::base::DataMatrix* rhos;
+	sg::base::DataMatrix* hMatrix;
 
 //	sg::base::DataMatrix* aCoeff;
 	sg::base::DataVector* bCoeff;
@@ -89,9 +89,9 @@ protected:
 	sg::base::OperationMatrix* OpLTwoInner;
 
 	/// Pointer to the mus
-	sg::base::DataVector* mus;
+//	sg::base::DataVector* mus;
 	/// Pointer to the sigmas
-	sg::base::DataVector* sigmas;
+//	sg::base::DataVector* sigmas;
 	/// Pointer to the coefficients of operation Delta
 	sg::base::DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
@@ -111,7 +111,7 @@ protected:
 	/// maxLevel max. Level of refinement
 	size_t refineMaxLevel;
 	/// the algorithmic dimensions used in this system
-	std::vector<size_t> BSalgoDims;
+	std::vector<size_t> HestonAlgoDims;
 	/// store number of executed timesteps
 	size_t nExecTimesteps;
 	/// the strike of the current option
@@ -159,12 +159,12 @@ protected:
 	 * this routine handles also the symmtrie of the
 	 * gamma operation
 	 */
-	void buildGammaCoefficients();
+//	void buildGammaCoefficients();
 
 	/**
 	 * Build the coefficients for the combined Delta Operation
 	 */
-	void buildDeltaCoefficients();
+//	void buildDeltaCoefficients();
 
 	/**
 	 * Build the coefficients for the Gamma Operation, which
@@ -175,14 +175,14 @@ protected:
 	 *
 	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
 	 */
-	void buildGammaCoefficientsLogTransform();
+//	void buildGammaCoefficientsLogTransform();
 
 	/**
 	 * Build the coefficients for the combined Delta Operation
 	 *
 	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
 	 */
-	void buildDeltaCoefficientsLogTransform();
+//	void buildDeltaCoefficientsLogTransform();
 
 public:
 	/**
