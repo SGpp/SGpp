@@ -711,8 +711,8 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	}
 
 	// We have boundary data for each dimension in the PDE
-	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[pdeDim];
-	if (readBoudingBoxData(fileBound, pdeDim, myBoundaries) != 0)
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[1];
+	if (readBoudingBoxData(fileBound, numberOfAssets, myBoundaries) != 0)
 	{
 		return;
 	}

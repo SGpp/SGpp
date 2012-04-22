@@ -72,9 +72,9 @@ namespace finance
         delete this->kappas;
         delete this->volvols;
         delete this->hMatrix;
-        delete this->eigval_covar;
-        delete this->eigvec_covar;
-        delete this->mu_hat;
+//        delete this->eigval_covar;
+//        delete this->eigvec_covar;
+//        delete this->mu_hat;
       }
     if (this->myScreen != NULL)
       {

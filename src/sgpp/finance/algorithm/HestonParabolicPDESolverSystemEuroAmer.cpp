@@ -591,7 +591,8 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size();
+	int test = 0;
 
 	for (size_t i = 0; i < dim; i++)
 	{
@@ -601,7 +602,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size();
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
@@ -614,7 +615,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size();
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
@@ -626,18 +627,19 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size();
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
 	{
-		this->eCoeff->set(i, this->r - this->hMatrix->get(i,i)*this->volvols->get(i));
+		this->eCoeff->set(i, this->r);
+		//this->eCoeff->set(i, this->r - this->hMatrix->get(i,i)*this->volvols->get(i));
 	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size();
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
@@ -646,12 +648,13 @@ void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 		double kappa = this->kappas->get(i);
 		double theta = this->thetas->get(i);
 		this->fCoeff->set(i, kappa*theta - 0.5*pow(volvol,2.0));
+		this->fCoeff->set(i, 0.0);
 	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size();
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
@@ -663,7 +666,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 
 void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size() / 2;
+	size_t dim = this->HestonAlgoDims.size();
 
 	// todo: fix this hack!
 	for (size_t i = 0; i < dim; i++)
