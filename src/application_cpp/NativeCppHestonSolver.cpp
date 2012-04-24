@@ -711,8 +711,8 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	}
 
 	// We have boundary data for each dimension in the PDE
-	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[1];
-	if (readBoudingBoxData(fileBound, numberOfAssets, myBoundaries) != 0)
+	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[pdeDim];
+	if (readBoudingBoxData(fileBound, pdeDim, myBoundaries) != 0)
 	{
 		return;
 	}
@@ -722,10 +722,10 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	{
 		myHestonSolver = new sg::finance::HestonSolver(true);
 	}
-//	else if (coordsType == "cart")
-//	{
-//		myHestonSolver = new sg::finance::HestonSolver(false);
-//	}
+	else if (coordsType == "cart")
+	{
+		myHestonSolver = new sg::finance::HestonSolver(false);
+	}
 //	else if (coordsType == "PAT")
 //	{
 //		myHestonSolver = new sg::finance::HestonSolver(true, true);
@@ -883,6 +883,8 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	for (size_t i = 0; i < numAssets; i++)
 	{
 		point.push_back(dStrike);
+		double middleVol = (myBoundaries[2*i+1].leftBoundary + myBoundaries[2*i+1].rightBoundary)/2.0;
+		point.push_back(middleVol);
 	}
 	std::cout << "Optionprice at testpoint (Strike): " << myHestonSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
