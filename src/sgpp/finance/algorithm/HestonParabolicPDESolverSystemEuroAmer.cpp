@@ -14,7 +14,7 @@
 #include "finance/operation/FinanceOpFactory.hpp"
 #include <cmath>
 
-#define NOBOUNDARYDISCOUNT
+//#define NOBOUNDARYDISCOUNT
 
 namespace sg
 {
