@@ -1006,11 +1006,11 @@ void HestonSolver::solveSC(std::string Solver, size_t numTimesteps, double times
             if (payoffType == "std_euro_call")
               {
                 tmp = 0.0;
-                for (size_t j = 0; j < dim; j++)
+                for (size_t j = 0; j < numAssets; j++)
                   {
-                    tmp += dblFuncValues[j];
+                    tmp += dblFuncValues[2*j];
                   }
-                alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
+                alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
               }
             else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
               {
