@@ -164,7 +164,7 @@ protected:
 	/**
 	 * Build the coefficients for the combined Delta Operation
 	 */
-//	void buildDeltaCoefficients();
+	void buildDeltaCoefficients();
 
 	/**
 	 * Build the coefficients for the Gamma Operation, which
