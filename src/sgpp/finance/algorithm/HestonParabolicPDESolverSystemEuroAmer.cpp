@@ -137,7 +137,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		//		buildGCoefficientsLogTransform();
 		//		buildHCoefficientsLogTransform();
 
-		//		buildDeltaCoefficientsLogTransform();
+		buildDeltaCoefficientsLogTransform();
 		//		buildGammaCoefficientsLogTransform();
 
 		// operations on boundary grid
@@ -158,10 +158,10 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		//		this->OpHInner = sg::op_factory::createOperationHestonHLog(*this->InnerGrid, *this->hCoeff);
 
 
-		//		this->OpDeltaBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
+				this->OpDeltaBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
 		//		this->OpGammaBound = sg::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
 		//		//operations on inner grid
-		//		this->OpDeltaInner = sg::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
+				this->OpDeltaInner = sg::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
 		//		this->OpGammaInner = sg::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
 	}
 
@@ -549,10 +549,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients()
 
 	for (size_t i = 0; i < dim; i++)
 	{
-		for (size_t j = 0; j < dim; j++)
-		{
-			this->deltaCoef->set(i, this->r);
-		}
+		this->deltaCoef->set(i, this->r);
 	}
 }
 
@@ -577,15 +574,15 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients()
 //	}
 //}
 
-//void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform()
-//{
-//	size_t dim = this->HestonAlgoDims.size();
-//
-//	for (size_t i = 0; i < dim; i++)
-//	{
-//		this->deltaCoef->set(i, this->mus->get(this->HestonAlgoDims[i])-(0.5*(this->sigmas->get(this->HestonAlgoDims[i])*this->sigmas->get(this->HestonAlgoDims[i]))));
-//	}
-//}
+void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform()
+{
+	size_t dim = this->HestonAlgoDims.size();
+
+	for (size_t i = 0; i < dim; i++)
+	{
+		this->deltaCoef->set(i, this->r);
+	}
+}
 
 void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 {

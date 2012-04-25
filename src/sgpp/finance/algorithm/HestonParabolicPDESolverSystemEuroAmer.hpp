@@ -182,7 +182,7 @@ protected:
 	 *
 	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
 	 */
-//	void buildDeltaCoefficientsLogTransform();
+	void buildDeltaCoefficientsLogTransform();
 
 public:
 	/**
