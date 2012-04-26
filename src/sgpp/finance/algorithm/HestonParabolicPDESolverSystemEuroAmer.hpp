@@ -55,6 +55,10 @@ protected:
 	sg::base::OperationMatrix* OpGInner;
 	sg::base::OperationMatrix* OpHBound;
 	sg::base::OperationMatrix* OpHInner;
+	sg::base::OperationMatrix* OpXBound;
+	sg::base::OperationMatrix* OpXInner;
+	sg::base::OperationMatrix* OpYBound;
+	sg::base::OperationMatrix* OpYInner;
 
 	// Pointer to the vector containing the volatility of volatility values
 	sg::base::DataVector* volvols;
@@ -64,7 +68,7 @@ protected:
 	/// Pointer to the rhos;
 	sg::base::DataMatrix* hMatrix;
 
-//	sg::base::DataMatrix* aCoeff;
+	//	sg::base::DataMatrix* aCoeff;
 	sg::base::DataVector* bCoeff;
 	sg::base::DataVector* cCoeff;
 	sg::base::DataVector* dCoeff;
@@ -72,6 +76,8 @@ protected:
 	sg::base::DataVector* fCoeff;
 	sg::base::DataVector* gCoeff;
 	sg::base::DataVector* hCoeff;
+	sg::base::DataVector* xCoeff;
+	sg::base::DataVector* yCoeff;
 
 	// ---- END HESTON-RELEVANT MEMBERS ----
 
@@ -89,9 +95,9 @@ protected:
 	sg::base::OperationMatrix* OpLTwoInner;
 
 	/// Pointer to the mus
-//	sg::base::DataVector* mus;
+	//	sg::base::DataVector* mus;
 	/// Pointer to the sigmas
-//	sg::base::DataVector* sigmas;
+	//	sg::base::DataVector* sigmas;
 	/// Pointer to the coefficients of operation Delta
 	sg::base::DataVector* deltaCoef;
 	/// Pointer to the coefficients ot operation Gamma
@@ -141,6 +147,8 @@ protected:
 	void buildFCoefficients();
 	void buildGCoefficients();
 	void buildHCoefficients();
+	void buildXCoefficients();
+	void buildYCoefficients();
 
 	void buildACoefficientsLogTransform();
 	void buildBCoefficientsLogTransform();
@@ -159,7 +167,7 @@ protected:
 	 * this routine handles also the symmtrie of the
 	 * gamma operation
 	 */
-//	void buildGammaCoefficients();
+	//	void buildGammaCoefficients();
 
 	/**
 	 * Build the coefficients for the combined Delta Operation
@@ -175,7 +183,7 @@ protected:
 	 *
 	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
 	 */
-//	void buildGammaCoefficientsLogTransform();
+	//	void buildGammaCoefficientsLogTransform();
 
 	/**
 	 * Build the coefficients for the combined Delta Operation

@@ -77,6 +77,8 @@ OBJS =	DataVector.o\
 	OperationHestonDLinear.o\
 	OperationHestonELinear.o\
 	OperationHestonHLinear.o\
+	OperationHestonXLinear.o\
+	OperationHestonYLinear.o\
 	OperationLaplaceLinearBoundary.o\
 	ScreenOutput.o\
 	ModWaveletGrid.o\
@@ -555,6 +557,12 @@ OperationHestonELinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pd
 
 OperationHestonHLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonHLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
+
+OperationHestonXLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonXLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.cpp
+
+OperationHestonYLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonYLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
 
 OperationLaplaceLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp

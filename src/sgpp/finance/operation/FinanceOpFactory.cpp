@@ -48,6 +48,8 @@
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.hpp"
 
 namespace sg
 {
@@ -247,6 +249,16 @@ base::OperationMatrix* createOperationHestonELog(base::Grid& grid, base::DataVec
 base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVector& coef)
 {
 	return new finance::OperationHestonHLinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonXLinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonYLinear(grid.getStorage(), coef);
 }
 
 }

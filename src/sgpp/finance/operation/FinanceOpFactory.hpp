@@ -113,6 +113,8 @@ namespace op_factory
   base::OperationMatrix* createOperationHestonDLog(base::Grid& grid, base::DataVector& coef);
   base::OperationMatrix* createOperationHestonELog(base::Grid& grid, base::DataVector& coef);
   base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVector& coef);
+  base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataVector& coef);
+  base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataVector& coef);
 
 }
 
