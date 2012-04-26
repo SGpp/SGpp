@@ -1189,7 +1189,7 @@ void HestonSolver::solveSC(std::string Solver, size_t numTimesteps, double times
           }
         else
           {
-            for (size_t i = 0; i < eval_point.size(); i++)
+            for (size_t i = 0; i < eval_point.size(); i=i+2)	// Here we know that the variance dimension is not log-transformed, so we shouldn't log its value
               {
                 trans_eval[i] = log(trans_eval[i]);
               }

@@ -861,22 +861,22 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		// Print the solved Heston Equation into a gnuplot file
 		myHestonSolver->printGrid(*alpha, 50, "solvedHeston.gnuplot");
 	}
-	if (numberOfAssets < 4)
-	{
-		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
-		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
-
-		if (coordsType == "log")
-		{
-			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
-			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
-		}
-		if (coordsType == "PAT")
-		{
-			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
-			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
-		}
-	}
+//	if (numberOfAssets < 4)
+//	{
+//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
+//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
+//
+//		if (coordsType == "log")
+//		{
+//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
+//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
+//		}
+//		if (coordsType == "PAT")
+//		{
+//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
+//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
+//		}
+//	}
 
 	// Test option @ the money
 	std::vector<double> point;
