@@ -18,7 +18,7 @@ namespace base
 {
 
 /**
- * Abstract free refinement class for sparse grids
+ * Free refinement class for sparse grids
  */
 class HashRefinement: public HashRefinementAbstract
 {
@@ -47,7 +47,12 @@ public:
 	 */
 	size_t getNumberOfRefinablePoints(GridStorage* storage);
 
-
+	/**
+	 * Refine one grid point along a single direction
+	 * @param storage hashmap that stores the grid points
+	 * @param index point to refine
+	 * @param d direction
+	 */
 	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d);
 
 protected:
@@ -67,10 +72,6 @@ protected:
 	 * @param index The point that should be inserted
 	 */
 	void create_gridpoint(GridStorage* storage, index_type& index);
-
-	/*void refine_gridpoint_1d(index_type& index,
-				size_t d, GridStorage * storage, index_t& souce_index, level_t& source_level);*/
-
 
 };
 

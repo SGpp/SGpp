@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -14,6 +14,7 @@ namespace sg
 {
 namespace base
 {
+
 size_t HashRefinementAbstract::getIndexOfMin(RefinementFunctor::value_type* array, size_t length)
 {
 		size_t min_idx = 0;
@@ -25,6 +26,7 @@ size_t HashRefinementAbstract::getIndexOfMin(RefinementFunctor::value_type* arra
 
 		return min_idx;
 }
+
 
 void HashRefinementAbstract::create_gridpoint_1d(index_type& index,
 		size_t d, GridStorage * storage, index_t& source_index, level_t& source_level)
@@ -41,6 +43,7 @@ void HashRefinementAbstract::create_gridpoint_1d(index_type& index,
 		index.set(d, source_level, source_index);
 	}
 }
+
 
 void HashRefinementAbstract::strategy_refine(GridStorage* storage,
 										RefinementStrategy& refinement_strategy)

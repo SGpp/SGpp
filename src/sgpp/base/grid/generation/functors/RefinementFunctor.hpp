@@ -72,6 +72,12 @@ public:
 	 */
 	virtual double getRefinementThreshold() = 0;
 
+	/**
+	 * Returns the total sum of local (error) indicators used for refinement
+	 *
+	 * @param storage pointer to the grids storage object
+	 * @return total sum of local (error) indicators used for refinement
+	 */
 	virtual double getTotalRefinementValue(GridStorage* storage) {
 		double sum = 0;
 		GridStorage::grid_map_iterator end_iter = storage->end();
