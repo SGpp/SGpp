@@ -44,7 +44,14 @@ public:
 	size_t getNumberOfRefinablePointsToMaxLevel(GridStorage* storage, unsigned int maxLevel);
 
 
-	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d, unsigned int maxLevel);
+	/**
+         * Refine one grid point along a single direction
+         * @param storage hashmap that stores the grid points
+         * @param index point to refine
+         * @param d direction
+         */
+	void refine_gridpoint_1d(GridStorage * storage, index_type & index,
+	                         size_t d, unsigned int maxLevel);
 
 
 protected:

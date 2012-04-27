@@ -84,8 +84,18 @@ protected:
 	 */
 	void create_gridpoint_levelZeroConsistency(GridStorage* storage, index_type& index);
 
+	/**
+         * Creates children grid points along single direction
+         *
+         * @param index The point that should be refined
+         * @param d direction
+         * @param storage hashmap that stores the gridpoints
+         * @param source_index index value in the dimension d
+         * @param source_level level value in the dimension d
+         */
 	void create_gridpoint_1d(index_type& index,
-					size_t d, GridStorage * storage, index_t& souce_index, level_t& source_level);
+				 size_t d, GridStorage * storage,
+				 index_t& souce_index, level_t& source_level);
 
 
 
