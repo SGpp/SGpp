@@ -888,6 +888,8 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	}
 	std::cout << "Optionprice at testpoint (Strike): " << myHestonSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
+	system("gnuplot /home/sam/Documents/Heston/plotHestonSln.cmd");
+
 	delete alpha;
 	delete myHestonSolver;
 	delete myBoundingBox;

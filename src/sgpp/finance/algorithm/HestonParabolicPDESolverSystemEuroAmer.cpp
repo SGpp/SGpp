@@ -100,10 +100,10 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	// build the coefficient matrices for the operations
 	// We essentially have a linear system to solve for this->HestonAlgoDims.size() unknowns, right? So this means that the coefficient vectors have to be the same size, right?
 	int coefficientVectorSize = this->HestonAlgoDims.size();
-		this->bCoeff = new sg::base::DataVector(coefficientVectorSize);
+	this->bCoeff = new sg::base::DataVector(coefficientVectorSize);
 	//	this->cCoeff = new sg::base::DataVector(coefficientVectorSize);
 	//	this->dCoeff = new sg::base::DataVector(coefficientVectorSize);
-	//	this->eCoeff = new sg::base::DataVector(coefficientVectorSize);
+	this->eCoeff = new sg::base::DataVector(coefficientVectorSize);
 	//	this->fCoeff = new sg::base::DataVector(coefficientVectorSize);
 	//	this->gCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->hCoeff = new sg::base::DataVector(coefficientVectorSize);
@@ -140,33 +140,33 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
 	else
 	{
-				buildBCoefficientsLogTransform();
+		buildBCoefficientsLogTransform();
 		//		buildCCoefficientsLogTransform();
 		//		buildDCoefficientsLogTransform();
-		//		buildECoefficientsLogTransform();
+		buildECoefficientsLogTransform();
 		//		buildFCoefficientsLogTransform();
 		//		buildGCoefficientsLogTransform();
-				buildHCoefficientsLogTransform();
+		buildHCoefficientsLogTransform();
 
 		buildDeltaCoefficientsLogTransform();
 		//		buildGammaCoefficientsLogTransform();
 
 		// operations on boundary grid
 
-				this->OpBBound = sg::op_factory::createOperationHestonBLog(*this->BoundGrid, *this->bCoeff);
-				this->OpBInner = sg::op_factory::createOperationHestonBLog(*this->InnerGrid, *this->bCoeff);
+		this->OpBBound = sg::op_factory::createOperationHestonBLog(*this->BoundGrid, *this->bCoeff);
+		this->OpBInner = sg::op_factory::createOperationHestonBLog(*this->InnerGrid, *this->bCoeff);
 		//		this->OpCBound = sg::op_factory::createOperationHestonCLog(*this->BoundGrid, *this->cCoeff);
 		//		this->OpCInner = sg::op_factory::createOperationHestonCLog(*this->InnerGrid, *this->cCoeff);
 		//		this->OpDBound = sg::op_factory::createOperationHestonDLog(*this->BoundGrid, *this->dCoeff);
 		//		this->OpDInner = sg::op_factory::createOperationHestonDLog(*this->InnerGrid, *this->dCoeff);
-		//		this->OpEBound = sg::op_factory::createOperationHestonELog(*this->BoundGrid, *this->eCoeff);
-		//		this->OpEInner = sg::op_factory::createOperationHestonELog(*this->InnerGrid, *this->eCoeff);
+		this->OpEBound = sg::op_factory::createOperationHestonELog(*this->BoundGrid, *this->eCoeff);
+		this->OpEInner = sg::op_factory::createOperationHestonELog(*this->InnerGrid, *this->eCoeff);
 		//		this->OpFBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->fCoeff);
 		//		this->OpFInner = sg::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->fCoeff);
 		//		this->OpGBound = sg::op_factory::createOperationDelta(*this->BoundGrid, *this->gCoeff);
 		//		this->OpGInner = sg::op_factory::createOperationDelta(*this->InnerGrid, *this->gCoeff);
-				this->OpHBound = sg::op_factory::createOperationHestonHLog(*this->BoundGrid, *this->hCoeff);
-				this->OpHInner = sg::op_factory::createOperationHestonHLog(*this->InnerGrid, *this->hCoeff);
+		this->OpHBound = sg::op_factory::createOperationHestonHLog(*this->BoundGrid, *this->hCoeff);
+		this->OpHInner = sg::op_factory::createOperationHestonHLog(*this->InnerGrid, *this->hCoeff);
 
 
 		this->OpDeltaBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
@@ -199,7 +199,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	// init option type and strike
 	this->dStrike = dStrike;
 	this->option_type = option_type;
-//	this->option_type = "std_euro_call";
+	//	this->option_type = "std_euro_call";
 
 	// save coordinate transformations
 	this->b_log_transform = bLogTransform;
@@ -284,20 +284,46 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::Da
 	}
 
 	// Apply the delta method
-	this->OpDeltaBound->mult(alpha, temp);
-	result.add(temp);
+	//	this->OpDeltaBound->mult(alpha, temp);
+	//	result.add(temp);
 
-	// Apply the X method
-	this->OpXBound->mult(alpha, temp);
-	result.add(temp);
+
+	if(this->b_log_transform)
+	{
+		// Log-transformed coordinates
+
+		// Apply the B method
+
+		this->OpBBound->mult(alpha, temp);
+		result.add(temp);
+
+		//		// Apply the H method
+				this->OpHBound->mult(alpha, temp);
+				result.add(temp);
+
+		// Apply the E method
+//		std::cout << "Applying E method: " << std::endl;
+		this->OpEBound->mult(alpha, temp);
+		result.add(temp);
 //
-//	// Apply the Y method
-	this->OpYBound->mult(alpha, temp);
-	result.add(temp);
+
+	}
+	else
+	{
+		// Cartesian coordinates
+
+		// Apply the X method
+		this->OpXBound->mult(alpha, temp);
+		result.add(temp);
+
+		// Apply the Y method
+		this->OpYBound->mult(alpha, temp);
+		result.add(temp);
+	}
 
 	// Apply the B method
-//		this->OpBBound->mult(alpha, temp);
-//		result.add(temp);
+	//		this->OpBBound->mult(alpha, temp);
+	//		result.add(temp);
 	//
 	//	// Apply the C method
 	//	this->OpCBound->mult(alpha, temp);
@@ -319,9 +345,7 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::Da
 	//	this->OpGBound->mult(alpha, temp);
 	//	result.add(temp);
 	//
-		// Apply the H method
-//		this->OpHBound->mult(alpha, temp);
-//		result.add(temp);
+
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -338,20 +362,47 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataV
 	}
 
 	// Apply the delta method
-	this->OpDeltaInner->mult(alpha, temp);
-	result.add(temp);
+	//	this->OpDeltaInner->mult(alpha, temp);
+	//	result.add(temp);
 
-//	// Apply the X method
-	this->OpXInner->mult(alpha, temp);
-	result.add(temp);
-//
-//	// Apply the Y method
-	this->OpYInner->mult(alpha, temp);
-	result.add(temp);
+	if(this->b_log_transform)
+	{
+		// Log-transformed coordinates
 
 		// Apply the B method
-//		this->OpBInner->mult(alpha, temp);
-//		result.add(temp);
+
+		this->OpBInner->mult(alpha, temp);
+		result.add(temp);
+
+		// Apply the H method
+				this->OpHInner->mult(alpha, temp);
+				result.add(temp);
+
+		// Apply the E method
+		this->OpEInner->mult(alpha, temp);
+		result.add(temp);
+//
+//
+
+	}
+	else
+	{
+		// Cartesian coordinates
+
+		// Apply the X method
+		this->OpXInner->mult(alpha, temp);
+		result.add(temp);
+
+		// Apply the Y method
+		this->OpYInner->mult(alpha, temp);
+		result.add(temp);
+	}
+
+
+
+	// Apply the B method
+	//		this->OpBInner->mult(alpha, temp);
+	//		result.add(temp);
 	//
 	//	// Apply the C method
 	//	this->OpCInner->mult(alpha, temp);
@@ -373,9 +424,7 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataV
 	//	this->OpGInner->mult(alpha, temp);
 	//	result.add(temp);
 	//
-		// Apply the H method
-//		this->OpHInner->mult(alpha, temp);
-//		result.add(temp);
+
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -606,8 +655,8 @@ void HestonParabolicPDESolverSystemEuroAmer::buildXCoefficients()
 {
 	size_t dim = this->HestonAlgoDims.size();
 
-//	this->xCoeff->set(0, -1.0);
-//	this->xCoeff->set(1, 0);
+	//	this->xCoeff->set(0, -1.0);
+	//	this->xCoeff->set(1, 0);
 
 	for (size_t i = 0; i < dim; i++)
 	{
@@ -619,8 +668,8 @@ void HestonParabolicPDESolverSystemEuroAmer::buildYCoefficients()
 {
 	size_t dim = this->HestonAlgoDims.size();
 
-//	this->yCoeff->set(0, -0.5);
-//	this->yCoeff->set(1, 0.0);
+	//	this->yCoeff->set(0, -0.5);
+	//	this->yCoeff->set(1, 0.0);
 
 	for (size_t i = 0; i < dim; i++)
 	{
@@ -632,8 +681,8 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform(
 {
 	size_t dim = this->HestonAlgoDims.size();
 
-//	this->deltaCoef->set(0, this->r);
-//	this->deltaCoef->set(1, 0.0);
+	//	this->deltaCoef->set(0, this->r);
+	//	this->deltaCoef->set(1, 0.0);
 
 	for (size_t i = 0; i < dim; i++)
 	{
@@ -645,13 +694,13 @@ void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 {
 	size_t dim = this->HestonAlgoDims.size();
 
-	this->bCoeff->set(0, -0.5);
-	this->bCoeff->set(1, 0.0);
+//	this->bCoeff->set(0, -0.5);
+//	this->bCoeff->set(1, -0.5);
 
-//	for (size_t i = 0; i < dim; i++)
-//	{
-//		this->bCoeff->set(i, -0.5);
-//	}
+		for (size_t i = 0; i < dim; i++)
+		{
+			this->bCoeff->set(i, -0.5);
+		}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
@@ -722,14 +771,14 @@ void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform()
 {
 	size_t dim = this->HestonAlgoDims.size();
 
-	this->hCoeff->set(0, -0.5);
-	this->hCoeff->set(1, 0.0);
+//	this->hCoeff->set(0, -0.5);
+//	this->hCoeff->set(1, -0.5);
 
 	// todo: fix this hack!
-//	for (size_t i = 0; i < dim; i++)
-//	{
-//		this->hCoeff->set(i, -0.5);
-//	}
+		for (size_t i = 0; i < dim; i++)
+		{
+			this->hCoeff->set(i, -0.5);
+		}
 }
 
 }
