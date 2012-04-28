@@ -30,24 +30,6 @@ OperationHestonBLinear::~OperationHestonBLinear()
 
 void OperationHestonBLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
-	// dphi * dphi
-	sg::pde::dPhidPhiUpModLinear func(this->storage);
-	sg::base::sweep<sg::pde::dPhidPhiUpModLinear> s(func, this->storage);
-
-	s.sweep1D(alpha, result, dim);
-}
-
-void OperationHestonBLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// dphi * dphi
-	sg::pde::dPhidPhiDownModLinear func(this->storage);
-	sg::base::sweep<sg::pde::dPhidPhiDownModLinear> s(func, this->storage);
-
-	s.sweep1D(alpha, result, dim);
-}
-
-void OperationHestonBLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
 	// x * phi * phi
 	XPhiPhiUpBBLinear func(this->storage);
 	sg::base::sweep<XPhiPhiUpBBLinear> s(func, this->storage);
@@ -55,13 +37,33 @@ void OperationHestonBLinear::upOpDim(sg::base::DataVector& alpha, sg::base::Data
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationHestonBLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
+void OperationHestonBLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// x * phi * phi
 	XPhiPhiDownBBLinear func(this->storage);
 	sg::base::sweep<XPhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
+}
+
+void OperationHestonBLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
+{
+	// dphi * dphi
+	sg::pde::dPhidPhiUpModLinear func(this->storage);
+	sg::base::sweep<sg::pde::dPhidPhiUpModLinear> s(func, this->storage);
+
+	s.sweep1D(alpha, result, dim);
+
+}
+
+void OperationHestonBLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
+{
+	// dphi * dphi
+	sg::pde::dPhidPhiDownModLinear func(this->storage);
+	sg::base::sweep<sg::pde::dPhidPhiDownModLinear> s(func, this->storage);
+
+	s.sweep1D(alpha, result, dim);
+
 }
 
 }
