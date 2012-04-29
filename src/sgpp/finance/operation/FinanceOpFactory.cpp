@@ -47,6 +47,8 @@
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonFLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.hpp"
@@ -244,6 +246,16 @@ base::OperationMatrix* createOperationHestonDLog(base::Grid& grid, base::DataVec
 base::OperationMatrix* createOperationHestonELog(base::Grid& grid, base::DataVector& coef)
 {
 	return new finance::OperationHestonELinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonFLog(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonFLinear(grid.getStorage(), coef);
+}
+
+base::OperationMatrix* createOperationHestonGLog(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationHestonGLinear(grid.getStorage(), coef);
 }
 
 base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVector& coef)

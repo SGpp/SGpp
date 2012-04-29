@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#include "finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
 
 namespace sg
 {
@@ -14,17 +14,17 @@ namespace finance
 
 
 
-XdPhidPhiUpBBLinear::XdPhidPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
+DPhidPhiUpBBLinear::DPhidPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
 }
 
 
-XdPhidPhiUpBBLinear::~XdPhidPhiUpBBLinear()
+DPhidPhiUpBBLinear::~DPhidPhiUpBBLinear()
 {
 }
 
 
-void XdPhidPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
+void DPhidPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = boundingBox->getIntervalWidth(dim);
 	double t = boundingBox->getIntervalOffset(dim);
@@ -50,7 +50,7 @@ void XdPhidPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::Dat
 	}
 }
 
-void XdPhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
+void DPhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
 {
 	size_t seq = index.seq();
 
@@ -82,21 +82,16 @@ void XdPhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector
 
 	double fm = fml + fmr;
 
-	double alpha_value = source[seq];
-
-//	double c = 0.5;
+//	double alpha_value = source[seq];
 
 	// transposed operations:
 	result[seq] = fm;
 
-	fl = (fm/2.0) + (alpha_value*(0.5)) + fl;
-	fr = (fm/2.0) + (alpha_value*((-0.5))) + fr;
-
-//	fl = (fm/2.0) + (alpha_value*c) + fl;
-//	fr = (fm/2.0) - (alpha_value*c) + fr;
+	fl = (fm/2.0) + fl;
+	fr = (fm/2.0) + fr;
 }
 
-void XdPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
+void DPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
 {
 	size_t seq = index.seq();
 
@@ -128,21 +123,13 @@ void XdPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVect
 
 	double fm = fml + fmr;
 
-	double alpha_value = source[seq];
-
-//	double c = 0.5;
+//	double alpha_value = source[seq];
 
 	// transposed operations:
 	result[seq] = fm;
 
-//	fl = (fm/2.0) + (alpha_value*c) + fl;
-//	fr = (fm/2.0) - (alpha_value*c) + fr;
-
-//	fl = ((fm/2.0) + (alpha_value*(h*h/2.0 * static_cast<double>(current_index) * q*q + h * t * q/4.0 - h*h/12.0 * q*q))) + fl;
-//	    fr = ((fm/2.0) + (alpha_value*(h*h/2.0 * static_cast<double>(current_index) * q*q + h * t * q/4.0 + h*h/12.0 * q*q))) + fr;
-
-	fl = (fm/2.0) + (alpha_value*(0.5*q)) + fl;
-	fr = (fm/2.0) + (alpha_value*((-0.5)*q)) + fr;
+	fl = (fm/2.0) + fl;
+	fr = (fm/2.0) + fr;
 }
 
 // namespace detail
