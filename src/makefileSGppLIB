@@ -76,6 +76,8 @@ OBJS =	DataVector.o\
 	OperationHestonCLinear.o\
 	OperationHestonDLinear.o\
 	OperationHestonELinear.o\
+	OperationHestonFLinear.o\
+	OperationHestonGLinear.o\
 	OperationHestonHLinear.o\
 	OperationHestonXLinear.o\
 	OperationHestonYLinear.o\
@@ -132,6 +134,8 @@ OBJS =	DataVector.o\
 	XPhiPhiUpBBLinear.o\
 	dPhidPhiDownModLinear.o\
 	dPhidPhiUpModLinear.o\
+	DPhidPhiDownBBLinear.o\
+	DPhidPhiUpBBLinear.o\
 	PhiPhiDownModLinear.o\
 	PhiPhiUpModLinear.o\
 	PhiPhiUpBBLinearBoundary.o\
@@ -555,6 +559,12 @@ OperationHestonDLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pd
 OperationHestonELinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonELinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.cpp
 
+OperationHestonFLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonFLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonFLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonFLinear.cpp
+
+OperationHestonGLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonGLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.cpp
+
 OperationHestonHLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonHLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
 
@@ -608,6 +618,12 @@ XdPhidPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_swe
 	
 XdPhidPhiUpBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhidPhiUpBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.cpp
+
+DPhidPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiDownBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
+	
+DPhidPhiUpBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DPhidPhiUpBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
 	
 XPhidPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp	

@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#include "finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiDownBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp"
 
 namespace sg
 {
@@ -14,15 +14,15 @@ namespace finance
 
 
 
-XdPhidPhiDownBBLinear::XdPhidPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
+DPhidPhiDownBBLinear::DPhidPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
 {
 }
 
-XdPhidPhiDownBBLinear::~XdPhidPhiDownBBLinear()
+DPhidPhiDownBBLinear::~DPhidPhiDownBBLinear()
 {
 }
 
-void XdPhidPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
+void DPhidPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
 {
 	double q = boundingBox->getIntervalWidth(dim);
 	double t = boundingBox->getIntervalOffset(dim);
@@ -44,7 +44,7 @@ void XdPhidPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::D
 	}
 }
 
-void XdPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
+void DPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
 {
 	size_t seq = index.seq();
 
@@ -55,23 +55,16 @@ void XdPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 
 	index.get(dim, l, i);
 
-	double i_dbl = static_cast<double>(i);
+//	double i_dbl = static_cast<double>(i);
 	int l_int = static_cast<int>(l);
 
 	double h = (1.0/(static_cast<double>(1<<(l_int))));
 
-//	double diagonal = ((1.0/3.0) + (i_dbl*i_dbl))*pow(2.0, 1-l_int);
 
-	// t=0, q=1
-
-
-	double diagonal = 2*i_dbl;
+	double diagonal = 2.0/h;
 
 	// integration
-	result[seq] = (  (0.5 * (fl-fr)) + (diagonal * alpha_value) );
-
-	// integration
-//	result[seq] = (  (((1.0/static_cast<double>(1<<l_int))* i_dbl) * (fl-fr)) + (diagonal * alpha_value) );
+	result[seq] = (diagonal * alpha_value);
 
 	// dehierarchisation
 	double fm = ((fl+fr)/2.0) + alpha_value;
@@ -94,7 +87,7 @@ void XdPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 	}
 }
 
-void XdPhidPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t)
+void DPhidPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t)
 {
 	size_t seq = index.seq();
 
@@ -105,15 +98,15 @@ void XdPhidPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVe
 
 	index.get(dim, l, i);
 
-	double i_dbl = static_cast<double>(i);
+//	double i_dbl = static_cast<double>(i);
 	int l_int = static_cast<int>(l);
 
 	double h = (1.0/(static_cast<double>(1<<(l_int))));
 
-	double diagonal = (2*(i*h*q + t))/(q*h);
+	double diagonal = (2)/(q*h);
 
 	// integration
-	result[seq] = (  (0.5 * q * (fl-fr)) + (diagonal * alpha_value) );
+	result[seq] = (diagonal * alpha_value);
 
 	// dehierarchisation
 	double fm = ((fl+fr)/2.0) + alpha_value;
