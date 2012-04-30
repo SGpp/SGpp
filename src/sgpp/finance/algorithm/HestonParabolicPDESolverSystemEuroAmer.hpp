@@ -59,6 +59,10 @@ protected:
 	sg::base::OperationMatrix* OpXInner;
 	sg::base::OperationMatrix* OpYBound;
 	sg::base::OperationMatrix* OpYInner;
+	sg::base::OperationMatrix* OpWBound;
+	sg::base::OperationMatrix* OpWInner;
+	sg::base::OperationMatrix* OpZBound;
+	sg::base::OperationMatrix* OpZInner;
 
 	// Pointer to the vector containing the volatility of volatility values
 	sg::base::DataVector* volvols;
@@ -78,6 +82,8 @@ protected:
 	sg::base::DataVector* hCoeff;
 	sg::base::DataVector* xCoeff;
 	sg::base::DataVector* yCoeff;
+	sg::base::DataVector* wCoeff;
+	sg::base::DataVector* zCoeff;
 
 	// ---- END HESTON-RELEVANT MEMBERS ----
 
@@ -139,16 +145,18 @@ protected:
 
 	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	void buildACoefficients();
-	void buildBCoefficients();
-	void buildCCoefficients();
+//	void buildACoefficients();
+//	void buildBCoefficients();
+//	void buildCCoefficients();
 	void buildDCoefficients();
-	void buildECoefficients();
+//	void buildECoefficients();
 	void buildFCoefficients();
 	void buildGCoefficients();
-	void buildHCoefficients();
+//	void buildHCoefficients();
 	void buildXCoefficients();
 	void buildYCoefficients();
+	void buildWCoefficients();
+	void buildZCoefficients();
 
 	void buildACoefficientsLogTransform();
 	void buildBCoefficientsLogTransform();

@@ -117,6 +117,8 @@ namespace op_factory
   base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVector& coef);
   base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataVector& coef);
   base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataVector& coef);
+  base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataVector& coef);
+  base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataVector& coef);
 
 }
 

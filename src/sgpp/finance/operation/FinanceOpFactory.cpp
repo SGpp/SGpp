@@ -273,6 +273,16 @@ base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataVector
 	return new finance::OperationHestonYLinear(grid.getStorage(), coef);
 }
 
+base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationLFLinear(grid.getStorage());
+}
+
+base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataVector& coef)
+{
+	return new finance::OperationDeltaLinear(grid.getStorage(), coef);
+}
+
 }
 }
 
