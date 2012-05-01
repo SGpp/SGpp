@@ -10,7 +10,7 @@
 
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/generation/functors/RefinementFunctor.hpp"
-//#include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
+//#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 
 
 namespace sg
@@ -18,7 +18,7 @@ namespace sg
 namespace base
 {
 
-class HashRefinementAbstract;
+class AbstractRefinement;
 
 class RefinementStrategy {
 public:
@@ -26,7 +26,7 @@ public:
 	RefinementStrategy(RefinementFunctor* functor){refinement_functor_ = functor;};
 	virtual ~RefinementStrategy(){};
 
-	virtual void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement)=0;
+	virtual void refine(GridStorage* storage, AbstractRefinement* hash_refinement)=0;
 
 protected:
 

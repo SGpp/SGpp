@@ -8,7 +8,7 @@
 #ifndef HASHREFINEMENTBOUNDARIES_HPP
 #define HASHREFINEMENTBOUNDARIES_HPP
 
-#include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
+#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/generation/functors/RefinementFunctor.hpp"
 
@@ -21,7 +21,7 @@ namespace base
 /**
  * Standard free refinement class for sparse grids with boundaries
  */
-class HashRefinementBoundaries: public HashRefinementAbstract
+class HashRefinementBoundaries: public AbstractRefinement
 {
 public:
 
@@ -41,7 +41,7 @@ public:
 	 */
 	size_t getNumberOfRefinablePoints(GridStorage* storage);
 
-	void refine_gridpoint_1d(GridStorage * storage, HashRefinementAbstract::index_type & index, size_t d);
+	void refine_gridpoint_1d(GridStorage * storage, AbstractRefinement::index_type & index, size_t d);
 
 protected:
 	/**

@@ -10,7 +10,7 @@
 
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/generation/functors/RefinementFunctor.hpp"
-#include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
+#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 
 namespace sg
 {
@@ -20,7 +20,7 @@ namespace base
 /**
  * Free refinement class for sparse grids
  */
-class HashRefinement: public HashRefinementAbstract
+class HashRefinement: public AbstractRefinement
 {
 
 public:
@@ -54,6 +54,10 @@ public:
 	 * @param d direction
 	 */
 	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d);
+
+	void refine_gridpoint_1d(GridStorage * storage, HashGridIndex< unsigned int,unsigned int > * index, size_t d) {
+	      refine_gridpoint_1d(storage, *index, d);
+	    }
 
 protected:
 	/**

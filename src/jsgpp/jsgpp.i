@@ -79,7 +79,7 @@ namespace std {
 
 %include "src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/RefinementStrategy.hpp"
-%include "src/sgpp/base/grid/generation/hashmap/HashRefinementAbstract.hpp"
+%include "src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
