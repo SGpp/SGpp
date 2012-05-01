@@ -289,7 +289,7 @@ void HashRefinementBoundaries::create_gridpoint_1d(index_type& index,
         }
     }
 
-    HashRefinementAbstract::create_gridpoint_1d(index, d, storage, source_index, source_level);
+    AbstractRefinement::create_gridpoint_1d(index, d, storage, source_index, source_level);
 
 }
 

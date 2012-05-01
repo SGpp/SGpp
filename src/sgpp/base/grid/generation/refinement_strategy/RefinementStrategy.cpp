@@ -5,8 +5,8 @@
  *      Author: khakhutv_local
  */
 
-#include "RefinementStrategy.hpp"
-#include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
+#include "base/grid/generation/refinement_strategy/RefinementStrategy.hpp"
+#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 namespace sg
 {
 namespace base

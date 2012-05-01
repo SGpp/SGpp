@@ -20,10 +20,11 @@ namespace base
 /**
  * Abstract refinement class for sparse grids
  */
-class HashRefinementAbstract
+class AbstractRefinement
 {
 public:
     typedef GridStorage::index_type index_type;
+    typedef GridStorage::index_pointer index_pointer;
     typedef index_type::index_type index_t;
     typedef index_type::level_type level_t;
 
@@ -66,11 +67,34 @@ public:
     virtual void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d) = 0;
 
     /**
+     * Refine one grid point along a single direction
+     * @param storage hashmap that stores the grid points
+     * @param index point to refine
+     * @param d direction
+     */
+    void refine_gridpoint_1d(GridStorage * storage, index_pointer index, size_t d) {
+      refine_gridpoint_1d(storage, *index, d);
+    }
+
+    bool is_refinable(GridStorage* storage, index_type& index);
+
+    /**
      * Destructor
      */
-    ~HashRefinementAbstract()
+    ~AbstractRefinement()
     {}
     ;
+
+    /**
+     * Returns the index of the first occurrence of minimal element in array.
+     * Used to find which entry is to be replaced next searching the maximum ones.
+     *
+     * @param array array with values
+     * @param length length of array
+     *
+     * @return index of the first occurrence of minimal element in array
+     */
+    virtual size_t getIndexOfMin(RefinementFunctor::value_type* array, size_t length);
 
 protected:
     /**
@@ -90,18 +114,6 @@ protected:
      * @param index The point that should be inserted
      */
     virtual void create_gridpoint(GridStorage* storage, index_type& index) = 0;
-
-
-    /**
-     * Returns the index of the first occurrence of minimal element in array.
-     * Used to find which entry is to be replaced next searching the maximum ones.
-     *
-     * @param array array with values
-     * @param length length of array
-     *
-     * @return index of the first occurrence of minimal element in array
-     */
-    virtual size_t getIndexOfMin(RefinementFunctor::value_type* array, size_t length);
 
 
     /**

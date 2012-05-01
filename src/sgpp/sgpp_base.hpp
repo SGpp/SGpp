@@ -45,7 +45,7 @@
 #include "base/grid/generation/GridGenerator.hpp"
 #include "base/grid/generation/PrewaveletGridGenerator.hpp"
 #include "base/grid/generation/hashmap/HashGenerator.hpp"
-#include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
+#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 #include "base/grid/generation/hashmap/HashRefinement.hpp"
 #include "base/grid/generation/hashmap/HashCoarsening.hpp"
 #include "base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
