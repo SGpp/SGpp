@@ -50,7 +50,7 @@ public:
          * @param index point to refine
          * @param d direction
          */
-	void refine_gridpoint_1d(GridStorage * storage, index_type & index,
+	void refineGridpoint1D(GridStorage * storage, index_type & index,
 	                         size_t d, unsigned int maxLevel);
 
 
@@ -63,7 +63,7 @@ protected:
 	 * @param refine_index the index in the hashmap of the point that should be refined
 	 * @param maxLevel no points on higher levels than maxLevel will be created
 	 */
-	void refine_gridpoint(GridStorage* storage, size_t refine_index, unsigned int maxLevel);
+	void refineGridpoint(GridStorage* storage, size_t refine_index, unsigned int maxLevel);
 
 
 };

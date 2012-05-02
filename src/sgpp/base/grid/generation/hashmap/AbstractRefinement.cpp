@@ -7,7 +7,7 @@
 
 
 #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/generation/refinement_strategy/RefinementStrategy.hpp"
+#include "base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
 
 
 namespace sg
@@ -28,7 +28,7 @@ size_t AbstractRefinement::getIndexOfMin(RefinementFunctor::value_type* array, s
 }
 
 
-void AbstractRefinement::create_gridpoint_1d(index_type& index,
+void AbstractRefinement::createGridpoint1D(index_type& index,
         size_t d, GridStorage * storage, index_t& source_index, level_t& source_level)
 {
     index.get(d, source_level, source_index);
@@ -42,20 +42,20 @@ void AbstractRefinement::create_gridpoint_1d(index_type& index,
         {
             index.set(d, source_level - 1, (source_index - 1) / 2);
         }
-        create_gridpoint_subroutine(storage, index);
+        createGridpointSubroutine(storage, index);
         // restore values
         index.set(d, source_level, source_index);
     }
 }
 
 
-void AbstractRefinement::strategy_refine(GridStorage* storage,
+/*void AbstractRefinement::strategy_refine(GridStorage* storage,
         RefinementStrategy& refinement_strategy)
 {
     refinement_strategy.refine(storage, this);
-}
+}*/
 
-bool AbstractRefinement::is_refinable(GridStorage* storage, index_type& index)
+bool AbstractRefinement::isRefinable(GridStorage* storage, index_type& index)
 {
   GridStorage::grid_map_iterator child_iter;
   if (index.isLeaf()) return true;

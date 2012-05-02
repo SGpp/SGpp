@@ -174,7 +174,7 @@ protected:
      * @param storage hashmap that stores the gridpoints
      * @param refine_index The index in the hashmap of the point that should be refined
      */
-    void refine_gridpoint(GridStorage* storage, size_t refine_index)
+    void refineGridpoint(GridStorage* storage, size_t refine_index)
     {
         index_type index((*storage)[refine_index]);
 
@@ -193,7 +193,7 @@ protected:
             if (!storage->has_key(&index))
             {
                 index.setLeaf(true);
-                create_gridpoint(storage, index);
+                createGridpoint(storage, index);
             }
 
             // generate right child, if necessary
@@ -201,7 +201,7 @@ protected:
             if (!storage->has_key(&index))
             {
                 index.setLeaf(true);
-                create_gridpoint(storage, index);
+                createGridpoint(storage, index);
             }
 
             index.set(d, source_level, source_index);
@@ -233,7 +233,7 @@ protected:
         if (!storage->has_key(&index))
         {
             index.setLeaf(true);
-            create_gridpoint(storage, index);
+            createGridpoint(storage, index);
         }
 
         // generate right child, if necessary
@@ -241,7 +241,7 @@ protected:
         if (!storage->has_key(&index))
         {
             index.setLeaf(true);
-            create_gridpoint(storage, index);
+            createGridpoint(storage, index);
         }
 
         index.set(d, source_level, source_index);
@@ -255,7 +255,7 @@ protected:
      * @param storage hashmap that stores the gridpoints
      * @param index The point that should be inserted
      */
-    void create_gridpoint(GridStorage* storage, index_type& index)
+    void createGridpoint(GridStorage* storage, index_type& index)
     {
         for (size_t d = 0; d < storage->dim(); d++)
         {
@@ -280,7 +280,7 @@ protected:
                     // save old leaf value
                     bool saveLeaf = index.isLeaf();
                     index.setLeaf(false);
-                    create_gridpoint(storage, index);
+                    createGridpoint(storage, index);
                     // restore leaf value
                     index.setLeaf(saveLeaf);
                 }

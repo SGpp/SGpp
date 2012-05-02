@@ -7,9 +7,9 @@
 ###############################################################################
 # @author Valeriy Khakhutskyy (khakhutv@in.tum.de)
 import unittest
-from tests.pysgpp import Grid, HashRefinement, GridIndex, \
+from pysgpp import Grid, HashRefinement, GridIndex, \
     SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
-    RefinementANOVAStrategy
+    ANOVARefinement
 
 
 class Test_RefinementANOVA(unittest.TestCase):
@@ -43,7 +43,7 @@ class Test_RefinementANOVA(unittest.TestCase):
         # refine the point in x1-direction
         dim = 0
         hash_refinement = HashRefinement()
-        hash_refinement.refine_gridpoint_1d(self.grid_storage, point_to_refine,
+        hash_refinement.refineGridpoint1D(self.grid_storage, point_to_refine,
                 dim)
         # check number of grid points
         self.assertEqual(self.grid.getSize(), 19,
@@ -67,7 +67,7 @@ class Test_RefinementANOVA(unittest.TestCase):
                          'Left x2 right child is present, though should not be')
         # refine the point in x2-direction
         dim = 1
-        hash_refinement.refine_gridpoint_1d(self.grid_storage, point_to_refine,
+        hash_refinement.refineGridpoint1D(self.grid_storage, point_to_refine,
                 dim)
         # check number of grid points
         self.assertEqual(self.grid.getSize(), 21,
@@ -181,9 +181,9 @@ class Test_RefinementANOVA(unittest.TestCase):
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         # refine one point
         functor = SurplusRefinementFunctor(alpha, 1, 0.0)
-        refinement_strategy = RefinementANOVAStrategy(functor)
         hash_refinement = HashRefinement()
-        hash_refinement.strategy_refine(self.grid_storage, refinement_strategy)
+        refinement_strategy = ANOVARefinement(hash_refinement)
+        refinement_strategy.free_refine(self.grid_storage, functor)
         
         # check if only the children along x1 direction were inserted
         self.assertEqual(self.grid.getSize(), 19,
@@ -225,9 +225,9 @@ class Test_RefinementANOVA(unittest.TestCase):
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         # refine one point
         functor = SurplusVolumeRefinementFunctor(alpha, 1, 0.0)
-        refinement_strategy = RefinementANOVAStrategy(functor)
         hash_refinement = HashRefinement()
-        hash_refinement.strategy_refine(self.grid_storage, refinement_strategy)
+        refinement_strategy = ANOVARefinement(hash_refinement)
+        refinement_strategy.free_refine(self.grid_storage, functor)
         
         # check if only the children along x1 direction were inserted
         self.assertEqual(self.grid.getSize(), 19,
