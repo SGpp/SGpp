@@ -243,7 +243,12 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 		clReleaseMemObject(clSource[i]);
 		clReleaseMemObject(clResult[i]);
 	}
-
+    for (size_t i = 0; i < num_devices; i++)
+    {
+        clReleaseEvent(clTimings[i]);
+        clReleaseEvent(GPUDone[i]);
+    }
+    
 	isFirstTimeMultTransModDP = false;
 
 	return time;
@@ -515,7 +520,12 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
     	clReleaseMemObject(clAlpha[i]);
     	clReleaseMemObject(clResult[i]);
     }
-
+    for (size_t i = 0; i < num_devices; i++)
+    {
+        clReleaseEvent(clTimings[i]);
+        clReleaseEvent(GPUDone[i]);
+    }
+    
     isFirstTimeMultModDP = false;
 
 	return time;

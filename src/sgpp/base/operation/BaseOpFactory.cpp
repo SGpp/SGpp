@@ -14,6 +14,8 @@
 #include "base/grid/type/PrewaveletGrid.hpp"
 #include "base/grid/type/ModBsplineGrid.hpp"
 
+#include "base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.hpp"
+#include "base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.hpp"
 #include "base/basis/linear/noboundary/operation/OperationHierarchisationLinear.hpp"
 #include "base/basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
@@ -27,6 +29,8 @@
 
 #include "base/operation/OperationQuadrature.hpp"
 #include "base/basis/linear/noboundary/operation/OperationQuadratureLinear.hpp"
+#include "base/basis/linear/noboundary/operation/OperationFirstMomentLinear.hpp"
+#include "base/basis/linear/noboundary/operation/OperationSecondMomentLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.hpp"
 #include "base/basis/poly/operation/OperationQuadraturePoly.hpp"
 
@@ -68,6 +72,14 @@ namespace op_factory
     if(strcmp(grid.getType(), "linear") == 0)
       {
         return new base::OperationHierarchisationLinear(grid.getStorage());
+      }
+    else if(strcmp(grid.getType(), "linearstencil") == 0 )
+      {
+        return new base::OperationStencilHierarchisationLinear(grid.getStorage());
+      }
+    else if(strcmp(grid.getType(), "modlinearstencil") == 0 )
+      {
+        return new base::OperationStencilHierarchisationModLinear(grid.getStorage());
       }
     else if(strcmp(grid.getType(), "modlinear") == 0 )
       {
@@ -141,6 +153,28 @@ namespace op_factory
       }
     else
       throw base::factory_exception("OperationQuadrature is not implemented for this grid type.");
+  }
+
+  base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid)
+  {
+
+    if(strcmp(grid.getType(), "linear") == 0)
+      {
+        return new base::OperationFirstMomentLinear(grid.getStorage());
+      }
+    else
+      throw base::factory_exception("OperationFirstMoment is not implemented for this grid type.");
+  }
+
+  base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid)
+  {
+
+    if(strcmp(grid.getType(), "linear") == 0)
+      {
+        return new base::OperationSecondMomentLinear(grid.getStorage());
+      }
+    else
+      throw base::factory_exception("OperationSecondMoment is not implemented for this grid type.");
   }
 
   base::OperationConvert* createOperationConvert(base::Grid& grid)
