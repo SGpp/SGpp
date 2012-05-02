@@ -157,7 +157,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage, Re
         {
             // DEBUG
             //std::cout << "Start refining..." << std::endl;
-            refine_gridpoint(storage, max_index, maxLevel);
+            refineGridpoint(storage, max_index, maxLevel);
         }
     }
 
@@ -253,7 +253,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(Gr
 }
 
 
-void HashRefinementBoundariesMaxLevel::refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d, unsigned int maxLevel)
+void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage * storage, index_type & index, size_t d, unsigned int maxLevel)
 {
     index_t source_index;
     level_t source_level;
@@ -268,7 +268,7 @@ void HashRefinementBoundariesMaxLevel::refine_gridpoint_1d(GridStorage * storage
             if(!storage->has_key(&index))
             {
                 index.setLeaf(true);
-                create_gridpoint(storage, index);
+                createGridpoint(storage, index);
             }
         }
         else
@@ -278,7 +278,7 @@ void HashRefinementBoundariesMaxLevel::refine_gridpoint_1d(GridStorage * storage
             if(!storage->has_key(&index))
             {
                 index.setLeaf(true);
-                create_gridpoint(storage, index);
+                createGridpoint(storage, index);
             }
 
             // generate right child, if necessary
@@ -286,7 +286,7 @@ void HashRefinementBoundariesMaxLevel::refine_gridpoint_1d(GridStorage * storage
             if(!storage->has_key(&index))
             {
                 index.setLeaf(true);
-                create_gridpoint(storage, index);
+                createGridpoint(storage, index);
             }
         }
 
@@ -295,7 +295,7 @@ void HashRefinementBoundariesMaxLevel::refine_gridpoint_1d(GridStorage * storage
 }
 
 
-void HashRefinementBoundariesMaxLevel::refine_gridpoint(GridStorage* storage, size_t refine_index, unsigned int maxLevel)
+void HashRefinementBoundariesMaxLevel::refineGridpoint(GridStorage* storage, size_t refine_index, unsigned int maxLevel)
 {
     index_type index((*storage)[refine_index]);
 
@@ -305,7 +305,7 @@ void HashRefinementBoundariesMaxLevel::refine_gridpoint(GridStorage* storage, si
     // @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
     for(size_t d = 0; d < storage->dim(); d++)
     {
-        refine_gridpoint_1d(storage, index, d, maxLevel);
+        refineGridpoint1D(storage, index, d, maxLevel);
     }
 }
 

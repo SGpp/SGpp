@@ -53,10 +53,10 @@ public:
 	 * @param index point to refine
 	 * @param d direction
 	 */
-	void refine_gridpoint_1d(GridStorage * storage, index_type & index, size_t d);
+	void refineGridpoint1D(GridStorage * storage, index_type & index, size_t d);
 
-	void refine_gridpoint_1d(GridStorage * storage, HashGridIndex< unsigned int,unsigned int > * index, size_t d) {
-	      refine_gridpoint_1d(storage, *index, d);
+	void refineGridpoint1D(GridStorage * storage, HashGridIndex< unsigned int,unsigned int > * index, size_t d) {
+	      refineGridpoint1D(storage, *index, d);
 	    }
 
 protected:
@@ -67,7 +67,7 @@ protected:
 	 * @param storage hashmap that stores the gridpoints
 	 * @param refine_index The index in the hashmap of the point that should be refined
 	 */
-	void refine_gridpoint(GridStorage* storage, size_t refine_index);
+	void refineGridpoint(GridStorage* storage, size_t refine_index);
 	/**
 	 * This method creates a new point on the grid. It checks if some parents or
 	 * children are needed in other dimensions.
@@ -75,7 +75,36 @@ protected:
 	 * @param storage hashmap that stores the gridpoints
 	 * @param index The point that should be inserted
 	 */
-	void create_gridpoint(GridStorage* storage, index_type& index);
+	void createGridpoint(GridStorage* storage, index_type& index);
+
+        /**
+         * Examines the grid points and stores the indices those that can be refined
+         * and have maximal indicator values.
+         *
+         * @param storage hashmap that stores the grid points
+         * @param functor a RefinementFunctor specifying the refinement criteria
+         * @param refinements_num number of points to refine
+         * @param max_indices the array where the point indices should be stored
+         * @param max_values the array where the corresponding indicator values
+         * should be stored
+         */
+        virtual void collectRefinablePoints(GridStorage* storage,
+            RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
+            RefinementFunctor::value_type* max_values);
+
+
+        /**
+         * Refines the collection of points.
+         *
+         * @param storage hashmap that stores the grid points
+         * @param functor a RefinementFunctor specifying the refinement criteria
+         * @param refinements_num number of points to refine
+         * @param max_indices the array with the indices of points that should be refined
+         * @param max_values the array with the corresponding indicator values
+         */
+        virtual void refineGridpointsCollection(GridStorage* storage,
+            RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
+            RefinementFunctor::value_type* max_values);
 
 };
 
