@@ -71,7 +71,8 @@ void HeatEquationSolverMPI::solveExplicitEuler(size_t numTimesteps, double times
 		double dNeededTime;
 		sg::solver::Euler* myEuler = new sg::solver::Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradientsMPI* myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-		HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
+        //does not compile with mpiicpc
+        HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = 0;//new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
 		sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
 		myStopwatch->start();
@@ -106,7 +107,8 @@ void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps, double times
 		double dNeededTime;
 		sg::solver::Euler* myEuler = new sg::solver::Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 		ConjugateGradientsMPI* myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-		HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        //does not compile with mpiicpc
+        HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = 0;//new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
 		sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
 		myStopwatch->start();
@@ -140,7 +142,8 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps, double times
 		}
 		double dNeededTime;
 		ConjugateGradientsMPI* myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-		HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+        //does not compile with mpiicpc
+        HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = 0;//new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
 		sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
 		size_t numCNSteps;

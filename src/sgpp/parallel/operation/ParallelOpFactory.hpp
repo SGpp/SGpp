@@ -34,9 +34,14 @@ namespace op_factory
    * @param grid Grid which is to be used for evaluation
    * @param vecType Type of Vectorization used. Currently supported: SSE, AVX
    * @param dataset Dataset (DataMatrix, data points per row) that is to be evaluated
+   * @param multFrom lower bound index that describes where to start processing the storage
+   * @param multTo upper bound index (exclusive) that describes where to end processing the storage
+   * @param multTransposeFrom lower bound index that describes where to start processing the dataset
+   * @param multTransposeTo upper bound index (exclusive) that describes where to end processing the dataset
+
    * @return Pointer to the new OperationMultipleEvalVectorized for the Grid grid
    */
-  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset);
+  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset, int multFrom = 0, int multTo = -1, int multTransposeFrom = 0, int multTransposeTo = -1);
   /**
    * Factory method, returning an OperationMultipleEvalVectorizedSP for the grid at hand,
    * single precision.

@@ -33,8 +33,8 @@ OMP=0
 # use the TR1 Implementations for Hashmaps
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
-CC=g++
-#CC=icpc
+#CC=g++
+CC=mpiicpc
 # vectorization option
 #  sse3
 #  sse4
@@ -59,8 +59,10 @@ UPDOWN_PARADIMS=4
 CFLAGS_GCC:=-Wall -Wconversion -pedantic -ansi -c -O3 -funroll-loops -fstrict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR) 
-LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
+#CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+#LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
+CFLAGS_ICC:=-Wall -Wconversion -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+LFLAGS_ICC:=-Wall -ansi -O3 -static-intel
 
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
@@ -315,6 +317,10 @@ endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icc
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/ClassifyBenchmark_mpiicc
+	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmarkMPI --directory=./tmp/build_native/ClassifyBenchmark_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=ClassifyBenchmark_ICC_MPI" "EXT=$(EXT)"
 endif
 
 ###################################################################

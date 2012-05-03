@@ -56,14 +56,15 @@ namespace op_factory
 {
 
   
-  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset)
+  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
+                                                                                   int multFrom, int multTo, int multTransposeFrom, int multTransposeTo)
   {
 
     if(strcmp(grid.getType(), "linear") == 0)
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, multFrom, multTo, multTransposeFrom, multTransposeTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -103,7 +104,8 @@ namespace op_factory
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, multFrom, multTo, multTransposeFrom, multTransposeTo);
+            //return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
