@@ -7,6 +7,7 @@
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "base/exception/operation_exception.hpp"
+#include "base/exception/data_exception.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -32,16 +33,60 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86SimdLinear(
+        sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
+        int multFrom, int multTo, int multTransposeFrom, int multTransposeTo) :
+    sg::parallel::OperationMultipleEvalVectorized(dataset)
 {
-	this->storage = storage;
 
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+    std::cout <<"param multfrom: "<< multFrom << std::endl;
+    std::cout <<"param multto: "<< multTo << std::endl;
+    std::cout <<"param multtransposefrom: "<< multTransposeFrom << std::endl;
+    std::cout <<"param multtransposeto: "<< multTransposeTo << std::endl;
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+    if(multFrom < 0 ||  multTransposeFrom < 0){
+        throw sg::base::data_exception("invalid lower multiplication bounds");
+    } else{
+        multIndexFrom = multFrom;
+        multTransposeIndexFrom = multTransposeFrom;
+    }
 
-	myTimer = new sg::base::SGppStopwatch();
+    if(multTo == -1 && multTransposeTo == -1){ // set default upper bounds
+        multIndexTo = storage->size();
+        multTransposeIndexTo = dataset->getNcols();
+    } else if(multTo > storage->size() || multTransposeTo > dataset->getNcols()) {
+        std::cout <<"multto: "<< multTo << "; max allowed val: " << storage->size() << std::endl;
+        std::cout <<"multtransposeto: "<< multTransposeTo << "; max allowed val: " << dataset->getNcols() << std::endl;
+
+        throw sg::base::data_exception("invalid upper multiplication bounds: ");
+    } else { // use given bounds
+        multIndexTo = multTo;
+        multTransposeIndexTo = multTransposeTo;
+    }
+
+    if(multIndexFrom > multIndexTo){
+        throw sg::base::data_exception("invalid bounds (mult)");
+    }
+    if(multTransposeIndexFrom > multTransposeIndexTo){
+        throw sg::base::data_exception("invalid bounds (multTranspose)");
+    }
+
+
+    std::cout <<"multfrom: "<< multIndexFrom << std::endl;
+    std::cout <<"multto: "<< multIndexTo << std::endl;
+    std::cout <<"multtransposefrom: "<< multTransposeIndexFrom << std::endl;
+    std::cout <<"multtransposeto: "<< multTransposeIndexTo << std::endl;
+
+
+
+    this->storage = storage;
+
+    this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+    this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+
+    storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+
+    myTimer = new sg::base::SGppStopwatch();
 }
 
 OperationMultipleEvalIterativeX86SimdLinear::~OperationMultipleEvalIterativeX86SimdLinear()
@@ -83,12 +128,13 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 #ifdef _OPENMP
     #pragma omp parallel
 	{
-		size_t chunksize = (storageSize/omp_get_num_threads())+1;
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, storageSize);
+        size_t mpi_chunksize = multTransposeIndexTo - multTransposeIndexFrom;
+        size_t chunksize = (mpi_chunksize/omp_get_num_threads())+1;
+        size_t start = multTransposeIndexFrom + chunksize*omp_get_thread_num();
+        size_t end = std::min<size_t>(start+chunksize, multTransposeIndexTo);
 #else
-    	size_t start = 0;
-    	size_t end = storageSize;
+        size_t start = multTransposeIndexFrom;
+        size_t end = multTransposeIndexTo;
 #endif
 
 		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
@@ -334,7 +380,8 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 #ifdef _OPENMP
     #pragma omp parallel
 	{
-		size_t chunksize = (result_size/omp_get_num_threads())+1;
+        size_t mpi_chunksize = multIndexTo - multIndexFrom;
+        size_t chunksize = (mpi_chunksize/omp_get_num_threads())+1;
 		// assure that every subarray is 32-byte aligned
 		if (chunksize % CHUNKDATAPOINTS_X86 != 0)
 		{
@@ -342,11 +389,11 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 			size_t patch = CHUNKDATAPOINTS_X86 - remainder;
 			chunksize += patch;
 		}
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, result_size);
+        size_t start = multIndexFrom + chunksize*omp_get_thread_num();
+        size_t end = std::min<size_t>(start+chunksize, multIndexTo);
 #else
-    	size_t start = 0;
-    	size_t end = result_size;
+        size_t start = multIndexFrom;
+        size_t end = multIndexTo;
 #endif
 		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (end-c)))
 		{

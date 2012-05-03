@@ -7,6 +7,7 @@
 
 #include "parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 
 namespace sg
@@ -36,7 +37,11 @@ sg::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(sg
 	if (this->grid_ == NULL)
 		return NULL;
 
-	return new sg::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
+#ifndef USE_MPI
+    return new sg::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
+#else
+    return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
+#endif
 }
 
 void LearnerVectorizedIdentity::postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,

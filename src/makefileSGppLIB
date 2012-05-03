@@ -368,7 +368,8 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BlackScholesSolverMPI.o\
 	BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	BiCGStabMPI.o\
-	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o
+	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
+	DMSystemMatrixVectorizedIdentityMPI.o
 endif
 
 default : $(OBJS)
@@ -1028,7 +1029,10 @@ AlgorithmAdaBoostVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/A
 	
 DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
-	
+
+DMSystemMatrixVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.cpp
+
 DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 	
