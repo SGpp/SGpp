@@ -85,7 +85,7 @@ protected:
     /**
      * Returns the pointer to decorated Refinement object
      */
-    AbstractRefinement* get_decorated_refiment()
+    AbstractRefinement* get_decorated_refinement()
     {
         return decorated_refinement_;
     }
