@@ -11,6 +11,7 @@
 #include "base/grid/Grid.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
+#include "base/grid/GridStorage.hpp"
 #include "pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
 #include "finance/tools/Hedging.hpp"
 
@@ -166,6 +167,8 @@ protected:
 	void buildFCoefficientsLogTransform();
 	void buildGCoefficientsLogTransform();
 	void buildHCoefficientsLogTransform();
+
+//	bool IsNonMaxVolatilityBoundary(sg::base::GridIndex* idx);
 
 
 	/**

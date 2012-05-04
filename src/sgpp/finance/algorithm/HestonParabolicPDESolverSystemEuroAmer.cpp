@@ -21,6 +21,35 @@ namespace sg
 namespace finance
 {
 
+bool IsNonMaxVolatilityBoundary(sg::base::GridIndex* idx, sg::base::GridStorage* storage)
+{
+//	return idx->isInnerPoint();
+
+	if(idx->isInnerPoint())
+		return false;
+
+	sg::base::DataVector pointCoords(storage->dim());
+
+	idx->getCoords(pointCoords);
+
+	if(pointCoords[1] == 1)
+		return false;
+
+//	storage->boundingBox->dimensionBoundaries->leftBoundary;
+
+//	return idx->isInnerPoint();
+
+
+	return true;
+
+}
+
+//bool IsStorageNonMaxVolatilityBoundary(sg::base::GridStorage* storage)
+//{
+//	return true;
+////	return storage->boundingBox->dimensionBoundaries;
+//}
+
 HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& thetas, sg::base::DataVector& volvols,
 		sg::base::DataVector& kappas,
 		sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
@@ -606,6 +635,7 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
 			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
+//			this->BoundaryUpdate->multiply(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))), &IsNonMaxVolatilityBoundary);
 		}
 	}
 #endif
