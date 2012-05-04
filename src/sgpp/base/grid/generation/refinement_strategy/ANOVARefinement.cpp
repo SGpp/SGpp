@@ -44,21 +44,24 @@ void ANOVARefinement::free_refine(GridStorage *storage, RefinementFunctor *funct
 
 void ANOVARefinement::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values)
 {
+    //RefinementDecorator::refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
     RefinementFunctor::value_type refinement_value;
-    size_t index;
+    size_t refine_index;
     // now refine all grid points which satisfy the refinement criteria
     double threshold = functor->getRefinementThreshold();
     for(size_t i = 0;i < refinements_num;i++)
     {
         refinement_value = max_values[i];
-        index = max_indices[i];
+        refine_index = max_indices[i];
         if(refinement_value > functor->start() && fabs(refinement_value) >= threshold)
         {
+            index_type index((*storage)[refine_index]);
+            index.setLeaf(false);
             for (size_t dim = 0; dim < storage->dim(); dim++)
             {
-                if (storage->get(index)->getLevel(dim) > 1)
+                if (index.getLevel(dim) > 1)
                   {
-                this->get_decorated_refiment()->refineGridpoint1D(storage, *storage->get(index),
+                this->get_decorated_refinement()->refineGridpoint1D(storage, index,
                                                          dim);
                   }
             }
