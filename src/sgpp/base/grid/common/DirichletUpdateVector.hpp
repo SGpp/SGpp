@@ -90,6 +90,13 @@ public:
 	* @param value the value that is multiplied with the value on the boundaries
 	*/
 	void multiplyBoundary(DataVector& updateVector, double value);
+
+	/**
+	 * Multiplies the values of the points in the vector that meet the predicate condition by the constant value.
+	 * Calling this method with a function pointer that returns true if point->isInnerPoint() and false otherwise gives the same result as
+	 * the multiplyBoundary method.
+	 */
+	void multiply(DataVector& updateVector, double value, bool (*predicate)(GridIndex*, GridStorage*));
 };
 
 }

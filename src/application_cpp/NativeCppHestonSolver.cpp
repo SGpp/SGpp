@@ -17,6 +17,7 @@
 #include <fstream>
 #include <iomanip>
 #include <cmath>
+#include <complex>
 
 // @todo (heinecke) remove global variables
 std::string tFileEvalCuboid = "evalCuboid.data";
@@ -28,6 +29,10 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 #define DFLT_EPS_AT_MONEY 0.0
 /// default value for sigma of refinement normal distribution
 #define DFLT_SIGMA_REFINE_NORMDIST 0.15
+
+using namespace sg;
+using namespace sg::pde;
+using namespace std;
 
 //#define EXPORT_MATRIX_FILES
 
@@ -726,10 +731,10 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	{
 		myHestonSolver = new sg::finance::HestonSolver(false);
 	}
-//	else if (coordsType == "PAT")
-//	{
-//		myHestonSolver = new sg::finance::HestonSolver(true, true);
-//	}
+	//	else if (coordsType == "PAT")
+	//	{
+	//		myHestonSolver = new sg::finance::HestonSolver(true, true);
+	//	}
 	else
 	{
 		// Write Error
@@ -739,10 +744,10 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	}
 
 	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(pdeDim, myBoundaries);
-//	if (numberOfAssets == 1)
-//	{
-//		maxStock = myBoundaries[0].rightBoundary;
-//	}
+	//	if (numberOfAssets == 1)
+	//	{
+	//		maxStock = myBoundaries[0].rightBoundary;
+	//	}
 	delete[] myBoundaries;
 
 	// init Screen Object
@@ -768,29 +773,34 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	std::cout << "Gridpoints @Money: " << myHestonSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
 	// Print interpolation-error at strike
-//	if (numberOfAssets == 2 && coordsType == "cart")
-//	{
-//		myHestonSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
-//	}
+	//	if (numberOfAssets == 2 && coordsType == "cart")
+	//	{
+	//		myHestonSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
+	//	}
 
 	// Print the payoff function into a gnuplot file
 	// Calculate analytic solution if current option is an 1D option
-//	if (numberOfAssets == 1)
-//	{
-//		double minStock = 0.0;
-//		if (payoffType == "std_euro_call")
-//		{
-//			std::vector< std::pair<double, double> > prems;
-//			myHestonSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, true);
-//			myHestonSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
-//		}
-//		if (payoffType == "std_euro_put")
-//		{
-//			std::vector< std::pair<double, double> > prems;
-//			myHestonSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, false);
-//			myHestonSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
-//		}
-//	}
+	//	if (numberOfAssets == 1)
+	//	{
+	//		double minStock = 0.0;
+	//		if (payoffType == "std_euro_call")
+	//		{
+	//			std::vector< std::pair<double, double> > prems;
+	//			myHestonSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, true);
+	//			myHestonSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
+	//		}
+	//		if (payoffType == "std_euro_put")
+	//		{
+	//			std::vector< std::pair<double, double> > prems;
+	//			myHestonSolver->solve1DAnalytic(prems, minStock, maxStock, maxStock/50, dStrike, ((double)(timesteps))*stepsize, false);
+	//			myHestonSolver->print1DAnalytic(prems, "analyticHeston.gnuplot");
+	//		}
+	//	}
+
+	if(numberOfAssets == 1 && payoffType == "std_euro_call")
+	{
+		myHestonSolver->EvaluateHestonPriceExact();
+	}
 
 	if (numberOfAssets < 3)
 	{
@@ -861,22 +871,22 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		// Print the solved Heston Equation into a gnuplot file
 		myHestonSolver->printGrid(*alpha, 50, "solvedHeston.gnuplot");
 	}
-//	if (numberOfAssets < 4)
-//	{
-//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
-//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
-//
-//		if (coordsType == "log")
-//		{
-//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
-//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
-//		}
-//		if (coordsType == "PAT")
-//		{
-//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
-//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
-//		}
-//	}
+	//	if (numberOfAssets < 4)
+	//	{
+	//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
+	//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
+	//
+	//		if (coordsType == "log")
+	//		{
+	//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
+	//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
+	//		}
+	//		if (coordsType == "PAT")
+	//		{
+	//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
+	//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
+	//		}
+	//	}
 
 	// Test option @ the money
 	std::vector<double> point;
@@ -916,273 +926,273 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 //void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,
 //		double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, std::string fileAnalyze, std::string coordsType)
 //{
-	//	size_t dim = d;
-	//	size_t timesteps = timeSt;
-	//	double stepsize = dt;
-	//	size_t CGiterations = CGIt;
-	//	double CGepsilon = CGeps;
-	//
-	//	sg::base::DataVector mu(dim);
-	//	sg::base::DataVector sigma(dim);
-	//	sg::base::DataMatrix rho(dim,dim);
-	//
-	//	sg::base::DataMatrix EvalPoints(1, d);
-	//
-	//	double r = riskfree;
-	//
-	//	std::vector<sg::base::DataVector> results;
-	//
-	//
-	//	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
-	//	{
-	//		return;
-	//	}
-	//
-	//	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
-	//	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
-	//	{
-	//		return;
-	//	}
-	//
-	//	size_t points = 0;
-	// 	sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
-	// 	if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0)
-	//	{
-	//		return;
-	//	}
-	//
-	//	sg::finance::BlackScholesSolver* myBSSolver;
-	//	if (coordsType == "log")
-	//	{
-	//		myBSSolver = new sg::finance::BlackScholesSolver(true);
-	//	}
-	//	else if (coordsType == "cart")
-	//	{
-	//		myBSSolver = new sg::finance::BlackScholesSolver(false);
-	//	}
-	//	else if (coordsType == "PAT")
-	//	{
-	//		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
-	//	}
-	//	else
-	//	{
-	//		// Write Error
-	//		std::cout << "Unsupported grid transformation!" << std::endl;
-	//		std::cout << std::endl << std::endl;
-	//		writeHelp();
-	//	}
-	//	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-	//	sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
-	//	sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
-	//	delete[] myBoundaries;
-	//	delete[] myEvalBoundaries;
-	//
-	//	// init Screen Object
-	//	myBSSolver->initScreen();
-	//
-	//	for (size_t i = start_l; i <= end_l; i++)
-	//	{
-	//		size_t level = i;
-	//
-	//		// Reset Solve Time
-	//		myBSSolver->resetSolveTime();
-	//
-	//		// Construct a grid
-	//		myBSSolver->constructGrid(*myBoundingBox, level);
-	//
-	//		// Set stochastic data
-	//		myBSSolver->setStochasticData(mu, sigma, rho, r);
-	//
-	//		// in first iteration -> calculate the evaluation points
-	//		if (i == start_l)
-	//		{
-	//			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
-	//			writeDataMatrix(EvalPoints, tFileEvalCuboid);
-	//		}
-	//
-	//		// init the basis functions' coefficient vector
-	//		sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
-	//
-	//		std::cout << "Grid has " << level << " Levels" << std::endl;
-	//		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	//		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-	//
-	//		// Init the grid with on payoff function
-	//		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//
-	//		// Print the payoff function into a gnuplot file
-	//		if (dim < 3)
-	//		{
-	//			myBSSolver->printGrid(*alpha, 21, "payoff.gnuplot");
-	//		}
-	//		if (dim < 4)
-	//		{
-	//			myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
-	//			myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
-	//
-	//			if (coordsType == "log")
-	//			{
-	//				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
-	//				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
-	//			}
-	//			if (coordsType == "PAT")
-	//			{
-	//				myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
-	//				myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
-	//			}
-	//		}
-	//
-	//		// Start solving the Black Scholes Equation
-	//		if (Solver == "ExEul")
-	//		{
-	//			myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	//		}
-	//		else if (Solver == "ImEul")
-	//		{
-	//			myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	//		}
-	//		else if (Solver == "CrNic")
-	//		{
-	//			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-	//		}
-	//		else if (Solver == "AdBas")
-	//		{
-	//			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-	//		}
-	//		else if (Solver == "SCAC")
-	//		{
-	//			myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	//		}
-	//		else if (Solver == "SCH")
-	//		{
-	//			myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	//		}
-	//		else if (Solver == "SCBDF")
-	//		{
-	//			myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	//		}
-	//		else if (Solver == "SCEJ")
-	//		{
-	//			myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
-	//		}
-	//		else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
-	//		{
-	//			myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-	//		}
-	//		else
-	//		{
-	//			std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-	//		}
-	//
-	//		if (dim < 3)
-	//		{
-	//			// Print the solved Black Scholes Equation into a gnuplot file
-	//			myBSSolver->printGrid(*alpha, 21, "solvedBS.gnuplot");
-	//		}
-	//		if (dim < 4)
-	//		{
-	//			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
-	//			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
-	//
-	//			if (coordsType == "log")
-	//			{
-	//				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
-	//				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
-	//			}
-	//			if (coordsType == "PAT")
-	//			{
-	//				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
-	//				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
-	//			}
-	//		}
-	//
-	//		// Test option @ the money
-	//		std::vector<double> point;
-	//		for (size_t x = 0; x < dim; x++)
-	//		{
-	//			point.push_back(dStrike);
-	//		}
-	//		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
-	//
-	//		if (i == start_l)
-	//		{
-	//			// if transformed Black Scholes Equation is used -> transform evaluation domain
-	//			for (size_t v = 0; v < EvalPoints.getNrows(); v++)
-	//			{
-	//				sg::base::DataVector r(dim);
-	//				EvalPoints.getRow(v, r);
-	//				myBSSolver->transformPoint(r);
-	//				EvalPoints.setRow(v, r);
-	//			}
-	//		}
-	//
-	//		// Evaluate Cuboid
-	//		sg::base::DataVector Prices(EvalPoints.getNrows());
-	//		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
-	//		results.push_back(Prices);
-	//
-	//		// write solution in a additional file
-	//		std::stringstream level_string;
-	//		level_string << i;
-	//		writeDataVector(Prices, tFileEvalCuboidValues+".level_"+ level_string.str());
-	//		writeDataVector(Prices, tFileEvalCuboidValues);
-	//
-	//		if (i > start_l)
-	//		{
-	//			std::cout << "=====================================================================" << std::endl;
-	//			std::cout << "=====================================================================" << std::endl << std::endl;
-	//			std::cout << "Calculating norms of relative errors to a grid" << std::endl;
-	//			std::cout << "with " << i << " levels and testing-coboid" << std::endl;
-	//			std::cout << "with the bounding box:" << std::endl;
-	//			for (size_t j = 0; j < d; j++)
-	//			{
-	//				std::cout << myEvalBoundingBox->getBoundary(j).leftBoundary << " " << myEvalBoundingBox->getBoundary(j).rightBoundary << std::endl;
-	//			}
-	//			std::cout << std::endl << std::endl;
-	//
-	//			double oldMaxNorm = 0.0;
-	//			double oldTwoNorm = 0.0;
-	//
-	//			std::cout << "Level, max-norm(rel-error), two-norm(rel-error), rate max-norm,  rate two-norm" << std::endl;
-	//			std::cout << "------------------------------------------------------------------------------" << std::endl;
-	//			// Calculate relative errors and some norms
-	//			for (size_t j = 0; j < i-start_l; j++)
-	//			{
-	//				sg::base::DataVector maxLevel(results[i-start_l]);
-	//				sg::base::DataVector relError(results[j]);
-	//				double maxNorm = 0.0;
-	//				double l2Norm = 0.0;
-	//
-	//				// calculate relative error
-	//				relError.sub(maxLevel);
-	//				relError.componentwise_div(maxLevel);
-	//
-	//				// calculate max. norm of relative error
-	//				maxNorm = relError.maxNorm();
-	//
-	//				// calculate two norm of relative error
-	//				l2Norm = relError.RMSNorm();
-	//
-	//				// Printing norms
-	//				//std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
-	//				std::cout << j + start_l << ", " << maxNorm << ", " << l2Norm << ", " << log(oldMaxNorm/maxNorm) << ", " << log(oldTwoNorm/l2Norm) << std::endl;
-	//
-	//				oldMaxNorm = maxNorm;
-	//				oldTwoNorm = l2Norm;
-	//			}
-	//		}
-	//		std::cout << std::endl << std::endl;
-	//
-	//		myBSSolver->deleteGrid();
-	//		delete alpha;
-	//
-	//		std::cout << std::endl;
-	//	}
-	//
-	//	delete myEvalBoundingBox;
-	//	delete myEvalCuboidGen;
-	//	delete myBSSolver;
-	//	delete myBoundingBox;
+//	size_t dim = d;
+//	size_t timesteps = timeSt;
+//	double stepsize = dt;
+//	size_t CGiterations = CGIt;
+//	double CGepsilon = CGeps;
+//
+//	sg::base::DataVector mu(dim);
+//	sg::base::DataVector sigma(dim);
+//	sg::base::DataMatrix rho(dim,dim);
+//
+//	sg::base::DataMatrix EvalPoints(1, d);
+//
+//	double r = riskfree;
+//
+//	std::vector<sg::base::DataVector> results;
+//
+//
+//	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
+//	{
+//		return;
+//	}
+//
+//	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+//	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+//	{
+//		return;
+//	}
+//
+//	size_t points = 0;
+// 	sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
+// 	if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0)
+//	{
+//		return;
+//	}
+//
+//	sg::finance::BlackScholesSolver* myBSSolver;
+//	if (coordsType == "log")
+//	{
+//		myBSSolver = new sg::finance::BlackScholesSolver(true);
+//	}
+//	else if (coordsType == "cart")
+//	{
+//		myBSSolver = new sg::finance::BlackScholesSolver(false);
+//	}
+//	else if (coordsType == "PAT")
+//	{
+//		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
+//	}
+//	else
+//	{
+//		// Write Error
+//		std::cout << "Unsupported grid transformation!" << std::endl;
+//		std::cout << std::endl << std::endl;
+//		writeHelp();
+//	}
+//	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+//	sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
+//	sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+//	delete[] myBoundaries;
+//	delete[] myEvalBoundaries;
+//
+//	// init Screen Object
+//	myBSSolver->initScreen();
+//
+//	for (size_t i = start_l; i <= end_l; i++)
+//	{
+//		size_t level = i;
+//
+//		// Reset Solve Time
+//		myBSSolver->resetSolveTime();
+//
+//		// Construct a grid
+//		myBSSolver->constructGrid(*myBoundingBox, level);
+//
+//		// Set stochastic data
+//		myBSSolver->setStochasticData(mu, sigma, rho, r);
+//
+//		// in first iteration -> calculate the evaluation points
+//		if (i == start_l)
+//		{
+//			myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
+//			writeDataMatrix(EvalPoints, tFileEvalCuboid);
+//		}
+//
+//		// init the basis functions' coefficient vector
+//		sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+//
+//		std::cout << "Grid has " << level << " Levels" << std::endl;
+//		std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//		std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+//
+//		// Init the grid with on payoff function
+//		myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//
+//		// Print the payoff function into a gnuplot file
+//		if (dim < 3)
+//		{
+//			myBSSolver->printGrid(*alpha, 21, "payoff.gnuplot");
+//		}
+//		if (dim < 4)
+//		{
+//			myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+//			myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+//
+//			if (coordsType == "log")
+//			{
+//				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
+//				myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+//			}
+//			if (coordsType == "PAT")
+//			{
+//				myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+//				myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
+//			}
+//		}
+//
+//		// Start solving the Black Scholes Equation
+//		if (Solver == "ExEul")
+//		{
+//			myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+//		}
+//		else if (Solver == "ImEul")
+//		{
+//			myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+//		}
+//		else if (Solver == "CrNic")
+//		{
+//			myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+//		}
+//		else if (Solver == "AdBas")
+//		{
+//			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+//		}
+//		else if (Solver == "SCAC")
+//		{
+//			myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+//		}
+//		else if (Solver == "SCH")
+//		{
+//			myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+//		}
+//		else if (Solver == "SCBDF")
+//		{
+//			myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+//		}
+//		else if (Solver == "SCEJ")
+//		{
+//			myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
+//		}
+//		else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
+//		{
+//			myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+//		}
+//		else
+//		{
+//			std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
+//		}
+//
+//		if (dim < 3)
+//		{
+//			// Print the solved Black Scholes Equation into a gnuplot file
+//			myBSSolver->printGrid(*alpha, 21, "solvedBS.gnuplot");
+//		}
+//		if (dim < 4)
+//		{
+//			myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+//			myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+//
+//			if (coordsType == "log")
+//			{
+//				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
+//				myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
+//			}
+//			if (coordsType == "PAT")
+//			{
+//				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
+//				myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
+//			}
+//		}
+//
+//		// Test option @ the money
+//		std::vector<double> point;
+//		for (size_t x = 0; x < dim; x++)
+//		{
+//			point.push_back(dStrike);
+//		}
+//		std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
+//
+//		if (i == start_l)
+//		{
+//			// if transformed Black Scholes Equation is used -> transform evaluation domain
+//			for (size_t v = 0; v < EvalPoints.getNrows(); v++)
+//			{
+//				sg::base::DataVector r(dim);
+//				EvalPoints.getRow(v, r);
+//				myBSSolver->transformPoint(r);
+//				EvalPoints.setRow(v, r);
+//			}
+//		}
+//
+//		// Evaluate Cuboid
+//		sg::base::DataVector Prices(EvalPoints.getNrows());
+//		myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
+//		results.push_back(Prices);
+//
+//		// write solution in a additional file
+//		std::stringstream level_string;
+//		level_string << i;
+//		writeDataVector(Prices, tFileEvalCuboidValues+".level_"+ level_string.str());
+//		writeDataVector(Prices, tFileEvalCuboidValues);
+//
+//		if (i > start_l)
+//		{
+//			std::cout << "=====================================================================" << std::endl;
+//			std::cout << "=====================================================================" << std::endl << std::endl;
+//			std::cout << "Calculating norms of relative errors to a grid" << std::endl;
+//			std::cout << "with " << i << " levels and testing-coboid" << std::endl;
+//			std::cout << "with the bounding box:" << std::endl;
+//			for (size_t j = 0; j < d; j++)
+//			{
+//				std::cout << myEvalBoundingBox->getBoundary(j).leftBoundary << " " << myEvalBoundingBox->getBoundary(j).rightBoundary << std::endl;
+//			}
+//			std::cout << std::endl << std::endl;
+//
+//			double oldMaxNorm = 0.0;
+//			double oldTwoNorm = 0.0;
+//
+//			std::cout << "Level, max-norm(rel-error), two-norm(rel-error), rate max-norm,  rate two-norm" << std::endl;
+//			std::cout << "------------------------------------------------------------------------------" << std::endl;
+//			// Calculate relative errors and some norms
+//			for (size_t j = 0; j < i-start_l; j++)
+//			{
+//				sg::base::DataVector maxLevel(results[i-start_l]);
+//				sg::base::DataVector relError(results[j]);
+//				double maxNorm = 0.0;
+//				double l2Norm = 0.0;
+//
+//				// calculate relative error
+//				relError.sub(maxLevel);
+//				relError.componentwise_div(maxLevel);
+//
+//				// calculate max. norm of relative error
+//				maxNorm = relError.maxNorm();
+//
+//				// calculate two norm of relative error
+//				l2Norm = relError.RMSNorm();
+//
+//				// Printing norms
+//				//std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+//				std::cout << j + start_l << ", " << maxNorm << ", " << l2Norm << ", " << log(oldMaxNorm/maxNorm) << ", " << log(oldTwoNorm/l2Norm) << std::endl;
+//
+//				oldMaxNorm = maxNorm;
+//				oldTwoNorm = l2Norm;
+//			}
+//		}
+//		std::cout << std::endl << std::endl;
+//
+//		myBSSolver->deleteGrid();
+//		delete alpha;
+//
+//		std::cout << std::endl;
+//	}
+//
+//	delete myEvalBoundingBox;
+//	delete myEvalCuboidGen;
+//	delete myBSSolver;
+//	delete myBoundingBox;
 //}
 
 
@@ -1218,413 +1228,422 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 //		std::string Solver, std::string refinementMode, int numRefinePoints, size_t maxRefineLevel, size_t nIterAdaptSteps, double dRefineThreshold,
 //		bool useCoarsen, std::string adaptSolvingMode, double coarsenThreshold, std::string coordsType, bool useNormalDist)
 //{
-	//	size_t dim = d;
-	//	size_t level = l;
-	//	size_t timesteps = timeSt;
-	//	double stepsize = dt;
-	//	size_t CGiterations = CGIt;
-	//	double CGepsilon = CGeps;
-	//
-	//	sg::base::DataVector mu(dim);
-	//	sg::base::DataVector sigma(dim);
-	//	sg::base::DataMatrix rho(dim,dim);
-	//
-	//	double r = riskfree;
-	//
-	//	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
-	//	{
-	//		return;
-	//	}
-	//
-	//	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
-	//	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
-	//	{
-	//		return;
-	//	}
-	//
-	//	sg::finance::BlackScholesSolver* myBSSolver;
-	//	if (coordsType == "log")
-	//	{
-	//		myBSSolver = new sg::finance::BlackScholesSolver(true);
-	//	}
-	//	else if (coordsType == "cart")
-	//	{
-	//		myBSSolver = new sg::finance::BlackScholesSolver(false);
-	//	}
-	//	else if (coordsType == "PAT")
-	//	{
-	//		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
-	//	}
-	//	else
-	//	{
-	//		// Write Error
-	//		std::cout << "Unsupported grid transformation!" << std::endl;
-	//		std::cout << std::endl << std::endl;
-	//		writeHelp();
-	//	}
-	//
-	//	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-	//	delete[] myBoundaries;
-	//
-	//	// init Screen Object
-	//	myBSSolver->initScreen();
-	//
-	//	// Construct a grid
-	//	myBSSolver->constructGrid(*myBoundingBox, level);
-	//
-	//	// Enable Coarsening
-	//	if (useCoarsen == true)
-	//	{
-	//		myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
-	//	}
-	//
-	//	// init the basis functions' coefficient vector
-	//	sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
-	//
-	//	// Set stochastic data
-	//	myBSSolver->setStochasticData(mu, sigma, rho, r);
-	//
-	//	// Init the grid with on payoff function
-	//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//
-	//	std::vector<double> norm_mu;
-	//	std::vector<double> norm_sigma;
-	//	double refineSigma = DFLT_SIGMA_REFINE_NORMDIST;
-	//
-	//	// estimate refine sigma from evaluation cuboid
-	//	// read Evaluation cuboid
-	//	sg::base::DataMatrix EvalCuboid(1, dim);
-	//	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
-	//
-	//	// read reference values for evaluation cuboid
-	//	sg::base::DataVector EvalCuboidValues(1);
-	//	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
-	//
-	//	if (EvalCuboid.getNrows() != EvalCuboidValues.getSize())
-	//	{
-	//		retCuboid = 1;
-	//		retCuboidValues = 1;
-	//	}
-	//
-	//	if (retCuboid == 0 && retCuboidValues == 0)
-	//	{
-	//		refineSigma = EvalCuboid.max(0) - EvalCuboid.min(0);
-	//	}
-	//
-	//	if (useNormalDist == true)
-	//	{
-	//		for (size_t i = 0; i < d; i++)
-	//		{
-	//			norm_mu.push_back(dStrike);
-	//			norm_sigma.push_back(refineSigma);
-	//		}
-	//	}
-	//
-	////	if (useCoarsen == true)
-	////	{
-	////		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-	////		{
-	////			myBSSolver->coarsenInitialGridSurplus(*alpha, coarsenThreshold);
-	////		}
-	////	}
-	//
-	//	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	//	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-	//
-	//	// refine the grid to approximate the singularity in the start solution better
-	//	if (refinementMode == "classic")
-	//	{
-	//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-	//		{
-	//			std::cout << "Refining Grid..." << std::endl;
-	//			if (useNormalDist == true)
-	//			{
-	//				myBSSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
-	//			}
-	//			else
-	//			{
-	//				myBSSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
-	//			}
-	//			myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//			std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	//			std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-	//		}
-	//
-	//	}
-	//	else if (refinementMode == "maxLevel")
-	//	{
-	//		size_t oldGridSize = 0;
-	//		size_t newGridSize = myBSSolver->getNumberGridPoints();
-	//		size_t addedGridPoint = 0;
-	//		size_t stepCounter = 0;
-	//		if (nIterAdaptSteps > 0)
-	//		{
-	//			do
-	//			{
-	//				oldGridSize = newGridSize;
-	//				std::cout << "Refining Grid..." << std::endl;
-	//				if (useNormalDist == true)
-	//				{
-	//					myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha, dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
-	//				}
-	//				else
-	//				{
-	//					myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, maxRefineLevel);
-	//				}
-	//				myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//				std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	//				std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-	//				newGridSize = myBSSolver->getNumberGridPoints();
-	//				addedGridPoint = newGridSize - oldGridSize;
-	//				stepCounter++;
-	//			} while ((addedGridPoint > 0) && (stepCounter < nIterAdaptSteps));
-	//		}
-	//	}
-	//	else
-	//	{
-	//		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
-	//		std::cout << "Skipping initial grid refinement!" << std::endl;
-	//	}
-	//	std::cout << std::endl << std::endl << std::endl;
-	//
-	////	if (useCoarsen == true)
-	////	{
-	////		myBSSolver->coarsenInitialGridSurplus(*alpha, coarsenThreshold);
-	////		std::cout << "Coarsened Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
-	////		std::cout << "Coarsened Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
-	////		std::cout << std::endl << std::endl << std::endl;
-	////	}
-	//
-	//	// Print the payoff function into a gnuplot file
-	//	if (dim < 3)
-	//	{
-	//		myBSSolver->printGrid(*alpha, 21, "payoff.gnuplot");
-	//	}
-	//	if (dim < 4)
-	//	{
-	//		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
-	//		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
-	//
-	//		if (coordsType == "log")
-	//		{
-	//			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
-	//			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
-	//		}
-	//		if (coordsType == "PAT")
-	//		{
-	//			myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
-	//			myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
-	//		}
-	//	}
-	//
-	//	// Gridpoints @Money
-	//	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
-	//
-	//	// Print interpolation-error at strike
-	//	if (dim == 2 && coordsType == "log")
-	//	{
-	//		myBSSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
-	//	}
-	//
-	//	// Start solving the Black Scholes Equation
-	//	if (Solver == "ExEul")
-	//	{
-	//		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	//	}
-	//	else if (Solver == "ImEul")
-	//	{
-	//		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	//	}
-	//	else if (Solver == "CrNic")
-	//	{
-	//		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-	//	}
-	//	else if (Solver == "AdBas")
-	//	{
-	//		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-	//	}
-	//	else if (Solver == "SCAC")
-	//	{
-	//		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	//	}
-	//	else if (Solver == "SCH")
-	//	{
-	//		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	//	}
-	//	else if (Solver == "SCBDF")
-	//	{
-	//		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	//	}
-	//	else if (Solver == "SCEJ")
-	//	{
-	//		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
-	//	}
-	//	else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
-	//	{
-	//		myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-	//	}
-	//	else
-	//	{
-	//		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-	//	}
-	//
-	//	if (dim < 3)
-	//	{
-	//		// Print the solved Black Scholes Equation into a gnuplot file
-	//		myBSSolver->printGrid(*alpha, 21, "solvedBS.gnuplot");
-	//	}
-	//	if (dim < 4)
-	//	{
-	//		myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
-	//		myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
-	//
-	//		if (coordsType == "log")
-	//		{
-	//			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
-	//			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
-	//		}
-	//		if (coordsType == "PAT")
-	//		{
-	//			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
-	//			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
-	//		}
-	//	}
-	//
-	//	// Test option @ the money
-	//	std::vector<double> point;
-	//	for (size_t i = 0; i < d; i++)
-	//	{
-	//		point.push_back(dStrike);
-	//	}
-	//	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
-	//
-	//	// calculate relative errors
-	//	////////////////////////////
-	//	double maxNorm = 0.0;
-	//	double l2Norm = 0.0;
-	//
-	//	if (retCuboid == 0 && retCuboidValues == 0)
-	//	{
-	//		// If the transformed Black Scholes Equation is used -> transform Eval-cuboid
-	//		for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
-	//		{
-	//			sg::base::DataVector r(dim);
-	//			EvalCuboid.getRow(v, r);
-	//			myBSSolver->transformPoint(r);
-	//			EvalCuboid.setRow(v, r);
-	//		}
-	//
-	//		std::cout << "Calculating relative errors..." << std::endl;
-	//		// Evaluate Cuboid
-	//		sg::base::DataVector Prices(EvalCuboid.getNrows());
-	//		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
-	//
-	//		sg::base::DataVector relError(Prices);
-	//
-	//		// calculate relative error
-	//		relError.sub(EvalCuboidValues);
-	//		relError.componentwise_div(EvalCuboidValues);
-	//
-	//		// calculate max. norm of relative error
-	//		maxNorm = relError.maxNorm();
-	//
-	//		// calculate two norm of relative error
-	//		l2Norm = relError.RMSNorm();
-	//
-	//		// Printing norms
-	//		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
-	//
-	//		// reprint data with prefix -> can be easily grep-ed
-	//		std::cout << std::endl << std::endl;
-	//	}
-	//	else
-	//	{
-	//		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
-	//	}
-	//
-	//	std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
-	//	std::string normDistrefine;
-	//	if (useNormalDist == true)
-	//	{
-	//		std::stringstream normDistRefineStream;
-	//		normDistRefineStream << "solveNDadaptSurplusSubDomain;" << dStrike << ";" << refineSigma;
-	//		normDistrefine = normDistRefineStream.str();
-	//		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
-	//		std::cout << "$ Refine mu = " << dStrike << "; Refine sigma = " << refineSigma << std::endl;
-	//	}
-	//	else
-	//	{
-	//		normDistrefine = "solveNDadaptSurplus;-1.0;1.0";
-	//		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
-	//	}
-	//
-	//	std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
-	//	std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
-	//	std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize() << std::endl;
-	//	std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize() << std::endl;
-	//	std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
-	//	std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
-	//	std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
-	//	std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl;
-	//	std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
-	//		<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
-	//		<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
-	//		<< ";" << myBSSolver->getAverageInnerGridSize() << ";" << myBSSolver->getNeededIterationsToSolve()
-	//		<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << l2Norm << std::endl;
-	//	std::cout << std::endl << std::endl;
-	//
-	//#ifdef EXPORT_MATRIX_FILES
-	//	// print inner matrix
-	//	std::stringstream mtxFile;
-	//	mtxFile.clear();
-	//	alpha->setAll(0.0);
-	//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//
-	//	mtxFile << "SG_BlackScholes_InnerMatrix_" << dim << "d_" << level << "l.mtx";
-	//	myBSSolver->storeInnerMatrix(*alpha, mtxFile.str(), dt);
-	//
-	//	// print inner matrix, diagonal
-	//	std::stringstream mtxFileDiagonal;
-	//	mtxFileDiagonal.clear();
-	//	alpha->setAll(0.0);
-	//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//
-	//	mtxFileDiagonal << "SG_BlackScholes_InnerMatrixDiagonal_" << dim << "d_" << level << "l.mtx";
-	//	myBSSolver->storeInnerMatrixDiagonal(*alpha, mtxFileDiagonal.str(), dt);
-	//
-	//	// print inner matrix, diagonal row sum
-	//	std::stringstream mtxFileDiagonalRowSum;
-	//	mtxFileDiagonalRowSum.clear();
-	//	alpha->setAll(0.0);
-	//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//
-	//	mtxFileDiagonalRowSum << "SG_BlackScholes_InnerMatrixDiagonalRowSum_" << dim << "d_" << level << "l.mtx";
-	//	myBSSolver->storeInnerMatrixDiagonalRowSum(*alpha, mtxFileDiagonalRowSum.str(), dt);
-	//
-	//	// print inner rhs
-	//	std::stringstream rhsFile;
-	//	rhsFile.clear();
-	//	alpha->setAll(0.0);
-	//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//
-	//	rhsFile << "SG_BlackScholes_InnerRHS_" << dim << "d_" << level << "l.vec";
-	//	myBSSolver->storeInnerRHS(*alpha, rhsFile.str(), dt);
-	//
-	//	// print inner solution
-	//	std::stringstream solFile;
-	//	solFile.clear();
-	//	alpha->setAll(0.0);
-	//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//
-	//	solFile << "SG_BlackScholes_InnerSolution_" << dim << "d_" << level << "l.vec";
-	//	myBSSolver->storeInnerSolution(*alpha, timesteps, stepsize, CGiterations, CGepsilon, solFile.str());
-	//	std::cout << std::endl << std::endl;
-	//#endif
-	//
-	//	delete myBSSolver;
-	//	delete myBoundingBox;
-	//	delete alpha;
+//	size_t dim = d;
+//	size_t level = l;
+//	size_t timesteps = timeSt;
+//	double stepsize = dt;
+//	size_t CGiterations = CGIt;
+//	double CGepsilon = CGeps;
+//
+//	sg::base::DataVector mu(dim);
+//	sg::base::DataVector sigma(dim);
+//	sg::base::DataMatrix rho(dim,dim);
+//
+//	double r = riskfree;
+//
+//	if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0)
+//	{
+//		return;
+//	}
+//
+//	sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+//	if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0)
+//	{
+//		return;
+//	}
+//
+//	sg::finance::BlackScholesSolver* myBSSolver;
+//	if (coordsType == "log")
+//	{
+//		myBSSolver = new sg::finance::BlackScholesSolver(true);
+//	}
+//	else if (coordsType == "cart")
+//	{
+//		myBSSolver = new sg::finance::BlackScholesSolver(false);
+//	}
+//	else if (coordsType == "PAT")
+//	{
+//		myBSSolver = new sg::finance::BlackScholesSolver(true, true);
+//	}
+//	else
+//	{
+//		// Write Error
+//		std::cout << "Unsupported grid transformation!" << std::endl;
+//		std::cout << std::endl << std::endl;
+//		writeHelp();
+//	}
+//
+//	sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+//	delete[] myBoundaries;
+//
+//	// init Screen Object
+//	myBSSolver->initScreen();
+//
+//	// Construct a grid
+//	myBSSolver->constructGrid(*myBoundingBox, level);
+//
+//	// Enable Coarsening
+//	if (useCoarsen == true)
+//	{
+//		myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
+//	}
+//
+//	// init the basis functions' coefficient vector
+//	sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+//
+//	// Set stochastic data
+//	myBSSolver->setStochasticData(mu, sigma, rho, r);
+//
+//	// Init the grid with on payoff function
+//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//
+//	std::vector<double> norm_mu;
+//	std::vector<double> norm_sigma;
+//	double refineSigma = DFLT_SIGMA_REFINE_NORMDIST;
+//
+//	// estimate refine sigma from evaluation cuboid
+//	// read Evaluation cuboid
+//	sg::base::DataMatrix EvalCuboid(1, dim);
+//	int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+//
+//	// read reference values for evaluation cuboid
+//	sg::base::DataVector EvalCuboidValues(1);
+//	int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
+//
+//	if (EvalCuboid.getNrows() != EvalCuboidValues.getSize())
+//	{
+//		retCuboid = 1;
+//		retCuboidValues = 1;
+//	}
+//
+//	if (retCuboid == 0 && retCuboidValues == 0)
+//	{
+//		refineSigma = EvalCuboid.max(0) - EvalCuboid.min(0);
+//	}
+//
+//	if (useNormalDist == true)
+//	{
+//		for (size_t i = 0; i < d; i++)
+//		{
+//			norm_mu.push_back(dStrike);
+//			norm_sigma.push_back(refineSigma);
+//		}
+//	}
+//
+////	if (useCoarsen == true)
+////	{
+////		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+////		{
+////			myBSSolver->coarsenInitialGridSurplus(*alpha, coarsenThreshold);
+////		}
+////	}
+//
+//	std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//	std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+//
+//	// refine the grid to approximate the singularity in the start solution better
+//	if (refinementMode == "classic")
+//	{
+//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+//		{
+//			std::cout << "Refining Grid..." << std::endl;
+//			if (useNormalDist == true)
+//			{
+//				myBSSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
+//			}
+//			else
+//			{
+//				myBSSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+//			}
+//			myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//			std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//			std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+//		}
+//
+//	}
+//	else if (refinementMode == "maxLevel")
+//	{
+//		size_t oldGridSize = 0;
+//		size_t newGridSize = myBSSolver->getNumberGridPoints();
+//		size_t addedGridPoint = 0;
+//		size_t stepCounter = 0;
+//		if (nIterAdaptSteps > 0)
+//		{
+//			do
+//			{
+//				oldGridSize = newGridSize;
+//				std::cout << "Refining Grid..." << std::endl;
+//				if (useNormalDist == true)
+//				{
+//					myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha, dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
+//				}
+//				else
+//				{
+//					myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, maxRefineLevel);
+//				}
+//				myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//				std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+//				std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+//				newGridSize = myBSSolver->getNumberGridPoints();
+//				addedGridPoint = newGridSize - oldGridSize;
+//				stepCounter++;
+//			} while ((addedGridPoint > 0) && (stepCounter < nIterAdaptSteps));
+//		}
+//	}
+//	else
+//	{
+//		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+//		std::cout << "Skipping initial grid refinement!" << std::endl;
+//	}
+//	std::cout << std::endl << std::endl << std::endl;
+//
+////	if (useCoarsen == true)
+////	{
+////		myBSSolver->coarsenInitialGridSurplus(*alpha, coarsenThreshold);
+////		std::cout << "Coarsened Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+////		std::cout << "Coarsened Grid size (inner): " << myBSSolver->getNumberInnerGridPoints() << std::endl;
+////		std::cout << std::endl << std::endl << std::endl;
+////	}
+//
+//	// Print the payoff function into a gnuplot file
+//	if (dim < 3)
+//	{
+//		myBSSolver->printGrid(*alpha, 21, "payoff.gnuplot");
+//	}
+//	if (dim < 4)
+//	{
+//		myBSSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
+//		myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
+//
+//		if (coordsType == "log")
+//		{
+//			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
+//			myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
+//		}
+//		if (coordsType == "PAT")
+//		{
+//			myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+//			myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
+//		}
+//	}
+//
+//	// Gridpoints @Money
+//	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+//
+//	// Print interpolation-error at strike
+//	if (dim == 2 && coordsType == "log")
+//	{
+//		myBSSolver->printPayoffInterpolationError2D(*alpha, "interpolation_error_16384.out", 16384, dStrike);
+//	}
+//
+//	// Start solving the Black Scholes Equation
+//	if (Solver == "ExEul")
+//	{
+//		myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+//	}
+//	else if (Solver == "ImEul")
+//	{
+//		myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+//	}
+//	else if (Solver == "CrNic")
+//	{
+//		myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+//	}
+//	else if (Solver == "AdBas")
+//	{
+//		myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+//	}
+//	else if (Solver == "SCAC")
+//	{
+//		myBSSolver->solveSCAC(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+//	}
+//	else if (Solver == "SCH")
+//	{
+//		myBSSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+//	}
+//	else if (Solver == "SCBDF")
+//	{
+//		myBSSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
+//	}
+//	else if (Solver == "SCEJ")
+//	{
+//		myBSSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
+//	}
+//	else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
+//	{
+//		myBSSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
+//	}
+//	else
+//	{
+//		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
+//	}
+//
+//	if (dim < 3)
+//	{
+//		// Print the solved Black Scholes Equation into a gnuplot file
+//		myBSSolver->printGrid(*alpha, 21, "solvedBS.gnuplot");
+//	}
+//	if (dim < 4)
+//	{
+//		myBSSolver->printSparseGrid(*alpha, "solvedBS_surplus.grid.gnuplot", true);
+//		myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.gnuplot", false);
+//
+//		if (coordsType == "log")
+//		{
+//			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.gnuplot", true);
+//			myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.gnuplot", false);
+//		}
+//		if (coordsType == "PAT")
+//		{
+//			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.gnuplot", true);
+//			myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.gnuplot", false);
+//		}
+//	}
+//
+//	// Test option @ the money
+//	std::vector<double> point;
+//	for (size_t i = 0; i < d; i++)
+//	{
+//		point.push_back(dStrike);
+//	}
+//	std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
+//
+//	// calculate relative errors
+//	////////////////////////////
+//	double maxNorm = 0.0;
+//	double l2Norm = 0.0;
+//
+//	if (retCuboid == 0 && retCuboidValues == 0)
+//	{
+//		// If the transformed Black Scholes Equation is used -> transform Eval-cuboid
+//		for (size_t v = 0; v < EvalCuboid.getNrows(); v++)
+//		{
+//			sg::base::DataVector r(dim);
+//			EvalCuboid.getRow(v, r);
+//			myBSSolver->transformPoint(r);
+//			EvalCuboid.setRow(v, r);
+//		}
+//
+//		std::cout << "Calculating relative errors..." << std::endl;
+//		// Evaluate Cuboid
+//		sg::base::DataVector Prices(EvalCuboid.getNrows());
+//		myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
+//
+//		sg::base::DataVector relError(Prices);
+//
+//		// calculate relative error
+//		relError.sub(EvalCuboidValues);
+//		relError.componentwise_div(EvalCuboidValues);
+//
+//		// calculate max. norm of relative error
+//		maxNorm = relError.maxNorm();
+//
+//		// calculate two norm of relative error
+//		l2Norm = relError.RMSNorm();
+//
+//		// Printing norms
+//		std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+//
+//		// reprint data with prefix -> can be easily grep-ed
+//		std::cout << std::endl << std::endl;
+//	}
+//	else
+//	{
+//		std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
+//	}
+//
+//	std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode << "; MaxRefLevel: " << maxRefineLevel << std::endl;
+//	std::string normDistrefine;
+//	if (useNormalDist == true)
+//	{
+//		std::stringstream normDistRefineStream;
+//		normDistRefineStream << "solveNDadaptSurplusSubDomain;" << dStrike << ";" << refineSigma;
+//		normDistrefine = normDistRefineStream.str();
+//		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
+//		std::cout << "$ Refine mu = " << dStrike << "; Refine sigma = " << refineSigma << std::endl;
+//	}
+//	else
+//	{
+//		normDistrefine = "solveNDadaptSurplus;-1.0;1.0";
+//		std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
+//	}
+//
+//	std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold << std::endl;
+//	std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
+//	std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize() << std::endl;
+//	std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize() << std::endl;
+//	std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize() << std::endl;
+//	std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve() << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
+//	std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+//	std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl;
+//	std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";" << nIterAdaptSteps
+//		<< ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode << ";" << coarsenThreshold
+//		<< ";" << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
+//		<< ";" << myBSSolver->getAverageInnerGridSize() << ";" << myBSSolver->getNeededIterationsToSolve()
+//		<< ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << l2Norm << std::endl;
+//	std::cout << std::endl << std::endl;
+//
+//#ifdef EXPORT_MATRIX_FILES
+//	// print inner matrix
+//	std::stringstream mtxFile;
+//	mtxFile.clear();
+//	alpha->setAll(0.0);
+//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//
+//	mtxFile << "SG_BlackScholes_InnerMatrix_" << dim << "d_" << level << "l.mtx";
+//	myBSSolver->storeInnerMatrix(*alpha, mtxFile.str(), dt);
+//
+//	// print inner matrix, diagonal
+//	std::stringstream mtxFileDiagonal;
+//	mtxFileDiagonal.clear();
+//	alpha->setAll(0.0);
+//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//
+//	mtxFileDiagonal << "SG_BlackScholes_InnerMatrixDiagonal_" << dim << "d_" << level << "l.mtx";
+//	myBSSolver->storeInnerMatrixDiagonal(*alpha, mtxFileDiagonal.str(), dt);
+//
+//	// print inner matrix, diagonal row sum
+//	std::stringstream mtxFileDiagonalRowSum;
+//	mtxFileDiagonalRowSum.clear();
+//	alpha->setAll(0.0);
+//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//
+//	mtxFileDiagonalRowSum << "SG_BlackScholes_InnerMatrixDiagonalRowSum_" << dim << "d_" << level << "l.mtx";
+//	myBSSolver->storeInnerMatrixDiagonalRowSum(*alpha, mtxFileDiagonalRowSum.str(), dt);
+//
+//	// print inner rhs
+//	std::stringstream rhsFile;
+//	rhsFile.clear();
+//	alpha->setAll(0.0);
+//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//
+//	rhsFile << "SG_BlackScholes_InnerRHS_" << dim << "d_" << level << "l.vec";
+//	myBSSolver->storeInnerRHS(*alpha, rhsFile.str(), dt);
+//
+//	// print inner solution
+//	std::stringstream solFile;
+//	solFile.clear();
+//	alpha->setAll(0.0);
+//	myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//
+//	solFile << "SG_BlackScholes_InnerSolution_" << dim << "d_" << level << "l.vec";
+//	myBSSolver->storeInnerSolution(*alpha, timesteps, stepsize, CGiterations, CGepsilon, solFile.str());
+//	std::cout << std::endl << std::endl;
+//#endif
+//
+//	delete myBSSolver;
+//	delete myBoundingBox;
+//	delete alpha;
 //}
+
+// function to interpolate
+double f(int dim, double *x, void *clientdata) {
+	double res = 1.0;
+	for (int i=0; i<dim; i++) {
+		res *= 4*x[i]*(1-x[i]);
+	}
+	return res;
+}
 
 /**
  * main routine of the application, do some first cli
@@ -1699,7 +1718,7 @@ int main(int argc, char *argv[])
 			std::string coordsType;
 			coordsType.assign(argv[2]);
 
-//			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coordsType);
+			//			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coordsType);
 		}
 	}
 	else if (option == "solveNDadaptSurplus" || option == "solveNDadaptSurplusSubDomain")
@@ -1760,7 +1779,7 @@ int main(int argc, char *argv[])
 				return 0;
 			}
 
-//			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode, atof(argv[20]), coordsType, isNormalDist);
+			//			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode, atof(argv[20]), coordsType, isNormalDist);
 		}
 	}
 	else

@@ -81,5 +81,18 @@ void DirichletUpdateVector::multiplyBoundaryVector(DataVector& updateVector,Data
 		}
 	}
 }
+
+void DirichletUpdateVector::multiply(DataVector& updateVector, double value, bool (*predicate)(GridIndex*, GridStorage*))
+{
+	for (size_t i = 0; i < storage->size(); i++)
+		{
+			GridIndex* curPoint = (*storage)[i];
+			if (predicate(curPoint, storage))
+			{
+				updateVector.set(i, updateVector.get(i)*value);
+			}
+		}
+}
+
 }
 }

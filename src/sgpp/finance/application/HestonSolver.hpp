@@ -506,6 +506,9 @@ public:
 	 * @param tFilename file into which the rhs is written
 	 */
 	void storeInnerSolution(sg::base::DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
+
+	double EvaluateHestonFExact(sg::base::DataVector* characteristicFunction, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
+	void EvaluateHestonPriceExact();
 };
 
 }
