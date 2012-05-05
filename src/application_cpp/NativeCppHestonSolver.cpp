@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <cmath>
 #include <complex>
+#include <limits>
 
 // @todo (heinecke) remove global variables
 std::string tFileEvalCuboid = "evalCuboid.data";
@@ -799,7 +800,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 	if(numberOfAssets == 1 && payoffType == "std_euro_call")
 	{
-		myHestonSolver->EvaluateHestonPriceExact();
+		myHestonSolver->EvaluateHestonPriceExact(timesteps*stepsize);
 	}
 
 	if (numberOfAssets < 3)
@@ -1644,6 +1645,8 @@ double f(int dim, double *x, void *clientdata) {
 	}
 	return res;
 }
+
+
 
 /**
  * main routine of the application, do some first cli
