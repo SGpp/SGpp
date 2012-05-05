@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iomanip>
 #include <complex>
+#include <limits>
 
 using namespace sg::pde;
 using namespace sg::solver;
@@ -1467,15 +1468,95 @@ void HestonSolver::storeInnerSolution(DataVector& alpha, size_t numTimesteps, do
 
 }
 
-double HestonSolver::EvaluateHestonFExact(sg::base::DataVector* characteristicFunction, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type)
+//double HestonSolver::EvaluateHestonFExact(sg::base::DataVector* characteristicFunction, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type)
+//{
+//	double a,b,u,x;
+//	size_t vecSize = characteristicFunction->getSize();
+//	//	sg::base::DataVector d(vecSize);
+//	//	sg::base::DataVector g(vecSize);
+//	//	sg::base::DataVector C(vecSize);
+//	//	sg::base::DataVector D(vecSize);
+//	//	sg::base::DataVector f(vecSize);
+//	if(type == 1)
+//	{
+//		u = 0.5;
+//		b = kappa - rho*xi;
+//	}
+//	else
+//	{
+//		u = -0.5;
+//		b = kappa;
+//	}
+//	a = kappa*theta;
+//	x = log(S);
+//
+//
+//	double * characteristicFuncData = characteristicFunction->getPointer();
+//
+//	//	Build d
+//	vector< complex<double> > dBuilder1;
+//	vector< complex<double> > dBuilder2;
+//	vector< complex<double> > d;
+//	for(size_t i=0;i<vecSize;i++)
+//	{
+//		dBuilder1.push_back(std::complex<double>(0.0, 1.0));
+//		dBuilder1[i] = pow(dBuilder1[i]*characteristicFuncData[i]*rho*xi - b,2.0);
+//
+//		dBuilder2.push_back(std::complex<double>(0.0, 1.0));
+//		dBuilder2[i] = dBuilder2[i]*characteristicFuncData[i];
+//		dBuilder2[i] = dBuilder2[i]*2.0*u - pow(characteristicFuncData[i],2.0);
+//		dBuilder2[i] = dBuilder2[i]*pow(xi,2.0);
+//
+//		d.push_back(std::complex<double>(0.0, 0.0));
+//		d[i] = sqrt(dBuilder1[i] - dBuilder2[i]);
+//	}
+//
+//	// Build g
+//	vector< complex<double> > g;
+//	for(size_t i=0;i<vecSize;i++)
+//	{
+//		g.push_back(std::complex<double>(0.0, 1.0));
+//		g[i] = (b - rho*xi*characteristicFuncData[i]*g[i] + d[i]) / (b - rho*xi*characteristicFuncData[i]*g[i] - d[i]);
+//	}
+//
+//	// Build C
+//	vector< complex<double> > C;
+//	for(size_t i=0;i<vecSize;i++)
+//	{
+//		C.push_back(std::complex<double>(0.0, 1.0));
+//		C[i] = (r*characteristicFuncData[i]*C[i]*T) + (a/pow(xi,2.0))*((b - rho*xi*characteristicFuncData[i]*C[i] + d[i])*T - 2.0*log( (1.0 - g[i]*exp(d[i]*T))/(1.0 - g[i])  ));
+//	}
+//
+//	// Build D
+//	vector< complex<double> > D;
+//	for(size_t i=0;i<vecSize;i++)
+//	{
+//		D.push_back(std::complex<double>(0.0, 1.0));
+//		D[i] = ((b - rho*xi*characteristicFuncData[i]*D[i] + d[i])/(pow(xi,2.0))) * ((1.0 - exp(d[i]*T))/(1.0 - g[i]*exp(d[i]*T)));
+//	}
+//
+//	// Build f
+//	vector< complex<double> > f;
+//	for(size_t i=0;i<vecSize;i++)
+//	{
+//		f.push_back(std::complex<double>(0.0, 1.0));
+//		f[i] = exp(C[i] + D[i]*v + f[i]*characteristicFuncData[i]*x);
+//	}
+//
+//	// Build realArgument
+//	vector< complex<double> > realArgument;
+//	for(size_t i=0;i<vecSize;i++)
+//	{
+//		realArgument.push_back(std::complex<double>(0.0, 1.0));
+//		realArgument[i] = (exp(0.0-realArgument[i]*characteristicFuncData[i]*log(K))*f[i]) / (realArgument[i]*characteristicFuncData[i]);
+//	}
+//
+//	return real(realArgument[0]);
+//}
+
+double EvaluateHestonClosedFormIntegralFunction(double phi, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type)
 {
 	double a,b,u,x;
-	size_t vecSize = characteristicFunction->getSize();
-	//	sg::base::DataVector d(vecSize);
-	//	sg::base::DataVector g(vecSize);
-	//	sg::base::DataVector C(vecSize);
-	//	sg::base::DataVector D(vecSize);
-	//	sg::base::DataVector f(vecSize);
 	if(type == 1)
 	{
 		u = 0.5;
@@ -1489,153 +1570,208 @@ double HestonSolver::EvaluateHestonFExact(sg::base::DataVector* characteristicFu
 	a = kappa*theta;
 	x = log(S);
 
-
-	double * characteristicFuncData = characteristicFunction->getPointer();
-
 	//	Build d
-	vector< complex<double> > dBuilder1;
-	vector< complex<double> > dBuilder2;
-	vector< complex<double> > d;
-	for(size_t i=0;i<vecSize;i++)
-	{
-		dBuilder1.push_back(std::complex<double>(0.0, 1.0));
-		dBuilder1[i] = pow(dBuilder1[i]*characteristicFuncData[i]*rho*xi - b,2.0);
-
-		dBuilder2.push_back(std::complex<double>(0.0, 1.0));
-		dBuilder2[i] = dBuilder2[i]*characteristicFuncData[i];
-		dBuilder2[i] = dBuilder2[i]*2.0*u - pow(characteristicFuncData[i],2.0);
-		dBuilder2[i] = dBuilder2[i]*pow(xi,2.0);
-
-		d.push_back(std::complex<double>(0.0, 0.0));
-		d[i] = sqrt(dBuilder1[i] - dBuilder2[i]);
-	}
+	complex<double> dBuilder1;
+	complex<double> dBuilder2;
+	complex<double> d;
+	dBuilder1 = std::complex<double>(0.0, 1.0);
+	dBuilder1 = pow(dBuilder1*phi*rho*xi - b,2.0);
+	dBuilder2 = std::complex<double>(0.0, 1.0);
+	dBuilder2 = dBuilder2*phi;
+	dBuilder2 = dBuilder2*2.0*u - pow(phi,2.0);
+	dBuilder2 = dBuilder2*pow(xi,2.0);
+	d = sqrt(dBuilder1 - dBuilder2);
 
 	// Build g
-	vector< complex<double> > g;
-	for(size_t i=0;i<vecSize;i++)
-	{
-		g.push_back(std::complex<double>(0.0, 1.0));
-		g[i] = (b - rho*xi*characteristicFuncData[i]*g[i] + d[i]) / (b - rho*xi*characteristicFuncData[i]*g[i] - d[i]);
-	}
+	complex<double> g;
+	g = std::complex<double>(0.0, 1.0);
+	g = (b - rho*xi*phi*g + d) / (b - rho*xi*phi*g - d);
+
 
 	// Build C
-	vector< complex<double> > C;
-	for(size_t i=0;i<vecSize;i++)
-	{
-		C.push_back(std::complex<double>(0.0, 1.0));
-		C[i] = (r*characteristicFuncData[i]*C[i]*T) + (a/pow(xi,2.0))*((b - rho*xi*characteristicFuncData[i]*C[i] + d[i])*T - 2.0*log( (1.0 - g[i]*exp(d[i]*T))/(1.0 - g[i])  ));
-	}
+	complex<double> C;
+	C = std::complex<double>(0.0, 1.0);
+	C = (r*phi*C*T) + (a/pow(xi,2.0))*((b - rho*xi*phi*C + d)*T - 2.0*log( (1.0 - g*exp(d*T))/(1.0 - g)  ));
 
 	// Build D
-	vector< complex<double> > D;
-	for(size_t i=0;i<vecSize;i++)
-	{
-		D.push_back(std::complex<double>(0.0, 1.0));
-		D[i] = ((b - rho*xi*characteristicFuncData[i]*D[i] + d[i])/(pow(xi,2.0))) * ((1.0 - exp(d[i]*T))/(1.0 - g[i]*exp(d[i]*T)));
-	}
+	complex<double> D;
+	D = std::complex<double>(0.0, 1.0);
+	D = ((b - rho*xi*phi*D + d)/(pow(xi,2.0))) * ((1.0 - exp(d*T))/(1.0 - g*exp(d*T)));
 
 	// Build f
-	vector< complex<double> > f;
-	for(size_t i=0;i<vecSize;i++)
-	{
-		f.push_back(std::complex<double>(0.0, 1.0));
-		f[i] = exp(C[i] + D[i]*v + f[i]*characteristicFuncData[i]*x);
-	}
+	complex<double> f;
+	f = complex<double>(0.0, 1.0);
+	f = exp(C + D*v + f*phi*x);
+
 
 	// Build realArgument
-	vector< complex<double> > realArgument;
-	for(size_t i=0;i<vecSize;i++)
-	{
-		realArgument.push_back(std::complex<double>(0.0, 1.0));
-		realArgument[i] = (exp(0.0-realArgument[i]*characteristicFuncData[i]*log(K))*f[i]) / (realArgument[i]*characteristicFuncData[i]);
-	}
+	complex<double> realArgument;
+	realArgument = std::complex<double>(0.0, 1.0);
+	realArgument = (exp(0.0-realArgument*phi*log(K))*f) / (realArgument*phi);
 
-	return real(realArgument[0]);
+	return real(realArgument);
 }
 
-void HestonSolver::EvaluateHestonPriceExact()
+void HestonSolver::EvaluateHestonPriceExact(double maturity)
 {
 	if (!this->bGridConstructed)
 		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
 	if (this->numAssets != 1 || this->payoffType != "std_euro_call")
-		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European option with one asset!");
+		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
 
-	sg::base::GridStorage* mainStorage = myGrid->getStorage();
-
+	double tmp;
 	sg::base::DataVector* alpha = new sg::base::DataVector(getNumberGridPoints());
-
-	std::ofstream fileout;
-	fileout.open("hestonExact.gnuplot");
-
-	for(size_t k=0;k< mainStorage->size();k++)
+	for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 	{
-		DimensionBoundary dimOne = myGrid->getBoundingBox()->getBoundary(0);
-		DimensionBoundary dimTwo = myGrid->getBoundingBox()->getBoundary(1);
+		std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+		std::stringstream coordsStream(coords);
+		double* dblFuncValues = new double[dim];
 
-		double offset_x = dimOne.leftBoundary;
-		double offset_y = dimTwo.leftBoundary;
-		double scale_x = (dimOne.rightBoundary - dimOne.leftBoundary);
-		double scale_y = (dimTwo.rightBoundary - dimTwo.leftBoundary);
+		for (size_t j = 0; j < this->dim; j++)
+		{
+			coordsStream >> tmp;
 
-		// Get the coordinates of the current point
-		double S = offset_x + scale_x*mainStorage->get(k)->abs(0);
-		double v = offset_y + scale_y*mainStorage->get(k)->abs(1);
-
-		// create a one-dimensional piecewise grid
-		int dim = 1;
-		sg::base::Grid* grid = sg::base::Grid::createLinearGrid(dim);
-		sg::base::GridStorage* gridStorage = grid->getStorage();
-
-		// create regular grid, level 10
-		int level = 15;
-		sg::base::GridGenerator* gridGen = grid->createGridGenerator();
-		gridGen->regular(level);
-
-		// create coefficient vector
-		sg::base::DataVector alpha1(gridStorage->size());
-		sg::base::DataVector alpha2(gridStorage->size());
-		sg::base::GridIndex* gp;
-		sg::base::DataVector phi(1);
-		double int1 = 0.0;
-		double int2 = 0.0;
-		int inf_cutoff = 100;
-		int num_intervals = 100000;
-		double increment = (double)inf_cutoff/(double)num_intervals;
-		for (int i=1; i <= num_intervals; i++) {
-//			gp = gridStorage->get(i);
-
-			double sample_point = increment*i;
-			phi[0] = sample_point;
-			int1 += increment*EvaluateHestonFExact(&phi, 0.3, 0.2, 2.0, 0.8, 0.03, 1.0, 1.0, S, v, 0);
-			int2 += increment*EvaluateHestonFExact(&phi, 0.3, 0.2, 2.0, 0.8, 0.03, 1.0, 1.0, S, v, 1);
-
-//			alpha1[i] = 2.0;//EvaluateHestonFExact(&phi, 0.3, 0.2, 2.0, 0.8, 0.03, 1.0, 1.0, S, v, 0);
-//			alpha2[i] = 2.0;//EvaluateHestonFExact(&phi, 0.3, 0.2, 2.0, 0.8, 0.03, 1.0, 1.0, S, v, 1);
+			dblFuncValues[j] = tmp;
 		}
-//		op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha1);
-//		op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha2);
 
-		// direct quadrature
-//		sg::base::OperationQuadrature* opQ1 = op_factory::createOperationQuadrature(*grid);
-		int1 = 0.5 + (1.0/M_PI)*int1;
-//		double res1 = opQ1->doQuadrature(alpha1);
-//		delete opQ1;
-//
-//		sg::base::OperationQuadrature* opQ2 = op_factory::createOperationQuadrature(*grid);
-		int2 = 0.5 + (1.0/M_PI)*int2;
-//		delete opQ2;
-
-		delete grid;
-
-		alpha->set(k, S*int1 - 1.0*exp((-1.0)*0.03*1.0)*int2);
-		fileout << S << " " << v << " " << "" << alpha->get(k) << std::endl;
+		// Approximate the integrals from 0 to infinity by 0.001 to 1000.0.
+		double int1 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike, dblFuncValues[0], dblFuncValues[1], 1);
+		double int2 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike, dblFuncValues[0], dblFuncValues[1], 2);
+		(*alpha)[i] = dblFuncValues[0]*int1 - 1.0*exp((-1.0)*this->r*maturity)*int2;
+		delete dblFuncValues;
 	}
 
-	fileout.close();
-//	printGrid(*alpha, 50, "hestonExact.gnuplot");
+	OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+	myHierarchisation->doHierarchisation(*alpha);
+	delete myHierarchisation;
 
+	printGrid(*alpha, 100, "hestonExact.gnuplot");
+	delete alpha;
 }
+
+/** \brief Perform a single step of the Gauss-Lobatto integration
+
+    \param f Function to integrate
+    \param a Lower integration limit
+    \param b Upper integration limit
+
+    \param fa Value of function at the lower limit (used to save an
+    evaluation when refinement is used)
+
+    \param fa Value of function at the upper limit (used to save an
+    evaluation when refinement is used)
+
+    \param neval Number of evaluations made so far
+
+    \param maxeval Maximum number of evalutions which should not be
+    exceeded
+
+    \param acc Required accuracy expressed in units of
+    std::numeric_limits<double>::epsilon(). This allows less-than
+    comparison by using addition and equality.
+ */
+double HestonSolver::GaussLobattoIntStep(
+		double a, double b,
+		double fa, double fb,
+		size_t &neval,
+		size_t maxeval,
+		double acc
+		, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type)
+{
+
+	// Constants used in the algorithm
+	const double alpha = std::sqrt(2.0/3.0);
+	const double beta  = 1.0/std::sqrt(5.0);
+
+	if (neval >= maxeval)
+	{
+		throw new application_exception("HestonSolver::Gauss-Lobatto : Maximum number of evaluations reached in GaussLobatto.");
+	}
+
+	// Here the abcissa points and function values for both the 4-point
+	// and the 7-point rule are calculated (the points at the end of
+	// interval come from the function call, i.e., fa and fb. Also note
+	// the 7-point rule re-uses all the points of the 4-point rule.)
+	const double h=(b-a)/2;
+	const double m=(a+b)/2;
+
+	const double mll=m-alpha*h;
+	const double ml =m-beta*h;
+	const double mr =m+beta*h;
+	const double mrr=m+alpha*h;
+
+	const double fmll= EvaluateHestonClosedFormIntegralFunction(mll, xi, theta, kappa, rho, r, T, K, S, v, type);
+	const double fml = EvaluateHestonClosedFormIntegralFunction(ml, xi, theta, kappa, rho, r, T, K, S, v, type);
+	const double fm  = EvaluateHestonClosedFormIntegralFunction(m, xi, theta, kappa, rho, r, T, K, S, v, type);
+	const double fmr = EvaluateHestonClosedFormIntegralFunction(mr, xi, theta, kappa, rho, r, T, K, S, v, type);
+	const double fmrr= EvaluateHestonClosedFormIntegralFunction(mrr, xi, theta, kappa, rho, r, T, K, S, v, type);
+	neval+=5;
+
+	// Both the 4-point and 7-point rule integrals are evaluted
+	const double integral2=(h/6)*(fa+fb+5*(fml+fmr));
+	const double integral1=(h/1470)*(77*(fa+fb)
+			+432*(fmll+fmrr)+625*(fml+fmr)+672*fm);
+
+	// The difference betwen the 4-point and 7-point integrals is the
+	// estimate of the accuracy
+	const double estacc=(integral1-integral2);
+
+	// The volatile keyword should prevent the floating point
+	// destination value from being stored in extended precision
+	// registers which actually have a very different
+	// std::numeric_limits<double>::epsilon().
+	volatile double dist = acc + estacc;
+
+	if(dist==acc || mll<=a || b<=mrr)
+	{
+		if (not (m>a && b>m))
+		{
+			throw new application_exception("HestonSolver::Gauss-Lobatto : Integration reached an interval with no more machine numbers!");
+		}
+		return integral1;
+	}
+	else {
+		return  GaussLobattoIntStep(a, mll, fa, fmll, neval, maxeval, acc, xi, theta, kappa, rho, r, T, K, S, v, type)
+				+ GaussLobattoIntStep(mll, ml, fmll, fml, neval, maxeval, acc, xi, theta, kappa, rho, r, T, K, S, v, type)
+				+ GaussLobattoIntStep(ml, m, fml, fm, neval, maxeval, acc, xi, theta, kappa, rho, r, T, K, S, v, type)
+				+ GaussLobattoIntStep(m, mr, fm, fmr, neval, maxeval, acc, xi, theta, kappa, rho, r, T, K, S, v, type)
+				+ GaussLobattoIntStep(mr, mrr, fmr, fmrr, neval, maxeval, acc, xi, theta, kappa, rho, r, T, K, S, v, type)
+				+ GaussLobattoIntStep(mrr, b, fmrr, fb, neval, maxeval, acc, xi, theta, kappa, rho, r, T, K, S, v, type);
+
+	}
+}
+
+/** \brief Compute the Gauss-Lobatto integral
+
+    \param f The function to be integrated
+
+    \param a The lower integration limit
+
+    \param b The upper integration limit
+
+    \param abstol Absolute tolerance -- integration stops when the
+    error estimate is smaller than this
+
+    \param maxeval Maxium of evaluations to make. If this number of
+    evalution is made without reaching the requied accuracy, an
+    exception of type std::runtime_error is thrown.
+ */
+double HestonSolver::GaussLobattoInt(double a, double b,
+		double abstol,
+		size_t maxeval
+		, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type)
+{
+	const double tol_epsunit=abstol/std::numeric_limits<double>::epsilon();
+	size_t neval=0;
+	return GaussLobattoIntStep(a, b,
+			EvaluateHestonClosedFormIntegralFunction(a, xi, theta, kappa, rho, r, T, K, S, v, type), EvaluateHestonClosedFormIntegralFunction(b, xi, theta, kappa, rho, r, T, K, S, v, type),
+			neval,
+			maxeval,
+			tol_epsunit, xi, theta, kappa, rho, r, T, K, S, v, type);
+}
+
+
 
 }
 }
