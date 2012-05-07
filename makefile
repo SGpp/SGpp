@@ -34,7 +34,7 @@ OMP=0
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
 #CC=g++
-CC=mpiicpc
+CC=icpc
 # vectorization option
 #  sse3
 #  sse4
@@ -62,7 +62,7 @@ LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 #CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
 #LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
 CFLAGS_ICC:=-Wall -Wconversion -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
-LFLAGS_ICC:=-Wall -ansi -O3 -static-intel
+LFLAGS_ICC:=-Wall -ansi -O3
 
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)

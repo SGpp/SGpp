@@ -56,15 +56,19 @@ namespace op_factory
 {
 
   
-  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
-                                                                                   int multFrom, int multTo, int multTransposeFrom, int multTransposeTo)
+parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
+                                                                                   int gridFrom, int gridTo, int datasetFrom, int datasetTo)
   {
+
+    if(gridTo == -1) gridTo = grid.getStorage()->size();
+    if(datasetTo == -1) datasetTo = dataset->getNcols();
 
     if(strcmp(grid.getType(), "linear") == 0)
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, multFrom, multTo, multTransposeFrom, multTransposeTo);
+            //return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, 0, grid.getStorage()->size(), 0, dataset->getNcols());
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -104,8 +108,7 @@ namespace op_factory
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, multFrom, multTo, multTransposeFrom, multTransposeTo);
-            //return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
+            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)

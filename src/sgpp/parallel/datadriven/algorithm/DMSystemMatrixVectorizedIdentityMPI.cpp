@@ -105,20 +105,17 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
         _mpi_data_send_sizes[rank] = _mpi_data_sizes[mpi_rank];
         _mpi_data_send_offsets[rank] = _mpi_data_offsets[mpi_rank];
     }
-    for(int i = 0; i<mpi_size; i++){
-        std::cout << _mpi_storage_sizes[i]  << " --- " <<_mpi_storage_offsets[i] << std::endl;
-        std::cout << _mpi_data_sizes[i]  << " --- " <<_mpi_data_offsets[i] << std::endl;
-    }
+    std::cout << "[rank " << mpi_rank << "] storage: " << _mpi_storage_offsets[mpi_rank] << " -- " << _mpi_storage_offsets[mpi_rank] + _mpi_storage_sizes[mpi_rank] - 1 << "size: " <<  _mpi_storage_sizes[mpi_rank] <<std::endl;
+    std::cout << "[rank " << mpi_rank << "] data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]  << std::endl;
 
     std::cout << "my rank:  #" << mpi_rank << std::endl;
 
     // mult: distribute calculations over storage
     // multTranspose: distribute calculations over dataset
 
-    std::cout << "gridtype: " << SparseGrid.getType() << std::endl;
+    //std::cout << "gridtype: " << SparseGrid.getType() << std::endl;
 
-    this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(
-                SparseGrid, this->vecMode_, this->dataset_,
+    this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_, this->dataset_,
                 _mpi_storage_offsets[mpi_rank],
                 _mpi_storage_offsets[mpi_rank] + _mpi_storage_sizes[mpi_rank],
                 _mpi_data_offsets[mpi_rank],
@@ -145,14 +142,12 @@ void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::
 {
 	sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 
-    std::cout << "mult" << std::endl;
-
     // Operation B
 	this->myTimer_->start();
 	this->computeTimeMult_ += this->B_->multVectorized(alpha, temp);
 
-//    MPI_Alltoallv(temp.getPointer(), _mpi_storage_send_sizes, _mpi_storage_send_offsets, MPI_DOUBLE,
-//                  temp.getPointer(), _mpi_storage_sizes, _mpi_storage_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
+    MPI_Alltoallv(temp.getPointer(), _mpi_data_send_sizes, _mpi_data_send_offsets, MPI_DOUBLE,
+                  temp.getPointer(), _mpi_data_sizes, _mpi_data_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
 
     this->completeTimeMult_ += this->myTimer_->stop();
 
@@ -168,11 +163,14 @@ void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::
 
     this->myTimer_->start();
     this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);
-//    MPI_Alltoallv(result.getPointer(), _mpi_data_send_sizes, _mpi_data_send_offsets, MPI_DOUBLE,
-//                  result.getPointer(), _mpi_data_sizes, _mpi_data_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
+    std::cout << "sie of result: " << result.getSize() << std::endl;
+    MPI_Alltoallv(result.getPointer(), _mpi_storage_send_sizes, _mpi_storage_send_offsets, MPI_DOUBLE,
+                  result.getPointer(), _mpi_storage_sizes, _mpi_storage_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
 
 
     this->completeTimeMultTrans_ += this->myTimer_->stop();
+
+    MPI_Barrier(MPI_COMM_WORLD);
 
     result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 }
@@ -192,6 +190,8 @@ void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classe
 
 	this->myTimer_->start();
 	this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(myClasses, b);
+    MPI_Alltoallv(b.getPointer(), _mpi_storage_send_sizes, _mpi_storage_send_offsets, MPI_DOUBLE,
+                  b.getPointer(), _mpi_storage_sizes, _mpi_storage_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
 	this->completeTimeMultTrans_ += this->myTimer_->stop();
     std::cout << "end generate b"<< sg::parallel::myGlobalMPIComm->getMyRank() << std::endl;
