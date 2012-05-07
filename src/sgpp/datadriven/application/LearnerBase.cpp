@@ -217,7 +217,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
     		myCG->setMaxIterations(SolverConfigFinal.maxIterations_);
     		myCG->setEpsilon(SolverConfigFinal.eps_);
     	}
-    	myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
+        myCG->solve(*DMSystem, *alpha_, b, true, true, 0.0);
 
         execTime_ += myStopwatch->stop();
 

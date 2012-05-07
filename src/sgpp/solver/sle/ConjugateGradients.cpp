@@ -62,6 +62,7 @@ void ConjugateGradients::solve(sg::base::OperationMatrix& SystemMatrix, sg::base
 		alpha.setAll(0.0);
 	}
 
+
 	// calculate the starting residuum
 	SystemMatrix.mult(alpha, temp);
 	r.sub(temp);

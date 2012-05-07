@@ -42,16 +42,13 @@ public:
 	 * doing any further mult or multTranspose calls.
 	 *
 	 * @param storage Pointer to the grid's gridstorage object
-     * @param dataset dataset that should be evaluated
-     * @param multFrom lower bound index that describes where to start processing the storage
-     * @param multTo upper bound index (exclusive) that describes where to end processing the storage
-     * @param multTransposeFrom lower bound index that describes where to start processing the dataset
-     * @param multTransposeTo upper bound index (exclusive) that describes where to end processing the dataset
-     */
-    OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset, int multFrom = 0, int multTo = -1, int multTransposeFrom = 0, int multTransposeTo = -1);
+	 * @param dataset dataset that should be evaluated
+	 */
+    OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
+                                                int storageFrom, int storageTo, int datasetFrom, int datasetTo);
 
 	/**
-     * Destructor
+	 * Destructor
 	 */
 	virtual ~OperationMultipleEvalIterativeX86SimdLinear();
 
@@ -67,12 +64,10 @@ protected:
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;
 
-    int multIndexFrom;
-    int multIndexTo;
-    int multTransposeIndexFrom;
-    int multTransposeIndexTo;
-private:
-
+    int m_storageFrom;
+    int m_storageTo;
+    int m_datasetFrom;
+    int m_datasetTo;
 };
 
 }
