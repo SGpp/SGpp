@@ -50,8 +50,10 @@
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonFLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonWLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.hpp"
+#include "finance/basis/linear/noboundary/operation/pde/OperationHestonZLinear.hpp"
 
 namespace sg
 {
@@ -263,24 +265,24 @@ base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVec
 	return new finance::OperationHestonHLinear(grid.getStorage(), coef);
 }
 
-base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataVector& coef)
+base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataMatrix& coef)
 {
 	return new finance::OperationHestonXLinear(grid.getStorage(), coef);
 }
 
-base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataVector& coef)
+base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataMatrix& coef)
 {
 	return new finance::OperationHestonYLinear(grid.getStorage(), coef);
 }
 
-base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataVector& coef)
+base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationLFLinear(grid.getStorage());
+	return new finance::OperationHestonWLinear(grid.getStorage(), coef);
 }
 
-base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataVector& coef)
+base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationDeltaLinear(grid.getStorage(), coef);
+	return new finance::OperationHestonZLinear(grid.getStorage(), coef);
 }
 
 }

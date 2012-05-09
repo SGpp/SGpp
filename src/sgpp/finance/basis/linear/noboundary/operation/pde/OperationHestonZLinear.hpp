@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#ifndef OPERATIONHESTONXLINEAR_HPP
-#define OPERATIONHESTONXLINEAR_HPP
+#ifndef OPERATIONHESTONZLINEAR_HPP
+#define OPERATIONHESTONZLINEAR_HPP
 
 //#include "pde/algorithm/UpDownOneOpDim.hpp"
 #include "pde/algorithm/UpDownTwoOpDims.hpp"
@@ -23,7 +23,7 @@ namespace finance
  *
  * @version $HEAD$
  */
-class OperationHestonXLinear : public sg::pde::UpDownTwoOpDims
+class OperationHestonZLinear : public sg::pde::UpDownTwoOpDims
 {
 public:
 	/**
@@ -32,17 +32,14 @@ public:
 	 * @param storage the grid's sg::base::GridStorage object
 	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	OperationHestonXLinear(sg::base::GridStorage* storage, sg::base::DataMatrix& coef);
+	OperationHestonZLinear(sg::base::GridStorage* storage, sg::base::DataMatrix& coef);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationHestonXLinear();
+	virtual ~OperationHestonZLinear();
 
 protected:
-
-	void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
-
 	/**
 	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
 	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
@@ -129,4 +126,4 @@ protected:
 }
 }
 
-#endif /* OPERATIONHESTONXLINEAR_HPP */
+#endif /* OPERATIONHESTONZLINEAR_HPP */

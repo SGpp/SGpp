@@ -7,6 +7,7 @@
 
 #include "finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.hpp"
 #include "finance/application/HestonSolver.hpp"
+#include "finance/application/BlackScholesSolver.hpp"
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 #include "solver/ode/AdamsBashforth.hpp"
@@ -956,15 +957,19 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, double strike,
 				DataVector coords(this->dim);
 				this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
 
+				// The stock prices come from the coordinates of the 0th, 2nd, 4th, 6th... dimensions. The other dimensions are the volatilities...they don't count for adding up stock prices.
+				// So...in order to determine whether the point is at the money or not, we have to add up only the 0th, 2nd, 4th, 6th...dimension values.
 				if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put")
 				{
-					for (size_t d = 0; d < this->dim; d++)
+					double stockPriceSum = 0.0;
+					for(size_t j=0;j<this->dim;j=j+2)
 					{
-						if ( ((coords.sum()/static_cast<double>(this->dim)) < (strike-eps)) || ((coords.sum()/static_cast<double>(this->dim)) > (strike+eps)) )
-						{
-							isAtMoney = false;
-						}
+						stockPriceSum += coords[j];
+					}
 
+					if ( ((stockPriceSum/static_cast<double>(this->dim)) < (strike-eps)) || ((stockPriceSum/static_cast<double>(this->dim)) > (strike+eps)) )
+					{
+						isAtMoney = false;
 					}
 				}
 				else
@@ -1612,7 +1617,7 @@ double EvaluateHestonClosedFormIntegralFunction(double phi, double xi, double th
 	return real(realArgument);
 }
 
-void HestonSolver::EvaluateHestonPriceExact(double maturity)
+void HestonSolver::EvaluateHestonExactSurface(DataVector& alpha, double maturity)
 {
 	if (!this->bGridConstructed)
 		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
@@ -1621,7 +1626,7 @@ void HestonSolver::EvaluateHestonPriceExact(double maturity)
 		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
 
 	double tmp;
-	sg::base::DataVector* alpha = new sg::base::DataVector(getNumberGridPoints());
+
 	for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 	{
 		std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -1635,20 +1640,153 @@ void HestonSolver::EvaluateHestonPriceExact(double maturity)
 			dblFuncValues[j] = tmp;
 		}
 
-		// Approximate the integrals from 0 to infinity by 0.001 to 1000.0.
-		double int1 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike, dblFuncValues[0], dblFuncValues[1], 1);
-		double int2 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike, dblFuncValues[0], dblFuncValues[1], 2);
-		(*alpha)[i] = dblFuncValues[0]*int1 - 1.0*exp((-1.0)*this->r*maturity)*int2;
+		alpha[i] = EvaluateHestonPriceExact(dblFuncValues[0], dblFuncValues[1], this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike) ;
 		delete dblFuncValues;
 	}
 
 	OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
-	myHierarchisation->doHierarchisation(*alpha);
+	myHierarchisation->doHierarchisation(alpha);
+	delete myHierarchisation;
+}
+
+void HestonSolver::CompareHestonBs1d(double maturity, double v)
+{
+	if (this->numAssets != 1 || this->payoffType != "std_euro_call")
+		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
+
+	size_t dim1d = 1;
+	size_t levels1d = this->levels;
+
+	// Build a new 1d grid for stock price
+	DimensionBoundary* boundaries1d = new sg::base::DimensionBoundary[dim1d];
+
+	boundaries1d[0].leftBoundary = this->myBoundingBox->getBoundary(0).leftBoundary;
+	boundaries1d[0].rightBoundary = this->myBoundingBox->getBoundary(0).rightBoundary;
+	boundaries1d[0].bDirichletLeft = this->myBoundingBox->getBoundary(0).bDirichletLeft;
+	boundaries1d[0].bDirichletRight = this->myBoundingBox->getBoundary(0).bDirichletRight;
+
+	BoundingBox* boundingBox1d = new BoundingBox(dim1d, boundaries1d);
+
+	Grid* grid1d = new LinearTrapezoidBoundaryGrid(*boundingBox1d);
+
+	GridGenerator* myGenerator = grid1d->createGridGenerator();
+	myGenerator->regular(levels1d);
+
+	sg::base::DataVector* alphaHeston = new sg::base::DataVector(grid1d->getSize());
+	sg::base::DataVector* alphaBS = new sg::base::DataVector(grid1d->getSize());
+
+	EvaluateHestonExact1d(*alphaHeston, grid1d, boundingBox1d, maturity, v);
+	EvaluateBsExact1d(*alphaBS, grid1d, boundingBox1d, maturity, 0.259);
+
+	// Switch over the grids so we can print the 1d ones
+	Grid* gridTemp = this->myGrid;
+	this->myGrid = grid1d;
+
+	printGrid(*alphaHeston, 50, "hestonExact1d.gnuplot");
+	printGrid(*alphaBS, 50, "bsExact1d.gnuplot");
+
+	alphaHeston->sub(*alphaBS);
+
+	printGrid(*alphaHeston, 50, "hestonMinusBsExact1d.gnuplot");
+
+	this->myGrid = gridTemp;
+
+	delete boundaries1d;
+	delete grid1d;
+	delete myGenerator;
+	delete alphaHeston;
+	delete alphaBS;
+}
+
+/**
+ * Evaluates the exact Heston solution for only varying stock price.
+ */
+void HestonSolver::EvaluateHestonExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, double maturity, double v)
+{
+	double tmp;
+
+	for (size_t i = 0; i < grid1d->getStorage()->size(); i++)
+	{
+		std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
+		std::stringstream coordsStream(coords);
+		double* dblFuncValues = new double[1];
+		coordsStream >> tmp;
+		dblFuncValues[0] = tmp;
+
+		alpha[i] = EvaluateHestonPriceExact(dblFuncValues[0], v, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike) ;
+		delete dblFuncValues;
+	}
+
+	OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*grid1d);
+	myHierarchisation->doHierarchisation(alpha);
+	delete myHierarchisation;
+}
+
+/**
+ * Evaluates the exact BS solution for only varying stock price.
+ */
+void HestonSolver::EvaluateBsExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, double maturity, double sigma)
+{
+	double tmp;
+
+	sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver(false);
+
+	for (size_t i = 0; i < grid1d->getStorage()->size(); i++)
+	{
+		std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
+		std::stringstream coordsStream(coords);
+		double* dblFuncValues = new double[1];
+		coordsStream >> tmp;
+		dblFuncValues[0] = tmp;
+
+		alpha[i] = myBSSolver->getAnalyticSolution1D(dblFuncValues[0], true, maturity, sigma, this->r, this->dStrike);
+		delete dblFuncValues;
+	}
+
+	OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*grid1d);
+	myHierarchisation->doHierarchisation(alpha);
+	delete myHierarchisation;
+	delete myBSSolver;
+}
+
+double HestonSolver::EvaluateHestonPriceExact(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K)
+{
+	double int1 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
+	double int2 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
+	return S*int1 - K*exp((-1.0)*r*T)*int2;
+}
+
+void HestonSolver::CompareHestonBsExact(sg::base::DataVector& alpha, double maturity)
+{
+	DataVector* alphaHeston = new DataVector(getNumberGridPoints());
+	DataVector* alphaBS = new DataVector(getNumberGridPoints());
+
+	EvaluateHestonExactSurface(*alphaHeston, maturity);
+	sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver(false);
+
+	double S,v;
+	for(size_t i=0;i<this->myGridStorage->size();i++)
+	{
+		std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+		std::stringstream coordsStream(coords);
+		coordsStream >> S;
+		coordsStream >> v;
+
+		(*alphaBS)[i] = myBSSolver->getAnalyticSolution1D(S, true, maturity, sqrt(v), this->r, this->dStrike);
+	}
+
+	OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+	myHierarchisation->doHierarchisation(*alphaBS);
 	delete myHierarchisation;
 
-	printGrid(*alpha, 100, "hestonExact.gnuplot");
-	delete alpha;
+	// Find the difference (heston - BS)
+	for(size_t i=0;i<this->myGridStorage->size();i++)
+	{
+		alpha[i] = (*alphaHeston)[i] - (*alphaBS)[i];
+	}
+
 }
+
 
 /** \brief Perform a single step of the Gauss-Lobatto integration
 
