@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de) Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
 
-#ifndef PHIPHIDOWNBBLINEAR_HPP
-#define PHIPHIDOWNBBLINEAR_HPP
+#ifndef XPHIPHIDOWNBBLINEAR_HPP
+#define XPHIPHIDOWNBBLINEAR_HPP
 
 #include "base/grid/GridStorage.hpp"
 #include "base/datatypes/DataVector.hpp"
@@ -90,4 +90,4 @@ protected:
 } // namespace sg
 }
 
-#endif /* PHIPHIDOWNBBLINEAR_HPP */
+#endif /* XPHIPHIDOWNBBLINEAR_HPP */

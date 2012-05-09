@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+ * Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.hpp"
@@ -30,24 +30,6 @@ OperationHestonGLinear::~OperationHestonGLinear()
 
 void OperationHestonGLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
-	// x * dphi * phi
-	XdPhiPhiUpBBLinear func(this->storage);
-	sg::base::sweep<XdPhiPhiUpBBLinear> s(func, this->storage);
-
-	s.sweep1D(alpha, result, dim);
-}
-
-void OperationHestonGLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// x * dphi * phi
-	XdPhiPhiDownBBLinear func(this->storage);
-	sg::base::sweep<XdPhiPhiDownBBLinear> s(func, this->storage);
-
-	s.sweep1D(alpha, result, dim);
-}
-
-void OperationHestonGLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
 	// phi * phi
 	sg::pde::PhiPhiUpBBLinear func(this->storage);
 	sg::base::sweep<sg::pde::PhiPhiUpBBLinear> s(func, this->storage);
@@ -55,11 +37,29 @@ void OperationHestonGLinear::upOpDim(sg::base::DataVector& alpha, sg::base::Data
 	s.sweep1D(alpha, result, dim);
 }
 
-void OperationHestonGLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
+void OperationHestonGLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
 	// phi * phi
 	sg::pde::PhiPhiDownBBLinear func(this->storage);
 	sg::base::sweep<sg::pde::PhiPhiDownBBLinear> s(func, this->storage);
+
+	s.sweep1D(alpha, result, dim);
+}
+
+void OperationHestonGLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
+{
+	// x * dphi * phi
+	XdPhiPhiUpBBLinear func(this->storage);
+	sg::base::sweep<XdPhiPhiUpBBLinear> s(func, this->storage);
+
+	s.sweep1D(alpha, result, dim);
+}
+
+void OperationHestonGLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
+{
+	// x * dphi * phi
+	XdPhiPhiDownBBLinear func(this->storage);
+	sg::base::sweep<XdPhiPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }

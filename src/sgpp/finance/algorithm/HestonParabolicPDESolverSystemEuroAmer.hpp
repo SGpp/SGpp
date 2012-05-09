@@ -81,10 +81,15 @@ protected:
 	sg::base::DataVector* fCoeff;
 	sg::base::DataVector* gCoeff;
 	sg::base::DataVector* hCoeff;
-	sg::base::DataVector* xCoeff;
-	sg::base::DataVector* yCoeff;
-	sg::base::DataVector* wCoeff;
-	sg::base::DataVector* zCoeff;
+//	sg::base::DataVector* xCoeff;
+//	sg::base::DataVector* yCoeff;
+//	sg::base::DataVector* wCoeff;
+//	sg::base::DataVector* zCoeff;
+
+	sg::base::DataMatrix* xCoeff;
+	sg::base::DataMatrix* yCoeff;
+	sg::base::DataMatrix* wCoeff;
+	sg::base::DataMatrix* zCoeff;
 
 	// ---- END HESTON-RELEVANT MEMBERS ----
 

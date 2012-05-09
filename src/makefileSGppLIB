@@ -80,6 +80,8 @@ OBJS =	DataVector.o\
 	OperationHestonGLinear.o\
 	OperationHestonHLinear.o\
 	OperationHestonXLinear.o\
+	OperationHestonWLinear.o\
+	OperationHestonZLinear.o\
 	OperationHestonYLinear.o\
 	OperationLaplaceLinearBoundary.o\
 	ScreenOutput.o\
@@ -570,6 +572,12 @@ OperationHestonHLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pd
 
 OperationHestonXLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonXLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.cpp
+
+OperationHestonWLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonWLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonWLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonWLinear.cpp
+
+OperationHestonZLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonZLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonZLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonZLinear.cpp
 
 OperationHestonYLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonYLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
