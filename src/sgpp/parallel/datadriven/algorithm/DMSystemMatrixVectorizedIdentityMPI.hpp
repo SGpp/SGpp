@@ -86,6 +86,16 @@ private:
     int* _mpi_data_send_offsets;
 
     /**
+     * Wrapper function that handles communication after calculation and time measurement
+     */
+    void multVec(base::DataVector &alpha, base::DataVector &result);
+
+    /**
+     * Wrapper function that handles communication after calculation and time measurement
+     */
+    void multTransposeVec(base::DataVector &source, base::DataVector &result);
+
+    /**
      * calculate size and offset of fragment number rank for a domain with a size of totalSize for a distribution over procCount Fragments
      * distribute domain as equal as possible
      * (the difference between the minimum and maximum number of items is at most 1)
