@@ -143,13 +143,7 @@ void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::
 	sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 
     // Operation B
-	this->myTimer_->start();
-	this->computeTimeMult_ += this->B_->multVectorized(alpha, temp);
-
-    MPI_Alltoallv(temp.getPointer(), _mpi_data_send_sizes, _mpi_data_send_offsets, MPI_DOUBLE,
-                  temp.getPointer(), _mpi_data_sizes, _mpi_data_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
-
-    this->completeTimeMult_ += this->myTimer_->stop();
+    multVec(alpha, temp);
 
     // patch result -> set additional entries zero
     if (this->numTrainingInstances_ != temp.getSize())
@@ -160,17 +154,8 @@ void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::
     	}
     }
 
+    multTransposeVec(temp, result);
 
-    this->myTimer_->start();
-    this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);
-    std::cout << "sie of result: " << result.getSize() << std::endl;
-    MPI_Alltoallv(result.getPointer(), _mpi_storage_send_sizes, _mpi_storage_send_offsets, MPI_DOUBLE,
-                  result.getPointer(), _mpi_storage_sizes, _mpi_storage_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
-
-
-    this->completeTimeMultTrans_ += this->myTimer_->stop();
-
-    MPI_Barrier(MPI_COMM_WORLD);
 
     result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 }
@@ -179,27 +164,46 @@ void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classe
 {
 	sg::base::DataVector myClasses(classes);
 
-
 	// Apply padding
 	if (this->numPatchedTrainingInstances_ != myClasses.getSize())
 	{
 		myClasses.resizeZero(this->numPatchedTrainingInstances_);
 	}
 
-    std::cout << "generate b " << myClasses.getSize() << " --- size of b:"  << b.getSize() << std::endl;
+    multTransposeVec(myClasses, b);
 
-	this->myTimer_->start();
-	this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(myClasses, b);
-    MPI_Alltoallv(b.getPointer(), _mpi_storage_send_sizes, _mpi_storage_send_offsets, MPI_DOUBLE,
-                  b.getPointer(), _mpi_storage_sizes, _mpi_storage_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
-	this->completeTimeMultTrans_ += this->myTimer_->stop();
     std::cout << "end generate b"<< sg::parallel::myGlobalMPIComm->getMyRank() << std::endl;
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()
 {
     this->B_->rebuildLevelAndIndex();
+}
+
+void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base::DataVector &result)
+{
+    this->myTimer_->start();
+    this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
+
+    sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
+//    MPI_Alltoallv(temp.getPointer(), _mpi_data_send_sizes, _mpi_data_send_offsets, MPI_DOUBLE,
+//                  temp.getPointer(), _mpi_data_sizes, _mpi_data_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
+
+    this->completeTimeMult_ += this->myTimer_->stop();
+}
+
+void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector &source, base::DataVector &result)
+{
+    this->myTimer_->start();
+    this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(source, result);
+    std::cout << "size of result: " << result.getSize() << std::endl;
+
+    sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_storage_offsets, _mpi_storage_sizes);
+//    MPI_Alltoallv(result.getPointer(), _mpi_storage_send_sizes, _mpi_storage_send_offsets, MPI_DOUBLE,
+//                  result.getPointer(), _mpi_storage_sizes, _mpi_storage_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
+
+
+    this->completeTimeMultTrans_ += this->myTimer_->stop();
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset)

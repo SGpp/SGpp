@@ -18,14 +18,14 @@ MPICommunicator::~MPICommunicator() { }
 
 void MPICommunicator::broadcastGridCoefficientsFromRank0(sg::base::DataVector& alpha)
 {
-	MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
 
 void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha)
 {
 	if (myid_ == 0)
 	{
-		MPI_Reduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	}
 	else
 	{
@@ -109,7 +109,28 @@ void MPICommunicator::Abort()
 
 void MPICommunicator::broadcastControlFromRank0(char* ctrl)
 {
-	MPI_Bcast((void*)ctrl, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Bcast((void*)ctrl, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
+}
+
+void MPICommunicator::dataVectorAllToAll(base::DataVector &alpha, int *distributionOffsets, int *distributionSizes)
+{
+    int numRanks = getNumRanks();
+    int myRank = getMyRank();
+    int mySendSize = distributionSizes[myRank];
+    int mySendOffset = distributionOffsets[myRank];
+
+    int *sendSizes = new int[numRanks];
+    int *sendOffsets = new int[numRanks];
+    for(int i = 0; i<numRanks;i++){
+        sendSizes[i] = mySendSize;
+        sendOffsets[i] = mySendOffset;
+    }
+
+    MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
+                  alpha.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
+
+    delete sendSizes;
+    delete sendOffsets;
 }
 
 int MPICommunicator::getMyRank()

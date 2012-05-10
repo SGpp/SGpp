@@ -119,6 +119,33 @@ public:
 	 */
 	void broadcastControlFromRank0(char* ctrl);
 
+    /**
+     * broadcasts a specific range of a DataVector (depending on the rank of the process
+     * and specified by distributionOffsets  and distributionSizes) to all other
+     * processes.
+     *
+     * After this method has been executed, the entries of alpha from distributionOffsets[rank]
+     * to distributionOffsets[rank] + distributionSizes[rank] - 1 of process with number rank
+     * are available in all other processes in the same place. Overlapping regions lead to
+     * undefined behaviour.
+     *
+     * example:
+     *
+     *      p1 p2 p3 p4                                    p1 p2 p3 p4
+     * d[0] R  X  X  X                                d[0] R  R  R  R
+     * d[1] S  X  X  X      distrOffsets: {0,4,2,5}   d[1] S  S  S  S
+     * d[2] X  X  T  X     ------------------------>  d[2] T  T  T  T
+     * d[3] X  X  U  X      distrSizes: {2,1,2,2}     d[3] U  U  U  U
+     * d[4] X  V  X  X                                d[4] V  V  V  V
+     * d[5] X  X  X  Y                                d[5] Y  Y  Y  Y
+     * d[6] X  X  X  Z                                d[6] Z  Z  Z  Z
+     *
+     * @param alpha the DataVector to distribute
+     * @param distributionOffsets array containing the offsets of data to distribute
+     * @param distributionSizes array containing the sizes of data to distribute
+     */
+    void dataVectorAllToAll(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+
 	/**
 	 * Implements a Barrier for all tasks
 	 */
@@ -138,6 +165,7 @@ public:
 	 * @return returns the number of MPI tasks in the parallel environment
 	 */
 	int getNumRanks();
+
 };
 
 }
