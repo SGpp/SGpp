@@ -510,6 +510,21 @@ void HestonSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, 
 		if (this->tBoundaryType == "Dirichlet")
 		{
 			myCG = new BiCGStab(maxCGIterations, epsilonCG);
+
+			//			GridStorage* myGridStorage = this->myGrid->getStorage();
+			//
+			//			// determine the number of grid points for both grids
+			//			size_t numTotalGridPoints = myGridStorage->size();
+			//			size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
+			//
+			//			size_t numNonZeroInner = 0;
+			//			for (size_t i = 0; i < numTotalGridPoints; i++)
+			//			{
+			//				GridIndex* curPoint = (*myGridStorage)[i];
+			//				if(curPoint->isInnerPoint() && alpha.get(i) != 0)
+			//					numNonZeroInner++;
+			//			}
+
 			myHestonSystem = new HestonParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->thetas, *this->volvols, *this->kappas, *this->hMatrix, this->r, timestepsize, "CrNic", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 		else
@@ -728,6 +743,24 @@ void HestonSolver::initGridWithPayoff(DataVector& alpha, double strike, std::str
 	else
 	{
 		initCartesianGridWithPayoff(alpha, strike, payoffType);
+
+		//		sg::base::GridStorage* myGridStorage = myGridStorage;
+
+		// determine the number of grid points for both grids
+		size_t numTotalGridPoints = myGridStorage->size();
+		size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
+
+		size_t numNonZeroInner = 0;
+		for (size_t i = 0; i < numTotalGridPoints; i++)
+		{
+			sg::base::GridIndex* curPoint = (*myGridStorage)[i];
+			if(curPoint->isInnerPoint() && alpha.get(i) != 0)
+				numNonZeroInner++;
+		}
+
+		int k=0;
+		k++;
+
 	}
 }
 
@@ -996,11 +1029,20 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 {
 	double tmp;
 
+	BlackScholesSolver* bsSolver = new BlackScholesSolver();
+
 	if (this->bGridConstructed)
 	{
+		std::ofstream fileout;
+
+		//		fileout.open("innerpoints.txt");
+
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
 		{
 			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+
+			GridIndex* curPoint = (*myGridStorage)[i];
+
 			std::stringstream coordsStream(coords);
 			double* dblFuncValues = new double[dim];
 
@@ -1011,14 +1053,41 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 				dblFuncValues[j] = tmp;
 			}
 
+			// print the values to a file
+
 			if (payoffType == "std_euro_call")
 			{
+				// So now we have in alpha[i] the standard payoff value for the point S_i, v_i.
+				// What we now want to do is solve the exact BS equation for every point S_i, v_i;
+				//				alpha[i] = bsSolver->getAnalyticSolution1D(dblFuncValues[0], true, 0.05, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
+
 				tmp = 0.0;
 				for (size_t j = 0; j < numAssets; j++)
 				{
 					tmp += dblFuncValues[2*j];
 				}
-				alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+
+				//				tmp = 0.0;
+				//				for (size_t j = 0; j < dim; j++)
+				//				{
+				//					tmp += dblFuncValues[j];
+				//				}
+
+				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).leftBoundary)
+				{
+					// Use the Black-Scholes solution for this boundary
+					alpha[i] = bsSolver->getAnalyticSolution1D(dblFuncValues[0], true, 1.0, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
+//					alpha[i] = (this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
+				}
+				else if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
+				{
+					// Dirichlet condition when v -> inf is that U = S
+					alpha[i] = dblFuncValues[0]; //(this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
+				}
+				else
+					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+
+				//				fileout << i << " " << dblFuncValues[0] << " " << dblFuncValues[1] << " " << alpha[i] << " inner point " << curPoint->isInnerPoint() << "" << std::endl;
 			}
 			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
@@ -1037,6 +1106,23 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 			delete[] dblFuncValues;
 		}
 
+		//		fileout.close();
+
+		// determine the number of grid points for both grids
+		size_t numTotalGridPoints = myGridStorage->size();
+		size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
+
+		size_t numNonZeroInner = 0;
+		for (size_t i = 0; i < numTotalGridPoints; i++)
+		{
+			sg::base::GridIndex* curPoint = (*myGridStorage)[i];
+			if(curPoint->isInnerPoint() && alpha.get(i) != 0)
+				numNonZeroInner++;
+		}
+
+		int k=0;
+		k++;
+
 		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
 		myHierarchisation->doHierarchisation(alpha);
 		delete myHierarchisation;
@@ -1051,6 +1137,8 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 {
 	double tmp;
 
+	BlackScholesSolver* bsSolver = new BlackScholesSolver();
+
 	if (this->bGridConstructed)
 	{
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
@@ -1058,6 +1146,8 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 			std::stringstream coordsStream(coords);
 			double* dblFuncValues = new double[dim];
+
+			GridIndex* curPoint = (*myGridStorage)[i];
 
 			for (size_t j = 0; j < this->dim; j++)
 			{
@@ -1080,7 +1170,22 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 				{
 					tmp += exp(dblFuncValues[2*j]);
 				}
-				alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+
+				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).leftBoundary)
+				{
+					// Use the Black-Scholes solution for this boundary
+					alpha[i] = bsSolver->getAnalyticSolution1D(tmp, true, 1.0, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
+				}
+				else if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
+				{
+					// Dirichlet condition when v -> inf is that U = S
+					alpha[i] = tmp;
+				}
+				else
+					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+
+
+
 			}
 			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
 			{
@@ -1907,6 +2012,46 @@ double HestonSolver::GaussLobattoInt(double a, double b,
 			neval,
 			maxeval,
 			tol_epsunit, xi, theta, kappa, rho, r, T, K, S, v, type);
+}
+
+void HestonSolver::CompareHestonSolutionToExact(sg::base::DataVector* solution, sg::base::DataVector* exact, std::string filename, size_t PointsPerDimension)
+{
+	DimensionBoundary dimOne;
+	DimensionBoundary dimTwo;
+	std::ofstream fileout;
+
+	fileout.open(filename.c_str());
+	OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
+
+
+	if (myGrid->getStorage()->dim() == 2)
+	{
+		dimOne = myGrid->getBoundingBox()->getBoundary(0);
+		dimTwo = myGrid->getBoundingBox()->getBoundary(1);
+
+		double offset_x = dimOne.leftBoundary;
+		double offset_y = dimTwo.leftBoundary;
+		double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(PointsPerDimension-1));
+		double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary)/(PointsPerDimension-1));
+
+		size_t points = (size_t)PointsPerDimension;
+
+		for (size_t i = 0; i < points; i++)
+		{
+			for (size_t j = 0; j < points; j++)
+			{
+				std::vector<double> point;
+				point.push_back(offset_x+(((double)(i))*inc_x));
+				point.push_back(offset_y+(((double)(j))*inc_y));
+				fileout << (offset_x+((double)(i))*inc_x) << " " << (offset_y+((double)(j))*inc_y) << " " << (myEval->eval(*solution,point) - myEval->eval(*exact,point)) << std::endl;
+			}
+			fileout << std::endl;
+		}
+	}
+
+	delete myEval;
+	// close filehandle
+	fileout.close();
 }
 
 

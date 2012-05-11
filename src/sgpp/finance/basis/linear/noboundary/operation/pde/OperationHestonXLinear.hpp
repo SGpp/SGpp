@@ -8,7 +8,6 @@
 #ifndef OPERATIONHESTONXLINEAR_HPP
 #define OPERATIONHESTONXLINEAR_HPP
 
-//#include "pde/algorithm/UpDownOneOpDim.hpp"
 #include "pde/algorithm/UpDownTwoOpDims.hpp"
 
 namespace sg

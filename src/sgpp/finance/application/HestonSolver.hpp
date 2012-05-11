@@ -516,6 +516,7 @@ public:
 	void CompareHestonBs1d(double maturity, double v);
 	double GaussLobattoIntStep(double a, double b, double fa, double fb, size_t &neval, size_t maxeval, double acc, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
 	double GaussLobattoInt(double a, double b, double abstol, size_t maxeval, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
+	void CompareHestonSolutionToExact(sg::base::DataVector* solution, sg::base::DataVector* exact, std::string filename, size_t PointsPerDimension);
 };
 
 }
