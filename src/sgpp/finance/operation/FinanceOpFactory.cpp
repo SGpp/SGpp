@@ -230,12 +230,12 @@ base::OperationMatrix* createOperationDeltaLog(base::Grid& grid, base::DataVecto
 		throw base::factory_exception("OperationDeltaLog is not implemented for this grid type.");
 }
 
-base::OperationMatrix* createOperationHestonBLog(base::Grid& grid, base::DataVector& coef)
+base::OperationMatrix* createOperationHestonBLog(base::Grid& grid, base::DataMatrix& coef)
 {
 	return new finance::OperationHestonBLinear(grid.getStorage(), coef);
 }
 
-base::OperationMatrix* createOperationHestonCLog(base::Grid& grid, base::DataVector& coef)
+base::OperationMatrix* createOperationHestonCLog(base::Grid& grid, base::DataMatrix& coef)
 {
 	return new finance::OperationHestonCLinear(grid.getStorage(), coef);
 }
@@ -260,7 +260,7 @@ base::OperationMatrix* createOperationHestonGLog(base::Grid& grid, base::DataVec
 	return new finance::OperationHestonGLinear(grid.getStorage(), coef);
 }
 
-base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVector& coef)
+base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataMatrix& coef)
 {
 	return new finance::OperationHestonHLinear(grid.getStorage(), coef);
 }
@@ -280,7 +280,7 @@ base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataMatrix
 	return new finance::OperationHestonWLinear(grid.getStorage(), coef);
 }
 
-base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataMatrix& coef)
+base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataVector& coef)
 {
 	return new finance::OperationHestonZLinear(grid.getStorage(), coef);
 }

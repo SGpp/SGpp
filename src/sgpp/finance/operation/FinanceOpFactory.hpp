@@ -108,17 +108,17 @@ namespace op_factory
    */
   base::OperationMatrix* createOperationDeltaLog(base::Grid& grid, base::DataVector& coef);
 
-  base::OperationMatrix* createOperationHestonBLog(base::Grid& grid, base::DataVector& coef);
-  base::OperationMatrix* createOperationHestonCLog(base::Grid& grid, base::DataVector& coef);
+  base::OperationMatrix* createOperationHestonBLog(base::Grid& grid, base::DataMatrix& coef);
+  base::OperationMatrix* createOperationHestonCLog(base::Grid& grid, base::DataMatrix& coef);
   base::OperationMatrix* createOperationHestonDLog(base::Grid& grid, base::DataVector& coef);
   base::OperationMatrix* createOperationHestonELog(base::Grid& grid, base::DataVector& coef);
   base::OperationMatrix* createOperationHestonFLog(base::Grid& grid, base::DataVector& coef);
   base::OperationMatrix* createOperationHestonGLog(base::Grid& grid, base::DataVector& coef);
-  base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataVector& coef);
+  base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataMatrix& coef);
   base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataMatrix& coef);
   base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataMatrix& coef);
   base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataMatrix& coef);
-  base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataMatrix& coef);
+  base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataVector& coef);
 
 }
 

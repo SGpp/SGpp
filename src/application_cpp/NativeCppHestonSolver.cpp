@@ -798,10 +798,10 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	//		}
 	//	}
 
-
+	sg::base::DataVector* alphaExact;
 	if(numberOfAssets == 1 && payoffType == "std_euro_call")
 	{
-//		sg::base::DataVector* alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+//		alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
 //		myHestonSolver->EvaluateHestonExactSurface(*alphaExact,timesteps*stepsize);
 //		myHestonSolver->printGrid(*alphaExact, 35, "hestonExact.gnuplot");
 
@@ -814,7 +814,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 	if (numberOfAssets < 3)
 	{
-		myHestonSolver->printGrid(*alpha, 50, "payoff.gnuplot");
+		myHestonSolver->printGrid(*alpha, 100, "payoff.gnuplot");
 	}
 
 	if (numberOfAssets < 4)
@@ -881,6 +881,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		// Print the solved Heston Equation into a gnuplot file
 		myHestonSolver->printGrid(*alpha, 50, "solvedHeston.gnuplot");
 	}
+
+//	myHestonSolver->CompareHestonSolutionToExact(alpha, alphaExact, "solExactDiff.gnuplot", 50);
+
 
 //	if (numberOfAssets == 1 && payoffType == "std_euro_call")
 //	{
