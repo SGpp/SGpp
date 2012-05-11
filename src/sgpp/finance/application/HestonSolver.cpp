@@ -1084,6 +1084,14 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 					// Dirichlet condition when v -> inf is that U = S
 					alpha[i] = dblFuncValues[0]; //(this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
 				}
+				else if(!curPoint->isInnerPoint() && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
+				{
+					// Set boundary to be the linear function at s_max
+					double normalPayoff = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+					double vRange = this->myBoundingBox->getBoundary(1).rightBoundary - this->myBoundingBox->getBoundary(1).leftBoundary;
+					double sPayoffDiff = dblFuncValues[0] - normalPayoff;
+					alpha[i] = normalPayoff + ((dblFuncValues[1] - this->myBoundingBox->getBoundary(1).leftBoundary) /vRange)*sPayoffDiff;
+				}
 				else
 					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
 

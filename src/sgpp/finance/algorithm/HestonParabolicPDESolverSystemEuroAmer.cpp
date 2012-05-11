@@ -645,8 +645,77 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 	{
 		if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul")
 		{
+
+			sg::base::GridStorage* storage = this->BoundGrid->getStorage();
+
+			for (size_t i = 0; i < storage->size(); i++)
+			{
+				sg::base::GridIndex* curPoint = (*storage)[i];
+
+				sg::base::DataVector pointCoords(storage->dim());
+				curPoint->getCoords(pointCoords);
+
+				// We want to handle the following boundaries separately:
+				// v_max: no discounting
+				// s_max: linear function discounting
+				if(pointCoords[1] == 1 || pointCoords[1] == 0)
+				{
+
+				}
+				else if(pointCoords[0] == 1)
+				{
+//					size_t dim = this->HestonAlgoDims.size();
+//					size_t numAssets = dim/2;
+//
+//					std::string coords = storage->get(i)->getCoordsStringBB(*(this->BoundGrid->getBoundingBox()));
+//
+//					std::stringstream coordsStream(coords);
+//					double tmp;
+//					double* dblFuncValues = new double[dim];
+//
+//					for (size_t j = 0; j < dim; j++)
+//					{
+//						coordsStream >> tmp;
+//						dblFuncValues[j] = tmp;
+//					}
+//
+//					tmp = 0.0;
+//					for (size_t j = 0; j < numAssets; j++)
+//					{
+//						if(this->b_log_transform)
+//							tmp += exp(dblFuncValues[2*j]);
+//						else
+//							tmp += dblFuncValues[2*j];
+//					}
+
+					// Get the value of v
+//					double v = dblFuncValues[1];
+
+					// Get the value of S
+//					double S = dblFuncValues[0];
+
+//					double payoffValueAtThisPoint = std::max<double>(((tmp/static_cast<double>(numAssets))-this->dStrike), 0.0);
+
+					// Get the discounted payoff value at this point
+//					double discountedPayoffValue = payoffValueAtThisPoint*exp(((-1.0)*(this->r*this->TimestepSize*this->nExecTimesteps)));
+
+					// Now we have the two boundary values for the s_max line. discountedPayoffValue is the minimum, and S
+					// maximum.
+					// All we have to do now is set the value to the linear interpolant...but we can't do this by setting the value directly!
+					// The values are hierarchised, so we have to multiply it by a fraction of the r value.
+//					this->alpha_complete->set(i, discountedPayoffValue + pointCoords[1]*(S - discountedPayoffValue ));
+					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(1.0-pointCoords[1])*(this->r*this->TimestepSize))));
+
+
+					int k=0;
+					k++;
+//					updateVector.set(i, updateVector.get(i)*value);
+//					delete dblFuncValues;
+				}
+			}
+
 			//			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
-			this->BoundaryUpdate->multiply(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))), &IsNonMaxVolatilityBoundary);
+//			this->BoundaryUpdate->multiply(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))), &IsNonMaxVolatilityBoundary);
 		}
 	}
 #endif

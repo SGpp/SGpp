@@ -801,9 +801,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	sg::base::DataVector* alphaExact;
 	if(numberOfAssets == 1 && payoffType == "std_euro_call")
 	{
-//		alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
-//		myHestonSolver->EvaluateHestonExactSurface(*alphaExact,timesteps*stepsize);
-//		myHestonSolver->printGrid(*alphaExact, 35, "hestonExact.gnuplot");
+		alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+		myHestonSolver->EvaluateHestonExactSurface(*alphaExact,timesteps*stepsize);
+		myHestonSolver->printGrid(*alphaExact, 35, "hestonExact.gnuplot");
 
 //		sg::base::DataVector* alphaCompare = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
 //		myHestonSolver->CompareHestonBsExact(*alphaCompare, timesteps*stepsize);
