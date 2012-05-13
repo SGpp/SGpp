@@ -1077,7 +1077,7 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 				{
 					// Use the Black-Scholes solution for this boundary
 					alpha[i] = bsSolver->getAnalyticSolution1D(dblFuncValues[0], true, 1.0, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
-//					alpha[i] = (this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
+					//					alpha[i] = (this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
 				}
 				else if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
 				{
@@ -1188,6 +1188,14 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 				{
 					// Dirichlet condition when v -> inf is that U = S
 					alpha[i] = tmp;
+				}
+				else if(!curPoint->isInnerPoint() && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
+				{
+					// Set boundary to be the linear function at s_max
+					double normalPayoff = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+					double vRange = this->myBoundingBox->getBoundary(1).rightBoundary - this->myBoundingBox->getBoundary(1).leftBoundary;
+					double sPayoffDiff = exp(dblFuncValues[0]) - normalPayoff;
+					alpha[i] = normalPayoff + ((dblFuncValues[1] - this->myBoundingBox->getBoundary(1).leftBoundary) /vRange)*sPayoffDiff;
 				}
 				else
 					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
@@ -1750,7 +1758,10 @@ void HestonSolver::EvaluateHestonExactSurface(DataVector& alpha, double maturity
 		{
 			coordsStream >> tmp;
 
-			dblFuncValues[j] = tmp;
+			if(this->useLogTransform && j == 0)
+				dblFuncValues[j] = exp(tmp);
+			else
+				dblFuncValues[j] = tmp;
 		}
 
 		alpha[i] = EvaluateHestonPriceExact(dblFuncValues[0], dblFuncValues[1], this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike) ;
