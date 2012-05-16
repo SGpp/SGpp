@@ -13,6 +13,9 @@
 #include "finance/basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.hpp"
 #include "finance/basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
 
+#include "finance/basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.hpp"
+
 #include "finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.hpp"
 #include "finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.hpp"
 
