@@ -224,24 +224,8 @@ public:
 	virtual void setStochasticData(sg::base::DataVector& thetas_arg, sg::base::DataVector& kappas_arg, sg::base::DataVector& volvols_arg, sg::base::DataMatrix& rhos, double r);
 
 	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
-
 	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
-
 	void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
-
-	void solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, void *myODESolverV = NULL, std::string Solver = "ImEul");
-
-	void solveSC(std::string Solver,size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
-
-	void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
-
-	void solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
-
-	void solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
-
-	void solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
-
-	void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
 	//void solveSCMC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
 
@@ -256,7 +240,7 @@ public:
 	 *
 	 * @returns the option price for the given stock value
 	 */
-	double getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike);
+//	double getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike);
 
 	/**
 	 * Solves the closed form of the Black Scholes equation, the Black Scholes
@@ -292,7 +276,7 @@ public:
 	 *  @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 *  @param flag whether values should be hierarchized (true=hierarchized, false=dehierarchized)
 	 */
-	virtual void getAnalyticAlpha1D(sg::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
+//	virtual void getAnalyticAlpha1D(sg::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
 
 	/**
 	 * Evaluates the analytic solution of the 1d Black Scholes equation
@@ -306,7 +290,7 @@ public:
 	 * @param t time to maturity
 	 * @param isCall set this to true to calculate call, false calculates put
 	 */
-	void evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall);
+//	void evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -517,6 +501,7 @@ public:
 	double GaussLobattoIntStep(double a, double b, double fa, double fb, size_t &neval, size_t maxeval, double acc, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
 	double GaussLobattoInt(double a, double b, double abstol, size_t maxeval, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
 	void CompareHestonSolutionToExact(sg::base::DataVector* solution, sg::base::DataVector* exact, std::string filename, size_t PointsPerDimension);
+	double EvalSinglePoint1Asset(double s, double v, sg::base::DataVector& alphaVec);
 };
 
 }
