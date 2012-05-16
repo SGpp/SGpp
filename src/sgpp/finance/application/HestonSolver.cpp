@@ -365,141 +365,6 @@ void HestonSolver::setStochasticData(DataVector& thetas_arg, DataVector& kappas_
 	bStochasticDataAlloc = true;
 }
 
-void HestonSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
-{
-	//    if (this->bGridConstructed && this->bStochasticDataAlloc)
-	//      {
-	//        Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
-	//        SLESolver* myCG = NULL;
-	//        OperationParabolicPDESolverSystem* myHestonSystem = NULL;
-	//
-	//        if (this->tBoundaryType == "Dirichlet")
-	//          {
-	//           myCG = new BiCGStab(maxCGIterations, epsilonCG);
-	//           myHestonSystem = new HestonParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->thetas, *this->volvols, *this->kappas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//          }
-	//        else
-	//          {
-	//
-	//          }
-	//
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//        this->staInnerGridSize = getNumberInnerGridPoints();
-	//
-	//        std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
-	//        myStopwatch->start();
-	//        myEuler->solve(*myCG, *myHestonSystem, true, verbose);
-	//        this->dNeededTime = myStopwatch->stop();
-	//
-	//        std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-	//        std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-	//
-	//        std::cout << "Average Grid size: " << static_cast<double>(myHestonSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-	//        std::cout << "Average Grid size (Inner): " << static_cast<double>(myHestonSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-	//
-	//        if (this->myScreen != NULL)
-	//          {
-	//            std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-	//            this->myScreen->writeEmptyLines(2);
-	//          }
-	//
-	//        this->finInnerGridSize = getNumberInnerGridPoints();
-	//        this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myHestonSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
-	//        this->nNeededIterations = myEuler->getNumberIterations();
-	//
-	//        delete myHestonSystem;
-	//        delete myCG;
-	//        delete myEuler;
-	//        delete myStopwatch;
-	//
-	//        this->current_time += (static_cast<double>(numTimesteps)*timestepsize);
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
-	//      }
-}
-
-void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
-{
-	//    if (this->bGridConstructed && this->bStochasticDataAlloc)
-	//      {
-	//        Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
-	//        SLESolver* myCG = NULL;
-	//        OperationParabolicPDESolverSystem* myBSSystem = NULL;
-	//
-	//        if (this->tBoundaryType == "Dirichlet")
-	//          {
-	//            if (this->usePAT == true)
-	//              {
-	//                myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-	//#ifdef _OPENMP
-	//                myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//#else
-	//                myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//#endif
-	//              }
-	//            else
-	//              {
-	//                myCG = new BiCGStab(maxCGIterations, epsilonCG);
-	//#ifdef _OPENMP
-	//                myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//#else
-	//                myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//#endif
-	//              }
-	//          }
-	//        else
-	//          {
-	//            if (this->usePAT == true)
-	//              {
-	//                myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-	//                myBSSystem = new BlackScholesPATParabolicPDESolverSystem(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//              }
-	//            else
-	//              {
-	//                myCG = new BiCGStab(maxCGIterations, epsilonCG);
-	//                myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//              }
-	//          }
-	//
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//        this->staInnerGridSize = getNumberInnerGridPoints();
-	//
-	//        std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
-	//        myStopwatch->start();
-	//        myEuler->solve(*myCG, *myBSSystem, true, verbose);
-	//        this->dNeededTime = myStopwatch->stop();
-	//
-	//        std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-	//        std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-	//
-	//        std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete())/static_cast<double>(numTimesteps) << std::endl;
-	//        std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-	//
-	//        if (this->myScreen != NULL)
-	//          {
-	//            std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-	//            this->myScreen->writeEmptyLines(2);
-	//          }
-	//
-	//        this->finInnerGridSize = getNumberInnerGridPoints();
-	//        this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
-	//        this->nNeededIterations = myEuler->getNumberIterations();
-	//
-	//        delete myBSSystem;
-	//        delete myCG;
-	//        delete myEuler;
-	//        delete myStopwatch;
-	//
-	//        this->current_time += (static_cast<double>(numTimesteps)*timestepsize);
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
-	//      }
-}
-
 void HestonSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
 {
 	if (this->bGridConstructed && this->bStochasticDataAlloc)
@@ -510,21 +375,6 @@ void HestonSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, 
 		if (this->tBoundaryType == "Dirichlet")
 		{
 			myCG = new BiCGStab(maxCGIterations, epsilonCG);
-
-			//			GridStorage* myGridStorage = this->myGrid->getStorage();
-			//
-			//			// determine the number of grid points for both grids
-			//			size_t numTotalGridPoints = myGridStorage->size();
-			//			size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
-			//
-			//			size_t numNonZeroInner = 0;
-			//			for (size_t i = 0; i < numTotalGridPoints; i++)
-			//			{
-			//				GridIndex* curPoint = (*myGridStorage)[i];
-			//				if(curPoint->isInnerPoint() && alpha.get(i) != 0)
-			//					numNonZeroInner++;
-			//			}
-
 			myHestonSystem = new HestonParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->thetas, *this->volvols, *this->kappas, *this->hMatrix, this->r, timestepsize, "CrNic", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
 		}
 		else
@@ -590,135 +440,6 @@ void HestonSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, 
 }
 
 
-void HestonSolver::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
-{
-	//    ODESolver* myODESolver = new AdamsBashforth(numTimesteps, timestepsize, myScreen);
-	//    HestonSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "AdBas");
-	//    delete myODESolver;
-}
-
-void HestonSolver::solveSC(std::string Solver, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
-{
-	std::string tmp;
-	float epsilon = 0.001;
-	float sc = 1;
-	float gamma = 0.5;
-	ODESolver* myODESolver;
-	std::istringstream iss(Solver);
-	if(Solver[2] == '2') {
-		getline(iss,tmp,':');
-		getline(iss,tmp,':');
-		std::istringstream qwe(tmp);
-		qwe >> epsilon;
-		iss >> gamma;
-		std::cout<<"2 " << "AdBas"<<", "  <<"CrNic"  << " Epsilon: "<< epsilon << " Gamma: "  << gamma   << std::endl;
-		myODESolver = new VarTimestep("AdBas","CrNic",numTimesteps, timestepsize, epsilon, myScreen, gamma);
-
-	} else if (Solver[2] == 'H') {
-		getline(iss,tmp,':');
-		getline(iss,tmp,':');
-		std::istringstream qwe(tmp);
-		qwe >> epsilon;
-		iss >> gamma;
-		std::cout<< "H "  <<"CrNic"  << " Epsilon: "<< epsilon << " Gamma: "  << gamma   << std::endl;
-		myODESolver = new StepsizeControlH("CrNic",numTimesteps, timestepsize, epsilon, myScreen, gamma);
-
-
-	}else if (Solver[2] == 'I') {
-		getline(iss,tmp,':');
-		getline(iss,tmp,':');
-		std::istringstream qwe(tmp);
-		qwe >> epsilon;
-		getline(iss,tmp,':');
-		std::istringstream qwe2(tmp);
-		qwe >> sc;
-		iss >> gamma;
-		std::cout << "I "   << " Epsilon: "<< epsilon<< " SC: "<<sc<< " Gamma: "  << gamma   << std::endl;
-		myODESolver = new StepsizeControlEJ("CrNic",numTimesteps, timestepsize, epsilon, sc,  myScreen, gamma);
-
-	} else std::cerr << "HestonSolver::solveSC(): Unknown Stepsize Control #" << Solver[3] << "#" << Solver << std::endl;
-
-	HestonSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
-	delete myODESolver;
-}
-
-void HestonSolver::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
-{
-	ODESolver* myODESolver = new VarTimestep("AdBasC","CrNic",numTimesteps, timestepsize, epsilon, myScreen, -1);
-	HestonSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
-	delete myODESolver;
-}
-
-void HestonSolver::solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
-{
-	ODESolver* myODESolver = new StepsizeControlH("CrNic",numTimesteps, timestepsize, epsilon, myScreen, 0.9);
-	HestonSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
-	delete myODESolver;
-}
-
-void HestonSolver::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
-{
-	ODESolver* myODESolver = new StepsizeControlBDF(numTimesteps, timestepsize, epsilon, myScreen);
-	HestonSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "SCBDF");
-	delete myODESolver;
-}
-
-void HestonSolver::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
-{
-	ODESolver* myODESolver = new StepsizeControlEJ("CrNic",numTimesteps, timestepsize, epsilon, myAlpha,  myScreen, 0.5);
-	HestonSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "SCEJ");
-	delete myODESolver;
-}
-
-void HestonSolver::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, void *myODESolverV, std::string Solver)
-{
-	//    ODESolver *myODESolver = (ODESolver *)myODESolverV;
-	//    if (this->bGridConstructed && this->bStochasticDataAlloc)
-	//      {		BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-	//        OperationParabolicPDESolverSystem* myBSSystem = NULL;
-	//
-	//        if (this->tBoundaryType == "Dirichlet")
-	//          {
-	//#ifdef _OPENMP
-	//            myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->dStrike, this->payoffType, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//#else
-	//            myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->dStrike, this->payoffType, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//#endif
-	//          }
-	//        else
-	//          {
-	//            myBSSystem = new BlackScholesParabolicPDESolverSystem(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, Solver, this->dStrike, this->payoffType, this->useLogTransform, false, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//          }
-	//
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//        this->staInnerGridSize = getNumberInnerGridPoints();
-	//
-	//        myStopwatch->start();
-	//        myODESolver->solve(*myCG, *myBSSystem, false, verbose);
-	//        this->dNeededTime = myStopwatch->stop();
-	//
-	//        if (this->myScreen != NULL)
-	//          {
-	//            std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-	//            this->myScreen->writeEmptyLines(2);
-	//          }
-	//
-	//        this->finInnerGridSize = getNumberInnerGridPoints();
-	//        this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner())/static_cast<double>(numTimesteps))+0.5);
-	//        this->nNeededIterations = myODESolver->getNumberIterations();
-	//
-	//        delete myBSSystem;
-	//        delete myCG;
-	//
-	//        this->current_time += (static_cast<double>(numTimesteps)*timestepsize);
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::solveX : A grid wasn't constructed before or stochastic parameters weren't set!");
-	//      }
-}
-
-
 void HestonSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
 {
 	this->dStrike = strike;
@@ -743,24 +464,6 @@ void HestonSolver::initGridWithPayoff(DataVector& alpha, double strike, std::str
 	else
 	{
 		initCartesianGridWithPayoff(alpha, strike, payoffType);
-
-		//		sg::base::GridStorage* myGridStorage = myGridStorage;
-
-		// determine the number of grid points for both grids
-		size_t numTotalGridPoints = myGridStorage->size();
-		size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
-
-		size_t numNonZeroInner = 0;
-		for (size_t i = 0; i < numTotalGridPoints; i++)
-		{
-			sg::base::GridIndex* curPoint = (*myGridStorage)[i];
-			if(curPoint->isInnerPoint() && alpha.get(i) != 0)
-				numNonZeroInner++;
-		}
-
-		int k=0;
-		k++;
-
 	}
 }
 
@@ -776,42 +479,22 @@ double HestonSolver::get1DEuroCallPayoffValue(double assetValue, double strike)
 	}
 }
 
-double HestonSolver::getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike)
-{
-	StdNormalDistribution myStdNDis;
-
-	double dOne = (log((stock/strike)) + ((r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
-	double dTwo = dOne - (vola*sqrt(t));
-
-	if (isCall)
-	{
-		return (stock*myStdNDis.getCumulativeDensity(dOne)) - (strike*myStdNDis.getCumulativeDensity(dTwo)*(exp((-1.0)*r*t)));
-	}
-	else
-	{
-		return (strike*myStdNDis.getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*r*t))) - (stock*myStdNDis.getCumulativeDensity(dOne*(-1.0)));
-	}
-}
-
-
-void HestonSolver::solve1DAnalytic(std::vector< std::pair<double, double> >& premiums, double minStock, double maxStock, double StockInc, double strike, double t, bool isCall)
-{
-	//    if (bStochasticDataAlloc)
-	//      {
-	//        double stock = 0.0;
-	//        double vola = this->sigmas->get(0);
-	//
-	//        for (stock = minStock; stock <= maxStock; stock += StockInc)
-	//          {
-	//            double prem = getAnalyticSolution1D(stock, isCall, t, vola, this->r, strike);
-	//            premiums.push_back(std::make_pair(stock, prem));
-	//          }
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::solve1DAnalytic : Stochastic parameters weren't set!");
-	//      }
-}
+//double HestonSolver::getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike)
+//{
+//	StdNormalDistribution myStdNDis;
+//
+//	double dOne = (log((stock/strike)) + ((r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
+//	double dTwo = dOne - (vola*sqrt(t));
+//
+//	if (isCall)
+//	{
+//		return (stock*myStdNDis.getCumulativeDensity(dOne)) - (strike*myStdNDis.getCumulativeDensity(dTwo)*(exp((-1.0)*r*t)));
+//	}
+//	else
+//	{
+//		return (strike*myStdNDis.getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*r*t))) - (stock*myStdNDis.getCumulativeDensity(dOne*(-1.0)));
+//	}
+//}
 
 void HestonSolver::print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename)
 {
@@ -826,71 +509,14 @@ void HestonSolver::print1DAnalytic(std::vector< std::pair<double, double> >& pre
 	fileout.close();
 }
 
-
-void HestonSolver::getAnalyticAlpha1D(DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized)
+void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	//    double coord;
-	//
-	//    if(dim!=1)
-	//      {
-	//        throw new application_exception("HestonSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
-	//      }
-	//    if (!this->bGridConstructed)
-	//      {
-	//        throw new application_exception("HestonSolver::getAnalyticAlpha1D : function only available for dim = 1!");
-	//      }
-	//
-	//    // compute values of analytic solution on given grid
-	//    for (size_t i = 0; i < this->myGridStorage->size(); i++)
-	//      {
-	//        std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-	//        std::stringstream coordsStream(coords);
-	//        coordsStream >> coord;
-	//        if(useLogTransform)
-	//          {
-	//            coord = exp(coord);
-	//          }
-	//        if (payoffType == "std_euro_call")
-	//          {
-	//            alpha_analytic[i] = getAnalyticSolution1D(coord, true, t, this->sigmas->get(0), this->r, strike);
-	//          }
-	//        else if (payoffType == "std_euro_put")
-	//          {
-	//            alpha_analytic[i] = getAnalyticSolution1D(coord, false, t, this->sigmas->get(0), this->r, strike);
-	//          }
-	//      }
-	//
-	//    if(hierarchized)
-	//      {
-	//        // hierarchize computed values
-	//        OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*this->myGrid);
-	//        myHier->doHierarchisation(alpha_analytic);
-	//
-	//        delete myHier;
-	//      }
+	throw new application_exception("This scheme is not implemented for the Heston solver!");
 }
 
-
-void HestonSolver::evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall)
+void HestonSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
 {
-	size_t n = EvaluationPoints.getNrows();
-
-	if (AnalyticOptionPrices.getSize() != n)
-	{
-		throw new sg::base::application_exception("PDESolver::evaluate1DAnalyticCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
-	}
-
-	for(size_t k=0; k<n; k++)
-	{
-		double x = EvaluationPoints.get(k,0); // get first coordinate
-
-		if(this->useLogTransform)
-		{
-			x = exp(x);
-		}
-		double price = getAnalyticSolution1D(x, isCall, t, vola, r, strike);
-		AnalyticOptionPrices.set(k,price);
-	}
+	throw new application_exception("This scheme is not implemented for the Heston solver!");
 }
 
 std::vector<size_t> HestonSolver::getAlgorithmicDimensions()
@@ -1179,6 +805,25 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 					tmp += exp(dblFuncValues[2*j]);
 				}
 
+				//				if(!curPoint->isInnerPoint())
+				//				{
+				//					// Use the Heston closed-form to get the exact boundary
+				//					//							   EvaluateHestonPriceExact(dblFuncValues[0], v, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike) ;
+				//					alpha[i] = EvaluateHestonPriceExact(exp(dblFuncValues[0]), dblFuncValues[1], this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, 1.0, this->dStrike);
+				//				}
+				//				else
+				//					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+
+
+				/**
+				 * This section the best of the non-exact boundaries so far
+				 */
+				tmp = 0.0;
+				for (size_t j = 0; j < numAssets; j++)
+				{
+					tmp += exp(dblFuncValues[2*j]);
+				}
+
 				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).leftBoundary)
 				{
 					// Use the Black-Scholes solution for this boundary
@@ -1199,6 +844,9 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 				}
 				else
 					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+				/**
+				 * End best boundaries section
+				 */
 
 
 
@@ -2073,7 +1721,14 @@ void HestonSolver::CompareHestonSolutionToExact(sg::base::DataVector* solution, 
 	fileout.close();
 }
 
-
+double HestonSolver::EvalSinglePoint1Asset(double s, double v, DataVector& alphaVec)
+{
+	OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
+	std::vector<double> point;
+	point.push_back(s);
+	point.push_back(v);
+	return myEval->eval(alphaVec, point);
+}
 
 }
 }

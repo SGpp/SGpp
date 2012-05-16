@@ -129,29 +129,21 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	// build the coefficient matrices for the operations
 	// We essentially have a linear system to solve for this->HestonAlgoDims.size() unknowns, right? So this means that the coefficient vectors have to be the same size, right?
 	int coefficientVectorSize = this->HestonAlgoDims.size();
-	//	this->bCoeff = new sg::base::DataVector(coefficientVectorSize);
-	//	this->cCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->dCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->eCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->fCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->gCoeff = new sg::base::DataVector(coefficientVectorSize);
-	//	this->hCoeff = new sg::base::DataVector(coefficientVectorSize);
-	//	this->xCoeff = new sg::base::DataVector(coefficientVectorSize);
-	//	this->yCoeff = new sg::base::DataVector(coefficientVectorSize);
-	//	this->wCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->zCoeff = new sg::base::DataVector(coefficientVectorSize);
-
-	this->bCoeff = new sg::base::DataMatrix(this->HestonAlgoDims.size(), this->HestonAlgoDims.size());
-	this->cCoeff = new sg::base::DataMatrix(this->HestonAlgoDims.size(), this->HestonAlgoDims.size());
-	this->hCoeff = new sg::base::DataMatrix(this->HestonAlgoDims.size(), this->HestonAlgoDims.size());
-	this->xCoeff = new sg::base::DataMatrix(this->HestonAlgoDims.size(), this->HestonAlgoDims.size());
-	this->yCoeff = new sg::base::DataMatrix(this->HestonAlgoDims.size(), this->HestonAlgoDims.size());
-	this->wCoeff = new sg::base::DataMatrix(this->HestonAlgoDims.size(), this->HestonAlgoDims.size());
-	//	this->zCoeff = new sg::base::DataMatrix(this->HestonAlgoDims.size(), this->HestonAlgoDims.size());
+	this->bCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+	this->cCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+	this->hCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+	this->xCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+	this->yCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+	this->wCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
 
 
 	//	this->gammaCoef = new sg::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
-	this->deltaCoef = new sg::base::DataVector(this->HestonAlgoDims.size());
+//	this->deltaCoef = new sg::base::DataVector(this->HestonAlgoDims.size());
 
 	// create the inner grid
 	// Here we have to make sure that the alpha_inner doesn't come out with zeros at the other end.
@@ -202,6 +194,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	// create needed operations that are different in case of a log-transformed Black-Scholoes equation
 	else
 	{
+		// coefficients
 		buildBCoefficientsLogTransform();
 		buildCCoefficientsLogTransform();
 		buildDCoefficientsLogTransform();
@@ -210,11 +203,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		buildGCoefficientsLogTransform();
 		buildHCoefficientsLogTransform();
 
-		buildDeltaCoefficientsLogTransform();
-		//		buildGammaCoefficientsLogTransform();
-
-		// operations on boundary grid
-
+		// operations
 		this->OpBBound = sg::op_factory::createOperationHestonBLog(*this->BoundGrid, *this->bCoeff);
 		this->OpBInner = sg::op_factory::createOperationHestonBLog(*this->InnerGrid, *this->bCoeff);
 		this->OpCBound = sg::op_factory::createOperationHestonCLog(*this->BoundGrid, *this->cCoeff);
@@ -229,13 +218,6 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		this->OpGInner = sg::op_factory::createOperationHestonGLog(*this->InnerGrid, *this->gCoeff);
 		this->OpHBound = sg::op_factory::createOperationHestonHLog(*this->BoundGrid, *this->hCoeff);
 		this->OpHInner = sg::op_factory::createOperationHestonHLog(*this->InnerGrid, *this->hCoeff);
-
-
-		//		this->OpDeltaBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
-		//		this->OpGammaBound = sg::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
-		//		//operations on inner grid
-		//		this->OpDeltaInner = sg::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
-		//		this->OpGammaInner = sg::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
 	}
 
 	// Create operations, independent bLogTransform
@@ -261,7 +243,6 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	// init option type and strike
 	this->dStrike = dStrike;
 	this->option_type = option_type;
-	//	this->option_type = "std_euro_call";
 
 	// save coordinate transformations
 	this->b_log_transform = bLogTransform;
@@ -349,32 +330,32 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::Da
 	{
 		// Log-transformed coordinates
 
-		//		// Apply the B method
+		// Apply the B operator
 		this->OpBBound->mult(alpha, temp);
 		result.sub(temp);
-		//
-		//		// Apply the H method
-		this->OpHBound->mult(alpha, temp);
-		result.sub(temp);
-		//
-		//		// Apply the E method
-		this->OpEBound->mult(alpha, temp);
-		result.add(temp);
-		//
-		// Apply the C method
+
+		// Apply the C operator
 		this->OpCBound->mult(alpha, temp);
 		result.sub(temp);
-		//		//
-		//		// Apply the D method
+
+		// Apply the D operator
 		this->OpDBound->mult(alpha, temp);
 		result.sub(temp);
-		//		//
-		//		//		// Apply the F method
+
+		// Apply the E operator
+		this->OpEBound->mult(alpha, temp);
+		result.add(temp);
+
+		// Apply the F operator
 		this->OpFBound->mult(alpha, temp);
 		result.add(temp);
-		//		//
-		//		//		// Apply the G method
+
+		// Apply the G operator
 		this->OpGBound->mult(alpha, temp);
+		result.sub(temp);
+
+		// Apply the H operator
+		this->OpHBound->mult(alpha, temp);
 		result.sub(temp);
 	}
 	else
@@ -427,14 +408,6 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataV
 		this->OpBInner->mult(alpha, temp);
 		result.sub(temp);
 
-		// Apply the H method
-		this->OpHInner->mult(alpha, temp);
-		result.sub(temp);
-
-		// Apply the E method
-		this->OpEInner->mult(alpha, temp);
-		result.add(temp);
-
 		// Apply the C method
 		this->OpCInner->mult(alpha, temp);
 		result.sub(temp);
@@ -443,12 +416,20 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataV
 		this->OpDInner->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the E method
+		this->OpEInner->mult(alpha, temp);
+		result.add(temp);
+
 		// Apply the F method
 		this->OpFInner->mult(alpha, temp);
 		result.add(temp);
 
 		// Apply the G method
 		this->OpGInner->mult(alpha, temp);
+		result.sub(temp);
+
+		// Apply the H method
+		this->OpHInner->mult(alpha, temp);
 		result.sub(temp);
 	}
 	else
@@ -655,12 +636,27 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 				sg::base::DataVector pointCoords(storage->dim());
 				curPoint->getCoords(pointCoords);
 
+				// What kind of boundary conditions have I tried?
+				// 1. Payoff function conditions
+				// 2. Constant condition at v->inf
+				// 3. Non-discounted v->inf = S condition
+				// 4. Discounted v->inf condition
+				// 5. Constant s->inf condition
+				// 6. Linear s->inf condition
+				// 7. Payoff v->0 condition
+				// 8. BS v-> condition
+
 				// We want to handle the following boundaries separately:
 				// v_max: no discounting
 				// s_max: linear function discounting
-				if(pointCoords[1] == 1 || pointCoords[1] == 0)
+				if(pointCoords[1] == 0)
 				{
 
+				}
+				else if(pointCoords[1] == 1)
+				{
+					// Discount the max_volatility values
+					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(this->r*this->TimestepSize))));
 				}
 				else if(pointCoords[0] == 1)
 				{
@@ -668,12 +664,15 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 					// maximum.
 					// All we have to do now is set the value to the linear interpolant...but we can't do this by setting the value directly!
 					// The values are hierarchised, so we have to multiply it by a fraction of the r value.
-					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(1.0-pointCoords[1])*(this->r*this->TimestepSize))));
+					//					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(1.0-pointCoords[1])*(this->r*this->TimestepSize))));
+
+
+					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(pointCoords[1])*(this->r*this->TimestepSize))));
 				}
 			}
 
 			//			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
-//			this->BoundaryUpdate->multiply(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))), &IsNonMaxVolatilityBoundary);
+			//			this->BoundaryUpdate->multiply(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))), &IsNonMaxVolatilityBoundary);
 		}
 	}
 #endif
@@ -858,10 +857,10 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform(
 	//	this->deltaCoef->set(0, this->r);
 	//	this->deltaCoef->set(1, 0.0);
 
-	for (size_t i = 0; i < dim; i++)
-	{
-		this->deltaCoef->set(i, this->r);
-	}
+//	for (size_t i = 0; i < dim; i++)
+//	{
+//		this->deltaCoef->set(i, this->r);
+//	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
@@ -932,7 +931,8 @@ void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform()
 	double rho = this->hMatrix->get(0,1);
 	double volvol = this->volvols->get(0);
 
-	this->eCoeff->set(0, this->r - rho*volvol);
+//	this->eCoeff->set(0, this->r - rho*volvol);
+	this->eCoeff->set(0, this->r);
 	this->eCoeff->set(1, 0.0);
 
 	//	this->eCoeff->set(0, this->r);
@@ -955,7 +955,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 	double kappa = this->kappas->get(0);
 	double volvol = this->volvols->get(0);
 
-	this->fCoeff->set(0, 0.0); // - 0.5*pow(volvol,2.0)
+	this->fCoeff->set(0, 0.0);
 	this->fCoeff->set(1, kappa*theta - 0.5*pow(volvol,2.0));
 
 	//	for (size_t i = 0; i < dim; i++)

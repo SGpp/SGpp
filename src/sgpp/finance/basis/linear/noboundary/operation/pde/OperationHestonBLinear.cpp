@@ -102,6 +102,11 @@ void OperationHestonBLinear::down(sg::base::DataVector& alpha, sg::base::DataVec
 
 void OperationHestonBLinear::upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// phi * phi
+	sg::pde::PhiPhiUpBBLinear func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiUpBBLinear> s(func, this->storage);
+
+	s.sweep1D(alpha, result, dim);
 }
 
 void OperationHestonBLinear::downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)

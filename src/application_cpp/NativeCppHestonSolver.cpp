@@ -37,6 +37,10 @@ using namespace std;
 
 //#define EXPORT_MATRIX_FILES
 
+double alphaDone;
+double vProbe;
+double sProbe;
+
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object
  * after creating a screen.
@@ -757,12 +761,55 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	// Construct a grid
 	myHestonSolver->constructGrid(*myBoundingBox, level);
 
+	std::string adaptSolvingMode = "refine";
+	std::string refinementMode = "classic";
+	size_t maxRefineLevel = 11;
+	double coarsenThreshold = 0.0;
+	double dRefineThreshold = 0.01;// See Alex's second thesis
+
+	// Set coarsening dat
+	//	myHestonSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
+
 	// init the basis functions' coefficient vector
 	sg::base::DataVector* alpha = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
 
 	std::cout << "Grid has " << level << " Levels" << std::endl;
 	std::cout << "Initial Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
 	std::cout << "Initial Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+
+	size_t nIterAdaptSteps = 5;
+	bool useNormalDist = true;
+	int numRefinePoints = -1;
+	std::vector<double> norm_mu;
+	std::vector<double> norm_sigma;
+	norm_mu.push_back(0.5); norm_mu.push_back(5);
+	norm_sigma.push_back(0.5); norm_sigma.push_back(5);
+
+	// refine the grid to approximate the singularity in the start solution better
+//	if (refinementMode == "classic")
+//	{
+//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+//		{
+//			std::cout << "Refining Grid..." << std::endl;
+//			if (useNormalDist == true)
+//			{
+//				myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
+//			}
+//			else
+//			{
+//				myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+//			}
+//			myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//			std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
+//			std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
+//		}
+//	}
+//	else
+//	{
+//		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+//		std::cout << "Skipping initial grid refinement!" << std::endl;
+//	}
+
 
 	// Set stochastic data
 	myHestonSolver->setStochasticData(theta, kappa, xi, hMatrix, r);
@@ -801,15 +848,15 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	sg::base::DataVector* alphaExact;
 	if(numberOfAssets == 1 && payoffType == "std_euro_call")
 	{
-		alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
-		myHestonSolver->EvaluateHestonExactSurface(*alphaExact,timesteps*stepsize);
-		myHestonSolver->printGrid(*alphaExact, 35, "hestonExact.gnuplot");
+		//		alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+		//		myHestonSolver->EvaluateHestonExactSurface(*alphaExact,timesteps*stepsize);
+		//		myHestonSolver->printGrid(*alphaExact, 35, "hestonExact.gnuplot");
 
-//		sg::base::DataVector* alphaCompare = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
-//		myHestonSolver->CompareHestonBsExact(*alphaCompare, timesteps*stepsize);
-//		myHestonSolver->printGrid(*alphaCompare, 35, "hestonBsCompare.gnuplot");
+		//		sg::base::DataVector* alphaCompare = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+		//		myHestonSolver->CompareHestonBsExact(*alphaCompare, timesteps*stepsize);
+		//		myHestonSolver->printGrid(*alphaCompare, 35, "hestonBsCompare.gnuplot");
 
-//		myHestonSolver->CompareHestonBs1d(timesteps*stepsize, 0.1);
+		//		myHestonSolver->CompareHestonBs1d(timesteps*stepsize, 0.1);
 	}
 
 	if (numberOfAssets < 3)
@@ -835,41 +882,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	}
 
 	// Start solving the Black Scholes Equation
-	if (Solver == "ExEul")
-	{
-		myHestonSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	}
-	else if (Solver == "ImEul")
-	{
-		myHestonSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-	}
-	else if (Solver == "CrNic")
+	if (Solver == "CrNic")
 	{
 		myHestonSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-	}
-	else if (Solver == "AdBas")
-	{
-		myHestonSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCAC")
-	{
-		myHestonSolver->solveSCAC(timesteps, stepsize, 0.01, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCH")
-	{
-		myHestonSolver->solveSCH(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCBDF")
-	{
-		myHestonSolver->solveSCBDF(timesteps, stepsize, 0.0001, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver == "SCEJ")
-	{
-		myHestonSolver->solveSCEJ(timesteps, stepsize, 0.001, 1.0, CGiterations, CGepsilon, *alpha, false);
-	}
-	else if (Solver[0] == 'S' && Solver[1] == 'C' && Solver[3] == ':')
-	{
-		myHestonSolver->solveSC(Solver,timesteps, stepsize, CGiterations, CGepsilon, *alpha, false);
 	}
 	else
 	{
@@ -882,15 +897,18 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		myHestonSolver->printGrid(*alpha, 50, "solvedHeston.gnuplot");
 	}
 
-//	myHestonSolver->CompareHestonSolutionToExact(alpha, alphaExact, "solExactDiff.gnuplot", 50);
+	// Set alphaDone
+//	alphaDone = abs(myHestonSolver->EvalSinglePoint1Asset(sProbe, vProbe, *alpha) - myHestonSolver->EvaluateHestonPriceExact(exp(sProbe), vProbe, xi.get(0), theta.get(0), kappa.get(0), hMatrix.get(0,1), r, timesteps*stepsize, dStrike));
+
+	//	myHestonSolver->CompareHestonSolutionToExact(alpha, alphaExact, "solExactDiff.gnuplot", 50);
 
 
-//	if (numberOfAssets == 1 && payoffType == "std_euro_call")
-//	{
-//		// Print the error into a gnuplot file
-//		alpha->sub(*alphaExact);
-//		myHestonSolver->printGrid(*alpha, 50, "hestonError.gnuplot");
-//	}
+	//	if (numberOfAssets == 1 && payoffType == "std_euro_call")
+	//	{
+	//		// Print the error into a gnuplot file
+	//		alpha->sub(*alphaExact);
+	//		myHestonSolver->printGrid(*alpha, 50, "hestonError.gnuplot");
+	//	}
 
 	//	if (numberOfAssets < 4)
 	//	{
@@ -919,7 +937,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	}
 	std::cout << "Optionprice at testpoint (Strike): " << myHestonSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
-	system("gnuplot /home/sam/Documents/Heston/plotHestonSln.cmd");
+//	system("gnuplot /home/sam/Documents/Heston/plotHestonSln.cmd");
 
 	delete alpha;
 	delete myHestonSolver;
@@ -1712,97 +1730,46 @@ int main(int argc, char *argv[])
 			std::string coordsType;
 			coordsType.assign(argv[2]);
 
-			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-		}
-	}
-	else if (option == "solveNDanalyze")
-	{
-		if (argc != 17)
-		{
-			writeHelp();
-		}
-		else
-		{
-			std::string fileStoch;
-			std::string fileBound;
-			double dStrike;
-			std::string fileAnalyze;
-			std::string ani;
-			std::string solver;
-			std::string payoff;
+			// Testing: We'd like to see how the error of a certain point behaves as we increase the region size.
+			// For this we keep the stoch file the same and vary the bound file
 
-			fileStoch.assign(argv[7]);
-			fileBound.assign(argv[6]);
-			dStrike = atof(argv[8]);
-			fileAnalyze.assign(argv[16]);
-			payoff.assign(argv[9]);
-			solver.assign(argv[13]);
+			// So what I would like to do here is run the BS solver for multiple values of sigma.
+			// I'll run it from sigma = 0.3 to sigma = 0.5, which corresponds to the heston v=0.09 to v=0.25
+			// I'll collect the results and plot them as a surface for comparison with the Heston results
 
-			std::string coordsType;
-			coordsType.assign(argv[2]);
+			vProbe = 0.5;
+			sProbe = 0;
 
-			//			testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound, dStrike, payoff, atof(argv[10]), (size_t)(atof(argv[11])/atof(argv[12])), atof(argv[12]), atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coordsType);
-		}
-	}
-	else if (option == "solveNDadaptSurplus" || option == "solveNDadaptSurplusSubDomain")
-	{
-		if (argc != 21)
-		{
-			writeHelp();
-		}
-		else
-		{
-			bool isNormalDist = false;
-			if (option == "solveNDadaptSurplusSubDomain")
-			{
-				isNormalDist = true;
-			}
-			std::string fileStoch;
-			std::string fileBound;
-			double dStrike;
-			std::string ani;
-			std::string solver;
-			std::string payoff;
-			std::string refinementMode;
-			std::string adaptSolveMode;
+			const int numTests = 40;
+			double initSHalfWidth = 0.5;
+			double initVHalfWidth = 0.01;
+			double dS = 0.1;
+			double dV = 0.02;
+//			double initDiff = 0.005;
+//			double vMins[numTests] = {vProbe - initDiff, vProbe - 2*initDiff, vProbe - 4*initDiff, vProbe - 8*initDiff, vProbe - 16*initDiff, vProbe - 32*initDiff, vProbe - 64*initDiff, vProbe - 128*initDiff};
+//			double vMaxs[numTests] = {vProbe + initDiff, vProbe + 2*initDiff, vProbe + 4*initDiff, vProbe + 8*initDiff, vProbe + 16*initDiff, vProbe + 32*initDiff, vProbe + 64*initDiff, vProbe + 128*initDiff};
 
-			fileStoch.assign(argv[6]);
-			fileBound.assign(argv[5]);
-			dStrike = atof(argv[7]);
-			payoff.assign(argv[8]);
-			solver.assign(argv[12]);
-			refinementMode.assign(argv[15]);
-			adaptSolveMode.assign(argv[19]);
+//			initDiff = 0.01;
+//			double sMins[numTests] = {sProbe - initDiff, sProbe - 2*initDiff, sProbe - 4*initDiff, sProbe - 8*initDiff, sProbe - 16*initDiff, sProbe - 32*initDiff, sProbe - 64*initDiff , sProbe - 128*initDiff};
+//			double sMaxs[numTests] = {sProbe + initDiff, sProbe + 2*initDiff, sProbe + 4*initDiff, sProbe + 8*initDiff, sProbe + 16*initDiff, sProbe + 32*initDiff, sProbe + 64*initDiff, sProbe + 128*initDiff};
 
-			std::string coordsType;
-			coordsType.assign(argv[2]);
+//			std::ofstream convFile;
+//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
+//
+//			for(int i=0;i<numTests;i++)
+//			{
+//				std::cout << "Starting test " << i << std::endl;
+//				std::ofstream fileout;
+//				fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
+//				fileout << (0.0 - (i+1)*dS) << " " << (0.0 + (i+1)*dS) << std::endl;
+//				fileout << "0.01" << " " << "1.0" << std::endl;
+//				fileout.close();
+//				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+//				convFile << i << " " << alphaDone << std::endl;
+//			}
+//			convFile.close();
 
-			if (refinementMode != "maxLevel" && refinementMode != "classic")
-			{
-				std::cout << "Unsupported refinement type! classic or maxLevel are supported!" << std::endl;
-				std::cout << std::endl << std::endl;
-				writeHelp();
-				return 0;
-			}
-
-			bool useAdaptSolve = false;
-			if (adaptSolveMode == "coarsen" || adaptSolveMode == "refine" || adaptSolveMode == "coarsenNrefine")
-			{
-				useAdaptSolve = true;
-			}
-			else if (adaptSolveMode == "none")
-			{
-				useAdaptSolve = false;
-			}
-			else
-			{
-				std::cout << "Unsupported adapt solve mode! none, coarsen, refine or coarsenNrefine are supported!" << std::endl;
-				std::cout << std::endl << std::endl;
-				writeHelp();
-				return 0;
-			}
-
-			//			testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode, atof(argv[20]), coordsType, isNormalDist);
+						testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 		}
 	}
 	else
