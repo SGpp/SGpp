@@ -54,6 +54,7 @@
 #include "base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
+#include "base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 #include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 #include "base/tools/GridPrinter.hpp"
 #include "base/tools/GridPrinterForStretching.hpp"

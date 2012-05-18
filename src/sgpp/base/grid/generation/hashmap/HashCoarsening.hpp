@@ -65,6 +65,7 @@ public:
 		// Perepare temp-data in order to determine the removable grid points
 		// -> leafs with minimal surplus
 		size_t remove_num = functor->getRemovementsNum();
+		if (remove_num == 0) return;
 
 		// create an array that will contain the GridPoints
 		// (pair of the grid Point's index and its surplus)
