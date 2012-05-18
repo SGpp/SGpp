@@ -651,7 +651,7 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 				// s_max: linear function discounting
 				if(pointCoords[1] == 0)
 				{
-
+					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(this->r*this->TimestepSize))));
 				}
 				else if(pointCoords[1] == 1)
 				{
