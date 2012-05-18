@@ -900,7 +900,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	// Set alphaDone
 	alphaDone = abs(myHestonSolver->EvalSinglePoint1Asset(sProbe, vProbe, *alpha) - myHestonSolver->EvaluateHestonPriceExact(exp(sProbe), vProbe, xi.get(0), theta.get(0), kappa.get(0), hMatrix.get(0,1), r, timesteps*stepsize, dStrike));
 
-	myHestonSolver->CompareHestonSolutionToExact(alpha, alphaExact, "solExactDiff.gnuplot", 50);
+	std::stringstream sstm;
+	sstm << "solExactDiff" << level << ".gnuplot";
+	myHestonSolver->CompareHestonSolutionToExact(alpha, alphaExact, sstm.str(), 50);
 
 
 	//	if (numberOfAssets == 1 && payoffType == "std_euro_call")
@@ -996,14 +998,14 @@ int main(int argc, char *argv[])
 			// I'll run it from sigma = 0.3 to sigma = 0.5, which corresponds to the heston v=0.09 to v=0.25
 			// I'll collect the results and plot them as a surface for comparison with the Heston results
 
-			vProbe = 0.7;
-			sProbe = 0.5;
+			vProbe = 0.305;
+			sProbe = 0.0;
 
-			const int numTests = 40;
-			double initSHalfWidth = 0.5;
-			double initVHalfWidth = 0.01;
-			double dS = 0.1;
-			double dV = 0.02;
+			const int numTests = 20;
+			double initSHalfWidth = 0.6;
+			double initVHalfWidth = 0.04;
+			double dS = 0.2;
+			double dV = 0.05;
 //			double initDiff = 0.005;
 //			double vMins[numTests] = {vProbe - initDiff, vProbe - 2*initDiff, vProbe - 4*initDiff, vProbe - 8*initDiff, vProbe - 16*initDiff, vProbe - 32*initDiff, vProbe - 64*initDiff, vProbe - 128*initDiff};
 //			double vMaxs[numTests] = {vProbe + initDiff, vProbe + 2*initDiff, vProbe + 4*initDiff, vProbe + 8*initDiff, vProbe + 16*initDiff, vProbe + 32*initDiff, vProbe + 64*initDiff, vProbe + 128*initDiff};
@@ -1012,27 +1014,31 @@ int main(int argc, char *argv[])
 //			double sMins[numTests] = {sProbe - initDiff, sProbe - 2*initDiff, sProbe - 4*initDiff, sProbe - 8*initDiff, sProbe - 16*initDiff, sProbe - 32*initDiff, sProbe - 64*initDiff , sProbe - 128*initDiff};
 //			double sMaxs[numTests] = {sProbe + initDiff, sProbe + 2*initDiff, sProbe + 4*initDiff, sProbe + 8*initDiff, sProbe + 16*initDiff, sProbe + 32*initDiff, sProbe + 64*initDiff, sProbe + 128*initDiff};
 
-//			std::ofstream convFile;
-//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
-//
-//			for(int i=0;i<numTests;i++)
-//			{
-//				std::cout << "Starting test " << i << std::endl;
-//				std::ofstream fileout;
-//				fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
-//				fileout << (0.0 - (i+1)*dS) << " " << (0.0 + (i+1)*dS) << std::endl;
-//				fileout << "0.01" << " " << "1.0" << std::endl;
-//				fileout.close();
-//				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-//				convFile << i << " " << alphaDone << std::endl;
-//			}
-//			convFile.close();
+			std::ofstream convFile;
+			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
+
+			for(int i=0;i<numTests;i++)
+			{
+				std::cout << "Starting test " << i << std::endl;
+				std::ofstream fileout;
+				fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
+				fileout << (sProbe - initSHalfWidth - (i+1)*dS) << " " << (sProbe + initSHalfWidth + (i+1)*dS) << std::endl;
+//				fileout << "-2.04 1.95" << std::endl;
+				fileout << "0.01 0.61" << std::endl;
+//				fileout << (vProbe - initVHalfWidth - (i+1)*dV) << " " << (vProbe + initVHalfWidth + (i+1)*dV) << std::endl;
+//				fileout << 0.01 << " " << (0.01 + (i+1)*dV) << std::endl;
+				fileout.close();
+//				vProbe = (0.01 + (0.01 + (i+1)*dV) / 2.0);
+				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+				convFile << i << " " << alphaDone << std::endl;
+			}
+			convFile.close();
 
 
 //			std::ofstream convFile;
 //			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
 //
-//			for(int i=2;i<12;i++)
+//			for(int i=2;i<9;i++)
 //			{
 //				std::cout << "Starting test " << i << std::endl;
 //				testNUnderlyings(atoi(argv[3]), i, fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
@@ -1040,7 +1046,7 @@ int main(int argc, char *argv[])
 //			}
 //			convFile.close();
 
-			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+//			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 
 			std::cout << "Error: " << alphaDone << std::endl;
 		}

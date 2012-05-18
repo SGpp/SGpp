@@ -818,18 +818,44 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 				/**
 				 * This section the best of the non-exact boundaries so far
 				 */
+				//				tmp = 0.0;
+				//				for (size_t j = 0; j < numAssets; j++)
+				//				{
+				//					tmp += exp(dblFuncValues[2*j]);
+				//				}
+				//
+				//				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).leftBoundary)
+				//				{
+				//					// Use the Black-Scholes solution for this boundary
+				//					alpha[i] = bsSolver->getAnalyticSolution1D(tmp, true, 1.0, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
+				//				}
+				//				else if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
+				//				{
+				//					// Dirichlet condition when v -> inf is that U = S
+				//					alpha[i] = tmp;
+				//				}
+				//				else if(!curPoint->isInnerPoint() && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
+				//				{
+				//					// Set boundary to be the linear function at s_max
+				//					double normalPayoff = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+				//					double vRange = this->myBoundingBox->getBoundary(1).rightBoundary - this->myBoundingBox->getBoundary(1).leftBoundary;
+				//					double sPayoffDiff = exp(dblFuncValues[0]) - normalPayoff;
+				//					alpha[i] = normalPayoff + ((dblFuncValues[1] - this->myBoundingBox->getBoundary(1).leftBoundary) /vRange)*sPayoffDiff;
+				//				}
+				//				else
+				//					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+				/**
+				 * End best boundaries section
+				 */
+
 				tmp = 0.0;
 				for (size_t j = 0; j < numAssets; j++)
 				{
 					tmp += exp(dblFuncValues[2*j]);
 				}
 
-				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).leftBoundary)
-				{
-					// Use the Black-Scholes solution for this boundary
-					alpha[i] = bsSolver->getAnalyticSolution1D(tmp, true, 1.0, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
-				}
-				else if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
+
+				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
 				{
 					// Dirichlet condition when v -> inf is that U = S
 					alpha[i] = tmp;
@@ -844,9 +870,6 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 				}
 				else
 					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
-				/**
-				 * End best boundaries section
-				 */
 
 
 
