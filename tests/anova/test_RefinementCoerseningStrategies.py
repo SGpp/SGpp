@@ -17,18 +17,18 @@ import numpy as np
 
 from bin.pysgpp import HashRefinementBoundaries, ANOVARefinement, Grid, \
      createOperationMultipleEval, SurplusRefinementFunctor, SurplusCoarseningFunctor, \
-     HashRefinement,SurplusVolumeRefinementFunctor
+     HashRefinement,SurplusVolumeRefinementFunctor, ANOVACoarseningFunctor
 from bin.learner.LearnerBuilder import LearnerBuilder
 from bin.learner import Types,  LearnerEvents
 from bin.data.DataContainer import DataContainer
 
 
-class TestRefinementANOVAStrategy(unittest.TestCase):
+class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
     
     def setUp(self):
         self.example = "sum"
         self.refinement_functor = SurplusVolumeRefinementFunctor
-        self.coarsening_functor = SurplusCoarseningFunctor
+        self.coarsening_functor = ANOVACoarseningFunctor #SurplusCoarseningFunctor
         
 #    def tearDown(self):
 #        import gc
@@ -50,7 +50,6 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
     def plotGrid(self, learner, suffix):
         from mpl_toolkits.mplot3d.axes3d import Axes3D
         import matplotlib.pyplot as plt
-#        plt.ioff()
         xs = np.linspace(0, 1, 30)
         ys = np.linspace(0, 1, 30)
         X, Y = np.meshgrid(xs, ys)
@@ -150,9 +149,13 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
                 functor = self.coarsening_functor(
                           learner.alpha,
                           generator.getNumberOfRemovablePoints(),
-                          learner.specification.getAdaptThreshold())
+                          0.99, learner.grid.getStorage())
+#                functor = self.coarsening_functor(
+#                          learner.alpha,
+#                          generator.getNumberOfRemovablePoints(),
+#                          learner.specification.getAdaptThreshold())
                 generator.coarsen(functor, learner.alpha)
-            
+            #print "coersening finished"
             self.plotGrid(learner, suffix)
             
             storage = learner.grid.getStorage()
@@ -220,16 +223,16 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             learner.alpha = learner.doLearningIteration(learner.dataContainer)
             learner.knowledge.update(learner.alpha)
             
-            self.plotGrid(learner, suffix)
+            #self.plotGrid(learner, suffix)
             
             storage = learner.grid.getStorage()
 
-            self.plot_grid_historgram(suffix, learner, storage, 'space')
+            #self.plot_grid_historgram(suffix, learner, storage, 'space')
             
             
             
-            formatter = GridImageFormatter()
-            formatter.serializeToFile(learner.grid, "%s%d_projections_space.png"%(suffix, learner.iteration))
+#            formatter = GridImageFormatter()
+#            formatter.serializeToFile(learner.grid, "%s%d_projections_space.png"%(suffix, learner.iteration))
             
             
             #calculate avg. error for training and test data and avg. for refine alpha

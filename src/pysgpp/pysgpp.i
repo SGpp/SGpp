@@ -113,6 +113,7 @@ namespace std {
 %include "src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/GridDataBase.hpp"
 

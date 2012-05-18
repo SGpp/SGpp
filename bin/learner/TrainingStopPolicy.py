@@ -161,6 +161,8 @@ class TrainingStopPolicy(object):
             policy.setAccuracyLimit(jsonObject['_TrainingStopPolicy__accuracyLimit'])
         if jsonObject.has_key('_TrainingStopPolicy__gridSize'):
             policy.setGridSizeLimit(jsonObject['_TrainingStopPolicy__gridSize'])
+        if jsonObject.has_key('_TrainingStopPolicy__oldGridSize'):
+            policy.__oldGridSize = jsonObject['_TrainingStopPolicy__oldGridSize']
         return policy
 
             
