@@ -502,6 +502,8 @@ public:
 	double GaussLobattoInt(double a, double b, double abstol, size_t maxeval, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
 	void CompareHestonSolutionToExact(sg::base::DataVector* solution, sg::base::DataVector* exact, std::string filename, size_t PointsPerDimension);
 	double EvalSinglePoint1Asset(double s, double v, sg::base::DataVector& alphaVec);
+	void GetBsExactSolution(sg::base::DataVector& alphaBS, double maturity);
+	void CompareHestonNumericToBsExact(sg::base::DataVector& alphaHestonNumeric, sg::base::DataVector& alphaBS, sg::base::DataVector& error, double maturity);
 };
 
 }
