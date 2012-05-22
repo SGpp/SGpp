@@ -1551,12 +1551,8 @@ double HestonSolver::EvaluateHestonPriceExact(double S, double v, double xi, dou
 	return S*int1 - K*exp((-1.0)*r*T)*int2;
 }
 
-void HestonSolver::CompareHestonBsExact(sg::base::DataVector& alpha, double maturity)
+void HestonSolver::GetBsExactSolution(sg::base::DataVector& alphaBS, double maturity)
 {
-	DataVector* alphaHeston = new DataVector(getNumberGridPoints());
-	DataVector* alphaBS = new DataVector(getNumberGridPoints());
-
-	EvaluateHestonExactSurface(*alphaHeston, maturity);
 	sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver(false);
 
 	double S,v;
@@ -1567,19 +1563,41 @@ void HestonSolver::CompareHestonBsExact(sg::base::DataVector& alpha, double matu
 		coordsStream >> S;
 		coordsStream >> v;
 
-		(*alphaBS)[i] = myBSSolver->getAnalyticSolution1D(S, true, maturity, sqrt(v), this->r, this->dStrike);
+		if(this->useLogTransform)
+			alphaBS[i] = myBSSolver->getAnalyticSolution1D(exp(S), true, maturity, sqrt(v), this->r, this->dStrike);
+		else
+			alphaBS[i] = myBSSolver->getAnalyticSolution1D(S, true, maturity, sqrt(v), this->r, this->dStrike);
 	}
 
 	OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
-	myHierarchisation->doHierarchisation(*alphaBS);
+	myHierarchisation->doHierarchisation(alphaBS);
 	delete myHierarchisation;
+}
+
+void HestonSolver::CompareHestonBsExact(sg::base::DataVector& alpha, double maturity)
+{
+	DataVector* alphaHeston = new DataVector(getNumberGridPoints());
+	DataVector* alphaBS = new DataVector(getNumberGridPoints());
+
+	EvaluateHestonExactSurface(*alphaHeston, maturity);
+	GetBsExactSolution(*alphaBS,maturity);
 
 	// Find the difference (heston - BS)
 	for(size_t i=0;i<this->myGridStorage->size();i++)
 	{
 		alpha[i] = (*alphaHeston)[i] - (*alphaBS)[i];
 	}
+}
 
+void HestonSolver::CompareHestonNumericToBsExact(sg::base::DataVector& alphaHestonNumeric, sg::base::DataVector& alphaBS, sg::base::DataVector& error, double maturity)
+{
+	GetBsExactSolution(alphaBS,maturity);
+
+	// Find the difference (heston - BS)
+	for(size_t i=0;i<this->myGridStorage->size();i++)
+	{
+		error[i] = alphaHestonNumeric[i] - alphaBS[i];
+	}
 }
 
 
