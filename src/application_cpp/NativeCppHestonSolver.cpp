@@ -899,15 +899,18 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		myHestonSolver->printGrid(*alpha, PLOT_RESOLUTION, "solvedHeston.gnuplot");
 	}
 
-	sg::base::DataVector* alphaCompare = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
-	sg::base::DataVector* alphaBsRef = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
-	myHestonSolver->CompareHestonNumericToBsExact(*alpha, *alphaBsRef, *alphaCompare, timesteps*stepsize);
-	myHestonSolver->printGrid(*alphaCompare, PLOT_RESOLUTION, "hestonBsCompare_error.gnuplot");
-	myHestonSolver->printGrid(*alphaBsRef, PLOT_RESOLUTION, "hestonBsCompare_bsref.gnuplot");
+	//	sg::base::DataVector* alphaCompare = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+	//	sg::base::DataVector* alphaBsRef = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+	//	myHestonSolver->CompareHestonNumericToBsExact(*alpha, *alphaBsRef, *alphaCompare, timesteps*stepsize);
+	//	myHestonSolver->printGrid(*alphaCompare, PLOT_RESOLUTION, "hestonBsCompare_error.gnuplot");
+	//	myHestonSolver->printGrid(*alphaBsRef, PLOT_RESOLUTION, "hestonBsCompare_bsref.gnuplot");
 
 
 	// Set alphaDone
 	//	alphaDone = abs(myHestonSolver->EvalSinglePoint1Asset(sProbe, vProbe, *alpha) - myHestonSolver->EvaluateHestonPriceExact(exp(sProbe), vProbe, xi.get(0), theta.get(0), kappa.get(0), hMatrix.get(0,1), r, timesteps*stepsize, dStrike));
+	alphaDone = myHestonSolver->EvalSinglePoint1Asset(sProbe, vProbe, *alpha);
+
+	std::cout << "Exact solution: " << myHestonSolver->EvaluateHestonPriceExact(exp(sProbe), vProbe, xi.get(0), theta.get(0), kappa.get(0), hMatrix.get(0,1), r, timesteps*stepsize, dStrike) << std::endl;
 
 	std::stringstream sstm;
 	sstm << "solExactDiff" << level << ".gnuplot";
@@ -1044,18 +1047,18 @@ int main(int argc, char *argv[])
 			//			convFile.close();
 
 
-			//			std::ofstream convFile;
-			//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
-			//
-			//			for(int i=2;i<9;i++)
-			//			{
-			//				std::cout << "Starting test " << i << std::endl;
-			//				testNUnderlyings(atoi(argv[3]), i, fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-			//				convFile << i << " " << alphaDone << std::endl;
-			//			}
-			//			convFile.close();
+			std::ofstream convFile;
+			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
 
-			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+			for(int i=2;i<10;i++)
+			{
+				std::cout << "Starting test " << i << std::endl;
+				testNUnderlyings(atoi(argv[3]), i, fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+				convFile << i << " " << alphaDone << std::endl;
+			}
+			convFile.close();
+
+//			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 
 			std::cout << "Error: " << alphaDone << std::endl;
 		}
