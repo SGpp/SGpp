@@ -24,6 +24,54 @@ UpDownFourOpDims::~UpDownFourOpDims()
 {
 }
 
+void UpDownFourOpDims::generateMap()
+{
+	// Build the function mapping
+
+	// unidirectional...
+	fnMap.insert( std::make_pair( 0, &sg::pde::UpDownFourOpDims::specialOpUnidirectional ));
+
+	// singles...
+	fnMap.insert( std::make_pair( 1, &sg::pde::UpDownFourOpDims::specialOpFour ));
+	fnMap.insert( std::make_pair( 2, &sg::pde::UpDownFourOpDims::specialOpThree ));
+	fnMap.insert( std::make_pair( 4, &sg::pde::UpDownFourOpDims::specialOpTwo ));
+	fnMap.insert( std::make_pair( 8, &sg::pde::UpDownFourOpDims::specialOpOne ));
+
+	// doubles
+	fnMap.insert( std::make_pair( 3, &sg::pde::UpDownFourOpDims::specialOpThreeAndOpFour ));
+	fnMap.insert( std::make_pair( 5, &sg::pde::UpDownFourOpDims::specialOpTwoAndOpFour ));
+	fnMap.insert( std::make_pair( 6, &sg::pde::UpDownFourOpDims::specialOpTwoAndOpThree ));
+	fnMap.insert( std::make_pair( 9, &sg::pde::UpDownFourOpDims::specialOpOneAndOpFour ));
+	fnMap.insert( std::make_pair( 10, &sg::pde::UpDownFourOpDims::specialOpOneAndOpThree ));
+	fnMap.insert( std::make_pair( 12, &sg::pde::UpDownFourOpDims::specialOpOneAndOpTwo ));
+
+	// triples
+	fnMap.insert( std::make_pair( 7, &sg::pde::UpDownFourOpDims::specialOpTwoAndOpThreeAndOpFour ));
+	fnMap.insert( std::make_pair( 11, &sg::pde::UpDownFourOpDims::specialOpOneAndOpThreeAndOpFour ));
+	fnMap.insert( std::make_pair( 13, &sg::pde::UpDownFourOpDims::specialOpOneAndOpTwoAndOpFour ));
+	fnMap.insert( std::make_pair( 14, &sg::pde::UpDownFourOpDims::specialOpOneAndOpTwoAndOpThree ));
+
+	// quadruple
+	fnMap.insert( std::make_pair( 15, &sg::pde::UpDownFourOpDims::specialOpOneAndOpTwoAndOpThreeAndOpFour ));
+}
+
+void UpDownFourOpDims::updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four)
+{
+	size_t num = 0;
+	if(dim == op_dim_one)
+		num += 8;
+	if(dim == op_dim_two)
+		num += 4;
+	if(dim == op_dim_three)
+		num += 2;
+	if(dim == op_dim_four)
+		num += 1;
+
+	// Call the relevant function...
+	MFP fp = fnMap[num];
+	(this->*fp)(alpha, result, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
 void UpDownFourOpDims::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	result.setAll(0.0);
@@ -122,6 +170,10 @@ void UpDownFourOpDims::specialOpX(sg::base::DataVector& alpha, sg::base::DataVec
 	}
 }
 
+void UpDownFourOpDims::specialOpUnidirectional(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four)
+{
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::up, &sg::pde::UpDownFourOpDims::down, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
 
 void UpDownFourOpDims::specialOpOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four)
 {
@@ -143,6 +195,79 @@ void UpDownFourOpDims::specialOpFour(sg::base::DataVector& alpha, sg::base::Data
 {
 	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
 }
+
+void UpDownFourOpDims::specialOpOneAndOpTwo(sg::base::DataVector& alpha,
+		sg::base::DataVector& result, size_t dim, size_t op_dim_one,
+		size_t op_dim_two, size_t op_dim_three, size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimOneAndOpDimTwo, &sg::pde::UpDownFourOpDims::downOpDimOneAndOpDimTwo, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpOneAndOpThree(sg::base::DataVector& alpha,
+		sg::base::DataVector& result, size_t dim, size_t op_dim_one,
+		size_t op_dim_two, size_t op_dim_three, size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimOneAndOpDimThree, &sg::pde::UpDownFourOpDims::downOpDimOneAndOpDimThree, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpOneAndOpFour(sg::base::DataVector& alpha,
+		sg::base::DataVector& result, size_t dim, size_t op_dim_one,
+		size_t op_dim_two, size_t op_dim_three, size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimOneAndOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimOneAndOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpTwoAndOpThree(sg::base::DataVector& alpha,
+		sg::base::DataVector& result, size_t dim, size_t op_dim_one,
+		size_t op_dim_two, size_t op_dim_three, size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimTwoAndOpDimThree, &sg::pde::UpDownFourOpDims::downOpDimTwoAndOpDimThree, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpTwoAndOpFour(sg::base::DataVector& alpha,
+		sg::base::DataVector& result, size_t dim, size_t op_dim_one,
+		size_t op_dim_two, size_t op_dim_three, size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimTwoAndOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimTwoAndOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpThreeAndOpFour(sg::base::DataVector& alpha,
+		sg::base::DataVector& result, size_t dim, size_t op_dim_one,
+		size_t op_dim_two, size_t op_dim_three, size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimThreeAndOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimThreeAndOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpOneAndOpTwoAndOpThree(
+		sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim,
+		size_t op_dim_one, size_t op_dim_two, size_t op_dim_three,
+		size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimOneAndOpDimTwoAndOpDimThree, &sg::pde::UpDownFourOpDims::downOpDimOneAndOpDimTwoAndOpDimThree, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpOneAndOpTwoAndOpFour(
+		sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim,
+		size_t op_dim_one, size_t op_dim_two, size_t op_dim_three,
+		size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimOneAndOpDimTwoAndOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimOneAndOpDimTwoAndOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpOneAndOpThreeAndOpFour(
+		sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim,
+		size_t op_dim_one, size_t op_dim_two, size_t op_dim_three,
+		size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimOneAndOpDimThreeAndOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimOneAndOpDimThreeAndOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpTwoAndOpThreeAndOpFour(
+		sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim,
+		size_t op_dim_one, size_t op_dim_two, size_t op_dim_three,
+		size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimTwoAndOpDimThreeAndOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimTwoAndOpDimThreeAndOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+void UpDownFourOpDims::specialOpOneAndOpTwoAndOpThreeAndOpFour(
+		sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim,
+		size_t op_dim_one, size_t op_dim_two, size_t op_dim_three,
+		size_t op_dim_four) {
+	specialOpX(alpha, result, &sg::pde::UpDownFourOpDims::upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour, &sg::pde::UpDownFourOpDims::downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour, dim, op_dim_one, op_dim_two, op_dim_three, op_dim_four);
+}
+
+
 
 }
 }
