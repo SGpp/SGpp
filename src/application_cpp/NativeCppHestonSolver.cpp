@@ -42,6 +42,8 @@ using namespace std;
 double alphaDone;
 double vProbe;
 double sProbe;
+double refinementThresh;
+size_t numGridPoints;
 
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object
@@ -767,7 +769,8 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	std::string refinementMode = "classic";
 	size_t maxRefineLevel = 11;
 	double coarsenThreshold = 0.0;
-	double dRefineThreshold = 0.00001;// See Alex's second thesis
+//	double dRefineThreshold = 0.0000001;// See Alex's second thesis
+	double dRefineThreshold = refinementThresh;
 
 	// Set coarsening dat
 	//	myHestonSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
@@ -788,30 +791,31 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	norm_sigma.push_back(0.5); norm_sigma.push_back(5);
 
 	// refine the grid to approximate the singularity in the start solution better
-	//	if (refinementMode == "classic")
-	//	{
-	//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-	//		{
-	//			std::cout << "Refining Grid..." << std::endl;
-	//			if (useNormalDist == true)
-	//			{
-	//				myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
-	//			}
-	//			else
-	//			{
-	//				myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
-	//			}
-	//			myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//			std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
-	//			std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
-	//		}
-	//	}
-	//	else
-	//	{
-	//		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
-	//		std::cout << "Skipping initial grid refinement!" << std::endl;
-	//	}
+	if (refinementMode == "classic")
+	{
+		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+		{
+			std::cout << "Refining Grid..." << std::endl;
+			if (useNormalDist == true)
+			{
+				myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
+			}
+			else
+			{
+				myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+			}
+			myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+			std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
+			std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+		std::cout << "Skipping initial grid refinement!" << std::endl;
+	}
 
+	numGridPoints = myHestonSolver->getNumberGridPoints();
 
 	// Set stochastic data
 	myHestonSolver->setStochasticData(theta, kappa, xi, hMatrix, r);
@@ -924,22 +928,22 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	//		myHestonSolver->printGrid(*alpha, 50, "hestonError.gnuplot");
 	//	}
 
-	//	if (numberOfAssets < 4)
-	//	{
-	//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
-	//		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
-	//
-	//		if (coordsType == "log")
-	//		{
-	//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
-	//			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
-	//		}
-	//		if (coordsType == "PAT")
-	//		{
-	//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
-	//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
-	//		}
-	//	}
+	if (numberOfAssets < 4)
+	{
+		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
+		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
+
+		if (coordsType == "log")
+		{
+			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
+			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
+		}
+		if (coordsType == "PAT")
+		{
+			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
+			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
+		}
+	}
 
 	// Test option @ the money
 	std::vector<double> point;
@@ -1047,14 +1051,27 @@ int main(int argc, char *argv[])
 			//			convFile.close();
 
 
+			//			std::ofstream convFile;
+			//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
+			//
+			//			for(int i=2;i<10;i++)
+			//			{
+			//				std::cout << "Starting test " << i << std::endl;
+			//				testNUnderlyings(atoi(argv[3]), i, fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+			//				convFile << i << " " << alphaDone << std::endl;
+			//			}
+			//			convFile.close();
+
+			// Adaptivity tests
 			std::ofstream convFile;
 			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
 
-			for(int i=2;i<10;i++)
+			for(int i=1;i<7;i++)
 			{
 				std::cout << "Starting test " << i << std::endl;
-				testNUnderlyings(atoi(argv[3]), i, fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-				convFile << i << " " << alphaDone << std::endl;
+				refinementThresh = pow(10.0, 0 - i);
+				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+				convFile << i << " " << numGridPoints << " " << alphaDone << std::endl;
 			}
 			convFile.close();
 
