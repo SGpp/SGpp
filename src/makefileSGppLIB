@@ -111,6 +111,7 @@ OBJS =	DataVector.o\
 	StdUpDown.o\
 	UpDownOneOpDim.o\
 	UpDownTwoOpDims.o\
+	UpDownFourOpDims.o\
 	DirichletGridConverter.o\
 	OperationDeltaLinear.o\
 	OperationGammaLinear.o\
@@ -1181,6 +1182,9 @@ UpDownOneOpDim.o : $(SRCDIR)pde/algorithm/UpDownOneOpDim.cpp
 
 UpDownTwoOpDims.o : $(SRCDIR)pde/algorithm/UpDownTwoOpDims.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownTwoOpDims.o $(SRCDIR)pde/algorithm/UpDownTwoOpDims.cpp
+
+UpDownFourOpDims.o : $(SRCDIR)pde/algorithm/UpDownFourOpDims.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownFourOpDims.o $(SRCDIR)pde/algorithm/UpDownFourOpDims.cpp
 	
 UpDownOneOpDimWithShadow.o : $(SRCDIR)pde/algorithm/UpDownOneOpDimWithShadow.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimWithShadow.o $(SRCDIR)pde/algorithm/UpDownOneOpDimWithShadow.cpp

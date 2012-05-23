@@ -769,8 +769,8 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	std::string refinementMode = "classic";
 	size_t maxRefineLevel = 11;
 	double coarsenThreshold = 0.0;
-//	double dRefineThreshold = 0.0000001;// See Alex's second thesis
-	double dRefineThreshold = refinementThresh;
+	double dRefineThreshold = 0.0000001;// See Alex's second thesis
+//	double dRefineThreshold = refinementThresh;
 
 	// Set coarsening dat
 	//	myHestonSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
@@ -791,29 +791,29 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	norm_sigma.push_back(0.5); norm_sigma.push_back(5);
 
 	// refine the grid to approximate the singularity in the start solution better
-	if (refinementMode == "classic")
-	{
-		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
-		{
-			std::cout << "Refining Grid..." << std::endl;
-			if (useNormalDist == true)
-			{
-				myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
-			}
-			else
-			{
-				myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
-			}
-			myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-			std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
-			std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
-		std::cout << "Skipping initial grid refinement!" << std::endl;
-	}
+//	if (refinementMode == "classic")
+//	{
+//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+//		{
+//			std::cout << "Refining Grid..." << std::endl;
+//			if (useNormalDist == true)
+//			{
+//				myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
+//			}
+//			else
+//			{
+//				myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+//			}
+//			myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+//			std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
+//			std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
+//		}
+//	}
+//	else
+//	{
+//		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+//		std::cout << "Skipping initial grid refinement!" << std::endl;
+//	}
 
 	numGridPoints = myHestonSolver->getNumberGridPoints();
 
@@ -972,6 +972,30 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
  */
 int main(int argc, char *argv[])
 {
+
+	size_t arraySize = 5;
+	double **** fourDArray = new double***[arraySize];
+	for(int i=0;i<arraySize;i++)
+	{
+		fourDArray[i] = new double**[arraySize];
+
+		for(int j=0;j<arraySize;j++)
+		{
+			fourDArray[i][j] = new double*[arraySize];
+
+			for(int k=0;k<arraySize;k++)
+			{
+				fourDArray[i][j][k] = new double[arraySize];
+
+				for (int m=0;m<arraySize;m++)
+				{
+					fourDArray[i][j][k][m] = 1.0;
+				}
+			}
+		}
+	}
+
+
 	std::string option;
 
 	if (argc == 1)
@@ -1063,19 +1087,19 @@ int main(int argc, char *argv[])
 			//			convFile.close();
 
 			// Adaptivity tests
-			std::ofstream convFile;
-			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
+//			std::ofstream convFile;
+//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
+//
+//			for(int i=1;i<7;i++)
+//			{
+//				std::cout << "Starting test " << i << std::endl;
+//				refinementThresh = pow(10.0, 0 - i);
+//				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+//				convFile << i << " " << numGridPoints << " " << alphaDone << std::endl;
+//			}
+//			convFile.close();
 
-			for(int i=1;i<7;i++)
-			{
-				std::cout << "Starting test " << i << std::endl;
-				refinementThresh = pow(10.0, 0 - i);
-				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-				convFile << i << " " << numGridPoints << " " << alphaDone << std::endl;
-			}
-			convFile.close();
-
-//			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 
 			std::cout << "Error: " << alphaDone << std::endl;
 		}
