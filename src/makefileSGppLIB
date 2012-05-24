@@ -136,6 +136,8 @@ OBJS =	DataVector.o\
 	XPhidPhiUpBBLinear.o\
 	XPhiPhiDownBBLinear.o\
 	XPhiPhiUpBBLinear.o\
+	SqrtXPhiPhiDownBBLinear.o\
+	SqrtXPhiPhiUpBBLinear.o\
 	dPhidPhiDownModLinear.o\
 	dPhidPhiUpModLinear.o\
 	DPhidPhiDownBBLinear.o\
@@ -661,6 +663,12 @@ XPhiPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep
 	
 XPhiPhiUpBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhiPhiUpBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp		
+
+SqrtXPhiPhiDownBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqrtXPhiPhiDownBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiDownBBLinear.cpp	
+	
+SqrtXPhiPhiUpBBLinear.o : $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqrtXPhiPhiUpBBLinear.o $(SRCDIR)finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiUpBBLinear.cpp
 
 DowndPhidPhiBBIterativeLinear.o : $(SRCDIR)pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DowndPhidPhiBBIterativeLinear.o $(SRCDIR)pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.cpp	
