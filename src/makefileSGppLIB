@@ -79,6 +79,7 @@ OBJS =	DataVector.o\
 	OperationHestonFLinear.o\
 	OperationHestonGLinear.o\
 	OperationHestonHLinear.o\
+	OperationHestonMLinear.o\
 	OperationHestonXLinear.o\
 	OperationHestonWLinear.o\
 	OperationHestonZLinear.o\
@@ -570,6 +571,9 @@ OperationHestonGLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pd
 
 OperationHestonHLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonHLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
+
+OperationHestonMLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonMLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonMLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonMLinear.cpp
 
 OperationHestonXLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonXLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.cpp
