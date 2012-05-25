@@ -27,11 +27,11 @@ from bin.learner.TrainingStopPolicy import TrainingStopPolicy
 
 from bin.learner.TrainingSpecification import TrainingSpecification
 from bin.learner.solver.CGSolver import CGSolver
-from bin.learner.formatter.GridFormatter import GridFormatter
-from bin.learner import Types
+from bin.learner.Types import BorderTypes
 
 from bin.pysgpp import *
 from bin.data.ARFFAdapter import ARFFAdapter
+from bin.data.CSVAdapter import CSVAdapter
 from bin.data.DataContainer import DataContainer
 from bin.learner.Regressor import Regressor
 
@@ -326,6 +326,37 @@ class LearnerBuilder(object):
     
     
     ## 
+    # Signals to use data from CSV file for training dataset
+    #
+    # @param filename: Filename where to read the data from
+    # @param name: Category name, default: "train"
+    # @return: LearnerBuilder
+    ##
+    def withTrainingDataFromCSVFile(self, filename, name="train"):
+        dataContainer = CSVAdapter(filename).loadData(name)
+        if self.__learner.dataContainer != None:
+            self.__learner.setDataContainer(self.__learner.dataContainer.combine(dataContainer))
+        else:
+            self.__learner.setDataContainer(dataContainer)        
+        return self
+    
+
+    ## 
+    # Signals to use data from CSV file for testing dataset
+    #
+    # @param filename: Filename where to read the data from
+    # @return: LearnerBuilder object itself
+    # @todo (khakhutv) implement test for the method
+    def withTestingDataFromCSVFile(self, filename):
+        dataContainer = CSVAdapter(filename).loadData(DataContainer.TEST_CATEGORY)
+        if self.__learner.dataContainer != None:
+            self.__learner.setDataContainer(self.__learner.dataContainer.combine(dataContainer))
+        else:
+            self.__learner.setDataContainer(dataContainer)
+        return self
+    
+    
+    ## 
     # Signals to use initial data for alpha vector from ARFF file
     #
     # @param filename: Filename where to read the data from
@@ -406,9 +437,9 @@ class LearnerBuilder(object):
                 if self.__dim == None or self.__level == None:
                     raise AttributeError, "Not all attributes assigned to create grid"                
                 if self.__border != None: 
-                    if self.__border == Types.BorderTypes.TRAPEZOIDBOUNDARY:
+                    if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
                         grid = Grid.createLinearTrapezoidBoundaryGrid(self.__dim)            
-                    elif self.__border == Types.BorderTypes.COMPLETEBOUNDARY:
+                    elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.__dim)            
                     else:
                         if self.__deg > 1:
@@ -621,7 +652,7 @@ class LearnerBuilder(object):
         # @return: SpecificationDescriptor itself
         ##
         def withAdaptThreshold(self, value):
-            self.__specification.setThreshold(value)
+            self.__specification.setAdaptThreshold(value)
             return self
         
         
