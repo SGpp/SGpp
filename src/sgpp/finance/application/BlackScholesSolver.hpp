@@ -16,8 +16,8 @@
 #include "base/grid/common/BoundingBox.hpp"
 #include "solver/ODESolver.hpp"
 
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 
 #include "base/tools/StdNormalDistribution.hpp"
 

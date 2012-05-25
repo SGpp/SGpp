@@ -63,7 +63,7 @@ void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func, DataVecto
 	coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
 }
 
-size_t StandardGridGenerator::getNumberOfRemoveablePoints()
+size_t StandardGridGenerator::getNumberOfRemovablePoints()
 {
 	HashCoarsening coarsen;
 	return coarsen.getNumberOfRemovablePoints(this->storage);

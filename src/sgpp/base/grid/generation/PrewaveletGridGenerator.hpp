@@ -70,7 +70,7 @@ public:
 
 	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
 	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
-	virtual size_t getNumberOfRemoveablePoints();
+	virtual size_t getNumberOfRemovablePoints();
 
 	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel);
 	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel);

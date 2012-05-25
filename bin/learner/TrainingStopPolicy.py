@@ -44,6 +44,7 @@ class TrainingStopPolicy(object):
         self.__MSELimit = None
         self.__accuracyLimit = None
         self.__gridSizeLimit = None
+        self.__oldGridSize = 0
 
 
     ## Returns the maximal number of refinement iterations
@@ -88,6 +89,8 @@ class TrainingStopPolicy(object):
         and (self.getMSELimit() == None
         or self.getMSELimit() >= learner.trainingOverall[-1]):
             return True
+        if learner.grid.getSize() == self.__oldGridSize: return True
+        self.__oldGridSize = learner.grid.getSize()
         return False
 
     
@@ -158,6 +161,8 @@ class TrainingStopPolicy(object):
             policy.setAccuracyLimit(jsonObject['_TrainingStopPolicy__accuracyLimit'])
         if jsonObject.has_key('_TrainingStopPolicy__gridSize'):
             policy.setGridSizeLimit(jsonObject['_TrainingStopPolicy__gridSize'])
+        if jsonObject.has_key('_TrainingStopPolicy__oldGridSize'):
+            policy.__oldGridSize = jsonObject['_TrainingStopPolicy__oldGridSize']
         return policy
 
             

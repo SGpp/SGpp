@@ -9,7 +9,7 @@
 #define SURPLUSCOARSENINGFUNCTOR_HPP
 
 #include "base/datatypes/DataVector.hpp"
-#include "base/grid/generation/CoarseningFunctor.hpp"
+#include "base/grid/generation/functors/CoarseningFunctor.hpp"
 #include "base/grid/GridStorage.hpp"
 
 namespace sg

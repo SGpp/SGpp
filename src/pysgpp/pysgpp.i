@@ -97,9 +97,12 @@ namespace std {
 %include "src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
 
 %include "src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
+%include "src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
 %include "src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
@@ -108,9 +111,10 @@ namespace std {
 %include "src/sgpp/base/grid/generation/TruncatedTrapezoidGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
-%include "src/sgpp/base/grid/generation/SurplusRefinementFunctor.hpp"
-%include "src/sgpp/base/grid/generation/SurplusVolumeRefinementFunctor.hpp"
-%include "src/sgpp/base/grid/generation/SurplusCoarseningFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/GridDataBase.hpp"
 
 

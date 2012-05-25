@@ -80,11 +80,17 @@ elif options.friedman == 3:
         X.setRow(i,p)
 else:
     sys.exit(1)
-        
-if options.outfile:
+ 
+if options.outfile and ".csv" in options.outfile:
+    from numpy import savetxt
+    #header = ','.join(['x%d'%i for i in xrange(X.getNcols()-1)] + ['classes'])
+    savetxt(options.outfile, X.array(), fmt='%.12f', delimiter = ',') 
+    sys.exit(1)      
+elif options.outfile:
     fd = tools.gzOpen(options.outfile, 'w')
 else:
     fd = sys.stdout
+
 fd.write("""@RELATION "%s"\n\n""" % (namestring))
 for d in range(X.getNcols()-1):
     fd.write("""@ATTRIBUTE x%d NUMERIC\n""" % (d))

@@ -465,11 +465,11 @@ TruncatedTrapezoidGridGenerator.o : $(SRCDIR)base/grid/generation/TruncatedTrape
 BoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundaryGridGenerator.o $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
 	
-SurplusRefinementFunctor.o : $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
+SurplusRefinementFunctor.o : $(SRCDIR)base/grid/generation/functors/SurplusRefinementFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)base/grid/generation/functors/SurplusRefinementFunctor.cpp
 	
-SurplusCoarseningFunctor.o : $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
+SurplusCoarseningFunctor.o : $(SRCDIR)base/grid/generation/functors/SurplusCoarseningFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 
 TrapezoidBoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TrapezoidBoundaryGridGenerator.o $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
