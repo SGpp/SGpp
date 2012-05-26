@@ -7,9 +7,18 @@
 
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonKLinear.hpp"
 
-//#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
-//#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
-//
+#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
+#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
+
+#include "finance/basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.hpp"
+
+#include "finance/basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
+
+#include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiDownBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiUpBBLinear.hpp"
+
 //#include "finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.hpp"
 //#include "finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.hpp"
 //
@@ -38,45 +47,93 @@ OperationHestonKLinear::~OperationHestonKLinear()
 // Unidirectional
 void OperationHestonKLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// phi * phi
+	sg::pde::PhiPhiUpBBLinear func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiUpBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
 void OperationHestonKLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// phi * phi
+	sg::pde::PhiPhiDownBBLinear func(this->storage);
+	sg::base::sweep<sg::pde::PhiPhiDownBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
 
 // Singles
 void OperationHestonKLinear::downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// phi * dphi
+	PhidPhiDownBBLinear func(this->storage);
+	sg::base::sweep<PhidPhiDownBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
+
 void OperationHestonKLinear::upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// phi * dphi
+	PhidPhiUpBBLinear func(this->storage);
+	sg::base::sweep<PhidPhiUpBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
+
 void OperationHestonKLinear::downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// sqrtX phi phi
+	SqrtXPhiPhiDownBBLinear func(this->storage);
+	sg::base::sweep<SqrtXPhiPhiDownBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
+
 void OperationHestonKLinear::upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// sqrtX phi phi
+	SqrtXPhiPhiUpBBLinear func(this->storage);
+	sg::base::sweep<SqrtXPhiPhiUpBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
+
 void OperationHestonKLinear::downOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// dphi * phi
+	DPhiPhiDownBBLinear func(this->storage);
+	sg::base::sweep<DPhiPhiDownBBLinear> s(func, this->storage);
+
+	s.sweep1D(alpha, result, dim);
 
 }
+
 void OperationHestonKLinear::upOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// dphi * phi
+	DPhiPhiUpBBLinear func(this->storage);
+	sg::base::sweep<DPhiPhiUpBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
+
 void OperationHestonKLinear::downOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// sqrtX phi phi
+	SqrtXPhiPhiDownBBLinear func(this->storage);
+	sg::base::sweep<SqrtXPhiPhiDownBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
+
 void OperationHestonKLinear::upOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
+	// sqrtX phi phi
+	SqrtXPhiPhiUpBBLinear func(this->storage);
+	sg::base::sweep<SqrtXPhiPhiUpBBLinear> s(func, this->storage);
 
+	s.sweep1D(alpha, result, dim);
 }
 
 // Doubles
