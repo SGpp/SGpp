@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#ifndef OPERATIONHESTONMLINEAR_HPP
-#define OPERATIONHESTONMLINEAR_HPP
+#ifndef OPERATIONHESTONKLINEAR_HPP
+#define OPERATIONHESTONKLINEAR_HPP
 
 #include "pde/algorithm/UpDownFourOpDims.hpp"
 
@@ -22,7 +22,7 @@ namespace finance
  *
  * @version $HEAD$
  */
-class OperationHestonMLinear : public sg::pde::UpDownFourOpDims
+class OperationHestonKLinear : public sg::pde::UpDownFourOpDims
 {
 public:
 	/**
@@ -31,12 +31,12 @@ public:
 	 * @param storage the grid's sg::base::GridStorage object
 	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	OperationHestonMLinear(sg::base::GridStorage* storage, double**** coef);
+	OperationHestonKLinear(sg::base::GridStorage* storage, double**** coef);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationHestonMLinear();
+	virtual ~OperationHestonKLinear();
 
 protected:
 
@@ -87,4 +87,4 @@ protected:
 }
 }
 
-#endif /* OPERATIONHESTONMLINEAR_HPP */
+#endif /* OPERATIONHESTONKLINEAR_HPP */
