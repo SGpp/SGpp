@@ -12,7 +12,7 @@ namespace sg
 namespace pde
 {
 
-UpDownFourOpDims::UpDownFourOpDims(sg::base::GridStorage* storage, double**** coef) : storage(storage), coefs(coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
+UpDownFourOpDims::UpDownFourOpDims(sg::base::GridStorage* storage, double***** coef) : storage(storage), coefs((*coef)), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
 }
 

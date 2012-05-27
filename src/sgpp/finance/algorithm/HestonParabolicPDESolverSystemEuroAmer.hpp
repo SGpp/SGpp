@@ -56,6 +56,8 @@ protected:
 	sg::base::OperationMatrix* OpGInner;
 	sg::base::OperationMatrix* OpHBound;
 	sg::base::OperationMatrix* OpHInner;
+	sg::base::OperationMatrix* OpKBound;
+	sg::base::OperationMatrix* OpKInner;
 	sg::base::OperationMatrix* OpXBound;
 	sg::base::OperationMatrix* OpXInner;
 	sg::base::OperationMatrix* OpYBound;
@@ -93,6 +95,8 @@ protected:
 	sg::base::DataMatrix* yCoeff;
 	sg::base::DataMatrix* wCoeff;
 //	sg::base::DataMatrix* zCoeff;
+
+	double**** kCoeff;
 
 	// ---- END HESTON-RELEVANT MEMBERS ----
 
@@ -177,6 +181,12 @@ protected:
 	void buildFCoefficientsLogTransform();
 	void buildGCoefficientsLogTransform();
 	void buildHCoefficientsLogTransform();
+	void buildKCoefficientsLogTransform();
+
+	void create4dEqualDimSizeArray(size_t dimSize, double***** array);
+//	void create4dEqualDimSizeArray(size_t dimSize);
+	void delete4dEqualDimSizeArray(size_t dimSize, double***** array);
+	void setAll4dEqualDimSizeArray(size_t dimSize, double***** array, double value);
 
 //	bool IsNonMaxVolatilityBoundary(sg::base::GridIndex* idx);
 

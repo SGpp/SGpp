@@ -39,7 +39,7 @@ public:
 	 * @param storage the grid's sg::base::GridStorage object
 	 * @param 4d tensor that contains the constant coefficients of this operation
 	 */
-	UpDownFourOpDims(sg::base::GridStorage* storage, double**** coef);
+	UpDownFourOpDims(sg::base::GridStorage* storage, double***** coef);
 
 	/**
 	 * Constructor

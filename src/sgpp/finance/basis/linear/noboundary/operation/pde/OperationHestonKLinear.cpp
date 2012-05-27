@@ -36,7 +36,7 @@ namespace sg
 namespace finance
 {
 
-OperationHestonKLinear::OperationHestonKLinear(sg::base::GridStorage* storage, double**** coef) : sg::pde::UpDownFourOpDims(storage, coef)
+OperationHestonKLinear::OperationHestonKLinear(sg::base::GridStorage* storage, double***** coef) : sg::pde::UpDownFourOpDims(storage, coef)
 {
 }
 
