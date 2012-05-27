@@ -565,12 +565,12 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		//		myHestonSolver->CompareHestonBs1d(timesteps*stepsize, 0.1);
 	}
 
-	if (numberOfAssets < 3)
+	if (numberOfAssets < 2)
 	{
 		myHestonSolver->printGrid(*alpha, 100, "payoff.gnuplot");
 	}
 
-	if (numberOfAssets < 4)
+	if (numberOfAssets < 2)
 	{
 		myHestonSolver->printSparseGrid(*alpha, "payoff_surplus.grid.gnuplot", true);
 		myHestonSolver->printSparseGrid(*alpha, "payoff_nodal.grid.gnuplot", false);
@@ -597,7 +597,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
 	}
 
-	if (numberOfAssets < 3)
+	if (numberOfAssets < 2)
 	{
 		// Print the solved Heston Equation into a gnuplot file
 		myHestonSolver->printGrid(*alpha, PLOT_RESOLUTION, "solvedHeston.gnuplot");
@@ -612,9 +612,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 	// Set alphaDone
 	//	alphaDone = abs(myHestonSolver->EvalSinglePoint1Asset(sProbe, vProbe, *alpha) - myHestonSolver->EvaluateHestonPriceExact(exp(sProbe), vProbe, xi.get(0), theta.get(0), kappa.get(0), hMatrix.get(0,1), r, timesteps*stepsize, dStrike));
-	alphaDone = myHestonSolver->EvalSinglePoint1Asset(sProbe, vProbe, *alpha);
+//	alphaDone = myHestonSolver->EvalSinglePoint1Asset(sProbe, vProbe, *alpha);
 
-	std::cout << "Exact solution: " << myHestonSolver->EvaluateHestonPriceExact(exp(sProbe), vProbe, xi.get(0), theta.get(0), kappa.get(0), hMatrix.get(0,1), r, timesteps*stepsize, dStrike) << std::endl;
+//	std::cout << "Exact solution: " << myHestonSolver->EvaluateHestonPriceExact(exp(sProbe), vProbe, xi.get(0), theta.get(0), kappa.get(0), hMatrix.get(0,1), r, timesteps*stepsize, dStrike) << std::endl;
 
 	std::stringstream sstm;
 	sstm << "solExactDiff" << level << ".gnuplot";
@@ -628,7 +628,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	//		myHestonSolver->printGrid(*alpha, 50, "hestonError.gnuplot");
 	//	}
 
-	if (numberOfAssets < 4)
+	if (numberOfAssets < 2)
 	{
 		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_surplus.grid.gnuplot", true);
 		myHestonSolver->printSparseGrid(*alpha, "solvedHeston_nodal.grid.gnuplot", false);
@@ -777,7 +777,7 @@ int main(int argc, char *argv[])
 
 			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 
-			std::cout << "Error: " << alphaDone << std::endl;
+//			std::cout << "Error: " << alphaDone << std::endl;
 		}
 	}
 	else
