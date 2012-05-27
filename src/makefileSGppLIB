@@ -25,6 +25,10 @@ OBJS =	DataVector.o\
 	SquareRootGrid.o\
 	TruncatedTrapezoidGrid.o\
 	PolyGrid.o\
+	AbstractRefinement.o\
+    HashRefinement.o\
+    HashRefinementBoundaries.o\
+    HashRefinementBoundariesMaxLevel.o\
 	StandardGridGenerator.o\
 	BoundaryGridGenerator.o\
 	TrapezoidBoundaryGridGenerator.o\
@@ -452,6 +456,18 @@ TruncatedTrapezoidGrid.o : $(SRCDIR)base/grid/type/TruncatedTrapezoidGrid.cpp
 	
 PolyGrid.o : $(SRCDIR)base/grid/type/PolyGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PolyGrid.o $(SRCDIR)base/grid/type/PolyGrid.cpp
+    
+AbstractRefinement.o : $(SRCDIR)base/grid/generation/hashmap/AbstractRefinement.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AbstractRefinement.o $(SRCDIR)base/grid/generation/hashmap/AbstractRefinement.cpp
+    
+HashRefinement.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinement.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinement.o $(SRCDIR)base/grid/generation/hashmap/HashRefinement.cpp
+    
+HashRefinementBoundaries.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundaries.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinementBoundaries.o $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundaries.cpp
+    
+HashRefinementBoundariesMaxLevel.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinementBoundariesMaxLevel.o $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
 	
 StandardGridGenerator.o : $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StandardGridGenerator.o $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
