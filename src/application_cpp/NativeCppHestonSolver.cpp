@@ -20,24 +20,16 @@
 #include <complex>
 #include <limits>
 
-// @todo (heinecke) remove global variables
-std::string tFileEvalCuboid = "evalCuboid.data";
-std::string tFileEvalCuboidValues = "evalCuboidValues.data";
-
-/// default number of Implicit Euler steps before starting with Crank Nicolson approach
+// default number of Implicit Euler steps before starting with Crank Nicolson approach
 #define CRNIC_IMEUL_STEPS 3
-/// default value for epsilon in gridpoints @money
+// default value for epsilon in gridpoints @money
 #define DFLT_EPS_AT_MONEY 0.0
-/// default value for sigma of refinement normal distribution
-#define DFLT_SIGMA_REFINE_NORMDIST 0.15
-
+// Resolution (num points per dimension) of the created gnuplots
 #define PLOT_RESOLUTION 40
 
 using namespace sg;
 using namespace sg::pde;
 using namespace std;
-
-//#define EXPORT_MATRIX_FILES
 
 double alphaDone;
 double vProbe;
@@ -46,7 +38,7 @@ double refinementThresh;
 size_t numGridPoints;
 
 /**
- * Calls the writeHelp method in the BlackScholesSolver Object
+ * Calls the writeHelp method in the HestonSolver Object
  * after creating a screen.
  */
 void writeHelp()
@@ -244,67 +236,6 @@ void writeHelp()
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-//int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector& thetas, sg::base::DataVector& volvols, sg::base::DataVector& kappas, sg::base::DataMatrix& rho)
-//{
-//	std::fstream file;
-//	double cur_theta;
-//	double cur_kappa;
-//	double cur_volvol;
-//	double cur_rho;
-//
-//	file.open(tFile.c_str());
-//
-//	if(!file.is_open())
-//	{
-//		std::cout << "Error cannot read file: " << tFile << std::endl;
-//		return -1;
-//	}
-//	// Get number of elements in stoch file, must be numAssests*(numAssests+2)
-//	size_t t = 0;
-//	double test;
-//	do
-//	{
-//		file >> test;
-//		t++;
-//	} while (!file.eof());
-//	file.close();
-//	if (t < ((numAssets*numAssets)+(2*numAssets)))
-//	{
-//		std::cout << "Invalid stoch file: " << tFile << " Last Value:" << test << std::endl;
-//		return -1;
-//	}
-//
-//	file.open(tFile.c_str());
-//	for (size_t i = 0; i < numAssets; i++)
-//	{
-//		file >> cur_theta;
-//		file >> cur_kappa;
-//		thetas.set(i, cur_theta);
-//		kappas.set(i, cur_kappa);
-//		for (size_t j = 0; j < numAssets; j++)
-//		{
-//			file >> cur_rho;
-//			rho.set(i,j, cur_rho);
-//		}
-//	}
-//
-//	file.close();
-//
-//	return 0;
-//}
-
-/**
- * reads the values of mu, sigma and rho of all assets from
- * a file and stores them into three separated DataVectors
- *
- * @param tFile the file that contains the stochastic data
- * @param numAssets the of Assets stored in the file
- * @param mu DataVector for the exspected values
- * @param sigma DataVector for standard deviation
- * @param rho DataMatrix for the correlations
- *
- * @return returns 0 if the file was successfully read, otherwise -1
- */
 int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector& xi, sg::base::DataVector& theta, sg::base::DataVector& kappa, sg::base::DataMatrix& hMatrix)
 {
 	// For the Heston model we need the following stochastic process data
@@ -457,233 +388,6 @@ int readBoudingBoxData(std::string tFile, size_t numDims, sg::base::DimensionBou
 }
 
 /**
- * reads the analyze configuration from a file
- *
- * @param tFile the file that contains the analyze data
- * @param numAssets the number of assets
- * @param BoundaryArray Pointer to the Bounding Box array
- * @param points variable to store the number of points in every dimension
- *
- * @return returns 0 if the file was successfully read, otherwise -1
- */
-//int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoundary* BoundaryArray, size_t& points)
-//{
-//	std::fstream file;
-//	double cur_right;
-//	double cur_left;
-//
-//	file.open(tFile.c_str());
-//
-//	if(!file.is_open())
-//	{
-//		std::cout << "Error cannot read file: " << tFile << std::endl;
-//		return -1;
-//	}
-//
-//	// Get number of elements in analyze file, must be 2*numAssests+1
-//	size_t j = 0;
-//	double test;
-//	do
-//	{
-//		file >> test;
-//		j++;
-//	} while (!file.eof());
-//	file.close();
-//	if (j < (numAssets*2)+1)
-//	{
-//		std::cout << "Invalid analyze file: " << tFile << " Last Value:" << test << std::endl;
-//		return -1;
-//	}
-//	file.open(tFile.c_str());
-//
-//
-//	for (size_t i = 0; i < numAssets; i++)
-//	{
-//		file >> cur_left;
-//		file >> cur_right;
-//
-//		BoundaryArray[i].leftBoundary = cur_left;
-//		BoundaryArray[i].rightBoundary = cur_right;
-//		BoundaryArray[i].bDirichletLeft = true;
-//		BoundaryArray[i].bDirichletRight = true;
-//	}
-//
-//	file >> points;
-//
-//	file.close();
-//
-//	return 0;
-//}
-
-/**
- * reads a cuboid defined by several points from a file. These points are stored in the
- * cuboid DataMatrix
- *
- * @param cuboid DataMatrix into which the evaluations points are stored
- * @param tFile file that contains the cuboid
- * @param dim the dimensions of cuboid
- */
-//int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim)
-//{
-//	std::fstream file;
-//	double cur_coord;
-//
-//	file.open(tFile.c_str());
-//
-//	if(cuboid.getNcols() != dim)
-//	{
-//		std::cout << "Cuboid-definition file doesn't match: " << tFile << std::endl;
-//		return -1;
-//	}
-//
-//	if(!file.is_open())
-//	{
-//		std::cout << "Error cannot read file: " << tFile << std::endl;
-//		return -1;
-//	}
-//
-//	// Get number of lines and resize DataMatrix
-//	size_t i = 0;
-//	while (!file.eof())
-//	{
-//		for (size_t d = 0; d < dim; d++)
-//		{
-//			file >> cur_coord;
-//		}
-//		i++;
-//	}
-//	file.close();
-//	cuboid.resize(i);
-//
-//	// Read data from file
-//	file.open(tFile.c_str());
-//	i = 0;
-//	while (!file.eof())
-//	{
-//		sg::base::DataVector line(dim);
-//		line.setAll(0.0);
-//		for (size_t d = 0; d < dim; d++)
-//		{
-//			file >> cur_coord;
-//			line.set(d, cur_coord);
-//		}
-//		cuboid.setRow(i, line);
-//		i++;
-//	}
-//	file.close();
-//
-//	return 0;
-//}
-
-/**
- * reads function values (here option prices) from a file
- *
- * @param values DataVector into which the values will be stored
- * @param tFile file from which the values are read
- * @param numValues number of values stored in the file
- */
-//int readOptionsValues(sg::base::DataVector& values, std::string tFile)
-//{
-//	std::fstream file;
-//	double cur_value;
-//
-//	file.open(tFile.c_str());
-//
-//	if(!file.is_open())
-//	{
-//		std::cout << "Error cannot read file: " << tFile << std::endl;
-//		return -1;
-//	}
-//
-//	// Count number of lines
-//	size_t i = 0;
-//	while (!file.eof())
-//	{
-//		file >> cur_value;
-//		i++;
-//	}
-//	values.resize(i);
-//	file.close();
-//
-//	// Read data from File
-//	file.open(tFile.c_str());
-//	i = 0;
-//	while (!file.eof())
-//	{
-//		file >> cur_value;
-//		values.set(i, cur_value);
-//		i++;
-//	}
-//	file.close();
-//
-//	return 0;
-//}
-
-/**
- * Writes a DataMatrix into a file
- *
- * @param data the DataMatrix that should be written into a file
- * @param tFile the file into which the data is written
- *
- * @return error code
- */
-//int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile)
-//{
-//	std::ofstream file;
-//	file.open(tFile.c_str());
-//
-//	if(!file.is_open())
-//	{
-//		std::cout << "Error cannot write file: " << tFile << std::endl;
-//		return -1;
-//	}
-//
-//	for (size_t i = 0; i < data.getNrows(); i++)
-//	{
-//		for (size_t j = 0; j < data.getNcols(); j++)
-//		{
-//			file << std::scientific << std::setprecision( 16 ) << data.get(i,j) << " ";
-//		}
-//		file << std::endl;
-//	}
-//
-//	file.close();
-//
-//	return 0;
-//}
-
-
-/**
- * Writes a DataVector into a file
- *
- * @param data the DataVector that should be written into a file
- * @param tFile the file into which the data is written
- *
- * @return error code
- */
-//int writeDataVector(sg::base::DataVector& data, std::string tFile)
-//{
-//	std::ofstream file;
-//	file.open(tFile.c_str());
-//
-//	if(!file.is_open())
-//	{
-//		std::cout << "Error cannot write file: " << tFile << std::endl;
-//		return -1;
-//	}
-//
-//	for (size_t i = 0; i < data.getSize(); i++)
-//	{
-//
-//		file << std::scientific << std::setprecision( 16 ) << data.get(i) << " " << std::endl;
-//	}
-//
-//	file.close();
-//
-//	return 0;
-//}
-
-/**
  * Do a Black Scholes solver test with n assets (ND Sparse Grid) European call / put option
  *
  * @param d the number of dimensions used in the Sparse Grid
@@ -740,10 +444,6 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	{
 		myHestonSolver = new sg::finance::HestonSolver(false);
 	}
-	//	else if (coordsType == "PAT")
-	//	{
-	//		myHestonSolver = new sg::finance::HestonSolver(true, true);
-	//	}
 	else
 	{
 		// Write Error
@@ -973,27 +673,27 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 int main(int argc, char *argv[])
 {
 
-	size_t arraySize = 5;
-	double **** fourDArray = new double***[arraySize];
-	for(int i=0;i<arraySize;i++)
-	{
-		fourDArray[i] = new double**[arraySize];
-
-		for(int j=0;j<arraySize;j++)
-		{
-			fourDArray[i][j] = new double*[arraySize];
-
-			for(int k=0;k<arraySize;k++)
-			{
-				fourDArray[i][j][k] = new double[arraySize];
-
-				for (int m=0;m<arraySize;m++)
-				{
-					fourDArray[i][j][k][m] = 1.0;
-				}
-			}
-		}
-	}
+//	size_t arraySize = 5;
+//	double **** fourDArray = new double***[arraySize];
+//	for(int i=0;i<arraySize;i++)
+//	{
+//		fourDArray[i] = new double**[arraySize];
+//
+//		for(int j=0;j<arraySize;j++)
+//		{
+//			fourDArray[i][j] = new double*[arraySize];
+//
+//			for(int k=0;k<arraySize;k++)
+//			{
+//				fourDArray[i][j][k] = new double[arraySize];
+//
+//				for (int m=0;m<arraySize;m++)
+//				{
+//					fourDArray[i][j][k][m] = 1.0;
+//				}
+//			}
+//		}
+//	}
 
 
 	std::string option;

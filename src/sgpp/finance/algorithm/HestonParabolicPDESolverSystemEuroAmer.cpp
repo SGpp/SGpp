@@ -78,7 +78,14 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	this->kappas = &kappas;
 	this->hMatrix = &rho;
 	this->HestonAlgoDims = this->BoundGrid->getAlgorithmicDimensions();
+	this->nAssets = this->HestonAlgoDims.size() / 2;
 	this->nExecTimesteps = 0;
+
+	// throw exception if algorithmic dimensions isn't even
+	if ((this->HestonAlgoDims.size()%2) != 0 )
+	{
+		throw sg::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Number of algorithmic dimensions is not even.");
+	}
 
 	// throw exception if grid dimensions not equal algorithmic dimensions
 	if (this->HestonAlgoDims.size() != this->BoundGrid->getStorage()->dim())
@@ -143,7 +150,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 
 
 	//	this->gammaCoef = new sg::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
-//	this->deltaCoef = new sg::base::DataVector(this->HestonAlgoDims.size());
+	//	this->deltaCoef = new sg::base::DataVector(this->HestonAlgoDims.size());
 
 	// create the inner grid
 	// Here we have to make sure that the alpha_inner doesn't come out with zeros at the other end.
@@ -699,16 +706,16 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 //	}
 //}
 
-void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients()
-{
-	size_t dim = this->HestonAlgoDims.size();
-	double covar_sum = 0.0;
-
-	for (size_t i = 0; i < dim; i++)
-	{
-		this->deltaCoef->set(i, this->r);
-	}
-}
+//void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients()
+//{
+//	size_t dim = this->HestonAlgoDims.size();
+//	double covar_sum = 0.0;
+//
+//	for (size_t i = 0; i < dim; i++)
+//	{
+//		this->deltaCoef->set(i, this->r);
+//	}
+//}
 
 //void HestonParabolicPDESolverSystemEuroAmer::buildGammaCoefficientsLogTransform()
 //{
@@ -850,159 +857,91 @@ void HestonParabolicPDESolverSystemEuroAmer::buildYCoefficients()
 	//	}
 }
 
-void HestonParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTransform()
-{
-	size_t dim = this->HestonAlgoDims.size();
-
-	//	this->deltaCoef->set(0, this->r);
-	//	this->deltaCoef->set(1, 0.0);
-
-//	for (size_t i = 0; i < dim; i++)
-//	{
-//		this->deltaCoef->set(i, this->r);
-//	}
-}
-
 void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size();
-
-	//	this->bCoeff->set(0, 0.0);
-	//	this->bCoeff->set(1, 0.0);
-
+	// Operator B has two custom 1D operators, so the coefficients object is a matrix.
+	// The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. dimensions (1,2), (3,4), (5,6) etc. (zero-based array dimensions (0,1), (2,3), (4,5) etc.)
 	this->bCoeff->setAll(0.0);
-	this->bCoeff->set(0,1,0.5);
-
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		this->bCoeff->set(i, -0.5);
-	//	}
+	for (size_t i = 0; i < this->nAssets; i++)
+	{
+		this->bCoeff->set(2*i,2*i+1, 0.5);
+	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size();
-
-	double volvol = volvols->get(0);
-	double rho = this->hMatrix->get(0,1);
-
+	// Operator C has two custom 1D operators, so the coefficients object is a matrix.
+	// The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. dimensions (1,2), (3,4), (5,6) etc. (zero-based array dimensions (0,1), (2,3), (4,5) etc.)
+	double volvol, rho;
 	this->cCoeff->setAll(0.0);
-	this->cCoeff->set(0,1, volvol*rho);
-
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		this->cCoeff->set(i, (-1.0)*volvol*rho);
-	//	}
-
-	// todo: fix this hack!
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		double rho = this->hMatrix->get(i,i);
-	//		double volvol = volvols->get(i);
-	//		this->cCoeff->set(i, -rho * volvol);
-	//	}
+	for (size_t i = 0; i < this->nAssets; i++)
+	{
+		volvol = volvols->get(i);
+		rho = this->hMatrix->get(2*i,2*i+1);
+		this->cCoeff->set(2*i, 2*i+1,volvol*rho);
+	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size();
-
-	//	for (size_t i = 0; i < dim; i++)
-	//		{
-	//			this->dCoeff->set(i, 0.0);
-	//		}
-
-	double volvol = this->volvols->get(0);
+	// The D operator is oneOpDim, so there is only a vector of coefficients to set.
+	// Only the variance dimensions are active in this operator, i.e. dimensions 2, 4, 6, 8 etc. (zero-based array dimensions 1, 3, 5, 7 etc.)
 	this->dCoeff->setAll(0.0);
-	this->dCoeff->set(1, 0.5*pow(volvol,2.0));
-
-
-	// todo: fix this hack!
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		this->dCoeff->set(i, -0.5*pow(volvol,2.0));
-	//	}
+	for(size_t i = 0; i < this->nAssets;i++)
+	{
+		double volvol = volvols->get(i);
+		this->dCoeff->set(2*i+1, (0.5)*pow(volvol,2.0));
+	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size();
-
-	double rho = this->hMatrix->get(0,1);
-	double volvol = this->volvols->get(0);
-
-//	this->eCoeff->set(0, this->r - rho*volvol);
-	this->eCoeff->set(0, this->r);
-	this->eCoeff->set(1, 0.0);
-
-	//	this->eCoeff->set(0, this->r);
-	//	this->eCoeff->set(1, this->r);
-
-
-	// todo: fix this hack!
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		//		this->eCoeff->set(i, this->r);
-	//		this->eCoeff->set(i, this->r - rho*volvol);
-	//	}
+	// The E operator is oneOpDim, so there is only a vector of coefficients to set.
+	// Only the stock-price dimensions are active in this operator, i.e. dimensions 1, 3, 5, 7 etc. (zero-based array dimensions 0, 2, 4, 6 etc.)
+	this->eCoeff->setAll(0.0);
+	for (size_t i = 0; i < this->nAssets; i++)
+	{
+		this->eCoeff->set(2*i, this->r);
+	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size();
-
-	double theta = this->thetas->get(0);
-	double kappa = this->kappas->get(0);
-	double volvol = this->volvols->get(0);
-
-	this->fCoeff->set(0, 0.0);
-	this->fCoeff->set(1, kappa*theta - 0.5*pow(volvol,2.0));
-
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		this->fCoeff->set(i, kappa*theta - 0.5*pow(volvol,2.0));
-	//	}
-
-	//	// todo: fix this hack!
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		double volvol = this->volvols->get(i);
-	//		double kappa = this->kappas->get(i);
-	//		double theta = this->thetas->get(i);
-	//		this->fCoeff->set(i, kappa*theta - 0.5*pow(volvol,2.0));
-	////		this->fCoeff->set(i, 0.0);
-	//	}
+	// The F operator is oneOpDim, so there is only a vector of coefficients to set.
+	// Only the variance dimensions are active in this operator, i.e. dimensions 2, 4, 6, 8 etc. (zero-based array dimensions 1, 3, 5, 7 etc.)
+	double theta, kappa, volvol;
+	this->fCoeff->setAll(0.0);
+	for (size_t i = 0; i < nAssets; i++)
+	{
+		theta = this->thetas->get(i);
+		kappa = this->kappas->get(i);
+		volvol = this->volvols->get(i);
+		this->fCoeff->set(2*i+1, kappa*theta - 0.5*pow(volvol,2.0));
+	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size();
-
-	double kappa = this->kappas->get(0);
-
-	this->gCoeff->set(0, 0.0);
-	this->gCoeff->set(1, kappa);
-
-	// todo: fix this hack!
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		this->gCoeff->set(i, (-1.0)*kappa);
-	//	}
+	// The G operator is oneOpDim, so there is only a vector of coefficients to set.
+	// Only the variance dimensions are active in this operator, i.e. dimensions 2, 4, 6, 8 etc. (zero-based array dimensions 1, 3, 5, 7 etc.)
+	this->gCoeff->setAll(0.0);
+	double kappa;
+	for (size_t i = 0; i < nAssets; i++)
+	{
+		kappa = this->kappas->get(i);
+		this->gCoeff->set(2*i+1, kappa);
+	}
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform()
 {
-	size_t dim = this->HestonAlgoDims.size();
-
+	// Operator H has two custom 1D operators, so the coefficients object is a matrix.
+	// The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. dimensions (1,2), (3,4), (5,6) etc. (zero-based array dimensions (0,1), (2,3), (4,5) etc.)
 	this->hCoeff->setAll(0.0);
-	this->hCoeff->set(0,1,0.5);
-
-
-	// todo: fix this hack!
-	//	for (size_t i = 0; i < dim; i++)
-	//	{
-	//		this->hCoeff->set(i, -0.5);
-	//	}
+	for (size_t i = 0; i < nAssets; i++)
+	{
+		this->hCoeff->set(2*i, 2*i+1, 0.5);
+	}
 }
 
 }

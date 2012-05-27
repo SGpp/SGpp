@@ -133,6 +133,8 @@ protected:
 	size_t refineMaxLevel;
 	/// the algorithmic dimensions used in this system
 	std::vector<size_t> HestonAlgoDims;
+	/// The number of assets (half the number of problem dimensions)
+	size_t nAssets;
 	/// store number of executed timesteps
 	size_t nExecTimesteps;
 	/// the strike of the current option
