@@ -31,7 +31,7 @@ public:
 	 * @param storage the grid's sg::base::GridStorage object
 	 * @param coef vector that contains the constant coefficients of this operation
 	 */
-	OperationHestonKLinear(sg::base::GridStorage* storage, double**** coef);
+	OperationHestonKLinear(sg::base::GridStorage* storage, double***** coef);
 
 	/**
 	 * Destructor

@@ -672,30 +672,6 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
  */
 int main(int argc, char *argv[])
 {
-
-//	size_t arraySize = 5;
-//	double **** fourDArray = new double***[arraySize];
-//	for(int i=0;i<arraySize;i++)
-//	{
-//		fourDArray[i] = new double**[arraySize];
-//
-//		for(int j=0;j<arraySize;j++)
-//		{
-//			fourDArray[i][j] = new double*[arraySize];
-//
-//			for(int k=0;k<arraySize;k++)
-//			{
-//				fourDArray[i][j][k] = new double[arraySize];
-//
-//				for (int m=0;m<arraySize;m++)
-//				{
-//					fourDArray[i][j][k][m] = 1.0;
-//				}
-//			}
-//		}
-//	}
-
-
 	std::string option;
 
 	if (argc == 1)

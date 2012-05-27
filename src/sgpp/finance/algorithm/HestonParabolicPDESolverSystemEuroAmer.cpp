@@ -135,7 +135,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 
 	// build the coefficient matrices for the operations
 	// We essentially have a linear system to solve for this->HestonAlgoDims.size() unknowns, right? So this means that the coefficient vectors have to be the same size, right?
-	int coefficientVectorSize = this->HestonAlgoDims.size();
+	size_t coefficientVectorSize = this->HestonAlgoDims.size();
 	this->dCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->eCoeff = new sg::base::DataVector(coefficientVectorSize);
 	this->fCoeff = new sg::base::DataVector(coefficientVectorSize);
@@ -147,6 +147,8 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	this->xCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
 	this->yCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
 	this->wCoeff = new sg::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+	create4dEqualDimSizeArray(coefficientVectorSize, &(this->kCoeff));
+	//	create4dEqualDimSizeArray(coefficientVectorSize);
 
 
 	//	this->gammaCoef = new sg::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
@@ -209,6 +211,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		buildFCoefficientsLogTransform();
 		buildGCoefficientsLogTransform();
 		buildHCoefficientsLogTransform();
+		buildKCoefficientsLogTransform();
 
 		// operations
 		this->OpBBound = sg::op_factory::createOperationHestonBLog(*this->BoundGrid, *this->bCoeff);
@@ -225,6 +228,8 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		this->OpGInner = sg::op_factory::createOperationHestonGLog(*this->InnerGrid, *this->gCoeff);
 		this->OpHBound = sg::op_factory::createOperationHestonHLog(*this->BoundGrid, *this->hCoeff);
 		this->OpHInner = sg::op_factory::createOperationHestonHLog(*this->InnerGrid, *this->hCoeff);
+		this->OpKBound = sg::op_factory::createOperationHestonKLog(*this->BoundGrid, &(this->kCoeff));
+		this->OpKInner = sg::op_factory::createOperationHestonKLog(*this->InnerGrid, &(this->kCoeff));
 	}
 
 	// Create operations, independent bLogTransform
@@ -314,6 +319,31 @@ HestonParabolicPDESolverSystemEuroAmer::~HestonParabolicPDESolverSystemEuroAmer(
 	//	}
 	//	delete this->alpha_complete_old;
 	//	delete this->alpha_complete_tmp;
+	delete4dEqualDimSizeArray(this->HestonAlgoDims.size(), &(this->kCoeff));
+
+	//	std::cout << "test1" << std::endl;
+	//
+	//	for(size_t i=0;i<this->HestonAlgoDims.size();i++)
+	//	{
+	//		for(size_t j=0;j<this->HestonAlgoDims.size();j++)
+	//		{
+	//			for(size_t k=0;k<this->HestonAlgoDims.size();k++)
+	//			{
+	//				std::cout << "test2" << std::endl;
+	//				delete[] this->kCoeff[i][j][k];
+	//			}
+	//			std::cout << "test3" << std::endl;
+	//			delete[] this->kCoeff[i][j];
+	//			std::cout << "test4" << std::endl;
+	//		}
+	//		std::cout << "test5" << std::endl;
+	//		delete[] this->kCoeff[i];
+	//		std::cout << "test6" << std::endl;
+	//	}
+	//	std::cout << "test7" << std::endl;
+	//	delete[] this->kCoeff;
+	//	std::cout << "test8" << std::endl;
+
 
 #ifdef HEDGE
 	delete myHedge;
@@ -363,6 +393,10 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::Da
 
 		// Apply the H operator
 		this->OpHBound->mult(alpha, temp);
+		result.sub(temp);
+
+		// Apply the K operator
+		this->OpKBound->mult(alpha, temp);
 		result.sub(temp);
 	}
 	else
@@ -437,6 +471,10 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataV
 
 		// Apply the H method
 		this->OpHInner->mult(alpha, temp);
+		result.sub(temp);
+
+		// Apply the K method
+		this->OpKInner->mult(alpha, temp);
 		result.sub(temp);
 	}
 	else
@@ -941,6 +979,103 @@ void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform()
 	for (size_t i = 0; i < nAssets; i++)
 	{
 		this->hCoeff->set(2*i, 2*i+1, 0.5);
+	}
+}
+
+void HestonParabolicPDESolverSystemEuroAmer::buildKCoefficientsLogTransform()
+{
+	// This operator is more exciting. It has four custom 1D operators, so the coefficients object is a 4d array.
+	// The operator has a non-zero coefficient for each quad-pairing of a stock and its variance, and a DIFFERENT stock and its variance, e.g. for three assets: (1,2,3,4), (1,2,5,6), (3,4,5,6). (zero-based array dimensions (0,1,2,3), (0,1,4,5), (2,3,4,5))
+	double rho;
+	setAll4dEqualDimSizeArray(this->HestonAlgoDims.size(), &(this->kCoeff), 0.0);
+	for (size_t i = 0; i < nAssets; i++)
+	{
+		for (size_t j = i+1; j < nAssets; j++)
+		{
+			rho = this->hMatrix->get(2*i,2*j);
+			this->kCoeff[2*i][2*i+1][2*j][2*j+1] = rho;
+		}
+	}
+}
+
+void HestonParabolicPDESolverSystemEuroAmer::create4dEqualDimSizeArray(size_t dimSize, double***** array)
+{
+	(*array) = (double****) calloc(dimSize, sizeof(double***));
+	for(size_t i=0;i<dimSize;i++)
+	{
+		(*array)[i] = (double***) calloc(dimSize, sizeof(double**));
+
+		for(size_t j=0;j<dimSize;j++)
+		{
+			(*array)[i][j] = (double**) calloc(dimSize, sizeof(double*));
+
+			for(size_t k=0;k<dimSize;k++)
+			{
+				(*array)[i][j][k] = (double*) calloc(dimSize, sizeof(double));
+
+				for (size_t m=0;m<dimSize;m++)
+				{
+					(*array)[i][j][k][m] = 0.0;
+				}
+			}
+		}
+	}
+
+	//	array = new double***[dimSize];
+	//	for(size_t i=0;i<dimSize;i++)
+	//	{
+	//		array[i] = new double**[dimSize];
+	//
+	//		for(size_t j=0;j<dimSize;j++)
+	//		{
+	//			array[i][j] = new double*[dimSize];
+	//
+	//			for(size_t k=0;k<dimSize;k++)
+	//			{
+	//				array[i][j][k] = new double[dimSize];
+	//
+	//				for (size_t m=0;m<dimSize;m++)
+	//				{
+	//					array[i][j][k][m] = 0.0;
+	//				}
+	//			}
+	//		}
+	//	}
+
+	int i=1;
+}
+
+void HestonParabolicPDESolverSystemEuroAmer::delete4dEqualDimSizeArray(size_t dimSize, double***** array)
+{
+	for(size_t i=0;i<dimSize;i++)
+	{
+		for(size_t j=0;j<dimSize;j++)
+		{
+			for(size_t k=0;k<dimSize;k++)
+			{
+				delete[] (*array)[i][j][k];
+			}
+			delete[] (*array)[i][j];
+		}
+		delete[] (*array)[i];
+	}
+	delete[] (*array);
+}
+
+void HestonParabolicPDESolverSystemEuroAmer::setAll4dEqualDimSizeArray(size_t dimSize, double***** array, double value)
+{
+	for(size_t i=0;i<dimSize;i++)
+	{
+		for(size_t j=0;j<dimSize;j++)
+		{
+			for(size_t k=0;k<dimSize;k++)
+			{
+				for (size_t m=0;m<dimSize;m++)
+				{
+					(*array)[i][j][k][m] = value;
+				}
+			}
+		}
 	}
 }
 
