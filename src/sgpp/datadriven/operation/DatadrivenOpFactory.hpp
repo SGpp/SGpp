@@ -12,6 +12,8 @@
 
 #include "datadriven/operation/OperationTest.hpp"
 #include "base/operation/OperationMatrix.hpp"
+#include "datadriven/operation/OperationDensityMarginalize.hpp"
+#include "datadriven/operation/OperationDensityConditional.hpp"
 
 /*
  * This file contains factory methods for operations.
@@ -31,13 +33,31 @@ namespace op_factory
   datadriven::OperationTest* createOperationTest(base::Grid& grid);
 
   /**
-   * Factory method, returning an OperationTest for the grid at hand.
+   * Factory method, returning an OperationRegularizationDiagonal for the grid at hand.
    * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used for OperationRegularizationDiagonal
-   * @return Pointer to the new OperationTest object for the Grid grid
+   * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
    */
   base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k);
+
+  /**
+   * Factory method, returning an OperationDensityMarginalize for the grid.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for the operation
+   * @return Pointer to new OperationDensityMarginalize for the Grid grid
+   */
+  datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid);
+
+    /**
+   * Factory method, returning an OperationDensityConditional for the grid.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for the operation
+   * @return Pointer to new OperationDensityConditional for the Grid grid
+   */
+  datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid);
 
 }
 }
