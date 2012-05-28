@@ -26,6 +26,9 @@
 #include "datadriven/basis/prewavelet/operation/OperationTestPrewavelet.hpp"
 #include "datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp"
 #include "datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp"
+
 
 #include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 
@@ -96,6 +99,20 @@ namespace op_factory
     }
     else
       throw base::factory_exception("OperationRegularizationDiagonal is not implemented for this grid type.");
+  }
+
+  datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid) {
+    if(strcmp(grid.getType(), "linear") == 0)
+      return new datadriven::OperationDensityMarginalizeLinear(&grid);
+    else
+      throw base::factory_exception("OperationDensityMarginalize is not implemented for this grid type.");
+  }
+
+  datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid) {
+    if(strcmp(grid.getType(), "linear") == 0)
+      return new datadriven::OperationDensityConditionalLinear(&grid);
+    else
+      throw base::factory_exception("OperationDensityConditional is not implemented for this grid type.");
   }
 
 }
