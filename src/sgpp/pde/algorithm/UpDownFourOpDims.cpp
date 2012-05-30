@@ -14,10 +14,12 @@ namespace pde
 
 UpDownFourOpDims::UpDownFourOpDims(sg::base::GridStorage* storage, double***** coef) : storage(storage), coefs((*coef)), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
+	generateMap();
 }
 
 UpDownFourOpDims::UpDownFourOpDims(sg::base::GridStorage* storage) : storage(storage), coefs(NULL), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size())
 {
+	generateMap();
 }
 
 UpDownFourOpDims::~UpDownFourOpDims()

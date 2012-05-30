@@ -77,7 +77,7 @@ void SqrtXPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVe
 
 	double diagResultTemp = e*iCu*hCu - 3*e*iSq*hCu + 3*e*i*hCu + 7*d*iSq*hCu - c*iCu*hCu
 	- 3*c*iSq*hCu - 3*c*i*hCu - e*hCu - c*hCu;
-	diagResultTemp = (-16/105)*(1/(hSq))*diagResultTemp;
+	diagResultTemp = (-16.0/105.0)*(1.0/(hSq))*diagResultTemp;
 
 	double downResultTemp = 2*c*hCu*a + 5*c*hCu*b + 4*d*iCu*hCu*b - 7*d*iSq*hCu*b -
 	4*d*iCu*hCu*a - 8*e*hCu*a*i - 6*e*hCu*b*i - 2*e*iCu*hCu*b +
@@ -85,7 +85,7 @@ void SqrtXPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVe
 	6*c*hCu*a*i - 2*c*iCu*hCu*b + c*iSq*hCu*b +
 	6*c*iSq*hCu*a + 2*c*iCu*hCu*a + 8*c*i*hCu*b - 7*d*iSq*hCu*a;
 
-	downResultTemp = (4/105)*(1/(hSq))*downResultTemp;
+	downResultTemp = (4.0/105.0)*(1.0/(hSq))*downResultTemp;
 
 
 	// integration
@@ -173,7 +173,7 @@ void SqrtXPhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::Data
 	+ 6*c*iSq*hCu*qCu*a + 2*c*iCu*hCu*qCu*a + 8*c*t*b*qSq*hSq
 	+ 8*c*i*hCu*qCu*b - 7*d*iSq*hCu*qCu*a - 7*d*tSq*a*q*h;
 
-	downResultTemp = (4/105)*(1/(qSq*hSq))*downResultTemp;
+	downResultTemp = (4.0/105.0)*(1.0/(qSq*hSq))*downResultTemp;
 
 	// integration
 	result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
