@@ -103,7 +103,7 @@ void SqrtXPhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 			+ 6*c*iSq*hCu + 2*c*iCu*hCu
 			- 7*d*iSq*hCu;
 
-	flTemp = (4/105)*(1/(hSq))*flTemp;
+	flTemp = (4.0/105.0)*(1/(hSq))*flTemp;
 
 	double frTemp = 5*c*hCu
 			+ 4*d*iCu*hCu - 7*d*iSq*hCu
@@ -113,7 +113,7 @@ void SqrtXPhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 			- 2*c*iCu*hCu + c*iSq*hCu
 			+ 8*c*i*hCu;
 
-	frTemp = (4/105)*(1/(hSq))*frTemp;
+	frTemp = (4.0/105.0)*(1/(hSq))*frTemp;
 
 	fl = ((fm/2.0) + (alpha_value*(flTemp))) + fl;
 	fr = ((fm/2.0) + (alpha_value*(frTemp))) + fr;
@@ -195,7 +195,7 @@ void SqrtXPhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVe
 			+ 6*c*iSq*hCu*qCu + 2*c*iCu*hCu*qCu
 			- 7*d*iSq*hCu*qCu - 7*d*tSq*q*h;
 
-	flTemp = (4/105)*(1/(qSq*hSq))*flTemp;
+	flTemp = (4.0/105.0)*(1/(qSq*hSq))*flTemp;
 
 	double frTemp = 5*c*qCu*hCu
 			- 6*c*tSq*i*h*q
@@ -215,7 +215,7 @@ void SqrtXPhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVe
 			+ 8*c*t*qSq*hSq
 			+ 8*c*i*hCu*qCu;
 
-	frTemp = (4/105)*(1/(qSq*hSq))*frTemp;
+	frTemp = (4.0/105.0)*(1/(qSq*hSq))*frTemp;
 
 
 

@@ -850,7 +850,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 
 				if(!curPoint->isInnerPoint())
 				{
-//					double accumulatedBoundaryVal = 0.0;
+					//					double accumulatedBoundaryVal = 0.0;
 
 					double sumStockPrices = 0.0;
 					double kMultiplier = 0;
@@ -1009,38 +1009,15 @@ double HestonSolver::evalOption(std::vector<double>& eval_point, sg::base::DataV
 	// apply needed coordinate transformations
 	if (this->useLogTransform)
 	{
-		if (this->usePAT)
+		for (size_t i = 0; i < eval_point.size(); i=i+2)	// Here we know that the variance dimension is not log-transformed, so we shouldn't log its value
 		{
-			for (size_t i = 0; i < eval_point.size(); i++)
-			{
-				double trans_point = 0.0;
-				for (size_t j = 0; j < this->dim; j++)
-				{
-					trans_point += (this->eigvec_covar->get(j,i)*(log(eval_point[j])));
-				}
-				trans_point += (this->current_time*this->mu_hat->get(i));
-
-				trans_eval[i] = trans_point;
-			}
-		}
-		else
-		{
-			for (size_t i = 0; i < eval_point.size(); i=i+2)	// Here we know that the variance dimension is not log-transformed, so we shouldn't log its value
-			{
-				trans_eval[i] = log(trans_eval[i]);
-			}
+			trans_eval[i] = log(trans_eval[i]);
 		}
 	}
 
 	sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
 	double result = myEval->eval(alpha, trans_eval);
 	delete myEval;
-
-	// discounting, if PAT is used
-	if (this->usePAT == true && this->payoffType != "std_amer_put")
-	{
-		result *= exp(((-1.0)*(this->r*this->current_time)));
-	}
 
 	return result;
 }

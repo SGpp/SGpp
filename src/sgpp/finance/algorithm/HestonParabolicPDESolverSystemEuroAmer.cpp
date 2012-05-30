@@ -694,26 +694,30 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 				// We want to handle the following boundaries separately:
 				// v_max: no discounting
 				// s_max: linear function discounting
-				if(pointCoords[1] == 0)
+				if(!curPoint->isInnerPoint())
 				{
 					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(this->r*this->TimestepSize))));
 				}
-				else if(pointCoords[1] == 1)
-				{
-					// Discount the max_volatility values
-					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(this->r*this->TimestepSize))));
-				}
-				else if(pointCoords[0] == 1)
-				{
-					// Now we have the two boundary values for the s_max line. discountedPayoffValue is the minimum, and S
-					// maximum.
-					// All we have to do now is set the value to the linear interpolant...but we can't do this by setting the value directly!
-					// The values are hierarchised, so we have to multiply it by a fraction of the r value.
-					//					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(1.0-pointCoords[1])*(this->r*this->TimestepSize))));
-
-
-					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(pointCoords[1])*(this->r*this->TimestepSize))));
-				}
+//				if(pointCoords[1] == 0)
+//				{
+//					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(this->r*this->TimestepSize))));
+//				}
+//				else if(pointCoords[1] == 1)
+//				{
+//					// Discount the max_volatility values
+//					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(this->r*this->TimestepSize))));
+//				}
+//				else if(pointCoords[0] == 1)
+//				{
+//					// Now we have the two boundary values for the s_max line. discountedPayoffValue is the minimum, and S
+//					// maximum.
+//					// All we have to do now is set the value to the linear interpolant...but we can't do this by setting the value directly!
+//					// The values are hierarchised, so we have to multiply it by a fraction of the r value.
+//					//					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(1.0-pointCoords[1])*(this->r*this->TimestepSize))));
+//
+//
+//					this->alpha_complete->set(i, this->alpha_complete->get(i)*exp(((-1.0)*(pointCoords[1])*(this->r*this->TimestepSize))));
+//				}
 			}
 
 			//			this->BoundaryUpdate->multiplyBoundary(*this->alpha_complete, exp(((-1.0)*(this->r*this->TimestepSize))));
