@@ -33,6 +33,7 @@ namespace datadriven
      * @param mg Referenz of grid pointer 
      * @param malpha Coefficient vector for new grid (mg). Will be resized.
      * @param mdim Marginalize in dimension mdim 
+     * @param xbar Point at which to conditionalize
      */
     virtual void doConditional(base::DataVector &alpha, base::Grid* &mg, base::DataVector &malpha, unsigned int mdim, double xbar) = 0;
   };

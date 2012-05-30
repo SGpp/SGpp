@@ -18,7 +18,7 @@ namespace datadriven
     /**
      * Assume: mdim = 1
      * Compute vector with values
-     * (\phi_{l1,i1}(xbar) = \phi{l1,i1}(xbar)*\phi_{l2,i2}(0.5)
+     * (phi_{l1,i1}(xbar) = phi_{l1,i1}(xbar)*phi_{l2,i2}(0.5)
      */
     sg::base::GridStorage *gs = this->grid->getStorage();
     sg::base::DataVector zeta(alpha.getSize());
@@ -30,7 +30,7 @@ namespace datadriven
 
     /**
      * Compute
-     * theta = theta + alpha_{l,i}*zeta_{l,i}*\int{phi_{l2, i_2}}
+     * theta = theta + alpha_{l,i}*zeta_{l,i}*int{phi_{l2, i_2}}
      */
     double theta = 0;
     double tmpint = 0;
