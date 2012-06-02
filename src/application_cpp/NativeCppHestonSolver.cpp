@@ -34,6 +34,8 @@ using namespace std;
 double alphaDone;
 double vProbe;
 double sProbe;
+double s2Probe;
+double v2Probe;
 double refinementThresh;
 size_t numGridPoints;
 
@@ -660,73 +662,74 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 		}
 	}
 
-	if(numberOfAssets == 2)
-	{
-		std::ifstream fileBsIn;
-		fileBsIn.open("solvedBSPayoffMultiV.gnuplot");
-
-		std::ofstream fileout;
-		fileout.open("result2asset.txt");
-
-		std::ofstream fileout2;
-		fileout2.open("result2assetComp.txt");
-
-		double v1,v2,result, resultHeston;
-		do
-		{
-			fileBsIn >> v1;
-			fileBsIn >> v2;
-			fileBsIn >> result;
-
-			std::vector<double> point;
-			point.push_back(1.0);
-			point.push_back(v1);
-			point.push_back(1.0);
-			point.push_back(v2);
-			resultHeston = myHestonSolver->evalOption(point, *alpha);
-
-			fileout << v1 << " " << v2 << " " << resultHeston << endl;
-			fileout2 << v1 << " " << v2 << " " << (resultHeston - result) << endl;
-
-		} while (!fileBsIn.eof());
-		fileout.close();
-		fileout2.close();
-		fileBsIn.close();
-
-		//		for(size_t i=0;i<10;i++)
-		//		{
-		//			for(size_t j=0;j<10;j++)
-		//			{
-		//				for(size_t k=0;k<10;k++)
-		//				{
-		//					for(size_t l=0;l<10;l++)
-		//					{
-		//						std::vector<double> point;
-		//						double s1Val = s1left + i*s1Inc;
-		//						double v1Val = v1left + j*v1Inc;
-		//						double s2Val = s2left + k*s2Inc;
-		//						double v2Val = v2left + l*v2Inc;
-		//						point.push_back(s1Val);
-		//						point.push_back(v1Val);
-		//						point.push_back(s2Val);
-		//						point.push_back(v2Val);
-		//
-		//						fileout << s1Val << " " << v1Val << " " << s2Val << " " << v2Val << " " << myHestonSolver->evalOption(point, *alpha) << std::endl;
-		//
-		//						//						myHestonSolver->evalOption(point, *alpha)
-		//					}
-		//				}
-		//			}
-		//		}
-
-	}
+//	// Heston 2d to BS 2d comparison
+//	if(numberOfAssets == 2)
+//	{
+//		std::ifstream fileBsIn;
+//		fileBsIn.open("solvedBSPayoffMultiV.gnuplot");
+//
+//		std::ofstream fileout;
+//		fileout.open("result2asset.txt");
+//
+//		std::ofstream fileout2;
+//		fileout2.open("result2assetComp.txt");
+//
+//		double v1,v2,result, resultHeston;
+//		do
+//		{
+//			fileBsIn >> v1;
+//			fileBsIn >> v2;
+//			fileBsIn >> result;
+//
+//			std::vector<double> point;
+//			point.push_back(1.0);
+//			point.push_back(v1);
+//			point.push_back(1.0);
+//			point.push_back(v2);
+//			resultHeston = myHestonSolver->evalOption(point, *alpha);
+//
+//			fileout << v1 << " " << v2 << " " << resultHeston << endl;
+//			fileout2 << v1 << " " << v2 << " " << (resultHeston - result) << endl;
+//
+//		} while (!fileBsIn.eof());
+//		fileout.close();
+//		fileout2.close();
+//		fileBsIn.close();
+//
+//		//		for(size_t i=0;i<10;i++)
+//		//		{
+//		//			for(size_t j=0;j<10;j++)
+//		//			{
+//		//				for(size_t k=0;k<10;k++)
+//		//				{
+//		//					for(size_t l=0;l<10;l++)
+//		//					{
+//		//						std::vector<double> point;
+//		//						double s1Val = s1left + i*s1Inc;
+//		//						double v1Val = v1left + j*v1Inc;
+//		//						double s2Val = s2left + k*s2Inc;
+//		//						double v2Val = v2left + l*v2Inc;
+//		//						point.push_back(s1Val);
+//		//						point.push_back(v1Val);
+//		//						point.push_back(s2Val);
+//		//						point.push_back(v2Val);
+//		//
+//		//						fileout << s1Val << " " << v1Val << " " << s2Val << " " << v2Val << " " << myHestonSolver->evalOption(point, *alpha) << std::endl;
+//		//
+//		//						//						myHestonSolver->evalOption(point, *alpha)
+//		//					}
+//		//				}
+//		//			}
+//		//		}
+//
+//	}
 
 	// Test option @ the money
 	std::vector<double> point;
-	point.push_back(dStrike);
-	point.push_back(0.36);
-	point.push_back(dStrike);
-	point.push_back(0.36);
+	point.push_back(sProbe);
+	point.push_back(vProbe);
+	point.push_back(s2Probe);
+	point.push_back(v2Probe);
 
 	//	for (size_t i = 0; i < numAssets; i++)
 	//	{
@@ -734,7 +737,8 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	//		double middleVol = (myBoundaries[2*i+1].leftBoundary + myBoundaries[2*i+1].rightBoundary)/2.0;
 	//		point.push_back(middleVol);
 	//	}
-	std::cout << "Optionprice at testpoint (Strike): " << myHestonSolver->evalOption(point, *alpha) << std::endl << std::endl;
+	alphaDone = myHestonSolver->evalOption(point, *alpha);
+	std::cout << "Optionprice at testpoint (Strike): " << alphaDone << std::endl << std::endl;
 
 	//	system("gnuplot /home/sam/Documents/Heston/solExactDiff.cmd");
 
@@ -795,8 +799,10 @@ int main(int argc, char *argv[])
 			// I'll run it from sigma = 0.3 to sigma = 0.5, which corresponds to the heston v=0.09 to v=0.25
 			// I'll collect the results and plot them as a surface for comparison with the Heston results
 
-			vProbe = 0.305;
-			sProbe = 0.0;
+			vProbe = 0.16;
+			sProbe = 1.0;
+			v2Probe = 0.16;
+			s2Probe = 1.0;
 
 			const int numTests = 20;
 			double initSHalfWidth = 0.6;
@@ -811,25 +817,28 @@ int main(int argc, char *argv[])
 			//			double sMins[numTests] = {sProbe - initDiff, sProbe - 2*initDiff, sProbe - 4*initDiff, sProbe - 8*initDiff, sProbe - 16*initDiff, sProbe - 32*initDiff, sProbe - 64*initDiff , sProbe - 128*initDiff};
 			//			double sMaxs[numTests] = {sProbe + initDiff, sProbe + 2*initDiff, sProbe + 4*initDiff, sProbe + 8*initDiff, sProbe + 16*initDiff, sProbe + 32*initDiff, sProbe + 64*initDiff, sProbe + 128*initDiff};
 
-			//			std::ofstream convFile;
-			//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
-			//
-			//			for(int i=0;i<numTests;i++)
-			//			{
-			//				std::cout << "Starting test " << i << std::endl;
-			//				std::ofstream fileout;
-			//				fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
-			//				fileout << (sProbe - initSHalfWidth - (i+1)*dS) << " " << (sProbe + initSHalfWidth + (i+1)*dS) << std::endl;
-			////				fileout << "-2.04 1.95" << std::endl;
-			//				fileout << "0.01 0.61" << std::endl;
-			////				fileout << (vProbe - initVHalfWidth - (i+1)*dV) << " " << (vProbe + initVHalfWidth + (i+1)*dV) << std::endl;
-			////				fileout << 0.01 << " " << (0.01 + (i+1)*dV) << std::endl;
-			//				fileout.close();
-			////				vProbe = (0.01 + (0.01 + (i+1)*dV) / 2.0);
-			//				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-			//				convFile << i << " " << alphaDone << std::endl;
-			//			}
-			//			convFile.close();
+						std::ofstream convFile;
+						convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
+
+						for(int i=0;i<numTests;i++)
+						{
+							std::cout << "Starting test " << i << std::endl;
+							std::ofstream fileout;
+							fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
+//							fileout << (sProbe - initSHalfWidth - (i+1)*dS) << " " << (sProbe + initSHalfWidth + (i+1)*dS) << std::endl;
+							fileout << "-2.04 1.95" << std::endl;
+							fileout << 0.01 << " " << (0.16 + (i+1)*dV) << std::endl;
+							fileout << "-2.04 1.95" << std::endl;
+							fileout << 0.01 << " " << (0.16 + (i+1)*dV) << std::endl;
+//							fileout << "0.01 0.61" << std::endl;
+			//				fileout << (vProbe - initVHalfWidth - (i+1)*dV) << " " << (vProbe + initVHalfWidth + (i+1)*dV) << std::endl;
+
+							fileout.close();
+			//				vProbe = (0.01 + (0.01 + (i+1)*dV) / 2.0);
+							testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+							convFile << i << " " << alphaDone << std::endl;
+						}
+						convFile.close();
 
 
 			//			std::ofstream convFile;
@@ -856,7 +865,7 @@ int main(int argc, char *argv[])
 			//			}
 			//			convFile.close();
 
-			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+//			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 
 			//			std::cout << "Error: " << alphaDone << std::endl;
 		}
