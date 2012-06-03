@@ -699,13 +699,13 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 				//					tmp += dblFuncValues[j];
 				//				}
 
-				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).leftBoundary)
-				{
-					// Use the Black-Scholes solution for this boundary
-					alpha[i] = bsSolver->getAnalyticSolution1D(dblFuncValues[0], true, 1.0, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
-					//					alpha[i] = (this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
-				}
-				else if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
+//				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).leftBoundary)
+//				{
+//					// Use the Black-Scholes solution for this boundary
+//					alpha[i] = bsSolver->getAnalyticSolution1D(dblFuncValues[0], true, 1.0, pow(dblFuncValues[1], 2.0), this->r, this->dStrike);
+//					//					alpha[i] = (this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
+//				}
+				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
 				{
 					// Dirichlet condition when v -> inf is that U = S
 					alpha[i] = dblFuncValues[0]; //(this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
