@@ -13,6 +13,9 @@
 #include "finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.hpp"
 #include "finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.hpp"
 
+#include "finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.hpp"
+
 #include "base/algorithm/sweep.hpp"
 
 #include <iostream>
@@ -97,18 +100,18 @@ void OperationHestonWLinear::down(sg::base::DataVector& alpha, sg::base::DataVec
 
 void OperationHestonWLinear::upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
-	// X * dphi * phi
-	XdPhiPhiUpBBLinear func(this->storage);
-	sg::base::sweep<XdPhiPhiUpBBLinear> s(func, this->storage);
+	// X * phi * dphi
+	XPhidPhiUpBBLinear func(this->storage);
+	sg::base::sweep<XPhidPhiUpBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
 
 void OperationHestonWLinear::downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
-	// X * dphi * phi
-	XdPhiPhiDownBBLinear func(this->storage);
-	sg::base::sweep<XdPhiPhiDownBBLinear> s(func, this->storage);
+	// X * phi * dphi
+	XPhidPhiDownBBLinear func(this->storage);
+	sg::base::sweep<XPhidPhiDownBBLinear> s(func, this->storage);
 
 	s.sweep1D(alpha, result, dim);
 }
