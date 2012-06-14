@@ -307,7 +307,7 @@ void DataMatrix::addReduce(DataVector& reduction)
                     "DataMatrix::addReduce : Dimensions do not match");
         }
 
-    for (size_t i = 0; i < this->ncols; i++)
+    for (size_t i = 0; i < this->nrows; i++)
     {
         double tmp = 0.0;
         for (size_t j = 0; j < this->ncols; j++)
@@ -325,7 +325,7 @@ void DataMatrix::expand(const DataVector& expand)
                     "DataMatrix::expand : Dimensions do not match");
         }
 
-    for (size_t i = 0; i < this->ncols; i++)
+    for (size_t i = 0; i < this->nrows; i++)
     {
         for (size_t j = 0; j < this->ncols; j++)
         {

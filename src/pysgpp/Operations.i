@@ -39,7 +39,7 @@ public:
 	virtual void coarsen(sg::base::CoarseningFunctor* func, sg::base::DataVector* alpha) = 0;
 	virtual void coarsenNFirstOnly(sg::base::CoarseningFunctor* func, sg::base::DataVector* alpha, size_t numFirstOnly) = 0;
 	virtual int getNumberOfRefinablePoints() = 0;
-	virtual int getNumberOfRemoveablePoints() = 0;
+	virtual int getNumberOfRemovablePoints() = 0;
 	virtual void refineMaxLevel(sg::base::RefinementFunctor* func, unsigned int maxLevel) = 0;
 	virtual int getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };

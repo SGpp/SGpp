@@ -58,7 +58,7 @@ void TruncatedTrapezoidGridGenerator::truncated(size_t level,size_t l_user)
 //	coarsen.free_coarsen(this->storage, func, alpha);
 //}
 //
-//size_t BoundaryGridGenerator::getNumberOfRemoveablePoints()
+//size_t BoundaryGridGenerator::getNumberOfRemovablePoints()
 //{
 //	HashCoarsening coarsen;
 //	return coarsen.getNumberOfRemovablePoints(this->storage);

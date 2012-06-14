@@ -231,7 +231,12 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
     	clReleaseMemObject(clSource[i]);
     	clReleaseMemObject(clResult[i]);
     }
-
+    for (size_t i = 0; i < num_devices; i++)
+    {
+        clReleaseEvent(clTimings[i]);
+        clReleaseEvent(GPUDone[i]);
+    }
+    
     isFirstTimeMultTransSP = false;
 
 	return time;
@@ -482,7 +487,12 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
     	clReleaseMemObject(clAlpha[i]);
     	clReleaseMemObject(clResult[i]);
     }
-
+    for (size_t i = 0; i < num_devices; i++)
+    {
+        clReleaseEvent(clTimings[i]);
+        clReleaseEvent(GPUDone[i]);
+    }
+    
     isFirstTimeMultSP = false;
 
 	return time;

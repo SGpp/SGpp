@@ -13,7 +13,7 @@
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/operation/OperationHierarchisation.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
 #include "solver/sle/ConjugateGradients.hpp"
 
@@ -55,7 +55,7 @@ class AlgorithmAdaBoostBase
 		sg::base::DataMatrix* data;
             /// DataSet Dimension
         size_t dim;
-            /// Pointer to the class of the data vector
+            /// Pointer to the class(real value in regression) of the data vector
 		sg::base::DataVector* classes;
             /// Number of base learner for Adaboosting
         size_t numBaseLearners;
@@ -100,7 +100,7 @@ class AlgorithmAdaBoostBase
 		    /// Number of refinement with a certain percentage of Grid points
 		size_t refineTimes;
 		    /// Number of Grid points to refine
-		int numOfAda;
+		size_t numOfAda;
 		    /// Percentage of Grid points to refine(between 0 and 1)
 		double perOfAda;
 		    /// Set the boost mode (1: Discrete Adaboost, 2: Real Adaboost)
@@ -125,7 +125,7 @@ class AlgorithmAdaBoostBase
              * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)
              * @param gridLevel reference to the level of grid
              * @param trainData reference to the training dataset
-             * @param trainDataClass reference to the class of training dataset
+             * @param trainDataClass reference to the class(real value in regression) of training dataset
              * @param NUM the number of baselearner for Adaboosting
              * @param lambda the regularisation parameter
              * @param IMAX the parameter for ConjugateGradients
@@ -145,7 +145,7 @@ class AlgorithmAdaBoostBase
 			 * @param percentOfAda the percentage of Grid points to refine
 			 * @param mode the adaboost type to choose
              */
-	AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, size_t mode);
+	AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode);
         
 
             /**
@@ -175,6 +175,29 @@ class AlgorithmAdaBoostBase
 			 * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
              */
         void doRealAdaBoost(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
+
+            /**
+             * Performs the Adaboost.R2(a regression algorithm)
+			 *
+			 * @param weights the matrix to store weights of every training date for every weak learner
+			 * @param testData reference to the testing dataset
+			 * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
+			 * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+			 * @param lossFucType the loss function type(linear, square or exponential)
+             */
+	    void doAdaBoostR2(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, std::string lossFucType);
+
+            /**
+             * Performs the Adaboost.RT(a regression algorithm)
+			 *
+			 * @param weights the matrix to store weights of every training date for every weak learner
+			 * @param testData reference to the testing dataset
+			 * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
+			 * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+			 * @param Tvalue the threshold to demarcate the prediction correctness(only from 0 to 1)
+			 * @param powerType the error rate power coefficient(linear, square or cubic)
+             */
+	    void doAdaBoostRT(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double Tvalue, std::string powerType);
 
             /**
              * Performs a real value calculate for the testing dataset

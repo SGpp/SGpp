@@ -8,12 +8,14 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "base/grid/type/ModLinearGrid.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/exception/application_exception.hpp"
+#include "base/tools/PrecisionConverter.hpp"
+#include "base/tools/GridPrinter.hpp"
 
 #include "solver/sle/ConjugateGradientsSP.hpp"
 #include "solver/sle/BiCGStabSP.hpp"
@@ -446,6 +448,28 @@ ClassificatorQuality LearnerBaseSP::getCassificatorQuality(const sg::base::DataV
 	}
 
 	return result;
+}
+
+void LearnerBaseSP::dumpGrid(std::string tFilename)
+{
+    if (isTrained_)
+    {
+        sg::base::GridPrinter myPlotter(*grid_);
+        sg::base::DataVector tmp_alpha(alpha_->getSize());
+        sg::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, tmp_alpha);
+        myPlotter.printSparseGrid(tmp_alpha, tFilename, false);
+    }
+}
+
+void LearnerBaseSP::dumpFunction(std::string tFilename, size_t resolution)
+{
+    if (isTrained_ && grid_->getStorage()->dim() <= 2)
+    {
+        sg::base::GridPrinter myPlotter(*grid_);
+        sg::base::DataVector tmp_alpha(alpha_->getSize());
+        sg::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, tmp_alpha);
+        myPlotter.printGrid(tmp_alpha, tFilename, resolution);
+    }
 }
 
 bool LearnerBaseSP::getIsRegression() const

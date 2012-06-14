@@ -226,6 +226,27 @@ public:
 	 */
 	void store(std::string tGridFilename, std::string tAlphaFilename);
 
+    /**
+     * simple dump of grid points into file, e.g. used to
+     * plot with gnuplot
+     *
+     * only executed if grid is trained
+     *
+     * @param tFilename filename to store the dump to
+     */
+    void dumpGrid(std::string tFilename);
+
+    /**
+     * simple dump of sparse grid function into file, e.g. used to
+     * plot with gnuplot.
+     *
+     * only executed if grid is trained and number of dimensions <= 2.
+     *
+     * @param tFilename filename to store the dump to
+     * @param resolution resolution of function plot
+     */
+    void dumpFunction(std::string tFilename, size_t resolution);
+
 	/**
 	 * determines the current mode
 	 *

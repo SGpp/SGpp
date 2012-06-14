@@ -55,6 +55,8 @@ public:
     static Grid* createSquareRootGrid(size_t dim);
 	static Grid* createTruncatedTrapezoidGrid(size_t dim);
 	static Grid* createPrewaveletGrid(size_t dim);
+	static Grid* createLinearGridStencil(size_t dim);
+	static Grid* createModLinearGridStencil(size_t dim);
 	
 	static Grid* unserialize(std::string& istr);
 	

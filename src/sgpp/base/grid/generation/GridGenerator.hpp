@@ -8,8 +8,8 @@
 #ifndef GRIDGENERATOR_HPP
 #define GRIDGENERATOR_HPP
 
-#include "base/grid/generation/RefinementFunctor.hpp"
-#include "base/grid/generation/CoarseningFunctor.hpp"
+#include "base/grid/generation/functors/RefinementFunctor.hpp"
+#include "base/grid/generation/functors/CoarseningFunctor.hpp"
 
 #include "base/datatypes/DataVector.hpp"
 
@@ -90,7 +90,7 @@ public:
 	 *
 	 * @return the number of points on the grid that can be removed
 	 */
-	virtual size_t getNumberOfRemoveablePoints() = 0;
+	virtual size_t getNumberOfRemovablePoints() = 0;
 
 	/**
 	 * Refines a grid according to the settings of the RefinementFunctor func.

@@ -62,7 +62,7 @@ void StretchedTrapezoidBoundaryGridGenerator::coarsenNFirstOnly(CoarseningFuncto
 	coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
 }
 
-size_t StretchedTrapezoidBoundaryGridGenerator::getNumberOfRemoveablePoints()
+size_t StretchedTrapezoidBoundaryGridGenerator::getNumberOfRemovablePoints()
 {
 	HashCoarsening coarsen;
 	return coarsen.getNumberOfRemovablePoints(this->storage);
