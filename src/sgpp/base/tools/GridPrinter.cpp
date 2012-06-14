@@ -29,7 +29,7 @@ GridPrinter::~GridPrinter()
 {
 }
 
-void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, double PointsPerDimension)
+void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, size_t PointsPerDimension)
 {
 	DimensionBoundary dimOne;
 	DimensionBoundary dimTwo;
@@ -50,9 +50,9 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename, Boun
 			dimOne = GridArea.getBoundary(0);
 			dimTwo = GridArea.getBoundary(1);
 
-			for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=((dimOne.rightBoundary - dimOne.leftBoundary)/PointsPerDimension))
+			for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary; i+=((dimOne.rightBoundary - dimOne.leftBoundary)/static_cast<double>(PointsPerDimension)))
 			{
-				for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary; j+=((dimTwo.rightBoundary - dimTwo.leftBoundary)/PointsPerDimension))
+				for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary; j+=((dimTwo.rightBoundary - dimTwo.leftBoundary)/static_cast<double>(PointsPerDimension)))
 				{
 					std::vector<double> point;
 					point.push_back(i);
@@ -73,7 +73,7 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename, Boun
 	}
 }
 
-void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double PointsPerDimension)
+void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, size_t PointsPerDimension)
 {
 	DimensionBoundary dimOne;
 	DimensionBoundary dimTwo;
@@ -96,9 +96,9 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 				dimOne = myGrid->getBoundingBox()->getBoundary(0);
 
 				double offset_x = dimOne.leftBoundary;
-				double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(PointsPerDimension-1));
+				double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(static_cast<double>(PointsPerDimension)-1.0));
 
-				size_t points = (size_t)PointsPerDimension;
+				size_t points = PointsPerDimension;
 
 				for (size_t i = 0; i < points; i++)
 				{
@@ -114,8 +114,8 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, double Poi
 
 				double offset_x = dimOne.leftBoundary;
 				double offset_y = dimTwo.leftBoundary;
-				double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(PointsPerDimension-1));
-				double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary)/(PointsPerDimension-1));
+				double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(static_cast<double>(PointsPerDimension)-1.0));
+				double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary)/(static_cast<double>(PointsPerDimension)-1.0));
 
 				size_t points = (size_t)PointsPerDimension;
 

@@ -8,10 +8,11 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "base/grid/type/ModLinearGrid.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 #include "base/exception/application_exception.hpp"
+#include "base/tools/GridPrinter.hpp"
 
 #include "solver/sle/ConjugateGradients.hpp"
 #include "solver/sle/BiCGStab.hpp"
@@ -432,6 +433,24 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(const sg::base::DataVec
 	}
 
 	return result;
+}
+
+void LearnerBase::dumpGrid(std::string tFilename)
+{
+    if (isTrained_)
+    {
+        sg::base::GridPrinter myPlotter(*grid_);
+        myPlotter.printSparseGrid(*alpha_, tFilename, false);
+    }
+}
+
+void LearnerBase::dumpFunction(std::string tFilename, size_t resolution)
+{
+    if (isTrained_ && grid_->getStorage()->dim() <= 2)
+    {
+        sg::base::GridPrinter myPlotter(*grid_);
+        myPlotter.printGrid(*alpha_, tFilename, resolution);
+    }
 }
 
 bool LearnerBase::getIsRegression() const

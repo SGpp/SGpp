@@ -15,7 +15,7 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, int numberOfAda, double percentOfAda, size_t mode)
+	AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode)
     {
 		if (refine && (gridType != 1 && gridType != 2 && gridType != 3))
 		{
@@ -123,8 +123,7 @@ namespace datadriven
 				alpha_learn.resizeZero(alpha_train.getSize());
 			}
 			//set the alpha for testing data(copy of alpha for training data)
-			for (size_t index = 0; index < alpha_train.getSize(); index++)
-				alpha_learn.set(index, alpha_train.get(index));
+			alpha_learn.copyFrom(alpha_train);
 
 			#pragma omp parallel for schedule(static)
 			for (size_t i = 0; i < this->numData; i++)
@@ -372,8 +371,7 @@ namespace datadriven
 				alpha_learn.resizeZero(alpha_train.getSize());
 			}
 			//set the alpha for testing data(copy of alpha for training data)
-			for (size_t index = 0; index < alpha_train.getSize(); index++)
-				alpha_learn.set(index, alpha_train.get(index));
+			alpha_learn.copyFrom(alpha_train);
 
 			// calculate the algorithm value of the testing data and training data
 			// for training data
@@ -453,6 +451,384 @@ namespace datadriven
 		delete opEval;
 	}
 
+	void AlgorithmAdaBoostBase::doAdaBoostR2(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, std::string lossFucType)
+	{
+		if (lossFucType != "linear" && lossFucType != "square" && lossFucType != "exponential")
+		{
+			throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : An unknown loss function type was specified!");
+		}
+		sg::base::DataVector weight(this->numData);
+		weight.setAll(1.0/double(this->numData));
+		sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
+		// to store certain train data point
+		sg::base::DataVector p_train(this->dim);
+		// to store certain train data point
+		sg::base::DataVector p_test(this->dim);
+		sg::base::DataVector tmpweight(this->numData);
+
+		// to store the loss
+		sg::base::DataVector loss(this->numData);
+		// to store the loss function value
+		sg::base::DataVector lossFuc(this->numData);
+		// to store the prediction training values
+		sg::base::DataVector value_train(this->numData);
+		// to store the prediction testing values
+		sg::base::DataVector value_test(testData.getNrows());
+		double maxloss;
+		double meanloss;
+		sg::base::DataVector beta(this->numBaseLearners); //[0,1] 
+		sg::base::DataVector logBetaSumR(this->numBaseLearners); //[0,1] 
+		for (size_t count = 0; count < this->numBaseLearners; count++)
+		{
+			(this->actualBaseLearners)++;
+			std::cout << std::endl;
+			std::cout << "This is the " << this->actualBaseLearners << "th weak learner." << std::endl;
+			std::cout << std::endl;
+			
+            // create coefficient vector
+			sg::base::DataVector alpha_train(this->gridPoint);
+			sg::base::DataVector alpha_learn(this->gridPoint);
+			std::cout << "gridPoint: " << this->gridPoint << std::endl;
+			if (this->maxGridPoint->get(count) < this->gridPoint)
+				this->maxGridPoint->set(count, (double)this->gridPoint);
+			if (!this->refinement)
+			{
+				if (count == 0)
+					this->sumGridPoint->set(count, (double)gridPoint);
+				else
+					this->sumGridPoint->set(count, this->sumGridPoint->get(count-1) + (double)gridPoint);
+			}
+			alpha_train.setAll(0.0);
+			weights.setColumn(count, weight);
+
+			bool final_step = false;
+			if (this->refinement == 0)
+				final_step = true;
+
+			// calculate alpha
+			alphaSolver(this->lamb, weight, alpha_train, final_step);
+			   
+			if(this->refinement)
+			{
+				doRefinement(alpha_train, weight, count+1);
+				opEval = sg::op_factory::createOperationEval(*this->grid);
+				alpha_learn.resizeZero(alpha_train.getSize());
+			}
+			//set the alpha for testing data(copy of alpha for training data)
+			alpha_learn.copyFrom(alpha_train);
+
+			// calculate the algorithm value of the testing data and training data
+			// for training data
+			#pragma omp parallel for schedule(static)
+			for (size_t i = 0; i < numData; i++)
+			{
+				sg::base::DataVector p_train_private(this->dim);
+				this->data->getRow(i, p_train_private);
+				value_train.set(i, opEval->eval(alpha_learn, p_train_private));
+				loss.set(i, this->classes->get(i) - value_train.get(i));
+			}
+			loss.abs();
+			maxloss = loss.max();
+			if(lossFucType == "linear")
+			{
+				lossFuc = loss;
+				lossFuc.mult(1/maxloss);
+			}
+			else if(lossFucType == "square")
+			{
+				lossFuc = loss;
+				lossFuc.mult(1/maxloss);
+				lossFuc.sqr();
+			}
+			else if(lossFucType == "exponential")
+			{
+				loss.mult(-1/maxloss);
+                #pragma omp parallel for schedule(static)
+				for (size_t i = 0; i < numData; i++)
+					lossFuc.set(i, 1-exp(loss.get(i)));
+			}
+			else
+				throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : An unknown loss function type was specified!");
+
+			meanloss = lossFuc.dotProduct(weight);
+
+			// to judge the regressor whether match the simple condition of AdaboostR2
+			if (meanloss >= 0.50)
+			{
+				std::cout << std::endl << "The average loss exceeds 0.5 after " << count + 1 << " iterations" << std::endl;
+				(this->actualBaseLearners)--;
+				break;
+			}
+			beta.set(count, meanloss / (1 - meanloss));
+
+			sg::base::DataVector TrValueHelper(this->numData);
+			double loghelp = log(1/beta.get(count));
+			if (count == 0)
+			{
+				logBetaSumR.set(count, loghelp);
+				algorithmValueTrain.setColumn(count, value_train);
+			}
+			// each column is the sum value of baselearner respect to the column index
+			else
+			{
+				logBetaSumR.set(count, logBetaSumR.get(count-1) + loghelp);
+				algorithmValueTrain.getColumn(count-1, TrValueHelper);
+				TrValueHelper.mult(logBetaSumR.get(count-1));
+				TrValueHelper.axpy(loghelp, value_train);
+				TrValueHelper.mult(1/logBetaSumR.get(count));
+				algorithmValueTrain.setColumn(count, TrValueHelper);
+			}
+
+			#pragma omp parallel for schedule(static)
+			for (size_t i = 0; i < numData; i++)
+				tmpweight.set(i, std::pow(beta.get(count), 1 - lossFuc.get(i)));
+			
+			tmpweight.componentwise_mult(weight);
+			// normalize weight
+			// update the weight
+			double normalizer = tmpweight.sum();
+			tmpweight.mult(1.0/normalizer);
+			weight = tmpweight;
+
+			// for testing data
+			#pragma omp parallel for schedule(static)
+			for (size_t i = 0; i < testData.getNrows(); i++)
+			{
+				sg::base::DataVector p_test_private(this->dim);
+				testData.getRow(i, p_test_private);
+				value_test.set(i, opEval->eval(alpha_learn, p_test_private));
+			}
+
+			sg::base::DataVector TeValueHelper(testData.getNrows());
+			if (count == 0)
+			{
+				algorithmValueTest.setColumn(count, value_test);
+			}
+			// each column is the sum value of baselearner respect to the column index
+			else
+			{
+				algorithmValueTest.getColumn(count-1, TeValueHelper);
+				TeValueHelper.mult(logBetaSumR.get(count-1));
+				TeValueHelper.axpy(loghelp, value_test);
+				TeValueHelper.mult(1/logBetaSumR.get(count));
+				algorithmValueTest.setColumn(count, TeValueHelper);
+			}
+
+			if (count < this->numBaseLearners - 1 && this->refinement)
+			{
+				//reset the grid to the regular grid
+				if(this->type == 1)
+				{
+					this->grid = sg::base::Grid::createLinearGrid(this->dim);
+					std::cout << std::endl;
+					std::cout << "Reset to the regular LinearGrid" << std::endl;
+				}
+				else if(this->type == 2)
+				{
+					this->grid = sg::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+					std::cout << std::endl;
+					std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
+				}
+				else if(this->type == 3)
+				{
+					this->grid = sg::base::Grid::createModLinearGrid(this->dim);
+					std::cout << std::endl;
+					std::cout << "Reset to the regular ModLinearGrid" << std::endl;
+				}
+				// should not happen because this exception should have been thrown some lines upwards!
+				else
+				{
+					throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+				}
+				sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
+				gridGen->regular(this->level);
+				std::cout << std::endl;
+				delete gridGen;
+			}
+		}
+		delete opEval;
+	}
+
+	void AlgorithmAdaBoostBase::doAdaBoostRT(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double Tvalue, std::string powerType)
+	{
+		if (Tvalue >= 1 || Tvalue <= 0)
+		{
+			throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : the Tvalue must lie between 0 and 1!");
+		}
+		if (powerType != "linear" && powerType != "square" && powerType != "cubic")
+		{
+			throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : An unknown power type was specified!");
+		}
+		sg::base::DataVector weight(this->numData);
+		weight.setAll(1.0/double(this->numData));
+		sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
+		// to store certain train data point
+		sg::base::DataVector p_train(this->dim);
+		// to store certain train data point
+		sg::base::DataVector p_test(this->dim);
+		sg::base::DataVector tmpweight(this->numData);
+
+		// to store the absolute relative error
+		sg::base::DataVector ARE(this->numData);
+		// to store the prediction training values
+		sg::base::DataVector value_train(this->numData);
+		// to store the prediction testing values
+		sg::base::DataVector value_test(testData.getNrows());
+
+		sg::base::DataVector beta(this->numBaseLearners);
+		sg::base::DataVector logBetaSumR(this->numBaseLearners);
+		double errorRate;
+		for (size_t count = 0; count < this->numBaseLearners; count++)
+		{
+			(this->actualBaseLearners)++;
+			std::cout << std::endl;
+			std::cout << "This is the " << this->actualBaseLearners << "th weak learner." << std::endl;
+			std::cout << std::endl;
+			
+            // create coefficient vector
+			sg::base::DataVector alpha_train(this->gridPoint);
+			sg::base::DataVector alpha_learn(this->gridPoint);
+			std::cout << "gridPoint: " << this->gridPoint << std::endl;
+			if (this->maxGridPoint->get(count) < this->gridPoint)
+				this->maxGridPoint->set(count, (double)this->gridPoint);
+			if (!this->refinement)
+			{
+				if (count == 0)
+					this->sumGridPoint->set(count, (double)gridPoint);
+				else
+					this->sumGridPoint->set(count, this->sumGridPoint->get(count-1) + (double)gridPoint);
+			}
+			alpha_train.setAll(0.0);
+			weights.setColumn(count, weight);
+
+			bool final_step = false;
+			if (this->refinement == 0)
+				final_step = true;
+
+			// calculate alpha
+			alphaSolver(this->lamb, weight, alpha_train, final_step);
+			   
+			if(this->refinement)
+			{
+				doRefinement(alpha_train, weight, count+1);
+				opEval = sg::op_factory::createOperationEval(*this->grid);
+				alpha_learn.resizeZero(alpha_train.getSize());
+			}
+			//set the alpha for testing data(copy of alpha for training data)
+			alpha_learn.copyFrom(alpha_train);
+
+			// calculate the algorithm value of the testing data and training data
+			// for training data
+			errorRate = 0;
+			#pragma omp parallel for schedule(static)
+			for (size_t i = 0; i < numData; i++)
+			{
+				sg::base::DataVector p_train_private(this->dim);
+				this->data->getRow(i, p_train_private);
+				value_train.set(i, opEval->eval(alpha_learn, p_train_private));
+				ARE.set(i, std::abs((this->classes->get(i) - value_train.get(i))/this->classes->get(i)));
+				if (ARE.get(i) > Tvalue)
+					errorRate += weight.get(i);
+			}
+			if(powerType == "linear")
+				beta.set(count, errorRate);
+			else if(powerType == "square")
+				beta.set(count, errorRate*errorRate);
+			else if(powerType == "cubic")
+				beta.set(count, errorRate*errorRate*errorRate);
+			else
+				throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : An unknown power type was specified!");
+
+			sg::base::DataVector TrValueHelper(this->numData);
+			double loghelp = log(1/beta.get(count));
+			if (count == 0)
+			{
+				logBetaSumR.set(count, loghelp);
+				algorithmValueTrain.setColumn(count, value_train);
+			}
+			// each column is the sum value of baselearner respect to the column index
+			else
+			{
+				logBetaSumR.set(count, logBetaSumR.get(count-1) + loghelp);
+				algorithmValueTrain.getColumn(count-1, TrValueHelper);
+				TrValueHelper.mult(logBetaSumR.get(count-1));
+				TrValueHelper.axpy(loghelp, value_train);
+				TrValueHelper.mult(1/logBetaSumR.get(count));
+				algorithmValueTrain.setColumn(count, TrValueHelper);
+			}
+
+			#pragma omp parallel for schedule(static)
+			for (size_t i = 0; i < numData; i++)
+			{
+				if (ARE.get(i) <= Tvalue)
+					tmpweight.set(i, weight.get(i)*beta.get(count));
+				else
+					tmpweight.set(i, weight.get(i));
+			}
+			// normalize weight
+			// update the weight
+			double normalizer = tmpweight.sum();
+			tmpweight.mult(1.0/normalizer);
+			weight = tmpweight;
+
+			// for testing data
+			#pragma omp parallel for schedule(static)
+			for (size_t i = 0; i < testData.getNrows(); i++)
+			{
+				sg::base::DataVector p_test_private(this->dim);
+				testData.getRow(i, p_test_private);
+				value_test.set(i, opEval->eval(alpha_learn, p_test_private));
+			}
+
+			sg::base::DataVector TeValueHelper(testData.getNrows());
+			if (count == 0)
+			{
+				algorithmValueTest.setColumn(count, value_test);
+			}
+			// each column is the sum value of baselearner respect to the column index
+			else
+			{
+				algorithmValueTest.getColumn(count-1, TeValueHelper);
+				TeValueHelper.mult(logBetaSumR.get(count-1));
+				TeValueHelper.axpy(loghelp, value_test);
+				TeValueHelper.mult(1/logBetaSumR.get(count));
+				algorithmValueTest.setColumn(count, TeValueHelper);
+			}
+
+			if (count < this->numBaseLearners - 1 && this->refinement)
+			{
+				//reset the grid to the regular grid
+				if(this->type == 1)
+				{
+					this->grid = sg::base::Grid::createLinearGrid(this->dim);
+					std::cout << std::endl;
+					std::cout << "Reset to the regular LinearGrid" << std::endl;
+				}
+				else if(this->type == 2)
+				{
+					this->grid = sg::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+					std::cout << std::endl;
+					std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
+				}
+				else if(this->type == 3)
+				{
+					this->grid = sg::base::Grid::createModLinearGrid(this->dim);
+					std::cout << std::endl;
+					std::cout << "Reset to the regular ModLinearGrid" << std::endl;
+				}
+				// should not happen because this exception should have been thrown some lines upwards!
+				else
+				{
+					throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+				}
+				sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
+				gridGen->regular(this->level);
+				std::cout << std::endl;
+				delete gridGen;
+			}
+		}
+		delete opEval;
+	}
 	
     void AlgorithmAdaBoostBase::eval(sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest)
     {

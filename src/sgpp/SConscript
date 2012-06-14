@@ -56,6 +56,9 @@ base/grid/type/ModBsplineGrid.cpp
 base/grid/type/SquareRootGrid.cpp
 base/grid/type/TruncatedTrapezoidGrid.cpp
 base/grid/type/PrewaveletGrid.cpp
+base/grid/type/ModLinearGridStencil.cpp
+base/grid/type/LinearGridStencil.cpp
+base/grid/type/GridStencil.cpp
 
 base/grid/generation/StandardGridGenerator.cpp
 base/grid/generation/BoundaryGridGenerator.cpp
@@ -63,9 +66,9 @@ base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/SquareRootGridGenerator.cpp
 base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
-base/grid/generation/SurplusRefinementFunctor.cpp
-base/grid/generation/SurplusVolumeRefinementFunctor.cpp
-base/grid/generation/SurplusCoarseningFunctor.cpp
+base/grid/generation/functors/SurplusRefinementFunctor.cpp
+base/grid/generation/functors/SurplusVolumeRefinementFunctor.cpp
+base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 base/grid/generation/PrewaveletGridGenerator.cpp
 
 base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp
@@ -77,6 +80,8 @@ datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 base/basis/linear/noboundary/operation/OperationEvalLinear.cpp
 base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
 base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
+base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.cpp
+base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.cpp
 pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationLBLinear.cpp
@@ -91,6 +96,8 @@ finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
 
 base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.cpp
+base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.cpp
+base/basis/linear/noboundary/algorithm_sweep/StencilHierarchisationLinear.cpp
 pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
 pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
 finance/basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
@@ -207,10 +214,13 @@ base/basis/modlinear/operation/OperationMultipleEvalModLinear.cpp
 datadriven/basis/modlinear/operation/OperationTestModLinear.cpp
 base/basis/modlinear/operation/OperationEvalModLinear.cpp
 base/basis/modlinear/operation/OperationHierarchisationModLinear.cpp
+base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.cpp
 pde/basis/modlinear/operation/OperationLaplaceModLinear.cpp
 
 base/basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
 base/basis/modlinear/algorithm_sweep/HierarchisationModLinear.cpp
+base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.cpp
+base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.cpp
 pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 pde/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
 pde/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp

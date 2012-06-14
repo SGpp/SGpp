@@ -80,6 +80,20 @@ class Grid
 {
 public:
 	/**
+	 * creates a stencil for a linear grid without boundaries
+	 *
+	 * @param dim the grid's dimension
+	 */
+	static Grid* createLinearGridStencil(size_t dim);
+
+	/**
+	 * creates a stencil for a modified linear grid (without boundaries)
+	 *
+	 * @param dim the grid's dimension
+	 */
+	static Grid* createModLinearGridStencil(size_t dim);
+
+	/**
 	 * creates a linear grid without boundaries
 	 *
 	 * @param dim the grid's dimension

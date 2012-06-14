@@ -21,5 +21,6 @@
 #############################################################################
 
 from GridFormatter import GridFormatter
+#from GridImageFormatter import GridImageFormatter
 from LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
 from LearnerFormatter import LearnerFormatter

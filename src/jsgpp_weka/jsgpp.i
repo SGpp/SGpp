@@ -55,9 +55,9 @@ namespace std {
 %include "src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/TrapezoidBoundaryGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
-%include "src/sgpp/base/grid/generation/SurplusRefinementFunctor.hpp"
-%include "src/sgpp/base/grid/generation/SurplusVolumeRefinementFunctor.hpp"
-%include "src/sgpp/base/grid/generation/SurplusCoarseningFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 
 %include "GridFactory.i"
 

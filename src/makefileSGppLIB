@@ -12,16 +12,23 @@ BINDIR = ./../../../lib/sgpp/
 
 OBJS =	DataVector.o\
  	Grid.o\
+	GridStencil.o\
  	LinearBoundaryGrid.o\
  	LinearTrapezoidBoundaryGrid.o\
  	LinearStretchedTrapezoidBoundaryGrid.o\
  	LinearGrid.o\
+	LinearGridStencil.o\
+ 	ModLinearGridStencil.o\
  	LinearStretchedGrid.o\
  	ModLinearGrid.o\
 	ModPolyGrid.o\
 	SquareRootGrid.o\
 	TruncatedTrapezoidGrid.o\
 	PolyGrid.o\
+	AbstractRefinement.o\
+    HashRefinement.o\
+    HashRefinementBoundaries.o\
+    HashRefinementBoundariesMaxLevel.o\
 	StandardGridGenerator.o\
 	BoundaryGridGenerator.o\
 	TrapezoidBoundaryGridGenerator.o\
@@ -31,6 +38,8 @@ OBJS =	DataVector.o\
 	OperationEvalLinear.o\
 	OperationHierarchisationLinear.o\
 	OperationMultipleEvalModLinear.o\
+	OperationStencilHierarchisationLinear.o\
+	OperationStencilHierarchisationModLinear.o\
 	OperationEvalModLinear.o\
 	OperationHierarchisationModLinear.o\
 	OperationMultipleEvalModPoly.o\
@@ -118,6 +127,10 @@ OBJS =	DataVector.o\
 	OperationGammaLinear.o\
 	OperationDeltaLogLinearBoundary.o\
 	OperationGammaLogLinearBoundary.o\
+	StencilDehierarchisationLinear.o\
+	StencilHierarchisationLinear.o\
+	StencilDehierarchisationModLinear.o\
+	StencilHierarchisationModLinear.o\
 	HierarchisationLinear.o\
 	DehierarchisationLinear.o\
 	HierarchisationLinearBoundary.o\
@@ -306,6 +319,8 @@ OBJS =	DataVector.o\
 	LearnerVectorizedIdentitySP.o\
 	LearnerVectorizedPerformanceCalculator.o\
 	BiCGStabSP.o\
+	OperationSecondMomentLinear.o\
+	OperationFirstMomentLinear.o\
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -415,6 +430,9 @@ DataMatrixSP.o : $(SRCDIR)base/datatypes/DataMatrixSP.cpp
 Grid.o : $(SRCDIR)base/grid/Grid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)Grid.o $(SRCDIR)base/grid/Grid.cpp
 
+GridStencil.o : $(SRCDIR)base/grid/type/GridStencil.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)GridStencil.o $(SRCDIR)base/grid/type/GridStencil.cpp
+
 LinearBoundaryGrid.o : $(SRCDIR)base/grid/type/LinearBoundaryGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearBoundaryGrid.o $(SRCDIR)base/grid/type/LinearBoundaryGrid.cpp
 
@@ -426,6 +444,12 @@ LinearStretchedTrapezoidBoundaryGrid.o : $(SRCDIR)base/grid/type/LinearStretched
 	
 LinearGrid.o : $(SRCDIR)base/grid/type/LinearGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearGrid.o $(SRCDIR)base/grid/type/LinearGrid.cpp
+
+LinearGridStencil.o : $(SRCDIR)base/grid/type/LinearGridStencil.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LinearGridStencil.o $(SRCDIR)base/grid/type/LinearGridStencil.cpp
+	
+ModLinearGridStencil.o : $(SRCDIR)base/grid/type/ModLinearGridStencil.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ModLinearGridStencil.o $(SRCDIR)base/grid/type/ModLinearGridStencil.cpp
 	
 LinearStretchedGrid.o : $(SRCDIR)base/grid/type/LinearStretchedGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LinearStretchedGrid.o $(SRCDIR)base/grid/type/LinearStretchedGrid.cpp	
@@ -453,6 +477,18 @@ TruncatedTrapezoidGrid.o : $(SRCDIR)base/grid/type/TruncatedTrapezoidGrid.cpp
 	
 PolyGrid.o : $(SRCDIR)base/grid/type/PolyGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PolyGrid.o $(SRCDIR)base/grid/type/PolyGrid.cpp
+    
+AbstractRefinement.o : $(SRCDIR)base/grid/generation/hashmap/AbstractRefinement.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AbstractRefinement.o $(SRCDIR)base/grid/generation/hashmap/AbstractRefinement.cpp
+    
+HashRefinement.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinement.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinement.o $(SRCDIR)base/grid/generation/hashmap/HashRefinement.cpp
+    
+HashRefinementBoundaries.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundaries.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinementBoundaries.o $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundaries.cpp
+    
+HashRefinementBoundariesMaxLevel.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinementBoundariesMaxLevel.o $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
 	
 StandardGridGenerator.o : $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StandardGridGenerator.o $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
@@ -466,11 +502,11 @@ TruncatedTrapezoidGridGenerator.o : $(SRCDIR)base/grid/generation/TruncatedTrape
 BoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundaryGridGenerator.o $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
 	
-SurplusRefinementFunctor.o : $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
+SurplusRefinementFunctor.o : $(SRCDIR)base/grid/generation/functors/SurplusRefinementFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)base/grid/generation/functors/SurplusRefinementFunctor.cpp
 	
-SurplusCoarseningFunctor.o : $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
+SurplusCoarseningFunctor.o : $(SRCDIR)base/grid/generation/functors/SurplusCoarseningFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 
 TrapezoidBoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TrapezoidBoundaryGridGenerator.o $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
@@ -534,6 +570,12 @@ OperationEvalLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/Operatio
 
 OperationHierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationHierarchisationLinear.cpp
+
+OperationStencilHierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationStencilHierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.cpp
+	
+OperationStencilHierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationStencilHierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.cpp
 	
 OperationQuadratureLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationQuadratureLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationQuadratureLinear.cpp
@@ -609,6 +651,18 @@ HierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/
 
 DehierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.cpp
+
+StencilHierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/StencilHierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StencilHierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/StencilHierarchisationLinear.cpp
+
+StencilDehierarchisationLinear.o : $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StencilDehierarchisationLinear.o $(SRCDIR)base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.cpp
+
+StencilHierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StencilHierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.cpp
+
+StencilDehierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StencilDehierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.cpp
 
 PhiPhiDownBBLinear.o : $(SRCDIR)pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiDownBBLinear.o $(SRCDIR)pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
@@ -1284,7 +1338,13 @@ LearnerVectorizedPerformanceCalculator.o : $(SRCDIR)parallel/datadriven/tools/Le
 
 BiCGStabSP.o : $(SRCDIR)solver/sle/BiCGStabSP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabSP.o $(SRCDIR)solver/sle/BiCGStabSP.cpp
+	
+OperationSecondMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationSecondMomentLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationSecondMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationSecondMomentLinear.cpp
 
+OperationFirstMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationFirstMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
+	
 	
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp

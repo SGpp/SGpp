@@ -18,6 +18,7 @@ import test_newCombi
 #import test_BBT_SSE
 #import test_BBT_AVX
 import test_BT
+import test_RefinementANOVA
 
 import test_GridFactory
 import test_DataVector
@@ -44,6 +45,7 @@ if __name__ == '__main__':
 #                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_AVX),
                 unittest.defaultTestLoader.loadTestsFromModule(test_newCombi),
                 unittest.defaultTestLoader.loadTestsFromModule(test_BT),
+                unittest.defaultTestLoader.loadTestsFromModule(test_RefinementANOVA),
                 unittest.defaultTestLoader.suiteClass(learnertests.alltests),
                 unittest.defaultTestLoader.suiteClass(datatests.alltests),
                 unittest.defaultTestLoader.suiteClass(controllertests.alltests)

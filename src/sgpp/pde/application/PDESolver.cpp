@@ -9,8 +9,8 @@
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/tools/StdNormalDistribution.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 
 #include <sstream>
@@ -240,7 +240,7 @@ void PDESolver::coarsenInitialGridSurplus(sg::base::DataVector& alpha, double dT
 	if (bGridConstructed)
 	{
 		sg::base::GridGenerator* myGenerator =  myGrid->createGridGenerator();
-		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+		size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 		size_t originalGridSize = myGrid->getStorage()->size();
 		sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(&alpha, numCoarsen, dThreshold);
 
