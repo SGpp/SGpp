@@ -481,7 +481,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	std::string refinementMode = "classic";
 	size_t maxRefineLevel = 10;
 	double coarsenThreshold = 0.0;
-	double dRefineThreshold = 0.001;// See Alex's second thesis
+	double dRefineThreshold = 0.00001;// See Alex's second thesis
 	//	double dRefineThreshold = refinementThresh;
 
 	// Set coarsening dat
@@ -503,29 +503,29 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	norm_sigma.push_back(0.5); norm_sigma.push_back(5);
 
 	// refine the grid to approximate the singularity in the start solution better
-	//		if (refinementMode == "classic")
+	//	if (refinementMode == "classic")
+	//	{
+	//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 	//		{
-	//			for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+	//			std::cout << "Refining Grid..." << std::endl;
+	//			if (useNormalDist == true)
 	//			{
-	//				std::cout << "Refining Grid..." << std::endl;
-	//				if (useNormalDist == true)
-	//				{
-	//					myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
-	//				}
-	//				else
-	//				{
-	//					myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
-	//				}
-	//				myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//				std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
-	//				std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
+	//				myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
 	//			}
+	//			else
+	//			{
+	//				myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+	//			}
+	//			myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+	//			std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
+	//			std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
 	//		}
-	//		else
-	//		{
-	//			std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
-	//			std::cout << "Skipping initial grid refinement!" << std::endl;
-	//		}
+	//	}
+	//	else
+	//	{
+	//		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+	//		std::cout << "Skipping initial grid refinement!" << std::endl;
+	//	}
 
 	numGridPoints = myHestonSolver->getNumberGridPoints();
 
@@ -724,10 +724,12 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	std::vector<double> point;
 	for (size_t i = 0; i < numAssets; i++)
 	{
-		point.push_back(dStrike);
-//		double middleVol = (myBoundingBox->getBoundary(2*i+1).leftBoundary + myBoundingBox->getBoundary(2*i+1).rightBoundary)/2.0;
-				double middleVol = 0.05;
+		point.push_back(sProbe);
+		//		double middleVol = (myBoundingBox->getBoundary(2*i+1).leftBoundary + myBoundingBox->getBoundary(2*i+1).rightBoundary)/2.0;
+		double middleVol = 0.05;
 		point.push_back(middleVol);
+		//		point.push_back(middleVol);
+		//		point.push_back(vProbe);
 	}
 	//
 	//
@@ -739,6 +741,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 	alphaDone = myHestonSolver->evalOption(point, *alpha);
 	std::cout << "Optionprice at testpoint (Strike): (" << point[0] << ", " << point[1] << ") " << alphaDone << std::endl << std::endl;
+
 
 	//	system("gnuplot /home/sam/Documents/Heston/solExactDiff.cmd");
 
@@ -845,52 +848,56 @@ int main(int argc, char *argv[])
 			// vprobe = 0.305 and theta = 0.6 and kappa above 0.5 with 0.5 increments works
 
 
-			vProbe = 0.305;
-			sProbe = 2.0;
+			vProbe = 0.55;
+			sProbe = 1.0;
 			v2Probe = 0.305;
 			s2Probe = 1.0;
 
-			const int numTests = 11;
+			sg::finance::BlackScholesSolver* bsSolver;
+			double bsSolution = bsSolver->getAnalyticSolution1D(1.0, true, 1.0, sqrt(0.0), 0.05, 1.0);
+
+			const int numTests = 20;
 			double initSHalfWidth = 0.6;
 			double initVHalfWidth = 0.04;
 			double dS = 0.2;
 			double dV = 0.05;
 			double dKappa = 0.1;
 			double dXi = 0.02;
-			//			double initDiff = 0.005;
-			//			double vMins[numTests] = {vProbe - initDiff, vProbe - 2*initDiff, vProbe - 4*initDiff, vProbe - 8*initDiff, vProbe - 16*initDiff, vProbe - 32*initDiff, vProbe - 64*initDiff, vProbe - 128*initDiff};
-			//			double vMaxs[numTests] = {vProbe + initDiff, vProbe + 2*initDiff, vProbe + 4*initDiff, vProbe + 8*initDiff, vProbe + 16*initDiff, vProbe + 32*initDiff, vProbe + 64*initDiff, vProbe + 128*initDiff};
+			double initDiff = 0.005;
+			double vMins[numTests] = {vProbe - initDiff, vProbe - 2*initDiff, vProbe - 4*initDiff, vProbe - 8*initDiff, vProbe - 16*initDiff, vProbe - 32*initDiff, vProbe - 64*initDiff, vProbe - 128*initDiff};
+			double vMaxs[numTests] = {vProbe + initDiff, vProbe + 2*initDiff, vProbe + 4*initDiff, vProbe + 8*initDiff, vProbe + 16*initDiff, vProbe + 32*initDiff, vProbe + 64*initDiff, vProbe + 128*initDiff};
 
-			//			initDiff = 0.01;
-			//			double sMins[numTests] = {sProbe - initDiff, sProbe - 2*initDiff, sProbe - 4*initDiff, sProbe - 8*initDiff, sProbe - 16*initDiff, sProbe - 32*initDiff, sProbe - 64*initDiff , sProbe - 128*initDiff};
-			//			double sMaxs[numTests] = {sProbe + initDiff, sProbe + 2*initDiff, sProbe + 4*initDiff, sProbe + 8*initDiff, sProbe + 16*initDiff, sProbe + 32*initDiff, sProbe + 64*initDiff, sProbe + 128*initDiff};
+			initDiff = 0.01;
+			double sMins[numTests] = {sProbe - initDiff, sProbe - 2*initDiff, sProbe - 4*initDiff, sProbe - 8*initDiff, sProbe - 16*initDiff, sProbe - 32*initDiff, sProbe - 64*initDiff , sProbe - 128*initDiff};
+			double sMaxs[numTests] = {sProbe + initDiff, sProbe + 2*initDiff, sProbe + 4*initDiff, sProbe + 8*initDiff, sProbe + 16*initDiff, sProbe + 32*initDiff, sProbe + 64*initDiff, sProbe + 128*initDiff};
 
 			//			std::ofstream convFile;
 			//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
 			//
 			//			for(int i=1;i<numTests;i++)
 			//			{
-			//				for(int j=1;j<numTests;j++)
-			//				{
+			//				//				for(int j=1;j<numTests;j++)
+			//				//				{
 			//
-			//					std::cout << "Starting test " << i << j << std::endl;
-			//					std::ofstream fileout;
-			//					fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
-			//					//							fileout << (sProbe - initSHalfWidth - (i+1)*dS) << " " << (sProbe + initSHalfWidth + (i+1)*dS) << std::endl;
-			//					fileout << "0.3 " << (0.475 + i*0.025) << " " << (2 + 0.2*j) << " 1.0 -0.5 -0.5 1.0" << std::endl;
+			//				std::cout << "Starting test " << i << std::endl;
+			//				std::ofstream fileout;
+			//				fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
+			//				//							fileout << (sProbe - initSHalfWidth - (i+1)*dS) << " " << (sProbe + initSHalfWidth + (i+1)*dS) << std::endl;
+			//				//					fileout << "0.3 " << (0.475 + i*0.025) << " " << (2 + 0.2*j) << " 1.0 -0.5 -0.5 1.0" << std::endl;
 			//
-			//					//							fileout << "-2.04 1.95" << std::endl;
-			//					//							fileout << 0.01 << " " << (0.16 + (i+1)*dV) << std::endl;
-			//					//							fileout << "-2.04 1.95" << std::endl;
-			//					//							fileout << 0.01 << " " << (0.16 + (i+1)*dV) << std::endl;
-			//					//							fileout << "0.01 0.61" << std::endl;
-			//					//				fileout << (vProbe - initVHalfWidth - (i+1)*dV) << " " << (vProbe + initVHalfWidth + (i+1)*dV) << std::endl;
+			//				fileout << "-2.04 1.95" << std::endl;
+			////				fileout << (0.01) << " " << (1.09) << std::endl;
+			//				fileout << (vProbe - 0.1 - i*0.02) << " " << (vProbe + 0.1 + i*0.02) << std::endl;
+			//				//							fileout << "-2.04 1.95" << std::endl;
+			//				//							fileout << 0.01 << " " << (0.16 + (i+1)*dV) << std::endl;
+			//				//							fileout << "0.01 0.61" << std::endl;
+			//				//				fileout << (vProbe - initVHalfWidth - (i+1)*dV) << " " << (vProbe + initVHalfWidth + (i+1)*dV) << std::endl;
 			//
-			//					fileout.close();
-			//					//				vProbe = (0.01 + (0.01 + (i+1)*dV) / 2.0);
-			//					testNUnderlyings(atoi(argv[3]), atoi(argv[4]), "/home/sam/Documents/Heston/tmpBound.bound", fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-			//					convFile << (0.475 + i*0.025) << " " << (2 + 0.2*j) << " " << alphaDone << std::endl;
-			//				}
+			//				fileout.close();
+			//				//				vProbe = (0.01 + (0.01 + (i+1)*dV) / 2.0);
+			//				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch , "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+			//				convFile << (vProbe - 0.1 - i*0.02) << " " << (vProbe + 0.1 + i*0.02) << " " << alphaDone << std::endl;
+			//				//				}
 			//			}
 			//			convFile.close();
 
@@ -910,18 +917,23 @@ int main(int argc, char *argv[])
 			std::ofstream convFile;
 			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
 
-			for(int i=2;i<5;i++)
+			//						double timestepSizes[4]={0.001,0.002,0.004,0.005};
+
+			for(int i=2;i<7;i++)
 			{
 				std::cout << "Starting test " << i << std::endl;
-//				refinementThresh = pow(10.0, 0 - i);
+				//							double timestep = timestepSizes[i];
+				//				refinementThresh = pow(10.0, 0 - i);
+				//							testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/timestep), timestep, atoi(argv[13]), atof(argv[14]), solver, coordsType);
 				testNUnderlyings(atoi(argv[3]), i, fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 				convFile << i << " " << alphaDone << std::endl;
 			}
 			convFile.close();
 
-//			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+			//						testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 
 			//			std::cout << "Error: " << alphaDone << std::endl;
+			std::cout << "BS: " << bsSolution << std::endl;
 		}
 	}
 	else
