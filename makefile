@@ -29,7 +29,7 @@ AMDOCLLIB = /opt/AMDAPP/lib/x86_64
 # Default Variables, overwirtten by CLI
 ###################################################################	
 # use OpenMP Version 3
-OMP=0
+OMP=1
 # use the TR1 Implementations for Hashmaps
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)

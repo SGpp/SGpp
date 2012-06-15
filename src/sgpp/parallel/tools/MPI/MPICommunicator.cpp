@@ -23,14 +23,14 @@ void MPICommunicator::broadcastGridCoefficientsFromRank0(sg::base::DataVector& a
 
 void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha)
 {
-	if (myid_ == 0)
-	{
+    if (myid_ == 0)
+    {
         MPI_Reduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	}
-	else
-	{
-		MPI_Reduce((void*)alpha.getPointer(), NULL, (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	}
+    }
+    else
+    {
+        MPI_Reduce((void*)alpha.getPointer(), NULL, (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    }
 }
 
 void MPICommunicator::reduceGridCoefficients(sg::base::DataVector& alpha)
@@ -40,9 +40,9 @@ void MPICommunicator::reduceGridCoefficients(sg::base::DataVector& alpha)
 
 void MPICommunicator::sendGrid(std::string& serialized_grid, int dest_rank)
 {
-	int nChars = (int)serialized_grid.length();
-	MPI_Send(&nChars, 1, MPI_INT, dest_rank, this->myid_, MPI_COMM_WORLD);
-	MPI_Send((void*)serialized_grid.c_str(), (int)serialized_grid.length(), MPI_CHAR, dest_rank, this->myid_, MPI_COMM_WORLD);
+    int nChars = (int)serialized_grid.length();
+    MPI_Send(&nChars, 1, MPI_INT, dest_rank, this->myid_, MPI_COMM_WORLD);
+    MPI_Send((void*)serialized_grid.c_str(), (int)serialized_grid.length(), MPI_CHAR, dest_rank, this->myid_, MPI_COMM_WORLD);
 }
 
 void MPICommunicator::broadcastGrid(std::string& serialized_grid)
@@ -140,7 +140,7 @@ int MPICommunicator::getMyRank()
 
 int MPICommunicator::getNumRanks()
 {
-	return this->ranks_;
+    return this->ranks_;
 }
 
 }

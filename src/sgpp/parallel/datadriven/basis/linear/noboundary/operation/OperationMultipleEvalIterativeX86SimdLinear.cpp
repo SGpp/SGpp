@@ -43,6 +43,15 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
 
     std::cout << "use the following bounds: " << m_storageFrom << " - " << m_storageTo << "; " << m_datasetFrom << " - " << m_datasetTo << std::endl;
 
+#ifdef _OPENMP
+#pragma omp parallel
+{
+    if (omp_get_thread_num() == 0) {
+        std::cout << "using " << omp_get_num_threads() << " OpenMP Threads" << std::endl;
+    }
+}
+#endif
+
 	this->storage = storage;
 
 	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
@@ -92,9 +101,14 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 #ifdef _OPENMP
     #pragma omp parallel
 	{
-		size_t chunksize = (storageSize/omp_get_num_threads())+1;
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, storageSize);
+//        size_t chunksize = (storageSize/omp_get_num_threads())+1;
+//    	size_t start = chunksize*omp_get_thread_num();
+//    	size_t end = std::min<size_t>(start+chunksize, storageSize);
+        size_t chunksizeProc = m_storageTo - m_storageFrom;
+        size_t chunksize = (chunksizeProc/omp_get_num_threads())+1;
+        size_t start = m_storageFrom + chunksize*omp_get_thread_num();
+        size_t end = std::min<size_t>(start+chunksize, m_storageTo);
+        //std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [multTranspose] start: " << start << "; end: " << end << std::endl;
 #else
 //    size_t start = 0;
 //    size_t end = storageSize;
@@ -345,16 +359,30 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 #ifdef _OPENMP
     #pragma omp parallel
 	{
-		size_t chunksize = (result_size/omp_get_num_threads())+1;
-		// assure that every subarray is 32-byte aligned
-		if (chunksize % CHUNKDATAPOINTS_X86 != 0)
-		{
-			size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
-			size_t patch = CHUNKDATAPOINTS_X86 - remainder;
-			chunksize += patch;
-		}
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, result_size);
+//		size_t chunksize = (result_size/omp_get_num_threads())+1;
+//		// assure that every subarray is 32-byte aligned
+//		if (chunksize % CHUNKDATAPOINTS_X86 != 0)
+//		{
+//			size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
+//			size_t patch = CHUNKDATAPOINTS_X86 - remainder;
+//			chunksize += patch;
+//		}
+//    	size_t start = chunksize*omp_get_thread_num();
+//    	size_t end = std::min<size_t>(start+chunksize, result_size);
+
+        size_t chunksizeProc = m_datasetTo - m_datasetFrom;
+        size_t chunksize = (chunksizeProc/omp_get_num_threads())+1;
+
+        // assure that every subarray is 32-byte aligned
+        if (chunksize % CHUNKDATAPOINTS_X86 != 0)
+        {
+            size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
+            size_t patch = CHUNKDATAPOINTS_X86 - remainder;
+            chunksize += patch;
+        }
+        size_t start = m_datasetFrom + chunksize*omp_get_thread_num();
+        size_t end = std::min<size_t>(start+chunksize, m_datasetTo);
+        //std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [mult] start: " << start << "; end: " << end << std::endl;
 #else
 //    size_t start = 0;
 //    size_t end = result_size;

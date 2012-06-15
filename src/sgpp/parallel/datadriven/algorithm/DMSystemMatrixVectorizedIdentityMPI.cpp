@@ -140,7 +140,7 @@ DMSystemMatrixVectorizedIdentityMPI::~DMSystemMatrixVectorizedIdentityMPI()
 
 void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	sg::base::DataVector temp(this->numPatchedTrainingInstances_);
+    sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 
     // Operation B
     multVec(alpha, temp);
@@ -186,8 +186,6 @@ void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base:
     this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
 
     sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
-//    MPI_Alltoallv(temp.getPointer(), _mpi_data_send_sizes, _mpi_data_send_offsets, MPI_DOUBLE,
-//                  temp.getPointer(), _mpi_data_sizes, _mpi_data_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
 
     this->completeTimeMult_ += this->myTimer_->stop();
 }
@@ -196,11 +194,9 @@ void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector &sou
 {
     this->myTimer_->start();
     this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(source, result);
-    std::cout << "size of result: " << result.getSize() << std::endl;
+    //std::cout << "size of result: " << result.getSize() << std::endl;
 
     sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_storage_offsets, _mpi_storage_sizes);
-//    MPI_Alltoallv(result.getPointer(), _mpi_storage_send_sizes, _mpi_storage_send_offsets, MPI_DOUBLE,
-//                  result.getPointer(), _mpi_storage_sizes, _mpi_storage_offsets, MPI_DOUBLE, MPI_COMM_WORLD);
 
 
     this->completeTimeMultTrans_ += this->myTimer_->stop();
