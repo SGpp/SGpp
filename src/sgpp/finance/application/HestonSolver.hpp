@@ -16,9 +16,6 @@
 #include "base/grid/common/BoundingBox.hpp"
 #include "solver/ODESolver.hpp"
 
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
-
 #include "base/tools/StdNormalDistribution.hpp"
 
 #include "base/application/ScreenOutput.hpp"
@@ -493,9 +490,11 @@ public:
 
 	double EvaluateHestonFExact(sg::base::DataVector* characteristicFunction, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
 	void EvaluateHestonExactSurface(sg::base::DataVector& alpha, double maturity);
+	void EvaluateHestonExactSurfacePut(sg::base::DataVector& alpha, double maturity);
 	void EvaluateHestonExact1d(sg::base::DataVector& alpha, sg::base::Grid* grid1d, sg::base::BoundingBox* boundingBox1d, double maturity, double v);
 	void EvaluateBsExact1d(sg::base::DataVector& alpha, sg::base::Grid* grid1d, sg::base::BoundingBox* boundingBox1d, double maturity, double sigma);
 	double EvaluateHestonPriceExact(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K);
+	double EvaluateHestonPriceExactPut(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K);
 	void CompareHestonBsExact(sg::base::DataVector& alpha, double maturity);
 	void CompareHestonBs1d(double maturity, double v);
 	double GaussLobattoIntStep(double a, double b, double fa, double fb, size_t &neval, size_t maxeval, double acc, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);

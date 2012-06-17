@@ -1442,6 +1442,41 @@ void HestonSolver::EvaluateHestonExactSurface(DataVector& alpha, double maturity
 	delete myHierarchisation;
 }
 
+void HestonSolver::EvaluateHestonExactSurfacePut(DataVector& alpha, double maturity)
+{
+	if (!this->bGridConstructed)
+		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
+
+	if (this->numAssets != 1 || this->payoffType != "std_euro_call")
+		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
+
+	double tmp;
+
+	for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
+	{
+		std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+		std::stringstream coordsStream(coords);
+		double* dblFuncValues = new double[dim];
+
+		for (size_t j = 0; j < this->dim; j++)
+		{
+			coordsStream >> tmp;
+
+			if(this->useLogTransform && j == 0)
+				dblFuncValues[j] = exp(tmp);
+			else
+				dblFuncValues[j] = tmp;
+		}
+
+		alpha[i] = EvaluateHestonPriceExactPut(dblFuncValues[0], dblFuncValues[1], this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike) ;
+		delete dblFuncValues;
+	}
+
+	OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+	myHierarchisation->doHierarchisation(alpha);
+	delete myHierarchisation;
+}
+
 void HestonSolver::CompareHestonBs1d(double maturity, double v)
 {
 	if (this->numAssets != 1 || this->payoffType != "std_euro_call")
@@ -1547,6 +1582,13 @@ double HestonSolver::EvaluateHestonPriceExact(double S, double v, double xi, dou
 	double int1 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
 	double int2 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
 	return S*int1 - K*exp((-1.0)*r*T)*int2;
+}
+
+double HestonSolver::EvaluateHestonPriceExactPut(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K)
+{
+	double int1 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
+	double int2 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
+	return S*int1 - K*exp((-1.0)*r*T)*int2 + K*exp((-1.0)*r*T) - S;
 }
 
 void HestonSolver::GetBsExactSolution(sg::base::DataVector& alphaBS, double maturity)
