@@ -579,9 +579,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 	if(numberOfAssets == 1 && payoffType == "std_euro_put")
 	{
-		alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
-		myHestonSolver->EvaluateHestonExactSurfacePut(*alphaExact,timesteps*stepsize);
-		myHestonSolver->printGrid(*alphaExact, PLOT_RESOLUTION, "hestonExactPut.gnuplot");
+//		alphaExact = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+//		myHestonSolver->EvaluateHestonExactSurfacePut(*alphaExact,timesteps*stepsize);
+//		myHestonSolver->printGrid(*alphaExact, PLOT_RESOLUTION, "hestonExactPut.gnuplot");
 	}
 
 	if (numberOfAssets < 2)
@@ -855,7 +855,7 @@ int main(int argc, char *argv[])
 			// vprobe = 0.305 and theta = 0.6 and kappa above 0.5 with 0.5 increments works
 
 
-			vProbe = 0.55;
+			vProbe = 0.31;
 			sProbe = 1.0;
 			v2Probe = 0.55;
 			s2Probe = 1.0;
@@ -866,7 +866,7 @@ int main(int argc, char *argv[])
 			const int numTests = 20;
 			double initSHalfWidth = 0.6;
 			double initVHalfWidth = 0.04;
-			double dS = 0.2;
+			double dS = 0.1;
 			double dV = 0.05;
 			double dKappa = 0.1;
 			double dXi = 0.02;
@@ -878,36 +878,37 @@ int main(int argc, char *argv[])
 			double sMins[numTests] = {sProbe - initDiff, sProbe - 2*initDiff, sProbe - 4*initDiff, sProbe - 8*initDiff, sProbe - 16*initDiff, sProbe - 32*initDiff, sProbe - 64*initDiff , sProbe - 128*initDiff};
 			double sMaxs[numTests] = {sProbe + initDiff, sProbe + 2*initDiff, sProbe + 4*initDiff, sProbe + 8*initDiff, sProbe + 16*initDiff, sProbe + 32*initDiff, sProbe + 64*initDiff, sProbe + 128*initDiff};
 
-			//			std::ofstream convFile;
-			//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
+//			std::ofstream convFile;
+//			convFile.open("/home/sam/workspace/Heston/convergence.gnuplot");
 
-			//			for(int i=12;i<13;i++)
-			//			{
-			//				//				for(int j=1;j<numTests;j++)
-			//				//				{
-			//
-			//				std::cout << "Starting test " << i << std::endl;
-			//				std::ofstream fileout;
-			//				fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
-			//				//							fileout << (sProbe - initSHalfWidth - (i+1)*dS) << " " << (sProbe + initSHalfWidth + (i+1)*dS) << std::endl;
-			//				//				fileout << "0.3 0.2 2.0 1.0 " << (-1.0 + i*0.5) << " " << (-1.0 + i*0.5) << " 1.0" << std::endl;
-			//
-			//				fileout << "-2.04 1.95" << std::endl;
-			//				//				fileout << (0.01) << " " << (1.09) << std::endl;
-			//				fileout << (vProbe - 0.3 - i*0.02) << " " << (vProbe + 0.3 + i*0.02) << std::endl;
-			//				fileout << "-2.04 1.95" << std::endl;
-			//				fileout << (vProbe - 0.3 - i*0.02) << " " << (vProbe + 0.3 + i*0.02) << std::endl;
-			//				//							fileout << 0.01 << " " << (0.16 + (i+1)*dV) << std::endl;
-			//				//							fileout << "0.01 0.61" << std::endl;
-			//				//				fileout << (vProbe - initVHalfWidth - (i+1)*dV) << " " << (vProbe + initVHalfWidth + (i+1)*dV) << std::endl;
-			//
-			//				fileout.close();
-			//				//				vProbe = (0.01 + (0.01 + (i+1)*dV) / 2.0);
-			//				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch , "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
-			//				convFile << (vProbe - 0.3 - i*0.02) << " " << (vProbe + 0.3 + i*0.02) << " " << alphaDone << std::endl;
-			//				//				}
-			//			}
-			//			convFile.close();
+//			for(int i=0;i<36;i++)
+//			{
+//				//				for(int j=1;j<numTests;j++)
+//				//				{
+//
+//				std::cout << "Starting test " << i << std::endl;
+//				std::ofstream fileout;
+//				fileout.open("/home/sam/Documents/Heston/tmpBound.bound");
+//				fileout << (0 - initSHalfWidth - (i)*dS) << " " << (0 + initSHalfWidth + (i)*dS) << std::endl;
+//				//				fileout << "0.3 0.2 2.0 1.0 " << (-1.0 + i*0.5) << " " << (-1.0 + i*0.5) << " 1.0" << std::endl;
+//
+////				fileout << "-2.04 1.95" << std::endl;
+//				//				fileout << (0.01) << " " << (1.09) << std::endl;
+//				fileout << (vProbe - 0.1 - i*0.02) << " " << (vProbe + 0.1 + i*0.02) << std::endl;
+////				fileout << "-2.04 1.95" << std::endl;
+////				fileout << (vProbe - 0.1 - i*0.02) << " " << (vProbe + 0.1 + i*0.02) << std::endl;
+//				//							fileout << 0.01 << " " << (0.16 + (i+1)*dV) << std::endl;
+//				//							fileout << "0.01 0.61" << std::endl;
+//				//				fileout << (vProbe - initVHalfWidth - (i+1)*dV) << " " << (vProbe + initVHalfWidth + (i+1)*dV) << std::endl;
+//
+//				fileout.close();
+//				//				vProbe = (0.01 + (0.01 + (i+1)*dV) / 2.0);
+//				testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch , "/home/sam/Documents/Heston/tmpBound.bound", dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+////				convFile << (vProbe - 0.1 - i*0.02) << " " << (vProbe + 0.1 + i*0.02) << " " << alphaDone << std::endl;
+//				convFile << i << " " << alphaDone << std::endl;
+//				//				}
+//			}
+//			convFile.close();
 
 
 			//			std::ofstream convFile;
@@ -939,7 +940,7 @@ int main(int argc, char *argv[])
 			//			convFile.close();
 
 			//			refinementThresh = pow(10.0, 0 - 5);
-			//			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
+			testNUnderlyings(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10])/atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, coordsType);
 
 			//			std::cout << "Error: " << alphaDone << std::endl;
 			//			std::cout << "BS: " << bsSolution << std::endl;

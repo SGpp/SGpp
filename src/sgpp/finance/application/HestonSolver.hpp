@@ -77,7 +77,7 @@ protected:
 	/// identifies if the Black Scholes Equation should be solved on a log-transformed grid
 	bool useLogTransform;
 	/// identifies if the Black Scholes Equation should be solved by using a principal axis transformation
-	bool usePAT;
+//	bool usePAT;
 	/// max. level for refinement during solving
 	size_t refineMaxLevel;
 	/// variable to store needed solving iterations
@@ -165,7 +165,7 @@ public:
 	 * @param useLogTransform speciefies if a log transformed formulation should be used for solving BlackScholes Equation
 	 * @param usePAT speciefies if a principal axis transformation (also enabling a log-transformation) should be used for solving BlackScholes Equation
 	 */
-	HestonSolver(bool useLogTransform = true, bool usePAT = false);
+	HestonSolver(bool useLogTransform = true);
 
 	/**
 	 * Std-Destructor of the solver

@@ -3,7 +3,7 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Sam Maurus (MA thesis)
 
 #include "finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.hpp"
 #include "finance/application/HestonSolver.hpp"
@@ -42,7 +42,13 @@ namespace sg
 namespace finance
 {
 
-HestonSolver::HestonSolver(bool useLogTransform, bool usePAT) : ParabolicPDESolver()
+/*
+ * HestonSolver constructor.
+ *
+ * @param useLogTransform: true if log-transformed stock-price coordinates are used (variance coordinates are always linear)
+ * @param used the number of dimensions used in the Sparse Grid
+ */
+HestonSolver::HestonSolver(bool useLogTransform) : ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -53,11 +59,11 @@ HestonSolver::HestonSolver(bool useLogTransform, bool usePAT) : ParabolicPDESolv
 	this->refineMode = "classic";
 	this->numCoarsenPoints = -1;
 	this->useLogTransform = useLogTransform;
-	this->usePAT = usePAT;
-	if (this->usePAT == true)
-	{
-		this->useLogTransform = true;
-	}
+//	this->usePAT = usePAT;
+//	if (this->usePAT == true)
+//	{
+//		this->useLogTransform = true;
+//	}
 	this->refineMaxLevel = 0;
 	this->nNeededIterations = 0;
 	this->dNeededTime = 0.0;
@@ -115,19 +121,19 @@ void HestonSolver::getGridNormalDistribution(DataVector& alpha, std::vector<doub
 				}
 				else
 				{
-					if (this->usePAT == true)
-					{
-						double inner_tmp = 0.0;
-						for (size_t l = 0; l < dim; l++)
-						{
-							inner_tmp += this->eigvec_covar->get(j, l)*(s_coords[l]-(this->current_time*this->mu_hat->get(l)));
-						}
-						value *= myNormDistr.getDensity(exp(inner_tmp), norm_mu[j], norm_sigma[j]);
-					}
-					else
-					{
+//					if (this->usePAT == true)
+//					{
+//						double inner_tmp = 0.0;
+//						for (size_t l = 0; l < dim; l++)
+//						{
+//							inner_tmp += this->eigvec_covar->get(j, l)*(s_coords[l]-(this->current_time*this->mu_hat->get(l)));
+//						}
+//						value *= myNormDistr.getDensity(exp(inner_tmp), norm_mu[j], norm_sigma[j]);
+//					}
+//					else
+//					{
 						value *= myNormDistr.getDensity(exp(s_coords[j]), norm_mu[j], norm_sigma[j]);
-					}
+//					}
 				}
 			}
 
@@ -452,14 +458,14 @@ void HestonSolver::initGridWithPayoff(DataVector& alpha, double strike, std::str
 
 	if (this->useLogTransform)
 	{
-		if (this->usePAT)
-		{
-			initPATTransformedGridWithPayoff(alpha, strike, payoffType);
-		}
-		else
-		{
+//		if (this->usePAT)
+//		{
+//			initPATTransformedGridWithPayoff(alpha, strike, payoffType);
+//		}
+//		else
+//		{
 			initLogTransformedGridWithPayoff(alpha, strike, payoffType);
-		}
+//		}
 	}
 	else
 	{
@@ -691,61 +697,78 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 					tmp += dblFuncValues[2*j];
 				}
 
-//				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
-//				{
-//					// Dirichlet condition when v -> inf is that U = S
-//					alpha[i] = dblFuncValues[0]; //(this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
-//				}
-//				else if(!curPoint->isInnerPoint() && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
-//				{
-//					// Set boundary to be the linear function at s_max
-//					double normalPayoff = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
-//					double vRange = this->myBoundingBox->getBoundary(1).rightBoundary - this->myBoundingBox->getBoundary(1).leftBoundary;
-//					double sPayoffDiff = dblFuncValues[0] - normalPayoff;
-//					alpha[i] = normalPayoff + ((dblFuncValues[1] - this->myBoundingBox->getBoundary(1).leftBoundary) /vRange)*sPayoffDiff;
-//				}
-//				else
-//				{
+				if(!curPoint->isInnerPoint() && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
+				{
+					// Dirichlet condition when v -> inf is that U = S
+					alpha[i] = dblFuncValues[0]; //(this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
+				}
+				else if(!curPoint->isInnerPoint() && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
+				{
+					// Set boundary to be the linear function at s_max
+					double normalPayoff = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
+					double vRange = this->myBoundingBox->getBoundary(1).rightBoundary - this->myBoundingBox->getBoundary(1).leftBoundary;
+					double sPayoffDiff = dblFuncValues[0] - normalPayoff;
+					alpha[i] = normalPayoff + ((dblFuncValues[1] - this->myBoundingBox->getBoundary(1).leftBoundary) /vRange)*sPayoffDiff;
+				}
+				else
+				{
 					// Payoff function
 					alpha[i] = std::max<double>(((tmp/static_cast<double>(numAssets))-strike), 0.0);
-//				}
+				}
 			}
 			else if (payoffType == "std_euro_put")
 			{
 				if(!curPoint->isInnerPoint())
 				{
-					// Get the payoff function value for this point
-					double payoffFuncVal = 0.0;
-					for(size_t k=0; k < numAssets; k++)
+					if(numAssets == 1 && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
 					{
-						payoffFuncVal += dblFuncValues[2*k];
+						// Vmax boundary for a single asset. Strike price
+						alpha[i] = strike;
 					}
-					payoffFuncVal = std::max<double>(strike - payoffFuncVal/ (static_cast<double>(numAssets)), 0.0);
-
-					// Get the max-volatility function value for this point
-					double maxVolFuncVal = 0.0;
-					for(size_t k=0; k < numAssets; k++)
+					else if(numAssets == 1 && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
 					{
-						double stockPrice = dblFuncValues[2*k];
-						double sMaxValue = this->myBoundingBox->getBoundary(2*k).rightBoundary;
-						maxVolFuncVal +=  (strike / (2.0*sMaxValue))*stockPrice;
+						// Smax boundary for a single asset. exponential function
+						double constantC = 20.0;
+						double constantB = (strike*pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary),20.0))/(1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
+						double constantA = strike + constantB;
+						alpha[i] = constantA*pow(exp(dblFuncValues[1] - this->myBoundingBox->getBoundary(1).rightBoundary),20.0) - constantB;
 					}
-					maxVolFuncVal = strike - maxVolFuncVal/ (static_cast<double>(numAssets));
-
-					// Get the fraction that we are away from the v=vMin value in the direction of vMax
-					double volFraction = 0.0;
-					for(size_t k=0; k < numAssets; k++)
+					else
 					{
-						double vValue = dblFuncValues[2*k+1];
-						double vRightValue = this->myBoundingBox->getBoundary(2*k+1).rightBoundary;
-						double vLeftValue = this->myBoundingBox->getBoundary(2*k+1).leftBoundary;
-						double vRange = vRightValue - vLeftValue;
-						volFraction += (vValue - vLeftValue)/vRange;
-					}
-					volFraction = volFraction / (static_cast<double>(numAssets));
 
-					// Now set the value of the point as the payoff function + fraction*maxVol function
-					alpha[i] = std::max<double>(payoffFuncVal + volFraction*(maxVolFuncVal - payoffFuncVal), 0.0);
+						// Get the payoff function value for this point
+						double payoffFuncVal = 0.0;
+						for(size_t k=0; k < numAssets; k++)
+						{
+							payoffFuncVal += dblFuncValues[2*k];
+						}
+						payoffFuncVal = std::max<double>(strike - payoffFuncVal/ (static_cast<double>(numAssets)), 0.0);
+
+						// Get the max-volatility function value for this point
+						double maxVolFuncVal = 0.0;
+						for(size_t k=0; k < numAssets; k++)
+						{
+							double stockPrice = dblFuncValues[2*k];
+							double sMaxValue = this->myBoundingBox->getBoundary(2*k).rightBoundary;
+							maxVolFuncVal +=  (strike / (2.0*sMaxValue))*stockPrice;
+						}
+						maxVolFuncVal = strike - maxVolFuncVal/ (static_cast<double>(numAssets));
+
+						// Get the fraction that we are away from the v=vMin value in the direction of vMax
+						double volFraction = 0.0;
+						for(size_t k=0; k < numAssets; k++)
+						{
+							double vValue = dblFuncValues[2*k+1];
+							double vRightValue = this->myBoundingBox->getBoundary(2*k+1).rightBoundary;
+							double vLeftValue = this->myBoundingBox->getBoundary(2*k+1).leftBoundary;
+							double vRange = vRightValue - vLeftValue;
+							volFraction += (vValue - vLeftValue)/vRange;
+						}
+						volFraction = volFraction / (static_cast<double>(numAssets));
+
+						// Now set the value of the point as the payoff function + fraction*maxVol function
+						alpha[i] = std::max<double>(payoffFuncVal + volFraction*(maxVolFuncVal - payoffFuncVal), 0.0);
+					}
 				}
 				else
 				{
@@ -859,39 +882,55 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 			{
 				if(!curPoint->isInnerPoint())
 				{
-					// Get the payoff function value for this point
-					double payoffFuncVal = 0.0;
-					for(size_t k=0; k < numAssets; k++)
+					if(numAssets == 1 && dblFuncValues[1] == this->myBoundingBox->getBoundary(1).rightBoundary)
 					{
-						payoffFuncVal += exp(dblFuncValues[2*k]);
+						// Vmax boundary for a single asset. Strike price
+						alpha[i] = strike;
 					}
-					payoffFuncVal = std::max<double>(strike - payoffFuncVal/ (static_cast<double>(numAssets)), 0.0);
-
-					// Get the max-volatility function value for this point
-					double maxVolFuncVal = 0.0;
-					for(size_t k=0; k < numAssets; k++)
+					else if(numAssets == 1 && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
 					{
-						double stockPrice = exp(dblFuncValues[2*k]);
-						double sMinValue = exp(this->myBoundingBox->getBoundary(2*k).leftBoundary);
-						double sMaxValue = exp(this->myBoundingBox->getBoundary(2*k).rightBoundary);
-						maxVolFuncVal +=  (strike / (2.0*(sMaxValue-sMinValue)))*(stockPrice-sMinValue);
+						// Smax boundary for a single asset. exponential function
+						double constantC = 20.0;
+						double constantB = (strike*pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary),20.0))/(1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
+						double constantA = strike + constantB;
+						alpha[i] = constantA*pow(exp(dblFuncValues[1] - this->myBoundingBox->getBoundary(1).rightBoundary),20.0) - constantB;
 					}
-					maxVolFuncVal = strike - maxVolFuncVal/ (static_cast<double>(numAssets));
-
-					// Get the fraction that we are away from the v=vMin value in the direction of vMax
-					double volFraction = 0.0;
-					for(size_t k=0; k < numAssets; k++)
+					else
 					{
-						double vValue = dblFuncValues[2*k+1];
-						double vRightValue = this->myBoundingBox->getBoundary(2*k+1).rightBoundary;
-						double vLeftValue = this->myBoundingBox->getBoundary(2*k+1).leftBoundary;
-						double vRange = vRightValue - vLeftValue;
-						volFraction += (vValue - vLeftValue)/vRange;
-					}
-					volFraction = volFraction / (static_cast<double>(numAssets));
+						// Get the payoff function value for this point
+						double payoffFuncVal = 0.0;
+						for(size_t k=0; k < numAssets; k++)
+						{
+							payoffFuncVal += exp(dblFuncValues[2*k]);
+						}
+						payoffFuncVal = std::max<double>(strike - payoffFuncVal/ (static_cast<double>(numAssets)), 0.0);
 
-					// Now set the value of the point as the payoff function + fraction*maxVol function
-					alpha[i] = std::max<double>(payoffFuncVal + volFraction*(maxVolFuncVal - payoffFuncVal), 0.0);
+						// Get the max-volatility function value for this point
+						double maxVolFuncVal = 0.0;
+						for(size_t k=0; k < numAssets; k++)
+						{
+							double stockPrice = exp(dblFuncValues[2*k]);
+							double sMinValue = exp(this->myBoundingBox->getBoundary(2*k).leftBoundary);
+							double sMaxValue = exp(this->myBoundingBox->getBoundary(2*k).rightBoundary);
+							maxVolFuncVal +=  (strike / (2.0*(sMaxValue-sMinValue)))*(stockPrice-sMinValue);
+						}
+						maxVolFuncVal = strike - maxVolFuncVal/ (static_cast<double>(numAssets));
+
+						// Get the fraction that we are away from the v=vMin value in the direction of vMax
+						double volFraction = 0.0;
+						for(size_t k=0; k < numAssets; k++)
+						{
+							double vValue = dblFuncValues[2*k+1];
+							double vRightValue = this->myBoundingBox->getBoundary(2*k+1).rightBoundary;
+							double vLeftValue = this->myBoundingBox->getBoundary(2*k+1).leftBoundary;
+							double vRange = vRightValue - vLeftValue;
+							volFraction += (vValue - vLeftValue)/vRange;
+						}
+						volFraction = volFraction / (static_cast<double>(numAssets));
+
+						// Now set the value of the point as the payoff function + fraction*maxVol function
+						alpha[i] = std::max<double>(payoffFuncVal + volFraction*(maxVolFuncVal - payoffFuncVal), 0.0);
+					}
 				}
 				else
 				{
@@ -1014,27 +1053,27 @@ void HestonSolver::transformPoint(sg::base::DataVector& point)
 	// apply needed coordinate transformations
 	if (this->useLogTransform)
 	{
-		if (this->usePAT)
-		{
-			for (size_t i = 0; i < point.getSize(); i++)
-			{
-				double trans_point = 0.0;
-				for (size_t j = 0; j < point.getSize(); j++)
-				{
-					trans_point += (this->eigvec_covar->get(j,i)*(log(point[j])));
-				}
-				trans_point += (this->current_time*this->mu_hat->get(i));
-
-				tmp_point[i] = trans_point;
-			}
-		}
-		else
-		{
+//		if (this->usePAT)
+//		{
+//			for (size_t i = 0; i < point.getSize(); i++)
+//			{
+//				double trans_point = 0.0;
+//				for (size_t j = 0; j < point.getSize(); j++)
+//				{
+//					trans_point += (this->eigvec_covar->get(j,i)*(log(point[j])));
+//				}
+//				trans_point += (this->current_time*this->mu_hat->get(i));
+//
+//				tmp_point[i] = trans_point;
+//			}
+//		}
+//		else
+//		{
 			for (size_t i = 0; i < point.getSize(); i++)
 			{
 				tmp_point[i] = log(point[i]);
 			}
-		}
+//		}
 	}
 
 	point = tmp_point;
@@ -1447,8 +1486,8 @@ void HestonSolver::EvaluateHestonExactSurfacePut(DataVector& alpha, double matur
 	if (!this->bGridConstructed)
 		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
-	if (this->numAssets != 1 || this->payoffType != "std_euro_call")
-		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
+	if (this->numAssets != 1 || this->payoffType != "std_euro_put")
+		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European put option with one asset!");
 
 	double tmp;
 
