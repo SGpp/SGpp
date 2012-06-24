@@ -15,11 +15,6 @@
 #include "pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
 #include "finance/tools/Hedging.hpp"
 
-//#define HEDGE
-#define HEDGE_EPS 0.05
-#define HEDGE_WIDTH_PERCENT 0.95
-#define HEDGE_POINTS_PER_DIM 75
-
 namespace sg
 {
 namespace finance
@@ -35,11 +30,10 @@ class HestonParabolicPDESolverSystemEuroAmer : public sg::pde::OperationParaboli
 {
 protected:
 
-	// ---- START HESTON-RELEVANT MEMBERS ----
-
 	/// the riskfree interest rate
 	double r;
 
+	// The various Heston operators
 	sg::base::OperationMatrix* OpABound;
 	sg::base::OperationMatrix* OpAInner;
 	sg::base::OperationMatrix* OpBBound;
@@ -66,108 +60,73 @@ protected:
 	sg::base::OperationMatrix* OpWInner;
 	sg::base::OperationMatrix* OpZBound;
 	sg::base::OperationMatrix* OpZInner;
+	sg::base::OperationMatrix* OpLTwoBound;
+	sg::base::OperationMatrix* OpLTwoInner;
 
 	// Pointer to the vector containing the volatility of volatility values
 	sg::base::DataVector* volvols;
 	sg::base::DataVector* kappas;
 	sg::base::DataVector* thetas;
 
-	/// Pointer to the rhos;
+	/// Pointer to the rhos
 	sg::base::DataMatrix* hMatrix;
 
-	//	sg::base::DataMatrix* aCoeff;
-//	sg::base::DataVector* bCoeff;
-//	sg::base::DataVector* cCoeff;
+	//	Coefficient collections for the operators
+	// Up/down one op-dim
 	sg::base::DataVector* dCoeff;
 	sg::base::DataVector* eCoeff;
 	sg::base::DataVector* fCoeff;
 	sg::base::DataVector* gCoeff;
-//	sg::base::DataVector* hCoeff;
-//	sg::base::DataVector* xCoeff;
-//	sg::base::DataVector* yCoeff;
-//	sg::base::DataVector* wCoeff;
 	sg::base::DataVector* zCoeff;
 
+	// Up/down two op-dims
 	sg::base::DataMatrix* bCoeff;
 	sg::base::DataMatrix* cCoeff;
 	sg::base::DataMatrix* hCoeff;
 	sg::base::DataMatrix* xCoeff;
 	sg::base::DataMatrix* yCoeff;
 	sg::base::DataMatrix* wCoeff;
-//	sg::base::DataMatrix* zCoeff;
 
+	// Up/down four op dims
 	double**** kCoeff;
 
-	// ---- END HESTON-RELEVANT MEMBERS ----
-
-	/// the delta Operation, on boundary grid
-	sg::base::OperationMatrix* OpDeltaBound;
-	/// the Gamma Operation, on boundary grid
-	sg::base::OperationMatrix* OpGammaBound;
-	/// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-	sg::base::OperationMatrix* OpLTwoBound;
-	/// the delta Operation, on Inner grid
-	sg::base::OperationMatrix* OpDeltaInner;
-	/// the Gamma Operation, on Inner grid
-	sg::base::OperationMatrix* OpGammaInner;
-	/// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-	sg::base::OperationMatrix* OpLTwoInner;
-
-	/// Pointer to the mus
-	//	sg::base::DataVector* mus;
-	/// Pointer to the sigmas
-	//	sg::base::DataVector* sigmas;
-	/// Pointer to the coefficients of operation Delta
-	sg::base::DataVector* deltaCoef;
-	/// Pointer to the coefficients ot operation Gamma
-	sg::base::DataMatrix* gammaCoef;
-	/// use coarsening between timesteps in order to reduce gridsize
+	// Use coarsening between timesteps in order to reduce gridsize
 	bool useCoarsen;
-	/// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
+	// Adaptive mode during solving Heston Equation: coarsen, refine, coarsenNrefine
 	std::string adaptSolveMode;
-	/// number of points the are coarsened in each coarsening-step !CURRENTLY UNUSED PARAMETER!
+	// Number of points the are coarsened in each coarsening-step
 	int numCoarsenPoints;
-	/// Threshold used to decide if a grid point should be deleted
+	// Threshold used to decide if a grid point should be deleted
 	double coarsenThreshold;
-	/// Threshold used to decide if a grid point should be refined
+	// Threshold used to decide if a grid point should be refined
 	double refineThreshold;
-	/// refine mode during solving Black Scholes Equation: classic or maxLevel
+	// Refine mode during solving the Heston Equation: classic or maxLevel
 	std::string refineMode;
-	/// maxLevel max. Level of refinement
+	// MaxLevel max. Level of refinement
 	size_t refineMaxLevel;
-	/// the algorithmic dimensions used in this system
+	// The algorithmic dimensions used in this system
 	std::vector<size_t> HestonAlgoDims;
-	/// The number of assets (half the number of problem dimensions)
+	// The number of assets (half the number of problem dimensions)
 	size_t nAssets;
-	/// store number of executed timesteps
+	// Stores the number of executed timesteps
 	size_t nExecTimesteps;
-	/// the strike of the current option
+	// The strike of the current option
 	double dStrike;
-	/// the type of the current option
+	// The type of the current option
 	std::string option_type;
-	/// store whether log coordinates are used
+	// store whether log coordinates are used
 	bool b_log_transform;
-#ifdef HEDGE
-	/// hedging calculator
-	sg::finance::Hedging* myHedge;
-#endif
 
+	//
 	virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
-
 	virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
-
 	virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
-
 	virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-//	void buildACoefficients();
-//	void buildBCoefficients();
-//	void buildCCoefficients();
+	//
 	void buildDCoefficients();
-//	void buildECoefficients();
 	void buildFCoefficients();
 	void buildGCoefficients();
-//	void buildHCoefficients();
 	void buildXCoefficients();
 	void buildYCoefficients();
 	void buildWCoefficients();
@@ -184,44 +143,8 @@ protected:
 	void buildKCoefficientsLogTransform();
 
 	void create4dEqualDimSizeArray(size_t dimSize, double***** array);
-//	void create4dEqualDimSizeArray(size_t dimSize);
 	void delete4dEqualDimSizeArray(size_t dimSize, double***** array);
 	void setAll4dEqualDimSizeArray(size_t dimSize, double***** array, double value);
-
-//	bool IsNonMaxVolatilityBoundary(sg::base::GridIndex* idx);
-
-
-	/**
-	 * Build the coefficients for the Gamma Operation, which
-	 * are the assets' covariance matrix multiplied by 0.5
-	 *
-	 * this routine handles also the symmtrie of the
-	 * gamma operation
-	 */
-	//	void buildGammaCoefficients();
-
-	/**
-	 * Build the coefficients for the combined Delta Operation
-	 */
-	void buildDeltaCoefficients();
-
-	/**
-	 * Build the coefficients for the Gamma Operation, which
-	 * are the assets' covariance matrix multiplied by 0.5
-	 *
-	 * this routine handles also the symmtrie of the
-	 * gamma operation
-	 *
-	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
-	 */
-	//	void buildGammaCoefficientsLogTransform();
-
-	/**
-	 * Build the coefficients for the combined Delta Operation
-	 *
-	 * This function builds the coefficients for the Log Transformed Black Scholes Equation
-	 */
-	void buildDeltaCoefficientsLogTransform();
 
 public:
 	/**
