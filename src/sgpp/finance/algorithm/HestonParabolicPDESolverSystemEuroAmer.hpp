@@ -60,8 +60,6 @@ protected:
 	sg::base::OperationMatrix* OpWInner;
 	sg::base::OperationMatrix* OpZBound;
 	sg::base::OperationMatrix* OpZInner;
-	sg::base::OperationMatrix* OpLTwoBound;
-	sg::base::OperationMatrix* OpLTwoInner;
 
 	// Pointer to the vector containing the volatility of volatility values
 	sg::base::DataVector* volvols;
