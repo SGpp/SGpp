@@ -3,10 +3,11 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Sam Maurus (MA thesis)
 
 #include "finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.hpp"
 #include "base/exception/algorithm_exception.hpp"
+#include "base/exception/application_exception.hpp"
 #include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/operation/BaseOpFactory.hpp"
@@ -54,6 +55,12 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	this->HestonAlgoDims = this->BoundGrid->getAlgorithmicDimensions();
 	this->nAssets = this->HestonAlgoDims.size() / 2;
 	this->nExecTimesteps = 0;
+
+	// throw an exception if we're not using Log coordinates and there is more than one asset
+	if (this->nAssets > 1 && !bLogTransform)
+	{
+		throw sg::base::application_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Cartesian coordinates are not supported for the basket case.");
+	}
 
 	// throw exception if algorithmic dimensions isn't even
 	if ((this->HestonAlgoDims.size()%2) != 0 )
@@ -214,61 +221,89 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	this->b_log_transform = bLogTransform;
 }
 
+/*
+ * Destructor. Just does the usual...releases all allocated memory.
+ */
 HestonParabolicPDESolverSystemEuroAmer::~HestonParabolicPDESolverSystemEuroAmer()
 {
-	// Todo: update
-
-	//	delete this->OpDeltaBound;
-	//	delete this->OpGammaBound;
-	//	delete this->OpLTwoBound;
-	//	delete this->OpDeltaInner;
-	//	delete this->OpGammaInner;
-	//	delete this->OpLTwoInner;
-	//	delete this->gammaCoef;
-	//	delete this->deltaCoef;
-	//	delete this->BoundaryUpdate;
-	//	delete this->GridConverter;
-	//	if (this->InnerGrid != NULL)
-	//	{
-	//		delete this->InnerGrid;
-	//	}
-	//	if (this->alpha_inner != NULL)
-	//	{
-	//		delete this->alpha_inner;
-	//	}
-	//	if (this->rhs != NULL)
-	//	{
-	//		delete this->rhs;
-	//	}
-	//	delete this->alpha_complete_old;
-	//	delete this->alpha_complete_tmp;
+	delete this->dCoeff;
+	delete this->eCoeff;
+	delete this->fCoeff;
+	delete this->gCoeff;
+	delete this->zCoeff;
+	delete this->bCoeff;
+	delete this->cCoeff;
+	delete this->hCoeff;
+	delete this->xCoeff;
+	delete this->yCoeff;
+	delete this->wCoeff;
 	delete4dEqualDimSizeArray(this->HestonAlgoDims.size(), &(this->kCoeff));
 
-	//	std::cout << "test1" << std::endl;
-	//
-	//	for(size_t i=0;i<this->HestonAlgoDims.size();i++)
-	//	{
-	//		for(size_t j=0;j<this->HestonAlgoDims.size();j++)
-	//		{
-	//			for(size_t k=0;k<this->HestonAlgoDims.size();k++)
-	//			{
-	//				std::cout << "test2" << std::endl;
-	//				delete[] this->kCoeff[i][j][k];
-	//			}
-	//			std::cout << "test3" << std::endl;
-	//			delete[] this->kCoeff[i][j];
-	//			std::cout << "test4" << std::endl;
-	//		}
-	//		std::cout << "test5" << std::endl;
-	//		delete[] this->kCoeff[i];
-	//		std::cout << "test6" << std::endl;
-	//	}
-	//	std::cout << "test7" << std::endl;
-	//	delete[] this->kCoeff;
-	//	std::cout << "test8" << std::endl;
+	if(!b_log_transform)
+	{
+		delete this->OpXBound;
+		delete this->OpXInner;
+		delete this->OpYBound;
+		delete this->OpYInner;
+		delete this->OpWBound;
+		delete this->OpWInner;
+		delete this->OpZBound;
+		delete this->OpZInner;
+		delete this->OpGBound;
+		delete this->OpGInner;
+		delete this->OpDBound;
+		delete this->OpDInner;
+		delete this->OpFBound;
+		delete this->OpFInner;
+	}
+	else
+	{
+		delete this->OpBBound;
+		delete this->OpBInner;
+		delete this->OpCBound;
+		delete this->OpCInner;
+		delete this->OpDBound;
+		delete this->OpDInner;
+		delete this->OpEBound;
+		delete this->OpEInner;
+		delete this->OpFBound;
+		delete this->OpFInner;
+		delete this->OpGBound;
+		delete this->OpGInner;
+		delete this->OpHBound;
+		delete this->OpHInner;
+		delete this->OpKBound;
+		delete this->OpKInner;
+	}
 
+	delete this->OpAInner;
+	delete this->OpABound;
+
+	delete this->BoundaryUpdate;
+	delete this->GridConverter;
+	if (this->InnerGrid != NULL)
+	{
+		delete this->InnerGrid;
+	}
+	if (this->alpha_inner != NULL)
+	{
+		delete this->alpha_inner;
+	}
+	if (this->rhs != NULL)
+	{
+		delete this->rhs;
+	}
+	delete this->alpha_complete_old;
+	delete this->alpha_complete_tmp;
+	delete this->oldGridStorage;
+	delete this->secondGridStorage;
 }
 
+/*
+ * Applies the full L operator defined in the Heston thesis to bound.
+ * @param: Current nodal values.
+ * @param: Vector in which to store the result.
+ */
 void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
@@ -321,32 +356,43 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::Da
 	else
 	{
 		// Cartesian coordinates
+		// Only a single asset is supported.
 
-		// Apply the X method
+		// Apply the X operator
 		this->OpXBound->mult(alpha, temp);
 		result.sub(temp);
 
-		// Apply the Y method
+		// Apply the Y operator
 		this->OpYBound->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the G operator
 		this->OpGBound->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the D operator
 		this->OpDBound->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the F operator
 		this->OpFBound->mult(alpha, temp);
 		result.add(temp);
 
+		// Apply the W operator
 		this->OpWBound->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the Z operator
 		this->OpZBound->mult(alpha, temp);
 		result.add(temp);
 	}
 }
 
+/*
+ * Applies the full L operator defined in the Heston thesis to inner.
+ * @param: Current nodal values.
+ * @param: Vector in which to store the result.
+ */
 void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
@@ -408,23 +454,33 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataV
 		this->OpYInner->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the G method
 		this->OpGInner->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the D method
 		this->OpDInner->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the F method
 		this->OpFInner->mult(alpha, temp);
 		result.add(temp);
 
+		// Apply the W method
 		this->OpWInner->mult(alpha, temp);
 		result.sub(temp);
 
+		// Apply the Z method
 		this->OpZInner->mult(alpha, temp);
 		result.add(temp);
 	}
 }
 
+/*
+ * Applies the L2 scalar product to bound.
+ * @param alpha: Current values of the nodes.
+ * @param result: Vector in which to store the result
+ */
 void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
@@ -437,6 +493,11 @@ void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::D
 	result.add(temp);
 }
 
+/*
+ * Applies the L2 scalar product to inner.
+ * @param alpha: Current values of the nodes.
+ * @param result: Vector in which to store the result
+ */
 void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
