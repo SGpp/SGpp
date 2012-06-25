@@ -22,9 +22,6 @@ namespace sg
 namespace finance
 {
 
-/*
- * Constructor. Checks for the sanity of the supplied parameters and initialises the required members.
- */
 HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& thetas, sg::base::DataVector& volvols,
 		sg::base::DataVector& kappas,
 		sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
@@ -221,9 +218,6 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	this->b_log_transform = bLogTransform;
 }
 
-/*
- * Destructor. Just does the usual...releases all allocated memory.
- */
 HestonParabolicPDESolverSystemEuroAmer::~HestonParabolicPDESolverSystemEuroAmer()
 {
 	delete this->dCoeff;
@@ -299,11 +293,6 @@ HestonParabolicPDESolverSystemEuroAmer::~HestonParabolicPDESolverSystemEuroAmer(
 	delete this->secondGridStorage;
 }
 
-/*
- * Applies the full L operator defined in the Heston thesis to bound.
- * @param: Current nodal values.
- * @param: Vector in which to store the result.
- */
 void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
@@ -388,11 +377,6 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::Da
 	}
 }
 
-/*
- * Applies the full L operator defined in the Heston thesis to inner.
- * @param: Current nodal values.
- * @param: Vector in which to store the result.
- */
 void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
@@ -476,11 +460,6 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataV
 	}
 }
 
-/*
- * Applies the L2 scalar product to bound.
- * @param alpha: Current values of the nodes.
- * @param result: Vector in which to store the result
- */
 void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
@@ -493,11 +472,6 @@ void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::D
 	result.add(temp);
 }
 
-/*
- * Applies the L2 scalar product to inner.
- * @param alpha: Current values of the nodes.
- * @param result: Vector in which to store the result
- */
 void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	sg::base::DataVector temp(alpha.getSize());
@@ -510,10 +484,6 @@ void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::base::Data
 	result.add(temp);
 }
 
-/*
- * Post-processing following the main timestep logic.
- * Updates the boundary coefficients and performs discounting.
- */
 void HestonParabolicPDESolverSystemEuroAmer::finishTimestep()
 {
 	this->nExecTimesteps++;
@@ -533,10 +503,6 @@ void HestonParabolicPDESolverSystemEuroAmer::finishTimestep()
 #endif
 }
 
-/*
- * Coarsens and refines the sparse grid based on the relevant thresholds.
- * @param isLastTimestep: True if the current timestep is the last. If this is true, integrated coarsening is not performed.
- */
 void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimestep)
 {
 	// add number of Gridpoints
@@ -590,9 +556,6 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
 	}
 }
 
-/*
- * Pre-processing operation before the main timestep operations begin. This method adjusts the boundaries by discounting them.
- */
 void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 {
 #ifndef NOBOUNDARYDISCOUNT
@@ -622,10 +585,6 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep()
 #endif
 }
 
-/*
- * Builds the coefficient object for the G operator.
- * Note that only vanilla options are supported for this (non-transformed) case.
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficients()
 {
 	double volvol = volvols->get(0);
@@ -636,10 +595,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficients()
 	this->gCoeff->set(1, (kappa) + rho*volvol);
 }
 
-/*
- * Builds the coefficient object for the (non-log-transformed) F operator.
- * Note that only vanilla options are supported for this (non-transformed) case.
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficients()
 {
 	double volvol = volvols->get(0);
@@ -650,10 +605,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficients()
 	this->fCoeff->set(1, kappa*theta - 0.5*pow(volvol,2.0));
 }
 
-/*
- * Builds the coefficient object for the (non-log-transformed) D operator.
- * Note that only vanilla options are supported for this (non-transformed) case.
- */
+
 void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficients()
 {
 	double volvol = volvols->get(0);
@@ -662,20 +614,14 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficients()
 	this->dCoeff->set(1, (0.5)*pow(volvol,2.0));
 }
 
-/*
- * Builds the coefficient object for the X operator.
- * Note that only vanilla options are supported for this (non-transformed) case.
- */
+
 void HestonParabolicPDESolverSystemEuroAmer::buildXCoefficients()
 {
 	this->xCoeff->setAll(0.0);
 	this->xCoeff->set(0,1,1.0);
 }
 
-/*
- * Builds the coefficient object for the W operator.
- * Note that only vanilla options are supported for this (non-transformed) case.
- */
+
 void HestonParabolicPDESolverSystemEuroAmer::buildWCoefficients()
 {
 	double volvol = volvols->get(0);
@@ -685,31 +631,18 @@ void HestonParabolicPDESolverSystemEuroAmer::buildWCoefficients()
 	this->wCoeff->set(0,1, rho*volvol);
 }
 
-/*
- * Builds the coefficient object for the Z operator.
- * Note that only vanilla options are supported for this (non-transformed) case.
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildZCoefficients()
 {
 	this->zCoeff->setAll(0.0);
 	this->zCoeff->set(0,this->r);
 }
 
-/*
- * Builds the coefficient object for the Y operator.
- * Note that only vanilla options are supported for this (non-transformed) case.
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildYCoefficients()
 {
 	this->yCoeff->setAll(0.0);
 	this->yCoeff->set(0,1,0.5);
 }
 
-/*
- * Builds the coefficients object for the B operator.
- * Operator B has two custom 1D operators, so the coefficients object is a matrix.
- * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 {
 	this->bCoeff->setAll(0.0);
@@ -718,11 +651,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform()
 		this->bCoeff->set(2*i,2*i+1, 0.5);	// Coefficient is a constant of 0.5
 	}
 }
-/*
- * Builds the coefficients object for the C operator.
- * Operator C has two custom 1D operators, so the coefficients object is a matrix.
- * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
- */
+
 void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 {
 	double volvol, rho;
@@ -736,11 +665,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform()
 	}
 }
 
-/*
- * Builds the coefficients object for the D operator.
- * The D operator is oneOpDim, so there is only a vector of coefficients to set.
- * Only the variance dimensions are active in this operator, i.e. elements 2, 4, 6, 8 etc. (zero-based array elements 1, 3, 5, 7 etc.)
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 {
 	this->dCoeff->setAll(0.0);
@@ -752,11 +676,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform()
 	}
 }
 
-/*
- * Builds the coefficients object for the E operator.
- * The E operator is oneOpDim, so there is only a vector of coefficients to set.
- * Only the stock-price dimensions are active in this operator, i.e. elements 1, 3, 5, 7 etc. (zero-based array elements 0, 2, 4, 6 etc.)
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform()
 {
 	this->eCoeff->setAll(0.0);
@@ -766,11 +685,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform()
 	}
 }
 
-/*
- * Builds the coefficients object for the F operator.
- * The F operator is oneOpDim, so there is only a vector of coefficients to set.
- * Only the variance elements are active in this operator, i.e. elements 2, 4, 6, 8 etc. (zero-based array elements 1, 3, 5, 7 etc.)
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 {
 	double theta, kappa, volvol;
@@ -784,11 +698,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform()
 	}
 }
 
-/*
- * Builds the coefficients object for the G operator.
- * The G operator is oneOpDim, so there is only a vector of coefficients to set.
- * Only the variance elements are active in this operator, i.e. elements 2, 4, 6, 8 etc. (zero-based vector elements 1, 3, 5, 7 etc.)
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 {
 	this->gCoeff->setAll(0.0);
@@ -800,11 +709,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform()
 	}
 }
 
-/*
- * Builds the coefficients object for the H operator.
- * Operator H has two custom 1D operators, so the coefficients object is a matrix.
- * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform()
 {
 	this->hCoeff->setAll(0.0);
@@ -814,11 +718,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform()
 	}
 }
 
-/*
- * Builds the coefficients object for the K operator.
- * This operator is more exciting. It has four custom 1D operators, so the coefficients object is a 4d array.
- * The operator has a non-zero coefficient for each quad-pairing of a stock and its variance, and a DIFFERENT stock and its variance, e.g. for three assets: (1,2,3,4), (1,2,5,6), (3,4,5,6). (zero-based array elements (0,1,2,3), (0,1,4,5), (2,3,4,5))
- */
 void HestonParabolicPDESolverSystemEuroAmer::buildKCoefficientsLogTransform()
 {
 	double rho;
@@ -833,9 +732,6 @@ void HestonParabolicPDESolverSystemEuroAmer::buildKCoefficientsLogTransform()
 	}
 }
 
-/*
- * Utility method for creating a 4d array of equal size in each dimension. The array is allocated dynamically based on the provided size.
- */
 void HestonParabolicPDESolverSystemEuroAmer::create4dEqualDimSizeArray(size_t dimSize, double***** array)
 {
 	(*array) = (double****) calloc(dimSize, sizeof(double***));
@@ -860,9 +756,6 @@ void HestonParabolicPDESolverSystemEuroAmer::create4dEqualDimSizeArray(size_t di
 	}
 }
 
-/*
- * Utility method to free the memory allocated to a 4d array of equal size in each dimension.
- */
 void HestonParabolicPDESolverSystemEuroAmer::delete4dEqualDimSizeArray(size_t dimSize, double***** array)
 {
 	for(size_t i=0;i<dimSize;i++)
@@ -880,9 +773,6 @@ void HestonParabolicPDESolverSystemEuroAmer::delete4dEqualDimSizeArray(size_t di
 	delete[] (*array);
 }
 
-/*
- * Utility method to set all values in a 4d array of equal size to one value (e.g. this method can be used to set all the values to zero).
- */
 void HestonParabolicPDESolverSystemEuroAmer::setAll4dEqualDimSizeArray(size_t dimSize, double***** array, double value)
 {
 	for(size_t i=0;i<dimSize;i++)
