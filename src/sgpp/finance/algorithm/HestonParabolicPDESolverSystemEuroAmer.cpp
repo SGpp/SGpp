@@ -161,7 +161,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 	else
 	{
 		// Log-transformed case
-		// coefficients
+		// Build coefficients
 		buildBCoefficientsLogTransform();
 		buildCCoefficientsLogTransform();
 		buildDCoefficientsLogTransform();
@@ -171,7 +171,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		buildHCoefficientsLogTransform();
 		buildKCoefficientsLogTransform();
 
-		// operations
+		// Create operators
 		this->OpBBound = sg::op_factory::createOperationHestonBLog(*this->BoundGrid, *this->bCoeff);
 		this->OpBInner = sg::op_factory::createOperationHestonBLog(*this->InnerGrid, *this->bCoeff);
 		this->OpCBound = sg::op_factory::createOperationHestonCLog(*this->BoundGrid, *this->cCoeff);
