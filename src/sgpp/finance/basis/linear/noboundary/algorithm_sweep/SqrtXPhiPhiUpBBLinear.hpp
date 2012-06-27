@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de) Chao qi (qic@in.tum.de)  Stefanie Schraufstetter (schraufs@in.tum.de)
+// @author Sam Maurus (MA thesis)
 
 #ifndef SQRTXPHIPHIUPBBLINEAR_HPP
 #define SQRTXPHIPHIUPBBLINEAR_HPP
@@ -20,7 +20,7 @@ namespace finance
 
 /**
  * Implementation of sweep operator (): 1D Up for
- * Bilinearform \f$\int_{x} x \phi(x) \phi(x) dx\f$
+ * Bilinearform \f$\int_{x} \sqrt{x} \phi(x) \phi(x) dx\f$
  */
 class SqrtXPhiPhiUpBBLinear
 {

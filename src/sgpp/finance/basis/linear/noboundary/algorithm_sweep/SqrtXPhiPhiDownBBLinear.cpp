@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de) Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
+// @author Sam Maurus (MA thesis)
 
 #include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiDownBBLinear.hpp"
 
@@ -58,9 +58,6 @@ void SqrtXPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVe
 	double i = static_cast<double>(i_idx);
     int l_int = static_cast<int>(l);
 
-//    double hsquare = (1.0/static_cast<double>(1<<(2*l_int)));
-
-
 	double h = (1.0/(static_cast<double>(1<<(l_int))));
 
 	double a = fl;
@@ -90,7 +87,6 @@ void SqrtXPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVe
 
 	// integration
 	result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
-//	result[seq] = (hsquare * ((fl+fr)/2.0))*i_dbl + hsquare * (fr-fl)/12.0 + (((2.0/3.0) * hsquare * i_dbl) * alpha_value);
 
 	// dehierarchisation
 	double fm = ((fl+fr)/2.0) + alpha_value;

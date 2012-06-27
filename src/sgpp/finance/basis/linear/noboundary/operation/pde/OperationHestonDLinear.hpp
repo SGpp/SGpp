@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+ * Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
 #ifndef OPERATIONHESTONDLINEAR_HPP
@@ -16,7 +16,7 @@ namespace finance
 {
 
 /**
- * Implements the Heston D-Operation (corresponds to matrix D in Master's thesis), that is needed
+ * Implements the Heston D-Operation (corresponds to operator D in Master's thesis), that is needed
  * the solve the multidimensional Heston
  * equation, on grids with fix Dirichlet-0-Boundaries.
  *
@@ -39,8 +39,11 @@ public:
 	virtual ~OperationHestonDLinear();
 
 protected:
+
 	/**
-	 * Todo: improve comments to match existing format
+	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i < l_j} \alpha_j \phi_j(x) dx.\f]
 	 *
 	 * @param dim dimension in which to apply the up-part
 	 * @param alpha vector of coefficients
@@ -49,7 +52,9 @@ protected:
 	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * Todo: improve comments to match existing format
+	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
+	 * Applies the down-part of the one-dimensional mass matrix in one dimension.
+	 * Computes \f[\int_{x=0}^1  \phi_i(x) \sum_{j, l_i\geq l_j} \alpha_j \phi_j(x) dx.\f]
 	 *
 	 * @param dim dimension in which to apply the down-part
 	 * @param alpha vector of coefficients
@@ -58,7 +63,8 @@ protected:
 	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * Todo: improve comments to match existing format
+	 * down-Gradient step in dimension <i>dim</i> applies the x dphi dphi operation
+	 * in one dimension
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
@@ -67,7 +73,8 @@ protected:
 	virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * Todo: improve comments to match existing format
+	 * up-Gradient step in dimension <i>dim</i> applies the x dphi dphi operation
+	 * in one dimension
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation

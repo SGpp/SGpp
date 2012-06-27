@@ -16,7 +16,7 @@ namespace finance
 {
 
 /**
- * Implements the Heston B-Operation (corresponds to matrix B in Master's thesis), that is needed
+ * Implements the Heston C-Operation (corresponds to operator C in Master's thesis), that is needed
  * the solve the multidimensional Heston
  * equation, on grids with fix Dirichlet-0-Boundaries.
  *
@@ -65,7 +65,7 @@ protected:
 	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * down-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
+	 * down-Gradient step in dimension <i>dim</i> applies the phi dphi operation
 	 * in one dimension
 	 *
 	 * @param alpha the coefficients of the gridpoints
@@ -75,7 +75,7 @@ protected:
 	virtual void downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * up-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
+	 * up-Gradient step in dimension <i>dim</i> applies the phi dphi operation
 	 * in one dimension
 	 *
 	 * @param alpha the coefficients of the gridpoints
@@ -105,8 +105,7 @@ protected:
 	virtual void upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * down-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
-	 * in one dimension
+	 * This method does nothing (this situation doesn't come up in Heston's PDEs). Only required to make the class complete.
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
@@ -115,8 +114,7 @@ protected:
 	void downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * up-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
-	 * in one dimension
+	 * This method does nothing (this situation doesn't come up in Heston's PDEs). Only required to make the class complete.
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
