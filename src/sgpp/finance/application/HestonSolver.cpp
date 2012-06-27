@@ -42,12 +42,7 @@ namespace sg
 namespace finance
 {
 
-/*
- * HestonSolver constructor.
- *
- * @param useLogTransform: true if log-transformed stock-price coordinates are used (variance coordinates are always linear)
- * @param used the number of dimensions used in the Sparse Grid
- */
+
 HestonSolver::HestonSolver(bool useLogTransform) : ParabolicPDESolver()
 {
 	this->bStochasticDataAlloc = false;
@@ -59,11 +54,6 @@ HestonSolver::HestonSolver(bool useLogTransform) : ParabolicPDESolver()
 	this->refineMode = "classic";
 	this->numCoarsenPoints = -1;
 	this->useLogTransform = useLogTransform;
-//	this->usePAT = usePAT;
-//	if (this->usePAT == true)
-//	{
-//		this->useLogTransform = true;
-//	}
 	this->refineMaxLevel = 0;
 	this->nNeededIterations = 0;
 	this->dNeededTime = 0.0;
@@ -82,68 +72,10 @@ HestonSolver::~HestonSolver()
 		delete this->kappas;
 		delete this->volvols;
 		delete this->hMatrix;
-		//        delete this->eigval_covar;
-		//        delete this->eigvec_covar;
-		//        delete this->mu_hat;
 	}
 	if (this->myScreen != NULL)
 	{
 		delete this->myScreen;
-	}
-}
-
-void HestonSolver::getGridNormalDistribution(DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
-{
-	if (this->bGridConstructed)
-	{
-		double value;
-		StdNormalDistribution myNormDistr;
-		double* s_coords = new double[this->dim];
-
-		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-		{
-			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
-			std::stringstream coordsStream(coords);
-
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				double tmp_load;
-				coordsStream >> tmp_load;
-				s_coords[j] = tmp_load;
-			}
-
-			value = 1.0;
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				if (this->useLogTransform == false)
-				{
-					value *= myNormDistr.getDensity(s_coords[j], norm_mu[j], norm_sigma[j]);
-				}
-				else
-				{
-//					if (this->usePAT == true)
-//					{
-//						double inner_tmp = 0.0;
-//						for (size_t l = 0; l < dim; l++)
-//						{
-//							inner_tmp += this->eigvec_covar->get(j, l)*(s_coords[l]-(this->current_time*this->mu_hat->get(l)));
-//						}
-//						value *= myNormDistr.getDensity(exp(inner_tmp), norm_mu[j], norm_sigma[j]);
-//					}
-//					else
-//					{
-						value *= myNormDistr.getDensity(exp(s_coords[j]), norm_mu[j], norm_sigma[j]);
-//					}
-				}
-			}
-
-			alpha[i] = value;
-		}
-		delete[] s_coords;
-	}
-	else
-	{
-		throw new application_exception("HestonSolver::getGridNormalDistribution : The grid wasn't initialized before!");
 	}
 }
 
@@ -165,10 +97,6 @@ void HestonSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 
 	this->myBoundingBox = this->myGrid->getBoundingBox();
 	this->myGridStorage = this->myGrid->getStorage();
-
-	//std::string serGrid;
-	//myGrid->serialize(serGrid);
-	//std::cout << serGrid << std::endl;
 
 	this->bGridConstructed = true;
 }
@@ -350,24 +278,6 @@ void HestonSolver::setStochasticData(DataVector& thetas_arg, DataVector& kappas_
 	this->hMatrix = new sg::base::DataMatrix(hMatrix_arg);
 	this->r = r;
 
-	// calculate eigenvalues, eigenvectors and mu_hat from stochastic data for PAT
-	// (not required yet)
-	//    size_t mydim = this->thetas->getSize();
-	//    this->eigval_covar = new sg::base::DataVector(mydim);
-	//    this->eigvec_covar = new sg::base::DataMatrix(mydim,mydim);
-	//    this->mu_hat = new sg::base::DataVector(mydim);
-
-	//PAT stuff (not required yet)
-	//    for (size_t i = 0; i < mydim; i++)
-	//      {
-	//        double tmp = 0.0;
-	//        for (size_t j = 0; j < mydim; j++)
-	//          {
-	//            tmp += ((this->mus->get(j) - (0.5*this->sigmas->get(j)*this->sigmas->get(j))) * this->eigvec_covar->get(j, i));
-	//          }
-	//        this->mu_hat->set(i, tmp);
-	//      }
-
 	bStochasticDataAlloc = true;
 }
 
@@ -458,14 +368,7 @@ void HestonSolver::initGridWithPayoff(DataVector& alpha, double strike, std::str
 
 	if (this->useLogTransform)
 	{
-//		if (this->usePAT)
-//		{
-//			initPATTransformedGridWithPayoff(alpha, strike, payoffType);
-//		}
-//		else
-//		{
-			initLogTransformedGridWithPayoff(alpha, strike, payoffType);
-//		}
+		initLogTransformedGridWithPayoff(alpha, strike, payoffType);
 	}
 	else
 	{
@@ -483,36 +386,6 @@ double HestonSolver::get1DEuroCallPayoffValue(double assetValue, double strike)
 	{
 		return assetValue - strike;
 	}
-}
-
-//double HestonSolver::getAnalyticSolution1D(double stock, bool isCall, double t, double vola, double r, double strike)
-//{
-//	StdNormalDistribution myStdNDis;
-//
-//	double dOne = (log((stock/strike)) + ((r + (vola*vola*0.5))*(t)))/(vola*sqrt(t));
-//	double dTwo = dOne - (vola*sqrt(t));
-//
-//	if (isCall)
-//	{
-//		return (stock*myStdNDis.getCumulativeDensity(dOne)) - (strike*myStdNDis.getCumulativeDensity(dTwo)*(exp((-1.0)*r*t)));
-//	}
-//	else
-//	{
-//		return (strike*myStdNDis.getCumulativeDensity(dTwo*(-1.0))*(exp((-1.0)*r*t))) - (stock*myStdNDis.getCumulativeDensity(dOne*(-1.0)));
-//	}
-//}
-
-void HestonSolver::print1DAnalytic(std::vector< std::pair<double, double> >& premiums, std::string tfilename)
-{
-	typedef std::vector< std::pair<double, double> > printVector;
-	std::ofstream fileout;
-
-	fileout.open(tfilename.c_str());
-	for(printVector::iterator iter = premiums.begin(); iter != premiums.end(); iter++)
-	{
-		fileout << iter->first << " " << iter->second << " " << std::endl;
-	}
-	fileout.close();
 }
 
 void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
@@ -558,54 +431,6 @@ void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::stri
 	this->adaptSolveMode = adaptSolveMode;
 	this->refineMode = refineMode;
 	this->numCoarsenPoints = numCoarsenPoints;
-}
-
-void HestonSolver::printPayoffInterpolationError2D(DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike)
-{
-	if (this->useLogTransform == false)
-	{
-		if (this->bGridConstructed)
-		{
-			if (this->myGrid->getStorage()->getBoundingBox()->getDimensions() == 2)
-			{
-				if (numTestpoints < 2)
-					numTestpoints = 2;
-
-				double dInc = (2.0*strike)/static_cast<double>(numTestpoints-1);
-
-				double dX = 0.0;
-				double dY = 2*strike;
-
-				std::ofstream file;
-				file.open(tFilename.c_str());
-
-				OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
-
-				for (size_t i = 0; i < numTestpoints; i++)
-				{
-					std::vector<double> point;
-
-					point.push_back(dX);
-					point.push_back(dY);
-
-					double result = myEval->eval(alpha, point);
-
-					file << std::scientific << std::setprecision( 16 ) << dX << " " << dY << " " << result << std::endl;
-
-					dX += dInc;
-					dY -= dInc;
-				}
-
-				delete myEval;
-
-				file.close();
-			}
-		}
-		else
-		{
-			throw new application_exception("HestonSolver::getPayoffInterpolationError : A grid wasn't constructed before!");
-		}
-	}
 }
 
 size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, double strike, double eps)
@@ -961,71 +786,6 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 	}
 }
 
-void HestonSolver::initPATTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType)
-{
-	double tmp;
-
-	if (this->bGridConstructed)
-	{
-		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-		{
-			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-			std::stringstream coordsStream(coords);
-			double* dblFuncValues = new double[dim];
-
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				coordsStream >> tmp;
-
-				dblFuncValues[j] = tmp;
-			}
-
-			if (payoffType == "std_euro_call")
-			{
-				tmp = 0.0;
-				for (size_t j = 0; j < dim; j++)
-				{
-					double inner_tmp = 0.0;
-					for (size_t l = 0; l < dim; l++)
-					{
-						inner_tmp += this->eigvec_covar->get(j, l)*dblFuncValues[l];
-					}
-					tmp += exp(inner_tmp);
-				}
-				alpha[i] = std::max<double>(((tmp/static_cast<double>(dim))-strike), 0.0);
-			}
-			else if (payoffType == "std_euro_put" || payoffType == "std_amer_put")
-			{
-				tmp = 0.0;
-				for (size_t j = 0; j < dim; j++)
-				{
-					double inner_tmp = 0.0;
-					for (size_t l = 0; l < dim; l++)
-					{
-						inner_tmp += this->eigvec_covar->get(j, l)*dblFuncValues[l];
-					}
-					tmp += exp(inner_tmp);
-				}
-				alpha[i] = std::max<double>(strike-((tmp/static_cast<double>(dim))), 0.0);
-			}
-			else
-			{
-				throw new application_exception("HestonSolver::initPATTransformedGridWithPayoff : An unknown payoff-type was specified!");
-			}
-
-			delete[] dblFuncValues;
-		}
-
-		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
-		myHierarchisation->doHierarchisation(alpha);
-		delete myHierarchisation;
-	}
-	else
-	{
-		throw new application_exception("HestonSolver::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
-	}
-}
-
 double HestonSolver::evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha)
 {
 	std::vector<double> trans_eval = eval_point;
@@ -1053,77 +813,13 @@ void HestonSolver::transformPoint(sg::base::DataVector& point)
 	// apply needed coordinate transformations
 	if (this->useLogTransform)
 	{
-//		if (this->usePAT)
-//		{
-//			for (size_t i = 0; i < point.getSize(); i++)
-//			{
-//				double trans_point = 0.0;
-//				for (size_t j = 0; j < point.getSize(); j++)
-//				{
-//					trans_point += (this->eigvec_covar->get(j,i)*(log(point[j])));
-//				}
-//				trans_point += (this->current_time*this->mu_hat->get(i));
-//
-//				tmp_point[i] = trans_point;
-//			}
-//		}
-//		else
-//		{
-			for (size_t i = 0; i < point.getSize(); i++)
-			{
-				tmp_point[i] = log(point[i]);
-			}
-//		}
+		for (size_t i = 0; i < point.getSize(); i++)
+		{
+			tmp_point[i] = log(point[i]);
+		}
 	}
 
 	point = tmp_point;
-}
-
-void HestonSolver::printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const
-{
-	DataVector temp(alpha);
-	double tmp = 0.0;
-	size_t dim = myGrid->getStorage()->dim();
-	std::ofstream fileout;
-
-	// Do Dehierarchisation, is specified
-	if (bSurplus == false)
-	{
-		OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
-		myHier->doDehierarchisation(temp);
-		delete myHier;
-	}
-
-	// Open filehandle
-	fileout.open(tfilename.c_str());
-	for (size_t i = 0; i < myGrid->getStorage()->size(); i++)
-	{
-		std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringBB(*myGrid->getBoundingBox());
-		std::stringstream coordsStream(coords);
-
-		double* dblFuncValues = new double[dim];
-
-		for (size_t j = 0; j < dim; j++)
-		{
-			coordsStream >> tmp;
-			dblFuncValues[j] = tmp;
-		}
-
-		for (size_t l = 0; l < dim; l++)
-		{
-			double trans_point = 0.0;
-			for (size_t j = 0; j < dim; j++)
-			{
-				trans_point += this->eigvec_covar->get(l,j)*(dblFuncValues[j] - (this->current_time*this->mu_hat->get(j)));
-			}
-			fileout << exp(trans_point) << " ";
-		}
-
-		fileout << temp[i] << std::endl;
-
-		delete[] dblFuncValues;
-	}
-	fileout.close();
 }
 
 void HestonSolver::resetSolveTime()
@@ -1155,238 +851,6 @@ size_t HestonSolver::getAverageInnerGridSize()
 {
 	return this->avgInnerGridSize;
 }
-
-void HestonSolver::storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	//    if (this->bGridConstructed)
-	//      {
-	//        OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//
-	//        std::string mtx = "";
-	//
-	//        myStopwatch->start();
-	//        std::cout << "Generating matrix in MatrixMarket format..." << std::endl;
-	//        myBSSystem->getInnerMatrix(mtx);
-	//
-	//        std::ofstream outfile(tFilename.c_str());
-	//        outfile << mtx;
-	//        outfile.close();
-	//        std::cout << "Generating matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
-	//
-	//        delete myStopwatch;
-	//        delete myBSSystem;
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	//      }
-}
-
-void HestonSolver::storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	//    if (this->bGridConstructed)
-	//      {
-	//        OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//
-	//        std::string mtx = "";
-	//
-	//        myStopwatch->start();
-	//        std::cout << "Generating systemmatrix's diagonal in MatrixMarket format..." << std::endl;
-	//        myBSSystem->getInnerMatrixDiagonal(mtx);
-	//
-	//        std::ofstream outfile(tFilename.c_str());
-	//        outfile << mtx;
-	//        outfile.close();
-	//        std::cout << "Generating systemmatrix's diagonal in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
-	//
-	//        delete myStopwatch;
-	//        delete myBSSystem;
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	//      }
-}
-
-void HestonSolver::storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	//    if (this->bGridConstructed)
-	//      {
-	//        OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//
-	//        std::string mtx = "";
-	//
-	//        myStopwatch->start();
-	//        std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format..." << std::endl;
-	//        myBSSystem->getInnerMatrixDiagonalRowSum(mtx);
-	//
-	//        std::ofstream outfile(tFilename.c_str());
-	//        outfile << mtx;
-	//        outfile.close();
-	//        std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
-	//
-	//        delete myStopwatch;
-	//        delete myBSSystem;
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	//      }
-}
-
-void HestonSolver::storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	//    if (this->bGridConstructed)
-	//      {
-	//        OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//
-	//        myStopwatch->start();
-	//        std::cout << "Exporting inner right-hand-side..." << std::endl;
-	//        DataVector* rhs_inner = myBSSystem->generateRHS();
-	//
-	//        size_t nCoefs = rhs_inner->getSize();
-	//        std::ofstream outfile(tFilename.c_str());
-	//        for (size_t i = 0; i < nCoefs; i++)
-	//          {
-	//            outfile << std::scientific << rhs_inner->get(i) << std::endl;
-	//          }
-	//        outfile.close();
-	//        std::cout << "Exporting inner right-hand-side... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
-	//
-	//        delete myStopwatch;
-	//        delete myBSSystem;
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	//      }
-}
-
-void HestonSolver::storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename)
-{
-	//    if (this->bGridConstructed)
-	//      {
-	//        Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, false, 0, myScreen);
-	//        BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
-	//        OperationParabolicPDESolverSystemDirichlet* myBSSystem = new BlackScholesParabolicPDESolverSystemEuroAmer(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-	//        SGppStopwatch* myStopwatch = new SGppStopwatch();
-	//
-	//        myStopwatch->start();
-	//        std::cout << "Exporting inner solution..." << std::endl;
-	//        myEuler->solve(*myCG, *myBSSystem, false);
-	//
-	//        DataVector* alpha_solve = myBSSystem->getGridCoefficientsForCG();
-	//        size_t nCoefs = alpha_solve->getSize();
-	//        std::ofstream outfile(tFilename.c_str());
-	//        for (size_t i = 0; i < nCoefs; i++)
-	//          {
-	//            outfile << std::scientific << alpha_solve->get(i) << std::endl;
-	//          }
-	//        outfile.close();
-	//
-	//        std::cout << "Exporting inner solution... DONE!" << std::endl;
-	//
-	//        delete myStopwatch;
-	//        delete myBSSystem;
-	//        delete myCG;
-	//        delete myEuler;
-	//      }
-	//    else
-	//      {
-	//        throw new application_exception("HestonSolver::solveImplicitEuler : A grid wasn't constructed before!");
-	//      }
-
-}
-
-//double HestonSolver::EvaluateHestonFExact(sg::base::DataVector* characteristicFunction, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type)
-//{
-//	double a,b,u,x;
-//	size_t vecSize = characteristicFunction->getSize();
-//	//	sg::base::DataVector d(vecSize);
-//	//	sg::base::DataVector g(vecSize);
-//	//	sg::base::DataVector C(vecSize);
-//	//	sg::base::DataVector D(vecSize);
-//	//	sg::base::DataVector f(vecSize);
-//	if(type == 1)
-//	{
-//		u = 0.5;
-//		b = kappa - rho*xi;
-//	}
-//	else
-//	{
-//		u = -0.5;
-//		b = kappa;
-//	}
-//	a = kappa*theta;
-//	x = log(S);
-//
-//
-//	double * characteristicFuncData = characteristicFunction->getPointer();
-//
-//	//	Build d
-//	vector< complex<double> > dBuilder1;
-//	vector< complex<double> > dBuilder2;
-//	vector< complex<double> > d;
-//	for(size_t i=0;i<vecSize;i++)
-//	{
-//		dBuilder1.push_back(std::complex<double>(0.0, 1.0));
-//		dBuilder1[i] = pow(dBuilder1[i]*characteristicFuncData[i]*rho*xi - b,2.0);
-//
-//		dBuilder2.push_back(std::complex<double>(0.0, 1.0));
-//		dBuilder2[i] = dBuilder2[i]*characteristicFuncData[i];
-//		dBuilder2[i] = dBuilder2[i]*2.0*u - pow(characteristicFuncData[i],2.0);
-//		dBuilder2[i] = dBuilder2[i]*pow(xi,2.0);
-//
-//		d.push_back(std::complex<double>(0.0, 0.0));
-//		d[i] = sqrt(dBuilder1[i] - dBuilder2[i]);
-//	}
-//
-//	// Build g
-//	vector< complex<double> > g;
-//	for(size_t i=0;i<vecSize;i++)
-//	{
-//		g.push_back(std::complex<double>(0.0, 1.0));
-//		g[i] = (b - rho*xi*characteristicFuncData[i]*g[i] + d[i]) / (b - rho*xi*characteristicFuncData[i]*g[i] - d[i]);
-//	}
-//
-//	// Build C
-//	vector< complex<double> > C;
-//	for(size_t i=0;i<vecSize;i++)
-//	{
-//		C.push_back(std::complex<double>(0.0, 1.0));
-//		C[i] = (r*characteristicFuncData[i]*C[i]*T) + (a/pow(xi,2.0))*((b - rho*xi*characteristicFuncData[i]*C[i] + d[i])*T - 2.0*log( (1.0 - g[i]*exp(d[i]*T))/(1.0 - g[i])  ));
-//	}
-//
-//	// Build D
-//	vector< complex<double> > D;
-//	for(size_t i=0;i<vecSize;i++)
-//	{
-//		D.push_back(std::complex<double>(0.0, 1.0));
-//		D[i] = ((b - rho*xi*characteristicFuncData[i]*D[i] + d[i])/(pow(xi,2.0))) * ((1.0 - exp(d[i]*T))/(1.0 - g[i]*exp(d[i]*T)));
-//	}
-//
-//	// Build f
-//	vector< complex<double> > f;
-//	for(size_t i=0;i<vecSize;i++)
-//	{
-//		f.push_back(std::complex<double>(0.0, 1.0));
-//		f[i] = exp(C[i] + D[i]*v + f[i]*characteristicFuncData[i]*x);
-//	}
-//
-//	// Build realArgument
-//	vector< complex<double> > realArgument;
-//	for(size_t i=0;i<vecSize;i++)
-//	{
-//		realArgument.push_back(std::complex<double>(0.0, 1.0));
-//		realArgument[i] = (exp(0.0-realArgument[i]*characteristicFuncData[i]*log(K))*f[i]) / (realArgument[i]*characteristicFuncData[i]);
-//	}
-//
-//	return real(realArgument[0]);
-//}
 
 double EvaluateHestonClosedFormIntegralFunction(double phi, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type)
 {
@@ -1565,9 +1029,6 @@ void HestonSolver::CompareHestonBs1d(double maturity, double v)
 	delete alphaBS;
 }
 
-/**
- * Evaluates the exact Heston solution for only varying stock price.
- */
 void HestonSolver::EvaluateHestonExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, double maturity, double v)
 {
 	double tmp;
@@ -1589,9 +1050,6 @@ void HestonSolver::EvaluateHestonExact1d(DataVector& alpha, Grid* grid1d, Boundi
 	delete myHierarchisation;
 }
 
-/**
- * Evaluates the exact BS solution for only varying stock price.
- */
 void HestonSolver::EvaluateBsExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, double maturity, double sigma)
 {
 	double tmp;
@@ -1680,27 +1138,6 @@ void HestonSolver::CompareHestonNumericToBsExact(sg::base::DataVector& alphaHest
 }
 
 
-/** \brief Perform a single step of the Gauss-Lobatto integration
-
-    \param f Function to integrate
-    \param a Lower integration limit
-    \param b Upper integration limit
-
-    \param fa Value of function at the lower limit (used to save an
-    evaluation when refinement is used)
-
-    \param fa Value of function at the upper limit (used to save an
-    evaluation when refinement is used)
-
-    \param neval Number of evaluations made so far
-
-    \param maxeval Maximum number of evalutions which should not be
-    exceeded
-
-    \param acc Required accuracy expressed in units of
-    std::numeric_limits<double>::epsilon(). This allows less-than
-    comparison by using addition and equality.
- */
 double HestonSolver::GaussLobattoIntStep(
 		double a, double b,
 		double fa, double fb,
@@ -1772,21 +1209,6 @@ double HestonSolver::GaussLobattoIntStep(
 	}
 }
 
-/** \brief Compute the Gauss-Lobatto integral
-
-    \param f The function to be integrated
-
-    \param a The lower integration limit
-
-    \param b The upper integration limit
-
-    \param abstol Absolute tolerance -- integration stops when the
-    error estimate is smaller than this
-
-    \param maxeval Maxium of evaluations to make. If this number of
-    evalution is made without reaching the requied accuracy, an
-    exception of type std::runtime_error is thrown.
- */
 double HestonSolver::GaussLobattoInt(double a, double b,
 		double abstol,
 		size_t maxeval

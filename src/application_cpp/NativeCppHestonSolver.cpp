@@ -599,11 +599,11 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 			myHestonSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.gnuplot", true);
 			myHestonSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.gnuplot", false);
 		}
-		if (coordsType == "PAT")
-		{
-			myHestonSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
-			myHestonSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
-		}
+//		if (coordsType == "PAT")
+//		{
+//			myHestonSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.gnuplot", true);
+//			myHestonSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.gnuplot", false);
+//		}
 	}
 
 	// Start solving the Black Scholes Equation
@@ -657,11 +657,11 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_surplus_cart.grid.gnuplot", true);
 			myHestonSolver->printSparseGridExpTransform(*alpha, "solvedHeston_nodal_cart.grid.gnuplot", false);
 		}
-		if (coordsType == "PAT")
-		{
-			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
-			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
-		}
+//		if (coordsType == "PAT")
+//		{
+//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_surplus_cart.PAT.grid.gnuplot", true);
+//			myHestonSolver->printSparseGridPAT(*alpha, "solvedHeston_nodal_cart.PAT.grid.gnuplot", false);
+//		}
 	}
 
 	//	// Heston 2d to BS 2d comparison
