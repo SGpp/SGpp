@@ -3,7 +3,7 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Sam Maurus (MA thesis)
 
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonWLinear.hpp"
 

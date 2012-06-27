@@ -3,7 +3,7 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de) Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
+// @author Sam Maurus (MA thesis)
 
 #include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiUpBBLinear.hpp"
 
@@ -120,9 +120,6 @@ void SqrtXPhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 
 	// transposed operations:
 	result[seq] = fm;
-
-	//	fl = ((fm/2.0) + (alpha_value*(hsquare/2.0 * static_cast<double>(current_index) - hsquare/12.0))) + fl;
-	//	fr = ((fm/2.0) + (alpha_value*(hsquare/2.0 * static_cast<double>(current_index) + hsquare/12.0))) + fr;
 }
 
 void SqrtXPhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
@@ -221,9 +218,6 @@ void SqrtXPhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVe
 
 	fl = ((fm/2.0) + (alpha_value*(flTemp))) + fl;
 	fr = ((fm/2.0) + (alpha_value*(frTemp))) + fr;
-
-	//	fl = ((fm/2.0) + (alpha_value*(h*h/2.0 * static_cast<double>(current_index) * q*q + h * t * q/4.0 - h*h/12.0 * q*q))) + fl;
-	//    fr = ((fm/2.0) + (alpha_value*(h*h/2.0 * static_cast<double>(current_index) * q*q + h * t * q/4.0 + h*h/12.0 * q*q))) + fr;
 }
 
 // namespace detail

@@ -3,7 +3,7 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Sam Maurus (Alexander.Heinecke@mytum.de)
 
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonKLinear.hpp"
 
@@ -18,14 +18,6 @@
 
 #include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiDownBBLinear.hpp"
 #include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiUpBBLinear.hpp"
-
-//#include "finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.hpp"
-//#include "finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.hpp"
-//
-//#include "finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.hpp"
-//#include "finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.hpp"
-//
-//#include "pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp"
 
 #include "base/algorithm/sweep.hpp"
 
@@ -137,38 +129,14 @@ void OperationHestonKLinear::upOpDimFour(sg::base::DataVector& alpha, sg::base::
 }
 
 // Doubles
-void OperationHestonKLinear::downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
-void OperationHestonKLinear::upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
-void OperationHestonKLinear::downOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
-void OperationHestonKLinear::upOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
-void OperationHestonKLinear::downOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
-void OperationHestonKLinear::upOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
-void OperationHestonKLinear::downOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
-void OperationHestonKLinear::upOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-
-}
+void OperationHestonKLinear::downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
+void OperationHestonKLinear::upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
+void OperationHestonKLinear::downOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
+void OperationHestonKLinear::upOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
+void OperationHestonKLinear::downOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
+void OperationHestonKLinear::upOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
+void OperationHestonKLinear::downOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
+void OperationHestonKLinear::upOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim){}
 void OperationHestonKLinear::downOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {}
 void OperationHestonKLinear::upOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {}
 void OperationHestonKLinear::downOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {}

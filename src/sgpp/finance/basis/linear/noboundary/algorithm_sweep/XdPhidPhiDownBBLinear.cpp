@@ -60,18 +60,10 @@ void XdPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 
 	double h = (1.0/(static_cast<double>(1<<(l_int))));
 
-//	double diagonal = ((1.0/3.0) + (i_dbl*i_dbl))*pow(2.0, 1-l_int);
-
-	// t=0, q=1
-
-
 	double diagonal = 2*i_dbl;
 
 	// integration
 	result[seq] = (  (0.5 * (fl-fr)) + (diagonal * alpha_value) );
-
-	// integration
-//	result[seq] = (  (((1.0/static_cast<double>(1<<l_int))* i_dbl) * (fl-fr)) + (diagonal * alpha_value) );
 
 	// dehierarchisation
 	double fm = ((fl+fr)/2.0) + alpha_value;

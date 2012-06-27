@@ -8,7 +8,6 @@
 #ifndef OPERATIONHESTONWLINEAR_HPP
 #define OPERATIONHESTONWLINEAR_HPP
 
-//#include "pde/algorithm/UpDownOneOpDim.hpp"
 #include "pde/algorithm/UpDownTwoOpDims.hpp"
 
 namespace sg
@@ -17,7 +16,7 @@ namespace finance
 {
 
 /**
- * Implements the Heston B-Operation (corresponds to matrix B in Master's thesis), that is needed
+ * Implements the Heston W-Operation (corresponds to operator W in Master's thesis), that is needed
  * the solve the multidimensional Heston
  * equation, on grids with fix Dirichlet-0-Boundaries.
  *
@@ -106,8 +105,7 @@ protected:
 	virtual void upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * down-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
-	 * in one dimension
+	 * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
@@ -116,8 +114,7 @@ protected:
 	void downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
 	/**
-	 * up-Gradient multiplied with a squared x step in dimension <i>dim</i> applies the x^2 dphi dphi operation
-	 * in one dimension
+	 * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
 	 *
 	 * @param alpha the coefficients of the gridpoints
 	 * @param result vector with the result of this operation
