@@ -731,12 +731,15 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	std::vector<double> point;
 	for (size_t i = 0; i < numAssets; i++)
 	{
-		point.push_back(sProbe);
+		point.push_back(1.0);	// strike
+		double middleVol = (myBoundingBox->getBoundary(2*i+1).leftBoundary + myBoundingBox->getBoundary(2*i+1).rightBoundary)/2.0;
+		point.push_back(middleVol);	//middle volatility in the range
+//		point.push_back(sProbe);
 		//		double middleVol = (myBoundingBox->getBoundary(2*i+1).leftBoundary + myBoundingBox->getBoundary(2*i+1).rightBoundary)/2.0;
 		//		double middleVol = vProbe;
 		//		point.push_back(middleVol);
 		//		point.push_back(middleVol);
-		point.push_back(vProbe);
+//		point.push_back(vProbe);
 	}
 	//
 	//
@@ -749,6 +752,18 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	alphaDone = myHestonSolver->evalOption(point, *alpha);
 	std::cout << "Optionprice at testpoint (Strike): (" << point[0] << ", " << point[1] << ") " << alphaDone << std::endl << std::endl;
 
+	if(numAssets == 1)
+	{
+		if(payoffType == "std_euro_call")
+		{
+			std::cout << "Analytical solution: (" << point[0] << ", " << point[1] << ") " << myHestonSolver->EvaluateHestonPriceExact(point[0], point[1], timesteps*stepsize) << std::endl << std::endl;
+		}
+		else
+		{
+			std::cout << "Analytical solution: (" << point[0] << ", " << point[1] << ") " << myHestonSolver->EvaluateHestonPriceExactPut(point[0], point[1], timesteps*stepsize) << std::endl << std::endl;
+		}
+
+	}
 
 	//	system("gnuplot /home/sam/Documents/Heston/solExactDiff.cmd");
 

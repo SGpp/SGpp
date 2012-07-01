@@ -1081,11 +1081,21 @@ double HestonSolver::EvaluateHestonPriceExact(double S, double v, double xi, dou
 	return S*int1 - K*exp((-1.0)*r*T)*int2;
 }
 
+double HestonSolver::EvaluateHestonPriceExact(double S, double v, double maturity)
+{
+	return EvaluateHestonPriceExact(S,v,this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike);
+}
+
 double HestonSolver::EvaluateHestonPriceExactPut(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K)
 {
 	double int1 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
 	double int2 = 0.5 + (1.0/M_PI)*GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
 	return S*int1 - K*exp((-1.0)*r*T)*int2 + K*exp((-1.0)*r*T) - S;
+}
+
+double HestonSolver::EvaluateHestonPriceExactPut(double S, double v, double maturity)
+{
+	return EvaluateHestonPriceExactPut(S,v,this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0,1), this->r, maturity, this->dStrike);
 }
 
 void HestonSolver::GetBsExactSolution(sg::base::DataVector& alphaBS, double maturity)
