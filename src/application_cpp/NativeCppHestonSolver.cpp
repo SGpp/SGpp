@@ -750,7 +750,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 
 	alphaDone = myHestonSolver->evalOption(point, *alpha);
-	std::cout << "Optionprice at testpoint (Strike): (" << point[0] << ", " << point[1] << ") " << alphaDone << std::endl << std::endl;
+	std::cout << "Optionprice at testpoint (at-the-money, and midpoint variance value):" << alphaDone << std::endl << std::endl;
 
 	if(numAssets == 1)
 	{

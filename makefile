@@ -385,6 +385,7 @@ test_BSS_all: test_BSS_1d test_BSS_2d test_BSS_3d
 		
 ###################################################################
 # test Heston Solver
+
 ###################################################################			
 
 test_Heston_1d:
@@ -392,6 +393,15 @@ test_Heston_1d:
 	./copyHestonSolverToTest.sh; \
 	cd ./../tests/CPP_Apps/HestonSolver/1d; \
 	./test_HestonSolver_1d.sh;
+
+test_Heston_2d:
+	cd bin; \
+	./copyHestonSolverToTest.sh; \	
+	cd ./../tests/CPP_Apps/HestonSolver/2d; \
+	./test_HestonSolver_2d.sh;
+	
+test_Heston_all: test_Heston_1d test_Heston_2d
+	echo "executed all Heston tests!"
 
 ###################################################################
 # test Combined Hull Wihte Solver Solver
