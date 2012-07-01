@@ -117,7 +117,7 @@ class CGSolver(ConjugateGradients, LinearSolver):
     # @return: SG Solver itself 
     def setImax(self, imax):
         #ConjugateGradients.setMaxIterations(self, imax)
-        self.nMaxIterations = imax
+        self.setMaxIterations(imax)
         return self
     
     ## Return the maximal number of CG iterations.
