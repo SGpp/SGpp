@@ -412,6 +412,14 @@ public:
 	 */
 	double EvaluateHestonPriceExact(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K);
 
+	/*
+	 * Calls the larger overload (the one with more parameters) of EvaluateHestonPriceExact with the stochastic data already saved in this instance.
+	 *
+	 * @param S stock price
+	 * @param v variance
+	 */
+	double EvaluateHestonPriceExact(double S, double v, double maturity);
+
 	/**
 	 * Evaluates the closed-form Heston price for a vanilla put.
 	 *
@@ -429,6 +437,13 @@ public:
 	 */
 	double EvaluateHestonPriceExactPut(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K);
 
+	/*
+	 * Calls the larger overload (the one with more parameters) of EvaluateHestonPriceExactPut with the stochastic data already saved in this instance.
+	 *
+	 * @param S stock price
+	 * @param v variance
+	 */
+	double EvaluateHestonPriceExactPut(double S, double v, double maturity);
 
 	/**
 	 * Evaluates the difference surface between the closed-form Heston surface and the closed-form Black-Scholes surface on the current grid.

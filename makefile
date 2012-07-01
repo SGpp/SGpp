@@ -393,12 +393,6 @@ test_Heston_1d:
 	cd ./../tests/CPP_Apps/HestonSolver/1d; \
 	./test_HestonSolver_1d.sh;
 
-test_custom_Heston_1d:
-	cd bin; \
-	./copyHestonSolverToTest.sh; \
-	cd ./../tests/CPP_Apps/HestonSolver/1d; \
-	./custom_test_HestonSolver_1d.sh;
-
 ###################################################################
 # test Combined Hull Wihte Solver Solver
 ###################################################################			
