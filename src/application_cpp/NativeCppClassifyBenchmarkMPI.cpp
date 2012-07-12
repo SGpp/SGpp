@@ -236,7 +236,7 @@ void printResults()
 	<< gtrainAcc << ";" << gtestAcc << ";" << gtimings.timeComplete_ << ";" << gtimings.timeMultComplete_
 	<< ";" << gtimings.timeMultCompute_ << ";" << gtimings.timeMultTransComplete_ << ";" << gtimings.timeMultTransCompute_
 	<< ";" << gtimings.GFlop_/gtimings.timeComplete_ << ";"
-	<< gtimings.GByte_/gtimings.timeComplete_ <<  std::endl << std::endl;
+    << gtimings.GByte_/gtimings.timeComplete_ << ";" << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << ";" << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_)  << ";" << sg::parallel::myGlobalMPIComm->getNumRanks()  << std::endl << std::endl;
 }
 
 void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,

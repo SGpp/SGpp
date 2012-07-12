@@ -89,26 +89,24 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
     _mpi_storage_offsets = new int[mpi_size];
     _mpi_data_sizes= new int[mpi_size];
     _mpi_data_offsets = new int[mpi_size];
-    _mpi_storage_send_sizes = new int[mpi_size];
-    _mpi_storage_send_offsets = new int[mpi_size];
-    _mpi_data_send_sizes = new int[mpi_size];
-    _mpi_data_send_offsets = new int[mpi_size];
+//    _mpi_storage_send_sizes = new int[mpi_size];
+//    _mpi_storage_send_offsets = new int[mpi_size];
+//    _mpi_data_send_sizes = new int[mpi_size];
+//    _mpi_data_send_offsets = new int[mpi_size];
 
     // calculate distribution
     calcDistribution(SparseGrid.getStorage()->size(), _mpi_storage_sizes, _mpi_storage_offsets);
     calcDistribution(this->dataset_->getNcols(), _mpi_data_sizes, _mpi_data_offsets);
 
-    // put values into send array
-    for(int rank = 0; rank<mpi_size; rank++){
-        _mpi_storage_send_sizes[rank] = _mpi_storage_sizes[mpi_rank];
-        _mpi_storage_send_offsets[rank] = _mpi_storage_offsets[mpi_rank];
-        _mpi_data_send_sizes[rank] = _mpi_data_sizes[mpi_rank];
-        _mpi_data_send_offsets[rank] = _mpi_data_offsets[mpi_rank];
-    }
-    std::cout << "[rank " << mpi_rank << "] storage: " << _mpi_storage_offsets[mpi_rank] << " -- " << _mpi_storage_offsets[mpi_rank] + _mpi_storage_sizes[mpi_rank] - 1 << "size: " <<  _mpi_storage_sizes[mpi_rank] <<std::endl;
-    std::cout << "[rank " << mpi_rank << "] data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]  << std::endl;
-
-    std::cout << "my rank:  #" << mpi_rank << std::endl;
+//    // put values into send array
+//    for(int rank = 0; rank<mpi_size; rank++){
+//        _mpi_storage_send_sizes[rank] = _mpi_storage_sizes[mpi_rank];
+//        _mpi_storage_send_offsets[rank] = _mpi_storage_offsets[mpi_rank];
+//        _mpi_data_send_sizes[rank] = _mpi_data_sizes[mpi_rank];
+//        _mpi_data_send_offsets[rank] = _mpi_data_offsets[mpi_rank];
+//    }
+    debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_storage_offsets[mpi_rank] << " -- " << _mpi_storage_offsets[mpi_rank] + _mpi_storage_sizes[mpi_rank] - 1 << "size: " <<  _mpi_storage_sizes[mpi_rank]);
+    debugMPI(sg::parallel::myGlobalMPIComm, "data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]);
 
     // mult: distribute calculations over storage
     // multTranspose: distribute calculations over dataset
@@ -128,14 +126,14 @@ DMSystemMatrixVectorizedIdentityMPI::~DMSystemMatrixVectorizedIdentityMPI()
 	delete this->B_;
 	delete this->dataset_;
 
-    delete this->_mpi_storage_sizes;
-    delete this->_mpi_storage_offsets;
-    delete this->_mpi_data_sizes;
-    delete this->_mpi_data_offsets;
-    delete this->_mpi_storage_send_sizes;
-    delete this->_mpi_storage_send_offsets;
-    delete this->_mpi_data_send_sizes;
-    delete this->_mpi_data_send_offsets;
+    delete[] this->_mpi_storage_sizes;
+    delete[] this->_mpi_storage_offsets;
+    delete[] this->_mpi_data_sizes;
+    delete[] this->_mpi_data_offsets;
+//    delete[] this->_mpi_storage_send_sizes;
+//    delete[] this->_mpi_storage_send_offsets;
+//    delete[] this->_mpi_data_send_sizes;
+//    delete[] this->_mpi_data_send_offsets;
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -172,7 +170,9 @@ void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classe
 
     multTransposeVec(myClasses, b);
 
-    std::cout << "end generate b"<< sg::parallel::myGlobalMPIComm->getMyRank() << std::endl;
+    debugMPI(sg::parallel::myGlobalMPIComm, "end generate b");
+
+    //std::cout << "end generate b"<< sg::parallel::myGlobalMPIComm->getMyRank() << std::endl;
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()
@@ -183,9 +183,25 @@ void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()
 void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base::DataVector &result)
 {
     this->myTimer_->start();
+
+    //std::cout << "multvec before calc" << std::endl;
+
     this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
 
+    //std::cout << "multvec before comm" << std::endl;
+
+    //CRASHING HERE vvvvvvv
+
+    debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_offsets[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_offsets[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
+    debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_sizes[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_sizes[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
+
+    debugMPI(sg::parallel::myGlobalMPIComm, "result.size() = " << result.getSize());
+
     sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
+
+    //CRASHING HERE ^^^^^
+
+    std::cout << "multvec end" << std::endl;
 
     this->completeTimeMult_ += this->myTimer_->stop();
 }
