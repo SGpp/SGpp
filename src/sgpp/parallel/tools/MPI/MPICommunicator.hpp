@@ -16,6 +16,33 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
 
+#define debugMPI(globalComm, messageStream) \
+    { \
+        int rank = globalComm->getMyRank(); \
+        int rcvbuffer; \
+        int token = 93453; \
+        MPI_Barrier(MPI_COMM_WORLD); \
+        if(rank > 0){ \
+                MPI_Recv(&rcvbuffer, 1, MPI_INT, rank-1, token, MPI_COMM_WORLD, MPI_STATUS_IGNORE); \
+        } \
+        std::cout << "[" << rank << "] " <<  messageStream << std::endl; \
+        std::cout.flush();\
+        if(rank < globalComm->getNumRanks()-1){ \
+            MPI_Send(&rank, 1, MPI_INT, rank+1, token, MPI_COMM_WORLD); \
+        } \
+        MPI_Barrier(MPI_COMM_WORLD); \
+    }
+
+#define debugMPI_0(messageStream) \
+    { \
+        int rank = globalComm->getMyRank(); \
+        MPI_Barrier(MPI_COMM_WORLD); \
+        if(rank == 0){ \
+            std::cout << "[0] " <<  messageStream << std::endl; \
+        } \
+        MPI_Barrier(MPI_COMM_WORLD); \
+    }
+
 namespace sg
 {
 namespace parallel
@@ -36,6 +63,10 @@ private:
 	int myid_;
 	/// Number of ranks in the whole system
 	int ranks_;
+
+    void dataVectorAllToAll_alltoallv(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+    void dataVectorAllToAll_broadcasts(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+    void dataVectorAllToAll_sendreceive(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
 
 public:
 	/*
@@ -165,6 +196,8 @@ public:
 	 * @return returns the number of MPI tasks in the parallel environment
 	 */
 	int getNumRanks();
+
+
 
 };
 
