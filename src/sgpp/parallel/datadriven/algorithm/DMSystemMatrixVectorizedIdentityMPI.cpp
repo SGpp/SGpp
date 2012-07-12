@@ -186,7 +186,7 @@ void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base:
 
     //std::cout << "multvec before calc" << std::endl;
 
-    this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
+ //   this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
 
     //std::cout << "multvec before comm" << std::endl;
 

@@ -148,8 +148,8 @@ void MPICommunicator::dataVectorAllToAll_alltoallv(base::DataVector &alpha, int 
 
     debugMPI(this, "initialized sendVars");
 
-    sg::base::DataVector* tmp;
-    tmp = new sg::base::DataVector(alpha.getSize());
+    sg::base::DataVector tmp(alpha.getSize());
+    //tmp = new sg::base::DataVector(alpha.getSize());
     //sg::base::DataVector tmp(alpha);
 
     debugMPI(this, "before communication - alltoall; vector size: " << alpha.getSize());
@@ -196,8 +196,8 @@ void MPICommunicator::dataVectorAllToAll_alltoallv(base::DataVector &alpha, int 
 
 
     MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
-                  tmp->getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
-    alpha.copyFrom(*tmp);
+                  tmp.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
+    alpha.copyFrom(tmp);
 
 
 //    MPI_Alltoallv(alphaPointer, sendSizes, sendOffsets, MPI_DOUBLE,

@@ -34,7 +34,7 @@ OMP=1
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
 #CC=g++
-CC=icpc
+CC=mpiicpc
 # vectorization option
 #  sse3
 #  sse4
@@ -45,7 +45,7 @@ VEC=sse3
 #	OCL - NVIDIA OpenCL support
 #	MPI - Intel MPI support
 #	NO - no extensions, default
-EXT=NO
+EXT=MPI
 # instances used to compile
 JOBS=2
 # Default residual threshold
