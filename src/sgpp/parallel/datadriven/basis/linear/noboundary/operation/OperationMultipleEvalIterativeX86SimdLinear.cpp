@@ -5,6 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "base/exception/operation_exception.hpp"
 
@@ -40,8 +41,7 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
     m_datasetFrom(datasetFrom),
     m_datasetTo(datasetTo)
 {
-
-    std::cout << "use the following bounds: " << m_storageFrom << " - " << m_storageTo << "; " << m_datasetFrom << " - " << m_datasetTo << std::endl;
+    adaptDatasetBoundaries();
 
 #ifdef _OPENMP
 #pragma omp parallel
@@ -62,6 +62,34 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
 	myTimer = new sg::base::SGppStopwatch();
 }
 
+void OperationMultipleEvalIterativeX86SimdLinear::adaptDatasetBoundaries()
+{
+    std::cout << "passed the following bounds: grid:" << m_storageFrom << " - " << m_storageTo << "; dataset: " << m_datasetFrom << " - " << m_datasetTo << std::endl;
+
+    //check for valid sized dataset already here
+    if ( this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 )
+    {
+        throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required!");
+    }
+
+    //round down to previous CHUNKDATAPOINTS_X86 border
+    if(m_datasetFrom%CHUNKDATAPOINTS_X86 != 0) {
+        int remainder = m_datasetFrom%CHUNKDATAPOINTS_X86;
+        m_datasetFrom -= remainder;
+    }
+
+    //round up to next CHUNKDATAPOINTS_X86 border
+    if(m_datasetTo%CHUNKDATAPOINTS_X86 != 0) {
+        int remainder = m_datasetTo%CHUNKDATAPOINTS_X86;
+        m_datasetTo += CHUNKDATAPOINTS_X86-remainder;
+    }
+
+    std::cout << "doing calculations with the following dataset bounds: " << m_datasetFrom << " - " << m_datasetTo << std::endl;
+
+    // now that both m_datasetFrom and m_datasetTo are aligned to multiples of CHUNKDATAPOINTS_X86, also the
+    // chunksize for this process is a multiple of CHUNKDATAPOINTS_X86
+}
+
 OperationMultipleEvalIterativeX86SimdLinear::~OperationMultipleEvalIterativeX86SimdLinear()
 {
 	delete myTimer;
@@ -75,8 +103,9 @@ void OperationMultipleEvalIterativeX86SimdLinear::rebuildLevelAndIndex()
 	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+    storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
+
 
 double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
@@ -116,7 +145,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
     size_t end = m_storageTo;
 #endif
 
-		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
+        for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k));
 
@@ -338,6 +367,22 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 	return myTimer->stop();
 }
 
+void OperationMultipleEvalIterativeX86SimdLinear::calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset)
+{
+    int result_size = totalSize / procCount;
+    int remainder = totalSize - result_size*procCount;
+    int result_offset = 0;
+    if(rank < remainder){
+        result_size++;
+        result_offset = result_size * rank;
+    } else {
+        result_offset = remainder * (result_size + 1) + (rank - remainder)*result_size;
+    }
+
+    *size = result_size;
+    *offset = result_offset;
+}
+
 double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
@@ -359,38 +404,41 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 #ifdef _OPENMP
     #pragma omp parallel
 	{
-//		size_t chunksize = (result_size/omp_get_num_threads())+1;
-//		// assure that every subarray is 32-byte aligned
-//		if (chunksize % CHUNKDATAPOINTS_X86 != 0)
-//		{
-//			size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
-//			size_t patch = CHUNKDATAPOINTS_X86 - remainder;
-//			chunksize += patch;
-//		}
-//    	size_t start = chunksize*omp_get_thread_num();
-//    	size_t end = std::min<size_t>(start+chunksize, result_size);
-
-        size_t chunksizeProc = m_datasetTo - m_datasetFrom;
-        size_t chunksize = (chunksizeProc/omp_get_num_threads())+1;
-
-        // assure that every subarray is 32-byte aligned
-        if (chunksize % CHUNKDATAPOINTS_X86 != 0)
+        size_t chunkSizeProc = m_datasetTo - m_datasetFrom;
+        if (chunkSizeProc % CHUNKDATAPOINTS_X86 != 0 )
         {
-            size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
-            size_t patch = CHUNKDATAPOINTS_X86 - remainder;
-            chunksize += patch;
+            throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86, but it does not!");
         }
-        size_t start = m_datasetFrom + chunksize*omp_get_thread_num();
-        size_t end = std::min<size_t>(start+chunksize, m_datasetTo);
+        //doing further calculations with complete blocks
+        size_t blockCount = chunkSizeProc/CHUNKDATAPOINTS_X86;
+
+        int chunkFragmentSize, chunkFragmentOffset;
+        calcDistributionFragment(blockCount, omp_get_num_threads(), omp_get_thread_num(), &chunkFragmentSize, &chunkFragmentOffset);
+
+        size_t start = m_datasetFrom + chunkFragmentOffset*CHUNKDATAPOINTS_X86;
+        size_t end = start+chunkFragmentSize*CHUNKDATAPOINTS_X86;
+        if (end > m_datasetTo)
+        {
+            throw sg::base::operation_exception("something is wrong with the calculations here!");
+        }
         //std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [mult] start: " << start << "; end: " << end << std::endl;
 #else
-//    size_t start = 0;
-//    size_t end = result_size;
-    size_t start = m_datasetFrom;
-    size_t end = m_datasetTo;
+//        size_t start = 0;
+//        size_t end = result_size;
+        size_t start = m_datasetFrom;
+        size_t end = m_datasetTo;
 #endif
+
+        debugMPI(sg::parallel::myGlobalMPIComm, "iterating from [incl.] " << start << " to [excl.] " << end);
+
+        if (start % CHUNKDATAPOINTS_X86 != 0 || end % CHUNKDATAPOINTS_X86 != 0)
+        {
+            debugMPI(sg::parallel::myGlobalMPIComm, "start%CHUNKDATAPOINTS_X86: " << start%CHUNKDATAPOINTS_X86 << "; end%CHUNKDATAPOINTS_X86: " << end%CHUNKDATAPOINTS_X86);
+            throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86!");
+        }
+
 		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (end-c)))
-		{
+        {
 			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86+c, end);
 
 #ifdef __ICC

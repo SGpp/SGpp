@@ -68,6 +68,9 @@ protected:
     int m_storageTo;
     int m_datasetFrom;
     int m_datasetTo;
+private:
+    void adaptDatasetBoundaries();
+    void calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset);
 };
 
 }
