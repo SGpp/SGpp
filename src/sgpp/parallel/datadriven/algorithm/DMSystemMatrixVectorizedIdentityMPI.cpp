@@ -4,15 +4,12 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#ifdef USE_MPI
-#include <mpi.h>
-#endif
+#include "parallel/tools/MPI/SGppMPITools.hpp"
 
 #include "base/exception/operation_exception.hpp"
 
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
-#include "parallel/tools/MPI/SGppMPITools.hpp"
 
 namespace sg
 {
@@ -138,24 +135,24 @@ DMSystemMatrixVectorizedIdentityMPI::~DMSystemMatrixVectorizedIdentityMPI()
 
 void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-    sg::base::DataVector temp(this->numPatchedTrainingInstances_);
+	sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 
-    // Operation B
-    multVec(alpha, temp);
+	// Operation B
+	multVec(alpha, temp);
 
-    // patch result -> set additional entries zero
-    if (this->numTrainingInstances_ != temp.getSize())
-    {
-    	for (size_t i = 0; i < (temp.getSize()-this->numTrainingInstances_); i++)
-    	{
-    		temp.set(temp.getSize()-(i+1), 0.0f);
-    	}
-    }
+	// patch result -> set additional entries zero
+	if (this->numTrainingInstances_ != temp.getSize())
+	{
+		for (size_t i = 0; i < (temp.getSize()-this->numTrainingInstances_); i++)
+		{
+			temp.set(temp.getSize()-(i+1), 0.0f);
+		}
+	}
 
-    multTransposeVec(temp, result);
+	multTransposeVec(temp, result);
 
 
-    result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
+	result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
@@ -168,9 +165,9 @@ void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classe
 		myClasses.resizeZero(this->numPatchedTrainingInstances_);
 	}
 
-    multTransposeVec(myClasses, b);
+	multTransposeVec(myClasses, b);
 
-    debugMPI(sg::parallel::myGlobalMPIComm, "end generate b");
+	debugMPI(sg::parallel::myGlobalMPIComm, "end generate b");
 
     //std::cout << "end generate b"<< sg::parallel::myGlobalMPIComm->getMyRank() << std::endl;
 }
@@ -182,63 +179,35 @@ void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()
 
 void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base::DataVector &result)
 {
-    this->myTimer_->start();
+	this->myTimer_->start();
 
-    //std::cout << "multvec before calc" << std::endl;
+	this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
 
-    this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
+	debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_offsets[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_offsets[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
+	debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_sizes[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_sizes[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
 
-    //std::cout << "multvec before comm" << std::endl;
+	debugMPI(sg::parallel::myGlobalMPIComm, "result.size() = " << result.getSize());
 
-    //CRASHING HERE vvvvvvv
+	sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
 
-    debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_offsets[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_offsets[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
-    debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_sizes[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_sizes[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
-
-    debugMPI(sg::parallel::myGlobalMPIComm, "result.size() = " << result.getSize());
-
-    sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
-
-    //CRASHING HERE ^^^^^
-
-    std::cout << "multvec end" << std::endl;
-
-    this->completeTimeMult_ += this->myTimer_->stop();
+	this->completeTimeMult_ += this->myTimer_->stop();
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector &source, base::DataVector &result)
 {
-    this->myTimer_->start();
-    this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(source, result);
-    //std::cout << "size of result: " << result.getSize() << std::endl;
+	this->myTimer_->start();
+	this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(source, result);
 
-    sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_storage_offsets, _mpi_storage_sizes);
+	sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_storage_offsets, _mpi_storage_sizes);
 
-
-    this->completeTimeMultTrans_ += this->myTimer_->stop();
-}
-
-void DMSystemMatrixVectorizedIdentityMPI::calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset)
-{
-    int result_size = totalSize / procCount;
-    int remainder = totalSize - result_size*procCount;
-    int result_offset = 0;
-    if(rank < remainder){
-        result_size++;
-        result_offset = result_size * rank;
-    } else {
-        result_offset = remainder * (result_size + 1) + (rank - remainder)*result_size;
-    }
-
-    *size = result_size;
-    *offset = result_offset;
+	this->completeTimeMultTrans_ += this->myTimer_->stop();
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::calcDistribution(int totalSize, int *sizes, int *offsets)
 {
-    for(int rank = 0; rank < sg::parallel::myGlobalMPIComm->getNumRanks(); ++rank){
-        calcDistributionFragment(totalSize, sg::parallel::myGlobalMPIComm->getNumRanks(), rank, &sizes[rank], &offsets[rank]);
-    }
+	for(int rank = 0; rank < sg::parallel::myGlobalMPIComm->getNumRanks(); ++rank){
+		sg::parallel::myGlobalMPIComm->calcDistributionFragment(totalSize, sg::parallel::myGlobalMPIComm->getNumRanks(), rank, &sizes[rank], &offsets[rank]);
+	}
 }
 
 }

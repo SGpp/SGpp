@@ -26,9 +26,7 @@ namespace base
 DataVector::DataVector(size_t size) :
     size(size), unused(0), inc_elems(100) {
 	// create new vector
-    std::cout << "before new; size is"  << size << std::endl;
 	this->data = new double[size];
-    std::cout << "after new" << std::endl;
 }
 
 DataVector::DataVector(const DataVector &vec) :

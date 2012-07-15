@@ -64,7 +64,7 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
 
 void OperationMultipleEvalIterativeX86SimdLinear::adaptDatasetBoundaries()
 {
-    std::cout << "passed the following bounds: grid:" << m_storageFrom << " - " << m_storageTo << "; dataset: " << m_datasetFrom << " - " << m_datasetTo << std::endl;
+    debugMPI(sg::parallel::myGlobalMPIComm, "passed the following bounds: grid:" << m_storageFrom << " - " << m_storageTo << "; dataset: " << m_datasetFrom << " - " << m_datasetTo)
 
     //check for valid sized dataset already here
     if ( this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 )
@@ -84,7 +84,7 @@ void OperationMultipleEvalIterativeX86SimdLinear::adaptDatasetBoundaries()
         m_datasetTo += CHUNKDATAPOINTS_X86-remainder;
     }
 
-    std::cout << "doing calculations with the following dataset bounds: " << m_datasetFrom << " - " << m_datasetTo << std::endl;
+    debugMPI(sg::parallel::myGlobalMPIComm, "doing calculations with the following dataset bounds: " << m_datasetFrom << " - " << m_datasetTo);
 
     // now that both m_datasetFrom and m_datasetTo are aligned to multiples of CHUNKDATAPOINTS_X86, also the
     // chunksize for this process is a multiple of CHUNKDATAPOINTS_X86
@@ -367,22 +367,6 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 	return myTimer->stop();
 }
 
-void OperationMultipleEvalIterativeX86SimdLinear::calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset)
-{
-    int result_size = totalSize / procCount;
-    int remainder = totalSize - result_size*procCount;
-    int result_offset = 0;
-    if(rank < remainder){
-        result_size++;
-        result_offset = result_size * rank;
-    } else {
-        result_offset = remainder * (result_size + 1) + (rank - remainder)*result_size;
-    }
-
-    *size = result_size;
-    *offset = result_offset;
-}
-
 double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
@@ -413,7 +397,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
         size_t blockCount = chunkSizeProc/CHUNKDATAPOINTS_X86;
 
         int chunkFragmentSize, chunkFragmentOffset;
-        calcDistributionFragment(blockCount, omp_get_num_threads(), omp_get_thread_num(), &chunkFragmentSize, &chunkFragmentOffset);
+        sg::parallel::myGlobalMPIComm->calcDistributionFragment(blockCount, omp_get_num_threads(), omp_get_thread_num(), &chunkFragmentSize, &chunkFragmentOffset);
 
         size_t start = m_datasetFrom + chunkFragmentOffset*CHUNKDATAPOINTS_X86;
         size_t end = start+chunkFragmentSize*CHUNKDATAPOINTS_X86;

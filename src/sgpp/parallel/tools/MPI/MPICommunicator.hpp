@@ -16,6 +16,8 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
 
+//#define ENABLE_DEBUG_MPI
+#ifdef ENABLE_DEBUG_MPI
 #define debugMPI(globalComm, messageStream) \
     { \
         int rank = globalComm->getMyRank(); \
@@ -42,6 +44,10 @@
         } \
         MPI_Barrier(MPI_COMM_WORLD); \
     }
+#else
+#define debugMPI(globalComm, messageStream)
+#define debugMPI_0(messageStream)
+#endif
 
 namespace sg
 {
@@ -197,8 +203,30 @@ public:
 	 */
 	int getNumRanks();
 
+    /**
+     * calculate size and offset of fragment number rank for a domain with a size of totalSize for a distribution over procCount Fragments
+     * distribute domain as equal as possible
+     * (the difference between the minimum and maximum number of items is at most 1)
+     * otherwise, a worker could have almost twice as much to do as all the others (example: total=127, proccount = 16)
+     *
+     * @param totalSize size of domain to distribute
+     * @param procCount number of fragments (processes) to distribute domain into
+     * @param rank specifies the number of the fragment for which to calculate size and offset
+     * @param size output variable to put resulting size into
+     * @param offset output variable to put resulting offset into
+     */
+    void calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset);
 
-
+    /**
+     * overloaded function.
+     *
+     * this function uses getNumRanks() and getMyRank() for the procCount and rank arguemnts
+     *
+     * @param totalSize size of domain to distribute
+     * @param size output variable to put resulting size into
+     * @param offset output variable to put resulting offset into
+     */
+    void calcDistributionFragment(int totalSize, int *size, int *offset);
 };
 
 }

@@ -129,13 +129,10 @@ int MPICommunicator::getNumRanks()
 
 void MPICommunicator::dataVectorAllToAll_alltoallv(base::DataVector &alpha, int *distributionOffsets, int *distributionSizes)
 {
-    debugMPI(this, "starting alltoall");
     int numRanks = getNumRanks();
     int myRank = getMyRank();
     int mySendSize = distributionSizes[myRank];
     int mySendOffset = distributionOffsets[myRank];
-
-    double *alphaPointer = alpha.getPointer();
 
     debugMPI(this, "read distribution vars");
 
@@ -148,63 +145,54 @@ void MPICommunicator::dataVectorAllToAll_alltoallv(base::DataVector &alpha, int 
 
     debugMPI(this, "initialized sendVars");
 
+//    std::ostringstream strstr;
+
+//    strstr << "sendSizes: ";
+//    for(int i = 0; i<numRanks; i++){
+//        strstr << sendSizes[i] << " - ";
+//    }
+//    debugMPI(this, strstr.str());
+//    strstr.str("");
+
+//    strstr << "sendOffsets: ";
+//    for(int i = 0; i<numRanks; i++){
+//        strstr << sendOffsets[i] << " - ";
+//    }
+//    debugMPI(this, strstr.str());
+//    strstr.str("");
+
+//    strstr << "distributionSizes: ";
+//    for(int i = 0; i<numRanks; i++){
+//        strstr << distributionSizes[i] << " - ";
+//    }
+//    debugMPI(this, strstr.str());
+//    strstr.str("");
+
+//    strstr << "distributionOffsets: ";
+//    for(int i = 0; i<numRanks; i++){
+//        strstr << distributionOffsets[i] << " - ";
+//    }
+//    debugMPI(this, strstr.str());
+//    strstr.str("");
+
+//    debugMPI(this, strstr.str());
+//    strstr.str("");
+
+
     sg::base::DataVector tmp(alpha.getSize());
-    //tmp = new sg::base::DataVector(alpha.getSize());
-    //sg::base::DataVector tmp(alpha);
-
-    debugMPI(this, "before communication - alltoall; vector size: " << alpha.getSize());
-
-    std::ostringstream strstr;
-
-    strstr << "sendSizes: ";
-    for(int i = 0; i<numRanks; i++){
-        strstr << sendSizes[i] << " - ";
-    }
-    debugMPI(this, strstr.str());
-    strstr.str("");
-
-    strstr << "sendOffsets: ";
-    for(int i = 0; i<numRanks; i++){
-        strstr << sendOffsets[i] << " - ";
-    }
-    debugMPI(this, strstr.str());
-    strstr.str("");
-
-    strstr << "distributionSizes: ";
-    for(int i = 0; i<numRanks; i++){
-        strstr << distributionSizes[i] << " - ";
-    }
-    debugMPI(this, strstr.str());
-    strstr.str("");
-
-    strstr << "distributionOffsets: ";
-    for(int i = 0; i<numRanks; i++){
-        strstr << distributionOffsets[i] << " - ";
-    }
-    debugMPI(this, strstr.str());
-    strstr.str("");
-
-    strstr << "some values: ";
-    for(int i = 0; i<10; i++){
-        strstr << alphaPointer[i] << "; ";
-    }
-    for(int i = alpha.getSize()-10; i<alpha.getSize(); i++){
-        strstr << alphaPointer[i] << "; ";
-    }
-    debugMPI(this, strstr.str());
-    strstr.str("");
-
-
     MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
                   tmp.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
     alpha.copyFrom(tmp);
 
 
-//    MPI_Alltoallv(alphaPointer, sendSizes, sendOffsets, MPI_DOUBLE,
-//                  alphaPointer, distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
+    // this seems to work, altough the standard does not guarantee this,
+    // also, the standard is inconsistent regarding the use of MPI_IN_PLACE with MPI_Alltoallv()
+//    MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
+//                  alpha.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
 
+    //the following does not work, MPI_IN_PLACE is not allowed
 //    MPI_Alltoallv(MPI_IN_PLACE, distributionSizes, distributionSizes, MPI_DOUBLE,
-//                  alphaPointer, distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
+//                  alpha.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
 
     debugMPI(this, "after communication - alltoallv; ");
 
@@ -224,8 +212,6 @@ void MPICommunicator::dataVectorAllToAll_broadcasts(base::DataVector &alpha, int
 void MPICommunicator::dataVectorAllToAll_sendreceive(base::DataVector &alpha, int *distributionOffsets, int *distributionSizes)
 {
     double *data = alpha.getPointer();
-
-
 
     MPI_Request reqs[getNumRanks()];
     int myRank = getMyRank();
@@ -258,6 +244,27 @@ void MPICommunicator::dataVectorAllToAll_sendreceive(base::DataVector &alpha, in
     std::cout << "["<< myRank <<"] after waitall; " << std::endl;
 
     MPI_Barrier(MPI_COMM_WORLD);
+}
+
+void MPICommunicator::calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset)
+{
+    int result_size = totalSize / procCount;
+    int remainder = totalSize - result_size*procCount;
+    int result_offset = 0;
+    if(rank < remainder){
+        result_size++;
+        result_offset = result_size * rank;
+    } else {
+        result_offset = remainder * (result_size + 1) + (rank - remainder)*result_size;
+    }
+
+    *size = result_size;
+    *offset = result_offset;
+}
+
+void MPICommunicator::calcDistributionFragment(int totalSize, int *size, int *offset)
+{
+    calcDistributionFragment(totalSize, getNumRanks(), getMyRank(), size, offset);
 }
 
 }
