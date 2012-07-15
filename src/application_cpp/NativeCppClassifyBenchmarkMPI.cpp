@@ -251,14 +251,52 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
     // training
     gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
 
-	// testing
-    gtrainAcc = myLearner->getAccuracy(data, classes);
-	gtestAcc = myLearner->getAccuracy(testdata, testclasses);
-	if (!isRegression)
-	{
+    // testing
+	gtrainAcc = myLearner->getAccuracy(data, classes);
+	//gtestAcc = myLearner->getAccuracy(testdata, testclasses);
+
+    if (!isRegression)
+    {
 		gTrainQual = myLearner->getCassificatorQuality(data, classes);
-		gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
-	}
+		//gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
+    }
+
+    /*
+    we don't do extensive tests for performance measuring
+
+    double time_gTrainAcc = 0;
+    double time_gTrainQual = 0;
+    double time_gTestQual = 0;
+    double time_gTestAcc = 0;
+    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+
+    // testing
+    myStopwatch->start();
+    gtrainAcc = myLearner->getAccuracy(data, classes);
+    time_gTrainAcc = myStopwatch->stop();
+
+    myStopwatch->start();
+    gtestAcc = myLearner->getAccuracy(testdata, testclasses);
+    time_gTestAcc = myStopwatch->stop();
+
+    if (!isRegression)
+    {
+        myStopwatch->start();
+        gTrainQual = myLearner->getCassificatorQuality(data, classes);
+        time_gTrainQual = myStopwatch->stop();
+
+        myStopwatch->start();
+        gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
+        time_gTestQual = myStopwatch->stop();
+    }
+
+    if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+        std::cout << "Times for Testing: " << std::endl
+                  << "Train Acc:  " << time_gTrainAcc << " s"<< std::endl
+                  << "Test  Acc:  " << time_gTestAcc << " s"<< std::endl
+                  << "Train Qual: " << time_gTrainQual << " s"<< std::endl
+                  << "Test  Qual: " << time_gTestQual << " s" << std::endl;
+    }*/
 
 #ifdef GNUPLOT
 #endif

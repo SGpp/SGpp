@@ -96,20 +96,6 @@ private:
     void multTransposeVec(base::DataVector &source, base::DataVector &result);
 
     /**
-     * calculate size and offset of fragment number rank for a domain with a size of totalSize for a distribution over procCount Fragments
-     * distribute domain as equal as possible
-     * (the difference between the minimum and maximum number of items is at most 1)
-     * otherwise, a worker could have almost twice as much to do as all the others (example: total=127, proccount = 16)
-     *
-     * @param totalSize size of domain to distribute
-     * @param procCount number of fragments (processes) to distribute domain into
-     * @param rank specifies the number of the fragment for which to calculate size and offset
-     * @param size output variable to put resulting size into
-     * @param offset output variable to put resulting offset into
-     */
-    void calcDistributionFragment(int totalSize, int procCount, int rank, int* size, int *offset);
-
-    /**
      * calculates the distribution for the current MPI setting for a domain of
      * size totalSize and stores the result into the arrays sizes and offsets. These
      * arrays must have a size equal to the number of MPI processes currently running.
