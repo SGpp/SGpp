@@ -64,12 +64,6 @@ protected:
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;
 
-    int m_storageFrom;
-    int m_storageTo;
-    int m_datasetFrom;
-    int m_datasetTo;
-private:
-    void adaptDatasetBoundaries();
 };
 
 }

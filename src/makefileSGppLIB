@@ -270,6 +270,8 @@ OBJS =	DataVector.o\
 	OperationQuadratureMC.o\
 	OperationQuadratureLinear.o\
 	OperationQuadraturePoly.o\
+	OperationMultipleEvalVectorized.o\
+	OperationMultipleEvalVectorizedSP.o\
 	BaseOpFactory.o\
 	DatadrivenOpFactory.o\
 	FinanceOpFactory.o\
@@ -369,7 +371,8 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	BiCGStabMPI.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
-	DMSystemMatrixVectorizedIdentityMPI.o
+	DMSystemMatrixVectorizedIdentityMPI.o\
+	DMSystemMatrixSPVectorizedIdentityMPI.o
 endif
 
 default : $(OBJS)
@@ -519,6 +522,12 @@ OperationHierarchisationModBspline.o : $(SRCDIR)base/basis/modbspline/operation/
 
 OperationMultipleEvalLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp
+
+OperationMultipleEvalVectorized.o : $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorized.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalVectorized.o $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorized.cpp
+
+OperationMultipleEvalVectorizedSP.o : $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalVectorizedSP.o $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
 	
 OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
@@ -1035,6 +1044,9 @@ DMSystemMatrixVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm/D
 
 DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
+
+DMSystemMatrixSPVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentityMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
 	
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp

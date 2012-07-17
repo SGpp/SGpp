@@ -7,6 +7,8 @@
 
 #include <mpi.h>
 
+#include <omp.h>
+
 #include "sgpp_mpi.hpp"
 #include "sgpp_base.hpp"
 #include "sgpp_parallel.hpp"
@@ -230,13 +232,17 @@ void printResults()
     std::cout << "===============================================================" << std::endl;
     std::cout << std::endl;
 
+	int ompThreadCount =1;
+#ifdef _OPENMP
+	ompThreadCount = omp_get_num_threads();
+#endif
 	std::cout << "$" << gdataFile << ";" << gtestFile << ";" << gisRegression << ";" << bUseFloat << ";"
 	<< ggridtype << ";" << gstart_level << ";" << glambda << ";" << gSLEfinal.maxIterations_ << ";" << gSLEfinal.eps_ << ";"
 	<< gAdapConfig.numRefinements_ << ";"  << gAdapConfig.threshold_ << ";" << gAdapConfig.noPoints_ << ";"
 	<< gtrainAcc << ";" << gtestAcc << ";" << gtimings.timeComplete_ << ";" << gtimings.timeMultComplete_
 	<< ";" << gtimings.timeMultCompute_ << ";" << gtimings.timeMultTransComplete_ << ";" << gtimings.timeMultTransCompute_
 	<< ";" << gtimings.GFlop_/gtimings.timeComplete_ << ";"
-    << gtimings.GByte_/gtimings.timeComplete_ << ";" << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << ";" << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_)  << ";" << sg::parallel::myGlobalMPIComm->getNumRanks()  << std::endl << std::endl;
+	<< gtimings.GByte_/gtimings.timeComplete_ << ";" << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << ";" << gtimings.GByte_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_)  << ";" << sg::parallel::myGlobalMPIComm->getNumRanks()  << ";" << ompThreadCount  << std::endl << std::endl;
 }
 
 void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,

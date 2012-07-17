@@ -181,7 +181,8 @@ public:
      * @param distributionOffsets array containing the offsets of data to distribute
      * @param distributionSizes array containing the sizes of data to distribute
      */
-    void dataVectorAllToAll(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+	void dataVectorAllToAll(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+	void dataVectorAllToAll(sg::base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes);
 
 	/**
 	 * Implements a Barrier for all tasks

@@ -75,8 +75,6 @@ DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Gri
 		this->dataset_->transpose();
 	}
 
-	this->myTimer_ = new sg::base::SGppStopwatch();
-
 	this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_, this->dataset_);
 }
 

@@ -4,8 +4,9 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#include "parallel/tools/MPI/SGppMPITools.hpp"
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
+#include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "base/exception/operation_exception.hpp"
 
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
@@ -71,12 +72,10 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
 
 	this->numPatchedTrainingInstances_ = this->dataset_->getNrows();
 
-	if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB  && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
+	if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
 	{
 		this->dataset_->transpose();
 	}
-
-	this->myTimer_ = new sg::base::SGppStopwatch();
 
     int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
     int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
@@ -85,23 +84,12 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
     _mpi_storage_sizes = new int[mpi_size];
     _mpi_storage_offsets = new int[mpi_size];
     _mpi_data_sizes= new int[mpi_size];
-    _mpi_data_offsets = new int[mpi_size];
-//    _mpi_storage_send_sizes = new int[mpi_size];
-//    _mpi_storage_send_offsets = new int[mpi_size];
-//    _mpi_data_send_sizes = new int[mpi_size];
-//    _mpi_data_send_offsets = new int[mpi_size];
+	_mpi_data_offsets = new int[mpi_size];
 
     // calculate distribution
     calcDistribution(SparseGrid.getStorage()->size(), _mpi_storage_sizes, _mpi_storage_offsets);
     calcDistribution(this->dataset_->getNcols(), _mpi_data_sizes, _mpi_data_offsets);
 
-//    // put values into send array
-//    for(int rank = 0; rank<mpi_size; rank++){
-//        _mpi_storage_send_sizes[rank] = _mpi_storage_sizes[mpi_rank];
-//        _mpi_storage_send_offsets[rank] = _mpi_storage_offsets[mpi_rank];
-//        _mpi_data_send_sizes[rank] = _mpi_data_sizes[mpi_rank];
-//        _mpi_data_send_offsets[rank] = _mpi_data_offsets[mpi_rank];
-//    }
     debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_storage_offsets[mpi_rank] << " -- " << _mpi_storage_offsets[mpi_rank] + _mpi_storage_sizes[mpi_rank] - 1 << "size: " <<  _mpi_storage_sizes[mpi_rank]);
     debugMPI(sg::parallel::myGlobalMPIComm, "data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]);
 
@@ -126,11 +114,7 @@ DMSystemMatrixVectorizedIdentityMPI::~DMSystemMatrixVectorizedIdentityMPI()
     delete[] this->_mpi_storage_sizes;
     delete[] this->_mpi_storage_offsets;
     delete[] this->_mpi_data_sizes;
-    delete[] this->_mpi_data_offsets;
-//    delete[] this->_mpi_storage_send_sizes;
-//    delete[] this->_mpi_storage_send_offsets;
-//    delete[] this->_mpi_data_send_sizes;
-//    delete[] this->_mpi_data_send_offsets;
+	delete[] this->_mpi_data_offsets;
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -151,7 +135,6 @@ void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::
 
 	multTransposeVec(temp, result);
 
-
 	result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 }
 
@@ -168,8 +151,6 @@ void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classe
 	multTransposeVec(myClasses, b);
 
 	debugMPI(sg::parallel::myGlobalMPIComm, "end generate b");
-
-    //std::cout << "end generate b"<< sg::parallel::myGlobalMPIComm->getMyRank() << std::endl;
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()

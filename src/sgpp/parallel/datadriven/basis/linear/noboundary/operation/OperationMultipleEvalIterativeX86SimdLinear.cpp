@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
@@ -25,9 +26,6 @@
 #undef __AVX__
 #endif
 
-#define CHUNKDATAPOINTS_X86 24 // must be divide-able by 24
-#define CHUNKGRIDPOINTS_X86 12
-
 namespace sg
 {
 namespace parallel
@@ -35,13 +33,13 @@ namespace parallel
 
 OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86SimdLinear(
         sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
-        int storageFrom, int storageTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorized(dataset),
-    m_storageFrom(storageFrom),
-    m_storageTo(storageTo),
-    m_datasetFrom(datasetFrom),
-    m_datasetTo(datasetTo)
+		int storageFrom, int storageTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorized(dataset)
 {
-    adaptDatasetBoundaries();
+	m_storageFrom = storageFrom;
+	m_storageTo = storageTo;
+	m_datasetFrom = datasetFrom;
+	m_datasetTo = datasetTo;
+	adaptDatasetBoundaries();
 
 #ifdef _OPENMP
 #pragma omp parallel
@@ -60,34 +58,6 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myTimer = new sg::base::SGppStopwatch();
-}
-
-void OperationMultipleEvalIterativeX86SimdLinear::adaptDatasetBoundaries()
-{
-    debugMPI(sg::parallel::myGlobalMPIComm, "passed the following bounds: grid:" << m_storageFrom << " - " << m_storageTo << "; dataset: " << m_datasetFrom << " - " << m_datasetTo)
-
-    //check for valid sized dataset already here
-    if ( this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 )
-    {
-        throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required!");
-    }
-
-    //round down to previous CHUNKDATAPOINTS_X86 border
-    if(m_datasetFrom%CHUNKDATAPOINTS_X86 != 0) {
-        int remainder = m_datasetFrom%CHUNKDATAPOINTS_X86;
-        m_datasetFrom -= remainder;
-    }
-
-    //round up to next CHUNKDATAPOINTS_X86 border
-    if(m_datasetTo%CHUNKDATAPOINTS_X86 != 0) {
-        int remainder = m_datasetTo%CHUNKDATAPOINTS_X86;
-        m_datasetTo += CHUNKDATAPOINTS_X86-remainder;
-    }
-
-    debugMPI(sg::parallel::myGlobalMPIComm, "doing calculations with the following dataset bounds: " << m_datasetFrom << " - " << m_datasetTo);
-
-    // now that both m_datasetFrom and m_datasetTo are aligned to multiples of CHUNKDATAPOINTS_X86, also the
-    // chunksize for this process is a multiple of CHUNKDATAPOINTS_X86
 }
 
 OperationMultipleEvalIterativeX86SimdLinear::~OperationMultipleEvalIterativeX86SimdLinear()
@@ -401,14 +371,8 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 
         size_t start = m_datasetFrom + chunkFragmentOffset*CHUNKDATAPOINTS_X86;
         size_t end = start+chunkFragmentSize*CHUNKDATAPOINTS_X86;
-        if (end > m_datasetTo)
-        {
-            throw sg::base::operation_exception("something is wrong with the calculations here!");
-        }
         //std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [mult] start: " << start << "; end: " << end << std::endl;
 #else
-//        size_t start = 0;
-//        size_t end = result_size;
         size_t start = m_datasetFrom;
         size_t end = m_datasetTo;
 #endif
