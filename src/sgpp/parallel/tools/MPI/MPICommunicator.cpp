@@ -114,7 +114,48 @@ void MPICommunicator::broadcastControlFromRank0(char* ctrl)
 
 void MPICommunicator::dataVectorAllToAll(base::DataVector &alpha, int *distributionOffsets, int *distributionSizes)
 {
-    dataVectorAllToAll_alltoallv(alpha, distributionOffsets, distributionSizes);
+	int numRanks = getNumRanks();
+	int myRank = getMyRank();
+	int mySendSize = distributionSizes[myRank];
+	int mySendOffset = distributionOffsets[myRank];
+
+	int *sendSizes = new int[numRanks];
+	int *sendOffsets = new int[numRanks];
+	for(int i = 0; i<numRanks;i++){
+		sendSizes[i] = mySendSize;
+		sendOffsets[i] = mySendOffset;
+	}
+
+	sg::base::DataVector tmp(alpha.getSize());
+	MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
+				  tmp.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
+	alpha.copyFrom(tmp);
+
+	delete[] sendSizes;
+	delete[] sendOffsets;
+}
+
+void MPICommunicator::dataVectorAllToAll(base::DataVectorSP &alpha, int *distributionOffsets, int *distributionSizes)
+{
+	int numRanks = getNumRanks();
+	int myRank = getMyRank();
+	int mySendSize = distributionSizes[myRank];
+	int mySendOffset = distributionOffsets[myRank];
+
+	int *sendSizes = new int[numRanks];
+	int *sendOffsets = new int[numRanks];
+	for(int i = 0; i<numRanks;i++){
+		sendSizes[i] = mySendSize;
+		sendOffsets[i] = mySendOffset;
+	}
+
+	sg::base::DataVectorSP tmp(alpha.getSize());
+	MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_FLOAT,
+				  tmp.getPointer(), distributionSizes, distributionOffsets, MPI_FLOAT, MPI_COMM_WORLD);
+	alpha.copyFrom(tmp);
+
+	delete[] sendSizes;
+	delete[] sendOffsets;
 }
 
 int MPICommunicator::getMyRank()

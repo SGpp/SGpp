@@ -44,7 +44,8 @@ public:
 	 * @param storage Pointer to the grid's gridstorage object
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeSPX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
+	OperationMultipleEvalIterativeSPX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset,
+												  int storageFrom, int storageTo, int datasetFrom, int datasetTo);
 
 	/**
 	 * Destructor

@@ -59,7 +59,7 @@ namespace op_factory
 parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
                                                                                    int gridFrom, int gridTo, int datasetFrom, int datasetTo)
   {
-
+	// handle default upper boundaries
     if(gridTo == -1) gridTo = grid.getStorage()->size();
     if(datasetTo == -1) datasetTo = dataset->getNcols();
 
@@ -178,13 +178,18 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
       }
   }
 
-  parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset)
+  parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
+																					   int gridFrom, int gridTo, int datasetFrom, int datasetTo)
   {
+	// handle default upper boundaries
+	if(gridTo == -1) gridTo = grid.getStorage()->size();
+	if(datasetTo == -1) datasetTo = dataset->getNcols();
+
     if(strcmp(grid.getType(), "linear") == 0)
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -222,7 +227,7 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)

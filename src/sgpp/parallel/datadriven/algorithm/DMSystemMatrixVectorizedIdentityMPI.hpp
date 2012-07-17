@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYMPI_HPP
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYMPI_HPP
@@ -76,14 +77,6 @@ private:
     /// how to distribute grid
     int* _mpi_data_sizes;
     int* _mpi_data_offsets;
-
-//    /// which part of the storage to send to all the other processes, will hold MPI_SIZE identical values
-//    int* _mpi_storage_send_sizes;
-//    int* _mpi_storage_send_offsets;
-
-//    /// which part of the grid to send to all the other processes, will hold MPI_SIZE identical values
-//    int* _mpi_data_send_sizes;
-//    int* _mpi_data_send_offsets;
 
     /**
      * Wrapper function that handles communication after calculation and time measurement
