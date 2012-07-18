@@ -19,28 +19,33 @@ namespace sg
 namespace parallel
 {
 
-void OperationMultipleEvalVectorized::calcOpenMPLoopDistribution(int processStart, int processEnd, int chunkSize, size_t *start, size_t *end)
+void OperationMultipleEvalVectorized::calcOpenMPLoopDistribution(int processStart, int processEnd, int blockSize, size_t *start, size_t *end)
 {
-#ifdef _OPENMP
+	// check for valid input
 	size_t chunkSizeProc = processEnd - processStart;
-	if (chunkSizeProc % chunkSize != 0 )
+	if (chunkSizeProc % blockSize != 0 )
 	{
-		std::cout << "chunkSize: " << chunkSize << "; chunkSizeProc: " << chunkSizeProc << std::endl;
+		std::cout << "chunkSize: " << blockSize << "; chunkSizeProc: " << chunkSizeProc << std::endl;
 		throw sg::base::operation_exception("processed vector segment must fit to chunkSize, but it does not!");
 	}
-	//doing further calculations with complete blocks
-	size_t blockCount = chunkSizeProc/chunkSize;
 
-	int chunkFragmentSize, chunkFragmentOffset;
-	sg::parallel::myGlobalMPIComm->calcDistributionFragment(blockCount, omp_get_num_threads(), omp_get_thread_num(), &chunkFragmentSize, &chunkFragmentOffset);
+	// doing further calculations with complete blocks
+	size_t blockCount = chunkSizeProc/blockSize;
+	int blockFragmentSize = blockCount;
+	int blockFragmentOffset=0;
 
-	*start = processStart + chunkFragmentOffset*chunkSize;
-	*end = *start+chunkFragmentSize*chunkSize;
-	//std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [mult] start: " << start << "; end: " << end << std::endl;
-#else
-	*start = processStart;
-	*end = processEnd;
+	int threadsCount = 1;
+	int myThreadNum = 0;
+#ifdef _OPENMP
+	threadsCount = omp_get_num_threads();
+	myThreadNum = omp_get_thread_num();
 #endif
+	//calculate distribution of blocks
+	sg::parallel::myGlobalMPIComm->calcDistributionFragment(blockCount, threadsCount, myThreadNum, &blockFragmentSize, &blockFragmentOffset);
+
+	// set return values
+	*start = processStart + blockFragmentOffset*blockSize;
+	*end = *start+blockFragmentSize*blockSize;
 }
 
 void OperationMultipleEvalVectorized::adaptDatasetBoundaries()

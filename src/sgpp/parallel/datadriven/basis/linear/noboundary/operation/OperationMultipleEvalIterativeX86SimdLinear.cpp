@@ -106,20 +106,10 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 #ifdef _OPENMP
     #pragma omp parallel
 	{
-//        size_t chunksize = (storageSize/omp_get_num_threads())+1;
-//    	size_t start = chunksize*omp_get_thread_num();
-//    	size_t end = std::min<size_t>(start+chunksize, storageSize);
-		size_t chunksizeProc = m_gridTo - m_gridFrom;
-        size_t chunksize = (chunksizeProc/omp_get_num_threads())+1;
-		size_t start = m_gridFrom + chunksize*omp_get_thread_num();
-		size_t end = std::min<size_t>(start+chunksize, m_gridTo);
-        //std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [multTranspose] start: " << start << "; end: " << end << std::endl;
-#else
-//    size_t start = 0;
-//    size_t end = storageSize;
-	size_t start = m_gridFrom;
-	size_t end = m_gridTo;
 #endif
+		size_t start;
+		size_t end;
+		calcOpenMPLoopDistribution(m_gridFrom, m_gridTo, 1, &start, &end);
 
         for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
 		{
@@ -361,27 +351,14 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 
     myTimer->start();
 
+
 #ifdef _OPENMP
-    #pragma omp parallel
+	#pragma omp parallel
 	{
-        size_t chunkSizeProc = m_datasetTo - m_datasetFrom;
-        if (chunkSizeProc % CHUNKDATAPOINTS_X86 != 0 )
-        {
-            throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86, but it does not!");
-        }
-        //doing further calculations with complete blocks
-        size_t blockCount = chunkSizeProc/CHUNKDATAPOINTS_X86;
-
-        int chunkFragmentSize, chunkFragmentOffset;
-        sg::parallel::myGlobalMPIComm->calcDistributionFragment(blockCount, omp_get_num_threads(), omp_get_thread_num(), &chunkFragmentSize, &chunkFragmentOffset);
-
-        size_t start = m_datasetFrom + chunkFragmentOffset*CHUNKDATAPOINTS_X86;
-        size_t end = start+chunkFragmentSize*CHUNKDATAPOINTS_X86;
-        //std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [mult] start: " << start << "; end: " << end << std::endl;
-#else
-        size_t start = m_datasetFrom;
-        size_t end = m_datasetTo;
 #endif
+		size_t start;
+		size_t end;
+		calcOpenMPLoopDistribution(m_datasetFrom, m_datasetTo, CHUNKDATAPOINTS_X86, &start, &end);
 
         debugMPI(sg::parallel::myGlobalMPIComm, "iterating from [incl.] " << start << " to [excl.] " << end);
 

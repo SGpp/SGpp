@@ -33,6 +33,18 @@ class OperationMultipleEvalVectorized
 {
 protected:
 	void adaptDatasetBoundaries();
+	/**
+	 * @brief calcOpenMPLoopDistribution
+	 *
+	 *@todo proper documentation
+	 * call this from within a parallel section
+	 *
+	 * @param processStart
+	 * @param processEnd
+	 * @param chunkSize
+	 * @param start
+	 * @param end
+	 */
 	void calcOpenMPLoopDistribution(int processStart, int processEnd, int chunkSize, size_t *start, size_t *end);
 
 
