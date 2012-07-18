@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef OPERATIONMULTIPLEEVALITERATIVEX86SIMDMODLINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVEX86SIMDMODLINEAR_HPP
@@ -54,6 +55,8 @@ public:
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
 
 	virtual void rebuildLevelAndIndex();
+
+	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
 
 protected:
 	/// Pointer to the grid's GridStorage object

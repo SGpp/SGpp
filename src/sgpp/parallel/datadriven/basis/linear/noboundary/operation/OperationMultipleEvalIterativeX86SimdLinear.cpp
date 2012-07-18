@@ -33,10 +33,10 @@ namespace parallel
 
 OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86SimdLinear(
         sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
-		int storageFrom, int storageTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorized(dataset)
+		int gridFrom, int gridTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorized(dataset)
 {
-	m_storageFrom = storageFrom;
-	m_storageTo = storageTo;
+	m_gridFrom = gridFrom;
+	m_gridTo = gridTo;
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
 	adaptDatasetBoundaries();
@@ -73,7 +73,13 @@ void OperationMultipleEvalIterativeX86SimdLinear::rebuildLevelAndIndex()
 	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 
-    storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+}
+
+void OperationMultipleEvalIterativeX86SimdLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
+{
+	m_gridFrom = gridFrom;
+	m_gridTo = gridTo;
 }
 
 
@@ -103,16 +109,16 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 //        size_t chunksize = (storageSize/omp_get_num_threads())+1;
 //    	size_t start = chunksize*omp_get_thread_num();
 //    	size_t end = std::min<size_t>(start+chunksize, storageSize);
-        size_t chunksizeProc = m_storageTo - m_storageFrom;
+		size_t chunksizeProc = m_gridTo - m_gridFrom;
         size_t chunksize = (chunksizeProc/omp_get_num_threads())+1;
-        size_t start = m_storageFrom + chunksize*omp_get_thread_num();
-        size_t end = std::min<size_t>(start+chunksize, m_storageTo);
+		size_t start = m_gridFrom + chunksize*omp_get_thread_num();
+		size_t end = std::min<size_t>(start+chunksize, m_gridTo);
         //std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [multTranspose] start: " << start << "; end: " << end << std::endl;
 #else
 //    size_t start = 0;
 //    size_t end = storageSize;
-    size_t start = m_storageFrom;
-    size_t end = m_storageTo;
+	size_t start = m_gridFrom;
+	size_t end = m_gridTo;
 #endif
 
         for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
