@@ -25,9 +25,6 @@
 #undef __AVX__
 #endif
 
-#define CHUNKDATAPOINTS_X86 48 // must be divide-able by 48
-#define CHUNKGRIDPOINTS_X86 12
-
 namespace sg
 {
 namespace parallel
@@ -78,7 +75,7 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
     float* ptrIndex = this->index_->getPointer();
     float* ptrResult = result.getPointer();
 
-    if (this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 || source_size != this->dataset_->getNcols())
+	if (this->dataset_->getNcols() % CHUNKDATAPOINTS_SP_X86 != 0 || source_size != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -88,18 +85,16 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
     result.setAll(0.0);
 
 #ifdef _OPENMP
-    #pragma omp parallel
+	#pragma omp parallel
 	{
-		size_t chunksize = (storageSize/omp_get_num_threads())+1;
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, storageSize);
-#else
-    	size_t start = 0;
-    	size_t end = storageSize;
 #endif
-		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
+		size_t start;
+		size_t end;
+		calcOpenMPLoopDistribution(m_gridFrom, m_gridTo, 1, &start, &end);
+
+		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86, (end-k)))
 		{
-			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k));
+			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86, (end-k));
 #if defined(__SSE3__) && !defined(__AVX__)
 			int imask = 0x7FFFFFFF;
 			float* fmask = (float*)&imask;
@@ -552,7 +547,7 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
     float* ptrLevel = this->level_->getPointer();
     float* ptrIndex = this->index_->getPointer();
 
-    if (this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 || result_size != this->dataset_->getNcols())
+	if (this->dataset_->getNcols() % CHUNKDATAPOINTS_SP_X86 != 0 || result_size != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -560,25 +555,16 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
     myTimer->start();
 
 #ifdef _OPENMP
-    #pragma omp parallel
+	#pragma omp parallel
 	{
-		size_t chunksize = (result_size/omp_get_num_threads())+1;
-		// assure that every subarray is 32-byte aligned
-		if (chunksize % CHUNKDATAPOINTS_X86 != 0)
-		{
-			size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
-			size_t patch = CHUNKDATAPOINTS_X86 - remainder;
-			chunksize += patch;
-		}
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, result_size);
-#else
-    	size_t start = 0;
-    	size_t end = result_size;
 #endif
-		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (end-c)))
+		size_t start;
+		size_t end;
+		calcOpenMPLoopDistribution(m_datasetFrom, m_datasetTo, CHUNKDATAPOINTS_SP_X86, &start, &end);
+
+		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_SP_X86, (end-c)))
 		{
-			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86+c, end);
+			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_SP_X86+c, end);
 
 #ifdef __ICC
 			#pragma ivdep
@@ -589,15 +575,15 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 				ptrResult[i] = 0.0f;
 			}
 
-			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m)))
+			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86, (storageSize-m)))
 			{
 #if defined(__SSE3__) && !defined(__AVX__)
-				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
+				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86, (storageSize-m));
 
 				int imask = 0x7FFFFFFF;
 				float* fmask = (float*)&imask;
 
-				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=24)
+				for (size_t i = c; i < c+CHUNKDATAPOINTS_SP_X86; i+=24)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
 					{
@@ -790,12 +776,12 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 				}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (storageSize-m));
+				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86, (storageSize-m));
 
 				int imask = 0x7FFFFFFF;
 				float* fmask = (float*)&imask;
 
-				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=48)
+				for (size_t i = c; i < c+CHUNKDATAPOINTS_SP_X86; i+=48)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
 					{
@@ -988,7 +974,7 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 				}
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
-				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86+m, storageSize);
+				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86+m, storageSize);
 
 				for (size_t i = c; i < data_end; i++)
 				{

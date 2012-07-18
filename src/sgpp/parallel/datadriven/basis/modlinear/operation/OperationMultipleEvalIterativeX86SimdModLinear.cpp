@@ -88,15 +88,13 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
     result.setAll(0.0);
 
 #ifdef _OPENMP
-    #pragma omp parallel
+	#pragma omp parallel
 	{
-		size_t chunksize = (storageSize/omp_get_num_threads())+1;
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, storageSize);
-#else
-    	size_t start = 0;
-    	size_t end = storageSize;
 #endif
+		size_t start;
+		size_t end;
+		calcOpenMPLoopDistribution(m_gridFrom, m_gridTo, 1, &start, &end);
+
 		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_x86, (end-k)))
 		{
 			size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_x86, (end-k));
@@ -558,22 +556,13 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
     myTimer->start();
 
 #ifdef _OPENMP
-    #pragma omp parallel
+	#pragma omp parallel
 	{
-		size_t chunksize = (result_size/omp_get_num_threads())+1;
-		// assure that every subarray is 32-byte aligned
-		if (chunksize % CHUNKDATAPOINTS_X86 != 0)
-		{
-			size_t remainder = chunksize % CHUNKDATAPOINTS_X86;
-			size_t patch = CHUNKDATAPOINTS_X86 - remainder;
-			chunksize += patch;
-		}
-    	size_t start = chunksize*omp_get_thread_num();
-    	size_t end = std::min<size_t>(start+chunksize, result_size);
-#else
-    	size_t start = 0;
-    	size_t end = result_size;
 #endif
+		size_t start;
+		size_t end;
+		calcOpenMPLoopDistribution(m_datasetFrom, m_datasetTo, CHUNKDATAPOINTS_X86, &start, &end);
+
 		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (end-c)))
 		{
 			size_t data_end = std::min<size_t>((size_t)CHUNKDATAPOINTS_X86+c, end);
