@@ -18,7 +18,7 @@ namespace parallel
 {
 
 DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-	: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), vecWidth_(0), numTrainingInstances_(0), numPatchedTrainingInstances_(0)
+	: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), vecWidth_(0), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid)
 {
 	// handle unsupported vector extensions
 	// @TODO (heinecke) refactor: better way to set vector width
@@ -81,16 +81,16 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
     int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
     // arrays for distribution settings
-    _mpi_storage_sizes = new int[mpi_size];
-    _mpi_storage_offsets = new int[mpi_size];
+    _mpi_grid_sizes = new int[mpi_size];
+    _mpi_grid_offsets = new int[mpi_size];
     _mpi_data_sizes= new int[mpi_size];
 	_mpi_data_offsets = new int[mpi_size];
 
     // calculate distribution
-    calcDistribution(SparseGrid.getStorage()->size(), _mpi_storage_sizes, _mpi_storage_offsets);
+	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets);
     calcDistribution(this->dataset_->getNcols(), _mpi_data_sizes, _mpi_data_offsets);
 
-    debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_storage_offsets[mpi_rank] << " -- " << _mpi_storage_offsets[mpi_rank] + _mpi_storage_sizes[mpi_rank] - 1 << "size: " <<  _mpi_storage_sizes[mpi_rank]);
+    debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_grid_offsets[mpi_rank] << " -- " << _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank] - 1 << "size: " <<  _mpi_grid_sizes[mpi_rank]);
     debugMPI(sg::parallel::myGlobalMPIComm, "data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]);
 
     // mult: distribute calculations over storage
@@ -98,9 +98,9 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
 
     //std::cout << "gridtype: " << SparseGrid.getType() << std::endl;
 
-    this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_, this->dataset_,
-                _mpi_storage_offsets[mpi_rank],
-                _mpi_storage_offsets[mpi_rank] + _mpi_storage_sizes[mpi_rank],
+	this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(m_grid, this->vecMode_, this->dataset_,
+                _mpi_grid_offsets[mpi_rank],
+                _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank],
                 _mpi_data_offsets[mpi_rank],
                 _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]
                 );
@@ -111,8 +111,8 @@ DMSystemMatrixVectorizedIdentityMPI::~DMSystemMatrixVectorizedIdentityMPI()
 	delete this->B_;
 	delete this->dataset_;
 
-    delete[] this->_mpi_storage_sizes;
-    delete[] this->_mpi_storage_offsets;
+    delete[] this->_mpi_grid_sizes;
+    delete[] this->_mpi_grid_offsets;
     delete[] this->_mpi_data_sizes;
 	delete[] this->_mpi_data_offsets;
 }
@@ -156,6 +156,12 @@ void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classe
 void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()
 {
     this->B_->rebuildLevelAndIndex();
+
+	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets);
+	int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
+
+	this->B_->updateGridComputeBoundaries(_mpi_grid_offsets[mpi_rank],
+										  _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank]);
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base::DataVector &result)
@@ -179,7 +185,7 @@ void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector &sou
 	this->myTimer_->start();
 	this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(source, result);
 
-	sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_storage_offsets, _mpi_storage_sizes);
+	sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
 
 	this->completeTimeMultTrans_ += this->myTimer_->stop();
 }

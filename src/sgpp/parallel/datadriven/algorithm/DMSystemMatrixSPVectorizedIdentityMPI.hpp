@@ -73,10 +73,14 @@ public:
 
 private:
 	/// how to distribute storage array
-	int* _mpi_storage_sizes;
-	int* _mpi_storage_offsets;
+	int* _mpi_grid_sizes;
+	int* _mpi_grid_offsets;
 
-	/// how to distribute grid
+	/// reference to grid. needed to get new grid size after it changes
+	sg::base::Grid& m_grid;
+
+
+	/// how to distribute dataset
 	int* _mpi_data_sizes;
 	int* _mpi_data_offsets;
 

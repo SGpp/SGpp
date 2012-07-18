@@ -61,6 +61,12 @@ void OperationMultipleEvalIterativeSPX86SimdModLinear::rebuildLevelAndIndex()
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
+void OperationMultipleEvalIterativeSPX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
+{
+	m_gridFrom = gridFrom;
+	m_gridTo = gridTo;
+}
+
 double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
 	size_t source_size = source.getSize();

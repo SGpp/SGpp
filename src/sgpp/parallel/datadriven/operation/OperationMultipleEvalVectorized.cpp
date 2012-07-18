@@ -35,7 +35,7 @@ void OperationMultipleEvalVectorized::calcOpenMPLoopDistribution(int processStar
 	sg::parallel::myGlobalMPIComm->calcDistributionFragment(blockCount, omp_get_num_threads(), omp_get_thread_num(), &chunkFragmentSize, &chunkFragmentOffset);
 
 	*start = processStart + chunkFragmentOffset*chunkSize;
-	*end = start+chunkFragmentSize*chunkSize;
+	*end = *start+chunkFragmentSize*chunkSize;
 	//std::cout << "[OpenMP Thread " << omp_get_thread_num() << "] [mult] start: " << start << "; end: " << end << std::endl;
 #else
 	*start = processStart;
@@ -45,7 +45,7 @@ void OperationMultipleEvalVectorized::calcOpenMPLoopDistribution(int processStar
 
 void OperationMultipleEvalVectorized::adaptDatasetBoundaries()
 {
-	debugMPI(sg::parallel::myGlobalMPIComm, "passed the following bounds: grid:" << m_storageFrom << " - " << m_storageTo << "; dataset: " << m_datasetFrom << " - " << m_datasetTo)
+	debugMPI(sg::parallel::myGlobalMPIComm, "passed the following bounds: grid:" << m_gridFrom << " - " << m_gridTo << "; dataset: " << m_datasetFrom << " - " << m_datasetTo)
 
 	//check for valid sized dataset already here
 	if ( this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 )

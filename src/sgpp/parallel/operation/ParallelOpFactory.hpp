@@ -5,6 +5,7 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef PARALLEL_OP_FACTORY_HPP
 #define PARALLEL_OP_FACTORY_HPP

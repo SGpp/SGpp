@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
@@ -45,7 +46,7 @@ public:
 	 * @param dataset dataset that should be evaluated
 	 */
     OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
-                                                int storageFrom, int storageTo, int datasetFrom, int datasetTo);
+												int gridFrom, int gridTo, int datasetFrom, int datasetTo);
 
 	/**
 	 * Destructor
@@ -57,6 +58,8 @@ public:
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
 
 	virtual void rebuildLevelAndIndex();
+
+	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
 
 protected:
 	/// Pointer to the grid's GridStorage object
