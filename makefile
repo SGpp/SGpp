@@ -24,6 +24,9 @@ IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 # AMD OpenCL
 AMDOCLINCLUDE = /opt/AMDAPP/include
 AMDOCLLIB = /opt/AMDAPP/lib/x86_64
+# Intel OpenCL, Windows
+IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\2.0\include\"
+IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\2.0\lib\x64\OpenCL.lib\"
 
 ###################################################################
 # Default Variables, overwirtten by CLI
@@ -174,20 +177,17 @@ ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) /Qopenmp
 LFLAGS:=$(LFLAGS) /Qopenmp
 endif
-ifeq ($(TR1),1)
-CFLAGS:=$(CFLAGS) /DUSETRONE -std=c++0x
-endif
 ifeq ($(EXT), OCL)
 CFLAGS:=$(CFLAGS) /I$(OCLINCLUDE) /DUSEOCL /DUSEOCL_NVIDIA /Qopenmp
 LFLAGS:=$(LFLAGS) /L$(OCLLIB) /Qpenmp
 endif
 ifeq ($(EXT), IOCL)
-CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDE) /DUSEOCL /DUSEOCL_INTEL /Qopenmp /DUSEOCL_CPU
-LFLAGS:=$(LFLAGS) /L$(IOCLLIB) /Qopenmp
+CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDEWIN) /DUSEOCL /DUSEOCL_INTEL /Qopenmp /DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) $(IOCLLIBWIN) /Qopenmp
 endif
-ifeq ($(EXT), AMDOCLGPU)
-CFLAGS:=$(CFLAGS) /I$(AMDOCLINCLUDE) /DUSEOCL /DUSEOCL_AMD /DNO_OCL_OPTS /Qopenmp
-LFLAGS:=$(LFLAGS) /L$(AMDOCLLIB) /Qopenmp
+ifeq ($(EXT), IOCLGPU)
+CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDEWIN) /DUSEOCL /DUSEOCL_INTEL /Qopenmp
+LFLAGS:=$(LFLAGS) /Qopenmp $(IOCLLIBWIN)
 endif
 endif
 
