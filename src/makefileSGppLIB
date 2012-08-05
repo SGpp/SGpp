@@ -321,6 +321,8 @@ OBJS =	DataVector.o\
 	BiCGStabSP.o\
 	OperationSecondMomentLinear.o\
 	OperationFirstMomentLinear.o\
+	OperationDensityMarginalizeLinear.o\
+	OperationDensityConditionalLinear.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -347,6 +349,18 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 endif
 
 ifeq ($(EXT), IOCL)
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
+ 	OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
+	OCLKernels.o\
+	OperationMultipleEvalIterativeOCLModLinear.o\
+	OperationMultipleEvalIterativeSPOCLModLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+endif
+
+ifeq ($(EXT), IOCLGPU)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
  	OperationMultipleEvalIterativeSPOCLLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
@@ -396,21 +410,44 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o
 endif
 
+WINOBJS=$(OBJS:.o=.obj)
+
+ifeq ($(CC),g++)
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
-ifeq ($(CC),icpc)
 	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
-ifeq ($(CC),mpiicpc)
-	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
-ifeq ($(CC),g++)
-	ar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
 	ranlib $(BINDIR)$(LIBNAME).a
-	$(CC) -shared -o $(BINDIR)$(LIBNAME).so $(OBJS)
+	$(CC) -shared -fopenmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),icpc)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),mpiicpc)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),icl)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).lib
+	xilib /OUT:$(BINDIR)$(LIBNAME).lib $(WINOBJS)
+endif
 
 DataVector.o : $(SRCDIR)base/datatypes/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)base/datatypes/DataVector.cpp
@@ -1345,7 +1382,12 @@ OperationSecondMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/
 OperationFirstMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationFirstMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 	
+OperationDensityConditionalLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityConditionalLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
 	
+OperationDensityMarginalizeLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityMarginalizeLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
+
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
