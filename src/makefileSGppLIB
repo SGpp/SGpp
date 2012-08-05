@@ -377,21 +377,44 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o
 endif
 
+WINOBJS=$(OBJS:.o=.obj)
+
+ifeq ($(CC),g++)
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
-ifeq ($(CC),icpc)
 	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
-ifeq ($(CC),mpiicpc)
-	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
-ifeq ($(CC),g++)
-	ar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
 	ranlib $(BINDIR)$(LIBNAME).a
-	$(CC) -shared -o $(BINDIR)$(LIBNAME).so $(OBJS)
+	$(CC) -shared -fopenmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),icpc)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),mpiicpc)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),icl)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).lib
+	xilib /OUT:$(BINDIR)$(LIBNAME).lib $(WINOBJS)
+endif
 
 DataVector.o : $(SRCDIR)base/datatypes/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)base/datatypes/DataVector.cpp

@@ -62,6 +62,9 @@ LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR) 
 LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
 
+CFLAGS_ICL:=/Wall /Qipo /Qip /Oa /Qansi_alias /Qfp-speculation=safe /c /O3 /Qunroll-aggressive /I$(SRCDIR) /DUSETRONE /Qcxx-features /D_WIN32 /DNOMINMAX
+LFLAGS_ICL:=/Wall /Qipo /Qip /Qansi_alias /O3
+
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
 LFLAGS:=$(LFLAGS_GCC)
@@ -147,8 +150,44 @@ CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -openmp -DUSEOCL_CPU
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -openmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
-CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -fopenmp
-LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -openmp
+LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -openmp
+endif
+endif
+
+ifeq ($(CC),icl)
+CFLAGS:=$(CFLAGS_ICL)
+LFLAGS:=$(LFLAGS_ICL)
+ifeq ($(VEC),sse3)
+CFLAGS:=$(CFLAGS) /arch:SSE3
+endif
+ifeq ($(VEC),sse4)
+CFLAGS:=$(CFLAGS) /arch:SSE4.2
+endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) /arch:AVX /D__USEAVX128__
+endif
+ifeq ($(VEC),avx)
+CFLAGS:=$(CFLAGS) /arch:AVX
+endif
+ifeq ($(OMP),1)
+CFLAGS:=$(CFLAGS) /Qopenmp
+LFLAGS:=$(LFLAGS) /Qopenmp
+endif
+ifeq ($(TR1),1)
+CFLAGS:=$(CFLAGS) /DUSETRONE -std=c++0x
+endif
+ifeq ($(EXT), OCL)
+CFLAGS:=$(CFLAGS) /I$(OCLINCLUDE) /DUSEOCL /DUSEOCL_NVIDIA /Qopenmp
+LFLAGS:=$(LFLAGS) /L$(OCLLIB) /Qpenmp
+endif
+ifeq ($(EXT), IOCL)
+CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDE) /DUSEOCL /DUSEOCL_INTEL /Qopenmp /DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) /L$(IOCLLIB) /Qopenmp
+endif
+ifeq ($(EXT), AMDOCLGPU)
+CFLAGS:=$(CFLAGS) /I$(AMDOCLINCLUDE) /DUSEOCL /DUSEOCL_AMD /DNO_OCL_OPTS /Qopenmp
+LFLAGS:=$(LFLAGS) /L$(AMDOCLLIB) /Qopenmp
 endif
 endif
 
@@ -193,6 +232,10 @@ endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/sgpplib_icc
 	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icl)
+	mkdir -p tmp/build_native/sgpplib_icl
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icl "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icl" "EXT=$(EXT)"
 endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/sgpplib_mpiicc
@@ -315,6 +358,10 @@ endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icc
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icl)
+	mkdir -p tmp/build_native/ClassifyBenchmark_icl
+	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icl "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icl.lib" "BINNAME=ClassifyBenchmark_ICL.exe" "EXT=$(EXT)"
 endif
 
 ###################################################################
