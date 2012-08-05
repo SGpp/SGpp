@@ -30,8 +30,17 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPX86SimdModLinear::OperationMultipleEvalIterativeSPX86SimdModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPX86SimdModLinear::OperationMultipleEvalIterativeSPX86SimdModLinear(
+		sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset,
+		int gridFrom, int gridTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
 {
+
+	m_gridFrom = gridFrom;
+	m_gridTo = gridTo;
+	m_datasetFrom = datasetFrom;
+	m_datasetTo = datasetTo;
+	adaptDatasetBoundaries();
+
 	this->storage = storage;
 
 	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());

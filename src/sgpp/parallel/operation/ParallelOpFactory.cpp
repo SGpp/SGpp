@@ -146,7 +146,7 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -265,7 +265,7 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
