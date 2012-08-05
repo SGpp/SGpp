@@ -343,6 +343,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 
     myTimer->start();
 
+
 #ifdef _OPENMP
 	#pragma omp parallel
 	{

@@ -88,7 +88,7 @@ DMSystemMatrixSPVectorizedIdentityMPI::DMSystemMatrixSPVectorizedIdentityMPI(sg:
 	_mpi_data_offsets = new int[mpi_size];
 
 	// calculate distribution
-	calcDistribution(SparseGrid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets);
+	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets);
 	calcDistribution(this->dataset_->getNcols(), _mpi_data_sizes, _mpi_data_offsets);
 
 	debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_grid_offsets[mpi_rank] << " -- " << _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank] - 1 << "size: " <<  _mpi_grid_sizes[mpi_rank]);
@@ -99,7 +99,7 @@ DMSystemMatrixSPVectorizedIdentityMPI::DMSystemMatrixSPVectorizedIdentityMPI(sg:
 
 	//std::cout << "gridtype: " << SparseGrid.getType() << std::endl;
 
-	this->B_ = sg::op_factory::createOperationMultipleEvalVectorizedSP(SparseGrid, this->vecMode_, this->dataset_,
+	this->B_ = sg::op_factory::createOperationMultipleEvalVectorizedSP(m_grid, this->vecMode_, this->dataset_,
 				_mpi_grid_offsets[mpi_rank],
 				_mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank],
 				_mpi_data_offsets[mpi_rank],
@@ -111,6 +111,11 @@ DMSystemMatrixSPVectorizedIdentityMPI::~DMSystemMatrixSPVectorizedIdentityMPI()
 {
 	delete this->B_;
 	delete this->dataset_;
+
+	delete[] this->_mpi_grid_sizes;
+	delete[] this->_mpi_grid_offsets;
+	delete[] this->_mpi_data_sizes;
+	delete[] this->_mpi_data_offsets;
 }
 
 void DMSystemMatrixSPVectorizedIdentityMPI::mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
@@ -144,9 +149,9 @@ void DMSystemMatrixSPVectorizedIdentityMPI::generateb(sg::base::DataVectorSP& cl
 		myClasses.resizeZero(this->numPatchedTrainingInstances_);
 	}
 
-	this->myTimer_->start();
-	this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(myClasses, b);
-	this->completeTimeMultTrans_ += this->myTimer_->stop();
+	multTransposeVec(myClasses, b);
+
+	debugMPI(sg::parallel::myGlobalMPIComm, "end generate b");
 }
 
 void DMSystemMatrixSPVectorizedIdentityMPI::rebuildLevelAndIndex()
