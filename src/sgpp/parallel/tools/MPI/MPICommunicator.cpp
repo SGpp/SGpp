@@ -288,27 +288,6 @@ void MPICommunicator::dataVectorAllToAll_sendreceive(base::DataVector &alpha, in
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-void MPICommunicator::calcDistributionFragment(int totalSize, int procCount, int rank, int *size, int *offset)
-{
-    int result_size = totalSize / procCount;
-    int remainder = totalSize - result_size*procCount;
-    int result_offset = 0;
-    if(rank < remainder){
-        result_size++;
-        result_offset = result_size * rank;
-    } else {
-        result_offset = remainder * (result_size + 1) + (rank - remainder)*result_size;
-    }
-
-    *size = result_size;
-    *offset = result_offset;
-}
-
-void MPICommunicator::calcDistributionFragment(int totalSize, int *size, int *offset)
-{
-    calcDistributionFragment(totalSize, getNumRanks(), getMyRank(), size, offset);
-}
-
 }
 
 }
