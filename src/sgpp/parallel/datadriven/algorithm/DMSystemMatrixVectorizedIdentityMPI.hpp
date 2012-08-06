@@ -71,15 +71,15 @@ public:
 
 private:
     /// how to distribute storage array
-	int* _mpi_grid_sizes;
-	int* _mpi_grid_offsets;
+	int * _mpi_grid_sizes;
+	int * _mpi_grid_offsets;
 
 	/// reference to grid. needed to get new grid size after it changes
 	sg::base::Grid& m_grid;
 
 	/// how to distribute dataset
-    int* _mpi_data_sizes;
-    int* _mpi_data_offsets;
+	int * _mpi_data_sizes;
+	int * _mpi_data_offsets;
 
     /**
      * Wrapper function that handles communication after calculation and time measurement
@@ -101,7 +101,7 @@ private:
      * @param offsets output array to store resulting distribution offsets (array size must match the number of MPI processes)
      *
      */
-    void calcDistribution(int totalSize, int* sizes, int* offsets);
+	void calcDistribution(int totalSize, int* sizes, int* offsets, size_t blocksize);
 };
 
 }

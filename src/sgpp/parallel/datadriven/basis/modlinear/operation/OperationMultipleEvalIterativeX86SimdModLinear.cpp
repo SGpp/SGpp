@@ -8,6 +8,7 @@
 
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
 #include "base/exception/operation_exception.hpp"
+#include "parallel/tools/PartitioningTool.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -102,7 +103,7 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
 #endif
 		size_t start;
 		size_t end;
-		calcOpenMPLoopDistribution(m_gridFrom, m_gridTo, 1, &start, &end);
+		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
 		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_x86, (end-k)))
 		{
@@ -570,7 +571,7 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
 #endif
 		size_t start;
 		size_t end;
-		calcOpenMPLoopDistribution(m_datasetFrom, m_datasetTo, CHUNKDATAPOINTS_X86, &start, &end);
+		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, CHUNKDATAPOINTS_X86);
 
 		for(size_t c = start; c < end; c+=std::min<size_t>((size_t)CHUNKDATAPOINTS_X86, (end-c)))
 		{

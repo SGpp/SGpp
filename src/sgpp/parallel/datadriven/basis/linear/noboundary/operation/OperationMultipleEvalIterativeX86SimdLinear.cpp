@@ -6,9 +6,9 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "base/exception/operation_exception.hpp"
+#include "parallel/tools/PartitioningTool.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -109,7 +109,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 #endif
 		size_t start;
 		size_t end;
-		calcOpenMPLoopDistribution(m_gridFrom, m_gridTo, 1, &start, &end);
+		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
         for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
 		{
@@ -358,13 +358,13 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 #endif
 		size_t start;
 		size_t end;
-		calcOpenMPLoopDistribution(m_datasetFrom, m_datasetTo, CHUNKDATAPOINTS_X86, &start, &end);
+		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, CHUNKDATAPOINTS_X86);
 
-        debugMPI(sg::parallel::myGlobalMPIComm, "iterating from [incl.] " << start << " to [excl.] " << end);
+		//debugMPI(sg::parallel::myGlobalMPIComm, "iterating from [incl.] " << start << " to [excl.] " << end);
 
         if (start % CHUNKDATAPOINTS_X86 != 0 || end % CHUNKDATAPOINTS_X86 != 0)
         {
-            debugMPI(sg::parallel::myGlobalMPIComm, "start%CHUNKDATAPOINTS_X86: " << start%CHUNKDATAPOINTS_X86 << "; end%CHUNKDATAPOINTS_X86: " << end%CHUNKDATAPOINTS_X86);
+			//debugMPI(sg::parallel::myGlobalMPIComm, "start%CHUNKDATAPOINTS_X86: " << start%CHUNKDATAPOINTS_X86 << "; end%CHUNKDATAPOINTS_X86: " << end%CHUNKDATAPOINTS_X86);
             throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86!");
         }
 

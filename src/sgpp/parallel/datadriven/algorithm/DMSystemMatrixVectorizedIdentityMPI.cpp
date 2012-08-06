@@ -11,6 +11,7 @@
 
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
+#include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg
 {
@@ -81,14 +82,14 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
     int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
     // arrays for distribution settings
-    _mpi_grid_sizes = new int[mpi_size];
-    _mpi_grid_offsets = new int[mpi_size];
-    _mpi_data_sizes= new int[mpi_size];
+	_mpi_grid_sizes = new int[mpi_size];
+	_mpi_grid_offsets = new int[mpi_size];
+	_mpi_data_sizes= new int[mpi_size];
 	_mpi_data_offsets = new int[mpi_size];
 
     // calculate distribution
-	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets);
-    calcDistribution(this->dataset_->getNcols(), _mpi_data_sizes, _mpi_data_offsets);
+	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
+	calcDistribution(this->dataset_->getNcols(), _mpi_data_sizes, _mpi_data_offsets, this->vecWidth_);
 
     debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_grid_offsets[mpi_rank] << " -- " << _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank] - 1 << "size: " <<  _mpi_grid_sizes[mpi_rank]);
     debugMPI(sg::parallel::myGlobalMPIComm, "data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]);
@@ -157,7 +158,7 @@ void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()
 {
     this->B_->rebuildLevelAndIndex();
 
-	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets);
+	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
 	int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
 	this->B_->updateGridComputeBoundaries(_mpi_grid_offsets[mpi_rank],
@@ -190,10 +191,14 @@ void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector &sou
 	this->completeTimeMultTrans_ += this->myTimer_->stop();
 }
 
-void DMSystemMatrixVectorizedIdentityMPI::calcDistribution(int totalSize, int *sizes, int *offsets)
+void DMSystemMatrixVectorizedIdentityMPI::calcDistribution(int totalSize, int *sizes, int *offsets, size_t blocksize)
 {
 	for(int rank = 0; rank < sg::parallel::myGlobalMPIComm->getNumRanks(); ++rank){
-		sg::parallel::myGlobalMPIComm->calcDistributionFragment(totalSize, sg::parallel::myGlobalMPIComm->getNumRanks(), rank, &sizes[rank], &offsets[rank]);
+		size_t size;
+		size_t offset;
+		sg::parallel::PartitioningTool::getPartitionSegment(totalSize, sg::parallel::myGlobalMPIComm->getNumRanks(), rank, &size, &offset, blocksize);
+		sizes[rank] = size;
+		offsets[rank] = offset;
 	}
 }
 

@@ -299,7 +299,8 @@ OBJS =	DataVector.o\
 	BiCGStabSP.o\
 	OperationSecondMomentLinear.o\
 	OperationFirstMomentLinear.o\
-	
+	PartitioningTool.o\
+
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	OperationMultipleEvalIterativeSPArBBLinear.o\
@@ -1207,7 +1208,10 @@ PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
 TwoPartitionAutoTuning.o : $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
-	
+
+PartitioningTool.o : $(SRCDIR)parallel/tools/PartitioningTool.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PartitioningTool.o $(SRCDIR)parallel/tools/PartitioningTool.cpp
+
 DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 	
