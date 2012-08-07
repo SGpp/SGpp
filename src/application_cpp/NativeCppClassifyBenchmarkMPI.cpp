@@ -235,7 +235,10 @@ void printResults()
 
 	int ompThreadCount =1;
 #ifdef _OPENMP
+#pragma omp parallel
+	{
 	ompThreadCount = omp_get_num_threads();
+	}
 #endif
 	std::cout << "$" << gdataFile << ";" << gtestFile << ";" << gisRegression << ";" << bUseFloat << ";"
 	<< ggridtype << ";" << gstart_level << ";" << glambda << ";" << gSLEfinal.maxIterations_ << ";" << gSLEfinal.eps_ << ";"
