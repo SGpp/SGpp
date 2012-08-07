@@ -322,7 +322,8 @@ OBJS =	DataVector.o\
 	OperationSecondMomentLinear.o\
 	OperationFirstMomentLinear.o\
 	OperationDensityMarginalizeLinear.o\
-	OperationDensityConditionalLinear.o
+	OperationDensityConditionalLinear.o\
+	DMVectorizationPaddingAssistant.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -417,7 +418,7 @@ default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
-	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ar rc $(BINDIR)$(LIBNAME).a $(OBJS)
 	ranlib $(BINDIR)$(LIBNAME).a
 	$(CC) -shared -fopenmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
 endif
@@ -1387,6 +1388,9 @@ OperationDensityConditionalLinear.o : $(SRCDIR)datadriven/basis/linear/noboundar
 	
 OperationDensityMarginalizeLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityMarginalizeLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
+
+DMVectorizationPaddingAssistant.o : $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMVectorizationPaddingAssistant.o $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
 
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
