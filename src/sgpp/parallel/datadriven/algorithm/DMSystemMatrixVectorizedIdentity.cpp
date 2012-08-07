@@ -7,6 +7,7 @@
 
 #include "base/exception/operation_exception.hpp"
 
+#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
 
@@ -16,66 +17,22 @@ namespace parallel
 {
 
 DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-	: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), vecWidth_(0), numTrainingInstances_(0), numPatchedTrainingInstances_(0)
+	: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0)
 {
 	// handle unsupported vector extensions
-	// @TODO (heinecke) refactor: better way to set vector width
-	if (this->vecMode_ == X86SIMD)
+	if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
 	{
-		this->vecWidth_ = 24;
-	}
-	else if (this->vecMode_ == OpenCL)
-	{
-		this->vecWidth_ = 128;
-	}
-	else if (this->vecMode_ == Hybrid_X86SIMD_OpenCL)
-	{
-		this->vecWidth_ = 128;
-	}
-	else if (this->vecMode_ == ArBB)
-	{
-		this->vecWidth_ = 16;
-	}
-	else if (this->vecMode_ == MIC)
-	{
-		this->vecWidth_ = 96;
-	}
-	else if (this->vecMode_ == Hybrid_X86SIMD_MIC)
-	{
-		this->vecWidth_ = 96;
-	}
-	else
-	{
-		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : un-supported vector extensions!");
+		throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
 	}
 
 	this->dataset_ = new sg::base::DataMatrix(trainData);
-
 	this->numTrainingInstances_ = this->dataset_->getNrows();
-
-	// Assure that data has a even number of instances -> padding might be needed
-	size_t remainder = this->dataset_->getNrows() % this->vecWidth_;
-	size_t loopCount = this->vecWidth_ - remainder;
-
-	if (loopCount != this->vecWidth_)
-	{
-		sg::base::DataVector lastRow(this->dataset_->getNcols());
-		for (size_t i = 0; i < loopCount; i++)
-		{
-			this->dataset_->getRow(this->dataset_->getNrows()-1, lastRow);
-			this->dataset_->resize(this->dataset_->getNrows()+1);
-			this->dataset_->setRow(this->dataset_->getNrows()-1, lastRow);
-		}
-	}
-
-	this->numPatchedTrainingInstances_ = this->dataset_->getNrows();
+	this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
 	if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB  && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
 	{
 		this->dataset_->transpose();
 	}
-
-	this->myTimer_ = new sg::base::SGppStopwatch();
 
 	this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_, this->dataset_);
 }
