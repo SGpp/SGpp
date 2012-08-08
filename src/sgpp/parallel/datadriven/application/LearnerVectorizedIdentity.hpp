@@ -62,6 +62,8 @@ public:
 	 * Destructor
 	 */
 	virtual ~LearnerVectorizedIdentity();
+
+	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 };
 
 }
