@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.hpp"
 #include "base/exception/operation_exception.hpp"
@@ -13,8 +14,16 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(
+		sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
+		int gridFrom, int gridTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorized(dataset)
 {
+	m_gridFrom = gridFrom;
+	m_gridTo = gridTo;
+	m_datasetFrom = datasetFrom;
+	m_datasetTo = datasetTo;
+	adaptDatasetBoundaries();
+
 	this->storage = storage;
 
 	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
@@ -45,6 +54,12 @@ void OperationMultipleEvalIterativeOCLLinear::rebuildLevelAndIndex()
 	myOCLKernels->resetKernels();
 }
 
+void OperationMultipleEvalIterativeOCLLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
+{
+	m_gridFrom = gridFrom;
+	m_gridTo = gridTo;
+}
+
 double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
 	size_t source_size = source.getSize();
@@ -64,7 +79,7 @@ double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(sg::base
     	throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multTransOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
+	double time = myOCLKernels->multTransOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
 
     // do the rest...
 	size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
@@ -120,7 +135,38 @@ double OperationMultipleEvalIterativeOCLLinear::multVectorized(sg::base::DataVec
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
-    double time = myOCLKernels->multOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, result_size);
+	if (m_datasetFrom % 128 != 0 || m_datasetTo % 128 != 0)
+	{
+		throw sg::base::operation_exception("The borders of the domain segment have to be aligned to multples of 128.");
+	}
+
+
+	double* ptrDataThisProcess = &(ptrData[m_datasetFrom*dims]);
+	size_t gpu_partition = m_datasetTo - m_datasetFrom;
+
+	sg::base::DataVector altResult(result.getSize());
+	double* ptrAltResult = altResult.getPointer();
+	double* ptrResultThisProcess = &(ptrAltResult[m_datasetFrom]);
+
+	std::cout << "from " << m_datasetFrom << " to " << m_datasetTo << "; gpu_partition: "<< gpu_partition <<"; dims: " << dims <<  std::endl;
+
+	for(int i = 0; i< gpu_partition*dims; i++){
+		if(ptrData[m_datasetFrom*dims + i] != ptrDataThisProcess[i]){
+			std::cout << "data differs[" << i << "]: (orig) " << ptrData[m_datasetFrom*dims + i] << " != " << ptrDataThisProcess[i] << " (partial)" << std::endl;
+			throw sg::base::operation_exception("data fail");
+		}
+	}
+
+	double time = myOCLKernels->multOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, result_size);
+
+	myOCLKernels->multOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrAltResult, gpu_partition, storageSize, dims, result_size);
+
+	for(int i = 0; i< gpu_partition; i++){
+		if(ptrResult[m_datasetFrom + i] != ptrAltResult[m_datasetFrom + i]){
+			std::cout << "results differ[" << i << "]: (orig) " << ptrResult[m_datasetFrom + i] << " != " << ptrAltResult[m_datasetFrom + i] << " (partial)" << std::endl;
+			throw sg::base::operation_exception("fail");
+		}
+	}
 
    	return time;
 }
