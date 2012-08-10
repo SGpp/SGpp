@@ -22,23 +22,31 @@ void OperationMultipleEvalVectorized::adaptDatasetBoundaries()
 {
 	//debugMPI(sg::parallel::myGlobalMPIComm, "passed the following bounds: grid:" << m_gridFrom << " - " << m_gridTo << "; dataset: " << m_datasetFrom << " - " << m_datasetTo)
 
-	//check for valid sized dataset already here
-	if ( this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 )
-	{
-		throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required!");
-	}
+//	//check for valid sized dataset and upper and lower border
+//	if ( this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 )
+//	{
+//		throw sg::base::operation_exception("For iterative mult an even number of dataset instances is required!");
+//	}
+//	if(m_datasetFrom%CHUNKDATAPOINTS_X86 != 0) {
+//		throw sg::base::operation_exception("For iterative mult an even number of dataset instances is required and the borders have to be aligned to a multiple of the ");
+//	}
+//	if(m_datasetTo%CHUNKDATAPOINTS_X86 != 0) {
+//		throw sg::base::operation_exception("For iterative mult an even number of dataset instances is required!");
+//	}
 
-	//round down to previous CHUNKDATAPOINTS_X86 border
-	if(m_datasetFrom%CHUNKDATAPOINTS_X86 != 0) {
-		int remainder = m_datasetFrom%CHUNKDATAPOINTS_X86;
-		m_datasetFrom -= remainder;
-	}
 
-	//round up to next CHUNKDATAPOINTS_X86 border
-	if(m_datasetTo%CHUNKDATAPOINTS_X86 != 0) {
-		int remainder = m_datasetTo%CHUNKDATAPOINTS_X86;
-		m_datasetTo += CHUNKDATAPOINTS_X86-remainder;
-	}
+
+//	round down to previous CHUNKDATAPOINTS_X86 border
+//		if(m_datasetFrom%CHUNKDATAPOINTS_X86 != 0) {
+//			int remainder = m_datasetFrom%CHUNKDATAPOINTS_X86;
+//			m_datasetFrom -= remainder;
+//		}
+
+//	//round up to next CHUNKDATAPOINTS_X86 border
+//	if(m_datasetTo%CHUNKDATAPOINTS_X86 != 0) {
+//		int remainder = m_datasetTo%CHUNKDATAPOINTS_X86;
+//		m_datasetTo += CHUNKDATAPOINTS_X86-remainder;
+//	}
 
 	//debugMPI(sg::parallel::myGlobalMPIComm, "doing calculations with the following dataset bounds: " << m_datasetFrom << " - " << m_datasetTo);
 
