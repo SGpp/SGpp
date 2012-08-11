@@ -40,8 +40,6 @@ class DMSystemMatrixSPVectorizedIdentityMPI : public sg::datadriven::DMSystemMat
 private:
 	/// vectorization mode
 	VectorizationType vecMode_;
-	/// vector width, class internal variable to enable padding and patching of vectors
-	size_t vecWidth_;
 	/// Number of original training instances
 	size_t numTrainingInstances_;
 	/// Number of patched and used training instances

@@ -9,6 +9,7 @@
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "base/exception/operation_exception.hpp"
 
+#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
@@ -19,59 +20,17 @@ namespace parallel
 {
 
 DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-	: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), vecWidth_(0), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid)
+	: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid)
 {
 	// handle unsupported vector extensions
-	// @TODO (heinecke) refactor: better way to set vector width
-	if (this->vecMode_ == X86SIMD)
+	if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
 	{
-		this->vecWidth_ = 24;
-	}
-	else if (this->vecMode_ == OpenCL)
-	{
-		this->vecWidth_ = 128;
-	}
-	else if (this->vecMode_ == Hybrid_X86SIMD_OpenCL)
-	{
-		this->vecWidth_ = 128;
-	}
-	else if (this->vecMode_ == ArBB)
-	{
-		this->vecWidth_ = 16;
-	}
-	else if (this->vecMode_ == MIC)
-	{
-		this->vecWidth_ = 96;
-	}
-	else if (this->vecMode_ == Hybrid_X86SIMD_MIC)
-	{
-		this->vecWidth_ = 96;
-	}
-	else
-	{
-		throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentity : un-supported vector extensions!");
+		throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
 	}
 
 	this->dataset_ = new sg::base::DataMatrix(trainData);
-
 	this->numTrainingInstances_ = this->dataset_->getNrows();
-
-    // Assure that data has a "even" number of instances -> padding might be needed
-	size_t remainder = this->dataset_->getNrows() % this->vecWidth_;
-	size_t loopCount = this->vecWidth_ - remainder;
-
-	if (loopCount != this->vecWidth_)
-	{
-		sg::base::DataVector lastRow(this->dataset_->getNcols());
-		for (size_t i = 0; i < loopCount; i++)
-		{
-			this->dataset_->getRow(this->dataset_->getNrows()-1, lastRow);
-			this->dataset_->resize(this->dataset_->getNrows()+1);
-			this->dataset_->setRow(this->dataset_->getNrows()-1, lastRow);
-		}
-	}
-
-	this->numPatchedTrainingInstances_ = this->dataset_->getNrows();
+	this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
 	if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
 	{
@@ -89,7 +48,8 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
 
     // calculate distribution
 	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
-	calcDistribution(this->numPatchedTrainingInstances_, _mpi_data_sizes, _mpi_data_offsets, this->vecWidth_);
+	calcDistribution(this->numPatchedTrainingInstances_, _mpi_data_sizes, _mpi_data_offsets,
+					 sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
 
     debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_grid_offsets[mpi_rank] << " -- " << _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank] - 1 << "size: " <<  _mpi_grid_sizes[mpi_rank]);
     debugMPI(sg::parallel::myGlobalMPIComm, "data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]);
