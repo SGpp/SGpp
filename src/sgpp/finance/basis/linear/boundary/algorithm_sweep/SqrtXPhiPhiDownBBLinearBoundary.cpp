@@ -65,7 +65,7 @@ void SqrtXPhiPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, s
 		}
 		else
 		{
-//			throw new application_exception("SqrtXPhiPhiDownBBLinearBoundary::not yet implemented for non-Dirichlet case!");
+			throw new base::application_exception("SqrtXPhiPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
 		{
@@ -73,11 +73,7 @@ void SqrtXPhiPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, s
 		}
 		else
 		{
-			result[seq_right] = ((1.0/3.0 * t + 1.0/4.0 * q*q)*right_boundary);
-
-			// down
-			//////////////////////////////////////
-			result[seq_right] += ((1.0/6.0 * t + 1.0/12.0 * q*q)*left_boundary);
+			throw new base::application_exception("SqrtXPhiPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		// move to root
@@ -102,7 +98,7 @@ void SqrtXPhiPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, s
 		}
 		else
 		{
-			result[seq_left] = (1.0/12.0)*left_boundary;
+			throw new base::application_exception("SqrtXPhiPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
 		{
@@ -110,11 +106,7 @@ void SqrtXPhiPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, s
 		}
 		else
 		{
-			result[seq_right] = (1.0/4.0)*right_boundary;
-
-			// down
-			//////////////////////////////////////
-			result[seq_right] += (1.0/12.0)*left_boundary;
+			throw new base::application_exception("SqrtXPhiPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		// move to root

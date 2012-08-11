@@ -6,6 +6,7 @@
 // @author Sam Maurus (MA thesis)
 
 #include "finance/basis/linear/boundary/algorithm_sweep/XdPhidPhiDownBBLinearBoundary.hpp"
+#include "base/exception/application_exception.hpp"
 
 namespace sg
 {
@@ -64,7 +65,7 @@ void XdPhidPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_left] = left_boundary * (((-1.0/6.0)*q) - (0.5*t));
+			throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
@@ -73,10 +74,7 @@ void XdPhidPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_right] = right_boundary * (((1.0/3.0)*q) + (0.5*t));
-			// down
-			//////////////////////////////////////
-			result[seq_right] += (left_boundary * (((-1.0/3.0)*q) - (0.5*t)));
+			throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		// move to root
@@ -101,7 +99,7 @@ void XdPhidPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_left] = left_boundary * (-1.0/3.0);
+			throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
@@ -110,10 +108,7 @@ void XdPhidPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_right] = right_boundary * (1.0/3.0);
-			// down
-			//////////////////////////////////////
-			result[seq_right] += (left_boundary * (1.0/6.0));
+			throw new base::application_exception("XdPhidPhiDownBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		// move to root
