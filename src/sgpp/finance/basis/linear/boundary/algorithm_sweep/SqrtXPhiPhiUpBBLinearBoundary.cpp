@@ -6,6 +6,7 @@
 // @author Sam Maurus (MA thesis)
 
 #include "finance/basis/linear/boundary/algorithm_sweep/SqrtXPhiPhiUpBBLinearBoundary.hpp"
+#include "base/exception/application_exception.hpp"
 
 namespace sg
 {
@@ -71,8 +72,7 @@ void SqrtXPhiPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_left] = fl;
-			result[seq_left] += ((1.0/6.0 * t + 1.0/12.0 * q*q)*source[seq_right]);
+			throw new base::application_exception("SqrtXPhiPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 		// Right
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
@@ -81,7 +81,7 @@ void SqrtXPhiPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_right] = fr;
+			throw new base::application_exception("SqrtXPhiPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		index.left_levelzero(dim);
@@ -119,8 +119,7 @@ void SqrtXPhiPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_left] = fl;
-			result[seq_left] += ((1.0/12.0)*source[seq_right]);
+			throw new base::application_exception("SqrtXPhiPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 		// Right
 		if (this->boundingBox->hasDirichletBoundaryRight(dim))
@@ -129,7 +128,7 @@ void SqrtXPhiPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg:
 		}
 		else
 		{
-			result[seq_right] = fr;
+			throw new base::application_exception("SqrtXPhiPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
 		}
 
 		index.left_levelzero(dim);
