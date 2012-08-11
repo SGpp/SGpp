@@ -103,11 +103,8 @@ void OperationHestonBLinearBoundary::down(sg::base::DataVector& alpha, sg::base:
 
 void OperationHestonBLinearBoundary::upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
 {
-	// phi * phi
-	sg::pde::PhiPhiUpBBLinearBoundary func(this->storage);
-	sg::base::sweep<sg::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
-
-	s.sweep1D_Boundary(alpha, result, dim);
+	sg::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+	myUp(alpha, result, dim);
 }
 
 void OperationHestonBLinearBoundary::downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
