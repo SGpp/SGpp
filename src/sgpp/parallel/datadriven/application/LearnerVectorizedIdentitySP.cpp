@@ -9,6 +9,9 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
+#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+
+#include "parallel/operation/ParallelOpFactory.hpp"
 
 namespace sg
 {
@@ -61,6 +64,31 @@ void LearnerVectorizedIdentitySP::postProcessing(const sg::base::DataMatrixSP& t
         std::cout << "Current GByte/s: " << this->GByte_/this->execTime_ << std::endl;
         std::cout << std::endl;
 	}
+}
+
+sg::base::DataVectorSP LearnerVectorizedIdentitySP::predict(sg::base::DataMatrixSP& testDataset)
+{
+	sg::base::DataMatrixSP tmpDataSet(testDataset);
+	size_t originalSize = testDataset.getNrows();
+	size_t paddedSize = sg::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
+
+	sg::base::DataVectorSP classesComputed(paddedSize);
+
+	classesComputed.setAll(0.0);
+
+	if (this->vecType_ != OpenCL && this->vecType_ != ArBB && this->vecType_ != Hybrid_X86SIMD_OpenCL)
+	{
+		tmpDataSet.transpose();
+	}
+
+	sg::parallel::OperationMultipleEvalVectorizedSP* MultEval = sg::op_factory::createOperationMultipleEvalVectorizedSP(*grid_, vecType_, &tmpDataSet);
+	MultEval->multVectorized(*alpha_, classesComputed);
+	delete MultEval;
+
+	// removed the padded instances
+	classesComputed.resize(originalSize);
+
+	return classesComputed;
 }
 
 }

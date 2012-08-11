@@ -8,8 +8,8 @@
 #include "finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 #include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "finance/application/VariableDiscountFactor.hpp"
 #include "finance/operation/FinanceOpFactory.hpp"
 
@@ -150,7 +150,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
 
 		if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
 		{
-			size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+			size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 			sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
 			myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 			delete myCoarsenFunctor;

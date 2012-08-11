@@ -12,7 +12,7 @@
 
 namespace sg
 {
-namespace base
+namespace parallel
 {
 
 /**

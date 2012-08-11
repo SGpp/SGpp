@@ -99,7 +99,11 @@ OCLKernels::OCLKernels()
 #ifdef USEOCL_INTEL
 			if (strcmp(vendor_name, "Intel(R) Corporation") == 0)
 			{
+#ifdef USEOCL_CPU
 				std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
+#else
+				std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
+#endif
 				platform_id = platform_ids[ui];
 			}
 #endif
@@ -126,26 +130,30 @@ OCLKernels::OCLKernels()
 	std::cout << std::endl;
 
 	// Find out how many devices there are
+#ifdef USEOCL_INTEL
+	device_ids = new cl_device_id[1];
 #ifdef USEOCL_CPU
-	device_ids = new cl_device_id[MAX_OCL_DEVICE_COUNT];
-	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, MAX_OCL_DEVICE_COUNT, device_ids, &num_devices);
-	if (err != CL_SUCCESS)
-    {
-    	std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
-    }
-	// set max number of devices
-	if (num_devices > MAX_OCL_DEVICE_COUNT)
-	{
-		num_devices = MAX_OCL_DEVICE_COUNT;
-	}
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, device_ids, NULL);
 #else
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, device_ids, NULL);
+#endif
+	if (err != CL_SUCCESS)
+    	{
+    		std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
+    	}
+	num_devices = 1;
+#endif
 #ifdef USEOCL_AMD
 	device_ids = new cl_device_id[1];
+#ifdef USEOCL_CPU
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, device_ids, NULL);
+#else
 	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, device_ids, NULL);
+#endif
 	if (err != CL_SUCCESS)
-    {
-    	std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
-    }
+    	{
+    		std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
+    	}
 	num_devices = 1;
 #endif
 #ifdef USEOCL_NVIDIA
@@ -165,7 +173,6 @@ OCLKernels::OCLKernels()
     {
     	std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
     }
-#endif
 #endif
 	std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
 

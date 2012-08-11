@@ -15,6 +15,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 
 namespace sg
 {

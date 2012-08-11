@@ -26,7 +26,7 @@ namespace base
 %apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
 
-%rename(__str__) sg::base::DataVector::toString;
+%rename(__str__) DataVector::toString;
 
 %rename(__getitem__) DataVector::get(size_t i) const;
 %rename(__setitem__) DataVector::set(size_t i, double value);
