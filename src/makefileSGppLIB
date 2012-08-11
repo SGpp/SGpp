@@ -159,10 +159,14 @@ OBJS =	DataVector.o\
 	PhiPhiUpModLinear.o\
 	PhiPhiUpBBLinearBoundary.o\
 	PhiPhiDownBBLinearBoundary.o\
+	SqrtXPhiPhiUpBBLinearBoundary.o\
+	SqrtXPhiPhiDownBBLinearBoundary.o\
 	SqXdPhidPhiDownBBLinearBoundary.o\
 	SqXdPhidPhiUpBBLinearBoundary.o\
 	XdPhiPhiDownBBLinearBoundary.o\
 	XdPhiPhiUpBBLinearBoundary.o\
+	XdPhidPhiDownBBLinearBoundary.o\
+	XdPhidPhiUpBBLinearBoundary.o\
 	XPhidPhiDownBBLinearBoundary.o\
 	XPhidPhiUpBBLinearBoundary.o\
 	DPhiPhiDownBBLinearBoundary.o\
@@ -896,6 +900,12 @@ PhiPhiDownBBLinearBoundary.o : $(SRCDIR)pde/basis/linear/boundary/algorithm_swee
 
 PhiPhiUpBBLinearBoundary.o : $(SRCDIR)pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PhiPhiUpBBLinearBoundary.o $(SRCDIR)pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
+
+SqrtXPhiPhiDownBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/SqrtXPhiPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqrtXPhiPhiDownBBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/SqrtXPhiPhiDownBBLinearBoundary.cpp
+
+SqrtXPhiPhiUpBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/SqrtXPhiPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SqrtXPhiPhiUpBBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/SqrtXPhiPhiUpBBLinearBoundary.cpp
 	
 SqXdPhidPhiDownBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)SqXdPhidPhiDownBBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
@@ -908,6 +918,12 @@ XdPhiPhiDownBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorith
 	
 XdPhiPhiUpBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhiPhiUpBBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp	
+
+XdPhidPhiDownBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XdPhidPhiDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhidPhiDownBBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XdPhidPhiDownBBLinearBoundary.cpp
+	
+XdPhidPhiUpBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XdPhidPhiUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)XdPhidPhiUpBBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XdPhidPhiUpBBLinearBoundary.cpp
 	
 XPhidPhiDownBBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)XPhidPhiDownBBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp	
