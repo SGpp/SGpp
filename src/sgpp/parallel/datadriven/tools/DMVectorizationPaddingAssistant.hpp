@@ -26,7 +26,7 @@ namespace parallel
  */
 class DMVectorizationPaddingAssistant
 {
-private:
+public:
     /**
      * determines the blocking vector-length for a given
      * vectorization mode, for double precision numbers.
@@ -47,7 +47,6 @@ private:
      */
     static size_t getVecWidthSP(VectorizationType& vecType);
 
-public:
     /**
      * Pads a DataMatrix object
      *
