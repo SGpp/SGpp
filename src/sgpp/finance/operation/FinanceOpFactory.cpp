@@ -56,6 +56,20 @@
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.hpp"
 #include "finance/basis/linear/noboundary/operation/pde/OperationHestonZLinear.hpp"
 
+#include "finance/basis/linear/boundary/operation/OperationHestonBLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonCLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonDLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonELinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonFLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonGLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonHLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonKLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonWLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonXLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.hpp"
+#include "finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.hpp"
+
+
 namespace sg
 {
 
@@ -233,62 +247,182 @@ base::OperationMatrix* createOperationDeltaLog(base::Grid& grid, base::DataVecto
 
 base::OperationMatrix* createOperationHestonBLog(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationHestonBLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonBLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonBLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonB is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonCLog(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationHestonCLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonCLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonCLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonC is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonDLog(base::Grid& grid, base::DataVector& coef)
 {
-	return new finance::OperationHestonDLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonDLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonDLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonD is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonELog(base::Grid& grid, base::DataVector& coef)
 {
-	return new finance::OperationHestonELinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonELinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonELinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonE is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonFLog(base::Grid& grid, base::DataVector& coef)
 {
-	return new finance::OperationHestonFLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonFLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonFLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonF is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonGLog(base::Grid& grid, base::DataVector& coef)
 {
-	return new finance::OperationHestonGLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonGLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonGLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonG is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationHestonHLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonHLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonHLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonH is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonKLog(base::Grid& grid, double***** coef)
 {
-	return new finance::OperationHestonKLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonKLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonKLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonK is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationHestonXLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonXLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonXLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonX is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationHestonYLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonYLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonYLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonY is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataMatrix& coef)
 {
-	return new finance::OperationHestonWLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonWLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonWLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonW is not implemented for this grid type.");
 }
 
 base::OperationMatrix* createOperationHestonZ(base::Grid& grid, base::DataVector& coef)
 {
-	return new finance::OperationHestonZLinear(grid.getStorage(), coef);
+	if(strcmp(grid.getType(), "linear") == 0)
+	{
+		return new finance::OperationHestonZLinear(grid.getStorage(), coef);
+	}
+	else if(strcmp(grid.getType(), "linearBoundary") == 0
+			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
+	{
+		return new finance::OperationHestonZLinearBoundary(grid.getStorage(), coef);
+	}
+	else
+		throw base::factory_exception("OperationHestonZ is not implemented for this grid type.");
 }
 
 }
