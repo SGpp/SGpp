@@ -93,6 +93,18 @@ OBJS =	DataVector.o\
 	OperationHestonWLinear.o\
 	OperationHestonZLinear.o\
 	OperationHestonYLinear.o\
+	OperationHestonBLinearBoundary.o\
+	OperationHestonCLinearBoundary.o\
+	OperationHestonDLinearBoundary.o\
+	OperationHestonELinearBoundary.o\
+	OperationHestonFLinearBoundary.o\
+	OperationHestonGLinearBoundary.o\
+	OperationHestonHLinearBoundary.o\
+	OperationHestonKLinearBoundary.o\
+	OperationHestonWLinearBoundary.o\
+	OperationHestonXLinearBoundary.o\
+	OperationHestonYLinearBoundary.o\
+	OperationHestonZLinearBoundary.o\
 	OperationLaplaceLinearBoundary.o\
 	ScreenOutput.o\
 	ModWaveletGrid.o\
@@ -870,6 +882,42 @@ OperationDeltaLogLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/opera
 	
 OperationGammaLogLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationGammaLogLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.cpp
+
+OperationHestonBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonBLinearBoundary.cpp
+
+OperationHestonCLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonCLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonCLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonCLinearBoundary.cpp
+
+OperationHestonDLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonDLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonDLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonDLinearBoundary.cpp
+
+OperationHestonELinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonELinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonELinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonELinearBoundary.cpp
+
+OperationHestonFLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonFLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonFLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonFLinearBoundary.cpp
+
+OperationHestonGLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonGLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonGLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonGLinearBoundary.cpp
+
+OperationHestonHLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonHLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonHLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonHLinearBoundary.cpp
+
+OperationHestonKLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonKLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonKLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonKLinearBoundary.cpp
+
+OperationHestonWLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonWLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonWLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonWLinearBoundary.cpp
+
+OperationHestonXLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonXLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonXLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonXLinearBoundary.cpp
+
+OperationHestonYLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonYLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.cpp
+
+OperationHestonZLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonZLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp	
 	
 OperationLBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
