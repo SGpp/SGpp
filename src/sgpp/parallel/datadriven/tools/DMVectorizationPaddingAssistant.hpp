@@ -35,7 +35,7 @@ public:
      *
      * @return the blocking/vector length
     */
-    static size_t getVecWidth(VectorizationType& vecType);
+	static size_t getVecWidth(VectorizationType& vecType);
 
     /**
      * determines the blocking vector-length for a given
