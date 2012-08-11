@@ -11,7 +11,7 @@
 
 namespace sg
 {
-namespace base
+namespace parallel
 {
 
 TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles, double damping, double maxPercent)

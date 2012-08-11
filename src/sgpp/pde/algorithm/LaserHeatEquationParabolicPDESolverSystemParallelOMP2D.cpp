@@ -7,8 +7,8 @@
 
 #include "pde/algorithm/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.hpp"
 #include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/tools/StdNormalDistribution.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 
@@ -104,7 +104,7 @@ void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep()
 
 	if (this->BoundGrid->getStorage()->getNumInnerPoints() > 100)
 	{
-		size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+		size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 		base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsen_threshold_);
 		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 		delete myCoarsenFunctor;

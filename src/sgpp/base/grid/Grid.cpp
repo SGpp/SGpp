@@ -25,7 +25,7 @@
 #include "base/grid/type/TruncatedTrapezoidGrid.hpp"
 #include "base/grid/type/PrewaveletGrid.hpp"
 
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
 #include "base/operation/BaseOpFactory.hpp"
 
@@ -163,6 +163,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::pair<std::string, Grid::Factory>("linear", LinearGrid::unserialize));
 		tMap->insert(std::pair<std::string, Grid::Factory>("linearStretched", LinearStretchedGrid::unserialize));
 		tMap->insert(std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("linearstencil", LinearGridStencil::unserialize));
+		tMap->insert(std::pair<std::string, Grid::Factory>("modlinearstencil", ModLinearGridStencil::unserialize));
 		tMap->insert(std::pair<std::string, Grid::Factory>("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
 		tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
 		tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
@@ -176,6 +178,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap()
 		tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
 		tMap->insert(std::make_pair("linearStretched", LinearStretchedGrid::unserialize));
 		tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
+		tMap->insert(std::make_pair("linearstencil", LinearGridStencil::unserialize));
+		tMap->insert(std::make_pair("modlinearstencil", ModLinearGridStencil::unserialize));
 		tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
 		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));

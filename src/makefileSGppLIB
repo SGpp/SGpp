@@ -26,6 +26,10 @@ OBJS =	DataVector.o\
 	SquareRootGrid.o\
 	TruncatedTrapezoidGrid.o\
 	PolyGrid.o\
+	AbstractRefinement.o\
+    HashRefinement.o\
+    HashRefinementBoundaries.o\
+    HashRefinementBoundariesMaxLevel.o\
 	StandardGridGenerator.o\
 	BoundaryGridGenerator.o\
 	TrapezoidBoundaryGridGenerator.o\
@@ -300,7 +304,10 @@ OBJS =	DataVector.o\
 	OperationSecondMomentLinear.o\
 	OperationFirstMomentLinear.o\
 	PartitioningTool.o\
-
+	OperationDensityMarginalizeLinear.o\
+	OperationDensityConditionalLinear.o\
+	DMVectorizationPaddingAssistant.o
+	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	OperationMultipleEvalIterativeSPArBBLinear.o\
@@ -326,6 +333,18 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 endif
 
 ifeq ($(EXT), IOCL)
+OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
+ 	OperationMultipleEvalIterativeSPOCLLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
+	OCLKernels.o\
+	OperationMultipleEvalIterativeOCLModLinear.o\
+	OperationMultipleEvalIterativeSPOCLModLinear.o\
+	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+endif
+
+ifeq ($(EXT), IOCLGPU)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
  	OperationMultipleEvalIterativeSPOCLLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
@@ -377,21 +396,44 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o
 endif
 
+WINOBJS=$(OBJS:.o=.obj)
+
+ifeq ($(CC),g++)
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
-ifeq ($(CC),icpc)
-	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
-ifeq ($(CC),mpiicpc)
-	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
-ifeq ($(CC),g++)
 	ar rc $(BINDIR)$(LIBNAME).a $(OBJS)
-endif
 	ranlib $(BINDIR)$(LIBNAME).a
-	$(CC) -shared -o $(BINDIR)$(LIBNAME).so $(OBJS)
+	$(CC) -shared -fopenmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),icpc)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),mpiicpc)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
+ifeq ($(CC),icl)
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).lib
+	xilib /OUT:$(BINDIR)$(LIBNAME).lib $(WINOBJS)
+endif
 
 DataVector.o : $(SRCDIR)base/datatypes/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)base/datatypes/DataVector.cpp
@@ -458,6 +500,18 @@ TruncatedTrapezoidGrid.o : $(SRCDIR)base/grid/type/TruncatedTrapezoidGrid.cpp
 	
 PolyGrid.o : $(SRCDIR)base/grid/type/PolyGrid.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PolyGrid.o $(SRCDIR)base/grid/type/PolyGrid.cpp
+    
+AbstractRefinement.o : $(SRCDIR)base/grid/generation/hashmap/AbstractRefinement.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)AbstractRefinement.o $(SRCDIR)base/grid/generation/hashmap/AbstractRefinement.cpp
+    
+HashRefinement.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinement.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinement.o $(SRCDIR)base/grid/generation/hashmap/HashRefinement.cpp
+    
+HashRefinementBoundaries.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundaries.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinementBoundaries.o $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundaries.cpp
+    
+HashRefinementBoundariesMaxLevel.o : $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HashRefinementBoundariesMaxLevel.o $(SRCDIR)base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
 	
 StandardGridGenerator.o : $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StandardGridGenerator.o $(SRCDIR)base/grid/generation/StandardGridGenerator.cpp
@@ -471,11 +525,11 @@ TruncatedTrapezoidGridGenerator.o : $(SRCDIR)base/grid/generation/TruncatedTrape
 BoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundaryGridGenerator.o $(SRCDIR)base/grid/generation/BoundaryGridGenerator.cpp
 	
-SurplusRefinementFunctor.o : $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)base/grid/generation/SurplusRefinementFunctor.cpp
+SurplusRefinementFunctor.o : $(SRCDIR)base/grid/generation/functors/SurplusRefinementFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusRefinementFunctor.o $(SRCDIR)base/grid/generation/functors/SurplusRefinementFunctor.cpp
 	
-SurplusCoarseningFunctor.o : $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)base/grid/generation/SurplusCoarseningFunctor.cpp
+SurplusCoarseningFunctor.o : $(SRCDIR)base/grid/generation/functors/SurplusCoarseningFunctor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SurplusCoarseningFunctor.o $(SRCDIR)base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 
 TrapezoidBoundaryGridGenerator.o : $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TrapezoidBoundaryGridGenerator.o $(SRCDIR)base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
@@ -1266,7 +1320,15 @@ OperationSecondMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/
 OperationFirstMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationFirstMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 	
+OperationDensityConditionalLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityConditionalLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
 	
+OperationDensityMarginalizeLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityMarginalizeLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
+
+DMVectorizationPaddingAssistant.o : $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMVectorizationPaddingAssistant.o $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
+
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeArBBLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp

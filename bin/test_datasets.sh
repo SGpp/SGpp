@@ -1,8 +1,8 @@
 #!/bin/sh
 # run specific variables, please adjust
-export OMP_NUM_THREADS=24
+export OMP_NUM_THREADS=8
 # prefix for result files
-RESPRE=WSM-EP
+RESPRE=i7
 VECTYPE="X86SIMD"
 PRECISION="SP DP"
 

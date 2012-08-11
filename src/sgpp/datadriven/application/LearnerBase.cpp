@@ -8,7 +8,7 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "base/grid/type/ModLinearGrid.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 #include "base/exception/application_exception.hpp"

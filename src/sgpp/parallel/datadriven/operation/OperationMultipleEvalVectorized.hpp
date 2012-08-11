@@ -86,6 +86,16 @@ public:
 	}
 
 	/**
+	 * Determines the size of stored dataset, including event. padding.
+	 *
+	 * @return returns the size of the stored dataset
+	 */
+	size_t getDatasetSize()
+	{
+		return this->dataset_->getNrows();
+	}
+
+	/**
 	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
 	 *
 	 * IMPORTANT REMARK:

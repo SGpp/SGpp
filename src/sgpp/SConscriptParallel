@@ -16,6 +16,7 @@ parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 parallel/datadriven/application/LearnerVectorizedIdentity.cpp
 parallel/datadriven/application/LearnerVectorizedIdentitySP.cpp
 parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.cpp
+parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
 
 parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
 parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp

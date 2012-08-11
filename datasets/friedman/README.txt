@@ -7,6 +7,7 @@ friedman.py generates Friedman1-3 datasets, e.g.
 
 # create files
 # note: to generate comparable files, use seed 123456 for training, 234567 for testing, and 345678 for validation
+# note: csv-files are created if the output file name is specified and contains ".csv", otherwise the output format is arff
 
 python friedman.py -f 1 -N 10000 -o friedman1_10000_train.arff.gz [--seed 123456]
 python friedman.py -f 1 -N 10000 -o friedman1_10000_test.arff.gz  [--seed 234567]

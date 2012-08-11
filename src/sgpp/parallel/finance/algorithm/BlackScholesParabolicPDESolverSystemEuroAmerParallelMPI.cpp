@@ -9,8 +9,8 @@
 
 #include "parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
 #include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/SurplusRefinementFunctor.hpp"
+#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "pde/algorithm/StdUpDown.hpp"
 #include "pde/algorithm/UpDownOneOpDim.hpp"
 #include "pde/algorithm/UpDownTwoOpDims.hpp"
@@ -685,7 +685,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(boo
 
 			if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine")
 			{
-				size_t numCoarsen = myGenerator->getNumberOfRemoveablePoints();
+				size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
 				base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
 				myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
 				delete myCoarsenFunctor;

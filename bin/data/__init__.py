@@ -21,6 +21,7 @@
 #############################################################################
 
 from ARFFAdapter import ARFFAdapter
+from CSVAdapter import CSVAdapter
 from DataAdapter import DataAdapter
 from DataContainer import DataContainer
 from DataEntry import DataEntry
