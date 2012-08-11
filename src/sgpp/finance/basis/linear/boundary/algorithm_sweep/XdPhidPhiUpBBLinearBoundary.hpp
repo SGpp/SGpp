@@ -3,15 +3,15 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
+// @author Sam Maurus (MA thesis)
 
-#ifndef XPHIPHIUPBBLINEARBOUNDARY_HPP
-#define XPHIPHIUPBBLINEARBOUNDARY_HPP
+#ifndef XDPHIDPHIUPBBLINEARBOUNDARY_HPP
+#define XDPHIDPHIUPBBLINEARBOUNDARY_HPP
 
 #include "base/grid/GridStorage.hpp"
 #include "base/datatypes/DataVector.hpp"
 
-#include "finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.hpp"
+#include "finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.hpp"
 
 namespace sg
 {
@@ -22,10 +22,10 @@ namespace finance
 
 /**
  * Implementation of sweep operator (): 1D Up for
- * Bilinearform \f$\int_{x} x \phi(x) \phi(x) dx\f$
+ * Bilinearform \f$\int_{x} x \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
  * on linear boundary grids
  */
-class XPhiPhiUpBBLinearBoundary : public XPhiPhiUpBBLinear
+class XdPhidPhiUpBBLinearBoundary : public XdPhidPhiUpBBLinear
 {
 public:
 	/**
@@ -33,12 +33,12 @@ public:
 	 *
 	 * @param storage the grid's sg::base::GridStorage object
 	 */
-	XPhiPhiUpBBLinearBoundary(sg::base::GridStorage* storage);
+	XdPhidPhiUpBBLinearBoundary(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~XPhiPhiUpBBLinearBoundary();
+	virtual ~XdPhidPhiUpBBLinearBoundary();
 
 	/**
 	 * This operations performs the calculation of up in the direction of dimension <i>dim</i>
@@ -61,4 +61,4 @@ public:
 } // namespace sg
 }
 
-#endif /* XPHIPHIUPBBLINEARBOUNDARY_HPP */
+#endif /* XDPHIDPHIUPBBLINEARBOUNDARY_HPP */
