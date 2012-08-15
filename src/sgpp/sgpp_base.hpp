@@ -62,6 +62,7 @@
 #include "base/tools/EvalCuboidGenerator.hpp"
 #include "base/tools/EvalCuboidGeneratorForStretching.hpp"
 #include "base/tools/PrecisionConverter.hpp"
+#include "base/tools/StdNormalDistribution.hpp"
 
 #include "base/operation/BaseOpFactory.hpp"
 
