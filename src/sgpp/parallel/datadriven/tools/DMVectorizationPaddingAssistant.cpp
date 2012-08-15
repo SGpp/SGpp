@@ -15,38 +15,76 @@ namespace sg
 namespace parallel
 {
 
-size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType)
+size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType& vecType)
 {
-    size_t vecWidth = 0;
-
 	if (vecType == X86SIMD)
     {
-        vecWidth = 24;
+        return 24;
     }
     else if (vecType == OpenCL)
     {
-        vecWidth = 128;
+        return 128;
     }
     else if (vecType == Hybrid_X86SIMD_OpenCL)
     {
-        vecWidth = 128;
+        return 128;
     }
     else if (vecType == ArBB)
     {
-        vecWidth = 16;
+        return 16;
     }
     else if (vecType == MIC)
     {
-        vecWidth = 96;
+        return 96;
     }
     else if (vecType == Hybrid_X86SIMD_MIC)
     {
-        vecWidth = 96;
+        return 96;
     }
     else
     {
-        throw new sg::base::operation_exception("DMVectorizationPaddingAssistant::padDataset : un-supported vector extension!");
+        throw new sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
     }
+
+	return 0;
+}
+
+size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType& vecType)
+{
+	if (vecType == X86SIMD)
+    {
+        return 48;
+    }
+    else if (vecType == OpenCL)
+    {
+        return 128;
+    }
+    else if (vecType == Hybrid_X86SIMD_OpenCL)
+    {
+        return 128;
+    }
+    else if (vecType == ArBB)
+    {
+        return 16;
+    }
+    else if (vecType == MIC)
+    {
+        return 192;
+    }
+    else if (vecType == Hybrid_X86SIMD_MIC)
+    {
+        return 192;
+    }
+    else
+    {
+        throw new sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");
+    }
+	return 0;
+}
+
+size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType)
+{
+    size_t vecWidth = getVecWidth(vecType);
 
 	// Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;
@@ -69,36 +107,7 @@ size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset
 
 size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType)
 {
-    size_t vecWidth = 0;
-
-	if (vecType == X86SIMD)
-    {
-        vecWidth = 48;
-    }
-    else if (vecType == OpenCL)
-    {
-        vecWidth = 128;
-    }
-    else if (vecType == Hybrid_X86SIMD_OpenCL)
-    {
-        vecWidth = 128;
-    }
-    else if (vecType == ArBB)
-    {
-        vecWidth = 16;
-    }
-    else if (vecType == MIC)
-    {
-        vecWidth = 192;
-    }
-    else if (vecType == Hybrid_X86SIMD_MIC)
-    {
-        vecWidth = 192;
-    }
-    else
-    {
-        throw new sg::base::operation_exception("DMVectorizationPaddingAssistant::padDataset : un-supported vector extension!");
-    }
+	size_t vecWidth = getVecWidthSP(vecType);
 
 	// Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;
