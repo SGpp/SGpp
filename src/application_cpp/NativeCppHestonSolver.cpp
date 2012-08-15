@@ -306,7 +306,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	double stepsize = dt;
 	size_t CGiterations = CGIt;
 	double CGepsilon = CGeps;
-	double maxStock = 0.0;
+//	double maxStock = 0.0;
 
 	sg::base::DataVector theta(numberOfAssets);
 	sg::base::DataVector xi(numberOfAssets);
@@ -355,9 +355,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 	std::string adaptSolvingMode = "refine";
 	std::string refinementMode = "classic";
-	size_t maxRefineLevel = 10;
-	double coarsenThreshold = 0.0;
-	double dRefineThreshold = 0.00001;// See Alex's second thesis
+//	size_t maxRefineLevel = 10;
+//	double coarsenThreshold = 0.0;
+//	double dRefineThreshold = 0.00001;// See Alex's second thesis
 	//	double dRefineThreshold = refinementThresh;
 
 	// Set coarsening dat
@@ -370,9 +370,9 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 	std::cout << "Initial Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
 	std::cout << "Initial Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-	size_t nIterAdaptSteps = 5;
-	bool useNormalDist = true;
-	int numRefinePoints = -1;
+//	size_t nIterAdaptSteps = 5;
+//	bool useNormalDist = true;
+//	int numRefinePoints = -1;
 	std::vector<double> norm_mu;
 	std::vector<double> norm_sigma;
 	norm_mu.push_back(0.5); norm_mu.push_back(5);
@@ -380,29 +380,29 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
 
 	// refine the grid to approximate the singularity in the start solution better
 	// uncomment if required
-	//	if (refinementMode == "classic")
-	//	{
-	//		for (size_t i = 0 ; i < nIterAdaptSteps; i++)
+	//		if (refinementMode == "classic")
 	//		{
-	//			std::cout << "Refining Grid..." << std::endl;
-	//			if (useNormalDist == true)
+	//			for (size_t i = 0 ; i < nIterAdaptSteps; i++)
 	//			{
-	//				myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
+	//				std::cout << "Refining Grid..." << std::endl;
+	//				if (useNormalDist == true)
+	//				{
+	//					myHestonSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold, norm_mu, norm_sigma);
+	//				}
+	//				else
+	//				{
+	//					myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
+	//				}
+	//				myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
+	//				std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
+	//				std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
 	//			}
-	//			else
-	//			{
-	//				myHestonSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
-	//			}
-	//			myHestonSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-	//			std::cout << "Refined Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;
-	//			std::cout << "Refined Grid size (inner): " << myHestonSolver->getNumberInnerGridPoints() << std::endl;
 	//		}
-	//	}
-	//	else
-	//	{
-	//		std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
-	//		std::cout << "Skipping initial grid refinement!" << std::endl;
-	//	}
+	//		else
+	//		{
+	//			std::cout << "An unsupported refinement mode has be chosen!" << std::endl;
+	//			std::cout << "Skipping initial grid refinement!" << std::endl;
+	//		}
 
 	numGridPoints = myHestonSolver->getNumberGridPoints();
 
