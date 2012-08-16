@@ -67,9 +67,9 @@ protected:
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
 	/// Autotuning object for mult routine
-	sg::base::TwoPartitionAutoTuning* _tuningMult;
+	sg::parallel::TwoPartitionAutoTuning* _tuningMult;
 	/// Autotuning object for mult trans routine
-	sg::base::TwoPartitionAutoTuning* _tuningMultTrans;
+	sg::parallel::TwoPartitionAutoTuning* _tuningMultTrans;
 };
 
 }

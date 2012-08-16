@@ -353,7 +353,7 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	ArBBKernels10D.o
 endif
 
-ifeq ($(EXT), OCL)
+ifeq ($(EXT), NVOCL)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeSPOCLLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
@@ -365,7 +365,7 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
 endif
 
-ifeq ($(EXT), IOCL)
+ifeq ($(EXT), INTELOCL)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
  	OperationMultipleEvalIterativeSPOCLLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
@@ -377,7 +377,7 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
 endif
 
-ifeq ($(EXT), IOCLGPU)
+ifeq ($(EXT), INTELOCLGPU)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
  	OperationMultipleEvalIterativeSPOCLLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
