@@ -42,8 +42,11 @@ private:
 	size_t numTrainingInstances_;
 	/// Number of patched and used training instances
 	size_t numPatchedTrainingInstances_;
-	/// OperationB for calculating the data matrix
-	sg::parallel::OperationMultipleEvalVectorized* B_;
+
+	sg::base::DataMatrix* level_;
+	/// Member to store the sparse grid's indices for better vectorization
+	sg::base::DataMatrix* index_;
+
 
 public:
 	/**
@@ -68,16 +71,28 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 private:
-    /// how to distribute storage array
+	/// how to distribute storage array across processes
 	int * _mpi_grid_sizes;
 	int * _mpi_grid_offsets;
 
 	/// reference to grid. needed to get new grid size after it changes
 	sg::base::Grid& m_grid;
 
-	/// how to distribute dataset
+	/// how to distribute dataset across processes
 	int * _mpi_data_sizes;
 	int * _mpi_data_offsets;
+
+	/// which chunks belong to which process
+	int * _mpi_data_sizes_global;
+	int * _mpi_data_offsets_global;
+
+	/// which chunks belong to which process
+	int * _mpi_grid_sizes_global;
+	int * _mpi_grid_offsets_global;
+
+	/// into how many chunks should data and grid be partitioned
+	size_t _chunkCountData;
+	size_t _chunkCountGrid;
 
     /**
      * Wrapper function that handles communication after calculation and time measurement
@@ -99,7 +114,7 @@ private:
      * @param offsets output array to store resulting distribution offsets (array size must match the number of MPI processes)
      *
      */
-	void calcDistribution(int totalSize, int* sizes, int* offsets, size_t blocksize);
+	void calcDistribution(int totalSize, int numChunks, int* sizes, int* offsets, size_t blocksize);
 };
 
 }

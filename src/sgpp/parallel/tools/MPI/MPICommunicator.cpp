@@ -159,6 +159,18 @@ void MPICommunicator::dataVectorAllToAll(base::DataVectorSP &alpha, int *distrib
 	delete[] sendOffsets;
 }
 
+void MPICommunicator::IsendToAll(double *ptr, size_t size, int tag)
+{
+	MPI_Request* req = new MPI_Request();
+	for(int i = 0; i<getNumRanks(); i++){
+		if (i == getMyRank()){
+			continue;
+		}
+
+		MPI_Isend(ptr, size, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, req);
+	}
+}
+
 int MPICommunicator::getMyRank()
 {
 	return this->myid_;

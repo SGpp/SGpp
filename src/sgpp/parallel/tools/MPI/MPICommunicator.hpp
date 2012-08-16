@@ -185,6 +185,8 @@ public:
 	void dataVectorAllToAll(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
 	void dataVectorAllToAll(sg::base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes);
 
+	void IsendToAll(double* ptr, size_t size, int tag);
+
 	/**
 	 * Implements a Barrier for all tasks
 	 */

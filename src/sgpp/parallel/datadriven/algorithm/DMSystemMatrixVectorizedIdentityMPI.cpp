@@ -54,9 +54,6 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
     debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_grid_offsets[mpi_rank] << " -- " << _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank] - 1 << "size: " <<  _mpi_grid_sizes[mpi_rank]);
     debugMPI(sg::parallel::myGlobalMPIComm, "data:" << _mpi_data_offsets[mpi_rank]  << " -- " <<_mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]);
 
-    // mult: distribute calculations over storage
-    // multTranspose: distribute calculations over dataset
-
     //std::cout << "gridtype: " << SparseGrid.getType() << std::endl;
 
 	this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(m_grid, this->vecMode_, this->dataset_,

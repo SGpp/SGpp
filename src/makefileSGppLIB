@@ -306,8 +306,16 @@ OBJS =	DataVector.o\
 	PartitioningTool.o\
 	OperationDensityMarginalizeLinear.o\
 	OperationDensityConditionalLinear.o\
-	DMVectorizationPaddingAssistant.o
-	
+	DMVectorizationPaddingAssistant.o\
+	X86SimdLinearMult.o\
+	X86SimdLinearMultTranspose.o\
+	SPX86SimdLinearMult.o\
+	SPX86SimdLinearMultTranspose.o\
+	#X86SimdModLinearMult.o\
+	#X86SimdModLinearMultTranspose.o\
+	#SPX86SimdModLinearMult.o\
+	#SPX86SimdModLinearMultTranspose.o\
+
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	OperationMultipleEvalIterativeSPArBBLinear.o\
@@ -591,6 +599,20 @@ OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)parallel/datadriven/bas
 
 OperationMultipleEvalIterativeSPX86SimdLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
+
+X86SimdLinearMult.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)X86SimdLinearMult.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.cpp
+
+X86SimdLinearMultTranspose.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)X86SimdLinearMultTranspose.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.cpp
+
+SPX86SimdLinearMult.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SPX86SimdLinearMult.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.cpp
+
+SPX86SimdLinearMultTranspose.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SPX86SimdLinearMultTranspose.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.cpp
+
+
 
 OperationTestLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
@@ -1105,8 +1127,8 @@ DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DM
 DMSystemMatrixSPVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentityMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
 
-DMSystemMatrixSPVectorizedIdentityAsyncMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAsyncMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentityAsyncMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAsyncMPI.cpp
+DMSystemMatrixVectorizedIdentityAsyncMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityAsyncMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
 	
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp
