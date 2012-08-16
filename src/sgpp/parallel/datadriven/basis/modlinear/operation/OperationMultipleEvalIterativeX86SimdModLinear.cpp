@@ -43,7 +43,6 @@ OperationMultipleEvalIterativeX86SimdModLinear::OperationMultipleEvalIterativeX8
 	m_gridTo = gridTo;
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
-	adaptDatasetBoundaries();
 
 	this->storage = storage;
 

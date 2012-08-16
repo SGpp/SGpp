@@ -12,6 +12,7 @@
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
+#include "base/exception/operation_exception.hpp"
 
 namespace sg
 {

@@ -9,6 +9,7 @@
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
 #include "base/exception/operation_exception.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/ChunkSizes.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -40,7 +41,6 @@ OperationMultipleEvalIterativeSPX86SimdModLinear::OperationMultipleEvalIterative
 	m_gridTo = gridTo;
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
-	adaptDatasetBoundaries();
 
 	this->storage = storage;
 

@@ -12,9 +12,6 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/operation/OperationMatrix.hpp"
 
-#define CHUNKDATAPOINTS_X86 24 // must be divide-able by 24
-#define CHUNKGRIDPOINTS_X86 12
-
 namespace sg
 {
 namespace parallel
@@ -32,22 +29,6 @@ namespace parallel
 class OperationMultipleEvalVectorized
 {
 protected:
-	void adaptDatasetBoundaries();
-	/**
-	 * @brief calcOpenMPLoopDistribution
-	 *
-	 *@todo proper documentation
-	 * call this from within a parallel section
-	 *
-	 * @param processStart
-	 * @param processEnd
-	 * @param chunkSize
-	 * @param start
-	 * @param end
-	 */
-	void calcOpenMPLoopDistribution(int processStart, int processEnd, int chunkSize, size_t *start, size_t *end);
-
-
 	/// Pointer to the dataset that should be evaluated on the grid
 	sg::base::DataMatrix* dataset_;
 	/// Member to store the sparse grid's levels for better vectorization
