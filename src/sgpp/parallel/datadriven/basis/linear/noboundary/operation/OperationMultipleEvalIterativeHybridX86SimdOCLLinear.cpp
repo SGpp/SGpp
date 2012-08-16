@@ -38,8 +38,8 @@ OperationMultipleEvalIterativeHybridX86SimdOCLLinear::OperationMultipleEvalItera
 	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 
-	_tuningMult = new sg::base::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 3);
-	_tuningMultTrans = new sg::base::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.85, 3);
+	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 3);
+	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.85, 3);
 }
 
 OperationMultipleEvalIterativeHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeHybridX86SimdOCLLinear()
