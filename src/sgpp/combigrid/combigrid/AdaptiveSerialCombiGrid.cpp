@@ -10,7 +10,7 @@
 std::vector<int> combigrid::AdaptiveSerialCombiGrid::addToCombiScheme(
 		std::vector<int> level) {
 
-	COMBIGRID_ERROR_TEST(level.size()==abs(combikernel_->getDim()),
+	COMBIGRID_ERROR_TEST((int)level.size()==abs(combikernel_->getDim()),
 			"new level vector has the wrong size!")
 	CombigridLevelVector current(combischeme_->getLevels(),
 			combischeme_->getCoef());
