@@ -8,6 +8,7 @@
 #include "parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 
@@ -43,6 +44,7 @@ sg::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(sg
 #ifndef USE_MPI
     return new sg::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
 #else
+	return new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
     return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
 #endif
 }

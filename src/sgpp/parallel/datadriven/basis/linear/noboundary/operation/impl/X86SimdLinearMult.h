@@ -25,7 +25,7 @@ public:
 	const size_t chunkGridPoints;
 	const size_t chunkDataPoints;
 
-private:
+public:
 	sg::base::DataMatrix *_level;
 	sg::base::DataMatrix *_index;
 	sg::base::DataMatrix *_dataset;

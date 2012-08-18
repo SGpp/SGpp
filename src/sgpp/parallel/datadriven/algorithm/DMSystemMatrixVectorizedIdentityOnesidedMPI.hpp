@@ -117,8 +117,6 @@ private:
      *
      */
 	void calcDistribution(int totalSize, int numChunks, int* sizes, int* offsets, size_t blocksize);
-
-	int getWorkerCount();
 };
 
 }

@@ -402,7 +402,9 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	DMSystemMatrixVectorizedIdentityMPI.o\
 	DMSystemMatrixVectorizedIdentityAsyncMPI.o\
-	DMSystemMatrixSPVectorizedIdentityMPI.o
+	DMSystemMatrixSPVectorizedIdentityMPI.o\
+	#DMSystemMatrixVectorizedIdentityOnesidedMPI.o\
+
 endif
 
 WINOBJS=$(OBJS:.o=.obj)
@@ -1129,7 +1131,10 @@ DMSystemMatrixSPVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm
 
 DMSystemMatrixVectorizedIdentityAsyncMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityAsyncMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
-	
+
+DMSystemMatrixVectorizedIdentityOnesidedMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityOnesidedMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.cpp
+
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	

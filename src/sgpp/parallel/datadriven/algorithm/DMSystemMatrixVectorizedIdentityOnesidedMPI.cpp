@@ -16,7 +16,6 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
-#include <omp.h>
 
 namespace sg
 {
@@ -47,16 +46,9 @@ DMSystemMatrixVectorizedIdentityAsyncMPI::DMSystemMatrixVectorizedIdentityAsyncM
 	}
 
 	int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-	int thread_count = 1;
-#ifdef _OPENMP
-	#pragma omp parallel
-	{
-		thread_count = omp_get_num_threads();
-	}
-#endif
 
-	size_t approximateChunkSizeData = 100; // approximately how many blocks should be computed before sending
-	size_t blockCountData = this->numPatchedTrainingInstances_/sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_); // this process has (in total) blockCountData blocks of Data to process
+	size_t approximateChunkSizeData = 10; // approximately how many blocks should be computed before sending
+	size_t blockCountData = this->numPatchedTrainingInstances_/sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_); // this process has (in total) blockCountData blocks of Data to process
 	_chunkCountData = blockCountData/approximateChunkSizeData;
 
 	// arrays for distribution settings
@@ -65,12 +57,11 @@ DMSystemMatrixVectorizedIdentityAsyncMPI::DMSystemMatrixVectorizedIdentityAsyncM
 	_mpi_data_sizes_global = new int[mpi_size];
 	_mpi_data_offsets_global = new int[mpi_size];
 
-	calcDistribution(this->numPatchedTrainingInstances_, _chunkCountData, _mpi_data_sizes, _mpi_data_offsets, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+	calcDistribution(this->numPatchedTrainingInstances_, _chunkCountData, _mpi_data_sizes, _mpi_data_offsets, sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
 	calcDistribution(_chunkCountData, mpi_size, _mpi_data_sizes_global, _mpi_data_offsets_global, 1);
 
 
-
-	size_t approximateChunkSizeGrid = 50; // approximately how many blocks should be computed before sending
+	size_t approximateChunkSizeGrid = 100; // approximately how many blocks should be computed before sending
 	_chunkCountGrid = m_grid.getStorage()->size()/approximateChunkSizeGrid;
 
 	// arrays for distribution settings
@@ -80,8 +71,7 @@ DMSystemMatrixVectorizedIdentityAsyncMPI::DMSystemMatrixVectorizedIdentityAsyncM
 	_mpi_grid_offsets_global = new int[mpi_size];
 
 	calcDistribution(m_grid.getStorage()->size(), _chunkCountGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
-	calcDistribution(_chunkCountGrid, mpi_size, _mpi_grid_sizes_global, _mpi_grid_offsets_global, 1);
-
+	calcDistribution(m_grid.getStorage()->size(), mpi_size, _mpi_grid_sizes_global, _mpi_grid_offsets_global, 1);
 
 	this->level_ = new sg::base::DataMatrix(m_grid.getStorage()->size(), m_grid.getStorage()->dim());
 	this->index_ = new sg::base::DataMatrix(m_grid.getStorage()->size(), m_grid.getStorage()->dim());
@@ -114,46 +104,32 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::mult(sg::base::DataVector& alpha,
 {
 	sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 	result.setAll(0.0);
-	double* ptrResult = result.getPointer();
-	double* ptrTemp = temp.getPointer();
 
 	int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 	int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
-
-	MPI_Request dataRecvReqs[_chunkCountData]; //allocating a little more than necessary, otherwise complicated index computations needed
-	int tagsData[_chunkCountData];
-	for (int i = 0; i<_chunkCountData; i++){
-		tagsData[i] = _mpi_data_offsets[i]*2 + 2;
-	}
-	sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrTemp, _mpi_data_sizes_global, _mpi_data_offsets_global, _mpi_data_sizes, _mpi_data_offsets, tagsData, _chunkCountData, dataRecvReqs);
-
-	MPI_Request gridRecvReqs[_chunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
-	int tagsGrid[_chunkCountGrid];
-	for (int i = 0; i<_chunkCountGrid; i++){
-		tagsGrid[i] = _mpi_grid_offsets[i]*2 + 3;
-	}
-	sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrResult, _mpi_grid_sizes_global, _mpi_grid_offsets_global, _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid, _chunkCountGrid, gridRecvReqs);
-
 	sg::parallel::X86SimdLinearMult mult = sg::parallel::X86SimdLinearMult(level_, index_, dataset_, alpha, temp);
-	sg::parallel::X86SimdLinearMultTranspose multTranspose = sg::parallel::X86SimdLinearMultTranspose(level_, index_, dataset_, temp, result);
+	double* ptrTemp = temp.getPointer();
+	MPI_Win tempWin;
+	MPI_Win_create(ptrTemp, sizeof(double) * temp.getSize(), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &tempWin);
 
+	sg::parallel::X86SimdLinearMultTranspose multTranspose = sg::parallel::X86SimdLinearMultTranspose(level_, index_, dataset_, temp, result);
+	double* ptrResult = result.getPointer();
+	MPI_Win resultWin;
+	MPI_Win_create(ptrResult, sizeof(double) * result.getSize(), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &resultWin);
 	this->myTimer_->start();
 
-	int thread_count = 1;
-	int thread_num = 0;
 #ifdef _OPENMP
-	#pragma omp parallel private (thread_num, thread_count)
+	#pragma omp parallel
 	{
-		thread_count = omp_get_num_threads();
-		thread_num = omp_get_thread_num();
 #endif
 
 		size_t myDataChunkStart = _mpi_data_offsets_global[mpi_myrank];
 		size_t myDataChunkEnd = myDataChunkStart + _mpi_data_sizes_global[mpi_myrank];
-		for(size_t thread_chunk = myDataChunkStart + thread_num; thread_chunk<myDataChunkEnd; thread_chunk+=thread_count){
-			size_t start = _mpi_data_offsets[thread_chunk];
-			size_t end =  start + _mpi_data_sizes[thread_chunk];
+		for(size_t chunk = myDataChunkStart; chunk<myDataChunkEnd; chunk++){
+			size_t start;
+			size_t end;
+			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(_mpi_data_offsets[chunk], _mpi_data_offsets[chunk] + _mpi_data_sizes[chunk], &start, &end, CHUNKDATAPOINTS_X86);
 
 			if (start % CHUNKDATAPOINTS_X86 != 0 || end % CHUNKDATAPOINTS_X86 != 0)
 			{
@@ -162,15 +138,14 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::mult(sg::base::DataVector& alpha,
 			}
 
 			mult(start, end);
-			sg::parallel::myGlobalMPIComm->IsendToAll(&ptrTemp[start], _mpi_data_sizes[thread_chunk], start*2 + 2);
-
+			sg::parallel::myGlobalMPIComm->putToAll(temp, start, end-start, tempWin);
 		}
 #ifdef _OPENMP
 	#pragma omp single
 		{
 #endif
 
-	MPI_Waitall(_chunkCountData, dataRecvReqs, MPI_STATUSES_IGNORE);
+	MPI_Waitall(mpi_size, dataRecvReqs, MPI_STATUSES_IGNORE);
 	this->completeTimeMult_ += this->myTimer_->stop();
 
 	// patch result -> set additional entries zero
@@ -188,22 +163,12 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::mult(sg::base::DataVector& alpha,
 		} //implicit OpenMP barrier here
 #endif
 
-		size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
-		size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
-		for(size_t thread_chunk = myGridChunkStart + thread_num; thread_chunk<myGridChunkEnd; thread_chunk+=thread_count){
-			size_t start = _mpi_grid_offsets[thread_chunk];
-			size_t end =  start + _mpi_grid_sizes[thread_chunk];
-
-			multTranspose(start, end);
-
-			sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[start], _mpi_grid_sizes[thread_chunk], start*2 + 3);
-		}
-
+		multTransposeVec(multTranspose);
 
 #ifdef _OPENMP
 	}
 #endif
-	MPI_Waitall(_chunkCountGrid, gridRecvReqs, MPI_STATUSES_IGNORE);
+	MPI_Waitall(mpi_size, gridRecvReqs, MPI_STATUSES_IGNORE);
 	this->completeTimeMultTrans_ += this->myTimer_->stop();
 
 	result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
@@ -212,9 +177,6 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::mult(sg::base::DataVector& alpha,
 void DMSystemMatrixVectorizedIdentityAsyncMPI::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
 {
 	int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-	int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
-
-	double* ptrB = b.getPointer();
 
 	sg::base::DataVector myClasses(classes);
 	// Apply padding
@@ -223,38 +185,21 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::generateb(sg::base::DataVector& c
 		myClasses.resizeZero(this->numPatchedTrainingInstances_);
 	}
 
-	MPI_Request gridRecvReqs[_chunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
-	int tags[_chunkCountGrid];
-	for(int i = 0; i<_chunkCountGrid; i++){
-		tags[i] = _mpi_grid_offsets[i]+1;
-	}
-	sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrB, _mpi_grid_sizes_global, _mpi_grid_offsets_global, _mpi_grid_sizes, _mpi_grid_offsets, tags, _chunkCountGrid, gridRecvReqs);
+	MPI_Request gridRecvReqs[mpi_size]; //allocating one more than necessary, otherwise complicated index computations needed
+	sg::parallel::myGlobalMPIComm->IrecvFromAll(b.getPointer(), _mpi_grid_sizes_global, _mpi_grid_offsets_global, _mpi_grid_sizes, _mpi_grid_offsets, _chunkCountGrid, gridRecvReqs);
 
 	sg::parallel::X86SimdLinearMultTranspose multTranspose = sg::parallel::X86SimdLinearMultTranspose(level_, index_, dataset_, myClasses, b);
 
 	std::cout << "before openmp" << std::endl;
 
-	int thread_count = 1;
-	int thread_num = 0;
 #ifdef _OPENMP
 	#pragma omp parallel
 	{
-		thread_count = omp_get_num_threads();
-		thread_num = omp_get_thread_num();
 #endif
+		std::cout << "in openmp" << std::endl;
 
-		size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
-		size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
-		for(size_t thread_chunk = myGridChunkStart + thread_num; thread_chunk<myGridChunkEnd; thread_chunk+=thread_count){
-			size_t start = _mpi_grid_offsets[thread_chunk];
-			size_t end =  start + _mpi_grid_sizes[thread_chunk];
-
-			multTranspose(start, end);
-
-			std::cout << "alltoall[" << thread_chunk << "]: from " << start << "; size" << _mpi_grid_sizes[thread_chunk] <<   std::endl;
-			sg::parallel::myGlobalMPIComm->IsendToAll(&ptrB[start], _mpi_grid_sizes[thread_chunk], start+1);
-			//std::cout << "after isendtoall " << thread_chunk << " --- " << _mpi_grid_offsets[thread_chunk] <<  std::endl;
-		}
+		multTransposeVec(multTranspose);
+		std::cout << "in openmp 2" << std::endl;
 
 #ifdef _OPENMP
 	}
@@ -262,7 +207,7 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::generateb(sg::base::DataVector& c
 
 	std::cout << "after openmp" << std::endl;
 
-	MPI_Waitall(_chunkCountGrid, gridRecvReqs, MPI_STATUSES_IGNORE);
+	MPI_Waitall(mpi_size, gridRecvReqs, MPI_STATUSES_IGNORE);
 
 	std::cout << "after waitall" << std::endl;
 }
@@ -299,7 +244,23 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::multVec(sg::parallel::X86SimdLine
 
 void DMSystemMatrixVectorizedIdentityAsyncMPI::multTransposeVec(sg::parallel::X86SimdLinearMultTranspose &multTranspose)
 {
+	int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
+	double* ptrResult = multTranspose._result.getPointer();
+
+	size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
+	size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
+	for(size_t chunk = myGridChunkStart; chunk<myGridChunkEnd; chunk++){
+		size_t start;
+		size_t end;
+		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(_mpi_grid_offsets[chunk], _mpi_grid_offsets[chunk] + _mpi_grid_offsets[chunk], &start, &end, 1);
+
+		multTranspose(start, end);
+		std::cout << "before isendtoall" << std::endl;
+
+		sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[start], end-start);
+		std::cout << "after isendtoall" << _mpi_grid_offsets[chunk] <<  std::endl;
+	}
 }
 
 void DMSystemMatrixVectorizedIdentityAsyncMPI::calcDistribution(int totalSize, int numChunks, int *sizes, int *offsets, size_t blocksize)
@@ -311,20 +272,6 @@ void DMSystemMatrixVectorizedIdentityAsyncMPI::calcDistribution(int totalSize, i
 		sizes[chunkID] = size;
 		offsets[chunkID] = offset;
 	}
-}
-
-int DMSystemMatrixVectorizedIdentityAsyncMPI::getWorkerCount()
-{
-	int thread_count = 1;
-	int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-#ifdef _OPENMP
-	#pragma omp parallel
-	{
-		thread_count = omp_get_num_threads();
-	}
-#endif
-	int worker_count = mpi_size*thread_count;
-	return worker_count;
 }
 
 }
