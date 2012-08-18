@@ -162,12 +162,47 @@ void MPICommunicator::dataVectorAllToAll(base::DataVectorSP &alpha, int *distrib
 void MPICommunicator::IsendToAll(double *ptr, size_t size, int tag)
 {
 	MPI_Request* req = new MPI_Request();
-	for(int i = 0; i<getNumRanks(); i++){
-		if (i == getMyRank()){
+	for(int rank = 0; rank<getNumRanks(); rank++){
+		if (rank == getMyRank()){
 			continue;
 		}
 
-		MPI_Isend(ptr, size, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, req);
+		MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, req);
+	}
+	delete req;
+}
+
+void MPICommunicator::IrecvFromAll(double *ptr, int *global_sizes, int *global_offsets, int *sizes, int *offsets, int *tag, int chunkCount, MPI_Request *dataRecvRequests)
+{
+	int rank;
+	//posting temp reveices
+	rank = 0;
+	for(int i = 0; i<chunkCount; i++){
+		// adjust rank to match chunk i
+		if(i>=global_offsets[rank] + global_sizes[rank]){
+			rank++;
+		}
+		// skip segments of this process, they are already there
+		if(rank == getMyRank()){
+			//i=global_offsets[rank] + global_sizes[rank]-1;
+			dataRecvRequests[i] = MPI_REQUEST_NULL;
+			// continue does the i++ (like after every iteration), so we are
+			// at _mpi_data_offsets_global[rank] + _mpi_data_sizes_global[rank] at
+			// the beginning of the next iteration, which means that we skipped rank mpi_myrank
+			continue;
+		}
+		MPI_Irecv(&ptr[offsets[i]], sizes[i], MPI_DOUBLE, rank, tag[i], MPI_COMM_WORLD, &dataRecvRequests[i]);
+	}
+}
+
+void MPICommunicator::putToAll(sg::base::DataVector& vec, int offset, int count, MPI_Win win)
+{
+	double* ptr = vec.getPointer();
+	for(int i = 0; i<getNumRanks(); i++){
+		if(i==getMyRank()){
+			continue;
+		}
+		MPI_Put(&ptr[offset], count, MPI_DOUBLE, i, offset, count, MPI_DOUBLE, win);
 	}
 }
 

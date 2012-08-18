@@ -186,6 +186,9 @@ public:
 	void dataVectorAllToAll(sg::base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes);
 
 	void IsendToAll(double* ptr, size_t size, int tag);
+	void IrecvFromAll(double* ptr, int* global_sizes, int* global_offsets, int* sizes, int* offsets, int *tag, int chunkCount, MPI_Request *dataRecvRequests);
+
+	void putToAll(sg::base::DataVector &vec, int offset, int count, MPI_Win win);
 
 	/**
 	 * Implements a Barrier for all tasks
