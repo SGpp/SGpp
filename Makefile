@@ -25,8 +25,8 @@ IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 AMDOCLINCLUDE = /opt/AMDAPP/include
 AMDOCLLIB = /opt/AMDAPP/lib/x86_64
 # Intel OpenCL, Windows
-IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\2.0\include\"
-IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\2.0\lib\x64\OpenCL.lib\"
+IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include\"
+IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"
 
 ###################################################################
 # Default Variables, overwirtten by CLI
@@ -110,7 +110,7 @@ CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), INTELOCLGPU)
-CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -DNO_OCL_OPTS -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
