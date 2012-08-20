@@ -37,6 +37,10 @@ using namespace sg::solver;
 using namespace sg::base;
 using namespace std;
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace sg
 {
 namespace finance
@@ -1202,7 +1206,7 @@ double HestonSolver::GaussLobattoIntStep(
 
 	if(dist==acc || mll<=a || b<=mrr)
 	{
-		if (not (m>a && b>m))
+		if (!(m>a && b>m))
 		{
 			throw new application_exception("HestonSolver::Gauss-Lobatto : Integration reached an interval with no more machine numbers!");
 		}
