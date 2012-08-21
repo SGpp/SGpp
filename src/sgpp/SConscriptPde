@@ -14,6 +14,7 @@ pde/algorithm/StdUpDown.cpp
 pde/algorithm/UpDownOneOpDim.cpp
 pde/algorithm/UpDownOneOpDimWithShadow.cpp
 pde/algorithm/UpDownTwoOpDims.cpp
+pde/algorithm/UpDownFourOpDims.cpp
 pde/application/EllipticPDESolver.cpp
 pde/application/HeatEquationSolver.cpp
 pde/application/ParabolicPDESolver.cpp

@@ -16,6 +16,7 @@
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
 #include "finance/application/BlackScholesSolver.hpp"
 #include "finance/application/BlackScholesSolverWithStretching.hpp"
+#include "finance/application/HestonSolver.hpp"
 #include "finance/application/HullWhiteSolver.hpp"
 #include "finance/application/BlackScholesHullWhiteSolver.hpp"
 

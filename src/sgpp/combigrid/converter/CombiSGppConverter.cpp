@@ -54,40 +54,81 @@ void combigrid::CombiSGppConverter::createSGpp( sg::base::GridStorage* storage ,
 	delete hgi;
 }
 
+// --------- the old and wrong FullGridToSGpp method --------------
+/*
+ void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , sg::base::GridStorage* storage , sg::base::DataVector *alpha){
+        int dim = fg->getDimension() , sgppIndex , k;
+        std::vector<int> levelsLI( dim );
+        std::vector<int> indexsLI( dim );
+        sg::base::GridIndex *hgi = new sg::base::GridIndex( dim );
+
+        // use the stored SGpp index if they exist
+        if ( fg->getSGppIndex().size() < 1 )
+        {
+                // each FG value will be added to the sg::base::DataVector, with the specified coefficient
+                fg->getSGppIndex().resize(fg->getNrElements());
+                for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++){
+                        // ... get the index and level
+                        fg->getLI( nrp , levelsLI , indexsLI);
+                        for (k = 0 ; k < dim ; k++ ){
+                                hgi->push( k , levelsLI[k] , indexsLI[k] );
+                        }
+                        // rehash for this index
+                        hgi->rehash();
+                        //todo: we do not test if this is present in the hashmap
+                        sgppIndex = (*storage)[hgi];
+                        (*alpha)[sgppIndex] = (*alpha)[sgppIndex] + coef * fg->getElementVector()[nrp];
+                        fg->getSGppIndex()[nrp] = sgppIndex;
+                        //COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp nrp:" << nrp << " , sgppIndex:" << sgppIndex << " , val:" << fg->getElementVector()[nrp] <<
+                        //              " , (*alpha)[sgppIndex]:" << (*alpha)[sgppIndex]);
+                }
+        }
+        else
+        {
+                // just get the index
+                for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++){
+                        sgppIndex = fg->getSGppIndex()[nrp];
+                        (*alpha)[sgppIndex] = (*alpha)[sgppIndex] + coef * fg->getElementVector()[nrp];
+                }
+        }
+        delete hgi;
+}
+
+ */
 
 void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , sg::base::GridStorage* storage , sg::base::DataVector *alpha){
-	int dim = fg->getDimension() , sgppIndex , k;
-	std::vector<int> levelsLI( dim );
-	std::vector<int> indexsLI( dim );
+	int dim = fg->getDimension();
 	sg::base::GridIndex *hgi = new sg::base::GridIndex( dim );
 
-	// use the stored SGpp index if they exist
-	if ( fg->getSGppIndex().size() < 1 )
-	{
-		// each FG value will be added to the sg::base::DataVector, with the specified coefficient
-		fg->getSGppIndex().resize(fg->getNrElements());
-		for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++){
-			// ... get the index and level
-			fg->getLI( nrp , levelsLI , indexsLI);
-			for (k = 0 ; k < dim ; k++ ){
-				hgi->push( k , levelsLI[k] , indexsLI[k] );
-			}
-			// rehash for this index
-			hgi->rehash();
-			//todo: we do not test if this is present in the hashmap
-			sgppIndex = (*storage)[hgi];
-			(*alpha)[sgppIndex] = (*alpha)[sgppIndex] + coef * fg->getElementVector()[nrp];
-			fg->getSGppIndex()[nrp] = sgppIndex;
-			//COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp nrp:" << nrp << " , sgppIndex:" << sgppIndex << " , val:" << fg->getElementVector()[nrp] <<
-			//		" , (*alpha)[sgppIndex]:" << (*alpha)[sgppIndex]);
+	// ---- evaluate the full grid at each point of the SGpp and add to the SGpp vector ----
+
+	const GridDomain* domain = fg->getDomain();
+	std::vector<double> coords( dim, 0.0), minV(dim,0.0), scaleV(dim,1.0);
+	double evalVal = 0.0;
+	int d;
+
+	if (domain == 0) {
+		for (int nrp = 0 ; nrp < (int)storage->size() ; nrp++){
+			// get the coordinates in the unit square
+			for (d = 0 ; d < dim ; d++)
+				{ coords[d] = (*storage)[(size_t)nrp]->getCoordBB( d , 1.0 , 0.0 ); }
+			// evaluate the FG at this position
+			evalVal = fg->eval(coords);
+			(*alpha)[nrp] = (*alpha)[nrp] + coef * evalVal;
 		}
-	}
-	else
-	{
-		// just get the index
-		for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++){
-			sgppIndex = fg->getSGppIndex()[nrp];
-			(*alpha)[sgppIndex] = (*alpha)[sgppIndex] + coef * fg->getElementVector()[nrp];
+	} else {
+		// for
+		for (int nrp = 0 ; nrp < (int)storage->size() ; nrp++){
+			for (d = 0 ; d < dim ; d++){
+				coords[d] = (*storage)[(size_t)nrp]->getCoordBB( d , 1.0 , 0.0 );
+						//fg->getDomain()->get1DDomain(d).getMaxDomain() - fg->getDomain()->get1DDomain(d).getMinDomain() ,
+						//fg->getDomain()->get1DDomain(d).getMinDomain() );
+				// transform the coordinates
+				domain->get1DDomain(d).transformRealToUnit( coords[d] , coords[d] );
+			}
+			// evaluate the FG at this position
+			evalVal = fg->eval(coords);
+			(*alpha)[nrp] = (*alpha)[nrp] + coef * evalVal;
 		}
 	}
 	delete hgi;
@@ -97,51 +138,54 @@ void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double 
 void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , sg::base::GridStorage* storage ,
 				sg::base::DataVector *alpha , sg::base::DataVector *minAlpha , sg::base::DataVector *maxAlpha ){
 
-	int dim = fg->getDimension() , sgppIndex , k;
-	std::vector<int> levelsLI( dim );
-	std::vector<int> indexsLI( dim );
+	int dim = fg->getDimension();
 	sg::base::GridIndex *hgi = new sg::base::GridIndex( dim );
 
-	// use the stored SGpp index if they exist
-	if ( fg->getSGppIndex().size() < 1 ){
-		// each FG value will be added to the sg::base::DataVector, with the specified coefficient
-		// as a byproduct the min and maximum Vector will be updated
-		fg->getSGppIndex().resize(fg->getNrElements());
-		for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++){
-			// ... get the index and level
-			fg->getLI( nrp , levelsLI , indexsLI);
-			for (k = 0 ; k < dim ; k++ ){
-				hgi->push( k , levelsLI[k] , indexsLI[k] );
-			}
-			// rehash for this index
-			hgi->rehash();
-			//todo: we do not test if this is present in the hashmap
-			sgppIndex = (*storage)[hgi];
-			(*alpha)[sgppIndex] = (*alpha)[sgppIndex] + coef * fg->getElementVector()[nrp];
-			(*minAlpha)[sgppIndex] = (fg->getElementVector()[nrp] < (*minAlpha)[sgppIndex]) ?
-						(fg->getElementVector()[nrp]) : ((*minAlpha)[sgppIndex]);
-			(*maxAlpha)[sgppIndex] = (fg->getElementVector()[nrp] > (*maxAlpha)[sgppIndex]) ?
-						(fg->getElementVector()[nrp]) : ((*maxAlpha)[sgppIndex]);
-			//COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp(minmax) nrp:" << nrp << " , sgppIndex:" << sgppIndex << " , val:" << fg->getElementVector()[nrp]);
-			//COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp (*minAlpha)[sgppIndex]:" << (*minAlpha)[sgppIndex]);
-			//COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp (*maxAlpha)[sgppIndex]:" << (*maxAlpha)[sgppIndex]);
-			fg->getSGppIndex()[nrp] = sgppIndex;
-		}
-	}
-	else
-	{
-		for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++){
-			// get the SGpp index
-			sgppIndex = fg->getSGppIndex()[nrp];
-			// use the index
-			(*alpha)[sgppIndex] = (*alpha)[sgppIndex] + coef * fg->getElementVector()[nrp];
-			(*minAlpha)[sgppIndex] = (fg->getElementVector()[nrp] < (*minAlpha)[sgppIndex]) ?
-						(fg->getElementVector()[nrp]) : ((*minAlpha)[sgppIndex]);
-			(*maxAlpha)[sgppIndex] = (fg->getElementVector()[nrp] > (*maxAlpha)[sgppIndex]) ?
-						(fg->getElementVector()[nrp]) : ((*maxAlpha)[sgppIndex]);
-		}
-	}
+	// ---- evaluate the full grid at each point of the SGpp and add to the SGpp vector ----
 
+	const GridDomain* domain = fg->getDomain();
+	std::vector<double> coords( dim, 0.0), minV(dim,0.0), scaleV(dim,1.0);
+	double evalVal = 0.0;
+	int d;
+
+	if (domain == 0) {
+		for (int nrp = 0 ; nrp < (int)storage->size() ; nrp++){
+			// get the coordinates in the unit square
+			for (d = 0 ; d < dim ; d++)
+				{ coords[d] = (*storage)[(size_t)nrp]->getCoordBB( d , 1.0 , 0.0 ); }
+			// evaluate the FG at this position
+			evalVal = fg->eval(coords);
+			(*alpha)[nrp] = (*alpha)[nrp] + coef * evalVal;
+			(*minAlpha)[nrp] = (evalVal < (*minAlpha)[nrp]) ?
+						(evalVal) : ((*minAlpha)[nrp]);
+			(*maxAlpha)[nrp] = (evalVal > (*maxAlpha)[nrp]) ?
+						(evalVal) : ((*maxAlpha)[nrp]);
+            //COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp1(minmax) nrp:" << nrp << " , val:" << evalVal);
+            //COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp (*minAlpha)[nrp]:" << (*minAlpha)[nrp]);
+            //COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp (*maxAlpha)[nrp]:" << (*maxAlpha)[nrp]);
+		}
+	} else {
+		// for
+		for (int nrp = 0 ; nrp < (int)storage->size() ; nrp++){
+			for (d = 0 ; d < dim ; d++){
+				coords[d] = (*storage)[(size_t)nrp]->getCoordBB( d , 1.0 , 0.0 );
+						//fg->getDomain()->get1DDomain(d).getMaxDomain() - fg->getDomain()->get1DDomain(d).getMinDomain() ,
+						//fg->getDomain()->get1DDomain(d).getMinDomain() );
+				// transform the coordinates
+				domain->get1DDomain(d).transformRealToUnit( coords[d] , coords[d] );
+			}
+			// evaluate the FG at this position
+			evalVal = fg->eval(coords);
+			(*alpha)[nrp] = (*alpha)[nrp] + coef * evalVal;
+			(*minAlpha)[nrp] = (evalVal < (*minAlpha)[nrp]) ?
+						(evalVal) : ((*minAlpha)[nrp]);
+			(*maxAlpha)[nrp] = (evalVal > (*maxAlpha)[nrp]) ?
+						(evalVal) : ((*maxAlpha)[nrp]);
+            //COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp2(minmax) nrp:" << nrp << " , val:" << evalVal);
+            //COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp (*minAlpha)[nrp]:" << (*minAlpha)[nrp]);
+            //COMBIGRID_OUT_LEVEL3(4 , "FullGridToSGpp (*maxAlpha)[nrp]:" << (*maxAlpha)[nrp]);
+		}
+	}
 	delete hgi;
 }
 

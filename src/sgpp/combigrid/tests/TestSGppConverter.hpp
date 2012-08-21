@@ -323,8 +323,8 @@ public:
     	std::vector<double> coords( 3 , 0.0);
     	std::vector<int> levels( 3 , 9);
     	std::vector<int> levels_trunc( 3 , 3);
-    	levels[0] = 9; levels[1] = 7; levels[2] = 9;
-    	levels_trunc[0] = 1; levels_trunc[1] = 3; levels_trunc[2] = 2;
+    	levels[0] = 6; levels[1] = 5; levels[2] = 6;
+    	levels_trunc[0] = 4; levels_trunc[1] = 3; levels_trunc[2] = 3;
     	CombiSchemeBasis* combischeme = new S_CT( 3 , levels , levels_trunc );
     	AbstractCombiGrid* combigrid = new SerialCombiGrid( combischeme , false );
     	sg::base::GridStorage* gridstorageSGpp;
@@ -391,15 +391,15 @@ public:
     	coords[0] = 0.0001; coords[1] = 1.0/3.0; coords[2] = 1.0/3.0;
     	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 1e-3 , "" );
     	coords[0] = 1.0/3.0; coords[1] = 0.0001; coords[2] = 0.0001;
-    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 1e-3 , "" );
+    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 1e-2 , "" );
     	coords[0] = 0.0; coords[1] = 0.0; coords[2] =0.0;
-    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 1e-3 , "" );
+    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 1e-2 , "" );
     	coords[0] = 1.0; coords[1] = 1.0; coords[2] =1.0;
-    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 3e-3 , "" );
+    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 3e-2 , "" );
     	coords[0] = 0.999; coords[1] = 0.95; coords[2] = 0.95;
-    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 3e-3 , "" );
+    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 3e-2 , "" );
     	coords[0] = 0.999; coords[1] = 0.001; coords[2] = 0.999;
-    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 3e-3 , "" );
+    	COMBIGRID_ERROR_TEST_EQUAL( combigrid->eval(coords) , testfunction3D1( coords[0] , coords[1] , coords[2] ) , 3e-2 , "" );
 
     	// delete the allocated variables
     	delete alphas;
