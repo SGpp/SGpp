@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de) Stefanie Schraufstetter (schraufs@in.tum.de)
 
-#ifndef PHIPHIDOWNBBLINEARBOUNDARY_HPP
-#define PHIPHIDOWNBBLINEARBOUNDARY_HPP
+#ifndef XPHIPHIDOWNBBLINEARBOUNDARY_HPP
+#define XPHIPHIDOWNBBLINEARBOUNDARY_HPP
 
 #include "base/grid/GridStorage.hpp"
 #include "base/datatypes/DataVector.hpp"
@@ -63,4 +63,4 @@ public:
 } // namespace sg
 }
 
-#endif /* PHIPHIDOWNBBLINEARBOUNDARY_HPP */
+#endif /* XPHIPHIDOWNBBLINEARBOUNDARY_HPP */

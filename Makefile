@@ -25,8 +25,8 @@ IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 AMDOCLINCLUDE = /opt/AMDAPP/include
 AMDOCLLIB = /opt/AMDAPP/lib/x86_64
 # Intel OpenCL, Windows
-IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\2.0\include\"
-IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\2.0\lib\x64\OpenCL.lib\"
+IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include\"
+IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"
 
 ###################################################################
 # Default Variables, overwirtten by CLI
@@ -103,12 +103,16 @@ ifeq ($(EXT), ArBB)
 CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
 LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
 endif
-ifeq ($(EXT), OCL)
+ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
 endif
-ifeq ($(EXT), IOCL)
+ifeq ($(EXT), INTELOCL)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -DNO_OCL_OPTS -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
@@ -146,12 +150,16 @@ ifeq ($(EXT), ArBB)
 CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
 LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
 endif
-ifeq ($(EXT), OCL)
+ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -openmp
 LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -openmp
 endif
-ifeq ($(EXT), IOCL)
+ifeq ($(EXT), INTELOCL)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -openmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -openmp
+endif
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -openmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -openmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
@@ -179,15 +187,19 @@ ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) /Qopenmp
 LFLAGS:=$(LFLAGS) /Qopenmp
 endif
-ifeq ($(EXT), OCL)
+ifeq ($(EXT), NVOCL)
 CFLAGS:=$(CFLAGS) /I$(OCLINCLUDE) /DUSEOCL /DUSEOCL_NVIDIA /Qopenmp
 LFLAGS:=$(LFLAGS) /L$(OCLLIB) /Qpenmp
 endif
-ifeq ($(EXT), IOCL)
+ifeq ($(EXT), INTELOCL)
 CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDEWIN) /DUSEOCL /DUSEOCL_INTEL /Qopenmp /DUSEOCL_CPU
 LFLAGS:=$(LFLAGS) $(IOCLLIBWIN) /Qopenmp
 endif
-ifeq ($(EXT), IOCLGPU)
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDEWIN) /DUSEOCL /DUSEOCL_INTEL /Qopenmp
+LFLAGS:=$(LFLAGS) $(IOCLLIBWIN) /Qopenmp
+endif
+ifeq ($(EXT), AMDOCLGPU)
 CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDEWIN) /DUSEOCL /DUSEOCL_INTEL /Qopenmp
 LFLAGS:=$(LFLAGS) /Qopenmp $(IOCLLIBWIN)
 endif
@@ -275,6 +287,23 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/BSSolverWithStretching_icc
 	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverWithStretching --directory=./tmp/build_native/BSSolverWithStretching_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=BSSolverWithStretching_ICC" "EXT=$(EXT)"
 endif
+
+###################################################################
+# Builds a Heston Solver
+####################################################################  
+
+HestonSolver: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/HestonSolver_gcc
+	make -j $(JOBS) -f ./../../../src/makefileNativeHestonSolver --directory=./tmp/build_native/HestonSolver_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=HestonSolver_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/HestonSolver_icc
+	make -j $(JOBS) -f ./../../../src/makefileNativeHestonSolver --directory=./tmp/build_native/HestonSolver_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=HestonSolver_ICC" "EXT=$(EXT)"
+endif
+#ifeq ($(CC),mpiicpc)   
+#   Not implemented     
+#endif
 
 ###################################################################
 # Builds a Hull White Solver
@@ -419,7 +448,26 @@ test_BSS_3d:
 	
 test_BSS_all: test_BSS_1d test_BSS_2d test_BSS_3d
 	echo "executed all BS tests!"
-		
+	
+###################################################################
+# test Heston Solver    
+# ###################################################################                     
+
+test_Heston_1d:
+	cd bin; \
+	./copyHestonSolverToTest.sh; \
+	cd ./../tests/CPP_Apps/HestonSolver/1d; \
+	./test_HestonSolver_1d.sh;
+
+test_Heston_2d:
+	cd bin; \
+	./copyHestonSolverToTest.sh; \
+	cd ./../tests/CPP_Apps/HestonSolver/2d; \
+	./test_HestonSolver_2d.sh;
+                                                                        
+test_Heston_all: test_Heston_1d test_Heston_2d
+	echo "executed all Heston tests!"
+                                                                                 	
 ###################################################################
 # test Combined Hull Wihte Solver Solver
 ###################################################################			
