@@ -38,6 +38,8 @@ public:
 	 */
 	TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles, double damping, double maxPercent);
 
+	TwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider);
+
 	/**
 	 * Destructor
 	 */
@@ -127,6 +129,9 @@ protected:
 
 	/// max. allowed change in percent
 	double _maxPercent;
+
+	bool _isStatic;
+	double _percentPartion1;
 
 	/**
 	 * re-scale the data and tuning parameter due to workload change
