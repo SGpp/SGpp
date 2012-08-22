@@ -9,6 +9,8 @@
 #include "base/exception/operation_exception.hpp"
 #include "base/tools/AlignedMemory.hpp"
 
+#include <omp.h>
+
 #if defined(__SSE3__) || defined(__AVX__)
 #ifdef _WIN32
 #include <immintrin.h>
@@ -38,8 +40,10 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::OperationMultipleEvalIte
 	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 
-	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 15);
-	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.75, 15);
+//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 15);
+//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.75, 15);
+	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.08, 128);
+	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.00, 128);
 }
 
 OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear()
@@ -347,23 +351,37 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
     // split result into GPU and CPU partition
     size_t gpu_partition = result_size - _tuningMult->getPartition1Size();
 
-	#pragma omp parallel shared(gpu_time, cpu_time)
+#ifdef _OPENMP
+    omp_set_nested(1);
+#endif
+
+	#pragma omp parallel default(shared) //(gpu_time, cpu_time)
     {
-		#pragma omp single nowait
+    	int tid = omp_get_thread_num();
+		if (tid == 0)
     	{
-			#pragma omp task shared(gpu_time, cpu_time)
-    		{
+			//#pragma omp task shared(gpu_time, cpu_time)
+    		//{
     			if (gpu_partition > 0)
     			{
     				gpu_time = myOCLKernels->multSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
     			}
-    		}
+    		//}
+    	}
+		else
+		{
+			//#pragma omp task shared(gpu_time, cpu_time)
+    		//{
+				int worksize = (result_size - gpu_partition)/(omp_get_num_threads()-1);
+				worksize = (worksize/32)*32;
+				int myStart = gpu_partition + (tid-1)*worksize;
+				int myEnd = myStart + worksize;
+				if (tid == omp_get_num_threads())
+					myEnd = result_size;
 
-			#pragma omp task shared(gpu_time, cpu_time)
-    		{
     			myTimer->start();
 #if defined(__SSE3__) && !defined(__AVX__)
-				for (size_t i = gpu_partition; i < result_size; i+=16)
+    			for (size_t i = gpu_partition; i < result_size; i+=16)
 				{
 					#pragma omp task firstprivate(i)
 					{
@@ -453,9 +471,11 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 				}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-				for (size_t i = gpu_partition; i < result_size; i+=32)
+
+
+    			for (size_t i = myStart; i < myEnd; i+=32)
 				{
-					#pragma omp task firstprivate(i)
+					//#pragma omp task firstprivate(i)
 					{
 						int imask = 0x7FFFFFFF;
 						float* fmask = (float*)&imask;
@@ -567,9 +587,9 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 				}
 #endif
 				cpu_time = myTimer->stop();
-    		}
+    		//}
 
-			#pragma omp taskwait
+			//#pragma omp taskwait
     	}
     }
 
