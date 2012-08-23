@@ -132,6 +132,8 @@ protected:
 
 	bool _isStatic;
 	double _percentPartion1;
+	int _staticOutputCounter;
+	int _staticOutputFreq;
 
 	/**
 	 * re-scale the data and tuning parameter due to workload change
