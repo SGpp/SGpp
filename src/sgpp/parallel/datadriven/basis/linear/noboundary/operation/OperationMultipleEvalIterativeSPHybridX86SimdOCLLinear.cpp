@@ -104,6 +104,8 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
     // split result into GPU and CPU partition
     size_t gpu_partition = storageSize - _tuningMultTrans->getPartition1Size();
 
+//    std::cout << gpu_partition << " " << storageSize << std::endl;
+
     // Do on-demand transpose
 	float* ptrTransData = new float[dims*source_size];
 	for (size_t n = 0; n < source_size; n++)
@@ -144,6 +146,10 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 #else
 			myTimer->start();
 #endif
+//			#pragma omp critical
+//			{
+//				std::cout << tid << " " << myStart << " " << myEnd << " " << storageSize << std::endl;
+//			}
 #if defined(__SSE3__) && !defined(__AVX__)
 			for (size_t j = myStart; j < myEnd; j++)
 			{
@@ -373,6 +379,8 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
     // split result into GPU and CPU partition
     size_t gpu_partition = result_size - _tuningMult->getPartition1Size();
 
+    //std::cout << gpu_partition << " " << result_size << std::endl;
+
 	#pragma omp parallel default(shared)
     {
 #ifdef _OPENMP
@@ -407,6 +415,10 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
 #else
 			myTimer->start();
 #endif
+//			#pragma omp critical
+//			{
+//				std::cout << tid << " " << myStart << " " << myEnd << " " << result_size << std::endl;
+//			}
 #if defined(__SSE3__) && !defined(__AVX__)
 			for (size_t i = myStart; i < myEnd; i+=16)
 			{
