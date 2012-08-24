@@ -22,11 +22,11 @@ TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, size_t partit
 {
 }
 
-TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider)
+TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider, size_t OutputFreq)
 	: _problemSize(problemSize), _partition2Divider(partition2Divider), _timePartition1(0.0), _timePartition2(0.0),
 	  _oldSizePartition1(problemSize), _testPartition1(false), _testPartition2(false), _isFirstTuning(false),
 	  _tuneCounter(0), _retune(50), _damping(0.0), _maxPercent(0.0), _isStatic(true),
-	  _percentPartion1(percentPartion1), _staticOutputCounter(0), _staticOutputFreq(20)
+	  _percentPartion1(percentPartion1), _staticOutputCounter(0), _staticOutputFreq(OutputFreq)
 {
 	rescaleAutoTuning(_problemSize);
 }
