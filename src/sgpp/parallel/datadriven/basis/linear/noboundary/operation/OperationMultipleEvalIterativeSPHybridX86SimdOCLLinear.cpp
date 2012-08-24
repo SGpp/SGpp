@@ -43,7 +43,9 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::OperationMultipleEvalIte
 //	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 15);
 //	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.75, 15);
 	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.085, 128);
-	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.045, 128);
+	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.045, 128);	
+//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.33, 128, 1);
+//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.32, 128, 1);
 }
 
 OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear()
@@ -108,6 +110,8 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 
     // Do on-demand transpose
 	float* ptrTransData = new float[dims*source_size];
+	
+	#pragma omp parallel for
 	for (size_t n = 0; n < source_size; n++)
 	{
 		for(size_t d = 0; d < dims; d++)
@@ -129,7 +133,9 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
 		{
 			if (gpu_partition > 0)
 			{
-				gpu_time = myOCLKernels->multTransSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+				double loc_start = omp_get_wtime();
+				myOCLKernels->multTransSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+				gpu_time = omp_get_wtime() - loc_start;
 			}
 #ifdef _OPENMP
     	}
@@ -394,7 +400,9 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multVectorized(sg
     	{
     		if (gpu_partition > 0)
     		{
-    			gpu_time = myOCLKernels->multSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+			double loc_start = omp_get_wtime();
+    			myOCLKernels->multSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+			gpu_time = omp_get_wtime() - loc_start;
     		}
     	}
 		else
