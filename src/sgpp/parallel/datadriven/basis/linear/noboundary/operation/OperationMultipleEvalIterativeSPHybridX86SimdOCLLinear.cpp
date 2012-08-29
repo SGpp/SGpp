@@ -42,10 +42,15 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::OperationMultipleEvalIte
 
 //	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 15);
 //	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.75, 15);
-	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.085, 128, 1);
-	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.045, 128, 1);	
+	// IVB + GTX680
+//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.085, 128, 1);
+//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.045, 128, 1);	
+	//Trinity
 //	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.33, 128, 1);
 //	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.32, 128, 1);
+	//Llano
+	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.36, 128, 1);
+	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.145, 128, 1);	
 }
 
 OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear()
