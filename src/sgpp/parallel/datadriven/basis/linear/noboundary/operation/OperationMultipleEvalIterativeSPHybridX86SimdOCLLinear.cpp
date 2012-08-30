@@ -49,8 +49,11 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::OperationMultipleEvalIte
 //	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.33, 128, 1);
 //	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.32, 128, 1);
 	//Llano
-	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.36, 128, 1);
-	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.145, 128, 1);	
+//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.36, 128, 1);
+//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.145, 128, 1);
+	//Ivy Bridge
+	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.655, 128, 20);
+	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.635, 128, 20);	
 }
 
 OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear()
