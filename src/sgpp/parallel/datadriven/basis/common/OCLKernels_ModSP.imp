@@ -155,13 +155,26 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
     size_t offset = 0;	
 	size_t global[MAX_OCL_DEVICE_COUNT];
 	size_t active_devices;
+	size_t scheduled_elements = 0;
 	for (size_t i = 0; i < num_devices; i++)
     {
     	global[i] = elements_per_gpu;
-    	// last GPU pads
-    	if (i == (num_devices-1))
-    		global[i] = gpu_partition-(elements_per_gpu*i);
-    		
+ 
+ 		// check for padding
+ 		if (scheduled_elements < gpu_partition)
+ 		{
+	    	global[i] = elements_per_gpu;
+	    	if ((global[i] + scheduled_elements) > gpu_partition)
+	    	{
+	    		global[i] = gpu_partition-scheduled_elements;
+	    	}
+ 		}
+ 		else
+ 		{
+ 			global[i] = 0;
+ 		}
+    	scheduled_elements += global[i];
+    	   		
     	if (global[i] != 0)
     	    active_devices++;
 	}
@@ -185,6 +198,7 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 				return 0.0;
 			}
 		}
+//		std::cout << "multTrans: global " << i << ": " << global[i] << " " << offset <<std::endl;
 		offset += global[i];
 	}
 
@@ -453,15 +467,28 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
     size_t offset = 0;	
 	size_t global[MAX_OCL_DEVICE_COUNT];
 	size_t active_devices = 0;
+	size_t scheduled_elements = 0;
 	for (size_t i = 0; i < num_devices; i++)
     {
     	global[i] = elements_per_gpu;
-    	// last GPU pads
-    	if (i == (num_devices-1))
-    		global[i] = gpu_partition-(elements_per_gpu*i);
-    		
+ 
+ 		// check for padding
+ 		if (scheduled_elements < gpu_partition)
+ 		{
+	    	global[i] = elements_per_gpu;
+	    	if ((global[i] + scheduled_elements) > gpu_partition)
+	    	{
+	    		global[i] = gpu_partition-scheduled_elements;
+	    	}
+ 		}
+ 		else
+ 		{
+ 			global[i] = 0;
+ 		}
+    	scheduled_elements += global[i];
+    	   		
     	if (global[i] != 0)
-    		active_devices++;
+    	    active_devices++;
 	}
 
 	size_t oclStorageSize = (storageSize/OCL_SGPP_LOCAL_WORKGROUP_SIZE)*OCL_SGPP_LOCAL_WORKGROUP_SIZE;
