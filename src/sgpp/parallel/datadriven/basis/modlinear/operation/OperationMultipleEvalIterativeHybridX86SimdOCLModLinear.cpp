@@ -83,7 +83,7 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multTransposeVec
     double* ptrIndex = this->index_->getPointer();
     double* ptrGlobalResult = result.getPointer();
 
-    if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows())
+    if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNrows())
     {
     	throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }
@@ -513,7 +513,7 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multVectorized(s
     double* ptrLevel = this->level_->getPointer();
     double* ptrIndex = this->index_->getPointer();
 
-    if (this->dataset_->getNrows() % 128 != 0 || result_size != this->dataset_->getNrows())
+    if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNrows())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
