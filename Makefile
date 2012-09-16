@@ -50,7 +50,7 @@ VEC=sse3
 #	NO - no extensions, default
 EXT=NO
 # instances used to compile
-JOBS=2
+JOBS=4
 # Default residual threshold
 SLE_RES_THRESH=-1.0
 # Default number of parallel dimensions for the parallelization of the recursive up down scheme
