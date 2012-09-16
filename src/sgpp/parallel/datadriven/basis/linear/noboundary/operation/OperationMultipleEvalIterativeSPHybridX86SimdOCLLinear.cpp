@@ -52,8 +52,12 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::OperationMultipleEvalIte
 //	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.36, 128, 1);
 //	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.145, 128, 1);
 	//Ivy Bridge
-	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.655, 128, 20);
-	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.635, 128, 20);	
+//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.655, 128, 20);
+//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.635, 128, 20);
+	// X5650 + 3xGTX470
+	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.06, 128, 25);
+	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.05, 128, 25);
+
 }
 
 OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear()
@@ -106,7 +110,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear::multTransposeVect
     float* ptrIndex = this->index_->getPointer();
     float* ptrGlobalResult = result.getPointer();
 
-    if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows())
+    if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNrows())
     {
     	throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
     }

@@ -10,11 +10,12 @@
 
 #include <cstdlib>
 
-#define MAX_OCL_DEVICE_COUNT 2 // Number of maximum used GPUs; must be 2 or 1
-#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP 128 // must divide vec-length with no reminder, max. vec-length
-#define OCL_DATAPREFETCH_SIZE_SP 64  // must divide vec-length with no reminder, max. vec-length
-#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP 128 // must divide vec-length with no reminder, max. vec-length
-#define OCL_DATAPREFETCH_SIZE_DP 64  // must divide vec-length with no reminder, max. vec-length
+#define MAX_OCL_DEVICE_COUNT 3 // Number of maximum used GPUs; must be 2 or 1
+//#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_SP 128 // must divide vec-length with no reminder, max. vec-length
+//#define OCL_DATAPREFETCH_SIZE_SP 64  // must divide vec-length with no reminder, max. vec-length
+//#define OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP 128 // must divide vec-length with no reminder, max. vec-length
+//#define OCL_DATAPREFETCH_SIZE_DP 64  // must divide vec-length with no reminder, max. vec-length
+#define OCL_SGPP_LOCAL_WORKGROUP_SIZE 64
 
 namespace sg
 {
