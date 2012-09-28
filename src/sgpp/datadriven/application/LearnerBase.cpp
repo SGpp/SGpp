@@ -180,7 +180,8 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 		std::cout << "Starting Learning...." << std::endl;
 
     // execute adaptsteps
-    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+	sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+	sg::base::SGppStopwatch* myStopwatch2 = new sg::base::SGppStopwatch();
 
     for (size_t i = 0; i < AdaptConfig.numRefinements_+1; i++)
     {
@@ -192,16 +193,17 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
     	// Do Refinements
     	if (i > 0)
     	{
+			myStopwatch2->start();
     		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
     		grid_->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
     		DMSystem->rebuildLevelAndIndex();
 
-    		if (isVerbose_)
-    			std::cout << "New Grid Size: " << grid_->getSize() << std::endl;
-
     		alpha_->resizeZero(grid_->getSize());
+			double refineTime = myStopwatch2->stop();
+			if (isVerbose_)
+				std::cout << "New Grid Size: " << grid_->getSize() << " (Refinement took " << refineTime << "seconds)" << std::endl;
     	}
     	else
     	{
@@ -303,8 +305,9 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 
     isTrained_ = true;
 
-    delete myStopwatch;
-    delete myCG;
+	delete myStopwatch;
+	delete myStopwatch2;
+	delete myCG;
     delete DMSystem;
 
     return result;

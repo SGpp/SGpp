@@ -6,8 +6,10 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYASYNCMPI_HPP
-#define DMSYSTEMMATRIXVECTORIZEDIDENTITYASYNCMPI_HPP
+#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDMPI_HPP
+#define DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDMPI_HPP
+
+#include "parallel/tools/MPI/SGppMPITools.hpp"
 
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
@@ -35,7 +37,7 @@ namespace parallel
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-class DMSystemMatrixVectorizedIdentityAsyncMPI : public sg::datadriven::DMSystemMatrixBase
+class DMSystemMatrixVectorizedIdentityOneSidedMPI : public sg::datadriven::DMSystemMatrixBase
 {
 private:
 	/// vectorization mode
@@ -59,12 +61,12 @@ public:
 	 * @param lambda the lambda, the regression parameter
 	 * @param vecMode vectorization mode
 	 */
-	DMSystemMatrixVectorizedIdentityAsyncMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
+	DMSystemMatrixVectorizedIdentityOneSidedMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
 
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~DMSystemMatrixVectorizedIdentityAsyncMPI();
+	virtual ~DMSystemMatrixVectorizedIdentityOneSidedMPI();
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
@@ -96,15 +98,11 @@ private:
 	size_t _chunkCountData;
 	size_t _chunkCountGrid;
 
-    /**
-     * Wrapper function that handles communication after calculation and time measurement
-     */
-	void multVec(sg::parallel::X86SimdLinearMult &mult);
-
-    /**
-     * Wrapper function that handles communication after calculation and time measurement
-     */
-	void multTransposeVec(sg::parallel::X86SimdLinearMultTranspose &multTranspose);
+	/// MPI windows
+	sg::base::DataVector* _mpi_grid_window_buffer;
+	sg::base::DataVector* _mpi_data_window_buffer;
+	MPI_Win* _mpi_grid_window;
+	MPI_Win* _mpi_data_window;
 
     /**
      * calculates the distribution for the current MPI setting for a domain of
@@ -122,4 +120,4 @@ private:
 }
 }
 
-#endif /* DMSYSTEMMATRIXVECTORIZEDIDENTITYASYNCMPI_HPP */
+#endif /* DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDMPI_HPP */

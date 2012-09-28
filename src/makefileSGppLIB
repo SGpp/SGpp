@@ -344,14 +344,6 @@ OBJS =	DataVector.o\
 	OperationDensityMarginalizeLinear.o\
 	OperationDensityConditionalLinear.o\
 	DMVectorizationPaddingAssistant.o\
-	X86SimdLinearMult.o\
-	X86SimdLinearMultTranspose.o\
-	SPX86SimdLinearMult.o\
-	SPX86SimdLinearMultTranspose.o\
-	#X86SimdModLinearMult.o\
-	#X86SimdModLinearMultTranspose.o\
-	#SPX86SimdModLinearMult.o\
-	#SPX86SimdModLinearMultTranspose.o\
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -440,7 +432,7 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	DMSystemMatrixVectorizedIdentityMPI.o\
 	DMSystemMatrixVectorizedIdentityAsyncMPI.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o\
-	#DMSystemMatrixVectorizedIdentityOnesidedMPI.o\
+	DMSystemMatrixVectorizedIdentityOnesidedMPI.o\
 
 endif
 
@@ -638,20 +630,6 @@ OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)parallel/datadriven/bas
 
 OperationMultipleEvalIterativeSPX86SimdLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
-
-X86SimdLinearMult.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)X86SimdLinearMult.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.cpp
-
-X86SimdLinearMultTranspose.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)X86SimdLinearMultTranspose.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.cpp
-
-SPX86SimdLinearMult.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SPX86SimdLinearMult.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.cpp
-
-SPX86SimdLinearMultTranspose.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)SPX86SimdLinearMultTranspose.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.cpp
-
-
 
 OperationTestLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp

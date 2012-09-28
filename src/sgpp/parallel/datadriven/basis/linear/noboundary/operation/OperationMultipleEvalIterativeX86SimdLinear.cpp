@@ -76,16 +76,14 @@ void OperationMultipleEvalIterativeX86SimdLinear::updateGridComputeBoundaries(in
 
 double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
-	if (this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 || source.getSize() != this->dataset_->getNcols())
+	if (this->dataset_->getNcols() % sg::parallel::X86SimdLinearMultTranspose::getChunkDataPoints() != 0 || source.getSize() != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     myTimer->start();
-
     result.setAll(0.0);
 
-	sg::parallel::X86SimdLinearMultTranspose multTranspose = sg::parallel::X86SimdLinearMultTranspose(this->level_, this->index_, this->dataset_, source, result);
 #ifdef _OPENMP
     #pragma omp parallel
 	{
@@ -94,10 +92,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 		size_t end;
 		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-        for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_X86, (end-k)))
-		{
-			multTranspose(k, end);
-		}
+		sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, source, result, start, end);
 #ifdef _OPENMP
 	}
 #endif
@@ -107,13 +102,12 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 
 double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	if (this->dataset_->getNcols() % CHUNKDATAPOINTS_X86 != 0 || result.getSize() != this->dataset_->getNcols())
+	if (this->dataset_->getNcols() % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0 || result.getSize() != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
-    myTimer->start();
-
+	myTimer->start();
 
 #ifdef _OPENMP
 	#pragma omp parallel
@@ -121,14 +115,14 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
 #endif
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, CHUNKDATAPOINTS_X86);
+		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, sg::parallel::X86SimdLinearMult::getChunkDataPoints());
 
-        if (start % CHUNKDATAPOINTS_X86 != 0 || end % CHUNKDATAPOINTS_X86 != 0)
+		if (start % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0 || end % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0)
         {
-			std::cout << "start%CHUNKDATAPOINTS_X86: " << start%CHUNKDATAPOINTS_X86 << "; end%CHUNKDATAPOINTS_X86: " << end%CHUNKDATAPOINTS_X86 << std::endl;
+			std::cout << "start%CHUNKDATAPOINTS_X86: " << start%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << "; end%CHUNKDATAPOINTS_X86: " << end%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << std::endl;
             throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86!");
         }
-
+		sg::parallel::X86SimdLinearMult::mult(level_, index_, dataset_, alpha, result, start, end);
 
 #ifdef _OPENMP
 	}

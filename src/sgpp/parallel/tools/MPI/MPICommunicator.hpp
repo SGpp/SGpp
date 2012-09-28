@@ -9,6 +9,10 @@
 #ifndef MPICOMMUNICATOR_HPP
 #define MPICOMMUNICATOR_HPP
 
+// we do not need c++ bindings, so skip these (and get rid of SEEK_SET errors)
+#define MPICH_SKIP_MPICXX
+#define OMPI_SKIP_MPICXX
+
 #include <mpi.h>
 
 #include <string>
@@ -188,7 +192,7 @@ public:
 	void IsendToAll(double* ptr, size_t size, int tag);
 	void IrecvFromAll(double* ptr, int* global_sizes, int* global_offsets, int* sizes, int* offsets, int *tag, int chunkCount, MPI_Request *dataRecvRequests);
 
-	void putToAll(sg::base::DataVector &vec, int offset, int count, MPI_Win win);
+	void putToAll(double* ptr, int winOffset, int count, MPI_Win win);
 
 	/**
 	 * Implements a Barrier for all tasks

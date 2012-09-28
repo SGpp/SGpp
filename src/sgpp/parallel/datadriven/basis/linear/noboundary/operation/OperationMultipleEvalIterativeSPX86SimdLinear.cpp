@@ -7,7 +7,8 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/ChunkSizes.h"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.h"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.h"
 #include "base/exception/operation_exception.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
@@ -76,16 +77,7 @@ void OperationMultipleEvalIterativeSPX86SimdLinear::updateGridComputeBoundaries(
 
 double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
-	size_t source_size = source.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
-    float* ptrSource = source.getPointer();
-    float* ptrData = this->dataset_->getPointer();
-    float* ptrLevel = this->level_->getPointer();
-    float* ptrIndex = this->index_->getPointer();
-	float* ptrResult = result.getPointer();
-
-	if (this->dataset_->getNcols() % CHUNKDATAPOINTS_SP_X86 != 0 || source_size != this->dataset_->getNcols())
+	if (this->dataset_->getNcols() % sg::parallel::SPX86SimdLinearMult::getChunkDataPoints() != 0 || source.getSize() != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
@@ -93,7 +85,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
     myTimer->start();
 
     result.setAll(0.0f);
-
 
 
 #ifdef _OPENMP
@@ -104,10 +95,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 		size_t end;
 		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-		for(size_t k = start; k < end; k+=std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86, (end-k)))
-		{
-
-		}
+		sg::parallel::SPX86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, source, result, start, end);
 #ifdef _OPENMP
 	}
 #endif
@@ -117,22 +105,12 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 
 double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
-	size_t result_size = result.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
-    float* ptrAlpha = alpha.getPointer();
-    float* ptrData = this->dataset_->getPointer();
-    float* ptrResult = result.getPointer();
-    float* ptrLevel = this->level_->getPointer();
-    float* ptrIndex = this->index_->getPointer();
-
-	if (this->dataset_->getNcols() % CHUNKDATAPOINTS_SP_X86 != 0 || result_size != this->dataset_->getNcols())
+	if (this->dataset_->getNcols() % sg::parallel::SPX86SimdLinearMult::getChunkDataPoints() != 0 || result.getSize() != this->dataset_->getNcols())
     {
     	throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
     }
 
     myTimer->start();
-
 
 #ifdef _OPENMP
 	#pragma omp parallel
@@ -140,9 +118,9 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 #endif
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, CHUNKDATAPOINTS_SP_X86);
+		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, sg::parallel::SPX86SimdLinearMult::getChunkDataPoints());
 
-
+		sg::parallel::SPX86SimdLinearMult::mult(level_, index_, dataset_, alpha, result, start, end);
 #ifdef _OPENMP
 	}
 #endif

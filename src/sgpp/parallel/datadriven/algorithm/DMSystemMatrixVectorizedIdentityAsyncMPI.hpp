@@ -97,16 +97,6 @@ private:
 	size_t _chunkCountGrid;
 
     /**
-     * Wrapper function that handles communication after calculation and time measurement
-     */
-	void multVec(sg::parallel::X86SimdLinearMult &mult);
-
-    /**
-     * Wrapper function that handles communication after calculation and time measurement
-     */
-	void multTransposeVec(sg::parallel::X86SimdLinearMultTranspose &multTranspose);
-
-    /**
      * calculates the distribution for the current MPI setting for a domain of
      * size totalSize and stores the result into the arrays sizes and offsets. These
      * arrays must have a size equal to the number of MPI processes currently running.
@@ -117,8 +107,6 @@ private:
      *
      */
 	void calcDistribution(int totalSize, int numChunks, int* sizes, int* offsets, size_t blocksize);
-
-	int getWorkerCount();
 };
 
 }

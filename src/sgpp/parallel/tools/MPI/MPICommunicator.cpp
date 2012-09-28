@@ -195,14 +195,13 @@ void MPICommunicator::IrecvFromAll(double *ptr, int *global_sizes, int *global_o
 	}
 }
 
-void MPICommunicator::putToAll(sg::base::DataVector& vec, int offset, int count, MPI_Win win)
+void MPICommunicator::putToAll(double* ptr, int winOffset, int count, MPI_Win win)
 {
-	double* ptr = vec.getPointer();
 	for(int i = 0; i<getNumRanks(); i++){
 		if(i==getMyRank()){
-			continue;
+			//continue;
 		}
-		MPI_Put(&ptr[offset], count, MPI_DOUBLE, i, offset, count, MPI_DOUBLE, win);
+		MPI_Put(ptr, count, MPI_DOUBLE, i, winOffset, count, MPI_DOUBLE, win);
 	}
 }
 
