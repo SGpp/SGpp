@@ -73,7 +73,6 @@ public:
 
 	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 	{
-		MultType mult = MultType(this->level_, this->index_, this->dataset_, alpha, result);
 		myTimer->start();
 
 	#ifdef _OPENMP
@@ -82,16 +81,15 @@ public:
 	#endif
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, mult.chunkDataPoints);
+			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
 
-			if (start % mult.chunkDataPoints != 0 || end % mult.chunkDataPoints != 0)
+			if (start % MultType::getChunkDataPoints() != 0 || end % MultType::getChunkDataPoints() != 0)
 			{
-				std::cout << "start%chunkDataPoints: " << start%mult.chunkDataPoints << "; end%chunkDataPoints: " << end%mult.chunkDataPoints << std::endl;
+				std::cout << "start%chunkDataPoints: " << start%MultType::getChunkDataPoints() << "; end%chunkDataPoints: " << end%MultType::getChunkDataPoints() << std::endl;
 				throw sg::base::operation_exception("processed vector segment must fit to chunkDataPoints!");
 			}
 
-
-			mult(start,end);
+			MultType::mult(level_, index_, dataset_, alpha, result, start, end);
 	#ifdef _OPENMP
 		}
 	#endif
@@ -101,8 +99,6 @@ public:
 
 	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 	{
-		MultTransposeType multTranspose = MultTransposeType(this->level_, this->index_, this->dataset_, source, result);
-
 		myTimer->start();
 
 		result.setAll(0.0);
@@ -115,7 +111,7 @@ public:
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			multTranspose(start, end);
+			MultTransposeType::multTranspose(level_, index_, dataset_, source, result, start, end);
 
 	#ifdef _OPENMP
 		}

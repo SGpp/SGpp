@@ -128,6 +128,7 @@ void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base:
 
 	this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
 
+	/// @todo hier zeiten plotten
 	debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_offsets[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_offsets[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
 	debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_sizes[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_sizes[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
 

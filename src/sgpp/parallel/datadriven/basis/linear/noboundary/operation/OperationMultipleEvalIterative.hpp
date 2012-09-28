@@ -73,24 +73,24 @@ public:
 
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 	{
-		MultType mult = MultType(this->level_, this->index_, this->dataset_, alpha, result);
 		myTimer->start();
 
 	#ifdef _OPENMP
 		#pragma omp parallel
 		{
 	#endif
+			std::cout << "thread " << omp_get_thread_num() << ": parallel section time: " << myTimer->stop() << std::endl;
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, mult.chunkDataPoints);
+			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
 
-			if (start % mult.chunkDataPoints != 0 || end % mult.chunkDataPoints != 0)
+			if (start % MultType::getChunkDataPoints() != 0 || end % MultType::getChunkDataPoints() != 0)
 			{
-				std::cout << "start%chunkDataPoints: " << start%mult.chunkDataPoints << "; end%chunkDataPoints: " << end%mult.chunkDataPoints << std::endl;
+				std::cout << "start%chunkDataPoints: " << start%MultType::getChunkDataPoints() << "; end%chunkDataPoints: " << end%MultType::getChunkDataPoints() << std::endl;
 				throw sg::base::operation_exception("processed vector segment must fit to chunkDataPoints!");
 			}
 
-			mult(start,end);
+			MultType::mult(this->level_, this->index_, this->dataset_, alpha, result, start, end);
 	#ifdef _OPENMP
 		}
 	#endif
@@ -100,8 +100,6 @@ public:
 
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 	{
-		MultTransposeType multTranspose = MultTransposeType(this->level_, this->index_, this->dataset_, source, result);
-
 		myTimer->start();
 
 		result.setAll(0.0);
@@ -114,7 +112,7 @@ public:
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			multTranspose(start, end);
+			MultTransposeType::multTranspose(this->level_, this->index_, this->dataset_, source, result, start, end);
 	#ifdef _OPENMP
 		}
 	#endif
