@@ -92,7 +92,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multTransposeVectorized(sg::
 		size_t end;
 		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-		sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, source, result, start, end);
+		sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
 #ifdef _OPENMP
 	}
 #endif

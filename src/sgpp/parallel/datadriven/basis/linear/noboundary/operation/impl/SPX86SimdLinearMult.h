@@ -10,7 +10,6 @@
 #define SPX86SIMDLINEARMULT_H
 
 #include "base/grid/GridStorage.hpp"
-#include "base/exception/operation_exception.hpp"
 
 #if defined(__SSE3__) || defined(__AVX__)
 #ifdef _WIN32
