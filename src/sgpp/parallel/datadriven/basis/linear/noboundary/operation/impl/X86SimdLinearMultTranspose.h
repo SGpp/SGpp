@@ -10,7 +10,6 @@
 #define X86SIMDLINEARMULTTRANSPOSE_H
 
 #include "base/grid/GridStorage.hpp"
-#include "base/exception/operation_exception.hpp"
 
 #if defined(__SSE3__) || defined(__AVX__)
 #ifdef _WIN32
@@ -23,6 +22,25 @@
 #ifdef __USEAVX128__
 #undef __AVX__
 #endif
+
+#define CHECK_KERNEL_CALLS
+#ifdef CHECK_KERNEL_CALLS
+#include "base/exception/operation_exception.hpp"
+#define ASSERT_INDEX_ARG(arg, min, max, alignment){\
+	if(arg<min){\
+		throw sg::base::operation_exception("argument to small!");\
+	}\
+	if(arg>max){\
+		throw sg::base::operation_exception("argument to big!");\
+	}\
+	if(arg%alignment != 0){\
+		throw sg::base::operation_exception("argument now aligned!");\
+	}\
+}
+#else
+#define ASSERT_INDEX_ARG(arg, min, max, alignment)
+#endif
+
 
 namespace sg {
 namespace parallel {
@@ -39,7 +57,9 @@ public:
 			sg::base::DataVector& source,
 			sg::base::DataVector& result,
 			size_t start_index_grid,
-			size_t end_index_grid) {
+			size_t end_index_grid,
+			size_t start_index_data,
+			size_t end_index_data) {
 		double* ptrLevel = level->getPointer();
 		double* ptrIndex = index->getPointer();
 		double* ptrSource = source.getPointer();
@@ -51,6 +71,11 @@ public:
 
 		size_t end = end_index_grid;
 
+		ASSERT_INDEX_ARG(start_index_grid, 0, level->getNrows(), 1);
+		ASSERT_INDEX_ARG(end_index_grid, 0, level->getNrows(), 1);
+		ASSERT_INDEX_ARG(start_index_data, 0, source.getSize(), 12); //or alignment 24?
+		ASSERT_INDEX_ARG(end_index_data, 0, source.getSize(), 12); //or alignment 24?
+
 		for(size_t k = start_index_grid; k < end; k+=std::min<size_t>(getChunkGridPoints(), (end-k)))
 		{
 			size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end-k));
@@ -59,7 +84,7 @@ public:
 			long long imask = 0x7FFFFFFFFFFFFFFF;
 			double* fmask = (double*)&imask;
 
-			for (size_t i = 0; i < source_size; i+=12)
+			for (size_t i = start_index_data; i < end_index_data; i+=12)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{
@@ -149,7 +174,7 @@ public:
 			long long imask = 0x7FFFFFFFFFFFFFFF;
 			double* fmask = (double*)&imask;
 
-			for (size_t i = 0; i < source_size; i+=24)
+			for (size_t i = start_index_data; i < end_index_data; i+=24)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{
@@ -245,7 +270,7 @@ public:
 			}
 	#endif
 	#if !defined(__SSE3__) && !defined(__AVX__)
-			for (size_t i = 0; i < source_size; i++)
+			for (size_t i = start_index_data; i < end_index_data; i++)
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{

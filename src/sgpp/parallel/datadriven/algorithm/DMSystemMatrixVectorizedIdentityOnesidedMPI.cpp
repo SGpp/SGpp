@@ -10,7 +10,6 @@
 #include "base/exception/operation_exception.hpp"
 
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/ChunkSizes.h"
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.h"
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.h"
 #include "parallel/operation/ParallelOpFactory.hpp"
@@ -245,9 +244,9 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 			size_t start = _mpi_data_offsets[thread_chunk];
 			size_t end = start + _mpi_data_sizes[thread_chunk];
 
-			if (start % CHUNKDATAPOINTS_X86 != 0 || end % CHUNKDATAPOINTS_X86 != 0 || end > this->numPatchedTrainingInstances_)
+			if (start % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0 || end % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0 || end > this->numPatchedTrainingInstances_)
 			{
-				std::cout << "start%CHUNKDATAPOINTS_X86: " << start%CHUNKDATAPOINTS_X86 << "; end%CHUNKDATAPOINTS_X86: " << end%CHUNKDATAPOINTS_X86 << std::endl;
+				std::cout << "start%CHUNKDATAPOINTS_X86: " << start%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << "; end%CHUNKDATAPOINTS_X86: " << end%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << std::endl;
 				std::cout << end << " > numpatchedtraininstances ("<< this->numPatchedTrainingInstances_ <<")" << std::endl;
 				throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86!");
 			}
@@ -309,7 +308,7 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 			size_t start = _mpi_grid_offsets[thread_chunk];
 			size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *tmp_result_buffer, start, end);
+			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *tmp_result_buffer, start, end, 0, this->numPatchedTrainingInstances_);
 
 			sg::parallel::myGlobalMPIComm->putToAll(&tmp_result_buffer_ptr[start], start - _mpi_grid_offsets[_mpi_grid_offsets_global[mpi_myrank]], end-start, _mpi_grid_window[mpi_myrank]);
 		}
@@ -366,7 +365,7 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::generateb(sg::base::DataVector
 		for(size_t thread_chunk = myGridChunkStart + thread_num; thread_chunk<myGridChunkEnd; thread_chunk+=thread_count){
 			size_t start = _mpi_grid_offsets[thread_chunk];
 			size_t end =  start + _mpi_grid_sizes[thread_chunk];
-			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *tmp_result_buffer, start, end);
+			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *tmp_result_buffer, start, end, 0, this->numPatchedTrainingInstances_);
 
 			sg::parallel::myGlobalMPIComm->putToAll(&tmp_result_buffer_ptr[start], start - _mpi_grid_offsets[_mpi_grid_offsets_global[mpi_myrank]], end-start, _mpi_grid_window[mpi_myrank]);
 		}

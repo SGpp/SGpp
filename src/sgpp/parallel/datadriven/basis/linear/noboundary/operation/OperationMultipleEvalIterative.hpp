@@ -112,7 +112,7 @@ public:
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			MultTransposeType::multTranspose(this->level_, this->index_, this->dataset_, source, result, start, end);
+			MultTransposeType::multTranspose(this->level_, this->index_, this->dataset_, source, result, start, end, 0, this->dataset_->getNcols());
 	#ifdef _OPENMP
 		}
 	#endif
