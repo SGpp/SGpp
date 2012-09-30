@@ -22,6 +22,7 @@
 #ifdef __USEAVX128__
 #undef __AVX__
 #endif
+
 namespace sg {
 namespace parallel {
 

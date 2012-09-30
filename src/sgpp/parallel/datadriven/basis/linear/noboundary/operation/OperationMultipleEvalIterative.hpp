@@ -79,7 +79,7 @@ public:
 		#pragma omp parallel
 		{
 	#endif
-			std::cout << "thread " << omp_get_thread_num() << ": parallel section time: " << myTimer->stop() << std::endl;
+			//std::cout << "thread " << omp_get_thread_num() << ": parallel section time: " << myTimer->stop() << std::endl;
 			size_t start;
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());

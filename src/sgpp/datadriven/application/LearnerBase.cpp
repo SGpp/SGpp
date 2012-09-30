@@ -213,7 +213,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 
     	sg::base::DataVector b(alpha_->getSize());
     	DMSystem->generateb(classes, b);
-		std::cout<< "generated b" << std::endl;
+		//std::cout<< "generated b" << std::endl;
 
     	if (i == AdaptConfig.numRefinements_)
     	{

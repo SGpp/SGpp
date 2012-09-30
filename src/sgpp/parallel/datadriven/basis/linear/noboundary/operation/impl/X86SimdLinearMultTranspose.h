@@ -41,7 +41,6 @@
 #define ASSERT_INDEX_ARG(arg, min, max, alignment)
 #endif
 
-
 namespace sg {
 namespace parallel {
 
@@ -73,8 +72,8 @@ public:
 
 		ASSERT_INDEX_ARG(start_index_grid, 0, level->getNrows(), 1);
 		ASSERT_INDEX_ARG(end_index_grid, 0, level->getNrows(), 1);
-		ASSERT_INDEX_ARG(start_index_data, 0, source.getSize(), 12); //or alignment 24?
-		ASSERT_INDEX_ARG(end_index_data, 0, source.getSize(), 12); //or alignment 24?
+		ASSERT_INDEX_ARG(start_index_data, 0, source_size, 12); //or alignment 24?
+		ASSERT_INDEX_ARG(end_index_data, 0, source_size, 12); //or alignment 24?
 
 		for(size_t k = start_index_grid; k < end; k+=std::min<size_t>(getChunkGridPoints(), (end-k)))
 		{
@@ -88,6 +87,9 @@ public:
 			{
 				for (size_t j = k; j < k+grid_inc; j++)
 				{
+					if(j>= end){
+						throw new sg::base::operation_exception("j to laarge");
+					}
 					__m128d support_0 = _mm_load_pd(&(ptrSource[i]));
 					__m128d support_1 = _mm_load_pd(&(ptrSource[i+2]));
 					__m128d support_2 = _mm_load_pd(&(ptrSource[i+4]));
