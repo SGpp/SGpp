@@ -119,7 +119,7 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
 		size_t end;
 		sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, sg::parallel::X86SimdModLinearMult::getChunkDataPoints());
 
-		sg::parallel::X86SimdModLinearMult::mult(level_, index_, dataset_, alpha, result, start, end);
+		sg::parallel::X86SimdModLinearMult::mult(level_, index_, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 #ifdef _OPENMP
 	}
 #endif
