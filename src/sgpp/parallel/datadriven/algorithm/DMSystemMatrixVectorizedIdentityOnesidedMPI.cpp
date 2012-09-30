@@ -224,10 +224,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 	double* tmp_data_buffer_ptr = tmp_data_buffer->getPointer();
 	sg::base::DataVector *tmp_result_buffer = new sg::base::DataVector(m_grid.getSize());
 	tmp_result_buffer->setAll(0.0);
-	sg::base::DataVector tmp2(this->numPatchedTrainingInstances_);
-	tmp2.setAll(0.0);
-	sg::base::DataVector result2(result);
-	result2.setAll(0.0);
 	_mpi_data_window_buffer->setAll(0.0);
 	double* tmp_result_buffer_ptr = tmp_result_buffer->getPointer();
 	double* tempPtr = _mpi_data_window_buffer->getPointer();
@@ -276,18 +272,7 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 		MPI_Win_fence(assert, _mpi_data_window[rank]);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
-	//std::cout << "[" <<  mpi_myrank << "] after fence " << std::endl;
 	this->completeTimeMult_ += this->myTimer_->stop();
-
-	sg::parallel::X86SimdLinearMult::mult(level_, index_, dataset_, alpha, tmp2, 0, this->numPatchedTrainingInstances_);
-
-	for(int i = 0; i<this->numPatchedTrainingInstances_; i++){
-		if(tmp2[i] != (*_mpi_data_window_buffer)[i]){
-			std::cout << "result after mult is wrong!!!" << tmp2[i] << " != " << (*_mpi_data_window_buffer)[i] << std::endl;
-			throw sg::base::operation_exception("fail!");
-
-		}
-	}
 
 	// patch result -> set additional entries zero
 	if (this->numTrainingInstances_ != _mpi_data_window_buffer->getSize())
@@ -295,15 +280,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 		for (size_t i = 0; i < (_mpi_data_window_buffer->getSize()-this->numTrainingInstances_); i++)
 		{
 			_mpi_data_window_buffer->set(_mpi_data_window_buffer->getSize()-(i+1), 0.0);
-			tmp2.set(tmp2.getSize()-(i+1), 0.0);
-		}
-	}
-
-	for(int i = 0; i<this->numPatchedTrainingInstances_; i++){
-		if(tmp2[i] != (*_mpi_data_window_buffer)[i]){
-			std::cout << "result after mult and padding is wrong!!!" << tmp2[i] << " != " << (*_mpi_data_window_buffer)[i] << std::endl;
-			throw sg::base::operation_exception("fail!");
-
 		}
 	}
 
@@ -330,31 +306,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 #endif
 	this->computeTimeMultTrans_ += this->myTimer_->stop();
 
-	//***********************************
-	//start check multtranspose result
-	sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, tmp2, result2, 0, m_grid.getSize(), 0, this->numPatchedTrainingInstances_);
-	size_t procChunkStart = _mpi_grid_offsets[_mpi_grid_offsets_global[mpi_myrank]];
-	size_t procChunkEnd = procChunkStart;
-	for(int i = 0; i<_mpi_grid_sizes_global[mpi_myrank]; i++){
-		procChunkEnd += _mpi_grid_sizes[_mpi_grid_offsets_global[mpi_myrank] + i];
-	}
-	//std::cout << "proc bounds: from " << procChunkStart << " to " << procChunkEnd <<   std::endl;
-	for(int i = 0; i<m_grid.getSize(); i++){
-		if(i >= procChunkStart && i<procChunkEnd){
-			if(result2[i] != (*tmp_result_buffer)[i]){
-				std::cout << "result after multTranspose is wrong!!!" << result2[i] << " != " << (*tmp_result_buffer)[i] << std::endl;
-				throw sg::base::operation_exception("fail!");
-			}
-		} else {
-			if(0 != (*tmp_result_buffer)[i]){
-				std::cout << "[" <<mpi_myrank << "] result after multTranspose should be zero for this part but isn't... index: " << i << "... " << 0 << " != " << (*tmp_result_buffer)[i] << std::endl;
-				throw sg::base::operation_exception("fail!");
-			}
-		}
-	}
-	//end check multtranspose result
-
-
 	for (int rank = 0; rank < mpi_size; rank++){
 		int assert = MPI_MODE_NOSUCCEED;
 		if(rank != mpi_myrank){
@@ -365,25 +316,8 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-
-	for(int i = 0; i<m_grid.getSize(); i++){
-		if(result2[i] != (*_mpi_grid_window_buffer)[i]){
-			std::cout << "tmp result after multTranspose COmmunication is wrong!!!index: " << i << " ..." << result2[i] << " != " << (*_mpi_grid_window_buffer)[i] << std::endl;
-			throw sg::base::operation_exception("fail!");
-
-		}
-	}
-
 	this->completeTimeMultTrans_ += this->myTimer_->stop();
 	result.copyFrom(*_mpi_grid_window_buffer);
-
-	for(int i = 0; i<m_grid.getSize(); i++){
-		if(result2[i] != result[i]){
-			std::cout << "result at end of mult is wrong!!!index: " << i << " ..." << result2[i] << " != " << result[i] << std::endl;
-			throw sg::base::operation_exception("fail!");
-
-		}
-	}
 
 	result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 	if (mpi_myrank == 0) std::cout << "*";
@@ -396,9 +330,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::generateb(sg::base::DataVector
 	_mpi_data_window_buffer->setAll(0.0);
 	_mpi_data_window_buffer->copyFrom(classes);
 	b.setAll(0.0);
-	sg::base::DataVector b_check(b);
-	b_check.setAll(0.0);
-
 
 	sg::base::DataVector *tmp_result_buffer = new sg::base::DataVector(m_grid.getSize());
 	tmp_result_buffer->setAll(0.0);
@@ -439,17 +370,7 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::generateb(sg::base::DataVector
 	}
 	b.copyFrom(*_mpi_grid_window_buffer);
 
-	sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, b_check, 0, m_grid.getSize(), 0, this->numPatchedTrainingInstances_);
-
-	for(int i= 0; i<m_grid.getSize(); i++){
-		if(b[i] != b_check[i]){
-			printf("[%d] b result does not match [index %d]: %f != %f \n", mpi_myrank, i, b[i], b_check[i]);
-			throw new sg::base::operation_exception("b results do not match!");
-		}
-	}
 	MPI_Barrier(MPI_COMM_WORLD);
-	std::cout << "finished generate b" << std::endl;
-
 }
 
 void DMSystemMatrixVectorizedIdentityOneSidedMPI::rebuildLevelAndIndex()
@@ -498,8 +419,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::rebuildLevelAndIndex()
 		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0)
 			std::cout << "win init grid [" << rank << "] " <<  offset << " - " << offset + size - 1 << " = " << size << std::endl;
 	}
-
-
 }
 
 
