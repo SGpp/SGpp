@@ -36,6 +36,8 @@ public:
 			base::DataMatrixSP *dataset,
 			base::DataVectorSP &alpha,
 			base::DataVectorSP &result,
+			size_t start_index_grid,
+			size_t end_index_grid,
 			size_t start_index_data,
 			size_t end_index_data){
 		float* ptrLevel = level->getPointer();
@@ -45,7 +47,6 @@ public:
 		float* ptrResult = result.getPointer();
 		size_t result_size = result.getSize();
 		size_t dims = dataset->getNrows();
-		size_t storageSize = alpha.getSize();
 
 		size_t end = end_index_data;
 
@@ -62,10 +63,10 @@ public:
 				ptrResult[i] = 0.0f;
 			}
 
-			for (size_t m = 0; m < storageSize; m+=std::min<size_t>((size_t)getChunkGridPoints(), (storageSize-m)))
+			for (size_t m = start_index_grid; m < end_index_grid; m+=std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-m)))
 			{
 	#if defined(__SSE3__) && !defined(__AVX__)
-				size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (storageSize-m));
+				size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-m));
 
 				int imask = 0x7FFFFFFF;
 				float* fmask = (float*)&imask;
@@ -164,7 +165,7 @@ public:
 				}
 	#endif
 	#if defined(__SSE3__) && defined(__AVX__)
-				size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (storageSize-m));
+				size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-m));
 
 				int imask = 0x7FFFFFFF;
 				float* fmask = (float*)&imask;
@@ -263,7 +264,7 @@ public:
 				}
 	#endif
 	#if !defined(__SSE3__) && !defined(__AVX__)
-				size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints()+m, storageSize);
+				size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints()+m, end_index_grid);
 
 				for (size_t i = c; i < data_end; i++)
 				{

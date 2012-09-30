@@ -193,7 +193,7 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 			size_t start = _mpi_data_offsets[thread_chunk];
 			size_t end = start + _mpi_data_sizes[thread_chunk];
 
-			sg::parallel::X86SimdLinearMult::mult(level_, index_, dataset_, alpha, *_mpi_data_window_buffer, start, end);
+			sg::parallel::X86SimdLinearMult::mult(level_, index_, dataset_, alpha, *_mpi_data_window_buffer, 0, alpha.getSize(), start, end);
 			sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_data_window[mpi_myrank], start - procDataChunkStart, end-start);
 		}
 

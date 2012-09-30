@@ -90,7 +90,7 @@ public:
 				throw sg::base::operation_exception("processed vector segment must fit to chunkDataPoints!");
 			}
 
-			MultType::mult(this->level_, this->index_, this->dataset_, alpha, result, start, end);
+			MultType::mult(this->level_, this->index_, this->dataset_, alpha, result, 0, alpha.getSize(), start, end);
 	#ifdef _OPENMP
 		}
 	#endif
@@ -112,7 +112,7 @@ public:
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			MultTransposeType::multTranspose(this->level_, this->index_, this->dataset_, source, result, start, end, 0, this->dataset_->getNcols());
+			MultTransposeType::multTranspose(level_, index_, dataset_, source, result, start, end, 0, dataset_->getNcols());
 	#ifdef _OPENMP
 		}
 	#endif
