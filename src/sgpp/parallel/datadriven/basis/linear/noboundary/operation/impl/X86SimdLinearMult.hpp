@@ -10,6 +10,7 @@
 #define X86SIMDLINEARMULT_H
 
 #include "base/grid/GridStorage.hpp"
+#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
 
 #if defined(__SSE3__) || defined(__AVX__)
 #ifdef _WIN32
@@ -26,11 +27,9 @@
 namespace sg {
 namespace parallel {
 
-class X86SimdLinearMult
+class X86SimdLinearMult : public X86SimdKernelBase
 {
 public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 24;}
 	static inline void mult(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,

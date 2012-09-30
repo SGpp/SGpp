@@ -10,6 +10,7 @@
 #define SPX86SIMDLINEARMULTTRANSPOSE_H
 
 #include "base/grid/GridStorage.hpp"
+#include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
 
 #if defined(__SSE3__) || defined(__AVX__)
 #ifdef _WIN32
@@ -26,11 +27,9 @@
 namespace sg {
 namespace parallel {
 
-class SPX86SimdLinearMultTranspose
+class SPX86SimdLinearMultTranspose : public SPX86SimdKernelBase
 {
 public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 48;}
 	static inline void multTranspose(
 			sg::base::DataMatrixSP* level,
 			sg::base::DataMatrixSP* index,

@@ -10,6 +10,7 @@
 #define X86SIMDLINEARMULTTRANSPOSE_H
 
 #include "base/grid/GridStorage.hpp"
+#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
 
 #if defined(__SSE3__) || defined(__AVX__)
 #ifdef _WIN32
@@ -23,32 +24,12 @@
 #undef __AVX__
 #endif
 
-#define CHECK_KERNEL_CALLS
-#ifdef CHECK_KERNEL_CALLS
-#include "base/exception/operation_exception.hpp"
-#define ASSERT_INDEX_ARG(arg, min, max, alignment){\
-	if(arg<min){\
-		throw sg::base::operation_exception("argument to small!");\
-	}\
-	if(arg>max){\
-		throw sg::base::operation_exception("argument to big!");\
-	}\
-	if(arg%alignment != 0){\
-		throw sg::base::operation_exception("argument now aligned!");\
-	}\
-}
-#else
-#define ASSERT_INDEX_ARG(arg, min, max, alignment)
-#endif
-
 namespace sg {
 namespace parallel {
 
-class X86SimdLinearMultTranspose
+class X86SimdLinearMultTranspose : public X86SimdKernelBase
 {
 public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 24;}
 	static inline void multTranspose(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,
