@@ -17,8 +17,6 @@
 #include "datadriven/algorithm/DMSystemMatrixBase.hpp"
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.h"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.h"
 #include "parallel/tools/TypesParallel.hpp"
 
 #include <string>
