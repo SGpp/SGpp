@@ -218,16 +218,8 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 		MPI_Win_fence(0, _mpi_grid_window[rank]);
 	}
 	result.setAll(0.0);
-
-	sg::base::DataVector *tmp_data_buffer = new sg::base::DataVector(this->numPatchedTrainingInstances_);
-	tmp_data_buffer->setAll(0.0);
-	double* tmp_data_buffer_ptr = tmp_data_buffer->getPointer();
-	sg::base::DataVector *tmp_result_buffer = new sg::base::DataVector(m_grid.getSize());
-	tmp_result_buffer->setAll(0.0);
 	_mpi_data_window_buffer->setAll(0.0);
-	double* tmp_result_buffer_ptr = tmp_result_buffer->getPointer();
-	double* tempPtr = _mpi_data_window_buffer->getPointer();
-	double* resultBufferPtr = _mpi_grid_window_buffer->getPointer();
+	_mpi_grid_window_buffer->setAll(0.0);
 
 	this->myTimer_->start();
 
@@ -242,6 +234,7 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 
 		size_t myDataChunkStart = _mpi_data_offsets_global[mpi_myrank];
 		size_t myDataChunkEnd = myDataChunkStart + _mpi_data_sizes_global[mpi_myrank];
+		size_t procDataChunkStart = _mpi_data_offsets[myDataChunkStart];
 		for(size_t thread_chunk = myDataChunkStart + thread_num; thread_chunk<myDataChunkEnd; thread_chunk+=thread_count){
 			size_t start = _mpi_data_offsets[thread_chunk];
 			size_t end = start + _mpi_data_sizes[thread_chunk];
@@ -252,16 +245,14 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 				std::cout << end << " > numpatchedtraininstances ("<< this->numPatchedTrainingInstances_ <<")" << std::endl;
 				throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86!");
 			}
-			sg::parallel::X86SimdLinearMult::mult(level_, index_, dataset_, alpha, *tmp_data_buffer, start, end);
-
-			sg::parallel::myGlobalMPIComm->putToAll(&tmp_data_buffer_ptr[start], start - _mpi_data_offsets[_mpi_data_offsets_global[mpi_myrank]], end-start, _mpi_data_window[mpi_myrank]);
+			sg::parallel::X86SimdLinearMult::mult(level_, index_, dataset_, alpha, *_mpi_data_window_buffer, start, end);
+			sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_data_window[mpi_myrank], start - procDataChunkStart, end-start);
 		}
 
 #ifdef _OPENMP
 	#pragma omp single
 		{
 #endif
-	MPI_Barrier(MPI_COMM_WORLD);
 	//std::cout << "[" <<  mpi_myrank << "] start mult " << std::endl;
 	this->computeTimeMult_ += this->myTimer_->stop();
 	for (int rank = 0; rank < mpi_size; rank++){
@@ -271,7 +262,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 		}
 		MPI_Win_fence(assert, _mpi_data_window[rank]);
 	}
-	MPI_Barrier(MPI_COMM_WORLD);
 	this->completeTimeMult_ += this->myTimer_->stop();
 
 	// patch result -> set additional entries zero
@@ -291,13 +281,13 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 
 		size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
 		size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
+		size_t procGridChunkStart = _mpi_grid_offsets[myGridChunkStart];
 		for(size_t thread_chunk = myGridChunkStart + thread_num; thread_chunk<myGridChunkEnd; thread_chunk+=thread_count){
 			size_t start = _mpi_grid_offsets[thread_chunk];
 			size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *tmp_result_buffer, start, end, 0, this->numPatchedTrainingInstances_);
-
-			sg::parallel::myGlobalMPIComm->putToAll(&tmp_result_buffer_ptr[start], start - _mpi_grid_offsets[_mpi_grid_offsets_global[mpi_myrank]], end-start, _mpi_grid_window[mpi_myrank]);
+			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *_mpi_grid_window_buffer, start, end, 0, this->numPatchedTrainingInstances_);
+			sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_grid_window[mpi_myrank], start - procGridChunkStart, end-start);
 		}
 
 
@@ -314,8 +304,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 		MPI_Win_fence(assert, _mpi_grid_window[rank]);
 	}
 
-	MPI_Barrier(MPI_COMM_WORLD);
-
 	this->completeTimeMultTrans_ += this->myTimer_->stop();
 	result.copyFrom(*_mpi_grid_window_buffer);
 
@@ -327,22 +315,17 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::generateb(sg::base::DataVector
 {
 	int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 	int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+
+	// reuse window buffer, it already has the correct size
 	_mpi_data_window_buffer->setAll(0.0);
 	_mpi_data_window_buffer->copyFrom(classes);
+
+	_mpi_grid_window_buffer->setAll(0.0);
 	b.setAll(0.0);
-
-	sg::base::DataVector *tmp_result_buffer = new sg::base::DataVector(m_grid.getSize());
-	tmp_result_buffer->setAll(0.0);
-	double* tmp_result_buffer_ptr = tmp_result_buffer->getPointer();
-
-	double* ptrClasses = _mpi_data_window_buffer->getPointer();
 
 	for (int rank = 0; rank < mpi_size; rank++){
 		MPI_Win_fence(0, _mpi_grid_window[rank]);
 	}
-
-
-	std::cout << "before openmp" << std::endl;
 
 	int thread_count = 1;
 	int thread_num = 0;
@@ -355,12 +338,13 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::generateb(sg::base::DataVector
 
 		size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
 		size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
+		size_t procChunkStart = _mpi_grid_offsets[myGridChunkStart];
 		for(size_t thread_chunk = myGridChunkStart + thread_num; thread_chunk<myGridChunkEnd; thread_chunk+=thread_count){
 			size_t start = _mpi_grid_offsets[thread_chunk];
 			size_t end =  start + _mpi_grid_sizes[thread_chunk];
-			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *tmp_result_buffer, start, end, 0, this->numPatchedTrainingInstances_);
 
-			sg::parallel::myGlobalMPIComm->putToAll(&tmp_result_buffer_ptr[start], start - _mpi_grid_offsets[_mpi_grid_offsets_global[mpi_myrank]], end-start, _mpi_grid_window[mpi_myrank]);
+			sg::parallel::X86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *_mpi_grid_window_buffer, start, end, 0, this->numPatchedTrainingInstances_);
+			sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_grid_window[mpi_myrank], start - procChunkStart, end - start);
 		}
 #ifdef _OPENMP
 	}
