@@ -7,8 +7,8 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.h"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.h"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp"
 #include "base/exception/operation_exception.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
@@ -83,7 +83,6 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
     }
 
     myTimer->start();
-
     result.setAll(0.0f);
 
 
@@ -111,6 +110,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
     }
 
     myTimer->start();
+	result.setAll(0.0f);
 
 #ifdef _OPENMP
 	#pragma omp parallel

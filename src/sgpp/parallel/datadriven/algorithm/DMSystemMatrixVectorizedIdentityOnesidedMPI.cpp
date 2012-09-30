@@ -10,8 +10,8 @@
 #include "base/exception/operation_exception.hpp"
 
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.h"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.h"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 #ifdef _OPENMP
@@ -168,8 +168,8 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 		if(rank == mpi_myrank) {
 			assert |= MPI_MODE_NOPUT;
 		}
-		MPI_Win_fence(0, _mpi_data_window[rank]);
-		MPI_Win_fence(0, _mpi_grid_window[rank]);
+		MPI_Win_fence(assert, _mpi_data_window[rank]);
+		MPI_Win_fence(assert, _mpi_grid_window[rank]);
 	}
 	result.setAll(0.0);
 	_mpi_data_window_buffer->setAll(0.0);
@@ -193,12 +193,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 			size_t start = _mpi_data_offsets[thread_chunk];
 			size_t end = start + _mpi_data_sizes[thread_chunk];
 
-			if (start % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0 || end % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0 || end > this->numPatchedTrainingInstances_)
-			{
-				std::cout << "start%CHUNKDATAPOINTS_X86: " << start%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << "; end%CHUNKDATAPOINTS_X86: " << end%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << std::endl;
-				std::cout << end << " > numpatchedtraininstances ("<< this->numPatchedTrainingInstances_ <<")" << std::endl;
-				throw new sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86!");
-			}
 			sg::parallel::X86SimdLinearMult::mult(level_, index_, dataset_, alpha, *_mpi_data_window_buffer, start, end);
 			sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_data_window[mpi_myrank], start - procDataChunkStart, end-start);
 		}
@@ -207,7 +201,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::mult(sg::base::DataVector& alp
 	#pragma omp single
 		{
 #endif
-	//std::cout << "[" <<  mpi_myrank << "] start mult " << std::endl;
 	this->computeTimeMult_ += this->myTimer_->stop();
 	for (int rank = 0; rank < mpi_size; rank++){
 		int assert = MPI_MODE_NOSUCCEED;
@@ -307,8 +300,6 @@ void DMSystemMatrixVectorizedIdentityOneSidedMPI::generateb(sg::base::DataVector
 		MPI_Win_fence(0, _mpi_grid_window[rank]);
 	}
 	b.copyFrom(*_mpi_grid_window_buffer);
-
-	MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void DMSystemMatrixVectorizedIdentityOneSidedMPI::rebuildLevelAndIndex()
