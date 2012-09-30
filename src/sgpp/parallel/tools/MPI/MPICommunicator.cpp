@@ -7,6 +7,7 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/tools/MPI/MPICommunicator.hpp"
+#include "base/exception/operation_exception.hpp"
 
 namespace sg
 {
@@ -198,10 +199,28 @@ void MPICommunicator::IrecvFromAll(double *ptr, int *global_sizes, int *global_o
 void MPICommunicator::putToAll(double* ptr, int winOffset, int count, MPI_Win win)
 {
 	for(int i = 0; i<getNumRanks(); i++){
-		if(i==getMyRank()){
-			//continue;
-		}
 		MPI_Put(ptr, count, MPI_DOUBLE, i, winOffset, count, MPI_DOUBLE, win);
+	}
+}
+
+void MPICommunicator::putToAllInplace(MPI_Win win, int winOffset, int count)
+{
+	int flag;
+	void* base_addr;
+	MPI_Win_get_attr(win, MPI_WIN_BASE, &base_addr, &flag);
+	if (!flag) {
+		fprintf( stderr, "Attribute for key MPI_WIN_BASE not set: %d\n", flag );
+		throw new sg::base::operation_exception("could not get MPI_WIN_BASE!");
+	}
+	double *winptr = (double *)base_addr;
+	double *sourcePtr = &winptr[winOffset];
+
+	for(int i = 0; i<getNumRanks(); i++){
+		if(i==getMyRank()){
+			// do not send to self, as we are working in place
+			continue;
+		}
+		MPI_Put(sourcePtr, count, MPI_DOUBLE, i, winOffset, count, MPI_DOUBLE, win);
 	}
 }
 
