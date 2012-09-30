@@ -31,13 +31,14 @@ class X86SimdLinearMult
 public:
 	static inline size_t getChunkGridPoints(){return 12;}
 	static inline size_t getChunkDataPoints(){return 24;}
-	static inline void mult(sg::base::DataMatrix* level,
-						   sg::base::DataMatrix* index,
-						   sg::base::DataMatrix* dataset,
-						   sg::base::DataVector& alpha,
-						   sg::base::DataVector& result,
-						   size_t start_index_data,
-						   size_t end_index_data){
+	static inline void mult(
+			sg::base::DataMatrix* level,
+			sg::base::DataMatrix* index,
+			sg::base::DataMatrix* dataset,
+			sg::base::DataVector& alpha,
+			sg::base::DataVector& result,
+			size_t start_index_data,
+			size_t end_index_data){
 		double* ptrLevel = level->getPointer();
 		double* ptrIndex = index->getPointer();
 		double* ptrAlpha = alpha.getPointer();
@@ -52,7 +53,6 @@ public:
 		for(size_t c = start_index_data; c < end; c+=std::min<size_t>(getChunkDataPoints(), (end-c)))
 		{
 			size_t data_end = std::min<size_t>((size_t)getChunkDataPoints()+c, end);
-
 
 		#ifdef __ICC
 		#pragma ivdep

@@ -108,6 +108,7 @@ double OperationMultipleEvalIterativeX86SimdLinear::multVectorized(sg::base::Dat
     }
 
 	myTimer->start();
+	result.setAll(0.0);
 
 #ifdef _OPENMP
 	#pragma omp parallel
