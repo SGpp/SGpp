@@ -115,6 +115,12 @@ private:
      *
      */
 	void calcDistribution(int totalSize, int numChunks, int* sizes, int* offsets, size_t blocksize);
+
+	void initWindows(double* windowBufferPtr, MPI_Win* windowsArray, int* sizes, int* offsets, int* sizes_global, int* offsets_global);
+	void createAndInitGridBuffers();
+	void createAndInitDataBuffers(sg::base::DataMatrix &trainData);
+	void freeGridBuffers();
+	void freeDataBuffers();
 };
 
 }
