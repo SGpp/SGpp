@@ -109,12 +109,6 @@ protected:
 	/// (old) size of partition1
 	size_t _oldSizePartition1;
 
-	/// identify partition1 as point of interest
-	bool _testPartition1;
-
-	/// identify partition2 as point of interest
-	bool _testPartition2;
-
 	/// first run, do initial calibration
 	bool _isFirstTuning;
 
@@ -123,12 +117,6 @@ protected:
 
 	/// number of updates that cause a tuning update
 	size_t _retune;
-
-	/// damping factor to shade OS issues and instabilities in time measurements
-	double _damping;
-
-	/// max. allowed change in percent
-	double _maxPercent;
 
 	bool _isStatic;
 	double _percentPartion1;

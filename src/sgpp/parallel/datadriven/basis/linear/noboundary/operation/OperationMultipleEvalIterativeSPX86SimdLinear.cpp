@@ -16,7 +16,7 @@
 #ifdef _WIN32
 #include <immintrin.h>
 #else
-#include <x86intrin.h>
+#include <immintrin.h>
 #endif
 #endif
 
