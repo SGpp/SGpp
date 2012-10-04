@@ -40,23 +40,11 @@ OperationMultipleEvalIterativeHybridX86SimdOCLLinear::OperationMultipleEvalItera
 	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 
-	//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10, 0.75, 15);
-	//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 128, 10, 0.75, 15);
-		// IVB + GTX680
+	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10);
+	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 128, 10);
+	// IVB + GTX680, static
 	//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.085, 128, 1);
 	//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.045, 128, 1);
-		//Trinity
-	//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.33, 128, 1);
-	//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.32, 128, 1);
-		//Llano
-	//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.36, 128, 1);
-	//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.145, 128, 1);
-		//Ivy Bridge
-	//	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.655, 128, 20);
-	//	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.635, 128, 20);
-	// X5650 + 3xGTX470
-	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.05, 128, 25);
-	_tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage->size(), 0.04, 128, 25);
 }
 
 OperationMultipleEvalIterativeHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeHybridX86SimdOCLLinear()
