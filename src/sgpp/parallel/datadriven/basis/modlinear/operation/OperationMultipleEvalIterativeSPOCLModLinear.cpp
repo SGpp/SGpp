@@ -68,7 +68,7 @@ namespace parallel
 	size_t numWGs = storageSize/OCL_SGPP_LOCAL_WORKGROUP_SIZE;
     size_t global = numWGs*OCL_SGPP_LOCAL_WORKGROUP_SIZE;
 
-    double time;
+    double time = 0.0;
     if (global > 0)
     	time = myOCLKernels->multTransModSPOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, global);
 
@@ -95,7 +95,7 @@ namespace parallel
                   }
                 else
                   {
-                    curSupport *= std::max<float>(1.0f - fabs( ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d])) - ptrIndex[(j*dims)+d] ), 0.0f);
+                    curSupport *= std::max<float>(1.0f - (float)fabs( ((ptrLevel[(j*dims)+d]) * (ptrData[(i*dims)+d])) - ptrIndex[(j*dims)+d] ), 0.0f);
                   }
               }
 

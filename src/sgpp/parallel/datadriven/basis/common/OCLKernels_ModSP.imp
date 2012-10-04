@@ -154,7 +154,7 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
     size_t local = OCL_SGPP_LOCAL_WORKGROUP_SIZE;
     size_t offset = 0;	
 	size_t global[MAX_OCL_DEVICE_COUNT];
-	size_t active_devices;
+	size_t active_devices = 0;
 	size_t scheduled_elements = 0;
 	for (size_t i = 0; i < num_devices; i++)
     {
@@ -210,7 +210,7 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 	{
 		if (global[i] > 0)
 		{
-			err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransModSP[i], 1, NULL, &global[i], &local, 0, NULL, &clTimings[i]);
+			err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransModSP[i], 1, NULL, &(global[i]), &local, 0, NULL, &(clTimings[i]));
 			if (err != CL_SUCCESS)
 			{
 				std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -225,7 +225,7 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 	{
 		if (global[i] > 0)
 		{ 
-			err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(float)*offset, sizeof(float)*global[i], &ptrGlobalResult[offset], 0, NULL, &GPUDone[i]);
+			err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(float)*offset, sizeof(float)*global[i], &(ptrGlobalResult[offset]), 0, NULL, &(GPUDone[i]));
 			if (err != CL_SUCCESS)
 			{
 				std::cout << "Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
@@ -236,7 +236,7 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 	}
 
 	// sync GPUs
-	clWaitForEvents(active_devices, GPUDone);
+	clWaitForEvents((cl_uint)active_devices, GPUDone);
 
 	// determine kernel execution time
 	for (size_t i = 0; i < num_devices; i++)
@@ -273,9 +273,6 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 	{
 		clReleaseMemObject(clSource[i]);
 		clReleaseMemObject(clResult[i]);
-	}
-    for (size_t i = 0; i < num_devices; i++)
-    {
     	if (global[i] > 0)
     	{
 	        clReleaseEvent(clTimings[i]);
@@ -527,7 +524,7 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
     {
     	if (global[i] > 0)
     	{
-			err = clEnqueueNDRangeKernel(command_queue[i], kernel_multModSP[i], 1, NULL, &global[i], &local, 0, NULL, &(clTimings[i]));
+			err = clEnqueueNDRangeKernel(command_queue[i], kernel_multModSP[i], 1, NULL, &(global[i]), &local, 0, NULL, &(clTimings[i]));
 			if (err != CL_SUCCESS)
 			{
 				std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
@@ -553,7 +550,7 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
     }
 
     // sync GPUs
-    clWaitForEvents(active_devices, GPUDone);
+    clWaitForEvents((cl_uint)active_devices, GPUDone);
 
 	// determine kernel execution time
     for (size_t i = 0; i < num_devices; i++)
@@ -590,9 +587,6 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
     {
     	clReleaseMemObject(clAlpha[i]);
     	clReleaseMemObject(clResult[i]);
-    }
-    for (size_t i = 0; i < num_devices; i++)
-    {
     	if (global[i] > 0)
     	{
 	        clReleaseEvent(clTimings[i]);
