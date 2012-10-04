@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -9,26 +9,26 @@
 #include <iostream>
 #include <algorithm>
 
-#define INITIAL_SPEEDUP_PARTITION_2 10.0;
+#define INITIAL_SPEEDUP_PARTITION_2 20.0;
 
 namespace sg
 {
 namespace parallel
 {
 
-TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles, double damping, double maxPercent)
+TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles)
 	: _problemSize(problemSize), _partition2Divider(partition2Divider), _timePartition1(0.0), _timePartition2(0.0),
 	  _oldSizePartition1(problemSize), _isFirstTuning(true),
 	  _tuneCounter(0), _retune(retune_cycles), _isStatic(false),
-	  _percentPartion1(0.0), _staticOutputCounter(0), _staticOutputFreq(20)
+	  _percentPartion1(0.0)
 {
 }
 
 TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider, size_t OutputFreq)
 	: _problemSize(problemSize), _partition2Divider(partition2Divider), _timePartition1(0.0), _timePartition2(0.0),
 	  _oldSizePartition1(problemSize), _isFirstTuning(false),
-	  _tuneCounter(0), _retune(50), _isStatic(true),
-	  _percentPartion1(percentPartion1), _staticOutputCounter(0), _staticOutputFreq(OutputFreq)
+	  _tuneCounter(0), _retune(OutputFreq), _isStatic(true),
+	  _percentPartion1(percentPartion1)
 {
 	rescaleAutoTuning(_problemSize);
 }
@@ -108,10 +108,8 @@ size_t TwoPartitionAutoTuning::getPartition1Size()
 	}
 	else
 	{
-		if (_staticOutputCounter % _staticOutputFreq == 0)
+		if (_tuneCounter % _retune == 0)
 			std::cout << "AUTOTUNING-PARTITION-SIZES (" << _problemSize << "): Time1: " << _timePartition1 << " Size1: " << _oldSizePartition1 << "(" << 100.0*(double)_oldSizePartition1/(double)_problemSize << "%); Time2: " << _timePartition2 << " Size2: " << _problemSize-_oldSizePartition1 << " (" << 100.0*(double)(_problemSize-_oldSizePartition1)/(double)_problemSize << "%)" << std::endl;
-
-		_staticOutputCounter++;
 	}
 
 	return _oldSizePartition1;
@@ -142,7 +140,6 @@ void TwoPartitionAutoTuning::resetAutoTuning()
 	_timePartition2 = 0.0;
 	_isFirstTuning = true;
 	_tuneCounter = 0;
-	_staticOutputCounter = 0;
 }
 
 void TwoPartitionAutoTuning::softResetAutoTuning()
@@ -150,7 +147,6 @@ void TwoPartitionAutoTuning::softResetAutoTuning()
 	_timePartition1 = 0.0;
 	_timePartition2 = 0.0;
 	_tuneCounter = 0;
-	_staticOutputCounter = 0;
 }
 
 void TwoPartitionAutoTuning::rescaleAutoTuning(size_t newProblemSize)
@@ -185,7 +181,7 @@ void TwoPartitionAutoTuning::rescaleAutoTuning(size_t newProblemSize)
 
 		_problemSize = newProblemSize;
 		_oldSizePartition1 = partition1;
-		_staticOutputCounter = 0;
+		_tuneCounter = 0;
 	}
 }
 

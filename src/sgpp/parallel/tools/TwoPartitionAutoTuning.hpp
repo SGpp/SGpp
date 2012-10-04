@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -28,16 +28,22 @@ class TwoPartitionAutoTuning
 {
 public:
 	/**
-	 * Constructor
+	 * Constructor for dynamic load balancing
 	 *
 	 * @param problemSize contains the overall size which should be partitioned
-	 * @param partition2Divider the second partition
+	 * @param partition2Divider the second partition divider, partition2's size is a multiple
 	 * @param retune_cycles number of iteration after which the problem's separation is re-considered
-	 * @oaram damping damping factor to shade OS issues which might influence time measurements
-	 * @param maxPercent max. percentage range into which the partition size should be changed during rescheduling
 	 */
-	TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles, double damping, double maxPercent);
+	TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
 
+	/**
+	 * Constructor for static load balancing
+	 *
+	 * @param problemSize contains the overall size which should be partitioned
+	 * @param percentPartion1 how big is the first, non accelerated portion?
+	 * @param partition2Divider the second partition divider, partition2's size is a multiple
+	 * @param OutputFreq how often should we print timings?
+	 */
 	TwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider, size_t OutputFreq);
 
 	/**
@@ -118,10 +124,11 @@ protected:
 	/// number of updates that cause a tuning update
 	size_t _retune;
 
+	/// if static load balancing is enabled
 	bool _isStatic;
+
+	/// static, percent threshold of partition 1
 	double _percentPartion1;
-	int _staticOutputCounter;
-	int _staticOutputFreq;
 
 	/**
 	 * re-scale the data and tuning parameter due to workload change
