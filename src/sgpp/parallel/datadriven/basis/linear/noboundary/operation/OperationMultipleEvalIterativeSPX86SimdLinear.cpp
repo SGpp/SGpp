@@ -13,11 +13,10 @@
 #endif
 
 #if defined(__SSE3__) || defined(__AVX__)
-#ifdef _WIN32
-#include <immintrin.h>
-#else
 #include <immintrin.h>
 #endif
+#if defined(__FMA4__)
+#include <fma4intrin.h>
 #endif
 
 #ifdef __USEAVX128__
