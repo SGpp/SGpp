@@ -16,7 +16,7 @@
 #include <immintrin.h>
 #endif
 #if defined(__FMA4__)
-#include <fma4intrin.h>
+#include <x86intrin.h>
 #endif
 
 #ifdef __USEAVX128__
