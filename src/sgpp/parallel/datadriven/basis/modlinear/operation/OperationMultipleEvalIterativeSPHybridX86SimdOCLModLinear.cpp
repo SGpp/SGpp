@@ -67,7 +67,7 @@ void OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::rebuildLevelAndI
 	myOCLKernels->resetKernels();
 
 	_tuningMultTrans->setProblemSize(storage->size());
-	_tuningMult->softResetAutoTuning();
+	_tuningMult->resetAutoTuning();
 }
 
 double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
