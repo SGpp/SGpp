@@ -67,7 +67,7 @@ void OperationMultipleEvalIterativeHybridX86SimdOCLLinear::rebuildLevelAndIndex(
 	myOCLKernels->resetKernels();
 
 	_tuningMultTrans->setProblemSize(storage->size());
-	_tuningMult->softResetAutoTuning();
+	_tuningMult->resetAutoTuning();
 }
 
 double OperationMultipleEvalIterativeHybridX86SimdOCLLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)

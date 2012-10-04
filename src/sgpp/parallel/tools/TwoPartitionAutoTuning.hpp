@@ -94,11 +94,6 @@ public:
 	 */
 	void resetAutoTuning();
 
-	/**
-	 * resets only temp. auto tuning data
-	 */
-	void softResetAutoTuning();
-
 protected:
 	/// store problemsize
 	size_t _problemSize;

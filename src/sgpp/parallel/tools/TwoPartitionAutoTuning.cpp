@@ -142,13 +142,6 @@ void TwoPartitionAutoTuning::resetAutoTuning()
 	_tuneCounter = 0;
 }
 
-void TwoPartitionAutoTuning::softResetAutoTuning()
-{
-	_timePartition1 = 0.0;
-	_timePartition2 = 0.0;
-	_tuneCounter = 0;
-}
-
 void TwoPartitionAutoTuning::rescaleAutoTuning(size_t newProblemSize)
 {
 	if (newProblemSize == _problemSize)
