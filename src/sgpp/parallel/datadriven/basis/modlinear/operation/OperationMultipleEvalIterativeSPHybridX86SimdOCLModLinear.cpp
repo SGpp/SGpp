@@ -140,9 +140,9 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
 		else
 		{
 #endif
-			int worksize = (storageSize - gpu_partition)/(num_threads);
-			int myStart = gpu_partition + (tid-1)*worksize;
-			int myEnd = myStart + worksize;
+			int worksize = static_cast<int>((storageSize - gpu_partition)/(num_threads));
+			int myStart = static_cast<int>(gpu_partition + (tid-1)*worksize);
+			size_t myEnd = static_cast<size_t>(myStart + worksize);
 			if (tid == num_threads-1)
 				myEnd = storageSize;
 #ifdef _OPENMP
@@ -155,7 +155,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
 //				std::cout << tid << " " << myStart << " " << myEnd << " " << storageSize << std::endl;
 //			}
 #if defined(__SSE3__) && !defined(__AVX__)
-			for (size_t j = myStart; j < myEnd; j++)
+			for (size_t j = (size_t)myStart; j < myEnd; j++)
 			{
 				__m128 res = _mm_set1_ps(0.0f);
 				int imask = 0x7FFFFFFF;
@@ -303,7 +303,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
 			}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-			for (size_t j = myStart; j < myEnd; j++)
+			for (size_t j = (size_t)myStart; j < myEnd; j++)
 			{
 				__m256 res = _mm256_set1_ps(0.0f);
 				int imask = 0x7FFFFFFF;
@@ -455,7 +455,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
 			}
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
-			for (size_t j = myStart; j < myEnd; j++)
+			for (size_t j = (size_t)myStart; j < myEnd; j++)
 			{
 				ptrGlobalResult[j] = 0.0f;
 
@@ -578,15 +578,15 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
     	}
 		else
 		{
-			int worksize = (result_size - gpu_partition)/(num_threads);
+			int worksize = static_cast<int>((result_size - gpu_partition)/(num_threads));
 #if defined(__SSE3__) && !defined(__AVX__)
 			worksize = (worksize/16)*16;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
 			worksize = (worksize/32)*32;
 #endif
-			int myStart = gpu_partition + (tid-1)*worksize;
-			int myEnd = myStart + worksize;
+			int myStart = static_cast<int>(gpu_partition + (tid-1)*worksize);
+			size_t myEnd = static_cast<size_t>(myStart + worksize);
 			if (tid == num_threads-1)
 				myEnd = result_size;
 #ifdef _OPENMP
@@ -599,7 +599,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
 //				std::cout << tid << " " << myStart << " " << myEnd << " " << result_size << std::endl;
 //			}
 #if defined(__SSE3__) && !defined(__AVX__)
-			for (size_t i = myStart; i < myEnd; i+=16)
+			for (size_t i = (size_t)myStart; i < myEnd; i+=16)
 			{
 				int imask = 0x7FFFFFFF;
 				float* fmask = (float*)&imask;
@@ -762,7 +762,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
 			}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-			for (size_t i = myStart; i < myEnd; i+=32)
+			for (size_t i = (size_t)myStart; i < myEnd; i+=32)
 			{
 				int imask = 0x7FFFFFFF;
 				float* fmask = (float*)&imask;
@@ -925,7 +925,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
 			}
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
-			for (size_t i = myStart; i < myEnd; i++)
+			for (size_t i = (size_t)myStart; i < myEnd; i++)
 			{
 				for (size_t j = 0; j < storageSize; j++)
 				{

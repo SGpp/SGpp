@@ -67,7 +67,7 @@ double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(sg::base
 	size_t numWGs = storageSize/OCL_SGPP_LOCAL_WORKGROUP_SIZE;
     size_t global = numWGs*OCL_SGPP_LOCAL_WORKGROUP_SIZE;
 
-    double time;
+    double time = 0.0;
     if (global > 0)
     	time = myOCLKernels->multTransOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, global);
 
