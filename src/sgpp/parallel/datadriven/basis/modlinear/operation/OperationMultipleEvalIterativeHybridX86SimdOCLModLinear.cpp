@@ -156,7 +156,6 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multTransposeVec
 			for (size_t j = (size_t)myStart; j < myEnd; j++)
 			{
 				__m128d res = _mm_set1_pd(0.0f);
-
 				long long imask = 0x7FFFFFFFFFFFFFFF;
 				double* fmask = (double*)&imask;
 
@@ -304,7 +303,6 @@ double OperationMultipleEvalIterativeHybridX86SimdOCLModLinear::multTransposeVec
 			for (size_t j = (size_t)myStart; j < myEnd; j++)
 			{
 				__m256d res = _mm256_set1_pd(0.0f);
-
 				long long imask = 0x7FFFFFFFFFFFFFFF;
 				double* fmask = (double*)&imask;
 

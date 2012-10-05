@@ -104,8 +104,6 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
     // split result into GPU and CPU partition
     size_t gpu_partition = storageSize - _tuningMultTrans->getPartition1Size();
 
-//    std::cout << gpu_partition << " " << storageSize << std::endl;
-
     // Do on-demand transpose
 	float* ptrTransData = new float[dims*source_size];
 
@@ -556,8 +554,6 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
     // split result into GPU and CPU partition
     size_t gpu_partition = result_size - _tuningMult->getPartition1Size();
 
-    //std::cout << gpu_partition << " " << result_size << std::endl;
-
 	#pragma omp parallel default(shared)
     {
 #ifdef _OPENMP
@@ -571,9 +567,9 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
     	{
     		if (gpu_partition > 0)
     		{
-			double loc_start = omp_get_wtime();
+    			double loc_start = omp_get_wtime();
     			myOCLKernels->multModSPOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
-			gpu_time = omp_get_wtime() - loc_start;
+    			gpu_time = omp_get_wtime() - loc_start;
     		}
     	}
 		else
@@ -770,7 +766,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
 				__m256 res_0 = _mm256_load_ps(&(ptrResult[i]));
 				__m256 res_1 = _mm256_load_ps(&(ptrResult[i+8]));
 				__m256 res_2 = _mm256_load_ps(&(ptrResult[i+16]));
-				__m256 res_3 = _mm256_load_ps(&(ptrResult[i+32]));
+				__m256 res_3 = _mm256_load_ps(&(ptrResult[i+24]));
 
 				// Do on-demand transpose
 				float* ptrTransData = new float[dims*32];
