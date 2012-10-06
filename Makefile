@@ -50,7 +50,7 @@ VEC=sse3
 #	NO - no extensions, default
 EXT=NO
 # instances used to compile
-JOBS=2
+JOBS=4
 # Default residual threshold
 SLE_RES_THRESH=-1.0
 # Default number of parallel dimensions for the parallelization of the recursive up down scheme
@@ -112,7 +112,7 @@ CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), INTELOCLGPU)
-CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -DNO_OCL_OPTS -fopenmp
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), AMDOCLGPU)

@@ -17,7 +17,6 @@
 #endif
 
 
-
 namespace sg
 {
 namespace parallel

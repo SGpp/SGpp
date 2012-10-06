@@ -60,21 +60,17 @@ namespace parallel
     double* ptrIndex = this->index_->getPointer();
     double* ptrGlobalResult = result.getPointer();
 
-    if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows())
+    if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNrows())
       {
     	throw base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 
-    double time = myOCLKernels->multTransModOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, storageSize);
+	size_t numWGs = storageSize/OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+    size_t global = numWGs*OCL_SGPP_LOCAL_WORKGROUP_SIZE;
 
-    // do the rest...
-    size_t numWGs = storageSize/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
-    size_t global = numWGs*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
-
-    if (global == 0)
-      {
-    	global = storageSize;
-      }
+    double time = 0.0;
+    if (global > 0)
+    	time = myOCLKernels->multTransModOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, global);
 
 #pragma omp parallel for
     for (size_t j = global; j < storageSize; j++)
@@ -126,7 +122,7 @@ namespace parallel
     double* ptrLevel = this->level_->getPointer();
     double* ptrIndex = this->index_->getPointer();
 
-    if (this->dataset_->getNrows() % 128 != 0 || result_size != this->dataset_->getNrows())
+    if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNrows())
       {
     	throw base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
