@@ -28,8 +28,8 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 		stream_program_src << std::endl;
 		stream_program_src << "	double eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	double myResult = 0.0f;" << std::endl << std::endl;
-		stream_program_src << "	__local double locData[" << dims*OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << "];" << std::endl;
-		stream_program_src << "	__local double locSource[" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << "];" << std::endl << std::endl;
+		stream_program_src << "	__local double locData[" << dims*OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
+		stream_program_src << "	__local double locSource[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
 			stream_program_src << "	double level_" << d << " = ptrLevel[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
@@ -37,7 +37,7 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 		}
 		stream_program_src << std::endl;
 		stream_program_src << "	// Iterate over all grid points" << std::endl;
-		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << ")" << std::endl;
+		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
@@ -45,7 +45,7 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 		}
 		stream_program_src << "		locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
-		stream_program_src << "		for(int k = 0; k < " << OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2 << "; k++)" << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "; k++)" << std::endl;
 		stream_program_src << "		{" << std::endl;
 
 		stream_program_src << "			curSupport = locSource[k];" << std::endl << std::endl;
@@ -149,36 +149,57 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 	cl_uint clSourceSize = (cl_uint)sourceSize;
 	cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
 
-	// determine best fit
-	size_t numWGs = gpu_partition/OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP;
-	size_t global = numWGs*(OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/num_devices);
-	size_t local = OCL_MULT_N_DATAPREFETCH_BLOCKSIZE_DP/2;
-	size_t offset = 0;
-
-	// if there is not enough workload for GPUs
-	if (global == 0)
-	{
-		return 0.0;
+    // determine best fit
+	size_t elements_per_gpu = (((gpu_partition/num_devices)/OCL_SGPP_LOCAL_WORKGROUP_SIZE)+1)*OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+    size_t local = OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+    size_t offset = 0;	
+	size_t global[MAX_OCL_DEVICE_COUNT];
+	size_t active_devices = 0;
+	size_t scheduled_elements = 0;
+	for (size_t i = 0; i < num_devices; i++)
+    {
+    	global[i] = elements_per_gpu;
+ 
+ 		// check for padding
+ 		if (scheduled_elements < gpu_partition)
+ 		{
+	    	global[i] = elements_per_gpu;
+	    	if ((global[i] + scheduled_elements) > gpu_partition)
+	    	{
+	    		global[i] = gpu_partition-scheduled_elements;
+	    	}
+ 		}
+ 		else
+ 		{
+ 			global[i] = 0;
+ 		}
+    	scheduled_elements += global[i];
+    	   		
+    	if (global[i] != 0)
+    	    active_devices++;
 	}
 
 	// set kernel arguments
 	for (size_t i = 0; i < num_devices; i++)
 	{
 		clOffsets[i] = (cl_uint)offset;
-		if ( clSetKernelArg(kernel_multTransModDP[i], 0, sizeof(cl_mem), &clSource[i]) ||
-				clSetKernelArg(kernel_multTransModDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
-				clSetKernelArg(kernel_multTransModDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
-				clSetKernelArg(kernel_multTransModDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
-				clSetKernelArg(kernel_multTransModDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
-				clSetKernelArg(kernel_multTransModDP[i], 5, sizeof(cl_uint), &clSourceSize) ||
-				clSetKernelArg(kernel_multTransModDP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+		if (global[i] > 0)
 		{
-			std::cout << "err" << std::endl;
-			std::cout << "Failed to create kernel Args for kernel " << i << "!" << std::endl;
-			return 0.0;
+			if ( clSetKernelArg(kernel_multTransModDP[i], 0, sizeof(cl_mem), &clSource[i]) ||
+					clSetKernelArg(kernel_multTransModDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
+					clSetKernelArg(kernel_multTransModDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
+					clSetKernelArg(kernel_multTransModDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
+					clSetKernelArg(kernel_multTransModDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+					clSetKernelArg(kernel_multTransModDP[i], 5, sizeof(cl_uint), &clSourceSize) ||
+					clSetKernelArg(kernel_multTransModDP[i], 6, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+			{
+				std::cout << "err" << std::endl;
+				std::cout << "Failed to create kernel Args for kernel " << i << "!" << std::endl;
+				return 0.0;
+			}
 		}
 
-		offset += global;
+		offset += global[i];
 	}
 
 	cl_event clTimings[MAX_OCL_DEVICE_COUNT];
@@ -187,11 +208,14 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 	// enqueue kernels
 	for (size_t i = 0; i < num_devices; i++)
 	{
-		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransModDP[i], 1, NULL, &global, &local, 0, NULL, &clTimings[i]);
-		if (err != CL_SUCCESS)
+		if (global[i] > 0)
 		{
-			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
-			return 0.0;
+			err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTransModDP[i], 1, NULL, &(global[i]), &local, 0, NULL, &(clTimings[i]));
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+				return 0.0;
+			}
 		}
 	}
 
@@ -199,33 +223,40 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 	offset = 0;
 	for (size_t i = 0; i < num_devices; i++)
 	{
-		err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global, &ptrGlobalResult[offset], 0, NULL, &GPUDone[i]);
-		if (err != CL_SUCCESS)
+		if (global[i] > 0)
 		{
-			std::cout << "Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
-			return 0.0;
+			err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global[i], &(ptrGlobalResult[offset]), 0, NULL, &(GPUDone[i]));
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
+				return 0.0;
+			}
 		}
-		offset += global;
+		offset += global[i];
 	}
 
 	// sync GPUs
-	clWaitForEvents(num_devices, GPUDone);
+	clWaitForEvents((cl_uint)active_devices, GPUDone);
 
 	// determine kernel execution time
 	for (size_t i = 0; i < num_devices; i++)
 	{
 		double tmpTime;
 		cl_ulong startTime, endTime;
-		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
-		if (err != CL_SUCCESS)
+		startTime = endTime = 0;
+		if (global[i] > 0)
 		{
-			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
-		}
-
-		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
-		if (err != CL_SUCCESS)
-		{
-			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+			}
+	
+			err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			}
 		}
 
 		tmpTime = (double)(endTime - startTime);
@@ -242,11 +273,11 @@ double OCLKernels::multTransModOCL(double* ptrSource, double* ptrData, double* p
 	{
 		clReleaseMemObject(clSource[i]);
 		clReleaseMemObject(clResult[i]);
-	}
-    for (size_t i = 0; i < num_devices; i++)
-    {
-        clReleaseEvent(clTimings[i]);
-        clReleaseEvent(GPUDone[i]);
+    	if (global[i] > 0)
+    	{
+	        clReleaseEvent(clTimings[i]);
+	        clReleaseEvent(GPUDone[i]);
+	    }
     }
     
 	isFirstTimeMultTransModDP = false;
@@ -276,9 +307,9 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
 		stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
 		stream_program_src << "	globalIdx = globalIdx + offset;" << std::endl;
 		stream_program_src << std::endl;
-		stream_program_src << "	__local double locLevel[" << dims * OCL_DATAPREFETCH_SIZE_DP << "];" << std::endl;
-		stream_program_src << "	__local double locIndex[" << dims * OCL_DATAPREFETCH_SIZE_DP << "];" << std::endl;
-		stream_program_src << "	__local double locAlpha[" << OCL_DATAPREFETCH_SIZE_DP << "];" << std::endl;
+		stream_program_src << "	__local double locLevel[" << dims * OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
+		stream_program_src << "	__local double locIndex[" << dims * OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
+		stream_program_src << "	__local double locAlpha[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << std::endl;
 		stream_program_src << "	double eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	double myResult = 0.0;" << std::endl << std::endl;
@@ -289,7 +320,7 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
 		}
 		stream_program_src << std::endl;
 		stream_program_src << "	// Iterate over all grid points (fast ones, with cache)" << std::endl;
-		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_DATAPREFETCH_SIZE_DP << ")" << std::endl;
+		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		for (size_t d = 0; d < dims; d++)
 		{
@@ -299,7 +330,7 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
 		stream_program_src << "		locAlpha[localIdx] = ptrAlpha[j+localIdx];" << std::endl;
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
 		stream_program_src << std::endl;
-		stream_program_src << "		for(int k = 0; k < " << OCL_DATAPREFETCH_SIZE_DP << "; k++)" << std::endl;
+		stream_program_src << "		for(int k = 0; k < " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "; k++)" << std::endl;
 		stream_program_src << "		{" << std::endl;
 		stream_program_src << "			curSupport = locAlpha[k];" << std::endl << std::endl;
 		for (size_t d = 0; d < dims; d++)
@@ -428,12 +459,36 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
 		clResult[i] = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(double)*gpu_partition, NULL, NULL);
 	}
 
-	size_t global = gpu_partition/num_devices;
-    size_t local = OCL_DATAPREFETCH_SIZE_DP;
-    size_t offset = 0;
+    size_t elements_per_gpu = (((gpu_partition/num_devices)/OCL_SGPP_LOCAL_WORKGROUP_SIZE)+1)*OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+    size_t local = OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+    size_t offset = 0;	
+	size_t global[MAX_OCL_DEVICE_COUNT];
+	size_t active_devices = 0;
+	size_t scheduled_elements = 0;
+	for (size_t i = 0; i < num_devices; i++)
+    {
+    	global[i] = elements_per_gpu;
+ 
+ 		// check for padding
+ 		if (scheduled_elements < gpu_partition)
+ 		{
+	    	global[i] = elements_per_gpu;
+	    	if ((global[i] + scheduled_elements) > gpu_partition)
+	    	{
+	    		global[i] = gpu_partition-scheduled_elements;
+	    	}
+ 		}
+ 		else
+ 		{
+ 			global[i] = 0;
+ 		}
+    	scheduled_elements += global[i];
+    	   		
+    	if (global[i] != 0)
+    	    active_devices++;
+	}
 
-	size_t oclStorageSize = storageSize/OCL_DATAPREFETCH_SIZE_DP;
-    oclStorageSize *= OCL_DATAPREFETCH_SIZE_DP;
+	size_t oclStorageSize = (storageSize/OCL_SGPP_LOCAL_WORKGROUP_SIZE)*OCL_SGPP_LOCAL_WORKGROUP_SIZE;
 
     cl_uint clFastStorageSize = (cl_uint)(oclStorageSize);
     cl_uint clStorageSize = (cl_uint)(storageSize);
@@ -442,20 +497,23 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
     for (size_t i = 0; i < num_devices; i++)
     {
     	clOffsets[i] = (cl_uint)offset;
-		// set kernel arguments
-		if ( clSetKernelArg(kernel_multModDP[i], 0, sizeof(cl_mem), &clAlpha[i]) ||
-				clSetKernelArg(kernel_multModDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
-				clSetKernelArg(kernel_multModDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
-				clSetKernelArg(kernel_multModDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
-				clSetKernelArg(kernel_multModDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
-				clSetKernelArg(kernel_multModDP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
-				clSetKernelArg(kernel_multModDP[i], 6, sizeof(cl_uint), &clStorageSize) ||
-				clSetKernelArg(kernel_multModDP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
-		{
-			std::cout << "Failed to create kernel Args!" << std::endl;
-			return 0.0;
+    	if (global[i] > 0)
+    	{
+			// set kernel arguments
+			if ( clSetKernelArg(kernel_multModDP[i], 0, sizeof(cl_mem), &clAlpha[i]) ||
+					clSetKernelArg(kernel_multModDP[i], 1, sizeof(cl_mem), &clDataDP[i]) ||
+					clSetKernelArg(kernel_multModDP[i], 2, sizeof(cl_mem), &clLevelDP[i]) ||
+					clSetKernelArg(kernel_multModDP[i], 3, sizeof(cl_mem), &clIndexDP[i]) ||
+					clSetKernelArg(kernel_multModDP[i], 4, sizeof(cl_mem), &clResult[i]) ||
+					clSetKernelArg(kernel_multModDP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
+					clSetKernelArg(kernel_multModDP[i], 6, sizeof(cl_uint), &clStorageSize) ||
+					clSetKernelArg(kernel_multModDP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS)
+			{
+				std::cout << "Failed to create kernel Args!" << std::endl;
+				return 0.0;
+			}
 		}
-		offset += global;
+		offset += global[i];
     }
 
     cl_event clTimings[MAX_OCL_DEVICE_COUNT];
@@ -464,11 +522,14 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
     // enqueue kernel
     for (size_t i = 0; i < num_devices; i++)
     {
-		err = clEnqueueNDRangeKernel(command_queue[i], kernel_multModDP[i], 1, NULL, &global, &local, 0, NULL, &(clTimings[i]));
-		if (err != CL_SUCCESS)
-		{
-			std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
-			return 0.0;
+    	if (global[i] > 0)
+    	{
+			err = clEnqueueNDRangeKernel(command_queue[i], kernel_multModDP[i], 1, NULL, &(global[i]), &local, 0, NULL, &(clTimings[i]));
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to enqueue kernel command! Error Code: " << err << std::endl;
+				return 0.0;
+			}
 		}
     }
 
@@ -476,33 +537,40 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
     offset = 0;
     for (size_t i = 0; i < num_devices; i++)
     {
-		err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global, &(ptrResult[offset]), 0, NULL, &(GPUDone[i]));
-		if (err != CL_SUCCESS)
-		{
-			std::cout << "Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
-			return 0.0;
+    	if (global[i] > 0)
+    	{
+			err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double)*offset, sizeof(double)*global[i], &(ptrResult[offset]), 0, NULL, &(GPUDone[i]));
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
+				return 0.0;
+			}
 		}
-		offset += global;
+		offset += global[i];
     }
 
     // sync GPUs
-    clWaitForEvents(num_devices, GPUDone);
+    clWaitForEvents((cl_uint)active_devices, GPUDone);
 
 	// determine kernel execution time
     for (size_t i = 0; i < num_devices; i++)
 	{
     	double tmpTime;
 		cl_ulong startTime, endTime;
-		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
-		if (err != CL_SUCCESS)
+		startTime = endTime = 0;
+		if (global[i] > 0)
 		{
-			std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
-		}
-
-		err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
-		if (err != CL_SUCCESS)
-		{
-			std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to read start-time from command queue! Error Code: " << err << std::endl;
+			}
+	
+			err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, NULL);
+			if (err != CL_SUCCESS)
+			{
+				std::cout << "Failed to read end-time from command queue! Error Code: " << err << std::endl;
+			}
 		}
 
 		tmpTime = (double)(endTime - startTime);
@@ -519,11 +587,11 @@ double OCLKernels::multModOCL(double* ptrAlpha, double* ptrData, double* ptrLeve
     {
     	clReleaseMemObject(clAlpha[i]);
     	clReleaseMemObject(clResult[i]);
-    }
-    for (size_t i = 0; i < num_devices; i++)
-    {
-        clReleaseEvent(clTimings[i]);
-        clReleaseEvent(GPUDone[i]);
+    	if (global[i] > 0)
+    	{
+	        clReleaseEvent(clTimings[i]);
+	        clReleaseEvent(GPUDone[i]);
+	    }
     }
     
     isFirstTimeMultModDP = false;

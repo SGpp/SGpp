@@ -439,6 +439,7 @@ endif
 WINOBJS=$(OBJS:.o=.obj)
 
 ifeq ($(CC),g++)
+NOIPO=
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
@@ -449,6 +450,7 @@ default : $(OBJS)
 endif
 
 ifeq ($(CC),icpc)
+NOIPO=-no-ipo -no-ip
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
@@ -459,6 +461,7 @@ default : $(OBJS)
 endif
 
 ifeq ($(CC),mpiicpc)
+NOIPO=-no-ipo -no-ip
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
@@ -469,6 +472,7 @@ default : $(OBJS)
 endif
 
 ifeq ($(CC),icl)
+NOIPO=
 default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).lib
@@ -1516,31 +1520,31 @@ ArBBKernels10D.o : $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels10D.cpp
 
 # OCL Extensions:
 OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
 
 OperationMultipleEvalIterativeSPOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.cpp
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.cpp
 	
 OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp	
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp	
 
 OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
 	
 OCLKernels.o : $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_DP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_SP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModDP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModSP.imp
-	$(CC) $(CFLAGS) -o OCLKernels.o $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLKernels.o $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp
 	
 OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
 
 OperationMultipleEvalIterativeSPOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.cpp
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.cpp
 	
 OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp	
+	$(CC) $(CFLAGS)$(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp	
 
 OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp	
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp	
 
 # MPI Extensions:
 MPICommunicator.o : $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
