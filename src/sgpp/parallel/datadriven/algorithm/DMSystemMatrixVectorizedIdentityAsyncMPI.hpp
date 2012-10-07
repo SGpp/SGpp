@@ -93,18 +93,6 @@ private:
 	/// into how many chunks should data and grid be partitioned
 	size_t _chunkCountData;
 	size_t _chunkCountGrid;
-
-    /**
-     * calculates the distribution for the current MPI setting for a domain of
-     * size totalSize and stores the result into the arrays sizes and offsets. These
-     * arrays must have a size equal to the number of MPI processes currently running.
-     *
-     * @param totalSize size of domain to distribute
-     * @param sizes output array to store resulting distribution sizes (array size must match the number of MPI processes)
-     * @param offsets output array to store resulting distribution offsets (array size must match the number of MPI processes)
-     *
-     */
-	void calcDistribution(int totalSize, int numChunks, int* sizes, int* offsets, size_t blocksize);
 };
 
 }

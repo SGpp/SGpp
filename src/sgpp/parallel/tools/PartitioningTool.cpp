@@ -96,7 +96,16 @@ void PartitioningTool::getMPIPartitionSegment(int start, int end, size_t *segmen
 	getPartitionSegment(start, end, numRanks, myRank, segmentStart, segmentEnd, blocksize);
 }
 
-
+void PartitioningTool::calcDistribution(int totalSize, int numChunks, int *sizes, int *offsets, size_t blocksize)
+{
+	for(int chunkID = 0; chunkID < numChunks; ++chunkID){
+		size_t size;
+		size_t offset;
+		getPartitionSegment(totalSize, numChunks, chunkID, &size, &offset, blocksize);
+		sizes[chunkID] = size;
+		offsets[chunkID] = offset;
+	}
 }
 
+}
 }
