@@ -37,14 +37,14 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 #define MPI_TYPE_ASYNC 3
 #define MPI_TYPE_ONESIDED 4
 
-	int mpi_type = MPI_TYPE_ONESIDED;
+	int mpi_type = MPI_TYPE_ASYNC;
 
 	if(mpi_type == MPI_TYPE_STANDARD){
 		return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_STANDARD_REDUCE) {
 		throw new sg::base::factory_exception("not implemented");
 	} else if(mpi_type == MPI_TYPE_ASYNC) {
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI(grid, trainDataset, lambda, vecType);
+		return new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ONESIDED) {
 		return new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else {
