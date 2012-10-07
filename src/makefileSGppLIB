@@ -432,7 +432,8 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	DMSystemMatrixVectorizedIdentityMPI.o\
 	DMSystemMatrixVectorizedIdentityAsyncMPI.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o\
-	DMSystemMatrixVectorizedIdentityOnesidedMPI.o\
+	DMSystemMatrixMPITypeFactory.o\
+
 
 endif
 
@@ -1256,8 +1257,17 @@ DMSystemMatrixSPVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm
 DMSystemMatrixVectorizedIdentityAsyncMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityAsyncMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
 
-DMSystemMatrixVectorizedIdentityOnesidedMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityOnesidedMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.cpp
+DMSystemMatrixMPITypeFactory.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
+
 
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp

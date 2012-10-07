@@ -11,6 +11,7 @@
 
 #include "base/grid/GridStorage.hpp"
 #include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
+#include "base/exception/operation_exception.hpp"
 
 #if defined(__SSE3__) || defined(__AVX__)
 #ifdef _WIN32

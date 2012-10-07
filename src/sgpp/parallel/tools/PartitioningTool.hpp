@@ -59,6 +59,28 @@ public:
 	static void getMPIPartitionSegment(int totalSize, size_t *size, size_t *offset, size_t blocksize = 1);
 	static void getMPIPartitionSegment(int start, int end, size_t *segmentStart, size_t *segmentEnd, size_t blocksize = 1);
 
+	/**
+	 * @brief calcDistribution calculates a distribution of a domain of size @a totalSize into @a numCunks chunks and
+	 * fills the two arrays @a sizes and @a offsets with the respective offsets and sizes (both arrays have to be
+	 * already allocated and must be of size @a numChunks). When blocksize greater than 1, then the resulting sizes
+	 * are a multiple of this blocksize.
+	 *
+	 * Example:
+	 *
+	 * |. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|
+	 * calcDistribution(50, 3, sizes, offsets, 5) ->
+	 * |. . . . .-. . . . .-. . . . .-. . . . .|. . . . .-. . . . .-. . . . .|. . . . .-. . . . .-. . . . .|
+	 *
+	 * sizes: [20,15,15]
+	 * offsets: [0,20,35]
+	 *
+	 * @param totalSize size of domain to distribute
+	 * @param numChunks
+	 * @param sizes output array to store resulting distribution sizes (array size must be numChunks)
+	 * @param offsets output array to store resulting distribution offsets (array size must be numChunks)
+	 * @param blocksize resulting sizes are a multiple of this blocksize.
+	 */
+	static void calcDistribution(int totalSize, int numChunks, int *sizes, int *offsets, size_t blocksize = 1);
 };
 
 }

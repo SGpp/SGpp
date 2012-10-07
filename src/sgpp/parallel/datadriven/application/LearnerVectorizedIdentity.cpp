@@ -6,10 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 
@@ -38,6 +35,8 @@ LearnerVectorizedIdentity::~LearnerVectorizedIdentity()
 {
 }
 
+
+
 sg::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda)
 {
 	if (this->grid_ == NULL)
@@ -46,23 +45,7 @@ sg::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(sg
 #ifndef USE_MPI
     return new sg::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
 #else
-#define MPI_TYPE_STANDARD 1
-#define MPI_TYPE_STANDARD_REDUCE 2
-#define MPI_TYPE_ASYNC 3
-#define MPI_TYPE_ONESIDED 4
-
-	int mpi_type = MPI_TYPE_ONESIDED;
-	if(mpi_type == MPI_TYPE_STANDARD){
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
-	} else if(mpi_type == MPI_TYPE_STANDARD_REDUCE) {
-		throw new sg::base::factory_exception("not implemented");
-	} else if(mpi_type == MPI_TYPE_ASYNC) {
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
-	} else if(mpi_type == MPI_TYPE_ONESIDED) {
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
-	} else {
-		throw new sg::base::factory_exception("not implemented");
-	}
+	return sg::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(*(this->grid_), trainDataset, lambda, this->vecType_);
 #endif
 }
 
