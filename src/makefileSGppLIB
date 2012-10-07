@@ -430,7 +430,6 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BiCGStabMPI.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	DMSystemMatrixVectorizedIdentityMPI.o\
-	DMSystemMatrixVectorizedIdentityAsyncMPI.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o\
 	DMSystemMatrixMPITypeFactory.o\
 
@@ -1254,9 +1253,6 @@ DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DM
 DMSystemMatrixSPVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentityMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
 
-DMSystemMatrixVectorizedIdentityAsyncMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityAsyncMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.cpp
-
 DMSystemMatrixMPITypeFactory.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp \
@@ -1265,7 +1261,9 @@ $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinea
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp \
-$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
 
 
