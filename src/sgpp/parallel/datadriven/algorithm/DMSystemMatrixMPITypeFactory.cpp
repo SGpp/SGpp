@@ -22,6 +22,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
 
 #include <cstring>
 #include "base/exception/factory_exception.hpp"
@@ -33,16 +34,16 @@ template<typename MultType, typename MultTransType>
 datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType)
 {
 #define MPI_TYPE_STANDARD 1
-#define MPI_TYPE_STANDARD_REDUCE 2
+#define MPI_TYPE_ALLREDUCE 2
 #define MPI_TYPE_ASYNC 3
 #define MPI_TYPE_ONESIDED 4
 
-	int mpi_type = MPI_TYPE_STANDARD;
+	int mpi_type = MPI_TYPE_ALLREDUCE;
 
 	if(mpi_type == MPI_TYPE_STANDARD){
 		return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
-	} else if(mpi_type == MPI_TYPE_STANDARD_REDUCE) {
-		throw new sg::base::factory_exception("not implemented");
+	} else if(mpi_type == MPI_TYPE_ALLREDUCE) {
+		return new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ASYNC) {
 		return new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ONESIDED) {
