@@ -1263,7 +1263,8 @@ $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMu
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \
-$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
 
 
