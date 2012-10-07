@@ -46,9 +46,9 @@ DMSystemMatrixVectorizedIdentityMPI::DMSystemMatrixVectorizedIdentityMPI(sg::bas
 	_mpi_data_sizes= new int[mpi_size];
 	_mpi_data_offsets = new int[mpi_size];
 
-    // calculate distribution
-	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
-	calcDistribution(this->numPatchedTrainingInstances_, _mpi_data_sizes, _mpi_data_offsets,
+	// calculate distribution
+	sg::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
+	sg::parallel::PartitioningTool::calcDistribution(this->numPatchedTrainingInstances_, mpi_size, _mpi_data_sizes, _mpi_data_offsets,
 					 sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
 
     debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_grid_offsets[mpi_rank] << " -- " << _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank] - 1 << "size: " <<  _mpi_grid_sizes[mpi_rank]);
@@ -114,8 +114,7 @@ void DMSystemMatrixVectorizedIdentityMPI::generateb(sg::base::DataVector& classe
 void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex()
 {
     this->B_->rebuildLevelAndIndex();
-
-	calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
+	sg::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(), sg::parallel::myGlobalMPIComm->getNumRanks(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
 	int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
 	this->B_->updateGridComputeBoundaries(_mpi_grid_offsets[mpi_rank],
@@ -147,17 +146,6 @@ void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector &sou
 	sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
 
 	this->completeTimeMultTrans_ += this->myTimer_->stop();
-}
-
-void DMSystemMatrixVectorizedIdentityMPI::calcDistribution(int totalSize, int *sizes, int *offsets, size_t blocksize)
-{
-	for(int rank = 0; rank < sg::parallel::myGlobalMPIComm->getNumRanks(); ++rank){
-		size_t size;
-		size_t offset;
-		sg::parallel::PartitioningTool::getPartitionSegment(totalSize, sg::parallel::myGlobalMPIComm->getNumRanks(), rank, &size, &offset, blocksize);
-		sizes[rank] = size;
-		offsets[rank] = offset;
-	}
 }
 
 }
