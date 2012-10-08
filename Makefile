@@ -214,10 +214,13 @@ ifeq ($(VEC),sse3)
 CFLAGS:=$(CFLAGS) -msse3
 endif
 ifeq ($(VEC),sse4)
-CFLAGS:=$(CFLAGS) -xSSE4.2
+CFLAGS:=$(CFLAGS) -msse4.2
 endif
 ifeq ($(VEC),avx)
-CFLAGS:=$(CFLAGS) -xAVX -DUSEAVX
+CFLAGS:=$(CFLAGS) -mavx
+endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
 endif
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -openmp
