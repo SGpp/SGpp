@@ -170,7 +170,7 @@ public:
 				long long imask = 0x7FFFFFFFFFFFFFFF;
 				double* fmask = (double*)&imask;
 
-				for (size_t i = c; i < c+CHUNKDATAPOINTS_X86; i+=24)
+				for (size_t i = c; i < c+getChunkDataPoints(); i+=24)
 				{
 					for (size_t j = m; j < m+grid_inc; j++)
 					{
