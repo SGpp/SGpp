@@ -264,7 +264,7 @@ public:
 				}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-				size_t grid_inc = std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86, (end_index_grid-m));
+				size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-m));
 
 				int imask = 0x7FFFFFFF;
 				float* fmask = (float*)&imask;
@@ -462,7 +462,7 @@ public:
 				}
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
-				size_t grid_end = std::min<size_t>((size_t)CHUNKGRIDPOINTS_SP_X86+m, end_index_grid);
+				size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints()+m, end_index_grid);
 
 				for (size_t i = c; i < data_end; i++)
 				{

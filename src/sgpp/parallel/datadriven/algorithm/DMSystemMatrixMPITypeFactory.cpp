@@ -38,7 +38,7 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 #define MPI_TYPE_ASYNC 3
 #define MPI_TYPE_ONESIDED 4
 
-	int mpi_type = MPI_TYPE_ALLREDUCE;
+	int mpi_type = MPI_TYPE_STANDARD;
 
 	if(mpi_type == MPI_TYPE_STANDARD){
 		return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
