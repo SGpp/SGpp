@@ -47,6 +47,15 @@ namespace op_factory
    */
   base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid);
 
+  /**
+     * Factory method, returning an OperationLTwoDotExplicit (OperationMatrix) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid);
+
 }
 
 }
