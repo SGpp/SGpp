@@ -26,11 +26,13 @@ pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.cpp
 pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.cpp
 pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.cpp
 pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.cpp
+pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.cpp
 pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
 pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
 pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.cpp
 pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.cpp
+pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.cpp
 pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 pde/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
 pde/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
