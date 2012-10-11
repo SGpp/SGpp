@@ -21,7 +21,9 @@
 #include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 
 #include "pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.hpp"
+#include "pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.hpp"
 #include "pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp"
+#include "pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.hpp"
 #include "pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp"
 #include "pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp"
 
@@ -103,6 +105,19 @@ namespace op_factory
       }
     else
       throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
+  }
+
+  base::OperationMatrix* createOperationLTwoExplicit(base::Grid& grid){
+  	  if(strcmp(grid.getType(), "linear") == 0)
+  	  {
+  	     return new pde::OperationMatrixLTwoDotExplicitLinear(&grid);
+  	  }
+  	  else if(strcmp(grid.getType(), "linearBoundary") == 0)
+  	  {
+  		  return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
+  	  }
+  	  else
+  	   throw base::factory_exception("OperationL2Explicit is not implemented for this grid type.");
   }
 
 }
