@@ -107,7 +107,7 @@ namespace op_factory
       throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }
 
-  base::OperationMatrix* createOperationLTwoExplicit(base::Grid& grid){
+  base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid){
   	  if(strcmp(grid.getType(), "linear") == 0)
   	  {
   	     return new pde::OperationMatrixLTwoDotExplicitLinear(&grid);
@@ -117,7 +117,7 @@ namespace op_factory
   		  return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
   	  }
   	  else
-  	   throw base::factory_exception("OperationL2Explicit is not implemented for this grid type.");
+  	   throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
   }
 
 }
