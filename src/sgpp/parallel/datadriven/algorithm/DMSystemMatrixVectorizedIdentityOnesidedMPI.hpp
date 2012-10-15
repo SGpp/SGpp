@@ -111,30 +111,45 @@ public:
 		_mpi_data_window_buffer->setAll(0.0);
 		_mpi_grid_window_buffer->setAll(0.0);
 
+		sg::base::DataVector temp(this->numPatchedTrainingInstances_);
+		temp.setAll(0.0);
+		//MultType::mult(level_, index_, dataset_, alpha, *_mpi_data_window_buffer, 0, alpha.getSize(), 0, this->numPatchedTrainingInstances_);
+
 		this->myTimer_->start();
 
 		int thread_count = 1;
 		int thread_num = 0;
-		#pragma omp parallel private (thread_num, thread_count)
-		{
+
+#pragma omp parallel private(thread_num, thread_count)
+	{
 	#ifdef _OPENMP
 			thread_count = omp_get_num_threads();
 			thread_num = omp_get_thread_num();
 	#endif
-
 			size_t myDataChunkStart = _mpi_data_offsets_global[mpi_myrank];
 			size_t myDataChunkEnd = myDataChunkStart + _mpi_data_sizes_global[mpi_myrank];
 			size_t procDataChunkStart = _mpi_data_offsets[myDataChunkStart];
-			for(size_t thread_chunk = myDataChunkStart + thread_num; thread_chunk<myDataChunkEnd; thread_chunk+=thread_count){
+			for(size_t thread_chunk = myDataChunkStart + thread_num; thread_chunk < myDataChunkEnd; thread_chunk += thread_count){
 				size_t start = _mpi_data_offsets[thread_chunk];
 				size_t end = start + _mpi_data_sizes[thread_chunk];
 
-				MultType::mult(level_, index_, dataset_, alpha, *_mpi_data_window_buffer, 0, alpha.getSize(), start, end);
+				MultType::mult(level_, index_, dataset_, alpha, temp, 0, alpha.getSize(), start, end);
+				for(int i = start; i<end; i++){
+					(*_mpi_data_window_buffer)[i] = temp[i];
+				}
+
+				//MultType::mult(level_, index_, dataset_, alpha, *_mpi_data_window_buffer, 0, alpha.getSize(), start, end);
 				sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_data_window[mpi_myrank], start - procDataChunkStart, end-start);
 			}
 
 		#pragma omp single
 		{
+//				size_t s = 0;
+//				for (int i = _mpi_data_offsets_global[mpi_myrank]; i<_mpi_data_offsets_global[mpi_myrank] + _mpi_data_sizes_global[mpi_myrank]; i++){
+//					s += _mpi_data_sizes[i];
+//				}
+//				sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_data_window[mpi_myrank], 0, s);
+
 			this->computeTimeMult_ += this->myTimer_->stop();
 			for (int rank = 0; rank < mpi_size; rank++){
 				int assert = MPI_MODE_NOSUCCEED;
@@ -143,6 +158,7 @@ public:
 				}
 				MPI_Win_fence(assert, _mpi_data_window[rank]);
 			}
+
 			this->completeTimeMult_ += this->myTimer_->stop();
 
 			// patch result -> set additional entries zero
